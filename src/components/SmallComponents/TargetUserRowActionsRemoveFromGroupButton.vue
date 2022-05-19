@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TargetUserRowActionsRemoveFromGroupButton',
@@ -28,6 +28,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTargetGroupsDeleteUsersPermissions: 'permissions/getTargetGroupsDeleteUsersPermissions'
+    }),
     getTooltipMessage() {
       const { row } = this.scope
       return !row.isEditable
@@ -38,7 +41,7 @@ export default {
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope
-      return !row.isEditable || !checkPermission('target-groups/{resourceId}/users', 'DELETE')
+      return !row.isEditable || !this.getTargetGroupsDeleteUsersPermissions
     }
   }
 }

@@ -5,7 +5,7 @@
         <v-card id="phishing-simulator-card" class="k-card">
           <el-tabs v-model="tab">
             <el-tab-pane
-              v-if="checkPermission('phishing-simulator/phishing-scenario/search', 'POST')"
+              v-if="getPhishingScenariosSearchPermissions"
               label="Scenarios"
               name="scenarios"
               id="emailTemplates-scenarios"
@@ -13,7 +13,7 @@
               <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
             </el-tab-pane>
             <el-tab-pane
-              v-if="checkPermission('phishing-simulator/email-templates', 'POST')"
+              v-if="getEmailTemplatesSearchPermissions"
               label="Email Templates"
               name="emailTemplates"
               id="emailTemplates-content"
@@ -21,7 +21,7 @@
               <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
             </el-tab-pane>
             <el-tab-pane
-              v-if="checkPermission('phishing-simulator/landing-page-template', 'POST')"
+              v-if="getLandingPageTemplatesSearchPermissions"
               label="Landing Page Templates"
               name="landingPage"
               id="landing-page-content"
@@ -36,10 +36,11 @@
 </template>
 
 <script>
-import EmailTemplates from '../components/PhishingScenarios/EmailTemplates'
-import LandingPageList from '../components/LandingPage/LandingPageList'
-import Scenarios from '../components/PhishingScenarios/Scenarios'
-import { checkPermission } from '@/utils/functions'
+import EmailTemplates from '@/components/PhishingScenarios/EmailTemplates'
+import LandingPageList from '@/components/LandingPage/LandingPageList'
+import Scenarios from '@/components/PhishingScenarios/Scenarios'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'PhishingSimulator',
   components: {
@@ -52,12 +53,17 @@ export default {
       tab: 'scenarios'
     }
   },
+  computed: {
+    ...mapGetters({
+      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions',
+      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions',
+      getLandingPageTemplatesSearchPermissions:
+        'permissions/getLandingPageTemplatesSearchPermissions'
+    })
+  },
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
-    },
-    checkPermission(permission, type) {
-      return checkPermission(permission, type)
     }
   },
   beforeRouteLeave(to, from, next) {

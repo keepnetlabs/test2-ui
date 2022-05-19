@@ -7,7 +7,7 @@
       body="Do you want to delete playbook rule?"
       title-id="text--playbook-delete-popup-title"
       subtitle-id="text--playbook-delete-popup-subtitle"
-      :subtitle="deleteMessage(deleteValues)"
+      :subtitle="getDeleteDialogSubtitle"
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
     >
@@ -71,7 +71,7 @@
         <span v-if="scope.row[col.property] === 0">
           {{ labels.NoMatchEmptyText }}
         </span>
-        <span v-else @click="matchingPopupClick(scope.row)" :class="getMatchingPlaybookPermission">
+        <span v-else :class="getMatchingPlaybookPermission" @click="matchingPopupClick(scope.row)">
           {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} {{ labels.Matches }}
         </span>
       </template>
@@ -519,13 +519,6 @@ export default {
         })
       }
     },
-    deleteMessage(item) {
-      const nameValues =
-        this.totalSelectedItemsCount > 1
-          ? `${this.totalSelectedItemsCount} rules`
-          : item && item.name
-      return `${nameValues} will be deleted!`
-    },
     calculateIsFilterColumnActive() {
       this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.tableCredientials)
     },
@@ -587,6 +580,14 @@ export default {
     ...mapGetters({
       playbookList: 'playbook/playbookListGetter'
     }),
+    getDeleteDialogSubtitle() {
+      const item = this.deleteValues
+      const nameValues =
+        this.totalSelectedItemsCount > 1
+          ? `${this.totalSelectedItemsCount} rules`
+          : item && item.name
+      return `${nameValues} will be deleted!`
+    },
     getMatchingPlaybookPermission() {
       return this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission && 'popup-link'
     },

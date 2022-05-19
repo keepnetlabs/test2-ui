@@ -54,7 +54,6 @@
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
-        :PERMISSIONS="PERMISSIONS"
         :scope="scope"
         :row-actions="tableOptions.rowActions"
         @on-edit="handleEdit"
@@ -88,6 +87,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
 import { getDefaultFilter } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -112,9 +112,6 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
-    },
-    PERMISSIONS: {
-      type: Object
     },
     statusItems: {
       type: Array
@@ -152,18 +149,18 @@ export default {
           action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
         },
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          disabled: !this.$store.getters['permissions/getCampaignManagerParentExportPermissions']
         },
         rowActions: [
           {
@@ -171,26 +168,34 @@ export default {
             id: 'btn-preview--row-actions-campaign-manager',
             icon: 'mdi-eye',
             action: 'on-preview',
-            disabled: !this.PERMISSIONS.GET.hasPermission
+            disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-campaign-manager',
             icon: 'mdi-content-copy',
             action: 'on-duplicate',
-            disabled: !this.PERMISSIONS.GET.hasPermission
+            disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getCampaignManagerParentDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
+  },
+  computed: {
+    ...mapGetters({
+      getCampaignManagerParentSearchPermissions:
+        'permissions/getCampaignManagerParentSearchPermissions',
+      getCampaignManagerParentExportPermissions:
+        'permissions/getCampaignManagerParentExportPermissions'
+    })
   },
   watch: {
     statusItems(val) {
@@ -241,8 +246,7 @@ export default {
       })
     },
     callForData() {
-      const { SEARCH } = this.PERMISSIONS
-      if (SEARCH.hasPermission) {
+      if (this.getCampaignManagerParentSearchPermissions) {
         this.$nextTick(() => {
           this.setLoading(true)
           searchCampaignManager(this.axiosPayload)
@@ -376,8 +380,7 @@ export default {
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
-      const { EXPORT } = this.PERMISSIONS
-      if (EXPORT.hasPermission) {
+      if (this.getCampaignManagerParentExportPermissions) {
         downloadTypes.exportTypes.forEach((item) => {
           let payload = {
             pageNumber: downloadTypes.pageNumber,

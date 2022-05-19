@@ -1,12 +1,12 @@
 <template>
   <div id="integrations">
     <v-overlay
-      id="add-new-community-overlay"
       v-if="modalStatus"
       :value="modalStatus"
+      id="add-new-community-overlay"
+      color="white"
       :opacity="1"
       :z-index="99"
-      color="white"
     >
       <new-integration
         v-if="modalStatus"
@@ -25,7 +25,6 @@
     />
 
     <data-table
-      v-if="checkPermissions('analysis-engines/search', 'POST')"
       id="integrations-data-table"
       ref="refIntegrationsList"
       selectable
@@ -44,6 +43,7 @@
       :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :download-button="tableOptions.downloadButton"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
@@ -54,7 +54,6 @@
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
@@ -69,14 +68,14 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn
-              @click="handleEdit(scope.row)"
+              v-on="on"
               :id="`btn-edit--integrations-row-action-${
                 scope.$index
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover"
               icon
-              v-on="on"
               :disabled="tableOptions.rowActions[0].disabled"
+              @click="handleEdit(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
             </v-btn>
@@ -150,7 +149,7 @@ import {
   INTEGRATION_TYPES,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -164,6 +163,12 @@ export default {
     DataTable,
     NewIntegration,
     DeleteIntegrationModal
+  },
+  props: {
+    permissions: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
     return {
@@ -257,24 +262,24 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'PUT')
+            disabled: !this.permissions.UPDATE.hasPermission
           },
           {
             name: labels.Disable,
             icon: 'mdi-minus-circle-outline',
             action: 'disable',
-            disabled: !this.checkPermissions('analysis-engines/{resourceId}/disable', 'PUT')
+            disabled: !this.permissions.DISABLE.hasPermission
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'DELETE')
+            disabled: !this.permissions.DELETE.hasPermission
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions('analysis-engines/search/export', 'POST')
+          disabled: !this.permissions.EXPORT.hasPermission
         },
         selectEvent: {
           clipboard: true,
@@ -293,7 +298,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add an integration',
           id: 'btn-add--integrations',
-          disabled: !this.checkPermissions('analysis-engines', 'POST')
+          disabled: !this.permissions.POST.hasPermission
         }
       },
       modalStatus: false,
@@ -307,12 +312,10 @@ export default {
       localStorage.setItem(TABLE_SETTINGS_KEYS.INTEGRATION, JSON.stringify(tableSettings))
     },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -329,18 +332,15 @@ export default {
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -383,9 +383,6 @@ export default {
           filterValues
         })
       )
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -463,7 +460,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('analysis-engines/search', 'POST')) {
+      if (this.permissions.SEARCH.hasPermission) {
         getIntegrationList(this.bodyData)
           .then((response) => {
             const {

@@ -67,6 +67,10 @@ export default {
   props: {
     formData: {
       type: Array
+    },
+    isActionButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -75,7 +79,6 @@ export default {
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
-      isActionButtonDisabled: false,
       labels
     }
   },

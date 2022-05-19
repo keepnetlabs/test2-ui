@@ -236,7 +236,7 @@
       </app-dialog>
       <v-btn
         v-if="$route.path == '/threat-sharing'"
-        :disabled="!checkPermissions('communities', 'POST')"
+        :disabled="!getCreateCommunityPermission"
         class="create-com-btn"
         @click="createNewCommunity"
         block
@@ -251,7 +251,7 @@
         block
         rounded
         id="threat-sharing-right-column-post-incident-button"
-        :disabled="!checkPermissions('community-posts', 'POST')"
+        :disabled="!getPostIncidentPermission"
         >POST INCIDENT
       </v-btn>
       <div class="right-side-content wrapper pt-8 pb-4">
@@ -269,9 +269,7 @@
               <div class="notification-wrapper__right-column">
                 <v-list dense flat class="notification-wrapper__v-list">
                   <v-list-item-group
-                    v-if="
-                      checkPermissions('communities/{resourceId}', 'PUT') && isOwnerOfTheCommunity()
-                    "
+                    v-if="getEditCommunityPermission && isOwnerOfTheCommunity()"
                     color="primary"
                   >
                     <v-list-item id="right-col-edit-commun" @click="editCommunity()">
@@ -305,7 +303,7 @@
                     <v-list-item
                       id="right-col-leave-commun"
                       @click="isWantToToLeaveFromCommunity = true"
-                      v-if="checkPermissions('communities/{resourceId}/leave', 'POST')"
+                      v-if="getLeaveCommunityPermission"
                     >
                       <v-list-item-icon>
                         <v-icon>mdi-exit-to-app</v-icon>
@@ -318,10 +316,7 @@
                     </v-list-item>
                   </v-list-item-group>
                   <v-list-item-group
-                    v-if="
-                      checkPermissions('communities/{resourceId}', 'DELETE') &&
-                      isOwnerOfTheCommunity()
-                    "
+                    v-if="getDeleteCommunityPermission && isOwnerOfTheCommunity()"
                     color="primary"
                   >
                     <v-list-item id="right-col-delete-commun" @click="isWantToDelete = true">
@@ -378,7 +373,7 @@
                     v-if="
                       ((!!communityDetails && communityDetails.myMembershipStatusId == 1) ||
                         (!!communityDetails && communityDetails.privacyStatusName === 'Public')) &&
-                      checkPermissions('communities/{resourceId}/invite', 'POST')
+                      getInviteToCommunityPermission
                     "
                     id="threat-sharing-right-column-invite-plus"
                     href="#"
@@ -419,18 +414,18 @@
         <div
           id="text--threat-sharing-right-column-posts-title"
           class="right-side-title pt-1"
-          v-if="checkPermissions('community-posts/my-last-posts', 'GET')"
+          v-if="getMyLastPostsPermission"
         >
           Your Posts
         </div>
         <PostCardLoading
           :loading="yourPostsLoading"
           id="your-post-skeleton"
-          v-show="checkPermissions('community-posts/my-last-posts', 'GET') && yourPostsLoading"
+          v-show="getMyLastPostsPermission && yourPostsLoading"
         >
           <template v-slot:skeleton-content> </template>
         </PostCardLoading>
-        <div v-show="checkPermissions('community-posts/my-last-posts', 'GET') && !yourPostsLoading">
+        <div v-show="getMyLastPostsPermission && !yourPostsLoading">
           <div class="pb-4" v-if="yourPosts && yourPosts.length > 0">
             <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
               <post
@@ -454,20 +449,13 @@
         <div
           id="text--threat-sharing-right-column-post-top-post-from-your-communities"
           class="right-side-title pt-4"
-          v-if="checkPermissions('community-posts/top-posts', 'GET')"
+          v-if="getTopPostsPermission"
         >
           Top Posts from your communities
         </div>
-        <PostCardLoading
-          :loading="checkPermissions('community-posts/top-posts', 'GET') && topPostsLoading"
-          id="top-post-skeleton"
-        >
+        <PostCardLoading :loading="getTopPostsPermission && topPostsLoading" id="top-post-skeleton">
           <template v-slot:skeleton-content>
-            <div
-              v-if="
-                topPosts && topPosts.length && checkPermissions('community-posts/top-posts', 'GET')
-              "
-            >
+            <div v-if="topPosts && topPosts.length && getTopPostsPermission">
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <post
                   class="right-side-post-container pt-2"
@@ -478,10 +466,7 @@
                 />
               </div>
             </div>
-            <div
-              v-else-if="!checkPermissions('community-posts/top-posts', 'GET')"
-              class="empty-posts pt-1"
-            ></div>
+            <div v-else-if="!getTopPostsPermission" class="empty-posts pt-1"></div>
             <div id="text--threat-sharing-right-column-top-posts-post-no-top-posts" v-else>
               No incident has been posted in your communities
             </div>
@@ -490,16 +475,16 @@
         <div
           id="text--threat-sharing-right-column-suggested-communities"
           class="right-side-title pb-3 pt-8"
-          v-if="checkPermissions('communities/suggested', 'GET')"
+          v-if="getSuggestedCommunitiesPermission"
         >
           Suggested Communities
         </div>
         <CommunitiesCardLoading
           v-if="postsLoading"
-          :loading="checkPermissions('communities/suggested', 'GET') && postsLoading"
+          :loading="getSuggestedCommunitiesPermission && postsLoading"
           id="communities-post-skeleton"
         />
-        <div v-show="checkPermissions('communities/suggested', 'GET') && !postsLoading">
+        <div v-show="getSuggestedCommunitiesPermission && !postsLoading">
           <div v-if="suggestedCommunities && suggestedCommunities.length">
             <v-card
               v-for="(commun, ind) of suggestedCommunities"
@@ -540,7 +525,7 @@ import {
 } from '@/api/threatSharing'
 import AppDialog from '@/components/AppDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { checkPermission, isOwner } from '@/utils/functions'
+import { isOwner } from '@/utils/functions'
 import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
 import CommunitiesCardLoading from '@/components/SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
@@ -663,7 +648,17 @@ export default {
   computed: {
     ...mapGetters({
       getSelectedCompany: 'dashboard/getSelectedCompany',
-      userGetter: 'auth/userGetter'
+      userGetter: 'auth/userGetter',
+      getCreateCommunityPermission: 'permissions/getThreatSharingCreateCommunityPermission',
+      getEditCommunityPermission: 'permissions/getThreatSharingEditCommunityPermission',
+      getLeaveCommunityPermission: 'permissions/getThreatSharingLeaveCommunityPermission',
+      getDeleteCommunityPermission: 'permissions/getThreatSharingDeleteCommunityPermission',
+      getPostIncidentPermission: 'permissions/getThreatSharingPostIncidentPermission',
+      getInviteToCommunityPermission: 'permissions/getThreatSharingInviteToCommunityPermission',
+      getMyLastPostsPermission: 'permissions/getThreatSharingMyLastPostsPermission',
+      getTopPostsPermission: 'permissions/getThreatSharingTopPostsPermission',
+      getSuggestedCommunitiesPermission:
+        'permissions/getThreatSharingSuggestedCommunitiesPermission'
     }),
     ...mapState({
       companyInformation: (state) => state.dashboard.companyInformation
@@ -676,9 +671,6 @@ export default {
     }
   },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     setAllNotification(val) {
       this.notifications = {
         isNotifications: val,

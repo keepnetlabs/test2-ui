@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TargetUserRowActionsEditButton',
@@ -41,6 +41,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTargetUsersEditPermissions: 'permissions/getTargetUsersEditPermissions'
+    }),
     getTooltipMessage() {
       const { row } = this.scope
       return !row.isEditable
@@ -51,7 +54,7 @@ export default {
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope
-      return !row.isEditable || !checkPermission('target-users/{resourceId}', 'PUT')
+      return !row.isEditable || !this.getTargetUsersEditPermissions
     }
   }
 }

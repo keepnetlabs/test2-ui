@@ -176,7 +176,7 @@
                 <template v-if="ind === 2">
                   {{ tab }}
                   <span
-                    v-if="checkPermissions('communities/my-invitations', 'GET') && invitationsCount"
+                    v-if="getMyInvitationsPermission && invitationsCount"
                     class="invitations-count"
                   >
                     {{ invitationsCount }}
@@ -277,16 +277,9 @@
                   :community="item"
                   :isOwnerOrMember="isOwnerOrMember(item)"
                   :isRequestToJoinDisabled="isRequestToJoinDisabled"
-                  :canEditCommunity="
-                    checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
-                  "
-                  :canLeaveCommunity="
-                    checkPermissions('communities/{resourceId}/leave', 'POST') &&
-                    isOwnerOrMember(item)
-                  "
-                  :canDeleteCommunity="
-                    checkPermissions('communities/{resourceId}', 'DELETE') && isOwner(item)
-                  "
+                  :canEditCommunity="getEditCommunityPermission && isOwner(item)"
+                  :canLeaveCommunity="getLeaveCommunityPermission && isOwnerOrMember(item)"
+                  :canDeleteCommunity="getDeleteCommunityPermission && isOwner(item)"
                   @detailsClick="communityDetails(item)"
                   @requestJoin="
                     requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
@@ -301,11 +294,7 @@
                 />
               </div>
             </div>
-            <div
-              v-if="
-                selectedTab === 'tab-2' && checkPermissions('communities/my-invitations', 'GET')
-              "
-            >
+            <div v-if="selectedTab === 'tab-2' && getMyInvitationsPermission">
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <community-invitation-card
                   :community="item"
@@ -465,7 +454,7 @@ import {
   removeFromCommunities,
   updateNotifications
 } from '@/api/threatSharing'
-import { checkPermission, isOwner, isOwnerOrMember } from '@/utils/functions'
+import { isOwner, isOwnerOrMember } from '@/utils/functions'
 import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -474,6 +463,7 @@ import labels from '@/model/constants/labels'
 import { getNotifications } from '@/api/dashboard'
 import CommunityCard from '@/components/ThreatSharing/Communities/CommunityCard'
 import CommunityInvitationCard from '@/components/ThreatSharing/Communities/CommunityInvitationCard'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -485,6 +475,12 @@ export default {
     CommunityInvitationCard
   },
   computed: {
+    ...mapGetters({
+      getMyInvitationsPermission: 'permissions/getThreatSharingMyInvitationsPermission',
+      getEditCommunityPermission: 'permissions/getThreatSharingEditCommunityPermission',
+      getLeaveCommunityPermission: 'permissions/getThreatSharingLeaveCommunityPermission',
+      getDeleteCommunityPermission: 'permissions/getThreatSharingDeleteCommunityPermission'
+    }),
     numberOfPages() {
       const communitiesData =
         this.$store.state['communities'].communities ||
@@ -701,9 +697,6 @@ export default {
         }
       }
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     setNotificationModal(communityResourceId) {
       this.temporaryResourceId = communityResourceId
       this.getNotifications()
@@ -815,7 +808,7 @@ export default {
       if (!this.isLoadState) this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
-      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+      if (this.getMyInvitationsPermission) {
         getInvitationCount()
           .then((response) => {
             this.invitationsCount = response.data.data.count
@@ -908,7 +901,7 @@ export default {
       this.getAllCommunitiesListData()
     },
     getInvitions() {
-      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+      if (this.getMyInvitationsPermission) {
         this.invitationData = []
         this.communityLoading = true
         getInvitations()

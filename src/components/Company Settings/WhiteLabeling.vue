@@ -278,7 +278,7 @@
           class="white-labeling__footer-reset-to-default"
           text
           color="#2196f3"
-          :disabled="!hasDeletePermission"
+          :disabled="!getWhiteLabelingDeletePermissions"
           @click="toggleWhiteLabelingDialog"
         >
           RESET TO DEFAULT</v-btn
@@ -302,6 +302,7 @@ import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
 import { getWhiteLabel } from '@/api/whitelabel'
 import WhiteLabelingDomainDialog from '@/components/Company Settings/WhiteLabelingDomainDialog'
+import { mapGetters } from 'vuex'
 export default {
   name: 'WhiteLabeling',
   components: {
@@ -316,10 +317,6 @@ export default {
     InputEntityName
   },
   props: {
-    PERMISSIONS: {
-      type: Object,
-      required: true
-    },
     isCompanyConfigure: {
       type: Boolean,
       default: false
@@ -379,9 +376,14 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
+      getWhiteLabelingUpdatePermissions: 'permissions/getWhiteLabelingUpdatePermissions',
+      getWhiteLabelingDeletePermissions: 'permissions/getWhiteLabelingDeletePermissions'
+    }),
     getActionButtonDisabled() {
       if (this.isCompanyAdmin) return true
-      return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
+      return this.isActionButtonDisabled || !this.getWhiteLabelingUpdatePermissions
     },
     isCompanyAdmin() {
       return this.$store.state?.auth?.userRoleName === labels.CompanyAdmin
@@ -397,11 +399,6 @@ export default {
     },
     getEmailTemplateLogo() {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
-    },
-    hasDeletePermission() {
-      if (this.isCompanyAdmin) return false
-      const { DELETE } = this.PERMISSIONS
-      return DELETE.hasPermission
     }
   },
   watch: {
@@ -410,14 +407,13 @@ export default {
     }
   },
   created() {
-    const { GET } = this.PERMISSIONS
     if (this.isCompanyConfigure) {
       this.callForData({
         overrideCompanyId: true,
         headers: { 'X-IR-COMPANY-ID': this.createdCompanyId },
         loading: true
       })
-    } else if (GET.hasPermission) {
+    } else if (this.getWhiteLabelingGetPermissions) {
       this.callForData()
     }
   },
@@ -475,8 +471,7 @@ export default {
         return this.$emit('on-configure-company-submit')
       }
       const { refForm } = this.$refs
-      const { UPDATE } = this.PERMISSIONS
-      if (UPDATE.hasPermission) {
+      if (this.getWhiteLabelingUpdatePermissions) {
         if (refForm.validate()) {
           this.isActionButtonDisabled = true
           this.$store
@@ -518,7 +513,7 @@ export default {
       this.resetToDefaultWhiteLabelingDialogStatus = !this.resetToDefaultWhiteLabelingDialogStatus
     },
     handleResetWhiteLabeling() {
-      if (this.hasDeletePermission) {
+      if (this.getWhiteLabelingDeletePermissions) {
         this.isWhiteLabelLoading = true
         this.isResetToDefaultActionButtonDisabled = true
         this.$store.dispatch('whitelabel/resetToDefault').then(() => {

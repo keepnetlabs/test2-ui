@@ -95,7 +95,7 @@
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
-                  :disabled="!checkPermissions('target-users/search', 'POST')"
+                  :disabled="!getTargetUsersCreatePermissions"
                   id="btn-add--target-users-people"
                   class="button-new"
                   style="margin-right: 10px;"
@@ -205,7 +205,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
 import {
@@ -217,6 +217,7 @@ import {
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'People',
@@ -237,179 +238,186 @@ export default {
     }
   },
   emits: ['call-for-company-licenses'],
-  data: () => ({
-    labels,
-    isInitial: true,
-    selectedUserToViewGroups: null,
-    payload: getDefaultAxiosPayload(),
-    storedTableSettings: null,
-    defaultRequestBody: getDefaultAxiosPayload(),
-    isWantToImportFile: false,
-    isShowingTargetUserViewTargetGroups: false,
-    tableData: [],
-    loading: true,
-    bulkDeleteErrorMessage: '',
-    isMultipleDelete: false,
-    multipleDeletedUserCount: 0,
-    multipleTargetUserPayload: {},
-    isWantToShowDeleteUserModal: false,
-    selectedRow: null,
-    customFields: [],
-    isWantToShowAddUsersModal: false,
-    showPopupModal: false,
-    isWantToShowImportUsersFromFileModal: false,
-    isWantToShowCustomFieldsModal: false,
-    deleteButtonDisabled: false,
-    tableOptions: {
-      isColumnFilterActive: false,
-      lastColumns: [
-        {
-          property: PROPERTY_STORE.PRIORITY,
-          align: 'center',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.PRIORITY),
-          sortable: true,
-          show: true,
-          type: 'priority',
-          width: 150,
-          fullWidth: true,
-          filterableType: 'select',
-          filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
-          dbName: 'Priority'
+  data() {
+    return {
+      labels,
+      isInitial: true,
+      selectedUserToViewGroups: null,
+      payload: getDefaultAxiosPayload(),
+      storedTableSettings: null,
+      defaultRequestBody: getDefaultAxiosPayload(),
+      isWantToImportFile: false,
+      isShowingTargetUserViewTargetGroups: false,
+      tableData: [],
+      loading: true,
+      bulkDeleteErrorMessage: '',
+      isMultipleDelete: false,
+      multipleDeletedUserCount: 0,
+      multipleTargetUserPayload: {},
+      isWantToShowDeleteUserModal: false,
+      selectedRow: null,
+      customFields: [],
+      isWantToShowAddUsersModal: false,
+      showPopupModal: false,
+      isWantToShowImportUsersFromFileModal: false,
+      isWantToShowCustomFieldsModal: false,
+      deleteButtonDisabled: false,
+      tableOptions: {
+        isColumnFilterActive: false,
+        lastColumns: [
+          {
+            property: PROPERTY_STORE.PRIORITY,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PRIORITY),
+            sortable: true,
+            show: true,
+            type: 'priority',
+            width: 150,
+            fullWidth: true,
+            filterableType: 'select',
+            filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
+            dbName: 'Priority'
+          },
+          {
+            property: PROPERTY_STORE.STATUS,
+            align: 'center',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'status',
+            width: 150,
+            isEditable: true,
+            hasTooltip: true,
+            fullWidth: true,
+            filterableType: 'select',
+            filterableItems: COMMON_CONSTANTS.STATUS_ITEMS,
+            dbName: 'Status'
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'date',
+            dbName: 'CreateTime'
+          }
+        ],
+        columns: [],
+        defaultColumns: [
+          // Should be defined to show the table
+          {
+            property: PROPERTY_STORE.FIRSTNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            width: 140,
+            type: 'text',
+            filterableType: 'text',
+            dbName: 'FirstName'
+          },
+          {
+            property: PROPERTY_STORE.LASTNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.LASTNAME),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: 'text',
+            dbName: 'LastName'
+          },
+          {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 275,
+            filterableType: 'text',
+            dbName: 'Email'
+          },
+          {
+            property: PROPERTY_STORE.DEPARTMENT,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: 'text',
+            dbName: 'Department'
+          }
+        ],
+        downloadButton: {
+          show: true
         },
-        {
-          property: PROPERTY_STORE.STATUS,
-          align: 'center',
-          label: getStoreValue(PROPERTY_STORE.STATUS),
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'status',
-          width: 150,
-          isEditable: true,
-          hasTooltip: true,
-          fullWidth: true,
-          filterableType: 'select',
-          filterableItems: COMMON_CONSTANTS.STATUS_ITEMS,
-          dbName: 'Status'
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: true,
+          download: false
         },
-        {
-          property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATETIME),
-          fixed: false,
-          sortable: true,
+        iEmpty: {
+          message: LABEL_STORE.NO_TARGET_USER_ADDED,
+          btn: 'ADD A USER',
+          id: 'btn-empty--target-users-people',
+          icon: 'mdi-account-plus'
+        },
+        addButton: {
           show: true,
-          type: 'text',
-          width: 180,
-          filterableType: 'date',
-          dbName: 'CreateTime'
-        }
+          action: 'addButton',
+          id: 'btn-add--target-users-people'
+        },
+        rowActions: [
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            action: 'editTargetUsers',
+            id: 'btn-edit--target-users-people-row-actions',
+            isNotShow: true,
+            disabled: !this.$store.getters['permissions/getTargetUsersEditPermissions']
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            id: 'btn-delete--target-users-people-row-actions',
+            disabled: !this.$store.getters['permissions/getTargetUsersDeletePermissions']
+          },
+          {
+            name: 'View user’s groups',
+            icon: 'mdi-account-supervisor-outline',
+            action: 'viewUserGroups',
+            id: 'btn-view--target-users-people-row-actions'
+          }
+        ]
+      },
+      addUsersItems: [
+        { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
+        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
       ],
-      columns: [],
-      defaultColumns: [
-        // Should be defined to show the table
-        {
-          property: PROPERTY_STORE.FIRSTNAME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
-          fixed: 'left',
-          sortable: true,
-          show: true,
-          width: 140,
-          type: 'text',
-          filterableType: 'text',
-          dbName: 'FirstName'
-        },
-        {
-          property: PROPERTY_STORE.LASTNAME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.LASTNAME),
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 150,
-          filterableType: 'text',
-          dbName: 'LastName'
-        },
-        {
-          property: PROPERTY_STORE.EMAIL,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.EMAIL),
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 275,
-          filterableType: 'text',
-          dbName: 'Email'
-        },
-        {
-          property: PROPERTY_STORE.DEPARTMENT,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 160,
-          filterableType: 'text',
-          dbName: 'Department'
-        }
-      ],
-      downloadButton: {
-        show: true
-      },
-      selectEvent: {
-        clipboard: true,
-        edit: false,
-        delete: true,
-        download: false
-      },
-      iEmpty: {
-        message: LABEL_STORE.NO_TARGET_USER_ADDED,
-        btn: 'ADD A USER',
-        id: 'btn-empty--target-users-people',
-        icon: 'mdi-account-plus'
-      },
-      addButton: {
-        show: true,
-        action: 'addButton',
-        id: 'btn-add--target-users-people'
-      },
-      rowActions: [
-        {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          action: 'editTargetUsers',
-          id: 'btn-edit--target-users-people-row-actions',
-          isNotShow: true,
-          disabled: !checkPermission('system-users/{resourceId}', 'PUT')
-        },
-        {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'deleteAction',
-          id: 'btn-delete--target-users-people-row-actions',
-          disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
-        },
-        {
-          name: 'View user’s groups',
-          icon: 'mdi-account-supervisor-outline',
-          action: 'viewUserGroups',
-          id: 'btn-view--target-users-people-row-actions'
-        }
-      ]
-    },
-    addUsersItems: [
-      { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
-      { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
-    ],
-    serverSideProps: new ServerSideProps()
-  }),
+      serverSideProps: new ServerSideProps()
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
+    })
+  },
   methods: {
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -499,9 +507,6 @@ export default {
       this.resetPageNumber()
       this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     closeImportModal() {
       this.isWantToImportFile = false

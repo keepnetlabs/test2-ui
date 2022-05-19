@@ -5,7 +5,7 @@
         <v-card class="k-card">
           <el-tabs v-model="tab">
             <el-tab-pane label="Rules" name="rules" id="playbook--rules-content">
-              <rules :PERMISSIONS="PERMISSIONS" ref="refRules" />
+              <rules :PERMISSIONS="permissions" ref="refRules" />
             </el-tab-pane>
           </el-tabs>
         </v-card>
@@ -16,8 +16,7 @@
 
 <script>
 import Rules from '../components/Playbook/Rules'
-import { getPermissionsOfAllItems } from '@/utils/functions'
-import PERMISSIONS from '@/permissions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Playbook',
   components: {
@@ -30,22 +29,20 @@ export default {
   },
   data() {
     return {
-      tab: 'rules',
-      PERMISSIONS: []
+      tab: 'rules'
     }
+  },
+  computed: {
+    ...mapGetters({
+      permissions: 'permissions/getPlaybookPermissions'
+    })
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
-    },
-    getPermissions() {
-      const { PLAYBOOK_PERMISSIONS } = PERMISSIONS
-      this.PERMISSIONS = getPermissionsOfAllItems(PLAYBOOK_PERMISSIONS)
     }
   },
-  created() {
-    this.getPermissions()
-  },
+
   beforeRouteLeave(to, from, next) {
     const { refRules } = this.$refs
     if (refRules && refRules.showRuleModal) {

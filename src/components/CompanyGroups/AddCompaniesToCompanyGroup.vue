@@ -80,7 +80,6 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -197,7 +196,7 @@ export default {
           show: false,
           action: 'addButton',
           tooltip: 'Add Company',
-          disabled: !checkPermission('companies', 'POST')
+          disabled: !this.$store.getters['permissions/getCompaniesCreatePermissions']
         },
         rowActions: [
           {
@@ -205,25 +204,25 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             isNotShow: true,
-            disabled: !checkPermission('companies/{resourceId}', 'PUT')
+            disabled: !this.$store.getters['permissions/getCompaniesEditPermissions']
           },
           {
             name: 'Add to a company group',
             icon: 'mdi-account-multiple-plus',
             action: 'AddGroupToModal',
-            disabled: !checkPermission('company-groups/search', 'POST')
+            disabled: !this.$store.getters['permissions/getCompanyGroupsSearchPermissions']
           },
           {
             name: 'Create a new company group with company',
             icon: 'mdi-account-multiple',
             action: 'createNewGroupWithCompany',
-            disabled: !checkPermission('companies/search', 'POST')
+            disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
-            disabled: !checkPermission('companies/{resourceId}', 'DELETE')
+            disabled: !this.$store.getters['permissions/getCompaniesDeletePermissions']
           }
         ]
       },
@@ -367,9 +366,6 @@ export default {
       //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)

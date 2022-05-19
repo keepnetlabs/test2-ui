@@ -77,9 +77,9 @@
               {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
             </span>
             <span
-              :key="item.resourceId"
               v-else
               v-for="item in scope.row.matchingPlaybooks"
+              :key="item.resourceId"
               class="popup-link"
               @click="togglePlaybookModalWithSelected(item.resourceId)"
               >{{ item.name }}</span
@@ -89,19 +89,19 @@
       </v-card>
     </div>
     <app-modal
-      :status="showPlaybookModal"
       v-if="showPlaybookModal"
+      class-name="incident-responder__playbook"
+      :status="showPlaybookModal"
       :icon-name="getIconName"
       :title="getTitle"
       :show-footer="false"
-      class-name="incident-responder__playbook"
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule
+          v-if="showPlaybookModal"
           :playbookId="selectedPlaybookId"
           @cancelForm="togglePlaybookModal"
           @closeFormWithUpdate="closePlaybookWithUpdate"
-          v-if="showPlaybookModal"
         />
       </template>
     </app-modal>
@@ -123,7 +123,7 @@ import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
@@ -150,158 +150,160 @@ export default {
     },
     isLoadState: {
       type: Boolean
+    },
+    PERMISSIONS: {
+      type: Object
     }
   },
-  data: () => ({
-    tableState: null,
-    stopInvestigateButtonDisabled: false,
-    loading: false,
-    showPlaybookModal: false,
-    selectedPlaybookId: null,
-    isShowNewInvestigationModal: false,
-    isWantToStopInvestigation: false,
-    init: true,
-    labels,
-    storedTableSettings: null,
-    columns: [
-      {
-        property: 'incident',
-        align: 'left',
-        editable: false,
-        label: getStoreValue('investigationName'),
-        fixed: 'left',
-        sortable: true,
-        show: true,
-        type: 'text',
-        width: 240,
-        isFilterable: true,
-        editComponent: 'textfield',
-        filterableType: 'text'
-      },
-      {
-        property: 'source',
-        align: 'left',
-        editable: false,
-        label: getStoreValue('trigger'),
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'slot',
-        width: 240,
-        filterableType: 'text'
-      },
-      {
-        property: 'status',
-        align: 'center',
-        editable: false,
-        label: getStoreValue('status'),
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'status',
-        isEditable: true,
-        isWithTooltip: true,
-        width: 150,
-        filterableType: 'select',
-        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished', 'Queued', 'No match']
-      },
-      {
-        property: 'createTime',
-        align: 'left',
-        editable: false,
-        label: getStoreValue('createTime'),
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        filterableType: 'date'
-      },
-      {
-        property: 'expireDate',
-        align: 'left',
-        editable: false,
-        label: getStoreValue('expireDate'),
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        filterableType: 'date'
-      },
-      {
-        property: 'userStatus',
-        informationTextProperty: 'scanStatusText',
-        align: 'center',
-        editable: false,
-        label: getStoreValue('scanStatus'),
-        fixed: false,
-        sortable: false,
-        show: true,
-        type: 'chart',
-        wıdth: 175
-      },
-      {
-        property: 'progress',
-        align: 'center',
-        editable: false,
-        label: getStoreValue('progress'),
-        fixed: false,
-        sortable: false,
-        show: true,
-        type: 'progress',
-        progressType: 'stats',
-        width: 130
-      }
-    ],
-    rowActions: [
-      {
-        name: labels.Details,
-        icon: 'mdi-text-box-multiple',
-        action: 'investigationDetails',
-        id: 'btn-details--investigations-row-actions',
-        disabled: !checkPermission('investigations/{resourceId}', 'GET')
-      },
-      {
-        name: labels.StopAction,
-        icon: 'mdi-stop',
-        id: 'btn-stop--investigations-row-actions',
-        action: 'stopInvestigationFunc',
-        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT'),
-        getButtonVisibility: (status) => {
-          return status === 'Running'
+  data() {
+    return {
+      tableState: null,
+      stopInvestigateButtonDisabled: false,
+      loading: false,
+      showPlaybookModal: false,
+      selectedPlaybookId: null,
+      isShowNewInvestigationModal: false,
+      isWantToStopInvestigation: false,
+      init: true,
+      labels,
+      storedTableSettings: null,
+      columns: [
+        {
+          property: 'incident',
+          align: 'left',
+          editable: false,
+          label: getStoreValue('investigationName'),
+          fixed: 'left',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 240,
+          isFilterable: true,
+          editComponent: 'textfield',
+          filterableType: 'text'
+        },
+        {
+          property: 'source',
+          align: 'left',
+          editable: false,
+          label: getStoreValue('trigger'),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'slot',
+          width: 240,
+          filterableType: 'text'
+        },
+        {
+          property: 'status',
+          align: 'center',
+          editable: false,
+          label: getStoreValue('status'),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'status',
+          isEditable: true,
+          isWithTooltip: true,
+          width: 150,
+          filterableType: 'select',
+          filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished', 'Queued', 'No match']
+        },
+        {
+          property: 'createTime',
+          align: 'left',
+          editable: false,
+          label: getStoreValue('createTime'),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          filterableType: 'date'
+        },
+        {
+          property: 'expireDate',
+          align: 'left',
+          editable: false,
+          label: getStoreValue('expireDate'),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          filterableType: 'date'
+        },
+        {
+          property: 'userStatus',
+          informationTextProperty: 'scanStatusText',
+          align: 'center',
+          editable: false,
+          label: getStoreValue('scanStatus'),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'chart',
+          width: 175
+        },
+        {
+          property: 'progress',
+          align: 'center',
+          editable: false,
+          label: getStoreValue('progress'),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'progress',
+          progressType: 'stats',
+          width: 130
         }
-      }
-    ],
-    newInvestigationButton: {
-      show: true,
-      tooltip: labels.StartAnInvestigation,
-      action: 'startNewInvestigation',
-      id: 'btn-add--investigations',
-      disabled: !checkPermission('investigations', 'POST')
-    },
-    iEmpty: {
-      message: labels.NoInvestigationStarted,
-      btn: labels.StartAnInvestigation,
-      id: 'btn-empty--investigations'
-    },
-    selectEvent: {
-      clipboard: true,
-      edit: false,
-      delete: false,
-      download: false,
-      pause: false,
-      stop: false
-    },
-    chartOptions: {
-      backgroundColor: ['#3f51b5', '#00bcd4'],
-      labels: [labels.CompletedUserCount, labels.NotStartedUserCount],
-      showTooltipLine: true,
-      isWithText: true
-    },
-    isColumnFilterActive: false,
-    bodyData: getDefaultAxiosPayload(),
-    defaultRequestBody: getDefaultAxiosPayload(),
-    serverSideProps: new ServerSideProps()
-  }),
+      ],
+      rowActions: [
+        {
+          name: labels.Details,
+          icon: 'mdi-text-box-multiple',
+          action: 'investigationDetails',
+          id: 'btn-details--investigations-row-actions',
+          disabled: !this?.PERMISSIONS?.GET?.hasPermission
+        },
+        {
+          name: labels.StopAction,
+          icon: 'mdi-stop',
+          id: 'btn-stop--investigations-row-actions',
+          action: 'stopInvestigationFunc',
+          disabled: !this?.PERMISSIONS?.STOP?.hasPermission
+        }
+      ],
+      newInvestigationButton: {
+        show: true,
+        tooltip: labels.StartAnInvestigation,
+        action: 'startNewInvestigation',
+        id: 'btn-add--investigations',
+        disabled: !this?.PERMISSIONS?.POST?.hasPermission
+      },
+      iEmpty: {
+        message: labels.NoInvestigationStarted,
+        btn: labels.StartAnInvestigation,
+        id: 'btn-empty--investigations'
+      },
+      selectEvent: {
+        clipboard: true,
+        edit: false,
+        delete: false,
+        download: false,
+        pause: false,
+        stop: false
+      },
+      chartOptions: {
+        backgroundColor: ['#3f51b5', '#00bcd4'],
+        labels: [labels.CompletedUserCount, labels.NotStartedUserCount],
+        showTooltipLine: true,
+        isWithText: true
+      },
+      isColumnFilterActive: false,
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps()
+    }
+  },
   methods: {
     getDynamicScanStatusWidth(columnItems) {
       if (!columnItems) {
@@ -397,9 +399,6 @@ export default {
         })
       )
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
@@ -430,7 +429,6 @@ export default {
         pageNumber: pageNumber,
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
-
       this.getInvestigationList()
     },
     columnFilterChanged(filter) {
@@ -559,27 +557,22 @@ export default {
     }
   },
   created() {
-    if (!this.checkPermissions('investigations/search', 'POST')) {
+    if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
       this.$router.push('/incident-responder')
     }
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    if (this.$route.params && this.$route.params.selectedEmail) {
-      this.isShowNewInvestigationModal = true
-    }
-    this.$nextTick(() => {
-      if (this.$route.params && this.$route.params.selectedEmail) {
-        if (this.$refs.refNewInvestigation && this.init) {
-          this.init = false
-          this.$refs.refNewInvestigation.fillForm(this.$route.params.selectedEmail)
-        }
-      }
-    })
-
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    this.getDefaultFilterAndSearch()
-
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
+    }
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
+    this.getDefaultFilterAndSearch()
+  },
+  mounted() {
+    if (this.$route.params && this.$route.params.selectedEmail) {
+      this.isShowNewInvestigationModal = true
+      if (this.$refs.refNewInvestigation && this.init) {
+        this.init = false
+        this.$refs.refNewInvestigation.fillForm(this.$route.params.selectedEmail)
+      }
     }
   },
   beforeDestroy() {
@@ -623,21 +616,6 @@ export default {
   }
   .table-wrapper {
     margin-top: 8px;
-  }
-  .newInvestigationOverlay {
-    background-color: #fff !important;
-    overflow: auto !important;
-    height: 100% !important;
-    max-width: 100vw !important;
-    width: 100% !important;
-    display: block !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    > ::v-deep .v-overlay__content {
-      height: auto;
-      width: 100%;
-    }
   }
 }
 </style>

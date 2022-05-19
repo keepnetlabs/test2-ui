@@ -5,6 +5,7 @@
         <v-btn
           v-on="on"
           :id="getId"
+          :disabled="!getCampaignManagerParentPreviewPermissions"
           class="btn-hover"
           icon
           @click="handleItemClick({ action: 'on-preview' })"
@@ -30,6 +31,7 @@
           v-for="(act, ind) of getItems"
           :key="ind"
           :id="`${act.id}-${scope.$index}-${ind}-${Math.random().toString().substring(2)}`"
+          :disabled="act.disabled"
           class="sub-menu-el datatable-row-action-list"
         >
           <v-list-item-title @click="handleItemClick(act)">
@@ -51,6 +53,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import { ACTION_STATUSES } from '@/components/CampaignManager/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerRowActions',
@@ -60,12 +63,19 @@ export default {
     },
     rowActions: {
       type: Array
-    },
-    PERMISSIONS: {
-      type: Object
     }
   },
   computed: {
+    ...mapGetters({
+      getCampaignManagerParentPreviewPermissions:
+        'permissions/getCampaignManagerParentPreviewPermissions',
+      getCampaignManagerParentCreatePermissions:
+        'permissions/getCampaignManagerParentCreatePermissions',
+      getCampaignManagerParentDeletePermissions:
+        'permissions/getCampaignManagerParentDeletePermissions',
+      getCampaignManagerParentUpdatePermissions:
+        'permissions/getCampaignManagerParentUpdatePermissions'
+    }),
     getId() {
       return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
     },
@@ -80,21 +90,21 @@ export default {
         id: 'btn-new-instance-item-row-actions-campaign-manager',
         icon: require('../../assets/img/icon_left.svg'),
         action: 'on-launch',
-        disabled: !this.PERMISSIONS.UPDATE.hasPermission
+        disabled: !this.getCampaignManagerParentCreatePermissions
       }
       const duplicateItem = {
         name: labels.Duplicate,
         id: 'btn-duplicate--row-actions-campaign-manager',
         icon: 'mdi-content-copy',
         action: 'on-duplicate',
-        disabled: !this.PERMISSIONS.GET.hasPermission
+        disabled: !this.getCampaignManagerParentCreatePermissions
       }
       const deleteItem = {
         name: labels.Delete,
         id: 'btn-delete--row-actions-campaign-manager',
         icon: 'mdi-delete',
         action: 'on-delete',
-        disabled: !this.PERMISSIONS.DELETE.hasPermission
+        disabled: !this.getCampaignManagerParentDeletePermissions
       }
       const editItem = {
         name: labels.Edit,
@@ -102,7 +112,7 @@ export default {
         id: 'btn-edit--row-actions-campaign-manager',
         icon: 'mdi-pencil',
         action: 'on-edit',
-        disabled: !this.PERMISSIONS.UPDATE.hasPermission
+        disabled: !this.getCampaignManagerParentUpdatePermissions
       }
       switch (this.actionStatus) {
         case ACTION_STATUSES.IDLE:

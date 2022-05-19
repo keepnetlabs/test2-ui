@@ -1,5 +1,5 @@
 const CookieKeys = {
-  AUTH_KEY: 'auth-token',
+  AUTH_KEY: 'token',
   PERMISSIONS: 'permissions',
   EXPIRE_KEY: 'expire-date-milisecond'
 }

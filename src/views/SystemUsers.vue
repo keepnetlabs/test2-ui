@@ -4,7 +4,7 @@
       <v-card class="system-users__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane
-            v-if="checkPermissions('system-users/search', 'POST')"
+            v-if="getSystemUsersSearchPermission"
             label="People"
             name="system-users--people"
             id="system-users--people-content"
@@ -13,7 +13,7 @@
           /></el-tab-pane>
 
           <el-tab-pane
-            v-if="checkPermissions('roles/search', 'POST')"
+            v-if="getSystemRolesSearchPermission"
             label="Roles"
             name="system-users--roles"
             id="system-users--roles-content"
@@ -29,7 +29,7 @@
 <script>
 import People from '@/components/SystemUsers/People'
 import Permissions from '../views/Permissions'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'SystemUsers',
   components: {
@@ -41,12 +41,15 @@ export default {
       tab: 'system-users--people'
     }
   },
+  computed: {
+    ...mapGetters({
+      getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission',
+      getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
+    })
+  },
   methods: {
     changeTabStatus(index) {
       this.tab = index
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     }
   },
 
@@ -63,7 +66,7 @@ export default {
     }
   },
   created() {
-    if (!this.checkPermissions('system-users/search', 'POST')) {
+    if (!this.getSystemUsersSearchPermission) {
       this.tab = 'system-users--roles'
     }
   }

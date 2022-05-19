@@ -284,7 +284,8 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             id: 'btn-delete--phishing-reporter-users-row-actions',
-            action: 'deleteAction'
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getPhishingReporterDeleteUserPermissions']
           }
         ]
       },

@@ -53,24 +53,9 @@
               ref="refWhiteLabeling"
               is-company-configure
               :created-company-id="createdCompanyResourceId"
-              :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
               @on-configure-company-submit="saveWhiteLabeling"
             />
           </v-stepper-content>
-          <!--      <v-stepper-content class="k-stepper__content" :step="2">
-            <ConfigureCompanyStepHeader
-              :title="labels.WhiteListing"
-              :subtitle="labels.WhiteListingSubTitle"
-            />
-            <WhiteListing />
-          </v-stepper-content>     <v-stepper-content class="k-stepper__content" :step="2">
-            <ConfigureCompanyStepHeader
-              :title="labels.WhiteListing"
-              :subtitle="labels.WhiteListingSubTitle"
-            />
-            <WhiteListing />
-          </v-stepper-content> -->
-
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               class="mb-6"
@@ -148,13 +133,13 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
-import PERMISSIONS from '@/permissions'
-import { getPermissionsOfAllItems, scrollToComponent } from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
 import ConfigureNewCompanyNextSteps from '@/components/Companies/ConfigureNewCompanyNextSteps'
 import { updateWhiteLabel } from '@/api/whitelabel'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ConfigureNewCompanyModal',
   components: {
@@ -176,9 +161,6 @@ export default {
     return {
       labels,
       isSaveDisabled: false,
-      PERMISSIONS: {
-        WHITE_LABEL_PERMISSIONS: {}
-      },
       step: 1,
       systemUserFormData: new SystemUserModel(),
       statusItems: [
@@ -189,7 +171,6 @@ export default {
     }
   },
   created() {
-    this.getPermissions()
     this.getRoles()
   },
   methods: {
@@ -240,14 +221,6 @@ export default {
           availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
             .resourceId
       })
-    },
-    getPermissions() {
-      const { WHITE_LABEL_PERMISSIONS } = PERMISSIONS
-      this.$set(
-        this.PERMISSIONS,
-        'WHITE_LABEL_PERMISSIONS',
-        getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
-      )
     },
     handleChangeStatus(val) {
       this.systemUserFormData.statusName = this.statusItems.find((item) => item.val === val).name
