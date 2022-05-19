@@ -94,6 +94,12 @@ export function getEmailTemplatePreviewContent(id) {
   return testRequest.get(`phishing-simulator/email-templates/${id}`)
 }
 
+export function getCampaignManagerEmailTemplatePreviewContent(id, jobResourceId) {
+  return testRequest.get(
+    `phishing-simulator/phishing-campaign-job-report/summary/${jobResourceId}/email-templates/${id}`
+  )
+}
+
 export function deleteEmailTemplate(id) {
   return testRequest.delete(`phishing-simulator/email-templates/${id}`, {
     snackbar: COMMON_SNACKBAR

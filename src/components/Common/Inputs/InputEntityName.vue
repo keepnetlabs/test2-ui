@@ -52,11 +52,9 @@ export default {
     }
   },
   data() {
+    //(v) => Validations.isEntityNameSpecialCharacter(v)
     return {
-      rules: [
-        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
-      ],
+      rules: [(v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace)],
       placeholder: '',
       requiredProps: {}
     }
