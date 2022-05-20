@@ -34,11 +34,7 @@ import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import SimpleReports from '@/views/SimpleReports'
 import SimpleReportDetails from '@/views/SimpleReportDetails'
-
 Vue.use(Router)
-
-console.log('store', store)
-
 const router = new Router({
   mode: 'history',
   linkExactActiveClass: 'active-link',
