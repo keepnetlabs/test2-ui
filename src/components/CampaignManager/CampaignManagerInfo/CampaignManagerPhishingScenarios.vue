@@ -167,6 +167,19 @@
                             emailTemplateParams.fromAddress
                           }}</span>
                         </div>
+                        <div
+                          v-if="!!getPhishingFile"
+                          class="attachment-wrapper mt-2"
+                          style="position: relative;"
+                        >
+                          <div class="attachment blue-attach mb-0">
+                            <AttachmentsPreview
+                              :deletable="false"
+                              :att="getPhishingFile"
+                              :isEmailTemplate="true"
+                            />
+                          </div>
+                        </div>
                       </div>
                       <hr class="mt-2" v-if="!!emailTemplate" />
 
@@ -252,10 +265,19 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+
 export default {
   name: 'CampaignManagerPhishingScenarios',
-  components: { ShowMoreTags, KEmailPreview, KSelect, AppDialog, Multipane, MultipaneResizer },
+  components: {
+    ShowMoreTags,
+    KEmailPreview,
+    KSelect,
+    AppDialog,
+    Multipane,
+    MultipaneResizer,
+    AttachmentsPreview
+  },
   props: {
     items: {
       type: Array
@@ -308,6 +330,13 @@ export default {
     }
   },
   computed: {
+    getPhishingFile() {
+      return this.emailTemplateParams?.phishingFileName
+        ? {
+            name: this.emailTemplateParams?.phishingFileName
+          }
+        : null
+    },
     getTableEmptyTextMessage() {
       return this.isFilterOrSearchActive
         ? 'Sorry, that search and filter criteria has no results.'
@@ -403,7 +432,8 @@ export default {
               name,
               difficultyResourceId,
               attachments,
-              languageTypeResourceId: languageOfEmailTemplate
+              languageTypeResourceId: languageOfEmailTemplate,
+              phishingFileName
             } = emailTemplate
 
             this.emailTemplateParams = {
@@ -412,7 +442,8 @@ export default {
               name,
               difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
               attachments,
-              languageTypeResourceId: languageOfEmailTemplate
+              languageTypeResourceId: languageOfEmailTemplate,
+              phishingFileName
             }
             this.emailTemplate = template
             const {
