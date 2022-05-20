@@ -37,6 +37,8 @@ import SimpleReportDetails from '@/views/SimpleReportDetails'
 
 Vue.use(Router)
 
+console.log('store', store)
+
 const router = new Router({
   mode: 'history',
   linkExactActiveClass: 'active-link',
@@ -76,7 +78,8 @@ const router = new Router({
           name: 'Company',
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getCompanyLeftMenuPermissions'
           },
           component: Company
         },
@@ -85,7 +88,8 @@ const router = new Router({
           name: 'Phishing Simulator',
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getPhishingSimulatorLeftMenuPermissions'
           },
           component: PhishingSimulatorRoute
         },
@@ -95,7 +99,8 @@ const router = new Router({
           component: ThreatSharing,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getThreatSharingLeftMenuPermissions'
           },
           params: true,
           props: true
@@ -106,7 +111,8 @@ const router = new Router({
           component: Community,
           meta: {
             isAuthenticated: true,
-            parentName: 'Threat Sharing'
+            parentName: 'Threat Sharing',
+            permissionStoreKey: 'permissions/getThreatSharingLeftMenuPermissions'
           },
           props: true,
           params: true,
@@ -118,7 +124,8 @@ const router = new Router({
           component: ShowAllJobs,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getAuditLogSearchPermission'
           }
         },
         {
@@ -127,7 +134,8 @@ const router = new Router({
           component: TargetUsers,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getTargetUsersLeftMenuPermissions'
           }
         },
         {
@@ -136,7 +144,8 @@ const router = new Router({
           component: TargetGroupUsers,
           meta: {
             isAuthenticated: true,
-            parentName: 'Target Users'
+            parentName: 'Target Users',
+            permissionStoreKey: 'permissions/getTargetUsersLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -147,7 +156,8 @@ const router = new Router({
           component: Companies,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getCompaniesLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -158,7 +168,8 @@ const router = new Router({
           component: Companies,
           meta: {
             isAuthenticated: true,
-            parentName: 'Companies'
+            parentName: 'Companies',
+            permissionStoreKey: 'permissions/getCompaniesLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -169,7 +180,8 @@ const router = new Router({
           component: PhishingSimulator,
           meta: {
             isAuthenticated: true,
-            parentName: 'Phishing Simulator'
+            parentName: 'Phishing Simulator',
+            permissionStoreKey: 'permissions/getPhishingScenarioLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -180,7 +192,8 @@ const router = new Router({
           component: DnsServices,
           meta: {
             isAuthenticated: true,
-            parentName: 'Phishing Simulator'
+            parentName: 'Phishing Simulator',
+            permissionStoreKey: 'permissions/getSettingsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -191,7 +204,8 @@ const router = new Router({
           component: CampaignManager,
           meta: {
             isAuthenticated: true,
-            parentName: 'Phishing Simulator'
+            parentName: 'Phishing Simulator',
+            permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -202,7 +216,8 @@ const router = new Router({
           component: CampaignManagerReport,
           meta: {
             isAuthenticated: true,
-            parentName: 'Campaign Reports'
+            parentName: 'Campaign Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -213,7 +228,8 @@ const router = new Router({
           component: IncidentResponder,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getIncidentResponderListGroupPermissions'
           },
           props: true,
           params: true
@@ -224,7 +240,8 @@ const router = new Router({
           component: CompanySettings,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getCompanySettingsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -235,7 +252,8 @@ const router = new Router({
           component: SystemUsers,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getSystemUserSearchPermission'
           },
           props: true,
           params: true
@@ -246,7 +264,8 @@ const router = new Router({
           component: EmailDetails,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getIncidentResponderNotifiedEmailPermission'
           },
           props: true,
           params: true
@@ -257,7 +276,8 @@ const router = new Router({
           component: PhishingReporter,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getPhishingReporterLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -268,7 +288,8 @@ const router = new Router({
           component: Integrations,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getIntegrationsSearchPermission'
           },
           props: true,
           params: true
@@ -279,7 +300,8 @@ const router = new Router({
           component: Playbook,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getPlaybookSearchPermission'
           }
         },
         {
@@ -288,7 +310,8 @@ const router = new Router({
           component: Audit,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Company',
+            permissionStoreKey: 'permissions/getAuditLogSearchPermission'
           },
           props: true,
           params: true
@@ -299,7 +322,8 @@ const router = new Router({
           component: MailConfiguration,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getMailConfigurationSearchPermission'
           },
           beforeEnter(to, from, next) {
             to.params.PERMISSIONS =
@@ -315,7 +339,8 @@ const router = new Router({
           component: Sandbox,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getCrossCompanyPermissions'
           },
           props: true,
           params: true
@@ -326,7 +351,8 @@ const router = new Router({
           component: InvestigationComponent,
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Incident Responder',
+            permissionStoreKey: 'permissions/getInvestigationsSearchPermission'
           },
           beforeEnter(to, from, next) {
             to.params.PERMISSIONS = store?.getters['permissions/getInvestigationPermissions'] || {}
@@ -340,7 +366,8 @@ const router = new Router({
           component: InvestigationDetailsComponent,
           meta: {
             isAuthenticated: true,
-            parentName: 'Investigations'
+            parentName: 'Investigations',
+            permissionStoreKey: 'permissions/getInvestigationsSearchPermission'
           },
           props: true,
           params: true
@@ -350,7 +377,8 @@ const router = new Router({
           name: 'Reports',
           component: Reports,
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           },
           children: [
             {
@@ -359,7 +387,8 @@ const router = new Router({
               component: CampaignReports,
               meta: {
                 isAuthenticated: true,
-                parentName: 'Reports'
+                parentName: 'Reports',
+                permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
               }
             }
             /*
@@ -404,7 +433,8 @@ router.beforeEach((to, from, next) => {
         storeRef.dispatch('common/changeDownloadModalStatus', false)
         next(false)
       } else {
-        next()
+        if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
+        else next(from.name ? false : '/')
       }
     } else {
       next('/login')
