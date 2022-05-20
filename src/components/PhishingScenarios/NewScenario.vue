@@ -607,7 +607,6 @@ export default {
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       availableForRequests: [],
       tagSearch: '',
       generalDifficultyTypeId: '',
@@ -849,14 +848,11 @@ export default {
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
+          const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-          if (this.$refs.refMakeAvailableFor) {
+          if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
             this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-              response.data.data.availableForList
-            )
-          } else {
-            this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-              response.data.data.availableForList
+              availableForList
             )
           }
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

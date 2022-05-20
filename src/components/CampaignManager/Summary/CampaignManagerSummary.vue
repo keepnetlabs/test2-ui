@@ -96,6 +96,19 @@
               <span>&#62;</span>
             </div>
             <div
+              v-if="!!getPhishingFile"
+              class="attachment-wrapper mt-2 mb-0"
+              style="position: relative;"
+            >
+              <div class="attachment blue-attach mb-0">
+                <AttachmentsPreview
+                  :deletable="false"
+                  :att="getPhishingFile"
+                  :isEmailTemplate="true"
+                />
+              </div>
+            </div>
+            <div
               class="campaign-manager-last-step__email-template-body-attachments"
               style="border: none;"
             >
@@ -220,13 +233,16 @@ import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
 import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+
 export default {
   name: 'CampaignManagerSummary',
   components: {
     KEmailPreview,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
+    AttachmentsPreview
   },
   props: {
     formData: {
@@ -252,7 +268,8 @@ export default {
           name: val?.emailTemplateParams?.name || '',
           difficulty: val?.emailTemplateParams?.difficulty || '',
           attachments: val?.emailTemplateParams?.attachments || [],
-          languageShortCode: val?.emailTemplateParams?.languageShortCode
+          languageShortCode: val?.emailTemplateParams?.languageShortCode,
+          phishingFileName: val?.emailTemplateParams?.phishingFileName || null
         },
         landingPageParams: {
           name: val?.landingPageParams?.name || '',
@@ -269,6 +286,13 @@ export default {
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    getPhishingFile() {
+      return this?.currentFormData?.emailTemplateParams?.phishingFileName
+        ? {
+            name: this?.currentFormData?.emailTemplateParams?.phishingFileName
+          }
+        : null
     },
     getAttachments() {
       return this?.currentFormData?.emailTemplateParams?.attachments || []

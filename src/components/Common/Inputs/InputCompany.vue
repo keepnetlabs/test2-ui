@@ -29,8 +29,7 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) =>
-          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CompanyNameSecondLower)),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
+          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CompanyNameSecondLower))
       ]
     }
   }
