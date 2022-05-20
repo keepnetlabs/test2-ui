@@ -19,24 +19,28 @@ export function updatePhishingEmailTemplate(payload, id) {
       payload.availableForRequests[i].resourceId
     )
   }
+  formData.append('fromAddress', payload.fromAddress)
+  formData.append('fromName', payload.fromName)
+  formData.append('subject', payload.subject)
+  formData.append('template', payload.template)
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+
   const phishingFileType = payload.attachmentFiles[0]
     ? payload.attachmentFiles[0]?.name
       ? payload.attachmentFiles[0]?.name?.split('.')[1]
       : payload.attachmentFiles[0]?.fileName?.split('.')[1]
     : null
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-  formData.append(
-    'phishingFile',
-    payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
-  )
-  formData.append('phishingFileType', phishingFileType)
-  formData.append('isPhishingFileModified', payload.isPhishingFileModified)
-  formData.append('phishingFileName', payload.phishingFileName)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+
+  if (payload.isAttachmentBasedTemplate) {
+    formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+    formData.append(
+      'phishingFile',
+      payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
+    )
+    formData.append('phishingFileType', phishingFileType)
+    formData.append('isPhishingFileModified', payload.isPhishingFileModified)
+    formData.append('phishingFileName', payload.phishingFileName)
+  }
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
@@ -61,19 +65,23 @@ export function createPhishingEmailTemplate(payload) {
     )
   }
 
+  formData.append('fromAddress', payload.fromAddress)
+  formData.append('fromName', payload.fromName)
+  formData.append('subject', payload.subject)
+  formData.append('template', payload.template)
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+
   const phishingFileType = payload.attachmentFiles[0]
     ? payload.attachmentFiles[0]?.name
       ? payload.attachmentFiles[0]?.name?.split('.')[1]
       : payload.attachmentFiles[0]?.fileName?.split('.')[1]
     : null
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-  formData.append('phishingFile', payload.attachmentFiles[0])
-  formData.append('phishingFileType', phishingFileType)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+
+  if (payload.isAttachmentBasedTemplate) {
+    formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+    formData.append('phishingFile', payload.attachmentFiles[0])
+    formData.append('phishingFileType', phishingFileType)
+  }
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
