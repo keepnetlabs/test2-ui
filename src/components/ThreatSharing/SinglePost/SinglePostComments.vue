@@ -163,8 +163,7 @@ export default {
       commentRules: [
         (v) => Validations.required(v),
         (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
-        (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5))
       ],
       isPostButtonDisabled: false,
       isEditCommentButtonDisabled: false,

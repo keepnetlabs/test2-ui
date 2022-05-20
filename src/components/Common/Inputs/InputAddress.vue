@@ -53,8 +53,7 @@ export default {
             v,
             this.maxLength,
             labels.getMaxLengthMessage(labels.Address, this.maxLength)
-          ),
-        (v) => Validations.isDescriptionSpecialCharacter(v)
+          )
       ],
       placeholder: '',
       requiredProps: {}

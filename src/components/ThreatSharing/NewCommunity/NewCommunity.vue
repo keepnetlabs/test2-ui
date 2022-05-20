@@ -250,15 +250,13 @@ export default {
         (v) => validations.required(v, labels.Required),
         (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space',
         (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
-        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
-        (v) => validations.isEntityNameSpecialCharacter(v)
+        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64))
       ],
       communityDescriptionRules: [
         (v) => validations.required(v, labels.Required),
         (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space',
         (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
-        (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
-        (v) => validations.isDescriptionSpecialCharacter(v)
+        (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300))
       ],
       checkboxRule: {
         required: (v) => {

@@ -181,7 +181,6 @@ export default {
     'size'
   ],
   data() {
-    //    (v) => Validations.isEntityNameSpecialCharacter(v)
     return {
       initialTemplate: null,
       labels,

@@ -64,7 +64,6 @@ export default {
     }
   },
   data() {
-    // (v) => Validations.isDescriptionSpecialCharacter(v)
     return {
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
