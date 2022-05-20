@@ -317,9 +317,9 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableItems: [
-              { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-              { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-              { text: 'Attachment', value: '7dLrW2kdBTDs' }
+              { text: 'Click Only', value: 'Click-Only' },
+              { text: 'Data Submission', value: 'Data Submission' },
+              { text: 'Attachment', value: 'Attachment' }
             ]
           },
           {
@@ -359,11 +359,7 @@ export default {
             show: true,
             type: 'status',
             filterableType: 'select',
-            filterableItems: [
-              { text: 'Easy', value: 'mT0CeYGgKsVb' },
-              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-              { text: 'Hard', value: 'c4LCGEB9MayB' }
-            ],
+            filterableItems: ['Easy', 'Medium', 'Hard'],
             width: 180
           },
           {
@@ -498,35 +494,23 @@ export default {
       }
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
       this.resetPageNumber()
       this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
