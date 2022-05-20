@@ -608,6 +608,8 @@ export default {
   },
   data() {
     return {
+      startDateValidation: '',
+      endDateValidation: '',
       saveDisable: false,
       totalNumberOfPagesOfCompanyGroups: 1,
       createdCompanyResourceId: null,
@@ -707,12 +709,6 @@ export default {
       return (
         this.activeStep === 2 && (!this.formData.LicenseStartDate || !this.formData.LicenseEndDate)
       )
-    },
-    startDateValidation() {
-      return this.formData.LicenseStartDate ? '' : 'Start date should be picked'
-    },
-    endDateValidation() {
-      return this.formData.LicenseEndDate ? '' : 'End date should be picked'
     },
     canNext() {
       return this.activeStep < this.totalStep
@@ -1027,6 +1023,11 @@ export default {
       }
     },
     'formData.LicenseStartDate'(newVal, oldVal) {
+      if (oldVal && !newVal) {
+        this.startDateValidation = 'Start date should be picked'
+      } else {
+        this.startDateValidation = ''
+      }
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
       if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
         this.expiryPeriodChange()
@@ -1048,7 +1049,12 @@ export default {
         }
       }
     },
-    'formData.LicenseEndDate'(newVal) {
+    'formData.LicenseEndDate'(newVal, oldVal) {
+      if (oldVal && !newVal) {
+        this.endDateValidation = 'End date should be picked'
+      } else {
+        this.endDateValidation = ''
+      }
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
     },
     'formData.LicenseModuleResourceIdArray'(newVal) {
