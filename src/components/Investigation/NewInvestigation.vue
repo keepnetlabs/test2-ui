@@ -759,16 +759,14 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject)),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
         )
         return rules
       } else if (option === 'senderName') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName)),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
         )
         return rules
       } else if (option === 'url') {
@@ -783,8 +781,7 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword)),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
         )
         return rules
       } else if (option === 'size') {
@@ -799,8 +796,7 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name)),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
         )
         return rules
       } else if (option === 'sha512') {

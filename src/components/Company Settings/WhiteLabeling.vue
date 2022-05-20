@@ -373,8 +373,7 @@ export default {
       brandRules: [
         (v) => validations.required(v, labels.Required),
         (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name')),
-        (v) => validations.isEntityNameSpecialCharacter(v)
+        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name'))
       ]
     }
   },

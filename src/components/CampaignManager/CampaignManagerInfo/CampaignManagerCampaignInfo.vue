@@ -345,8 +345,7 @@ export default {
         name: [
           (v) => validations.required(v, labels.Required),
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-          (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName)),
-          (v) => validations.isEntityNameSpecialCharacter(v)
+          (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName))
         ],
         select: [
           (v) => !!v.length || labels.Required,

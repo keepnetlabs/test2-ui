@@ -91,7 +91,7 @@ export function email(value, message = 'Invalid email address') {
     ? (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
         value
       ) &&
-        isEmailSpacialCharacter(value)) ||
+        isEmailSpecialCharacter(value)) ||
         message
     : true
 }
@@ -170,7 +170,7 @@ export function isEntityNameSpecialCharacter(
   return /^([A-Z]|[0-9]|[-/,:&\söğüıçşÖĞÜİÇŞ]){0,64}$/gi.test(value) || message
 }
 
-export function isEmailSpacialCharacter(value) {
+export function isEmailSpecialCharacter(value) {
   return /^([A-Z]|[0-9]|[-/,&!#$%'*+-/=?@^_`~]){0,320}$/gi.test(value)
 }
 
