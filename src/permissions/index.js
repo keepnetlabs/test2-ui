@@ -545,7 +545,7 @@ export default {
       method: ENUMS.METHODS.DELETE
     },
     OPENED: {
-      url: `phishing-simulator/phishing-campaign-job-report/opened/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -555,7 +555,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     CLICKED: {
-      url: `phishing-simulator/phishing-campaign-job-report/clicked/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-clicked/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -565,7 +565,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     OPENED_ATTACHMENT: {
-      url: `phishing-simulator/phishing-campaign-job-report/attachmentopened/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -575,7 +575,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     SUBMITTED_DATA: {
-      url: `phishing-simulator/phishing-campaign-job-report/submitteddata/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-submitted/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -585,12 +585,12 @@ export default {
       method: ENUMS.METHODS.POST
     },
     NO_RESPONSE: {
-      url: `phishing-simulator/phishing-campaign-job-report/noresponse/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}`,
       hasPermission: false,
-      method: ENUMS.METHODS.POST
+      method: ENUMS.METHODS.GET
     },
     PHISHING_REPORTER: {
-      url: `phishing-simulator/phishing-campaign-job-report/reported/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-reported/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -600,14 +600,14 @@ export default {
       method: ENUMS.METHODS.POST
     },
     SENDING_REPORT: {
-      url: `phishing-simulator/phishing-campaign-job-report/all/search/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}`,
       hasPermission: false,
-      method: ENUMS.METHODS.POST
+      method: ENUMS.METHODS.GET
     },
     SENDING_REPORT_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/email-activity/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}`,
       hasPermission: false,
-      method: ENUMS.METHODS.POST
+      method: ENUMS.METHODS.GET
     },
     RESEND: {
       url: `phishing-simulator/phishing-campaign-job-report/resend/list/{resourceId}`,

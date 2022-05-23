@@ -1035,20 +1035,24 @@ export function getSelectSearchPayload(payload = {}, search, key = 'name', extra
 }
 
 export function isDifferent(a, b) {
-  return Object.keys(a).some((key) => {
-    if (Array.isArray(a[key]) && Array.isArray(b[key])) {
-      return a[key].length !== b[key].length
-    }
-    if (
-      typeof a[key] === 'object' &&
-      a[key] !== null &&
-      typeof b[key] === 'object' &&
-      b[key] !== null
-    ) {
-      return isDifferent(a[key], b[key])
-    }
-    return a[key] !== b[key]
-  })
+  return (
+    !a ||
+    !b ||
+    Object.keys(a).some((key) => {
+      if (Array.isArray(a[key]) && Array.isArray(b[key])) {
+        return a[key].length !== b[key].length
+      }
+      if (
+        typeof a[key] === 'object' &&
+        a[key] !== null &&
+        typeof b[key] === 'object' &&
+        b[key] !== null
+      ) {
+        return isDifferent(a[key], b[key])
+      }
+      return a[key] !== b[key]
+    })
+  )
 }
 
 export function getInvestigationStatusTooltipText(type) {

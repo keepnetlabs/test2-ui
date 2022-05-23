@@ -442,10 +442,12 @@ export default {
       this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
       this.callForDatas()
       this.$nextTick(() => {
-        this.$refs.refNotificationList.filterValues = {}
-        this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-          .toString()
-          .substring(0, 5)}`
+        if (this.$refs.refNotificationList) {
+          this.$refs.refNotificationList.filterValues = {}
+          this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        }
       })
     },
     handleRestoreDefaultSearch() {
@@ -588,9 +590,11 @@ export default {
             filterableItems: this.templateTypeItems
           })
           this.$nextTick(() => {
-            this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
+            if (this.$refs.refNotificationList) {
+              this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+                .toString()
+                .substring(0, 5)}`
+            }
           })
         })
         .finally(() => {
@@ -614,10 +618,12 @@ export default {
         this.axiosPayload.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refNotificationList.filterValues = savedFilter.filterValues
-          this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          if (this.$refs.refNotificationList) {
+            this.$refs.refNotificationList.filterValues = savedFilter.filterValues
+            this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          }
         })
       }
       this.callForDatas()
