@@ -202,16 +202,6 @@ export default {
           })
         })
         .finally(() => {
-          if (!this?.value?.length) {
-            this.handleInputChange([
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ])
-          }
           this.isInfiniteLoading = false
         })
     },
@@ -300,6 +290,16 @@ export default {
     }
   },
   mounted() {
+    if (!this?.value?.length) {
+      this.handleInputChange([
+        {
+          id: 'MyCompanyOnly',
+          label: 'My company only',
+          type: 'MyCompanyOnly',
+          resourceId: null
+        }
+      ])
+    }
     if (this.placeholder) this.isAvailableForProps.placeholder = this.placeholder
   }
 }
