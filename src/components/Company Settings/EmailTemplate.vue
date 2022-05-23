@@ -263,19 +263,25 @@ export default {
           const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
           const isChanged = isDifferent(currentTemplate, this.initialTemplate)
           if (!isChanged || isSubmitted) {
-            this.$refs.grapesJsPostIncident.destroyEditor()
+            if (this.$refs.grapesJsPostIncident) {
+              this.$refs.grapesJsPostIncident.destroyEditor()
+            }
             this.showGrapesModal = !this.showGrapesModal
           } else {
             this.$store.dispatch('common/setIsShowLeavingDialog', {
               show: true,
               callback: () => {
-                this.$refs.grapesJsPostIncident.destroyEditor()
+                if (this.$refs.grapesJsPostIncident) {
+                  this.$refs.grapesJsPostIncident.destroyEditor()
+                }
                 this.showGrapesModal = !this.showGrapesModal
               }
             })
           }
         } else {
-          this.$refs.grapesJsPostIncident.destroyEditor()
+          if (this.$refs.grapesJsPostIncident) {
+            this.$refs.grapesJsPostIncident.destroyEditor()
+          }
           this.showGrapesModal = !this.showGrapesModal
         }
       } else {

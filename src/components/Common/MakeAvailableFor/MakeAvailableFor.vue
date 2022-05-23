@@ -190,15 +190,17 @@ export default {
           })
           this.$set(this.treeSelectOptions, 2, {
             ...this.treeSelectOptions[2],
-            children: groups.results.map((item) => {
-              return {
-                id: item.resourceId,
-                resourceId: item.resourceId,
-                label: item.name,
-                type: 'Group',
-                isDisabled: this.treeSelectionStatus
-              }
-            })
+            children: groups?.results
+              ? groups.results.map((item) => {
+                  return {
+                    id: item.resourceId,
+                    resourceId: item.resourceId,
+                    label: item.name,
+                    type: 'Group',
+                    isDisabled: this.treeSelectionStatus
+                  }
+                })
+              : []
           })
         })
         .finally(() => {

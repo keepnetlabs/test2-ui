@@ -2788,13 +2788,15 @@ export default {
     },
     investigationDetailsData(val) {
       const tempArr = []
-      if (val && val.targetUserType && val.targetUserType === 'Groups') {
-        for (let user of val.targetUsers) {
-          tempArr.push({ Group: user.targetUser })
-        }
-      } else {
-        for (let user of val.targetUsers) {
-          tempArr.push({ User: user.targetUser })
+      if (val && val.targetUsers) {
+        if (val.targetUserType && val.targetUserType === 'Groups') {
+          for (let user of val.targetUsers) {
+            tempArr.push({ Group: user.targetUser })
+          }
+        } else {
+          for (let user of val.targetUsers) {
+            tempArr.push({ User: user.targetUser })
+          }
         }
       }
       this.targetUserChips = tempArr

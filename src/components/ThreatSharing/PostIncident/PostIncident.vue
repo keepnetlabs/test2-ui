@@ -2723,7 +2723,8 @@ export default {
             ...item,
             url: item.url.replace(/amp;/g, ''),
             name: item.name,
-            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
+            urlHtml:
+              urlItem && !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
             index: index + 1
           }
         })
