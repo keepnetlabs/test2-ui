@@ -160,8 +160,9 @@ export default {
           download: false
         },
         empty: {
-          message: LABEL_STORE.NO_INTEGRATIONS,
-          btn: labels.New,
+          message: labels.NoSiemIntegrations,
+          subMes: labels.NoSiemIntegrationsSub,
+          btn: labels.CreateSiemIntegration,
           icon: 'mdi-plus',
           id: 'btn-empty--siem-integrations',
           disabled: !this?.PERMISSIONS?.create
