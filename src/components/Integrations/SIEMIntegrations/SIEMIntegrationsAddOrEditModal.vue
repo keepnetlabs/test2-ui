@@ -22,7 +22,18 @@
             entity-name="Integration"
           />
         </FormGroup>
-        <FormGroup :title="labels.SIEMProvider" has-hint>
+        <FormGroup title="History Logs" class-name="mb-2">
+          <div>
+            <v-checkbox
+              v-model="formData.isForwardHistoricalAuditLog"
+              id="input--siem-integration-forward-historical-audit-log"
+              label="History Logs"
+              color="#2196f3"
+              style="margin-top: 2px;"
+            ></v-checkbox>
+          </div>
+        </FormGroup>
+        <FormGroup :title="labels.IntegrationType" has-hint>
           <KSelect
             v-model.trim="formData.typeId"
             persistent-hint
@@ -34,7 +45,7 @@
             no-data-text="No service type available"
             hint="*Required"
             custom-menu-class="menu--provider"
-            placeholder="Select SIEM type"
+            placeholder="Select Integration Type"
             :rules="[(v) => Validations.required(v, labels.Required)]"
             :items="providerTypes"
           ></KSelect>
@@ -43,7 +54,7 @@
           <InputUrl
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
-            placeholder="Enter URL"
+            placeholder="Enter SIEM URL"
           />
         </FormGroup>
         <FormGroup :title="labels.SecretToken" has-hint>
@@ -53,40 +64,12 @@
             outlined
             dense
             persistent-hint
-            placeholder="Enter Secret Token"
+            placeholder="Enter GUID Token"
             hint="*Required"
             :rules="secretTokenRules"
           ></v-text-field>
         </FormGroup>
-        <FormGroup title="SIEM Settings">
-          <div>
-            <v-checkbox
-              v-model="formData.isForwardHistoricalAuditLog"
-              id="input--siem-integration-forward-historical-audit-log"
-              label="Forward Historical Audit Log"
-              color="#2196f3"
-              style="margin-top: 2px;"
-            ></v-checkbox>
-          </div>
-        </FormGroup>
-
-        <FormGroup
-          has-hint
-          class-name="mt-2"
-          title="Status"
-          sub-title="Activate and deactivate integration"
-        >
-          <v-switch
-            v-model.trim="formData.statusId"
-            id="input--switch-siem-integration-status"
-            class="playbook-rule-form__switch"
-            hide-details
-            color="#2196f3"
-            style="max-width: 100px;"
-            :label="formData.statusId ? 'Active' : 'Inactive'"
-          />
-        </FormGroup>
-        <FormGroup :title="labels.TestConnection" class="mt-3">
+        <FormGroup :title="labels.TestConnection">
           <v-btn
             id="btn-test-connection--proxy-settings"
             class="btn-util btn-save-changes"
@@ -116,6 +99,17 @@
             medium
             >mdi-check
           </v-icon>
+        </FormGroup>
+        <FormGroup has-hint class-name="mt-6" title="Status">
+          <v-switch
+            v-model.trim="formData.statusId"
+            id="input--switch-siem-integration-status"
+            class="k-switch"
+            hide-details
+            color="#2196f3"
+            style="max-width: 100px;"
+            :label="formData.statusId ? 'Active' : 'Inactive'"
+          />
         </FormGroup>
       </v-form>
     </template>
