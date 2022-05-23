@@ -207,7 +207,7 @@
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
                         :is-edit="!!isEdit"
-                        :is-phishing-template="true"
+                        :is-phishing-template="isAttachmentBasedTemplate"
                         :extensions="['doc', 'docx', 'html', 'htm']"
                         :size="2"
                         fileUploadHint="Only word and html files. Max. file size 2MB"
@@ -608,6 +608,7 @@ export default {
             ...this.formValues.attachmentFiles,
             ...this.formValues.importedEmailAttachments
           ],
+          isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
           isPhishingFileModified: this.isPhishingFileModified,
           isAddedNewPhishingFile: this.isAddedNewPhishingFile,
           phishingFileName:
@@ -790,6 +791,9 @@ export default {
   },
 
   computed: {
+    isAttachmentBasedTemplate() {
+      return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
+    },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
     }
