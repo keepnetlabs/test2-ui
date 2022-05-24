@@ -370,8 +370,8 @@ export default {
     },
     getDistributionText() {
       return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} ${this.totalTargetUserCount} target users will take approx ${this.getApproximatedTime}`
-        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}`
+        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
+        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
       let seconds = this.batchEverySendSecond
@@ -423,9 +423,19 @@ export default {
       minutes = minutes.toString()
       seconds = seconds.toString()
 
-      return `${hours !== '0' ? `${hours} hours ` : ''}${
-        minutes !== '0' ? `${minutes} minutes ` : ''
-      }${seconds !== '0' ? `and ${seconds} seconds` : ''}`
+      const hoursText = hours > 1 ? 'hours' : 'hour'
+      const minutesText = minutes > 1 ? 'minutes' : 'minute'
+      const secondsText = seconds > 1 ? 'seconds' : 'second'
+
+      return `${hours !== '0' ? `${hours} ${hoursText} ` : ''}${
+        minutes !== '0' ? `${minutes} ${minutesText} ` : ''
+      }${
+        seconds !== '0'
+          ? hours !== '0' || minutes !== '0'
+            ? `and ${seconds} ${secondsText}`
+            : `${seconds} ${secondsText}`
+          : ''
+      }`
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers
