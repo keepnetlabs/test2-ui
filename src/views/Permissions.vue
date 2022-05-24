@@ -19,6 +19,7 @@
       icon="mdi-delete"
       title="Delete Permission?"
       subtitle="The permission will deleted permanently"
+      @changeStatus="closeDeleteDialog"
     >
       <template v-slot:app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
       <template v-slot:app-dialog-footer>
