@@ -137,6 +137,16 @@ export default {
     }
   },
   created() {
+    this.tab = [
+      { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
+      { permission: this.getNotificationTemplatesSearchPermissions, name: 'notification-template' },
+      { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
+      { permission: this.getWhiteLabelingGetPermissions, name: 'white-labeling' },
+      { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
+      { permission: this.getSAMLIntegrationSearchPermissions, name: 'saml-settings' },
+      { permission: this.getSCIMSettingsSearchPermissions, name: 'scim-settings' },
+      { permission: this.getSIEMIntegrationSearchPermissions, name: 'siem-integrations' }
+    ].find((item) => item.permission)?.name
     this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {

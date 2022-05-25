@@ -54,6 +54,14 @@
             :disabled="editItemsDisabled"
           />
         </form-group>
+        <form-group title="Tags" sub-title="Define tags for the notification template">
+          <InputTag
+            id="input--action-tags-new-notification-template"
+            v-model="formValues.tags"
+            :items="[]"
+            class="hide-caret"
+          />
+        </form-group>
         <make-available-for
           v-if="isRenderMakeAvailableFor"
           ref="refMakeAvailableFor"
@@ -152,10 +160,12 @@ import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/anal
 import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
 import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputTag from '@/components/Common/Inputs/InputTag'
 
 export default {
   name: 'NewNotificationTemplate',
   components: {
+    InputTag,
     MakeAvailableFor,
     KSelect,
     EmailTemplate,
@@ -201,6 +211,7 @@ export default {
       initialFormValues: null,
       formValues: {
         availableForRequests: [],
+        tags: [],
         name: '',
         emailTemplateCategoryResourceId: '',
         smtpSettingResourceId: '',

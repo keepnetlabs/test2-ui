@@ -344,7 +344,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'textArray',
+            type: 'smallBadge',
             width: 150,
             hasTooltip: true,
             filterableType: 'text',

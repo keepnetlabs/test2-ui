@@ -560,7 +560,6 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
@@ -945,7 +944,8 @@ export default {
     padding: 24px !important;
   }
 }
-#input--action-tags-new-scenario.hide-caret {
+#input--action-tags-new-scenario.hide-caret,
+#input--action-tags-new-notification-template.hide-caret {
   .v-input__append-inner {
     display: none !important;
   }
