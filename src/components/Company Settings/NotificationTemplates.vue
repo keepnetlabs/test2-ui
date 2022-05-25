@@ -333,15 +333,16 @@ export default {
           },
           {
             property: PROPERTY_STORE.AVAILABLE_FOR,
-            align: 'left',
+            align: 'right',
             label: labels.AvailalbeFor,
             fixed: false,
-            sortable: true,
+            sortable: false,
+            hideSort: true,
+            filtarable: false,
             show: true,
             type: 'number',
-            width: 180,
-            isEditable: true,
-            filterableType: 'number'
+            width: 100,
+            isEditable: true
           }
         ],
         addButton: {
