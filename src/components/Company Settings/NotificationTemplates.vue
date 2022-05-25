@@ -296,6 +296,20 @@ export default {
             filterableType: 'text'
           },
           {
+            property: PROPERTY_STORE.TAGS,
+            align: 'left',
+            editable: false,
+            label: 'Tags',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'smallBadge',
+            width: 150,
+            hasTooltip: true,
+            filterableType: 'text',
+            filterableCustomFieldName: PROPERTY_STORE.TAGS
+          },
+          {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             label: labels.CreateTime,
@@ -645,7 +659,6 @@ export default {
 .notification-templates__row-actions__overflow-menu__icon {
   margin-right: 16px;
 }
-
 .sub-menu-el__title {
   display: flex;
   align-items: center;

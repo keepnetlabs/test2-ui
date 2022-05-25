@@ -198,7 +198,7 @@
                     :id="
                       'threat-sharing-single-post-investigate-button' + post.communityPostResourceId
                     "
-                    v-if="getPostPermission"
+                    v-if="getInvestigationPermissions.POST.hasPermission"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -1146,6 +1146,7 @@ export default {
   }),
   computed: {
     ...mapGetters({
+      getInvestigationPermissions: 'permissions/getInvestigationPermissions',
       getPostPermission: 'permissions/getThreatSharingGetPostPermission',
       getSharePostPermission: 'permissions/getThreatSharingSharePostPermission',
       getDeletePostPermission: 'permissions/getThreatSharingDeletePostPermission',
