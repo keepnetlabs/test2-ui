@@ -39,12 +39,10 @@
       <CampaignManagerParentTable
         v-show="!isItemTableShowing"
         ref="campaignManagerParentTable"
-        :axios-payload.sync="axiosPayloadOfParent"
         :is-loading.sync="isParentTableLoading"
         :status-items="getStatusItems"
         @on-record-button-click="handleOnRecordButtonClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
-        @reset-axios-payload="handleResetAxiosPayloadOfParent"
         @on-edit="handleItemOnEdit"
         @on-preview="handleItemOnPreview"
         @on-delete="handleItemOnDelete"
@@ -58,13 +56,11 @@
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
         ref="campaignManagerItemTable"
-        :axios-payload.sync="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
         :item="selectedParentItem"
         :status-items="getStatusItems"
         @on-launch="handleLaunch"
         @on-back-click="handleOnBackClick"
-        @reset-axios-payload="handleResetAxiosPayloadOfItem"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
     </div>
@@ -73,7 +69,6 @@
 
 <script>
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
-import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
@@ -104,8 +99,6 @@ export default {
       launchResourceId: '',
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
-      axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
-      axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       selectedParentItem: null,
       selectedRow: null,
       isShowPreviewDialog: false,
@@ -129,11 +122,6 @@ export default {
     }),
     getStatusItems() {
       return this.formDetails.status
-    }
-  },
-  watch: {
-    isItemTableShowing(val) {
-      if (!val) this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'StartDate' })
     }
   },
   created() {
@@ -201,12 +189,6 @@ export default {
     handleOnSubmit() {
       this.$refs.campaignManagerParentTable.callForData()
       this.toggleAddCampaignManagerModal()
-    },
-    handleResetAxiosPayloadOfParent() {
-      this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
-    },
-    handleResetAxiosPayloadOfItem() {
-      this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'CreatedDate' })
     },
     handleItemOnEdit(row) {
       this.selectedRow = row

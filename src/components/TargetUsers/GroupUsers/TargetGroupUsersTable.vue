@@ -6,19 +6,19 @@
     filterable
     options
     is-server-side
-    :refName="'groupsTable'"
     :loading="loading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
     :add-button="tableOptions.addButton"
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
     :show-datatable-row-actions="false"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
     @onEmptyBtnClicked="handleAddAction"
@@ -33,10 +33,6 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
   >
     <template #selection-all-slot v-if="hasSelectionSlot">
       <v-tooltip bottom opacity="1">
@@ -115,14 +111,12 @@ import {
   getTargetUserCustomFieldsByCompanyId,
   searchTargetGroupUsers
 } from '@/api/targetUsers'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import {
   columnFilterChanged,
   columnFilterCleared,
-  createCustomFieldColumns,
-  isColumnFilterActive
+  createCustomFieldColumns
 } from '@/utils/helperFunctions'
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/TargetUserRowActionsRemoveFromGroupButton'
@@ -177,7 +171,6 @@ export default {
       axiosPayload: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
       defaultRequestBody: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
       defaultColumns: [
-        // Should be defined to show the table
         {
           property: PROPERTY_STORE.FIRSTNAME,
           align: 'left',
@@ -273,6 +266,8 @@ export default {
       ],
       loading: false,
       tableOptions: {
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
         addButton: {
           show: this.hasAddButton,
           action: 'addAction',
@@ -280,7 +275,6 @@ export default {
         },
         columns: [],
         iEmpty: this.iEmpty,
-        isColumnFilterActive: false,
         rowActions: this.getRowActions(),
         selectEvent: {
           clipboard: true,
@@ -292,7 +286,6 @@ export default {
       tableData: [],
       customFields: [],
       selections: [],
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps()
     }
   },
@@ -303,91 +296,37 @@ export default {
   },
 
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS)
-    )
     if (this.resourceId) {
-      this.getDefaultFilterAndSearch()
+      this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
 
   methods: {
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
-        JSON.stringify(tableSettings)
-      )
-      this.storedTableSettings = tableSettings
-    },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.axiosPayload.pageNumber = pageNumber
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     resetPageNumber() {
-      //generic
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE)
-      )
-      if (savedFilter) {
-        this.axiosPayload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refTargetGroupUsersTable.filterValues = savedFilter.filterValues
-          this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refTargetGroupUsersTable.filterValues = {}
-      this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
     },
     addCustomFieldColumns() {
       const columnsOfCustomFields = createCustomFieldColumns(this.customFields)
@@ -402,9 +341,10 @@ export default {
       }
     },
     setStoredTableSettings(newColumns = []) {
-      if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
+      const renderedColumns = this?.$refs.refTargetGroupUsersTable?.renderedColumns
+      if (renderedColumns?.length) {
         newColumns.forEach((column) => {
-          const item = this.storedTableSettings.renderedColumns.find(
+          const item = renderedColumns.find(
             (renderedColumnProp) => renderedColumnProp === column.property
           )
           column.show = !!item
@@ -476,8 +416,6 @@ export default {
     },
 
     columnFilterChanged(filter) {
-      //generic
-      this.tableOptions.isColumnFilterActive = true
       this.resetPageNumber()
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
@@ -490,7 +428,6 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForSearchTargetGroupUsers()
     },
     getRowActions() {
@@ -538,33 +475,16 @@ export default {
       this.$emit('handleRemoveToGroup', selectedRow)
     },
     exportTargetGroupsUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
-        this.$refs.refTargetGroupUsersTable,
-        'CreateTime'
-      )
-      if (this.$refs.refTargetGroupUsersTable.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (
-        this.$refs.refTargetGroupUsersTable.sortProps &&
-        this.$refs.refTargetGroupUsersTable.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
+          pageNumber,
+          pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter,
-          excludeGroupUsers: this.excludeGroupUsers
+          filter: this.axiosPayload.filter
         }
-
         exportTargetGroupUsers(this.resourceId, payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
@@ -578,9 +498,6 @@ export default {
     },
     toggleLoading() {
       this.loading = !this.loading
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

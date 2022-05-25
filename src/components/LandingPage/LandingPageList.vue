@@ -74,7 +74,6 @@
       filterable
       options
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
@@ -85,6 +84,9 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
@@ -96,14 +98,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
     >
       <!-- <template v-slot:datatable-custom-column="{ scope }">
         <div>
@@ -286,11 +284,7 @@ import {
 } from '@/api/landingPage'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 export default {
   name: 'EmailTemplates',
@@ -318,7 +312,8 @@ export default {
       storedTableSettings: null,
       selectedEmailTemplate: {},
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.LANDINGPAGES,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -505,16 +500,11 @@ export default {
         })
       }
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.LANDINGPAGES, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -527,78 +517,21 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.getDatatableList()
-    },
-    getDefaultFilterAndSearch(callLookup = false) {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          if (!callLookup && this.$refs.refLandingPageList) {
-            this.$refs.refLandingPageList.reRenderColumns(savedFilter.filterValues)
-          }
-        })
-      }
-      if (callLookup) {
-        this.callForLanguages()
-        this.callForLookups(savedFilter?.filterValues)
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refLandingPageList.filterValues = {}
-      this.$refs.refLandingPageList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      if (Object.keys(filterValues).length) {
-        localStorage.setItem(
-          DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
-          JSON.stringify({
-            filter: this.bodyData.filter,
-            filterValues
-          })
-        )
-      } else {
-        localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES)
-      }
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
       this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
@@ -663,7 +596,6 @@ export default {
         this.getDatatableList()
       })
     },
-    handleAdd() {},
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newLandingPage) {
         if (this.$refs.newLandingPage.$refs.refEmailTemplate)
@@ -738,7 +670,6 @@ export default {
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -747,13 +678,9 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
-    },
-    callForLookups(filterValues) {
+    callForLookups() {
       getLandingPageFormDetails().then((response) => {
         this.$set(
           this.tableOptions.columns[1],
@@ -765,19 +692,15 @@ export default {
           'filterableItems',
           response.data.data.difficultyTypes.map((item) => item.text)
         )
-        // this.$set(
-        //   this.tableOptions.columns[6],
-        //   'filterableItems',
-        //   response.data.data.languages.map((item) => item.text)
-        // )
-        this.$refs.refLandingPageList?.reRenderColumns(filterValues || {})
+        this.$refs.refLandingPageList?.reRenderFilters()
         this.landingPageData = response.data.data
       })
     }
   },
   created() {
-    this.getDefaultFilterAndSearch(true)
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
+    this.callForLanguages()
+    this.callForLookups()
+    this.getDatatableList()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)

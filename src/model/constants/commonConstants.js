@@ -300,6 +300,7 @@ export const TABLE_SETTINGS_KEYS = {
   SCIM_SETTINGS_TABLE: 'SCIM_SETTINGS_TABLE',
   CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
+  CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSettings',
   CAMPAIGN_REPORTS: 'CampaignReportsTableSettings',
@@ -438,6 +439,7 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
+  CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
@@ -446,7 +448,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PERMISSION: 'PERMISSION',
   SIEM_INTEGRATION: 'SiemIntegrationSearchKeys',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
-  REST_API: 'RestApi',
+  REST_API: 'RestApiSearchKeys',
   CAMPAIGN_REPORTS: 'CampaignReportsSearchKeys',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
@@ -475,7 +477,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   EMAILTEMPLATES: 'EmailTemplatesSearchContainer',
   SANDBOX: 'Sandbox',
   sandbox: 'Sandbox',
-  SANDBOXSTATS: 'SandboxStats',
+  SANDBOXSTATS: 'SandboxStatsSearchContainerKeys',
   DNSSERVICELIST: 'DNSServiceListSearchContainerKeys',
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
   DOMAINS: 'DomainsSearchContainerKeys',

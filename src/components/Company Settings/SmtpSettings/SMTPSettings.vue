@@ -29,14 +29,13 @@
         selectable
         :loading="loading"
         :table="tableData"
-        :refName="'smtpSettingsList'"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :axios-payload.sync="bodyOptions"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :download-button="tableOptions.downloadButton"
-        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
@@ -48,10 +47,6 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchSmtpSettings"
         @downloadEvent="exportSmtpSettingsList"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
-        @on-table-settings-change="handleSetRenderedColumns"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
@@ -165,15 +160,10 @@ import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/SmtpSettings/NewSmtpSettings'
 import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/DeleteSmtpSettings'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 export default {
   name: 'SMTPSettings',
@@ -189,9 +179,7 @@ export default {
       loading: false,
       selectedDeleteSmtpSettings: null,
       selectedTableItems: [],
-      isRestoredOrClearedFilters: false,
       selectedEditSmtpSettings: null,
-      storedTableSettings: null,
       isEdit: false,
       tableOptions: {
         columns: [
@@ -261,8 +249,8 @@ export default {
             width: 150
           }
         ],
-        isColumnFilterActive: false,
-        pageSizes: [5, 10, 25],
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SMTP_SETTINGS,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -382,56 +370,33 @@ export default {
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings))
-    },
     getDisabledStatusOfEdit({ isOwner } = {}) {
       return this.tableOptions.rowActions[0].disabled || !isOwner
     },
     getDisabledStatusOfDelete({ isOwner } = {}) {
       return this.tableOptions.rowActions[1].disabled || !isOwner
     },
-    exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      if (this.getSMTPSettingsExportPermissions) {
-        const clientTableExportHelper = new ClientTableExportHelper(
-          JSON.parse(JSON.stringify(this.bodyOptions.filter)),
-          this.$refs.refSmtpSettingsList,
-          'CreateTime'
-        )
-        if (this.$refs.refSmtpSettingsList.search) {
-          clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-          clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-            (item) => item.FieldName === 'StatusName'
-          ).FieldName = 'Status'
+    exportSmtpSettingsList(downloadTypes) {
+      downloadTypes.exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.bodyOptions.orderBy,
+          ascending: this.bodyOptions.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyOptions.filter
         }
-        if (
-          this.$refs.refSmtpSettingsList.sortProps &&
-          this.$refs.refSmtpSettingsList.sortProps.order
-        ) {
-          clientTableExportHelper.addSortItems()
-        }
-
-        const { filter, sortFilter } = clientTableExportHelper
-        exportTypes.map((exportType) => {
-          const payload = {
-            ...sortFilter,
-            pageNumber: pageNumber,
-            pageSize: pageSize,
-            reportAllPages,
-            exportType: exportType === 'XLS' ? 'Excel' : exportType,
-            filter
-          }
-          exportSmtpSettings(payload).then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Smtp Settings.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
+        exportSmtpSettings(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Smtp Settings.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
         })
-      }
+      })
     },
     toggleDeleteSmtpModalStatus() {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
@@ -459,7 +424,6 @@ export default {
           })
           .finally(() => {
             this.loading = false
-            this.isRestoredOrClearedFilters = false
           })
       }
     },
@@ -507,7 +471,6 @@ export default {
     },
     handleMakeDefault(selectedRow) {},
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.bodyOptions
@@ -522,33 +485,11 @@ export default {
       this.calculateIsFilterColumnActive()
       this.callForSearchSmtpSettings()
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
-        JSON.stringify({
-          filter: this.bodyOptions.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
     handleMultipleDelete(selections) {
       if (this.getSMTPSettingsDeletePermissions) {
         this.selectedDeleteSmtpSettings = selections
         this.toggleDeleteSmtpModalStatus()
       }
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refSmtpSettingsList.filterValues = {}
-      this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.callForSearchSmtpSettings()
     },
     handleDeleteMultipleSmtpSettings(selections) {
       if (this.getSMTPSettingsDeletePermissions) {
@@ -556,30 +497,10 @@ export default {
           this.handleDeleteSmtpSettings(item)
         })
       }
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
-      )
-      if (savedFilter) {
-        this.bodyOptions.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues
-          this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForSearchSmtpSettings()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyOptions)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
-    this.getDefaultFilterAndSearch()
+    this.callForSearchSmtpSettings()
   }
 }
 </script>

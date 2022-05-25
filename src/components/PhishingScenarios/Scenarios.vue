@@ -50,19 +50,18 @@
       filterable
       options
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'scenariosList'"
       :columns="tableOptions.columns"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -73,14 +72,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
       @on-fast-launch="handleFastLaunch"
     >
       <template v-slot:datatable-row-actions="{ scope }">
@@ -251,11 +246,7 @@ import {
   getScenarioDataDetails,
   getScenariosList
 } from '@/api/scenarios'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -288,10 +279,10 @@ export default {
       selectedScenarioURL: '',
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       selectedScenario: {},
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SCENARIOS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -429,7 +420,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_SCENARIO,
           btn: labels.New,
@@ -459,9 +449,6 @@ export default {
     })
   },
   methods: {
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SCENARIOS, JSON.stringify(tableSettings))
-    },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
       this.isShowPreviewDialog = !this.isShowPreviewDialog
@@ -498,7 +485,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -515,44 +501,6 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getDatatableList()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SCENARIOS))
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          if (this?.$refs?.refScenariosList) {
-            this.$refs.refScenariosList.filterValues = savedFilter.filterValues
-            this.$refs.refScenariosList.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
-          }
-        })
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refScenariosList.filterValues = {}
-      this.$refs.refScenariosList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SCENARIOS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
@@ -609,7 +557,6 @@ export default {
       this.isDuplicate = isDuplicate
       this.scenarioId = row.resourceId
     },
-    handleAdd() {},
     checkIfCanCLoseNewScenarioModal() {
       if (this.$refs.newScenarioModal) {
         this.$refs.newScenarioModal.changeNewScenarioModalStatus()
@@ -682,11 +629,7 @@ export default {
       this.selectedScenario = row
       this.showDeleteModal = true
     },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
-    },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -695,7 +638,6 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     }
   },
@@ -723,10 +665,8 @@ export default {
         )
       })
       .finally(() => {
-        this.getDefaultFilterAndSearch()
+        this.getDatatableList()
       })
-
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SCENARIOS))
   }
 }
 </script>

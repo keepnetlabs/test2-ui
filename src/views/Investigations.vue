@@ -10,12 +10,12 @@
         @refreshDatatable="refreshDatatable"
       />
       <app-dialog
+        icon="mdi-alert"
         :status="isWantToStopInvestigation"
         :title="labels.StopOngoingInvestigation"
         :subtitle="labels.DoYouWantToStopInvestigation"
         :body="labels.OnceYouStoppedInvestigation"
         @changeStatus="isWantToStopInvestigation = false"
-        icon="mdi-alert"
       >
         <template #app-dialog-footer>
           <app-dialog-footer
@@ -30,16 +30,13 @@
       <v-card class="investigations__container-card" light>
         <datatable
           v-bind="tableState"
+          ref="investigationTable"
+          id="investigations-data-table"
           selectable
           filterable
           options
           is-server-side
-          isServerSideSelection
           :loading="loading"
-          :is-column-filter-active="isColumnFilterActive"
-          id="investigations-data-table"
-          ref="investigationTable"
-          :refName="'investigationTable'"
           :columns="columns"
           :table="tableData.data"
           :rowActions="rowActions"
@@ -50,6 +47,9 @@
           :chartOptions="chartOptions"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
+          :axios-payload.sync="bodyData"
+          :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
+          :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
           @startNewInvestigation="startNewInvestigation"
           @stopInvestigationFunc="stopInvestigationFunc($event)"
           @investigationDetails="investigationDetails($event)"
@@ -59,10 +59,6 @@
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @refreshAction="getInvestigationList"
-          @set-default-search="handleSetDefaultSearch"
-          @restore-default-search="handleRestoreDefaultSearch"
-          @clear-filters="handleClearFilters"
-          @on-table-settings-change="handleSetRenderedColumns"
           @server-side-page-number-changed="serverSidePageNumberChanged"
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
@@ -125,11 +121,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 
 export default {
   name: 'Investigations',
@@ -298,7 +290,8 @@ export default {
         showTooltipLine: true,
         isWithText: true
       },
-      isColumnFilterActive: false,
+      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
+      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.INVESTIGATIONS,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
@@ -336,7 +329,6 @@ export default {
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getInvestigationList()
     },
     sortChanged({ order, prop } = {}) {
@@ -357,47 +349,6 @@ export default {
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    calculateIsFilterColumnActive() {
-      this.isColumnFilterActive = isColumnFilterActive(this.bodyData)
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.investigationTable.reRenderColumns(savedFilter.filterValues)
-        })
-      }
-      this.getInvestigationList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.investigationTable.filterValues = {}
-      this.$refs.investigationTable.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getInvestigationList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS, JSON.stringify(tableSettings))
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
     },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
@@ -432,9 +383,7 @@ export default {
       this.getInvestigationList()
     },
     columnFilterChanged(filter) {
-      this.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-
       this.getInvestigationList()
     },
     columnFilterCleared(fieldName) {
@@ -442,8 +391,6 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
-
       if (this.$route.name === 'Investigations') {
         this.getInvestigationList()
       }
@@ -563,8 +510,7 @@ export default {
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
     }
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    this.getDefaultFilterAndSearch()
+    this.getInvestigationList()
   },
   mounted() {
     if (this.$route.params && this.$route.params.selectedEmail) {

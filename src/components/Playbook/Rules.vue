@@ -37,31 +37,27 @@
       options
       is-server-side
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'rulesListTable'"
       :columns="tableOptions.columns"
       :row-actions="tableOptions.rowActions"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :selectEvent="tableOptions.selectEvent"
       :download-button="getDownloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      @deleteFunction="deleteRule($event)"
+      :axios-payload.sync="tableCredientials"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @addAction="toggleRuleModal"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
-      @deleteAction="deleteRule($event)"
+      @deleteAction="deleteRule"
+      @handleMultipleDelete="deleteRule"
       @editAction="handleEdit"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
@@ -117,11 +113,7 @@ import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'Rules',
   components: {
@@ -147,7 +139,6 @@ export default {
       tableData: [],
       labels,
       loading: false,
-      storedTableSettings: null,
       showRuleModal: false,
       selectedMatch: null,
       showMatchingModal: false,
@@ -155,7 +146,8 @@ export default {
       deleteValues: null,
       selectedPlaybookId: null,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.PLAYBOOK,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -321,8 +313,7 @@ export default {
       this.resetPageNumber()
       this.callForSearchPlaybook()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -331,7 +322,6 @@ export default {
       })
       this.tableCredientials.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForSearchPlaybook()
     },
     sortChanged({ order, prop } = {}) {
@@ -342,45 +332,6 @@ export default {
     resetPageNumber() {
       this.tableCredientials.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
-      )
-      if (savedFilter) {
-        this.tableCredientials.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refRulesList.filterValues = savedFilter.filterValues
-          this.$refs.refRulesList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForSearchPlaybook()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.PLAYBOOK, JSON.stringify(tableSettings))
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refRulesList.filterValues = {}
-      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForSearchPlaybook()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
-        JSON.stringify({
-          filter: this.tableCredientials.filter,
-          filterValues
-        })
-      )
     },
     getTableEmptyStatus() {
       const emptyObj = {
@@ -519,11 +470,7 @@ export default {
         })
       }
     },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.tableCredientials)
-    },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.tableCredientials
@@ -535,7 +482,6 @@ export default {
         fieldName,
         this.tableCredientials
       )
-      this.calculateIsFilterColumnActive()
       this.callForSearchPlaybook()
     },
     callForSearchPlaybook() {
@@ -564,16 +510,10 @@ export default {
       }
     }
   },
-  mounted() {
-    if (this.PERMISSIONS.SEARCH.hasPermission) {
-      this.getDefaultFilterAndSearch()
-    }
-    this.controlGetAndUpdatePermission(this.playbookId)
-  },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PLAYBOOK))
-    if (this.$route.params && this.$route.params.playbookId) {
-      this.controlGetAndUpdatePermission(this.$route.params.playbookId)
+    this.controlGetAndUpdatePermission(this?.$route?.params?.playbookId || this.playbookId)
+    if (this.PERMISSIONS.SEARCH.hasPermission) {
+      this.callForSearchPlaybook()
     }
   },
   computed: {

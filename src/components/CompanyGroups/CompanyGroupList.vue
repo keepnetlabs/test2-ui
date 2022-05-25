@@ -25,18 +25,18 @@
       options
       selectable
       :key="tableKey"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :stored-table-settings="storedTableSettings"
       :empty="tableOptions.iEmpty"
-      :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="payload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @addButton="addButton"
       @downloadEvent="handleTableDownload"
       @delete="handleTableItemDelete"
@@ -45,10 +45,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
@@ -75,11 +71,7 @@ import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 
 export default {
   name: 'CompanyGroupList',
@@ -98,7 +90,6 @@ export default {
       tableKey: 'key-table-company-group',
       loading: false,
       tableData: [],
-      storedTableSettings: null,
       isShowDeleteModal: false,
       isShowAddModal: false,
       editAddModal: false,
@@ -106,8 +97,9 @@ export default {
       selectedRow: null,
       isCompanyGroupListLoaded: false,
       tableOptions: {
-        isColumnFilterActive: false,
         downloadButton: { show: false, disable: false },
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.COMPANY_GROUP_LIST,
         columns: [
           {
             property: 'name',
@@ -193,7 +185,6 @@ export default {
         this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
-          this.tableOptions.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
             if (value.selectValue === 'between') {
               this.payload.filter.FilterGroups[0].FilterItems.push({
@@ -256,10 +247,6 @@ export default {
           .finally(() => (this.loading = false))
       }
     } else {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_LIST)
-      )
-      this.getDefaultFilterAndSearch()
       this.getTableData()
     }
   },
@@ -294,45 +281,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
-        JSON.stringify({
-          filter: this.payload.filter,
-          filterValues
-        })
-      )
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_LIST, JSON.stringify(tableSettings))
-    },
-    handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.getTableData()
-    },
-    handleClearFilters() {
-      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
-      this.$refs.refGroupDataList.filterValues = {}
-      this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getTableData()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
-      )
-      if (savedFilter) {
-        this.payload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refGroupDataList.filterValues = savedFilter.filterValues
-          this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
     },
     handleTableDownload(downloadTypes) {
       const searchFilter = {
@@ -428,7 +376,6 @@ export default {
       })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
@@ -436,9 +383,6 @@ export default {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
       this.calculateIsFilterColumnActive()
       this.getTableData()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   },
   beforeDestroy() {

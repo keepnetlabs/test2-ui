@@ -56,22 +56,20 @@
       filterable
       options
       selectable
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :stored-table-settings="storedTableSettings"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="payload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
-      @edit="handleTableItemEdit"
       @remove="handleTableItemRemove"
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
@@ -80,10 +78,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -115,11 +109,7 @@ import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CompanyGroupDetails',
@@ -144,7 +134,6 @@ export default {
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
-    storedTableSettings: null,
     editModal: false,
     isShowRemoveModal: false,
     isShowExtended: false,
@@ -156,7 +145,8 @@ export default {
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
-      isColumnFilterActive: false,
+      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS,
+      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS,
       columns: [
         {
           property: PROPERTY_STORE.COMPANYNAME,
@@ -230,7 +220,6 @@ export default {
           filterableType: 'date'
         }
       ],
-      pageSizes: [5, 10, 25],
       downloadButton: { show: false, disable: false },
       selectEvent: {
         clipboard: true,
@@ -293,10 +282,7 @@ export default {
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS)
-    )
-    this.getDefaultFilterAndSearch()
+    this.initMethods()
   },
   methods: {
     resetPageNumber() {
@@ -315,13 +301,6 @@ export default {
       this.payload.pageNumber = pageNumber
       this.initMethods()
     },
-    reRenderTable() {
-      this.$nextTick(() => {
-        if (this.$refs && this.$refs.refDataList) {
-          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        }
-      })
-    },
     sortChanged({ order, prop } = {}) {
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
@@ -331,42 +310,6 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.initMethods()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS, JSON.stringify(tableSettings))
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS,
-        JSON.stringify({
-          filter: this.payload.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.initMethods()
-    },
-    handleClearFilters() {
-      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
-      this.$refs.refDataList.filterValues = {}
-      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.initMethods()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
-      )
-      if (savedFilter) {
-        this.payload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refDataList.filterValues = savedFilter.filterValues
-          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        })
-      }
       this.initMethods()
     },
     handleTableDownload(downloadTypes) {
@@ -397,7 +340,7 @@ export default {
     initMethods() {
       this.getIndustries().then(() => {
         this.getLicenceTypes().then(() => {
-          this.reRenderTable()
+          this?.$refs?.refDataList?.reRenderFilters()
           this.getTableData()
         })
       })
@@ -434,7 +377,6 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    handleTableItemEdit(row) {},
     handleTableItemRemove(selectedItem) {
       this.selectedRow = selectedItem
       this.changeRemoveModalStatus(true)
@@ -463,7 +405,6 @@ export default {
       this.selectedRow = row
       this.editModal = true
       this.isShowExtended = false
-
       getCompanyByID(row.companyResourceId)
         .then((response) => {
           this.selectedExtend = response.data.data
@@ -524,7 +465,6 @@ export default {
       this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
@@ -554,9 +494,6 @@ export default {
           })
         )
       })
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

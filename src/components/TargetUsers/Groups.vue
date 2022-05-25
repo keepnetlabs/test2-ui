@@ -40,11 +40,9 @@
       selectable
       disable-extended-view-transition
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :stored-table-settings="storedTableSettings"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
       :extendedViewValue="extendedViewValue"
@@ -53,6 +51,9 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :show-datatable-row-actions="false"
+      :axios-payload.sync="tableCredientials"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @downloadEvent="exportTargetGroupsList"
       @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
@@ -64,14 +65,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -158,11 +155,7 @@ import { required, maxLength } from '@/utils/validations'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetGroupRowActionsDeleteButton from '@/components/SmallComponents/TargetGroupRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
@@ -189,12 +182,12 @@ export default {
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
-      storedTableSettings: null,
       tableData: [],
       selectedGroup: {},
       extendedViewLoading: true,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -350,7 +343,6 @@ export default {
           ]
         }
       },
-      addGroupsItems: ['Create User Group', 'Create Smart Group'],
       showNewUserGroupModal: false,
       showDeleteGroupModal: false,
       selectedRow: {},
@@ -376,76 +368,31 @@ export default {
     handleEditBtnClick(row, scope) {
       this.$refs.refGroupsTable.handleEdit(row, scope.$index)
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
-      //generic
       this.tableCredientials.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.tableCredientials.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForTargetGroups()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.tableCredientials.pageNumber = pageNumber
       this.callForTargetGroups()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.tableCredientials.ascending = order === 'ascending'
       this.tableCredientials.orderBy = prop
       this.callForTargetGroups()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.tableCredientials.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForTargetGroups()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
-      )
-      if (savedFilter) {
-        this.tableCredientials.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refGroupsTable.filterValues = savedFilter.filterValues
-          this.$refs.refGroupsTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForTargetGroups()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refGroupsTable.filterValues = {}
-      this.$refs.refGroupsTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForTargetGroups()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP,
-        JSON.stringify({
-          filter: this.tableCredientials.filter,
-          filterValues
-        })
-      )
     },
     handleSyncWithLDAP(row) {},
     handleAddGroup(row = {}) {
@@ -558,7 +505,6 @@ export default {
         })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.tableCredientials
@@ -570,11 +516,7 @@ export default {
         fieldName,
         this.tableCredientials
       )
-      this.calculateIsFilterColumnActive()
       this.callForTargetGroups()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.tableCredientials)
     }
   },
 
@@ -586,7 +528,6 @@ export default {
         this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
-          this.tableOptions.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
             if (value.selectValue === 'between') {
               this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
@@ -610,13 +551,9 @@ export default {
         }
         this.tableState = { persistentState: tableState }
       }
-    } else {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
-      )
     }
     if (!this.isLoadState || !tableState) {
-      this.getDefaultFilterAndSearch()
+      this.callForTargetGroups()
     }
   },
   beforeDestroy() {
