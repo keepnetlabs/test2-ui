@@ -297,16 +297,16 @@ const store = {
       return state?.incidentResponderLeftMenuPermissions?.isOneOfThemPermitted
     },
     getInvestigationsSearchPermission(state) {
-      return state?.incidentResponderLeftMenuPermissions?.INVESTIGATIONS?.hasPermission
+      return state?.incidentResponderListGroupPermissions?.INVESTIGATIONS?.hasPermission
     },
     getIntegrationsSearchPermission(state) {
-      return state?.incidentResponderLeftMenuPermissions?.INTEGRATIONS?.hasPermission
+      return state?.incidentResponderListGroupPermissions?.INTEGRATIONS?.hasPermission
     },
     getPlaybookSearchPermission(state) {
-      return state?.incidentResponderLeftMenuPermissions?.PLAYBOOKS?.hasPermission
+      return state?.incidentResponderListGroupPermissions?.PLAYBOOKS?.hasPermission
     },
     getMailConfigurationSearchPermission(state) {
-      return state?.incidentResponderLeftMenuPermissions?.MAIL_CONFIGURATIONS?.hasPermission
+      return state?.incidentResponderListGroupPermissions?.MAIL_CONFIGURATIONS?.hasPermission
     },
     getCrossCompanyPermissions(state) {
       const {

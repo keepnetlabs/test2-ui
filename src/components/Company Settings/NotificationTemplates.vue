@@ -320,6 +320,43 @@ export default {
             width: 180,
             isEditable: true,
             filterableType: 'date'
+          },
+          {
+            property: PROPERTY_STORE.TYPE,
+            align: 'left',
+            label: labels.Type,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 125,
+            isEditable: true,
+            filterableType: 'text'
+          },
+          {
+            property: PROPERTY_STORE.CREATEDBY,
+            align: 'left',
+            label: labels.CreatedBy,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            isEditable: true,
+            filterableType: 'text'
+          },
+          {
+            property: PROPERTY_STORE.AVAILABLE_FOR,
+            align: 'right',
+            label: labels.AvailalbeFor,
+            fixed: false,
+            sortable: false,
+            hideSort: true,
+            filtarable: false,
+            show: true,
+            type: 'number',
+            width: 100,
+            isEditable: true
           }
         ],
         addButton: {

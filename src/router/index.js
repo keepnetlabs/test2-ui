@@ -225,7 +225,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard',
-            permissionStoreKey: 'permissions/getIncidentResponderListGroupPermissions'
+            permissionStoreKey: 'permissions/getIncidentResponderLeftMenuPermissions'
           },
           props: true,
           params: true
