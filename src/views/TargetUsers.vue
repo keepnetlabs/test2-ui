@@ -106,7 +106,7 @@ export default {
       }
       this.tab = tab
     }
-    if (!this.getTargetGroupsSearchPermissions) {
+    if (!this.getTargetUsersSearchPermissions && this.getTargetGroupsSearchPermissions) {
       this.tab = 'target-users--group'
     }
     this.callForLicenseCheck(true)

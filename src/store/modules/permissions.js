@@ -630,8 +630,8 @@ const store = {
       }
     },
     getSystemUserSearchPermission(state) {
-      const { SYSTEM_USERS = {} } = state?.companyLeftMenuPermissions
-      return SYSTEM_USERS?.hasPermission
+      const { SYSTEM_USERS = {}, ROLES = {} } = state?.companyLeftMenuPermissions
+      return SYSTEM_USERS?.hasPermission || ROLES?.hasPermission
     },
     getSystemUsersSearchPermission(state) {
       return state?.systemUsersPermissions?.SEARCH?.hasPermission
@@ -666,6 +666,10 @@ const store = {
     getAuditLogSearchPermission(state) {
       const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions
       return AUDIT_LOGS?.hasPermission
+    },
+    getJobLogsSearchPermission(state) {
+      const { JOB_LOGS = {} } = state?.companyLeftMenuPermissions
+      return JOB_LOGS?.hasPermission
     },
     getIncidentResponderSummaryPermission(state) {
       return state?.dashboardPermissions?.IR_SUMMARY?.hasPermission

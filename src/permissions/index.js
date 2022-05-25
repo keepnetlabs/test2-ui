@@ -655,6 +655,11 @@ export default {
       url: `audit-logs`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    JOB_LOGS: {
+      url: 'jobs',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   },
   TARGET_USERS_PERMISSIONS: {
