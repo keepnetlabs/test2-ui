@@ -1,10 +1,11 @@
 <template>
   <k-select
+    ref="refTags"
+    type="combobox"
     :value="value"
     :search-input.sync="tagSearch"
-    type="combobox"
-    ref="refTags"
     :items="items"
+    :class="['hide-caret', className]"
     chips
     deletable-chips
     outlined
@@ -25,12 +26,6 @@ export default {
   components: {
     KSelect
   },
-  data() {
-    return {
-      tagSearch: '',
-      tags: []
-    }
-  },
   props: {
     items: {
       type: Array,
@@ -39,6 +34,15 @@ export default {
     value: {
       type: Array,
       default: () => []
+    },
+    className: {
+      type: String
+    }
+  },
+  data() {
+    return {
+      tagSearch: '',
+      tags: []
     }
   },
   watch: {

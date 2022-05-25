@@ -463,9 +463,17 @@ const store = {
       const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions
       return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission
     },
-    getCompanySettingsLeftMenuPermissions(state) {
-      const { ROLES = {}, SMTP_SETTINGS = {} } = state?.companyLeftMenuPermissions
-      return ROLES?.hasPermission || SMTP_SETTINGS?.hasPermission
+    getCompanySettingsLeftMenuPermissions(state, getters) {
+      return (
+        getters?.getRestApiSearchPermissions ||
+        getters?.getNotificationTemplatesSearchPermissions ||
+        getters?.getWhiteLabelingGetPermissions ||
+        getters?.getSMTPSettingsSearchPermissions ||
+        getters?.getProxySettingsSearchPermissions ||
+        getters?.getSAMLIntegrationSearchPermissions ||
+        getters?.getSCIMSettingsSearchPermissions ||
+        getters?.getSIEMIntegrationSearchPermissions
+      )
     },
     getSMTPSettingsSearchPermissions(state) {
       return state?.smtpSettingsPermissions?.SEARCH?.hasPermission
