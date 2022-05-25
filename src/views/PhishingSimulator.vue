@@ -66,6 +66,17 @@ export default {
       this.tab = tabStatus
     }
   },
+  created() {
+    if (!this.getPhishingScenariosSearchPermissions && this.getEmailTemplatesSearchPermissions) {
+      this.tab = 'emailTemplates'
+    } else if (
+      !this.getPhishingScenariosSearchPermissions &&
+      !this.getEmailTemplatesSearchPermissions &&
+      this.getLandingPageTemplatesSearchPermissions
+    ) {
+      this.tab = 'landingPage'
+    }
+  },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
 

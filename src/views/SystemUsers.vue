@@ -66,7 +66,7 @@ export default {
     }
   },
   created() {
-    if (!this.getSystemUsersSearchPermission) {
+    if (!this.getSystemUsersSearchPermission && this.getSystemRolesSearchPermission) {
       this.tab = 'system-users--roles'
     }
   }

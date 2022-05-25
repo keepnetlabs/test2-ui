@@ -450,6 +450,7 @@ export const labels = {
   KeepEditing: 'KEEP EDITING',
   NotificationTemplate: 'Notification Template',
   MakeAvailableFor: 'Make Available For',
+  AvailalbeFor: 'Available For',
   MakeAvailableForSubtitle: 'Use this setting to make the item avaliable for companies and groups.',
   MakeAvailableForPlaceholder: 'Search companies and groups',
   DeleteNotificationTemplateBody:
@@ -524,7 +525,8 @@ export const labels = {
   Preview: 'Preview',
   CreatedBy: 'Created By',
   dnsServiceProviderName: 'Service Provider',
-  LANGUAGE: 'Language'
+  LANGUAGE: 'Language',
+  Type: 'Type'
 }
 
 export default labels
