@@ -365,13 +365,6 @@ export default {
       url: `notify/result`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
-    }
-  },
-  INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS: {
-    NOTIFIED_EMAIL: {
-      url: `notified-emails/search`,
-      hasPermission: false,
-      method: ENUMS.METHODS.POST
     },
     INVESTIGATIONS: {
       url: `investigations/search`,
@@ -390,6 +383,13 @@ export default {
     },
     MAIL_CONFIGURATIONS: {
       url: `mail-configurations/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS: {
+    NOTIFIED_EMAIL: {
+      url: `notified-emails/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
