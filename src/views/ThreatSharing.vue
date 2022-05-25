@@ -123,7 +123,11 @@ export default {
   beforeRouteUpdate(to, from, next) {
     next(true)
   },
-  created() {},
+  created() {
+    if (!this.getCommunityPostsPermission) {
+      this.tab = 1
+    }
+  },
   methods: {
     setThreatSharingStepLoading(val) {
       this.isStepDisabled = val
