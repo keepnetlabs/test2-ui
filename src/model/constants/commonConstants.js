@@ -160,6 +160,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  AVAILABLE_FOR: 'availableFor',
   LANGUAGE: 'languageTypeName',
   TAGS: 'tags',
   TOEMAIL: 'toEmail',
