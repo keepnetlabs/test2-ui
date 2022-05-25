@@ -339,7 +339,6 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -461,7 +460,6 @@ export default {
         fieldName,
         this.bodyOptions
       )
-      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
     },
     handleMultipleDelete(selections) {

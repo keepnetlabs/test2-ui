@@ -80,7 +80,6 @@
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
@@ -309,7 +308,6 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       selectedEmailTemplate: {},
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
@@ -692,7 +690,7 @@ export default {
           'filterableItems',
           response.data.data.difficultyTypes.map((item) => item.text)
         )
-        this.$refs.refLandingPageList?.reRenderFilters()
+        this?.$refs?.refLandingPageList?.reRenderFilters()
         this.landingPageData = response.data.data
       })
     }

@@ -1119,7 +1119,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -1471,7 +1470,6 @@ export default {
         fieldName,
         this.requestBody
       )
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     }
   },

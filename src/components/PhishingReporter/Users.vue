@@ -301,6 +301,9 @@ export default {
         : 'This user'
     }
   },
+  created() {
+    this.callForPhishingReporterUser()
+  },
   methods: {
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
@@ -471,7 +474,6 @@ export default {
         fieldName,
         this.requestBody
       )
-      this.calculateIsFilterColumnActive()
       this.callForPhishingReporterUser()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -493,7 +495,6 @@ export default {
       })
       this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForPhishingReporterUser()
     },
     sortChanged({ order, prop } = {}) {
@@ -505,9 +506,6 @@ export default {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     }
-  },
-  created() {
-    this.callForPhishingReporterUser()
   }
 }
 </script>

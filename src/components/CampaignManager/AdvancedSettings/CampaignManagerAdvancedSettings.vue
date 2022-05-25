@@ -1,11 +1,5 @@
 <template>
   <v-form ref="refForm">
-    <CampaignManagerSmtpSettingsDialog
-      v-if="isShowCustomSmtpDialog"
-      :status="isShowCustomSmtpDialog"
-      :smtp-items="defaultSmtpItems"
-      @on-close="toggleCustomSmtpDialog"
-    />
     <CampaignManagerSmtpErrorDialog
       v-if="isShowSmtpErrorDialog"
       :status="isShowSmtpErrorDialog"
@@ -272,7 +266,6 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
-import CampaignManagerSmtpSettingsDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpSettingsDialog'
 import * as validations from '@/utils/validations'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
@@ -280,7 +273,6 @@ export default {
   name: 'CampaignManagerAdvancedSettings',
   components: {
     CampaignManagerSmtpErrorDialog,
-    CampaignManagerSmtpSettingsDialog,
     KSelect,
     FormGroup
   },
@@ -299,7 +291,6 @@ export default {
     return {
       labels,
       isTestingConnection: false,
-      isShowCustomSmtpDialog: false,
       isShowSmtpErrorDialog: false,
       isUsersOnline: false,
       totalSendSecond: 77720,
@@ -561,10 +552,6 @@ export default {
           this.batchEverySendSecond = batchEverySendSecond
         })
       }, 500)
-    },
-
-    toggleCustomSmtpDialog() {
-      this.isShowCustomSmtpDialog = !this.isShowCustomSmtpDialog
     },
     handleTestConnectionChange() {
       try {

@@ -40,7 +40,6 @@
           :columns="columns"
           :table="tableData.data"
           :rowActions="rowActions"
-          :stored-table-settings="storedTableSettings"
           :addButton="newInvestigationButton"
           :empty="iEmpty"
           :selectEvent="selectEvent"
@@ -158,7 +157,6 @@ export default {
       isWantToStopInvestigation: false,
       init: true,
       labels,
-      storedTableSettings: null,
       columns: [
         {
           property: 'incident',

@@ -270,7 +270,6 @@ export default {
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -381,7 +380,6 @@ export default {
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     }
   },

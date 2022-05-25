@@ -17,25 +17,22 @@
               ref="refMatchingInvestigation"
               id="matching-incident-data-table"
               is-server-side
-              :refName="'matchingInvestigation'"
+              filterable
+              options
+              show-header
               :show-filter-options="false"
               :count-row="5"
               :table="tableData"
               :columns="columns"
               :loading="isMatchingModalLoading"
-              :is-column-filter-active="isColumnFilterActive"
-              :pageSizes="[5, 10, 25]"
-              :showHeader="true"
-              :defaultSort="'subject'"
               :selectable="false"
-              :filterable="true"
-              :options="true"
               :rowActions="[]"
               :cell-padding="15"
               :empty="empty"
               :server-side-props="serverSideProps"
               :server-side-events="{ pagination: true, search: true, sort: true }"
               :download-button="{ show: false }"
+              :axios-payload.sync="payload"
               @refreshAction="callForMatchingIncident"
               @columnFilterChanged="columnFilterChanged"
               @columnFilterCleared="columnFilterCleared"
@@ -70,11 +67,7 @@ import { getStoreValue } from '@/model/constants/commonConstants'
 import { getMatchingIncidents } from '@/api/incidentResponder'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'MatchingIncidentModal',
   components: {
@@ -134,7 +127,6 @@ export default {
         }
       ],
       payload: getDefaultAxiosPayload({ pageSize: 5, orderBy: 'createDate' }),
-      isColumnFilterActive: false,
       serverSideProps: new ServerSideProps(),
       empty: { message: "There isn't any matching Incidents, yet", btn: '', icon: 'mdi-plus' },
       tableData: [],
@@ -150,13 +142,11 @@ export default {
   },
   methods: {
     columnFilterChanged(filter) {
-      this.isColumnFilterActive = true
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.callForMatchingIncident()
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.callForMatchingIncident()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -177,7 +167,6 @@ export default {
         return column.filterableType
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.calculateIsFilterColumnActive()
       this.resetPageNumber()
       this.callForMatchingIncident()
     },
@@ -189,9 +178,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    calculateIsFilterColumnActive() {
-      this.isColumnFilterActive = isColumnFilterActive(this.payload)
     },
     closeOverlay() {
       this.$emit('closeOverlay')

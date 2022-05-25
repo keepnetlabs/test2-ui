@@ -6,12 +6,10 @@
     options
     is-server-side
     :id="CONSTANTS.id"
-    :refName="'campaignReportTable'"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
@@ -66,7 +64,6 @@ export default {
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],

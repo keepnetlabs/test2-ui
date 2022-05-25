@@ -297,6 +297,7 @@ export const TABLE_SETTINGS_KEYS = {
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
   CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
     'CampaignManagerReportPhishingReportTableSettings',
+  CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentTableSettings',
   SCIM_SETTINGS_TABLE: 'SCIM_SETTINGS_TABLE',
   CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
@@ -442,6 +443,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
+  CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentDataTableSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
   SCIM_SETTINGS: 'SCIMSettingsDataTableSearchKeys',

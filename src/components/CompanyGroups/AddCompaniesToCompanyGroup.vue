@@ -16,8 +16,9 @@
         id="companies-data-table"
         ref="refDataList"
         row-key="companyName"
-        refName="companyList"
         selectable
+        filterable
+        options
         is-server-side
         :show-filter-options="false"
         :loading="loading"
@@ -27,12 +28,10 @@
         :columns="tableOptions.columns"
         :download-button="{ show: false }"
         :empty="tableOptions.iEmpty"
-        :filterable="true"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :options="true"
         :selectEvent="tableOptions.selectEvent"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :axios-payload.sync="payload"
         @handleSelectionChange="handleSelectionChange"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -41,9 +40,6 @@
         @sortChangedEvent="sortChanged"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
       />
     </template>
     <template v-slot:app-dialog-footer>
@@ -74,12 +70,7 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import {
-  DEFAULT_SEARCH_CONTAINER_KEYS,
-  getStoreValue,
-  PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -179,8 +170,6 @@ export default {
             width: 180
           }
         ],
-        pageSizes: [5, 10, 25],
-        isColumnFilterActive: false,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -277,56 +266,9 @@ export default {
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
-
-    this.getDefaultFilterAndSearch()
     this.callForSearch()
   },
   methods: {
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
-      copyOfFilter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
-        JSON.stringify({
-          filter: copyOfFilter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.callForSearch()
-    },
-    handleClearFilters() {
-      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
-      this.payload.pageNumber = 1
-      this.$refs.refDataList.filterValues = {}
-      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.ADD_COMPANY_LIST)
-      this.callForSearch()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.ADD_COMPANY_LIST)
-      )
-      if (savedFilter) {
-        this.payload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refDataList.filterValues = savedFilter.filterValues
-          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        })
-      }
-    },
-
     toggleConfigureNewCompanyModal() {
       if (this.isShowConfigureCompanyModal) {
         this.callForSearch()
@@ -345,25 +287,21 @@ export default {
       localStorage.setItem('selectedCompanyName', account.companyName)
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.payload.pageNumber = pageNumber
       this.callForSearch()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
       this.callForSearch()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForSearch()
     },
     resetPageNumber() {
-      //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
@@ -375,13 +313,11 @@ export default {
         this.isShowExtended = false
       }
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
       this.callForSearch()
     },
     callForSearch() {
@@ -428,7 +364,6 @@ export default {
         })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
@@ -466,9 +401,6 @@ export default {
       filterPayload = [...items]
       this.payload.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForSearch()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     closeOverlay() {
       this.$emit('close-overlay')

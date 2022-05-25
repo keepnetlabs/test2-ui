@@ -24,18 +24,17 @@
       filterable
       options
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'domainsList'"
       :columns="tableOptions.columns"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleActionDelete"
       @handleEdit="handleEdit"
@@ -46,14 +45,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
       @addAction="handleAdd"
     >
       <template #datatable-row-actions="{scope}">
@@ -110,11 +105,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
 import DeleteServiceModal from '@/components/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/Domains/NewEditDomain'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -143,10 +134,10 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       selectedDomain: null,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DOMAINS,
         columns: [
           {
             property: 'domain',
@@ -209,8 +200,6 @@ export default {
             width: 240,
             type: 'text',
             filterableType: 'text'
-            // filterableType: 'select',
-            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -248,7 +237,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: 'You do not have any domains',
           btn: labels.New,
@@ -293,16 +281,11 @@ export default {
         this.getDatatableList()
       }
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.DOMAINS, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -315,65 +298,22 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getDatatableList()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS))
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refDomainsListList.filterValues = savedFilter.filterValues
-          this.$refs.refDomainsListList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refDomainsListList.filterValues = {}
-      this.$refs.refDomainsListList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -397,8 +337,8 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refDomainsListList.$refs.elTableRef.toggleRowSelection(row, false)
       deleteEmailTemplate(row.resourceId).then(() => {
+        this.$refs.refDomainsListList.unSelectRow(row)
         this.getDatatableList()
       })
     },
@@ -461,7 +401,6 @@ export default {
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -470,7 +409,6 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     }
   },
@@ -478,9 +416,8 @@ export default {
     if (this.getDomainFormDetailsPermissions)
       getDomainData().then((response) => {
         this.domainData = response.data.data
-        this.getDefaultFilterAndSearch()
+        this.getDatatableList()
       })
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
   }
 }
 </script>

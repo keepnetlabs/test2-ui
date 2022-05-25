@@ -25,9 +25,9 @@
       @changeModalStatus="changeRemoveModalStatus"
     />
     <AddGroupToModal
+      v-if="showAddGroupToModal"
       :companyIdArray="companyIdArray"
       :status="showAddGroupToModal"
-      v-if="showAddGroupToModal"
       @changeStatus="handleStatusAddGroupToModal"
     />
     <create-item-modal
@@ -294,7 +294,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.initMethods()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -470,7 +469,6 @@ export default {
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     async getIndustries() {

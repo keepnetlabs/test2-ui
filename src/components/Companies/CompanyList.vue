@@ -433,7 +433,7 @@ export default {
               .filter((item) => item.genericCodeTypeId === 3)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
-          this.$refs.refDataList.reRenderFilters()
+          this?.$refs?.refDataList?.reRenderFilters()
         })
         .finally(() => this.getTableData())
     },
@@ -481,7 +481,7 @@ export default {
     },
     resetTableFilters() {
       this.payload.filter.FilterGroups[0].FilterItems = []
-      this.$refs.refDataList.reRenderFilters({})
+      this?.$refs?.refDataList?.reRenderFilters({})
     },
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
@@ -489,7 +489,7 @@ export default {
     },
     deleteConfirmedItem(selectedItem) {
       deleteCompany(selectedItem.companyResourceId).then((response) => {
-        this.$refs.refDataList.$refs.elTableRef.toggleRowSelection(selectedItem, false)
+        this?.$refs?.refDataList?.unSelectRow(selectedItem)
         if (response.data && response.data.message) {
           this.getTableData()
         }

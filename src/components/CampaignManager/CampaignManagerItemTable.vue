@@ -19,7 +19,6 @@
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="tableOptions.serverSideEvents"
       :select-event="tableOptions.selectEvent"
@@ -122,7 +121,6 @@ export default {
       },
       tableData: [],
       selectedRow: {},
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
