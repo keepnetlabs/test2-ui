@@ -414,6 +414,9 @@ export default {
     }
   },
   created() {
+    if (!this.getPhishingReporterSearchPermissions && this.getPhishingReporterGetPermissions) {
+      this.tab = 'phishing-reporter-settings'
+    }
     this.getPhishingReportSummary()
     this.getPhishingReport()
     if (this.$route.params && this.$route.params.tab) {
