@@ -76,13 +76,7 @@
             rounded
             color="white"
             style="box-shadow: none !important;"
-            :style="
-              !getTestConnectionDisableStatus && {
-                border: '1px solid #2196f3 !important',
-                color: '#2196f3'
-              }
-            "
-            :disabled="getTestConnectionDisableStatus"
+            :style="getTestConnectionStyle"
             @click="handleTestConnection(false)"
           >
             <span>Test Connection</span>
@@ -185,6 +179,19 @@ export default {
         this.isTesting ||
         Validations.url(this.formData.apiUrl, 'Invalid URL') === 'Invalid URL'
       )
+    },
+    getTestConnectionStyle() {
+      const style = {
+        border: '1px solid #2196f3 !important',
+        color: '#2196f3',
+        opacity: '1',
+        pointerEvents: 'auto'
+      }
+      if (this.getTestConnectionDisableStatus) {
+        style.opacity = '.5'
+        style.pointerEvents = 'none'
+      }
+      return style
     }
   },
   watch: {
