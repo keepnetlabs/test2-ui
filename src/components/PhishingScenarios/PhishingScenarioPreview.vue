@@ -153,9 +153,11 @@ export default {
             fromAddress,
             name,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            attachment: {
-              name: phishingFileName
-            }
+            attachment: phishingFileName
+              ? {
+                  name: phishingFileName
+                }
+              : null
           }
           this.emailTemplate = template
 

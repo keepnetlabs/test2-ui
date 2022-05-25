@@ -91,7 +91,7 @@ export default {
     }
   },
   created() {
-    if (!this.getCompaniesSearchPermissions) {
+    if (!this.getCompaniesSearchPermissions && this.getCompanyGroupsSearchPermissions) {
       this.tab = 'company-company-groups'
     }
   },

@@ -248,10 +248,9 @@ export default {
       const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
       const { formData } = refCampaignManagerCampaignInfo
       const { refForm } = refCampaignManagerCampaignInfo.$refs
-
       switch (this.step) {
         case 1:
-          if (refForm.validate()) {
+          if (refForm.validate() && !formData?.targetGroupResourceIds?.length) {
             const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
               (item) => item.value
             )
@@ -282,7 +281,12 @@ export default {
                 response.data.data.results
               this.changeStep()
             })
-          } else this.showErrorMessage(refForm)
+          } else {
+            if (!formData?.targetGroupResourceIds?.length) {
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+            }
+            this.showErrorMessage(refForm)
+          }
           break
         case 2:
           this.setActionButtonDisability(true)

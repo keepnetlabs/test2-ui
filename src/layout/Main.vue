@@ -519,7 +519,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getAuditLogSearchPermission"
+              v-if="getJobLogsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
@@ -882,7 +882,8 @@ export default {
       getCompaniesLeftMenuPermissions: 'permissions/getCompaniesLeftMenuPermissions',
       getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
       getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
-      getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission'
+      getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission',
+      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'

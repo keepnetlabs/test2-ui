@@ -47,7 +47,7 @@ export default {
     })
   },
   created() {
-    if (!this.isDomainRender) {
+    if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
       this.tab = 'DNSServices'
     }
   },
