@@ -44,7 +44,6 @@ import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  LABEL_STORE,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -78,7 +77,7 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
-            label: labels.SIEMSettingName,
+            label: labels.IntegrationName,
             sortable: true,
             show: true,
             type: 'text',
@@ -96,17 +95,6 @@ export default {
             type: 'text',
             fixed: false,
             width: 240,
-            filterableType: 'text'
-          },
-          {
-            property: 'apiUrl',
-            align: 'left',
-            editable: false,
-            label: labels.ApiURL,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 260,
             filterableType: 'text'
           },
           {
