@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       CONSTANTS: {
-        title: 'SIEM Settings',
+        title: 'SIEM Integrations',
         subtitle: 'Manage SIEM Integrations'
       },
       isShowDeleteDialog: false,
