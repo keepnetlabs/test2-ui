@@ -172,8 +172,17 @@
         </div>
       </template>
       <template #datatable-row-actions="{scope}">
-        <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
-        <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+        <TargetUserRowActionsEditButton :scope="scope" @on-click="handleEditTargetUsers" />
+        <RowActionsMenu>
+          <v-list>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :text="tableOptions.rowActions[2].name"
+              :icon="tableOptions.rowActions[2].icon"
+            />
+            <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+          </v-list>
+        </RowActionsMenu>
       </template>
     </datatable>
   </div>
@@ -209,14 +218,18 @@ import {
   columnFilterCleared,
   createCustomFieldColumns
 } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
-import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
+import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 
 export default {
   name: 'People',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetUserRowActionsDeleteButton,
     TargetUserRowActionsEditButton,

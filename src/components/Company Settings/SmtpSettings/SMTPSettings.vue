@@ -65,40 +65,20 @@
           </div>
         </template> -->
         <template #datatable-row-actions="{ scope }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                @click.native="handleEditAction(scope.row)"
-                :disabled="getDisabledStatusOfEdit(scope.row)"
-                class="btn-hover mr-1"
-                icon
-                :id="`${tableOptions.rowActions[0].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                v-on="on"
-              >
-                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[0].name }}</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                @click.native="handleDeleteAction(scope.row)"
-                class="btn-hover"
-                icon
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                v-on="on"
-              >
-                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[1].name }}</span>
-          </v-tooltip>
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[0].disabled"
+            @on-click="handleEditAction(scope.row)"
+          />
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            @on-click="handleDeleteAction(scope.row)"
+          />
           <!-- <v-menu bottom left offset-y transition="scale-transition">
             <template v-slot:activator="{ on }">
               <v-btn class="btn-hover" icon v-on="on">
@@ -165,9 +145,11 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 export default {
   name: 'SMTPSettings',
   components: {
+    DefaultButtonRowAction,
     DeleteSmtpSettings,
     CompanySettingsHeader,
     DataTable,
@@ -325,7 +307,6 @@ export default {
       this.changeMultipleDeleteDisability()
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -368,12 +349,6 @@ export default {
         this.isEdit = false
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
-    },
-    getDisabledStatusOfEdit({ isOwner } = {}) {
-      return this.tableOptions.rowActions[0].disabled || !isOwner
-    },
-    getDisabledStatusOfDelete({ isOwner } = {}) {
-      return this.tableOptions.rowActions[1].disabled || !isOwner
     },
     exportSmtpSettingsList(downloadTypes) {
       downloadTypes.exportTypes.map((exportType) => {

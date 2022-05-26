@@ -363,14 +363,6 @@ export default {
       this.selectedPlaybookId = selectedPlaybookId
       return (this.showPlaybookModal = !this.showPlaybookModal)
     },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getInvestigationList()
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,

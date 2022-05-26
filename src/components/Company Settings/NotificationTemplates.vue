@@ -71,52 +71,31 @@
           </div>
         </template> -->
         <template #datatable-row-actions="{ scope }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                :id="`${tableOptions.rowActions[0].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                class="btn-hover mr-1"
-                icon
-                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
-                @click.native="handleEdit(scope.row)"
-              >
-                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[0].name }}</span>
-          </v-tooltip>
-          <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list class="v-cart-dropdown-list el-table__action-buttons scenarios__row-actions">
-              <v-list-item
-                :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'POST')"
-              >
-                <v-list-item-title @click="handleDuplicate(scope.row, true)">
-                  <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                :id="`${tableOptions.rowActions[2].id}-${scope.$index}`"
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
-              >
-                <v-list-item-title @click="handleDelete(scope.row, true)">
-                  <v-icon class="pr-3">{{ tableOptions.rowActions[2].icon }}</v-icon>
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
+          <DefaultButtonRowAction
+            :scope="scope"
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :disabled="tableOptions.rowActions[0].disabled"
+            @on-click="handleEdit(scope.row)"
+          />
+          <RowActionsMenu>
+            <v-list>
+              <DefaultMenuRowAction
+                :scope="scope"
+                :disabled="tableOptions.rowActions[1].disabled"
+                :icon="tableOptions.rowActions[1].icon"
+                :text="tableOptions.rowActions[1].name"
+                @on-click="handleDuplicate(scope.row, true)"
+              />
+              <DefaultMenuRowAction
+                :scope="scope"
+                :disabled="tableOptions.rowActions[2].disabled"
+                :icon="tableOptions.rowActions[2].icon"
+                :text="tableOptions.rowActions[2].name"
+                @on-click="handleDelete(scope.row, true)"
+              />
             </v-list>
-          </v-menu>
+          </RowActionsMenu>
           <!-- <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
@@ -210,9 +189,15 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
   name: 'NotificationTemplates',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
+    DefaultButtonRowAction,
     NewNotificationTemplate,
     DeleteNotificationTemplateModal,
     DataTable,

@@ -101,31 +101,17 @@
           :scope="scope"
           @on-edit="handleEditBtnClick"
         />
-        <v-menu bottom left offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              style="margin-top: -18px;"
-              :id="`btn-dots--row-actions-list-${scope.$index}`"
-              class="btn-hover ml-1"
-              icon
-            >
-              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical </v-icon>
-            </v-btn>
-          </template>
+        <RowActionsMenu>
           <v-list>
-            <v-list-item
-              :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
-              @click="handleAddGroup(scope.row)"
-            >
-              <v-list-item-title>
-                <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
-                <span>{{ tableOptions.rowActions[1].name }}</span>
-              </v-list-item-title>
-            </v-list-item>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              @on-click="handleAddGroup(scope.row)"
+            />
             <TargetGroupRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
           </v-list>
-        </v-menu>
+        </RowActionsMenu>
       </template>
     </datatable>
   </div>
@@ -156,13 +142,17 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
 import TargetGroupRowActionsDeleteButton from '@/components/SmallComponents/TargetGroupRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
   name: 'Groups',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetGroupRowActionsDeleteButton,
     TargetUserRowActionsEditButton,
@@ -264,13 +254,7 @@ export default {
             icon: 'mdi-pencil',
             id: 'btn-edit--target-users-group-row-actions',
             action: 'edit',
-            isNotShow: true,
-            checkDisability(row) {
-              return (
-                !row.isEditable ||
-                !this.$store.getters['permissions/getTargetGroupsEditPermissions']
-              )
-            }
+            isNotShow: true
           },
           {
             name: 'Add users to group',
@@ -282,13 +266,7 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
-            id: 'btn-delete--target-users-people-row-actions',
-            disabled(row) {
-              return (
-                !this.$store.getters['permissions/getTargetGroupsDeletePermissions'] ||
-                !row.isEditable
-              )
-            }
+            id: 'btn-delete--target-users-people-row-actions'
           }
         ],
         extendedViewOptions: {

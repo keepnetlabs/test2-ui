@@ -42,7 +42,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import {
   exportCampaignJobUserEmailClicked,
   searchCampaignJobUserEmailClicked

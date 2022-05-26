@@ -118,8 +118,8 @@ import {
   columnFilterCleared,
   createCustomFieldColumns
 } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
-import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/TargetUserRowActionsRemoveFromGroupButton'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
+import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsRemoveFromGroupButton'
 export default {
   name: 'TargetGroupUsersTable',
   components: {

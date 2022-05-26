@@ -597,11 +597,7 @@
                             v-on="on"
                             class="btn-hover"
                             icon
-                            :disabled="
-                              rowActions[0].checkDisability
-                                ? rowActions[0].checkDisability(scope.row)
-                                : rowActions[0].disabled
-                            "
+                            :disabled="rowActions[0].disabled"
                             :id="`${rowActions[0].id}-${
                               scope.$index
                             }-${Math.random().toString().substring(2)}`"
