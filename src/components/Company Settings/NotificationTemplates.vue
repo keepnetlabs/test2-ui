@@ -386,7 +386,7 @@ export default {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
             id: 'btn-duplicate--notification-template-row-actions',
-            action: 'handleDuplicate',
+            action: 'handleDuplicate'
             // disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
