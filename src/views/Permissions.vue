@@ -67,36 +67,20 @@
           @editPermissions="editPermissions"
         >
           <template #datatable-row-actions="{ scope }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click.native="editPermissions(scope.row)"
-                  :disabled="getDisabledStatusOfEdit(scope.row)"
-                  class="btn-hover mr-1"
-                  icon
-                  :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
-                  v-on="on"
-                >
-                  <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ tableOptions.rowActions[0].name }}</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  :disabled="getDisabledStatusOfDelete(scope.row)"
-                  @click.native="handleDelete(scope.row)"
-                  class="btn-hover"
-                  icon
-                  :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
-                  v-on="on"
-                >
-                  <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ tableOptions.rowActions[1].name }}</span>
-            </v-tooltip>
+            <DefaultButtonRowAction
+              :icon="tableOptions.rowActions[0].icon"
+              :text="tableOptions.rowActions[0].name"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[0].disabled"
+              @on-click="editPermissions(scope.row)"
+            />
+            <DefaultButtonRowAction
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[1].disabled"
+              @on-click="handleDelete(scope.row)"
+            />
           </template>
         </data-table>
       </div>
@@ -127,10 +111,12 @@ import AppDialog from '../components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'Permission',
   components: {
+    DefaultButtonRowAction,
     NewPermissions,
     DataTable,
     AppDialogFooter,
@@ -265,13 +251,11 @@ export default {
       getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
     })
   },
+  created() {
+    this.getPermissions()
+    this.getDatatableList()
+  },
   methods: {
-    getDisabledStatusOfEdit({ isOwner } = {}) {
-      return this.tableOptions.rowActions[0].disabled || !isOwner
-    },
-    getDisabledStatusOfDelete({ isOwner } = {}) {
-      return this.tableOptions.rowActions[1].disabled || !isOwner
-    },
     handleEditAction({ resourceId } = {}) {
       if (this.getSystemRolesUpdatePermission) {
         this.isEdit = true
@@ -451,10 +435,6 @@ export default {
         this.$refs.permissionsModal.closeOverlay()
       }
     }
-  },
-  created() {
-    this.getPermissions()
-    this.getDatatableList()
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
-  <v-list-item :disabled="disabled" @click="$emit('on-click', scope)">
+  <v-list-item :disabled="isDisabled" @click="$emit('on-click', scope)">
     <v-list-item-title>
-      <v-icon :disabled="disabled" class="pr-3">{{ icon }}</v-icon>
+      <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
       <span>{{ text }}</span>
     </v-list-item-title>
   </v-list-item>
@@ -22,6 +22,19 @@ export default {
     },
     disabled: {
       type: Boolean
+    },
+    checkIsOwnerProperty: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    isDisabled() {
+      const { row } = this.scope
+      if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
+        return this.disabled || !row.isOwner
+      }
+      return this.disabled
     }
   }
 }

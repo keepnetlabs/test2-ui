@@ -102,15 +102,13 @@
           @on-edit="handleEditBtnClick"
         />
         <RowActionsMenu>
-          <v-list>
-            <DefaultMenuRowAction
-              :scope="scope"
-              :icon="tableOptions.rowActions[1].icon"
-              :text="tableOptions.rowActions[1].name"
-              @on-click="handleAddGroup(scope.row)"
-            />
-            <TargetGroupRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
-          </v-list>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            @on-click="handleAddGroup(scope.row)"
+          />
+          <TargetGroupRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
         </RowActionsMenu>
       </template>
     </datatable>

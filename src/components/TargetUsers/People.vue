@@ -174,14 +174,12 @@
       <template #datatable-row-actions="{scope}">
         <TargetUserRowActionsEditButton :scope="scope" @on-click="handleEditTargetUsers" />
         <RowActionsMenu>
-          <v-list>
-            <DefaultMenuRowAction
-              :scope="scope"
-              :text="tableOptions.rowActions[2].name"
-              :icon="tableOptions.rowActions[2].icon"
-            />
-            <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
-          </v-list>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :text="tableOptions.rowActions[2].name"
+            :icon="tableOptions.rowActions[2].icon"
+          />
+          <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
         </RowActionsMenu>
       </template>
     </datatable>

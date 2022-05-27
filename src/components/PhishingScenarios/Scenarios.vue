@@ -78,149 +78,45 @@
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
     >
-      <template v-slot:datatable-row-actions="{ scope }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              :id="`btn-edit--scenarios-row-action-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              v-on="on"
-              :disabled="tableOptions.rowActions[0].disabled"
-              @click="handleFastLaunch(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-menu bottom left offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn class="btn-hover" icon v-on="on">
-              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <v-list class="v-cart-dropdown-list el-table__action-buttons scenarios__row-actions">
-            <v-tooltip
-              bottom
-              :z-index="1010"
-              v-if="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-            >
-              <template v-slot:activator="{ on: onTooltip }">
-                <div v-on="onTooltip">
-                  <v-list-item
-                    :id="`btn-status--scenarios-row-action-${
-                      scope.$index
-                    }-0-${Math.random().toString().substring(2)}`"
-                    class="sub-menu-el"
-                    :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                    @click="handleEdit(scope.row, false)"
-                  >
-                    <v-list-item-title>
-                      <v-icon
-                        :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                        class="pr-3"
-                        >mdi-pencil</v-icon
-                      >
-                      <span>Edit</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                </div>
-              </template>
-              <span>You are not authorized to edit this scenario</span>
-            </v-tooltip>
-            <v-list-item
-              v-else
-              :id="`btn-status--scenarios-row-action-${
-                scope.$index
-              }-0-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-              @click="handleEdit(scope.row, false)"
-            >
-              <v-list-item-title>
-                <v-icon
-                  :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                  class="pr-3"
-                  >mdi-pencil</v-icon
-                >
-                <span>Edit</span>
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :id="`btn-status--scenarios-row-action-${
-                scope.$index
-              }-0-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[2].disabled"
-              @click="handlePreview(scope.row)"
-            >
-              <v-list-item-title @click="() => {}">
-                <v-icon class="pr-3">{{ 'mdi-eye' }}</v-icon>
-                <span>Preview</span>
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :id="`btn-duplicate--scenarios-row-action-${
-                scope.$index
-              }-1-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[3].disabled"
-            >
-              <v-list-item-title @click="handleEdit(scope.row, true)">
-                <v-icon class="pr-3">mdi-content-copy</v-icon>
-                <span>Duplicate</span>
-              </v-list-item-title>
-            </v-list-item>
-
-            <v-tooltip
-              bottom
-              :z-index="1010"
-              v-if="tableOptions.rowActions[4].disabled || !scope.row.isOwner"
-            >
-              <template v-slot:activator="{ on: onTooltip }">
-                <div v-on="onTooltip">
-                  <v-list-item
-                    :id="`btn-delete--scenarios-row-action-${
-                      scope.$index
-                    }-1-${Math.random().toString().substring(3)}`"
-                    class="sub-menu-el"
-                    :disabled="tableOptions.rowActions[4].disabled || !scope.row.isOwner"
-                  >
-                    <v-list-item-title @click="handleActionDelete(scope.row)">
-                      <v-icon
-                        :disabled="tableOptions.rowActions[4].disabled || !scope.row.isOwner"
-                        class="pr-3"
-                        >mdi-delete</v-icon
-                      >
-                      <span>{{ labels.Delete }}</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                </div>
-              </template>
-              <span>You are not authorized to edit this scenario</span>
-            </v-tooltip>
-            <v-list-item
-              v-else
-              :id="`btn-delete--scenarios-row-action-${
-                scope.$index
-              }-1-${Math.random().toString().substring(3)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[4].disabled || !scope.row.isOwner"
-            >
-              <v-list-item-title @click="handleActionDelete(scope.row)">
-                <v-icon
-                  :disabled="tableOptions.rowActions[4].disabled || !scope.row.isOwner"
-                  class="pr-3"
-                  >mdi-delete</v-icon
-                >
-                <span>{{ labels.Delete }}</span>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleFastLaunch(scope.row)"
+        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            @on-click="handleEdit(scope.row, false)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            @on-click="handlePreview(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[3].disabled"
+            :icon="tableOptions.rowActions[3].icon"
+            :text="tableOptions.rowActions[3].name"
+            @on-click="handleEdit(scope.row, true)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[4].disabled"
+            :icon="tableOptions.rowActions[4].icon"
+            :text="tableOptions.rowActions[4].name"
+            @on-click="handleActionDelete(scope.row)"
+          />
+        </RowActionsMenu>
       </template>
     </data-table>
   </div>
@@ -249,18 +145,25 @@ import {
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { mapGetters } from 'vuex'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    DefaultMenuRowAction,
+    RowActionsMenu,
+    DefaultButtonRowAction,
     PhishingScenarioPreview,
     PhishingScenariosFastLaunch,
     DataTable,
     DeleteScenario,
     NewScenario
   },
+  mixins: [useCallForLanguagesForTableFilter],
   data() {
     return {
       languageFilterOptions: [],
@@ -399,7 +302,7 @@ export default {
           },
           {
             name: 'Duplicate',
-            icon: 'mdi-eye',
+            icon: 'mdi-content-copy',
             action: 'handlePreview',
             disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
           },
@@ -456,29 +359,6 @@ export default {
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    callForLanguages() {
-      const languageColumnIndex = this.tableOptions.columns.findIndex(
-        (column) => column.property === PROPERTY_STORE.LANGUAGE
-      )
-      if (languageColumnIndex !== -1) {
-        LookupLocalStorage.getSingle(21).then((response) => {
-          this.languageFilterOptions =
-            response?.map((language) => ({
-              text: language.name,
-              value: language.resourceId
-            })) || []
-          this.$set(this.tableOptions.columns, languageColumnIndex, {
-            ...this.tableOptions.columns[languageColumnIndex],
-            filterableItems: this.languageFilterOptions
-          })
-          this.$nextTick(() => {
-            if (this?.$refs?.refScenariosList) {
-              this.$refs.refScenariosList.reRenderColumns()
-            }
-          })
-        })
-      }
     },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
@@ -642,7 +522,7 @@ export default {
     }
   },
   created() {
-    this.callForLanguages()
+    this.callForLanguages('refScenariosList')
     getScenarioDataDetails()
       .then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {

@@ -52,40 +52,20 @@
       @addAction="handleAdd"
     >
       <template #datatable-row-actions="{scope}">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[0].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover mr-1"
-              icon
-              :disabled="!getDomainUpdatePermissions"
-              @click.native="handleEdit(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[1].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              :disabled="!getDomainDeletePermissions"
-              @click.native="handleActionDelete(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[1].name }}</span>
-        </v-tooltip>
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEdit(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          @on-click="handleActionDelete(scope.row)"
+        />
       </template>
     </data-table>
   </div>
@@ -107,10 +87,12 @@ import DeleteServiceModal from '@/components/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/Domains/NewEditDomain'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'DomainList',
   components: {
+    DefaultButtonRowAction,
     NewEditDomain,
     DataTable,
     DeleteServiceModal

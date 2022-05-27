@@ -64,34 +64,19 @@
     </template>
     <template v-if="hasRowActions" #datatable-row-actions="{scope}">
       <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
-      <v-menu bottom left offset-y transition="scale-transition">
-        <template v-slot:activator="{ on }">
-          <v-btn
-            v-on="on"
-            style="margin-top: -18px;"
-            :id="`btn-dots--row-actions-list-${scope.$index}`"
-            class="btn-hover ml-1"
-            icon
-          >
-            <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical </v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item
-            :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
-            @click="handleAddToAnExistingGroup(scope.row)"
-          >
-            <v-list-item-title>
-              <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
-              <span>{{ tableOptions.rowActions[1].name }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <TargetUserRowActionsRemoveFromGroupButton
-            :scope="scope"
-            @on-remove="handleRemoveToGroup"
-          />
-        </v-list>
-      </v-menu>
+      <RowActionsMenu>
+        <DefaultMenuRowAction
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          @on-click="handleAddToAnExistingGroup(scope.row)"
+        />
+        <TargetUserRowActionsRemoveFromGroupButton
+          :scope="scope"
+          @on-remove="handleRemoveToGroup"
+        />
+      </RowActionsMenu>
     </template>
   </DataTable>
 </template>
@@ -120,9 +105,13 @@ import {
 } from '@/utils/helperFunctions'
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
 import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsRemoveFromGroupButton'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
     TargetUserRowActionsRemoveFromGroupButton,
     TargetUserRowActionsEditButton,
     DataTable

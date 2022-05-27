@@ -119,14 +119,12 @@
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :table="tableData"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
@@ -139,7 +137,6 @@
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
-      @disable="handleDisable"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportEmailTemplates"
@@ -153,135 +150,38 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
-      <template v-slot:datatable-row-actions="{ scope }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              @click="handlePreview(scope.row)"
-              :id="`btn-edit--emailTemplates-row-action-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              v-on="on"
-              :disabled="tableOptions.rowActions[0].disabled"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-menu bottom left offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn class="btn-hover" icon v-on="on">
-              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <v-list class="v-cart-dropdown-list el-table__action-buttons emailTemplates__row-actions">
-            <v-tooltip
-              bottom
-              :z-index="1010"
-              v-if="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-            >
-              <template v-slot:activator="{ on: onTooltip }">
-                <div v-on="onTooltip">
-                  <v-list-item
-                    :id="`btn-status--emailTemplates-row-action-${
-                      scope.$index
-                    }-0-${Math.random().toString().substring(2)}`"
-                    class="sub-menu-el"
-                    :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                    @click="handleEdit(scope.row, false)"
-                  >
-                    <v-list-item-title @click="() => {}">
-                      <v-icon
-                        :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                        class="pr-3"
-                        >{{ 'mdi-pencil' }}</v-icon
-                      >
-                      <span>Edit</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                </div>
-              </template>
-              <span>You are not authorized to edit this scenario</span>
-            </v-tooltip>
-            <v-list-item
-              v-else
-              :id="`btn-status--emailTemplates-row-action-${
-                scope.$index
-              }-0-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-              @click="handleEdit(scope.row, false)"
-            >
-              <v-list-item-title @click="() => {}">
-                <v-icon
-                  :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
-                  class="pr-3"
-                  >{{ 'mdi-pencil' }}</v-icon
-                >
-                <span>Edit</span>
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :id="`btn-duplicate--emailTemplates-row-action-${
-                scope.$index
-              }-1-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[2].disabled"
-            >
-              <v-list-item-title @click="handleEdit(scope.row, true)">
-                <v-icon class="pr-3">mdi-content-copy</v-icon>
-                <span>Duplicate</span>
-              </v-list-item-title>
-            </v-list-item>
-            <v-tooltip
-              bottom
-              :z-index="1010"
-              v-if="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
-            >
-              <template v-slot:activator="{ on: onTooltip }">
-                <div v-on="onTooltip">
-                  <v-list-item
-                    :id="`btn-delete--emailTemplates-row-action-${
-                      scope.$index
-                    }-1-${Math.random().toString().substring(3)}`"
-                    class="sub-menu-el"
-                    :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
-                  >
-                    <v-list-item-title @click="handleActionDelete(scope.row)">
-                      <v-icon
-                        :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
-                        class="pr-3"
-                        >mdi-delete</v-icon
-                      >
-                      <span>{{ labels.Delete }}</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                </div>
-              </template>
-              <span>You are not authorized to edit this scenario</span>
-            </v-tooltip>
-            <v-list-item
-              v-else
-              :id="`btn-delete--emailTemplates-row-action-${
-                scope.$index
-              }-1-${Math.random().toString().substring(3)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
-            >
-              <v-list-item-title @click="handleActionDelete(scope.row)">
-                <v-icon
-                  :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
-                  class="pr-3"
-                  >mdi-delete</v-icon
-                >
-                <span>{{ labels.Delete }}</span>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :scope="scope"
+          :icon="tableOptions.rowActions[0].icon"
+          :disabled="tableOptions.rowActions[0].disable"
+          :text="tableOptions.rowActions[0].name"
+          @on-click="handlePreview(scope.row)"
+        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            @on-click="handleEdit(scope.row, false)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            @on-click="handleEdit(scope.row, true)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[3].disabled"
+            :icon="tableOptions.rowActions[3].icon"
+            :text="tableOptions.rowActions[3].name"
+            @on-click="handleActionDelete(scope.row)"
+          />
+        </RowActionsMenu>
       </template>
     </data-table>
   </div>
@@ -317,10 +217,17 @@ import * as Validations from '@/utils/validations'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { mapGetters } from 'vuex'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    DefaultMenuRowAction,
+    RowActionsMenu,
+    DefaultButtonRowAction,
     DatatableLoading,
     KEmailPreview,
     DataTable,
@@ -330,6 +237,7 @@ export default {
     AppDialogFooter,
     AttachmentsPreview
   },
+  mixins: [useCallForLanguagesForTableFilter],
   data() {
     return {
       attachmentName: '',
@@ -477,7 +385,7 @@ export default {
             disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
           },
           {
-            name: labels.Disable,
+            name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'disable',
             disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
@@ -527,6 +435,10 @@ export default {
       getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
     })
   },
+  created() {
+    this.callForLanguages('refEmailTemplatesList')
+    this.getDatatableList()
+  },
   methods: {
     onShowRenameAttachmentModal() {
       this.isRenameAttachmentModalVisible = true
@@ -568,27 +480,6 @@ export default {
         this.onCloseRenameAttachmentModal()
       }
     },
-    callForLanguages() {
-      const languageColumnIndex = this.tableOptions.columns.findIndex(
-        (column) => column.property === PROPERTY_STORE.LANGUAGE
-      )
-      if (languageColumnIndex !== -1) {
-        LookupLocalStorage.getSingle(21).then((response) => {
-          this.languageFilterOptions =
-            response?.map((language) => ({
-              text: language.name,
-              value: language.resourceId
-            })) || []
-          this.$set(this.tableOptions.columns, languageColumnIndex, {
-            ...this.tableOptions.columns[languageColumnIndex],
-            filterableItems: this.languageFilterOptions
-          })
-          this.$nextTick(() => {
-            this.$refs.refEmailTemplatesList.reRenderColumns()
-          })
-        })
-      }
-    },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -623,36 +514,6 @@ export default {
       this.resetPageNumber()
       this.getDatatableList()
     },
-    //   callForLookups(filterValues) {
-    //     getLandingPageFormDetails().then((response) => {
-    //       this.$set(
-    //         this.tableOptions.columns[1],
-    //         'filterableItems',
-    //         response.data.data.methodTypes.map((item) => item.text)
-    //       )
-    //       this.$set(
-    //         this.tableOptions.columns[2],
-    //         'filterableItems',
-    //         response.data.data.difficultyTypes.map((item) => item.text)
-    //       )
-    //       // this.$set(
-    //       //   this.tableOptions.columns[6],
-    //       //   'filterableItems',
-    //       //   response.data.data.languages.map((item) => item.text)
-    //       // )
-    //       this.$refs.refLandingPageList?.reRenderColumns(filterValues || {})
-    //       this.landingPageData = response.data.data
-    //     })
-    //   }
-    // },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getDatatableList()
-    },
     handleDeleteMultiple(selections) {
       selections.forEach((item) => {
         this.handleDelete(item)
@@ -662,8 +523,7 @@ export default {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+        pageNumber: pageNumber
       }
       this.getDatatableList()
     },
@@ -676,8 +536,8 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refEmailTemplatesList.$refs.elTableRef.toggleRowSelection(row, false)
       deleteIntegration(row.resourceId).then(() => {
+        this.$refs.refEmailTemplatesList.unSelectRow(row)
         this.getDatatableList()
       })
     },
@@ -715,16 +575,6 @@ export default {
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.emailTemplateId = row.resourceId
-    },
-    handleDisable(row) {
-      disableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
-    },
-    handleEnable(row) {
-      enableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
     },
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newEmailTemplate) {
@@ -786,7 +636,6 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
-            this.totalNumberOfRecords = totalNumberOfRecords
           })
           .catch(() => {
             this.tableData = []
@@ -811,10 +660,6 @@ export default {
       )
       this.getDatatableList()
     }
-  },
-  created() {
-    this.callForLanguages()
-    this.getDatatableList()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)

@@ -5,7 +5,9 @@
         <v-icon>mdi-dots-vertical </v-icon>
       </v-btn>
     </template>
-    <slot></slot>
+    <v-list>
+      <slot></slot>
+    </v-list>
   </v-menu>
 </template>
 

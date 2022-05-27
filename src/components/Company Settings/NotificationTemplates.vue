@@ -79,22 +79,20 @@
             @on-click="handleEdit(scope.row)"
           />
           <RowActionsMenu>
-            <v-list>
-              <DefaultMenuRowAction
-                :scope="scope"
-                :disabled="tableOptions.rowActions[1].disabled"
-                :icon="tableOptions.rowActions[1].icon"
-                :text="tableOptions.rowActions[1].name"
-                @on-click="handleDuplicate(scope.row, true)"
-              />
-              <DefaultMenuRowAction
-                :scope="scope"
-                :disabled="tableOptions.rowActions[2].disabled"
-                :icon="tableOptions.rowActions[2].icon"
-                :text="tableOptions.rowActions[2].name"
-                @on-click="handleDelete(scope.row, true)"
-              />
-            </v-list>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :disabled="tableOptions.rowActions[1].disabled"
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              @on-click="handleDuplicate(scope.row, true)"
+            />
+            <DefaultMenuRowAction
+              :scope="scope"
+              :disabled="tableOptions.rowActions[2].disabled"
+              :icon="tableOptions.rowActions[2].icon"
+              :text="tableOptions.rowActions[2].name"
+              @on-click="handleDelete(scope.row, true)"
+            />
           </RowActionsMenu>
           <!-- <v-tooltip bottom>
             <template v-slot:activator="{ on }">
