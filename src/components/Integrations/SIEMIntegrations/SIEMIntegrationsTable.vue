@@ -68,7 +68,7 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
-            label: labels.SIEMSettingName,
+            label: labels.IntegrationName,
             sortable: true,
             show: true,
             type: 'text',
@@ -86,17 +86,6 @@ export default {
             type: 'text',
             fixed: false,
             width: 240,
-            filterableType: 'text'
-          },
-          {
-            property: 'apiUrl',
-            align: 'left',
-            editable: false,
-            label: labels.ApiURL,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 260,
             filterableType: 'text'
           },
           {

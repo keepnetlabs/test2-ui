@@ -332,7 +332,7 @@ export default {
         targetGroupResourceIds: [],
         phishingScenarioResourceId: '',
         scheduleTypeId: '1',
-        duration: 3,
+        duration: 365,
         scheduledDate: '',
         scheduledDateTimeZoneId: ''
       },
