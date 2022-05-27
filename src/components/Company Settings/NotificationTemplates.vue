@@ -321,18 +321,18 @@ export default {
             isEditable: true,
             filterableType: 'date'
           },
-          {
-            property: PROPERTY_STORE.TYPE,
-            align: 'left',
-            label: labels.Type,
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 125,
-            isEditable: true,
-            filterableType: 'text'
-          },
+          // {
+          //   property: PROPERTY_STORE.TYPE,
+          //   align: 'left',
+          //   label: labels.Type,
+          //   fixed: false,
+          //   sortable: true,
+          //   show: true,
+          //   type: 'text',
+          //   width: 125,
+          //   isEditable: true,
+          //   filterableType: 'text'
+          // },
           {
             property: PROPERTY_STORE.CREATEDBY,
             align: 'left',
