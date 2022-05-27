@@ -250,7 +250,7 @@ export default {
       const { refForm } = refCampaignManagerCampaignInfo.$refs
       switch (this.step) {
         case 1:
-          if (refForm.validate() && !formData?.targetGroupResourceIds?.length) {
+          if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
             const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
               (item) => item.value
             )
@@ -294,7 +294,7 @@ export default {
             name: formData.name,
             phishingScenarioResourceId: this.selectedScenario.resourceId,
             scheduleTypeId: '1',
-            duration: 3,
+            duration: 365,
             targetGroupResourceIds: formData.targetGroupResourceIds.map((item) => item.value),
             distributionTypeId: '1',
             distributionSmtpDelayEvery: 20,
