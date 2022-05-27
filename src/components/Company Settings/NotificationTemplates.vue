@@ -84,7 +84,7 @@
                 }-${Math.random().toString().substring(2)}`"
                 class="btn-hover mr-1"
                 icon
-                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
+                :disabled="!scope.row.isOwner || tableOptions.rowActions[0].disabled"
                 @click.native="handleEdit(scope.row)"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -102,7 +102,6 @@
               <v-list-item
                 :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
                 class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'POST')"
               >
                 <v-list-item-title @click="handleDuplicate(scope.row, true)">
                   <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -112,7 +111,7 @@
               <v-list-item
                 :id="`${tableOptions.rowActions[2].id}-${scope.$index}`"
                 class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+                :disabled="!scope.row.isOwner || tableOptions.rowActions[2].disabled"
               >
                 <v-list-item-title @click="handleDelete(scope.row, true)">
                   <v-icon class="pr-3">{{ tableOptions.rowActions[2].icon }}</v-icon>
@@ -385,10 +384,10 @@ export default {
           },
           {
             name: 'Duplicate',
-            icon: 'mdi-eye',
+            icon: 'mdi-content-copy',
             id: 'btn-duplicate--notification-template-row-actions',
             action: 'handleDuplicate',
-            disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
+            // disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
             name: 'Delete',

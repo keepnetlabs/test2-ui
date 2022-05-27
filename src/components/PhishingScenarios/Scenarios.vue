@@ -408,7 +408,7 @@ export default {
           },
           {
             name: 'Duplicate',
-            icon: 'mdi-eye',
+            icon: 'mdi-content-copy',
             action: 'handlePreview',
             disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
           },

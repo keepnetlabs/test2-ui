@@ -500,7 +500,7 @@ const store = {
       return state?.notificationTemplatesPermissions?.CREATE?.hasPermission
     },
     getNotificationTemplatesUpdatePermissions(state) {
-      return state?.notificationTemplatesPermissions?.UPDATE?.hasPermission
+      return state?.notificationTemplatesPermissions?.EDIT?.hasPermission
     },
     getNotificationTemplatesDeletePermissions(state) {
       return state?.notificationTemplatesPermissions?.DELETE?.hasPermission
