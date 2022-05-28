@@ -295,8 +295,10 @@ export default {
         } = response
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
-            this.formValues['availableForRequests'] = getAvailableForListFromBackend(value)
-            this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
+            if (value.length) {
+              this.formValues['availableForRequests'] = getAvailableForListFromBackend(value)
+              this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
+            }
             continue
           }
           if (key === 'template') {
