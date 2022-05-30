@@ -20,7 +20,7 @@
     @input="handleTagItemChange"
   >
     <template #selection="{ item, index }">
-      <v-chip v-if="item.trim().length > 0" small class="ml-0 my-1">
+      <v-chip v-if="isValidItem(item)" small class="ml-0 my-1">
         <span class="mr-2">
           {{ item }}
         </span>
@@ -67,6 +67,9 @@ export default {
     }
   },
   methods: {
+    isValidItem(item) {
+      return item?.trim().length > 0
+    },
     handleRemoveTag(index) {
       this.tags.splice(index, 1)
     },
