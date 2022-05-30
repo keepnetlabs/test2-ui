@@ -29,7 +29,17 @@
     @refreshAction="callForData"
     @on-view-report="handleViewReport"
     @on-delete="handleDelete"
-  />
+  >
+    <template v-slot:datatable-custom-column="{ scope, col }">
+      <template v-if="scope.column.property === columns.USER_STATS.property">
+        <DataTableChart
+          :scope="scope"
+          :col="col"
+          :chartOptions="getChartOptionsForRow(scope.row)"
+        />
+      </template>
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -40,6 +50,7 @@ import { COLUMNS } from './utils'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'
+import DataTableChart from '@/components/DataTableComponents/DataTableChart'
 
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -49,7 +60,7 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 import { callForCampaignReports, exportCampaignReports } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignReportsTable',
-  components: { DataTable },
+  components: { DataTable, DataTableChart },
   mixins: [useLoading],
   props: {
     justShowReportAction: {
@@ -63,6 +74,7 @@ export default {
         id: 'campaign-manager-clicked-data-table',
         ascending: 'ascending'
       },
+      columns: COLUMNS,
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -139,6 +151,21 @@ export default {
     this.callForData()
   },
   methods: {
+    getChartOptionsForRow(row) {
+      if (row.methodTypeId === 3) {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.OpenedAttachment],
+          showTooltipLine: true
+        }
+      } else {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
+          showTooltipLine: true
+        }
+      }
+    },
     callForData() {
       this.setLoading(true)
       callForCampaignReports(this.axiosPayload)
@@ -151,18 +178,26 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => ({
-            ...row,
-            campaignStatus: [
+          this.tableData = results.map((row, index) => {
+            const campaignStatus = [
               row['totalNoResponseCount'],
               row['totalClickedCount'],
-              row['totalOpenedCount'],
-              row['totalSubmittedCount'],
-              row['totalAttachmentOpenedCount']
-            ],
-            progress:
-              Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) || 0
-          }))
+              row['totalOpenedCount']
+            ]
+            if (index % 2 === 0) {
+              campaignStatus.push(row['totalSubmittedCount'])
+            } else {
+              campaignStatus.push(row['totalAttachmentOpenedCount'])
+            }
+            return {
+              ...row,
+              campaignStatus,
+              methodTypeId: index % 2 === 0 ? 3 : 2,
+              progress:
+                Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) ||
+                0
+            }
+          })
         })
         .finally(this.setLoading)
     },
