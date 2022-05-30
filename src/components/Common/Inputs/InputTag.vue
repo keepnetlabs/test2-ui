@@ -6,6 +6,7 @@
     :search-input.sync="tagSearch"
     :items="items"
     :class="['hide-caret', className]"
+    :slots="{ selection: true }"
     chips
     deletable-chips
     outlined
@@ -14,9 +15,21 @@
     persistent-hint
     small-chips
     :return-object="false"
+    class="px-0"
     placeholder="Enter tags and press enter key"
     @input="handleTagItemChange"
-  />
+  >
+    <template #selection="{ item, index }">
+      <v-chip v-if="isValidItem(item)" small class="ml-0 my-1">
+        <span class="mr-2">
+          {{ item }}
+        </span>
+        <v-icon size="19" style="margin-right: -8px;" @click="handleRemoveTag(index)"
+          >mdi-close-circle</v-icon
+        >
+      </v-chip>
+    </template>
+  </k-select>
 </template>
 
 <script>
@@ -54,6 +67,12 @@ export default {
     }
   },
   methods: {
+    isValidItem(item) {
+      return item?.trim().length > 0
+    },
+    handleRemoveTag(index) {
+      this.tags.splice(index, 1)
+    },
     handleTagItemChange(newTags) {
       if (newTags.length < this.tags.length) {
         this.tags = newTags
@@ -81,8 +100,10 @@ export default {
           }
         }
         this.$nextTick(() => {
-          this.$refs.refTags.$refs.refComponent.initialValue = this.tags
-          this.$refs.refTags.$refs.refComponent.lazyValue = this.tags
+          if (this.$refs.refTags.$refs.refComponent) {
+            this.$refs.refTags.$refs.refComponent.initialValue = this.tags
+            this.$refs.refTags.$refs.refComponent.lazyValue = this.tags
+          }
         })
       }
     }

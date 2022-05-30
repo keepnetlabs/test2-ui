@@ -1,12 +1,15 @@
 <template>
-  <div class="campaign-manager-summary-card">
+  <CardLoading v-if="isLoading" :loading="isLoading" />
+  <div class="campaign-manager-summary-card" v-else>
     <slot name="header">
       <div class="campaign-manager-summary-card__header">
         <div class="campaign-manager-summary-card__header-left">
           <v-icon color="#2196f3" medium>
             {{ icon }}
           </v-icon>
-          <div class="campaign-manager-summary-card__title ml-4">{{ title }}</div>
+          <div class="campaign-manager-summary-card__title ml-4">
+            {{ title }}
+          </div>
         </div>
         <slot name="header-right">
           <v-btn
@@ -36,7 +39,9 @@
               <div v-if="!hideLabel" class="campaign-manager-summary-card__body-item-key">
                 {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
               </div>
-              <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
+              <div class="campaign-manager-summary-card__body-item-value">
+                {{ val }}
+              </div>
             </slot>
           </div>
         </div>
@@ -46,8 +51,11 @@
 </template>
 
 <script>
+import CardLoading from '@/components/SkeletonLoading/IRCardLoading'
+
 export default {
   name: 'CampaignManagerSummaryCard',
+  components: { CardLoading },
   props: {
     icon: {
       type: String
@@ -66,6 +74,10 @@ export default {
       type: Boolean
     },
     detailable: {
+      type: Boolean,
+      default: false
+    },
+    isLoading: {
       type: Boolean,
       default: false
     }

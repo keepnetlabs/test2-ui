@@ -95,14 +95,30 @@
           >{{ item.name }}</span
         >
       </template>
+      <template v-slot:datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="rowActions[0].icon"
+          :text="rowActions[0].name"
+          :scope="scope"
+          :disabled="rowActions[0].disabled"
+          @on-click="investigationDetails(scope)"
+        />
+        <DefaultButtonRowAction
+          :icon="rowActions[1].icon"
+          :text="rowActions[1].name"
+          :scope="scope"
+          :disabled="rowActions[1].disabled || scope.row.status !== 'Running'"
+          @on-click="stopInvestigationFunc(scope)"
+        />
+      </template>
     </datatable>
   </KContainer>
 </template>
 
 <script>
-import Datatable from '../components/DataTable'
-import newInvestigation from '../components/Investigation/NewInvestigation'
-import AppDialog from '../components/AppDialog'
+import Datatable from '@/components/DataTable'
+import newInvestigation from '@/components/Investigation/NewInvestigation'
+import AppDialog from '@/components/AppDialog'
 import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
 import {
@@ -110,7 +126,7 @@ import {
   getStoreValue,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
@@ -118,6 +134,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import KContainer from '@/components/KContainer/KContainer'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'Investigations',
@@ -128,7 +145,8 @@ export default {
     newInvestigation,
     AppDialog,
     CreateOrEditRule,
-    AppModal
+    AppModal,
+    DefaultButtonRowAction
   },
   props: {
     selectedEmail: {
