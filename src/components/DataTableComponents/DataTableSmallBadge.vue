@@ -112,7 +112,7 @@ export default {
 
         let maximumRenderedBadgeCount = 0
         for (let text of this.badges) {
-          let multiplyBy = text.length > 15 ? 7.5 : text.length > 5 ? 8 : 10
+          let multiplyBy = text.length > 15 ? 7.5 : text.length > 5 ? 8.6 : 11
           const itemWidth = Math.floor(text.length * multiplyBy) + 5
           if (itemWidth > totalWidth) {
             break
