@@ -8,6 +8,7 @@
         :id="item.id"
         :name="item.name"
         :label="item.label"
+        :disabled="isLoading"
       >
         <span slot="label">
           <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />

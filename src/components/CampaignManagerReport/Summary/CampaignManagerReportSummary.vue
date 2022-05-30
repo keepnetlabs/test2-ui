@@ -15,16 +15,21 @@
         :items="getCampaignSummaryItems"
         :helper-data="getCampaignSummaryHelperData"
         :is-test-campaign="isTestCampaign"
+        :isLoading="isLoading"
       />
       <CampaignManagerReportEmailDelivery
         class="ml-4"
         :items="getEmailDeliveryData"
         :helper-data="getEmailDeliveryHelperData"
+        :isLoading="isLoading"
       />
     </div>
     <div class="campaign-manager-report-summary__general-info mt-4"></div>
-    <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
-    <CampaignManagerReportSummaryLandingPage :form-data="getLandingPageTemplateData" />
+    <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" :isLoading="isLoading" />
+    <CampaignManagerReportSummaryLandingPage
+      :form-data="getLandingPageTemplateData"
+      :isLoading="isLoading"
+    />
   </div>
 </template>
 
@@ -33,7 +38,7 @@ import CampaignManagerReportSummaryHeader from '@/components/CampaignManagerRepo
 import CampaignManagerReportSummaryCards from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
 import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
-import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
+import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
