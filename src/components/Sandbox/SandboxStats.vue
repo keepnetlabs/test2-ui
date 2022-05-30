@@ -6,22 +6,22 @@
       is-server-side
       filterable
       options
+      no-padding-bottom
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'sandboxStatsList'"
       :columns="tableOptions.columns"
       :selectable="false"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :download-button="tableOptions.downloadButton"
       :is-show-download-modal="isSandboxStatsDownloadModal"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportSandboxStats"
@@ -30,14 +30,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
     ></data-table>
   </div>
 </template>
@@ -54,11 +50,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxStats, getSandboxStats } from '@/api/sandbox'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'sandboxStats',
   components: {
@@ -87,9 +79,9 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SANDBOXSTATS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SANDBOXSTATS,
         columns: [
           {
             property: PROPERTY_STORE.COMPANYNAME,
@@ -172,7 +164,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: 'No stats available'
         }
@@ -303,16 +294,11 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SANDBOXSTATS, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -325,64 +311,22 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getDatatableList()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SANDBOXSTATS)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refsandboxStatsList.filterValues = savedFilter.filterValues
-          this.$refs.refsandboxStatsList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refsandboxStatsList.filterValues = {}
-      this.$refs.refsandboxStatsList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SANDBOXSTATS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -406,7 +350,6 @@ export default {
       this.bodyData = { ...this.bodyData, filter }
       this.getDatatableList()
     },
-    handleAdd() {},
     exportSandboxStats({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -459,7 +402,6 @@ export default {
         .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -468,18 +410,11 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SANDBOXSTATS))
-  },
-  mounted() {
-    this.getDefaultFilterAndSearch()
+    this.getDatatableList()
   }
 }
 </script>

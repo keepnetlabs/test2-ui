@@ -1,37 +1,29 @@
 <template>
-  <div class="k-container">
-    <v-layout wrap style="min-height: 80vh;">
-      <v-col class="k-container__tab-container" cols="12">
-        <v-card class="k-card">
-          <template v-if="!$route.params.groupId && $route.name === 'Companies'">
-            <el-tabs v-model="tab">
-              <el-tab-pane
-                v-if="getCompaniesSearchPermissions"
-                label="Companies"
-                name="company-companies"
-                id="company-companies-content"
-              >
-                <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
-              /></el-tab-pane>
-              <el-tab-pane
-                v-if="getCompanyGroupsSearchPermissions"
-                label="Company Groups"
-                name="company-company-groups"
-                id="company-company-groups-content"
-              >
-                <company-group-list
-                  :isLoadState="isLoadState"
-                  v-if="tab === 'company-company-groups'"
-              /></el-tab-pane>
-            </el-tabs>
-          </template>
-          <template v-else>
-            <company-group-details :groupId="$route.params.groupId" />
-          </template>
-        </v-card>
-      </v-col>
-    </v-layout>
-  </div>
+  <KContainer id="companies">
+    <template v-if="!$route.params.groupId && $route.name === 'Companies'">
+      <el-tabs v-model="tab">
+        <el-tab-pane
+          v-if="getCompaniesSearchPermissions"
+          label="Companies"
+          name="company-companies"
+          id="company-companies-content"
+        >
+          <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
+        /></el-tab-pane>
+        <el-tab-pane
+          v-if="getCompanyGroupsSearchPermissions"
+          label="Company Groups"
+          name="company-company-groups"
+          id="company-company-groups-content"
+        >
+          <company-group-list :isLoadState="isLoadState" v-if="tab === 'company-company-groups'"
+        /></el-tab-pane>
+      </el-tabs>
+    </template>
+    <template v-else>
+      <company-group-details :groupId="$route.params.groupId" />
+    </template>
+  </KContainer>
 </template>
 
 <script>
@@ -39,10 +31,11 @@ import CompanyList from '@/components/Companies/CompanyList'
 import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
 import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
 export default {
   name: 'Companies',
   props: {},
-  components: { CompanyGroupDetails, CompanyGroupList, CompanyList },
+  components: { KContainer, CompanyGroupDetails, CompanyGroupList, CompanyList },
   data() {
     return {
       tab: 'company-companies',

@@ -96,10 +96,10 @@
             />
             <data-table-filter-options
               v-if="showFilterOptions"
-              :is-active="isFiltered"
+              :is-active="isColumnFilterActive"
               :hide-action-options="hideActionOptions"
-              @set-default-search="$emit('set-default-search', search, filterValues)"
-              @restore-default-search="$emit('restore-default-search')"
+              @set-default-search="handleSetDefaultSearch"
+              @restore-default-search="handleRestoreDefaultSearch"
               @clear-filters="handleClearFilters"
             />
           </div>
@@ -452,7 +452,7 @@
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
-              :key="col.property + ind + columnKey"
+              :key="col.property + ind"
               :align="col.align"
               :fixed="col.fixed"
               :label="col.label"
@@ -558,6 +558,7 @@
                 <data-table-filter
                   v-if="col.filterableType"
                   v-model="filterValues[col.filterableCustomFieldName || col.property]"
+                  :key="filterKey"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
@@ -596,11 +597,7 @@
                             v-on="on"
                             class="btn-hover"
                             icon
-                            :disabled="
-                              rowActions[0].checkDisability
-                                ? rowActions[0].checkDisability(scope.row)
-                                : rowActions[0].disabled
-                            "
+                            :disabled="rowActions[0].disabled"
                             :id="`${rowActions[0].id}-${
                               scope.$index
                             }-${Math.random().toString().substring(2)}`"
@@ -949,7 +946,11 @@ import {
   getDataTableFieldLabel,
   copyToClipboard
 } from '@/utils/functions'
-import { columnStandards } from '@/model/constants/commonConstants'
+import {
+  columnStandards,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -985,9 +986,21 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    axiosPayload: {
+      type: Object,
+      default: () => ({})
+    },
     showDatatableRowActions: {
       type: Boolean,
       default: true
+    },
+    savedFiltersLocalStorageKey: {
+      type: String,
+      default: ''
+    },
+    savedTableSettingsLocalStorageKey: {
+      type: String,
+      default: ''
     },
     isShowDownloadModal: {
       default: false
@@ -1246,10 +1259,6 @@ export default {
     settingsPopupStyle: {
       type: Object
     },
-    isColumnFilterActive: {
-      type: Boolean,
-      default: false
-    },
     id: {
       type: String
     },
@@ -1275,6 +1284,15 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isColumnFilterActive() {
+      return !!(
+        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length ||
+        (this.axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length &&
+          !this.axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.every(
+            (filterItem) => filterItem.Value === '' || filterItem.value === ''
+          ))
+      )
+    },
     shouldRenderTable() {
       const { tableData, isColumnFilterActive, loading } = this
       return (tableData && tableData.length) || isColumnFilterActive || loading
@@ -1285,9 +1303,6 @@ export default {
         : this.showfilteredData
         ? this.filteredData
         : this.tableData
-    },
-    isFiltered() {
-      return Object.keys(this.filterValues).length > 0
     },
     isExtendedViewRender() {
       return (
@@ -1373,7 +1388,7 @@ export default {
       isSelectedAllEver
     } = this.persistentState
     return {
-      columnKey: 'column-key',
+      filterKey: 'filter-key',
       cacheChecks: false,
       filteredData,
       renderedColumns,
@@ -1422,7 +1437,8 @@ export default {
       isDownloadMenuOpen: false,
       isMultipleEdit: false,
       firstOpenSettingsTimeout: null,
-      renderFixedItemsTimeout: null
+      renderFixedItemsTimeout: null,
+      initialAxiosPayload: JSON.parse(JSON.stringify(this.axiosPayload))
     }
   },
   watch: {
@@ -1591,6 +1607,9 @@ export default {
     }
   },
   created() {
+    //init default filters
+    this.initDefaultFilters(false)
+
     //Init column standardisation
     if (this.persistentState) this.setPersistentStateToDataValues()
 
@@ -1633,12 +1652,45 @@ export default {
     window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    initDefaultFilters(isReRenderFilters = true) {
+      if (this.savedFiltersLocalStorageKey) {
+        const savedFilter = JSON.parse(localStorage.getItem(this.savedFiltersLocalStorageKey))
+        if (!savedFilter) return
+        const { filter, search, filterValues } = savedFilter
+        this.$set(this.axiosPayload, 'filter', filter)
+        this.search = search
+        this.filterValues = filterValues
+        if (isReRenderFilters) this.reRenderFilters()
+      }
+    },
     onEnterPressed(event) {
       event.preventDefault()
-      return
+    },
+    handleSetDefaultSearch() {
+      const { search, filterValues, savedFiltersLocalStorageKey, axiosPayload } = this
+      if (savedFiltersLocalStorageKey) {
+        localStorage.setItem(
+          savedFiltersLocalStorageKey,
+          JSON.stringify({
+            filter: axiosPayload?.filter,
+            filterValues,
+            search
+          })
+        )
+      }
+      this.$emit('set-default-search', search, filterValues)
+    },
+    handleRestoreDefaultSearch() {
+      this.initDefaultFilters()
+      this.$emit('restore-default-search')
+      this.handleRefresh()
     },
     handleClearFilters() {
       this.search = ''
+      this.filterValues = {}
+      this.reRenderFilters()
+      this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      this.handleRefresh()
       this.$emit('clear-filters')
     },
     handleRowClick(row) {
@@ -1715,9 +1767,11 @@ export default {
         firstColFixed,
         lastColFixed
       } = this.persistentState
-
-      if (this.storedTableSettings) {
-        this.setStoredTableSettings()
+      const storedTableSettings =
+        JSON.parse(localStorage.getItem(this.savedTableSettingsLocalStorageKey)) ||
+        this.storedTableSettings
+      if (storedTableSettings) {
+        this.setStoredTableSettings(storedTableSettings)
       } else {
         if (!firstColFixed) this.columns[0].fixed = false
         if (!lastColFixed) this.actionFixed = false
@@ -1994,11 +2048,15 @@ export default {
       this.handleTableSettingsChange()
     },
     handleTableSettingsChange() {
-      this.$emit('on-table-settings-change', {
+      const tableSettings = {
         renderedColumns: this.renderedColumns,
         firstColFixed: this.firstColFixed,
         lastColFixed: this.lastColFixed
-      })
+      }
+      if (this.savedTableSettingsLocalStorageKey) {
+        localStorage.setItem(this.savedTableSettingsLocalStorageKey, JSON.stringify(tableSettings))
+      }
+      this.$emit('on-table-settings-change', tableSettings)
     },
     /**
      * This function sets rendered columns on table
@@ -2130,8 +2188,8 @@ export default {
         }
       }
     },
-    setStoredTableSettings() {
-      const { firstColFixed, lastColFixed, renderedColumns } = this.storedTableSettings
+    setStoredTableSettings(storedTableSettings) {
+      const { firstColFixed, lastColFixed, renderedColumns } = storedTableSettings
       if (!firstColFixed) {
         this.firstColFixed = firstColFixed
         this.columns[0].fixed = false
@@ -2935,9 +2993,6 @@ export default {
             ...Object.values(this.getServerSideSelectionParams())
           )
           break
-        case 'rulesListTable':
-          this.$emit('deleteFunction', selections)
-          break
         default:
           if (this.isServerSideSelection) {
             this.$emit(
@@ -2979,8 +3034,12 @@ export default {
     reRenderColumns(filterValues = {}) {
       this.$nextTick(() => {
         this.filterValues = filterValues
-        this.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
       })
+    },
+    reRenderFilters(filterValues) {
+      if (filterValues) this.filterValues = filterValues
+      this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
     }
   }
 }

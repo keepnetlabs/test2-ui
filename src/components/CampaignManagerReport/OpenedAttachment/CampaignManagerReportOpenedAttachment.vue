@@ -12,7 +12,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoOpenedAttachment"
-      subtitle="List of users who oepend the attachment"
+      subtitle="List of users who opened the attachment"
     />
     <CampaignManagerReportOpenedAttachmentItemDetailDialog
       v-if="isShowDetailDialog"

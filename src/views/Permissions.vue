@@ -4,12 +4,12 @@
       v-if="newPermissionsModalStatus"
       ref="permissionsModal"
       :status="newPermissionsModalStatus"
-      @closeOverlay="togglePermissionModalStatus"
-      @closeOverlayWithUpdate="closeOverlayWithUpdate"
       :resourceId="resourceId"
       :isEdit="isEdit"
       :permissions="permissions"
       :permissionEditData="permissionEditData"
+      @closeOverlay="togglePermissionModalStatus"
+      @closeOverlayWithUpdate="closeOverlayWithUpdate"
     />
     <app-dialog
       v-if="deleteDialog"
@@ -43,64 +43,44 @@
           filterable
           options
           :loading="loading"
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
-          :refName="'permissionList'"
           :columns="tableOptions.columns"
-          :stored-table-settings="storedTableSettings"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
           :addButton="tableOptions.addButton"
           :rowActions="tableOptions.rowActions"
+          :axios-payload.sync="bodyData"
+          :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+          :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
           :download-button="{ show: false }"
           @openPermissionModal="openPermissionModal"
           @refreshAction="getDatatableList"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @set-default-search="handleSetDefaultSearch"
-          @restore-default-search="handleRestoreDefaultSearch"
-          @clear-filters="handleClearFilters"
           @server-side-page-number-changed="serverSidePageNumberChanged"
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
           @delete="handleDelete"
           @editPermissions="editPermissions"
-          @on-table-settings-change="handleSetRenderedColumns"
         >
           <template #datatable-row-actions="{ scope }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click.native="editPermissions(scope.row)"
-                  :disabled="getDisabledStatusOfEdit(scope.row)"
-                  class="btn-hover mr-1"
-                  icon
-                  :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
-                  v-on="on"
-                >
-                  <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ tableOptions.rowActions[0].name }}</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  :disabled="getDisabledStatusOfDelete(scope.row)"
-                  @click.native="handleDelete(scope.row)"
-                  class="btn-hover"
-                  icon
-                  :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
-                  v-on="on"
-                >
-                  <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ tableOptions.rowActions[1].name }}</span>
-            </v-tooltip>
+            <DefaultButtonRowAction
+              :icon="tableOptions.rowActions[0].icon"
+              :text="tableOptions.rowActions[0].name"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[0].disabled"
+              @on-click="editPermissions(scope.row)"
+            />
+            <DefaultButtonRowAction
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[1].disabled"
+              @on-click="handleDelete(scope.row)"
+            />
           </template>
         </data-table>
       </div>
@@ -129,16 +109,14 @@ import {
 } from '@/api/permissions'
 import AppDialog from '../components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'Permission',
   components: {
+    DefaultButtonRowAction,
     NewPermissions,
     DataTable,
     AppDialogFooter,
@@ -150,12 +128,12 @@ export default {
       deletePermissionName: null,
       deletePermissionId: null,
       selectedItem: null,
-      storedTableSettings: null,
       loading: true,
       labels,
       tableData: [],
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES,
         columns: [
           {
             property: PROPERTY_STORE.ROLENAME,
@@ -261,7 +239,6 @@ export default {
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       newPermissionsModalStatus: false,
-      selectedPermissionId: null,
       isEdit: false,
       resourceId: null,
       permissions: [],
@@ -274,13 +251,11 @@ export default {
       getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
     })
   },
+  created() {
+    this.getPermissions()
+    this.getDatatableList()
+  },
   methods: {
-    getDisabledStatusOfEdit({ isOwner } = {}) {
-      return this.tableOptions.rowActions[0].disabled || !isOwner
-    },
-    getDisabledStatusOfDelete({ isOwner } = {}) {
-      return this.tableOptions.rowActions[1].disabled || !isOwner
-    },
     handleEditAction({ resourceId } = {}) {
       if (this.getSystemRolesUpdatePermission) {
         this.isEdit = true
@@ -291,15 +266,12 @@ export default {
     closeDeleteDialog() {
       this.deleteDialog = false
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES, JSON.stringify(tableSettings))
-    },
     handleDeleteDialog() {
       deletePermission(this.deletePermissionId)
         .then(() => {
           this.$refs.refPermissionList.unSelectRow(this.selectedItem)
           this.deleteDialog = false
-          this.getDefaultFilterAndSearch()
+          this.getDatatableList()
         })
         .catch(() => {
           this.$store.dispatch(
@@ -380,7 +352,7 @@ export default {
         this.isEdit = false
       }
       this.newPermissionsModalStatus = !this.newPermissionsModalStatus
-      this.getDefaultFilterAndSearch()
+      this.getDatatableList()
     },
     togglePermissionModalStatus() {
       if (this.newPermissionsModalStatus) {
@@ -391,20 +363,6 @@ export default {
     },
     openPermissionModal() {
       this.togglePermissionModalStatus()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION))
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refPermissionList.filterValues = savedFilter.filterValues
-          this.$refs.refPermissionList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
@@ -435,41 +393,12 @@ export default {
       filterItems.forEach(myFunction)
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refPermissionList.filterValues = {}
-      this.$refs.refPermissionList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfFilter = JSON.parse(JSON.stringify(this.bodyData.filter))
-      copyOfFilter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION,
-        JSON.stringify({
-          filter: copyOfFilter,
-          filterValues
-        })
-      )
     },
     getDatatableList() {
       this.loading = true
@@ -491,7 +420,6 @@ export default {
         })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -500,26 +428,13 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.checkIsColumnFilterActive()
       this.getDatatableList()
     },
     checkIfCanClosePermissionsModal() {
       if (this.$refs.permissionsModal) {
         this.$refs.permissionsModal.closeOverlay()
       }
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
-  },
-  created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES)
-    )
-  },
-  mounted() {
-    this.getPermissions()
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>

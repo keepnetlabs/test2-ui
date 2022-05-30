@@ -15,12 +15,10 @@
       <v-form ref="refFormAddToGroup" lazy-validation>
         <Datatable
           ref="refGroupDataList"
-          refName="refNameTableAddToGroup"
           is-server-side
           filterable
           options
           selectable
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :show-filter-options="false"
           :loading="isLoading"
           :count-row="countRow"
@@ -32,6 +30,7 @@
           :table="tableData"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
+          :axios-payload.sync="payload"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @downloadEvent="handleTableDownload"
@@ -75,11 +74,7 @@ import Datatable from '../../components/DataTable'
 import labels from '@/model/constants/labels'
 
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
@@ -106,7 +101,6 @@ export default {
       selectedArray: [],
       showTable: false,
       tableOptions: {
-        isColumnFilterActive: false,
         columns: [
           {
             property: 'name',
@@ -194,7 +188,6 @@ export default {
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -282,17 +275,12 @@ export default {
     },
     columnFilterChanged(filter) {
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = true
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.getTableData()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

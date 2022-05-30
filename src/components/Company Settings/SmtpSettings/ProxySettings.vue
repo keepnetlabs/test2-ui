@@ -27,18 +27,17 @@
         is-server-side
         :loading="loading"
         :table="tableData"
-        :refName="'proxySettingsList'"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :download-button="tableOptions.downloadButton"
-        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :axios-payload.sync="bodyOptions"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         @addNewProxySetting="toggleProxyModalStatus"
         @onEmptyBtnClicked="toggleProxyModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
@@ -46,10 +45,6 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchProxySettings"
         @downloadEvent="exportProxySettingsList"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
-        @on-table-settings-change="handleSetRenderedColumns"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
@@ -65,40 +60,20 @@
           </div>
         </template> -->
         <template #datatable-row-actions="{ scope }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                @click.native="handleEditAction(scope.row)"
-                :disabled="getDisabledStatusOfEdit(scope.row)"
-                class="btn-hover mr-1"
-                icon
-                :id="`${tableOptions.rowActions[0].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                v-on="on"
-              >
-                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[0].name }}</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                @click.native="handleDeleteAction(scope.row)"
-                class="btn-hover"
-                icon
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                v-on="on"
-              >
-                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[1].name }}</span>
-          </v-tooltip>
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[0].disabled"
+            @on-click="handleEditAction(scope.row)"
+          />
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            @on-click="handleDeleteAction(scope.row)"
+          />
           <!-- <v-menu bottom left offset-y transition="scale-transition">
             <template v-slot:activator="{ on }">
               <v-btn class="btn-hover" icon v-on="on">
@@ -159,19 +134,16 @@ import DataTable from '@/components/DataTable'
 import NewProxySettings from '@/components/Company Settings/ProxySettings/NewProxySettings'
 import { deleteProxySettings, exportProxySettings, searchProxySettings } from '@/api/proxySettings'
 import DeleteProxySettings from '@/components/Company Settings/ProxySettings/DeleteProxySettings'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 export default {
   name: 'PROXYSettings',
   components: {
+    DefaultButtonRowAction,
     CompanySettingsHeader,
     DataTable,
     NewProxySettings,
@@ -182,9 +154,7 @@ export default {
       tableData: [],
       loading: false,
       selectedDeleteProxySettings: null,
-      isRestoredOrClearedFilters: false,
       selectedEditProxySettings: null,
-      storedTableSettings: null,
       isEdit: false,
       tableOptions: {
         columns: [
@@ -271,8 +241,8 @@ export default {
             width: 180
           }
         ],
-        isColumnFilterActive: false,
-        pageSizes: [5, 10, 25],
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.PROXY_SETTINGS,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -336,7 +306,6 @@ export default {
   },
   methods: {
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -352,27 +321,22 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyOptions.pageNumber = pageNumber
       this.callForSearchProxySettings()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyOptions.ascending = order === 'ascending'
       this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
       this.callForSearchProxySettings()
     },
     resetPageNumber() {
-      //generic
       this.bodyOptions.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyOptions.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -388,43 +352,16 @@ export default {
       }
       this.newProxyModalStatus = !this.newProxyModalStatus
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS, JSON.stringify(tableSettings))
-    },
-    getDisabledStatusOfEdit() {
-      return this.tableOptions.rowActions[0].disabled
-    },
-    getDisabledStatusOfDelete() {
-      return this.tableOptions.rowActions[1].disabled
-    },
-    exportProxySettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.bodyOptions.filter)),
-        this.$refs.refProxySettingsList,
-        'CreateTime'
-      )
-      if (this.$refs.refProxySettingsList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-          (item) => item.FieldName === 'StatusName'
-        ).FieldName = 'Status'
-      }
-      if (
-        this.$refs.refProxySettingsList.sortProps &&
-        this.$refs.refProxySettingsList.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-      exportTypes.map((exportType) => {
+    exportProxySettingsList(downloadTypes) {
+      downloadTypes.exportTypes.map((exportType) => {
         const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.bodyOptions.orderBy,
+          ascending: this.bodyOptions.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
+          filter: this.bodyOptions.filter
         }
         exportProxySettings(payload).then((response) => {
           const { data } = response
@@ -457,7 +394,6 @@ export default {
         })
         .finally(() => {
           this.loading = false
-          this.isRestoredOrClearedFilters = false
         })
     },
     handleEditAction({ resourceId } = {}) {
@@ -489,7 +425,6 @@ export default {
       this.toggleDeleteProxyModalStatus()
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.bodyOptions
@@ -501,58 +436,15 @@ export default {
         fieldName,
         this.bodyOptions
       )
-      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS,
-        JSON.stringify({
-          filter: this.bodyOptions.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
     },
     handleMultipleDelete(selections) {
       this.selectedDeleteProxySettings = selections
       this.toggleDeleteProxyModalStatus()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refProxySettingsList.filterValues = {}
-      this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.callForSearchProxySettings()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS)
-      )
-      if (savedFilter) {
-        this.bodyOptions.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refProxySettingsList.filterValues = savedFilter.filterValues
-          this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForSearchProxySettings()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyOptions)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS))
-    this.getDefaultFilterAndSearch()
+    this.callForSearchProxySettings()
   }
 }
 </script>

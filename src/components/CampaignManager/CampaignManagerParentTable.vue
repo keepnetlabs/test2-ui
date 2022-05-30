@@ -7,19 +7,19 @@
     options
     is-server-side
     is-server-side-selection
-    :refName="'campaignManagerTable'"
     :loading="isLoading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :select-event="tableOptions.selectEvent"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @on-add-button-click="toggleAddCampaignManagerModal"
     @onEmptyBtnClicked="toggleAddCampaignManagerModal"
     @columnFilterChanged="columnFilterChanged"
@@ -28,10 +28,6 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerList"
     @refreshAction="callForData"
     @handleMultipleDelete="handleMultipleDeleteOfCampaigns"
@@ -72,11 +68,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { COLUMNS } from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -86,8 +78,8 @@ import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
-import { getDefaultFilter } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -106,9 +98,6 @@ export default {
   name: 'CampaignManagerParentTable',
   components: { TheRecordsButton, DataTable, CampaignManagerRowActions },
   props: {
-    axiosPayload: {
-      type: Object
-    },
     isLoading: {
       type: Boolean,
       default: false
@@ -124,11 +113,12 @@ export default {
         id: 'campaign-manager-parent-data-table',
         ascending: 'ascending'
       },
+      axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -203,7 +193,6 @@ export default {
         const col = this.tableOptions.columns.find(
           (col) => col.property === COLUMNS.STATUS.property
         )
-
         this.$set(
           col,
           'filterableItems',
@@ -211,167 +200,83 @@ export default {
             return { ...item, value: item.text }
           })
         )
-        this.$nextTick(() => {
-          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        })
+        this?.$refs?.refTable?.reRenderFilters()
       }
     }
   },
   created() {
-    this.getStoredTableSettings()
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
-      )
-    },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
-      )
-      if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const {
-        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
-        filterValues
-      } = savedFilter
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter = filter
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
-      this.tableOptions.isColumnFilterActive = true
-      this.$nextTick(() => {
-        this.$refs.refTable.reRenderColumns(filterValues)
-      })
-    },
     callForData() {
       if (this.getCampaignManagerParentSearchPermissions) {
-        this.$nextTick(() => {
-          this.setLoading(true)
-          searchCampaignManager(this.axiosPayload)
-            .then((response) => {
-              const {
-                data: { data = [] }
-              } = response
-              const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-              this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-              this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-              this.serverSideProps.pageNumber = pageNumber
-              this.tableData = results.map((item) => {
-                const newItem = JSON.parse(JSON.stringify(item))
-                delete newItem['instanceCount']
-                newItem.targetUsers = Number(newItem.targetUsers)
-                newItem.total = Number(item['instanceCount'])
-                return newItem
-              })
+        this.setLoading(true)
+        searchCampaignManager(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            this.tableData = results.map((item) => {
+              const newItem = JSON.parse(JSON.stringify(item))
+              delete newItem['instanceCount']
+              newItem.targetUsers = Number(newItem.targetUsers)
+              newItem.total = Number(item['instanceCount'])
+              return newItem
             })
-            .finally(this.setLoading)
-        })
+          })
+          .finally(this.setLoading)
       }
     },
     setLoading(flag = false) {
       this.$emit('update:is-loading', flag)
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
-        copyOfAxiosPayload
+        this.axiosPayload
       )
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
     columnFilterCleared(fieldName) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
-        copyOfAxiosPayload
+        this.axiosPayload
       )
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageNumber = pageNumber
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageNumber = pageNumber
+      this.resetPageNumber()
       this.callForData()
     },
     serverSideSizeChanged(pageSize = 5) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageSize = pageSize
       this.resetPageNumber()
       this.callForData()
     },
     sortChanged({ order, prop } = {}) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.ascending = order === this.CONSTANTS.ascending
-      copyOfAxiosPayload.orderBy = prop
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.orderBy = prop
       this.callForData()
     },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    emitCopyOfAxiosPayload(payload) {
-      this.$emit(EMITS.UPDATE_AXIOS_PAYLOAD, payload)
-    },
-    copyAxiosPayload() {
-      return JSON.parse(JSON.stringify(this.axiosPayload))
-    },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
         return column.filterableType
       })
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 || columnFilterActive
-
       this.callForData()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
-        JSON.stringify({
-          filter: copyOfAxiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    handleClearFilters() {
-      this.$emit(EMITS.RESET_AXIOS_PAYLOAD)
-      this.$refs.refTable.reRenderColumns({})
-      this.callForData()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
-        JSON.stringify(tableSettings)
-      )
     },
     handleRecordButtonClick(row) {
       this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)

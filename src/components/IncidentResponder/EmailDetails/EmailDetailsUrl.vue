@@ -74,11 +74,9 @@
               options
               :loading="isLoading"
               :table="url['analysisList']"
-              :refName="'urlAnalysisTable'"
               :columns="columns"
               :empty="iEmpty"
               :selectEvent="selectEvent"
-              :sizeable="true"
               :download-button="downloadButton"
               @refreshAction="$emit('get-post-details')"
             >

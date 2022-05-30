@@ -1,5 +1,5 @@
 <template>
-  <div id="container--threat-sharing" class="component-threat-sharing page-wrapper">
+  <div id="container--threat-sharing" class="component-threat-sharing page-wrapper mt-1">
     <v-overlay
       id="new-community-overlay"
       ref="refNewCommunity"

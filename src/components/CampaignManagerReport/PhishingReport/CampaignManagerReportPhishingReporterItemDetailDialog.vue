@@ -20,9 +20,8 @@
         no-padding-bottom
         :show-filter-options="false"
         :is-settings-popup="false"
-        :refName="'campaignManagerOpenedTable'"
         :loading="isLoading"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :axios-payload.sync="axiosPayload"
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
@@ -59,11 +58,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { searchCampaignJobUserEmailReportedDetails } from '@/api/phishingsimulator'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'CampaignManagerReportPhishingReporterItemDetailDialog',
   components: { DataTable, AppDialog },
@@ -86,7 +81,6 @@ export default {
       serverSideProps: new ServerSideProps(),
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'ReportedTime' }),
       tableOptions: {
-        isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.DATE_REPORTED,
@@ -137,7 +131,6 @@ export default {
         .finally(this.setLoading)
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -149,7 +142,6 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -171,9 +163,6 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
-    },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
@@ -183,7 +172,6 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     handleClose() {

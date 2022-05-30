@@ -7,28 +7,24 @@
     options
     is-server-side-selection
     is-server-side
-    :refName="'campaignManagerPhishingReporterTable'"
     :loading="isLoading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :select-event="tableOptions.selectEvent"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerReportOpenedTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
@@ -51,11 +47,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'CampaignManagerReportPhishingReportTable',
   components: { DataTable },
@@ -73,10 +65,12 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       tableData: [],
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true
@@ -117,8 +111,6 @@ export default {
     }
   },
   created() {
-    this.getStoredTableSettings()
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
@@ -138,30 +130,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE
-        )
-      )
-      if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const {
-        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
-        filterValues
-      } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
-      this.$nextTick(() => {
-        this.$refs.refTable.reRenderColumns(filterValues)
-      })
-    },
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE)
-      )
-    },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -173,7 +142,6 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -195,9 +163,6 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
-    },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
@@ -207,37 +172,7 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForData()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      this.axiosPayload.filter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    handleClearFilters() {
-      this.axiosPayload = getDefaultAxiosPayload({ orderBy: 'FirstName' })
-      this.$refs.refTable.reRenderColumns({})
-      this.callForData()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE,
-        JSON.stringify(tableSettings)
-      )
     },
     exportCampaignManagerReportOpenedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

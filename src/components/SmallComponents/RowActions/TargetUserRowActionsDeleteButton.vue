@@ -1,18 +1,17 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <div style="display: inline-flex;" v-on="on">
-        <v-btn
-          v-on="on"
-          :id="`btn-delete-${scope.$index}`"
-          style="margin-bottom: -5px;"
-          icon
-          :disabled="getDisabledStatusOfAction"
-          @click.native="$emit('on-delete', scope.row)"
-        >
-          <v-icon>{{ icon }}</v-icon>
-        </v-btn>
-      </div>
+      <v-list-item
+        v-on="on"
+        :disabled="getDisabledStatusOfAction"
+        :id="`btn-edit--target-user-${scope.$index}`"
+        @click="!getDisabledStatusOfAction && $emit('on-delete', scope.row)"
+      >
+        <v-list-item-title>
+          <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
+          <span>Delete</span>
+        </v-list-item-title>
+      </v-list-item>
     </template>
     <span>{{ getTooltipMessage }}</span>
   </v-tooltip>

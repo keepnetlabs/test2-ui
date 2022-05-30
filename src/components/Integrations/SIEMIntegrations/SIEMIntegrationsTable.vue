@@ -7,17 +7,18 @@
     options
     is-server-side
     :loading="isLoading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.empty"
     :select-event="tableOptions.selectEvent"
     :row-actions="tableOptions.rowActions"
     :addButton="tableOptions.addButton"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
     :download-button="tableOptions.downloadButton"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @deleteAction="handleDeleteRowClick"
     @handleEdit="handleEdit"
     @onEmptyBtnClicked="toggleAddOrEditModal"
@@ -27,14 +28,10 @@
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @refreshAction="callForData"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @on-table-settings-change="handleSetRenderedColumns"
   />
 </template>
 
@@ -47,14 +44,10 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { useLoading } from '@/hooks/useLoading'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { exportSIEMIntegrations, searchSIEMIntegrations } from '@/api/siemIntegrations'
 export default {
   name: 'SIEMIntegrationsTable',
@@ -69,9 +62,7 @@ export default {
     return {
       labels,
       tableData: [],
-      storedTableSettings: null,
       tableOptions: {
-        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -123,6 +114,8 @@ export default {
             filterableType: 'date'
           }
         ],
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SIEM_INTEGRATION,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SIEMIntegration,
         rowActions: [
           {
             name: labels.Edit,
@@ -170,8 +163,6 @@ export default {
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SIEMIntegration))
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
@@ -193,24 +184,6 @@ export default {
     toggleAddOrEditModal() {
       this.$emit('on-open-add-or-edit-modal')
     },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SIEM_INTEGRATION)
-      )
-      if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const {
-        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
-        filterValues
-      } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
-      this.$nextTick(() => {
-        this?.$refs?.refTable?.reRenderColumns(filterValues)
-      })
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SIEMIntegration, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -225,8 +198,6 @@ export default {
 
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 || columnFilterActive
 
       this.callForData()
     },
@@ -244,24 +215,6 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForData()
-    },
-    handleClearFilters() {
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.$refs.refTable.reRenderColumns({})
-      this.callForData()
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SIEM_INTEGRATION,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
     },
     handleSortChange({ prop, order }) {
       this.axiosPayload = { ...this.axiosPayload, orderBy: prop, ascending: order === 'ascending' }
@@ -310,7 +263,6 @@ export default {
       })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -322,11 +274,7 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.calculateIsFilterColumnActive()
       this.callForData()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }
