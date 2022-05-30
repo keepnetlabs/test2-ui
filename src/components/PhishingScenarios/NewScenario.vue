@@ -1,15 +1,5 @@
 <template>
-  <app-modal
-    :status="status"
-    icon-name="mdi-hook"
-    :title="
-      !isEdit
-        ? 'New Phishing Scenario'
-        : isDuplicate
-        ? 'Duplicate Phishing Scenario'
-        : 'Edit Phishing Scenario'
-    "
-  >
+  <app-modal :status="status" icon-name="mdi-hook" :title="getModalTitle">
     <template v-slot:overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -787,6 +777,13 @@ export default {
   },
 
   computed: {
+    getModalTitle() {
+      return !this.isEdit
+        ? 'New Phishing Scenario'
+        : this.isDuplicate
+        ? 'Duplicate Phishing Scenario'
+        : 'Edit Phishing Scenario'
+    },
     getPhishingFile() {
       return this.summaryData?.emailTemplate?.phishingFileName
         ? {
