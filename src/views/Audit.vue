@@ -1,38 +1,34 @@
 <template>
-  <div id="auditLogs" class="audit-logs">
-    <div class="audit-logs__container">
-      <div class="audit-logs__datatable">
-        <data-table
-          id="audit-data-list"
-          ref="refAuditList"
-          is-server-side
-          selectable
-          filterable
-          options
-          :loading="loading"
-          :table="tableData"
-          :columns="tableOptions.columns"
-          :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: true, search: true, sort: true }"
-          :empty="tableOptions.empty"
-          :select-event="tableOptions.selectEvent"
-          :addButton="tableOptions.addButton"
-          :download="downloadOptions"
-          :axios-payload="bodyData"
-          :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-          :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-          @refreshAction="getDatatableList"
-          @downloadEvent="exportAuditLog"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-          @server-side-page-number-changed="serverSidePageNumberChanged"
-          @server-side-size-changed="serverSideSizeChanged"
-          @searchChangedEvent="handleSearchChange"
-          @sortChangedEvent="sortChanged"
-        ></data-table>
-      </div>
-    </div>
-  </div>
+  <KContainer tabless id="audit-logs">
+    <data-table
+      id="audit-data-list"
+      ref="refAuditList"
+      is-server-side
+      selectable
+      filterable
+      options
+      :loading="loading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :addButton="tableOptions.addButton"
+      :download="downloadOptions"
+      :axios-payload="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @refreshAction="getDatatableList"
+      @downloadEvent="exportAuditLog"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
+    ></data-table>
+  </KContainer>
 </template>
 
 <script>
@@ -49,10 +45,12 @@ import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
   name: 'Audit',
   components: {
+    KContainer,
     DataTable
   },
   data() {
@@ -357,19 +355,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.audit-logs {
-  padding: 0 16px 24px 16px !important;
-  width: 100%;
-  min-height: 90vh;
-  margin-top: 10px;
-  &__container {
-    border-radius: 20px !important;
-    background: white;
-  }
-  &__datatable {
-    padding: 16px 24px 0 24px;
-  }
-}
-</style>

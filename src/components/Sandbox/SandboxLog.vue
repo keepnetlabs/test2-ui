@@ -5,6 +5,7 @@
       is-server-side
       filterable
       options
+      no-padding-bottom
       :loading="loading"
       :selectable="false"
       :table="tableData"

@@ -1,5 +1,5 @@
 <template>
-  <div id="community-page-wrapper" class="page-wrapper">
+  <div id="community-page-wrapper" class="page-wrapper mt-1">
     <div id="" class="component-threat-sharing page-wrapper">
       <v-overlay
         :value="isWantToAddNewCommunity"

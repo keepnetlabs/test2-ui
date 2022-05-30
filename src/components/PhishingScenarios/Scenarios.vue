@@ -552,12 +552,6 @@ export default {
 </script>
 
 <style lang="scss">
-.scenarios__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
 #scenarios {
   .k-stepper {
     overflow: visible;

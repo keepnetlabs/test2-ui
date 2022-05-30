@@ -1,5 +1,5 @@
 <template>
-  <div id="integrations">
+  <div>
     <v-overlay
       v-if="modalStatus"
       :value="modalStatus"
@@ -424,15 +424,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.integrations {
-  min-height: 90vh;
-}
-.integrations__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

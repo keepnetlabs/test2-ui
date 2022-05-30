@@ -1,88 +1,31 @@
 <template>
-  <div class="investigations">
-    <div class="investigations__container">
-      <new-investigation
-        v-if="isShowNewInvestigationModal"
-        ref="refNewInvestigation"
-        :status="isShowNewInvestigationModal"
-        @closeWithRoute="onAddClose"
-        @closeAdd="isShowNewInvestigationModal = false"
-        @refreshDatatable="refreshDatatable"
-      />
-      <app-dialog
-        icon="mdi-alert"
-        :status="isWantToStopInvestigation"
-        :title="labels.StopOngoingInvestigation"
-        :subtitle="labels.DoYouWantToStopInvestigation"
-        :body="labels.OnceYouStoppedInvestigation"
-        @changeStatus="isWantToStopInvestigation = false"
-      >
-        <template #app-dialog-footer>
-          <app-dialog-footer
-            cancel-button-id="btn-cancel--investigations-popup"
-            confirm-button-id="btn-stop--investigations-popup"
-            :confirm-button-disabled="stopInvestigateButtonDisabled"
-            @handleClose="isWantToStopInvestigation = false"
-            @handleConfirm="stopInvestigation"
-          />
-        </template>
-      </app-dialog>
-      <v-card class="investigations__container-card" light>
-        <datatable
-          v-bind="tableState"
-          ref="investigationTable"
-          id="investigations-data-table"
-          selectable
-          filterable
-          options
-          is-server-side
-          :loading="loading"
-          :columns="columns"
-          :table="tableData.data"
-          :rowActions="rowActions"
-          :addButton="newInvestigationButton"
-          :empty="iEmpty"
-          :selectEvent="selectEvent"
-          :chartOptions="chartOptions"
-          :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: true, search: true, sort: true }"
-          :axios-payload.sync="bodyData"
-          :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
-          :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
-          @startNewInvestigation="startNewInvestigation"
-          @stopInvestigationFunc="stopInvestigationFunc($event)"
-          @investigationDetails="investigationDetails($event)"
-          @downloadEvent="exportInvestigationList"
-          @paginationChangedEvent="paginationChangedEvent($event)"
-          @onEmptyBtnClicked="isShowNewInvestigationModal = true"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-          @refreshAction="getInvestigationList"
-          @server-side-page-number-changed="serverSidePageNumberChanged"
-          @server-side-size-changed="serverSideSizeChanged"
-          @searchChangedEvent="handleSearchChange"
-          @sortChangedEvent="sortChanged"
-        >
-          <template v-slot:datatable-custom-column="{ scope }">
-            <span
-              v-if="
-                scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
-              "
-            >
-              {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
-            </span>
-            <span
-              v-else
-              v-for="item in scope.row.matchingPlaybooks"
-              :key="item.resourceId"
-              class="popup-link"
-              @click="togglePlaybookModalWithSelected(item.resourceId)"
-              >{{ item.name }}</span
-            >
-          </template>
-        </datatable>
-      </v-card>
-    </div>
+  <KContainer tabless id="investigations">
+    <new-investigation
+      v-if="isShowNewInvestigationModal"
+      ref="refNewInvestigation"
+      :status="isShowNewInvestigationModal"
+      @closeWithRoute="onAddClose"
+      @closeAdd="isShowNewInvestigationModal = false"
+      @refreshDatatable="refreshDatatable"
+    />
+    <app-dialog
+      icon="mdi-alert"
+      :status="isWantToStopInvestigation"
+      :title="labels.StopOngoingInvestigation"
+      :subtitle="labels.DoYouWantToStopInvestigation"
+      :body="labels.OnceYouStoppedInvestigation"
+      @changeStatus="isWantToStopInvestigation = false"
+    >
+      <template #app-dialog-footer>
+        <app-dialog-footer
+          cancel-button-id="btn-cancel--investigations-popup"
+          confirm-button-id="btn-stop--investigations-popup"
+          :confirm-button-disabled="stopInvestigateButtonDisabled"
+          @handleClose="isWantToStopInvestigation = false"
+          @handleConfirm="stopInvestigation"
+        />
+      </template>
+    </app-dialog>
     <app-modal
       v-if="showPlaybookModal"
       class-name="incident-responder__playbook"
@@ -100,7 +43,60 @@
         />
       </template>
     </app-modal>
-  </div>
+    <datatable
+      v-bind="tableState"
+      ref="investigationTable"
+      id="investigations-data-table"
+      selectable
+      filterable
+      options
+      is-server-side
+      :loading="loading"
+      :columns="columns"
+      :table="tableData.data"
+      :rowActions="rowActions"
+      :addButton="newInvestigationButton"
+      :empty="iEmpty"
+      :selectEvent="selectEvent"
+      :chartOptions="chartOptions"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
+      @startNewInvestigation="startNewInvestigation"
+      @stopInvestigationFunc="stopInvestigationFunc($event)"
+      @investigationDetails="investigationDetails($event)"
+      @downloadEvent="exportInvestigationList"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @onEmptyBtnClicked="isShowNewInvestigationModal = true"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="getInvestigationList"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span
+          v-if="
+            scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
+          "
+        >
+          {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
+        </span>
+        <span
+          v-else
+          v-for="item in scope.row.matchingPlaybooks"
+          :key="item.resourceId"
+          class="popup-link"
+          @click="togglePlaybookModalWithSelected(item.resourceId)"
+          >{{ item.name }}</span
+        >
+      </template>
+    </datatable>
+  </KContainer>
 </template>
 
 <script>
@@ -121,10 +117,12 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
   name: 'Investigations',
   components: {
+    KContainer,
     AppDialogFooter,
     Datatable,
     newInvestigation,
@@ -536,22 +534,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.investigations {
-  padding: 13px 16px 16px 16px;
-  &__container {
-    min-height: 80vh;
-    &-card {
-      border-radius: 20px !important;
-      margin-top: -2px;
-      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
-      background-color: #ffffff;
-      padding: 16px 24px 0 24px;
-    }
-  }
-  .table-wrapper {
-    margin-top: 8px;
-  }
-}
-</style>

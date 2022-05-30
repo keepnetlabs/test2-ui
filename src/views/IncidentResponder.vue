@@ -1,5 +1,5 @@
 <template>
-  <div class="incident-responder-parent">
+  <div class="incident-responder-parent mt-2">
     <div class="incident-responder">
       <ReAnalyzeIncidentDialog
         v-if="showReAnalyzeIncidentDialog"

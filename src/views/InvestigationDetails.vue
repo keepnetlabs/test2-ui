@@ -1,5 +1,5 @@
 <template>
-  <div class="investigation-details-wrapper">
+  <div class="investigation-details-wrapper" style="margin-top: 6px;">
     <div
       class="investigation-details"
       v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"

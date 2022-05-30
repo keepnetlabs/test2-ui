@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-configuration">
+  <div class="mail-configuration" style="margin-top: 5px;">
     <app-modal
       v-if="status"
       ref="mail-configuration__modal"

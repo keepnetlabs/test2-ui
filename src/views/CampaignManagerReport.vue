@@ -1,34 +1,28 @@
 <template>
-  <div id="campaign-manager-report" class="k-container">
-    <v-layout id="ts-layout" wrap style="min-height: 80vh;">
-      <v-col class="k-container__tab-container" cols="12">
-        <v-card id="campaign-manager-report-card" class="k-card">
-          <el-tabs v-model="tab">
-            <el-tab-pane
-              v-for="item in tabItems"
-              v-if="item.isVisible"
-              :key="item.name"
-              :id="item.id"
-              :name="item.name"
-              :label="item.label"
-            >
-              <span slot="label">
-                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-                <template v-else> {{ item.label }} </template>
-              </span>
-              <component
-                v-if="item.name === tab"
-                :is="item.component"
-                :id="id"
-                :phishing-scenario-name="getPhishingScenarioName"
-                :form-details="formDetails"
-              />
-            </el-tab-pane>
-          </el-tabs>
-        </v-card>
-      </v-col>
-    </v-layout>
-  </div>
+  <KContainer id="campaign-manager-report">
+    <el-tabs v-model="tab">
+      <el-tab-pane
+        v-for="item in tabItems"
+        v-if="item.isVisible"
+        :key="item.name"
+        :id="item.id"
+        :name="item.name"
+        :label="item.label"
+      >
+        <span slot="label">
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+          <template v-else> {{ item.label }} </template>
+        </span>
+        <component
+          v-if="item.name === tab"
+          :is="item.component"
+          :id="id"
+          :phishing-scenario-name="getPhishingScenarioName"
+          :form-details="formDetails"
+        />
+      </el-tab-pane>
+    </el-tabs>
+  </KContainer>
 </template>
 
 <script>
@@ -42,9 +36,11 @@ import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
 import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/phishingsimulator'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
   name: 'CampaignManagerReport',
+  components: { KContainer },
   data() {
     return {
       isLoading: true,
