@@ -58,11 +58,6 @@ export default {
       tags: []
     }
   },
-  computed: {
-    console() {
-      return console
-    }
-  },
   watch: {
     tags(newVal) {
       this.$emit('input', newVal)
