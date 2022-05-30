@@ -1,5 +1,10 @@
 <template>
-  <CampaignManagerSummaryCard icon="mdi-alert-circle" :title="labels.CampaignInfo" :items="items">
+  <CampaignManagerSummaryCard
+    :isLoading="isLoading"
+    icon="mdi-alert-circle"
+    :title="labels.CampaignInfo"
+    :items="items"
+  >
     <template #TargetUsers="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
@@ -39,6 +44,10 @@ export default {
     },
     isTestCampaign: {
       type: Boolean
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
