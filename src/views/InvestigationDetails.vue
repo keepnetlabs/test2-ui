@@ -904,6 +904,7 @@
                 is-server-side-selection
                 :show-filter-options="false"
                 :refName="'investigationDetailsListTable'"
+                :manage-column-filter-status-from-parent="emailsColumnFilterStatus"
                 :columns="columns"
                 :table="investigationDetailsList"
                 :axios-payload.sync="investigationListBodyData"
@@ -1048,6 +1049,7 @@
                 id="investigationDetailsTargetUsersList"
                 ref="investigationDetailsTargetUsersList"
                 refName="investigationDetailsTargetUsersListTable"
+                :manage-column-filter-status-from-parent="targetUserColumnFilterStatus"
                 is-server-side
                 filterable
                 options
@@ -1211,6 +1213,8 @@ export default {
     progressValue: null,
     notifyMessage: null,
     notifyMessageWithDelete: null,
+    targetUserColumnFilterStatus: { status: false },
+    emailsColumnFilterStatus: { status: false },
     diffDays: null,
     totalHours: 0,
     totalMinutes: 0,
@@ -1536,6 +1540,22 @@ export default {
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
     },
+    calculateInvestigateListFilterActive() {
+      this.emailsColumnFilterStatus.status = this.isColumnFilterActive(
+        this.investigationListBodyData
+      )
+    },
+    calculateTargetUserListFilterActive() {
+      this.targetUserColumnFilterStatus.status = this.isColumnFilterActive(
+        this.investigationTargetUsersListBodyData
+      )
+    },
+    isColumnFilterActive(axiosPayload) {
+      return !!(
+        axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length > 1 ||
+        axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length
+      )
+    },
     getMailCountByFolderName(folderName = '') {
       const { statsAndMenuData } = this
       return (
@@ -1557,6 +1577,7 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumberForTargetUsers()
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
@@ -1583,6 +1604,7 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -2357,6 +2379,7 @@ export default {
     },
     columnFilterChanged(filter) {
       this.resetPageNumber()
+      this.emailsColumnFilterStatus.status = true
       this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.investigationListBodyData
@@ -2369,10 +2392,12 @@ export default {
         fieldName,
         this.investigationListBodyData
       )
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
     },
     columnFilterChangedTargetUsers(filter) {
       this.resetPageNumberForTargetUsers()
+      this.targetUserColumnFilterStatus.status = true
       this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.investigationTargetUsersListBodyData
@@ -2385,6 +2410,7 @@ export default {
         fieldName,
         this.investigationTargetUsersListBodyData
       )
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
     }
   },
