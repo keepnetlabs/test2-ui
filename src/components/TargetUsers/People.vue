@@ -164,6 +164,13 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
+                    <v-list-item @click="toggleImportLDAPModal">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-import-from-ldap"
+                          >Import from LDAP</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-list-item-group>
                 </v-list>
               </div>
@@ -248,6 +255,7 @@ export default {
     return {
       labels,
       isInitial: true,
+      isShowImportLDAPModal: false,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
@@ -412,7 +420,8 @@ export default {
       },
       addUsersItems: [
         { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
-        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
+        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' },
+        { text: 'Import from LDAP', id: 'btn-add-users-import-from-ldap--target-users-people' }
       ],
       serverSideProps: new ServerSideProps()
     }
@@ -423,6 +432,9 @@ export default {
     })
   },
   methods: {
+    toggleImportLDAPModal() {
+      this.isShowImportLDAPModal = !this.isShowImportLDAPModal
+    },
     handleViewUserGroups(selectedRow = {}) {
       this.selectedUserToViewGroups = selectedRow
       this.toggleShowingTargetUserViewTargetGroups()
@@ -479,6 +491,9 @@ export default {
           break
         case this.addUsersItems[1].text:
           this.isWantToImportFile = true
+          break
+        case this.addUsersItems[2].text:
+          this.toggleImportLDAPModal()
           break
         default:
           break
