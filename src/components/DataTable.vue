@@ -990,6 +990,10 @@ export default {
       type: Object,
       default: () => ({})
     },
+    manageColumnFilterStatusFromParent: {
+      type: Object,
+      default: null
+    },
     showDatatableRowActions: {
       type: Boolean,
       default: true
@@ -1285,6 +1289,8 @@ export default {
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
     isColumnFilterActive() {
+      if (this.manageColumnFilterStatusFromParent)
+        return this?.manageColumnFilterStatusFromParent?.status
       return !!(
         this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length ||
         (this.axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length &&

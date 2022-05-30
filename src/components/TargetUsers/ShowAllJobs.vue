@@ -1,7 +1,7 @@
 <template>
   <div>
     <datatable-loading v-if="jobLoading" :loading="jobLoading"></datatable-loading>
-    <v-expansion-panels class="my-10" popout v-model="panelIndex" v-else>
+    <v-expansion-panels popout v-model="panelIndex" v-else>
       <v-expansion-panel
         v-for="(job, index) in jobs"
         :key="index"
