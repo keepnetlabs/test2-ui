@@ -34,6 +34,8 @@
   &__body {
     width: 100%;
     position: relative;
+    max-height: 500px;
+    overflow-y: auto;
 
     .items-wrapper {
       display: flex;
