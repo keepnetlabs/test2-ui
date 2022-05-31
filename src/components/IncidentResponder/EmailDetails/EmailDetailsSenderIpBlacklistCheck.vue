@@ -15,8 +15,6 @@
       selectable
       :loading="loading"
       :table="tableData"
-      :refName="'emailDetailSenderIpBlacklistCheckRefName'"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
       :download-button="tableOptions.downloadButton"
@@ -79,7 +77,6 @@ export default {
       tableData: [],
       PROPERTY_STORE,
       tableOptions: {
-        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.ANALYSISENGINE,

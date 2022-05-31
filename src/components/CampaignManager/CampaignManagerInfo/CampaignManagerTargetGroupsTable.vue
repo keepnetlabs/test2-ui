@@ -5,15 +5,14 @@
     selectable
     filterable
     is-server-side
-    :refName="'campaignManagerTargetGroupTable'"
     :server-side-events="{ pagination: true, search: true, sort: true }"
     :server-side-props="serverSideProps"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
     :show-filter-options="false"
+    :axios-payload.sync="axiosPayload"
     :add-row-class-name="addRowClassName"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
@@ -29,11 +28,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { searchTargetGroups } from '@/api/targetUsers'
@@ -67,7 +62,6 @@ export default {
       },
       tableData: [],
       tableOptions: {
-        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -185,7 +179,7 @@ export default {
         this.$emit('update:empty', false)
       } else {
         this.highlightedRow = {}
-        if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
+        if (!this.$refs?.refTable?.isColumnFilterActive) this.$emit('update:empty', true)
       }
       this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
       this.setLoading(false)
@@ -194,7 +188,6 @@ export default {
       this.$emit('update:is-loading', val)
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -206,12 +199,10 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     searchChangedFilter(filter = []) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = filter
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -232,11 +223,6 @@ export default {
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 ||
-        this.search.length >= 1
     },
     handleRowClick(row) {
       this.highlightedRow = row

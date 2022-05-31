@@ -1,5 +1,5 @@
 <template>
-  <div id="integrations">
+  <div>
     <v-overlay
       v-if="modalStatus"
       :value="modalStatus"
@@ -32,18 +32,18 @@
       options
       is-server-side
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'integrationsList'"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
@@ -55,76 +55,38 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:datatable-row-actions="{ scope }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`btn-edit--integrations-row-action-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              :disabled="tableOptions.rowActions[0].disabled"
-              @click="handleEdit(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-menu bottom left offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn class="btn-hover" icon v-on="on">
-              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
-            <v-list-item
-              :id="`btn-status--integrations-row-action-${
-                scope.$index
-              }-0-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[1].disabled"
-            >
-              <v-list-item-title
-                @click="
-                  scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
-                "
-              >
-                <v-icon class="pr-3">{{
-                  scope.row.status === 'Active'
-                    ? 'mdi-minus-circle-outline'
-                    : 'mdi-check-circle-outline'
-                }}</v-icon>
-                <span>{{
-                  scope.row.status === labels.Active ? labels.InActive : labels.Active
-                }}</span>
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :id="`btn-delete--integrations-row-action-${
-                scope.$index
-              }-1-${Math.random().toString().substring(2)}`"
-              class="sub-menu-el"
-              :disabled="tableOptions.rowActions[2].disabled"
-            >
-              <v-list-item-title @click="handleActionDelete(scope.row)">
-                <v-icon class="pr-3">mdi-delete</v-icon>
-                <span>{{ labels.Delete }}</span>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEdit(scope.row)"
+        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="scope.row.status === labels.Active ? labels.InActive : labels.Active"
+            @on-click="
+              scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
+            "
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            @on-click="handleActionDelete(scope.row)"
+          />
+        </RowActionsMenu>
       </template>
     </data-table>
   </div>
@@ -152,14 +114,16 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 export default {
   name: 'Integrations',
   components: {
+    DefaultMenuRowAction,
+    RowActionsMenu,
+    DefaultButtonRowAction,
     DataTable,
     NewIntegration,
     DeleteIntegrationModal
@@ -177,10 +141,10 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       selectedIntegration: {},
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.INTEGRATION,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -308,9 +272,6 @@ export default {
     }
   },
   methods: {
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.INTEGRATION, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -328,7 +289,6 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -345,44 +305,6 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getDatatableList()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refIntegrationsList.filterValues = savedFilter.filterValues
-          this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refIntegrationsList.filterValues = {}
-      this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -407,7 +329,7 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refIntegrationsList.$refs.elTableRef.toggleRowSelection(row, false)
+      this.$refs.refIntegrationsList.unSelectRow(row)
       deleteIntegration(row.resourceId).then(() => {
         this.getDatatableList()
       })
@@ -486,7 +408,6 @@ export default {
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -495,28 +416,11 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
-    this.getDefaultFilterAndSearch()
+    this.getDatatableList()
   }
 }
 </script>
-
-<style lang="scss">
-.integrations {
-  min-height: 90vh;
-}
-.integrations__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

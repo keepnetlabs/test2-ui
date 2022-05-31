@@ -15,18 +15,18 @@
       filterable
       options
       is-server-side
-      :refName="'campaignManagerItemTable'"
       :loading="isLoading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="tableOptions.serverSideEvents"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :add-button="tableOptions.addButton"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @on-add-button-click="handleOnAddButtonClick"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -34,10 +34,6 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
       @refreshAction="callForData"
       @downloadEvent="exportCampaignManagerItemList"
     >
@@ -76,11 +72,7 @@
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -98,6 +90,7 @@ import {
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -107,9 +100,6 @@ export default {
   name: 'CampaignManagerItemTable',
   components: { CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
   props: {
-    axiosPayload: {
-      type: Object
-    },
     item: {
       type: Object
     },
@@ -124,16 +114,17 @@ export default {
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       CONSTANTS: {
         id: 'campaign-manager-item-data-table',
         ascending: 'ascending'
       },
       tableData: [],
       selectedRow: {},
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -190,15 +181,11 @@ export default {
             return { ...item, value: item.text }
           })
         )
-        this.$nextTick(() => {
-          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        })
+        this?.$refs?.refTable?.reRenderFilters()
       }
     }
   },
   created() {
-    this.getStoredTableSettings()
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
@@ -241,74 +228,38 @@ export default {
         })
       })
     },
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
-      )
-    },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
-      )
-      if (!savedFilter) return
-      const { filter, filterValues } = savedFilter
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter = filter
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
-      this.tableOptions.isColumnFilterActive = true
-      this.$refs.refTable.reRenderColumns(filterValues)
-    },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
-        copyOfAxiosPayload
+        this.axiosPayload
       )
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
     columnFilterCleared(fieldName) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
-        copyOfAxiosPayload
+        this.axiosPayload
       )
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageNumber = pageNumber
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageNumber = pageNumber
       this.callForData()
     },
     serverSideSizeChanged(pageSize = 5) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageSize = pageSize
       this.resetPageNumber()
       this.callForData()
     },
     sortChanged({ order } = {}) {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
       this.callForData()
     },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    emitCopyOfAxiosPayload(payload) {
-      this.$emit(EMITS.UPDATE_AXIOS_PAYLOAD, payload)
-    },
-    copyAxiosPayload() {
-      return JSON.parse(JSON.stringify(this.axiosPayload))
-    },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -316,40 +267,9 @@ export default {
         return column.filterableType
       })
 
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 || columnFilterActive
       this.callForData()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    handleClearFilters() {
-      this.$emit(EMITS.RESET_AXIOS_PAYLOAD)
-      this.$refs.refTable.reRenderColumns({})
-      this.callForData()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
-        JSON.stringify(tableSettings)
-      )
     },
     handleBackClick() {
       this.$emit(EMITS.ON_BACK_CLICK)

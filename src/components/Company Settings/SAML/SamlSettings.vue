@@ -31,15 +31,16 @@
         is-server-side
         :loading="loading"
         :table="tableData"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :axios-payload.sync="axiosPayload"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         @addNewSamlSetting="toggleNewSamlSettingsModalStatus(false)"
         @deleteAction="toggleDeletePopupStatus"
         @editAction="handleEditAction"
@@ -48,10 +49,6 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSamlSettings"
         @downloadEvent="exportSamlSettings"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
-        @on-table-settings-change="handleSetRenderedColumns"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
@@ -75,8 +72,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
   columnFilterCleared,
-  downloadExportedFile,
-  isColumnFilterActive
+  downloadExportedFile
 } from '@/utils/helperFunctions'
 import DeleteSamlSettings from '@/components/Company Settings/SAML/DeleteSamlSettings'
 import NewSamlSettings from '@/components/Company Settings/SAML/NewSamlSettings'
@@ -95,7 +91,6 @@ export default {
       loading: false,
       selectedRow: null,
       tableData: [],
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         columns: [
@@ -140,7 +135,8 @@ export default {
             filterableType: 'date'
           }
         ],
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SAML_SETTINGS,
         addButton: {
           show: true,
           action: 'addNewSamlSetting',
@@ -182,8 +178,6 @@ export default {
     }
   },
   created() {
-    this.setStoredTableSettings()
-    this.getDefaultFilterAndSearch()
     this.callForSamlSettings()
   },
   methods: {
@@ -204,7 +198,6 @@ export default {
         .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter = {}) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -216,7 +209,6 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForSamlSettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -248,60 +240,17 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForSamlSettings()
     },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS, JSON.stringify(tableSettings))
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS)
-      )
-      if (!savedFilter) {
-        return
-      }
-      const { filter, filterValues } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
-      this.$nextTick(() => {
-        this.$refs.refSamlSettings.filterValues = filterValues
-        this.$refs.refSamlSettings.columnKey = `column-key${Math.random()
-          .toString()
-          .substring(0, 5)}`
-      })
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.callForSamlSettings()
-    },
     handleEditOrNewFormSuccess() {
       this.selectedRow = null
       this.isEdit = false
       this.callForSamlSettings()
       this.toggleNewSamlSettingsModalStatus()
-    },
-    handleClearFilters() {
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.$refs.refSamlSettings.filterValues = {}
-      this.$refs.refSamlSettings.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForSamlSettings()
-    },
-    setStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS))
     },
     handleEditAction(row = {}) {
       this.selectedRow = row
@@ -339,9 +288,6 @@ export default {
     handleOnDelete(selectedRow = {}) {
       this.$refs.refSamlSettings.unSelectRow(selectedRow)
       this.callForSamlSettings()
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

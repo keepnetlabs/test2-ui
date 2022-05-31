@@ -1,42 +1,34 @@
 <template>
-  <div id="auditLogs" class="audit-logs">
-    <div class="audit-logs__container">
-      <div class="audit-logs__datatable">
-        <data-table
-          id="audit-data-list"
-          ref="refAuditList"
-          is-server-side
-          selectable
-          filterable
-          options
-          :loading="loading"
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
-          :table="tableData"
-          :refName="'auditList'"
-          :columns="tableOptions.columns"
-          :stored-table-settings="storedTableSettings"
-          :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: true, search: true, sort: true }"
-          :empty="tableOptions.empty"
-          :select-event="tableOptions.selectEvent"
-          :addButton="tableOptions.addButton"
-          :download="downloadOptions"
-          @refreshAction="getDatatableList"
-          @downloadEvent="exportAuditLog"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-          @set-default-search="handleSetDefaultSearch"
-          @restore-default-search="handleRestoreDefaultSearch"
-          @clear-filters="handleClearFilters"
-          @server-side-page-number-changed="serverSidePageNumberChanged"
-          @server-side-size-changed="serverSideSizeChanged"
-          @searchChangedEvent="handleSearchChange"
-          @sortChangedEvent="sortChanged"
-          @on-table-settings-change="handleSetRenderedColumns"
-        ></data-table>
-      </div>
-    </div>
-  </div>
+  <KContainer tabless id="audit-logs">
+    <data-table
+      id="audit-data-list"
+      ref="refAuditList"
+      is-server-side
+      selectable
+      filterable
+      options
+      :loading="loading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :addButton="tableOptions.addButton"
+      :download="downloadOptions"
+      :axios-payload="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @refreshAction="getDatatableList"
+      @downloadEvent="exportAuditLog"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
+    ></data-table>
+  </KContainer>
 </template>
 
 <script>
@@ -50,28 +42,25 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
   name: 'Audit',
   components: {
+    KContainer,
     DataTable
   },
   data() {
     return {
       loading: true,
       labels,
-      storedTableSettings: null,
       tableData: [],
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.AUDIT,
         columns: [
           {
             property: PROPERTY_STORE.LOGDATE,
@@ -266,24 +255,22 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  created() {
+    this.bodyData.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
+      .subtract(2, 'weeks')
+      .format(getTimeZoneForMoment())
+    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
+      .subtract(2, 'weeks')
+      .format(getTimeZoneForMoment())
+    this.bodyData.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(Date.now()).format(
+      getTimeZoneForMoment()
+    )
+    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(
+      Date.now()
+    ).format(getTimeZoneForMoment())
+    this.getDatatableList()
+  },
   methods: {
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT))
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refAuditList.filterValues = savedFilter.filterValues
-          this.$refs.refAuditList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.AUDIT, JSON.stringify(tableSettings))
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
@@ -307,7 +294,6 @@ export default {
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
@@ -315,36 +301,16 @@ export default {
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refAuditList.filterValues = {}
-      this.$refs.refAuditList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.getDatatableList()
-    },
     exportAuditLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.bodyData.filter)),
-        this.$refs.refAuditList,
-        'LogDate'
-      )
-      if (this.$refs.refAuditList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (this.$refs.refAuditList.sortProps && this.$refs.refAuditList.sortProps.order) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-
       exportTypes.map((exportType) => {
         const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
+          pageNumber,
+          pageSize,
+          orderBy: this.bodyData.orderBy,
+          ascending: this.bodyData.ascending,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
+          filter: this.bodyData.filter
         }
         exportAuditLog(payload).then((response) => {
           const { data } = response
@@ -356,25 +322,6 @@ export default {
           link.click()
         })
       })
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfFilter = JSON.parse(JSON.stringify(this.bodyData.filter))
-      copyOfFilter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT,
-        JSON.stringify({
-          filter: copyOfFilter,
-          filterValues
-        })
-      )
     },
     getDatatableList() {
       this.loading = true
@@ -395,7 +342,6 @@ export default {
         })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -404,44 +350,8 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.checkIsColumnFilterActive()
       this.getDatatableList()
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
-  },
-  created() {
-    this.bodyData.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
-      .subtract(2, 'weeks')
-      .format(getTimeZoneForMoment())
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
-      .subtract(2, 'weeks')
-      .format(getTimeZoneForMoment())
-    this.bodyData.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(Date.now()).format(
-      getTimeZoneForMoment()
-    )
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(
-      Date.now()
-    ).format(getTimeZoneForMoment())
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>
-
-<style lang="scss">
-.audit-logs {
-  padding: 0 16px 24px 16px !important;
-  width: 100%;
-  min-height: 90vh;
-  margin-top: 10px;
-  &__container {
-    border-radius: 20px !important;
-    background: white;
-  }
-  &__datatable {
-    padding: 16px 24px 0 24px;
-  }
-}
-</style>

@@ -1,28 +1,20 @@
 <template>
-  <v-tooltip bottom>
-    <template v-slot:activator="{ on }">
-      <div style="display: inline-flex;" v-on="on">
-        <v-btn
-          v-on="on"
-          :id="`btn-edit-${scope.$index}`"
-          style="margin-bottom: -5px;"
-          icon
-          :disabled="getDisabledStatusOfAction"
-          @click.native="$emit('on-edit', scope.row, scope)"
-        >
-          <v-icon>{{ icon }}</v-icon>
-        </v-btn>
-      </div>
-    </template>
-    <span>{{ getTooltipMessage }}</span>
-  </v-tooltip>
+  <DefaultButtonRowAction
+    :scope="scope"
+    :icon="icon"
+    :disabled="getDisabledStatusOfAction"
+    :text="getTooltipMessage"
+    @on-click="$emit('on-click', scope.row)"
+  />
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'TargetUserRowActionsEditButton',
+  components: { DefaultButtonRowAction },
   props: {
     scope: {
       type: Object

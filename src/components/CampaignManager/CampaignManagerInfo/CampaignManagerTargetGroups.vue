@@ -102,7 +102,6 @@ export default {
   watch: {
     search(val) {
       this.debounce(() => {
-        this.$refs.refGroupTable.tableOptions.isColumnFilterActive = !!val.length
         this.$refs.refGroupTable.searchChangedFilter(
           [
             { FieldName: 'Name', Operator: 'Contains', Value: val },
@@ -121,7 +120,7 @@ export default {
       return refGroupTable
         ? refGroupTable.tableData.length
           ? true
-          : !refGroupTable.tableOptions.isColumnFilterActive
+          : !refGroupTable?.$refs?.refTable?.isColumnFilterActive
         : true
     },
     debounce(fn, delay) {

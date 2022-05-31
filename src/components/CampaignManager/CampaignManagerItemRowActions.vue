@@ -98,7 +98,10 @@ export default {
     },
     getRowActions() {
       const rowActions = this.rowActions
-      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+      if (
+        this.actionStatus === ACTION_STATUSES.RUNNING ||
+        this.actionStatus === ACTION_STATUSES.PAUSE
+      ) {
         const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
         copyOfRowActions.splice(1, 0, {
           name: labels.ViewReport,

@@ -37,16 +37,14 @@
                     <datatable
                       ref="refRelayTable"
                       id="relay-data-table"
+                      filterable
+                      options
                       :loading="isLoading"
                       :table="relayTable.data"
-                      :refName="'relayTable'"
                       :columns="relayTable.columns"
                       :selectable="false"
-                      :filterable="true"
-                      :options="true"
                       :empty="relayTable.iEmpty"
                       :selectEvent="selectEvent"
-                      :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                     />
@@ -62,18 +60,16 @@
                     <datatable
                       ref="refHeadersTable"
                       id="headers-data-table"
+                      filterable
+                      options
                       :loading="isLoading"
                       :table="headersTable.data"
-                      :refName="'headersTable'"
                       :columns="headersTable.columns"
                       :countRow="25"
                       :defaultSort="'date'"
                       :selectable="false"
-                      :filterable="true"
-                      :options="true"
                       :empty="headersTable.iEmpty"
                       :selectEvent="selectEvent"
-                      :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                       @onPageChanged="adjustScroll"
@@ -268,7 +264,6 @@
                         id="attachmentsTable"
                         ref="refAttachmentsTable"
                         :loading="isLoading"
-                        :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :table="attachmentTableOptions.tableData[index].analysisList"
                         :options="false"

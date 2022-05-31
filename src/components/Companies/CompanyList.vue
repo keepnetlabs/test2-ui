@@ -63,16 +63,15 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :selectEvent="tableOptions.selectEvent"
-      :stored-table-settings="storedTableSettings"
-      :refName="'companyList'"
       :clusterItems="[{ name: 'Company Name' }]"
       :rowActions="tableOptions.rowActions"
+      :axios-payload.sync="payload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       active-cluster=""
       @clusterChanged="clusterChanged"
-      @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
       @downloadEvent="handleTableDownload"
@@ -91,10 +90,6 @@
       @sortChangedEvent="sortChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -159,11 +154,7 @@ import { getDefaultAxiosPayload, handleIsSafari, setSafariClusterFix } from '@/u
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'CompanyList',
   components: {
@@ -195,7 +186,6 @@ export default {
       showCreateNewGroupWithCompany: false,
       selectedExtend: {},
       selectedRow: {},
-      storedTableSettings: null,
       tableOptions: {
         columns: [
           {
@@ -290,7 +280,8 @@ export default {
             width: 180
           }
         ],
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.COMPANY_LIST,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -360,9 +351,6 @@ export default {
     }
   },
   created() {
-    //generic
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
-    this.getDefaultFilterAndSearch()
     this.getLookUpDatas()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -371,49 +359,6 @@ export default {
     }
   },
   methods: {
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
-      copyOfFilter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
-        JSON.stringify({
-          filter: copyOfFilter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.getLookUpDatas()
-    },
-    handleClearFilters() {
-      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
-      this.payload.pageNumber = 1
-      this.$refs.refDataList.filterValues = {}
-      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.getLookUpDatas()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
-      )
-      if (savedFilter) {
-        this.payload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refDataList.filterValues = savedFilter.filterValues
-          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-        })
-      }
-    },
-
     toggleConfigureNewCompanyModal() {
       if (this.isShowConfigureCompanyModal) {
         this.getTableData()
@@ -463,7 +408,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     handleCellClick({ column, event }) {
@@ -489,13 +433,7 @@ export default {
               .filter((item) => item.genericCodeTypeId === 3)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
-          this.$nextTick(() => {
-            if (this.$refs && this.$refs.refDataList) {
-              this.$refs.refDataList.columnKey = `column-key${Math.random()
-                .toString()
-                .substring(0, 5)}`
-            }
-          })
+          this?.$refs?.refDataList?.reRenderFilters()
         })
         .finally(() => this.getTableData())
     },
@@ -533,29 +471,25 @@ export default {
       this.isClustered = true
       this.resetPageNumber()
       this.resetTableFilters()
-      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
       this.resetPageNumber()
       this.resetTableFilters()
-      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     resetTableFilters() {
       this.payload.filter.FilterGroups[0].FilterItems = []
-      this.$refs.refDataList.filterValues = {}
-      this.$refs.refDataList.columnKey = `key-${Math.random().toString().substring(0, 7)}`
+      this?.$refs?.refDataList?.reRenderFilters({})
     },
-    handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
     deleteConfirmedItem(selectedItem) {
       deleteCompany(selectedItem.companyResourceId).then((response) => {
-        this.$refs.refDataList.$refs.elTableRef.toggleRowSelection(selectedItem, false)
+        this?.$refs?.refDataList?.unSelectRow(selectedItem)
         if (response.data && response.data.message) {
           this.getTableData()
         }
@@ -665,17 +599,12 @@ export default {
       this.showCreateNewGroupWithCompany = status
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.getTableData()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

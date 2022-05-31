@@ -23,18 +23,18 @@
       filterable
       options
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'dnsServiceListList'"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :stored-table-settings="storedTableSettings"
       :download-button="tableOptions.downloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="handleActionDelete"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -44,51 +44,27 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @on-table-settings-change="handleSetRenderedColumns"
       @addAction="handleAdd"
     >
       <template #datatable-row-actions="{scope}">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[0].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover mr-1"
-              icon
-              :disabled="!getDnsUpdatePermissions"
-              @click.native="handleEdit(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[1].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              :disabled="!getDnsDeletePermissions"
-              @click.native="handleActionDelete(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[1].name }}</span>
-        </v-tooltip>
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEdit(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          @on-click="handleActionDelete(scope.row)"
+        />
       </template>
     </data-table>
   </div>
@@ -108,16 +84,14 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
 import DeleteServiceModal from '@/components/DnsServices/DeleteServiceModal'
 import NewEditDnsService from '@/components/DnsServices/NewEditDnsService'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'DnsServiceList',
   components: {
+    DefaultButtonRowAction,
     NewEditDnsService,
     DataTable,
     DeleteServiceModal
@@ -130,15 +104,13 @@ export default {
       editableFormValues: {},
       loading: true,
       isEdit: false,
-      isDuplicate: false,
-      emailTemplateId: null,
       labels,
       tableData: [],
       showDeleteModal: false,
-      storedTableSettings: null,
       selectedDnsService: null,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DNSSERVICELIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DNSSERVICELIST,
         columns: [
           {
             property: 'dnsServiceProviderName',
@@ -178,10 +150,6 @@ export default {
             isEditable: true,
             tooltipKey: 'healthStatusMessage',
             width: 150
-            /*
-            filterableType: 'select',
-            filterableItems: ['Success', 'Failed', { text: 'Not Checked', value: 'NotChecked' }]
-             */
           },
           {
             property: 'createdBy',
@@ -194,8 +162,6 @@ export default {
             width: 240,
             type: 'text',
             filterableType: 'text'
-            // filterableType: 'select',
-            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -263,6 +229,9 @@ export default {
       getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
     })
   },
+  created() {
+    this.getDatatableList()
+  },
   methods: {
     checkIfCanCloseDnsServiceModal() {
       if (this.$refs.newEditDnsServiceModal) {
@@ -276,16 +245,11 @@ export default {
         this.getDatatableList()
       }
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.DNSSERVICELIST, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -298,64 +262,22 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getDatatableList()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.DNSSERVICELIST)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refDnsServiceListList.filterValues = savedFilter.filterValues
-          this.$refs.refDnsServiceListList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getDatatableList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refDnsServiceListList.filterValues = {}
-      this.$refs.refDnsServiceListList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getDatatableList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.DNSSERVICELIST,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -379,8 +301,8 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refDnsServiceListList.$refs.elTableRef.toggleRowSelection(row, false)
       deleteEmailTemplate(row.resourceId).then(() => {
+        this.$refs.refDnsServiceListList.unSelectRow(row)
         this.getDatatableList()
       })
     },
@@ -443,7 +365,6 @@ export default {
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
@@ -452,16 +373,8 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
       this.getDatatableList()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
-  },
-  created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DNSSERVICELIST))
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>

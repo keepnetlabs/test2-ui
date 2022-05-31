@@ -6,28 +6,24 @@
     filterable
     options
     is-server-side
-    :refName="'groupsTable'"
     :loading="isLoading"
     :count-row="tableOptions.countRow"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :download-button="tableOptions.downloadButton"
     :is-settings-popup="tableOptions.isSettingsPopup"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
     @refreshAction="callForData"
   >
     <template #datatable-custom-column="{ scope, col }">
@@ -49,11 +45,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getTargetUserViewUserGroups } from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
@@ -75,7 +67,8 @@ export default {
       },
       isLoading: false,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSVIEWUSERGROUPS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TARGET_USERS_VIEW_USER_GROUPS,
         isSettingsPopup: false,
         countRow: 5,
         columns: [
@@ -123,13 +116,10 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true }
       },
       tableData: [],
-      storedTableSettings: null,
       serverSideProps: new ServerSideProps('', false, 5, 1, 0, 0)
     }
   },
   created() {
-    this.getStoredTableSettings()
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
@@ -153,14 +143,8 @@ export default {
     setLoading(val = false) {
       this.isLoading = val
     },
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_VIEW_USER_GROUPS)
-      )
-    },
     columnFilterChanged(filter) {
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -173,7 +157,6 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -203,57 +186,13 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForData()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSVIEWUSERGROUPS,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSVIEWUSERGROUPS)
-      )
-      if (!savedFilter) return
-      const { filter, filterValues } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
-      this.reRenderColumns(filterValues)
-    },
-    handleClearFilters() {
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.reRenderColumns({})
-      this.callForData()
-    },
-    reRenderColumns(filterValues) {
-      this.$nextTick(() => {
-        this.$refs.refTable.filterValues = filterValues
-        this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      })
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.TARGET_USERS_VIEW_USER_GROUPS,
-        JSON.stringify(tableSettings)
-      )
     },
     handleGroupNameClick(row = '') {
       this.$router.push({
         name: 'Target Group Users',
         params: { id: row.resourceId, label: row.name, from: 'people' }
       })
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

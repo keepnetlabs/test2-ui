@@ -12,11 +12,11 @@
       <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
-          @handleClose="isWantToDelete = false"
-          @handleConfirm="deleteUser"
           type="delete"
           cancel-button-id="btn-cancel--phishing-reporter-users-popup"
           confirm-button-id="btn-delete--phishing-reporter-users-popup"
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteUser"
         />
       </template>
     </app-dialog>
@@ -28,31 +28,27 @@
       selectable
       filterable
       options
+      :table="tableOptions.table"
       :loading="isLoading"
       :select-event="tableOptions.selectEvent"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
-      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
-      :table="tableOptions.table"
+      :axios-payload.sync="requestBody"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForPhishingReporterUser"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
-      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -115,11 +111,7 @@ import {
 } from '@/utils/functions'
 import Badge from '@/components/Badge'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'Users',
   components: {
@@ -133,9 +125,9 @@ export default {
       PROPERTY_STORE,
       isLoading: true,
       isInit: true,
-      isRestoredOrClearedFilters: false,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.PHISHINGREPORTER,
         table: [],
         selectEvent: {
           clipboard: true,
@@ -291,7 +283,6 @@ export default {
       },
       isWantToDelete: false,
       selectedRow: null,
-      storedTableSettings: null,
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -310,12 +301,12 @@ export default {
         : 'This user'
     }
   },
+  created() {
+    this.callForPhishingReporterUser()
+  },
   methods: {
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.PHISHINGREPORTER, JSON.stringify(tableSettings))
     },
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
@@ -382,35 +373,9 @@ export default {
       }
       return text
     },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refUsersList.filterValues = {}
-      this.$refs.refUsersList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForPhishingReporterUser()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
     handleDelete(row) {
       this.selectedRow = row
       this.isWantToDelete = true
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
-      copyOfFilter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
-        JSON.stringify({
-          filter: copyOfFilter,
-          filterValues
-        })
-      )
     },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()
@@ -448,9 +413,6 @@ export default {
           this.isLoading = false
         })
         .finally(() => {
-          if (this.isRestoredOrClearedFilters) {
-            this.isRestoredOrClearedFilters = false
-          }
           this.isInit = false
         })
     },
@@ -500,7 +462,6 @@ export default {
       this.isWantToDelete = false
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.requestBody
@@ -513,23 +474,6 @@ export default {
         fieldName,
         this.requestBody
       )
-      this.calculateIsFilterColumnActive()
-      this.callForPhishingReporterUser()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
-      )
-      if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refUsersList.filterValues = savedFilter.filterValues
-          this.$refs.refUsersList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
       this.callForPhishingReporterUser()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -551,7 +495,6 @@ export default {
       })
       this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForPhishingReporterUser()
     },
     sortChanged({ order, prop } = {}) {
@@ -562,16 +505,7 @@ export default {
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
-  },
-  created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.PHISHINGREPORTER)
-    )
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>

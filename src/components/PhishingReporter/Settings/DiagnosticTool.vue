@@ -136,24 +136,6 @@
             label="Check and enable all disabled add-ins automatically"
             :readonly="!showForm"
           ></v-checkbox>
-          <v-checkbox
-            v-model="formValues.writeAddinStatusToHKLM"
-            class="diagnostic-tool__checkbox k-checkbox mb-4"
-            id="input--phishing-reporter-is-enable-add-in"
-            hide-details
-            color="#2196f3"
-            label="Send registry flag to local machine (HKLM)"
-            :readonly="!showForm"
-          ></v-checkbox>
-          <v-checkbox
-            v-model="formValues.writeAddinStatusToHKCU"
-            class="diagnostic-tool__checkbox k-checkbox mb-4"
-            id="input--phishing-reporter-is-enable-add-in"
-            hide-details
-            color="#2196f3"
-            label="Send registry flag to current user (HKCU)"
-            :readonly="!showForm"
-          ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
     </div>

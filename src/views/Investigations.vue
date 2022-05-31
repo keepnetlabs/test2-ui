@@ -1,93 +1,31 @@
 <template>
-  <div class="investigations">
-    <div class="investigations__container">
-      <new-investigation
-        v-if="isShowNewInvestigationModal"
-        ref="refNewInvestigation"
-        :status="isShowNewInvestigationModal"
-        @closeWithRoute="onAddClose"
-        @closeAdd="isShowNewInvestigationModal = false"
-        @refreshDatatable="refreshDatatable"
-      />
-      <app-dialog
-        :status="isWantToStopInvestigation"
-        :title="labels.StopOngoingInvestigation"
-        :subtitle="labels.DoYouWantToStopInvestigation"
-        :body="labels.OnceYouStoppedInvestigation"
-        @changeStatus="isWantToStopInvestigation = false"
-        icon="mdi-alert"
-      >
-        <template #app-dialog-footer>
-          <app-dialog-footer
-            cancel-button-id="btn-cancel--investigations-popup"
-            confirm-button-id="btn-stop--investigations-popup"
-            :confirm-button-disabled="stopInvestigateButtonDisabled"
-            @handleClose="isWantToStopInvestigation = false"
-            @handleConfirm="stopInvestigation"
-          />
-        </template>
-      </app-dialog>
-      <v-card class="investigations__container-card" light>
-        <datatable
-          v-bind="tableState"
-          selectable
-          filterable
-          options
-          is-server-side
-          isServerSideSelection
-          :loading="loading"
-          :is-column-filter-active="isColumnFilterActive"
-          id="investigations-data-table"
-          ref="investigationTable"
-          :refName="'investigationTable'"
-          :columns="columns"
-          :table="tableData.data"
-          :rowActions="rowActions"
-          :stored-table-settings="storedTableSettings"
-          :addButton="newInvestigationButton"
-          :empty="iEmpty"
-          :selectEvent="selectEvent"
-          :chartOptions="chartOptions"
-          :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: true, search: true, sort: true }"
-          @startNewInvestigation="startNewInvestigation"
-          @stopInvestigationFunc="stopInvestigationFunc($event)"
-          @investigationDetails="investigationDetails($event)"
-          @downloadEvent="exportInvestigationList"
-          @paginationChangedEvent="paginationChangedEvent($event)"
-          @onEmptyBtnClicked="isShowNewInvestigationModal = true"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-          @refreshAction="getInvestigationList"
-          @set-default-search="handleSetDefaultSearch"
-          @restore-default-search="handleRestoreDefaultSearch"
-          @clear-filters="handleClearFilters"
-          @on-table-settings-change="handleSetRenderedColumns"
-          @server-side-page-number-changed="serverSidePageNumberChanged"
-          @server-side-size-changed="serverSideSizeChanged"
-          @searchChangedEvent="handleSearchChange"
-          @sortChangedEvent="sortChanged"
-        >
-          <template v-slot:datatable-custom-column="{ scope }">
-            <span
-              v-if="
-                scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
-              "
-            >
-              {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
-            </span>
-            <span
-              v-else
-              v-for="item in scope.row.matchingPlaybooks"
-              :key="item.resourceId"
-              class="popup-link"
-              @click="togglePlaybookModalWithSelected(item.resourceId)"
-              >{{ item.name }}</span
-            >
-          </template>
-        </datatable>
-      </v-card>
-    </div>
+  <KContainer tabless id="investigations">
+    <new-investigation
+      v-if="isShowNewInvestigationModal"
+      ref="refNewInvestigation"
+      :status="isShowNewInvestigationModal"
+      @closeWithRoute="onAddClose"
+      @closeAdd="isShowNewInvestigationModal = false"
+      @refreshDatatable="refreshDatatable"
+    />
+    <app-dialog
+      icon="mdi-alert"
+      :status="isWantToStopInvestigation"
+      :title="labels.StopOngoingInvestigation"
+      :subtitle="labels.DoYouWantToStopInvestigation"
+      :body="labels.OnceYouStoppedInvestigation"
+      @changeStatus="isWantToStopInvestigation = false"
+    >
+      <template #app-dialog-footer>
+        <app-dialog-footer
+          cancel-button-id="btn-cancel--investigations-popup"
+          confirm-button-id="btn-stop--investigations-popup"
+          :confirm-button-disabled="stopInvestigateButtonDisabled"
+          @handleClose="isWantToStopInvestigation = false"
+          @handleConfirm="stopInvestigation"
+        />
+      </template>
+    </app-dialog>
     <app-modal
       v-if="showPlaybookModal"
       class-name="incident-responder__playbook"
@@ -105,13 +43,82 @@
         />
       </template>
     </app-modal>
-  </div>
+    <datatable
+      v-bind="tableState"
+      ref="investigationTable"
+      id="investigations-data-table"
+      selectable
+      filterable
+      options
+      is-server-side
+      :loading="loading"
+      :columns="columns"
+      :table="tableData.data"
+      :rowActions="rowActions"
+      :addButton="newInvestigationButton"
+      :empty="iEmpty"
+      :selectEvent="selectEvent"
+      :chartOptions="chartOptions"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
+      @startNewInvestigation="startNewInvestigation"
+      @stopInvestigationFunc="stopInvestigationFunc($event)"
+      @investigationDetails="investigationDetails($event)"
+      @downloadEvent="exportInvestigationList"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @onEmptyBtnClicked="isShowNewInvestigationModal = true"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="getInvestigationList"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span
+          v-if="
+            scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
+          "
+        >
+          {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
+        </span>
+        <span
+          v-else
+          v-for="item in scope.row.matchingPlaybooks"
+          :key="item.resourceId"
+          class="popup-link"
+          @click="togglePlaybookModalWithSelected(item.resourceId)"
+          >{{ item.name }}</span
+        >
+      </template>
+      <template v-slot:datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="rowActions[0].icon"
+          :text="rowActions[0].name"
+          :scope="scope"
+          :disabled="rowActions[0].disabled"
+          @on-click="investigationDetails(scope)"
+        />
+        <DefaultButtonRowAction
+          :icon="rowActions[1].icon"
+          :text="rowActions[1].name"
+          :scope="scope"
+          :disabled="rowActions[1].disabled || scope.row.status !== 'Running'"
+          @on-click="stopInvestigationFunc(scope)"
+        />
+      </template>
+    </datatable>
+  </KContainer>
 </template>
 
 <script>
-import Datatable from '../components/DataTable'
-import newInvestigation from '../components/Investigation/NewInvestigation'
-import AppDialog from '../components/AppDialog'
+import Datatable from '@/components/DataTable'
+import newInvestigation from '@/components/Investigation/NewInvestigation'
+import AppDialog from '@/components/AppDialog'
 import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
 import {
@@ -119,27 +126,27 @@ import {
   getStoreValue,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import KContainer from '@/components/KContainer/KContainer'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'Investigations',
   components: {
+    KContainer,
     AppDialogFooter,
     Datatable,
     newInvestigation,
     AppDialog,
     CreateOrEditRule,
-    AppModal
+    AppModal,
+    DefaultButtonRowAction
   },
   props: {
     selectedEmail: {
@@ -166,7 +173,6 @@ export default {
       isWantToStopInvestigation: false,
       init: true,
       labels,
-      storedTableSettings: null,
       columns: [
         {
           property: 'incident',
@@ -298,7 +304,8 @@ export default {
         showTooltipLine: true,
         isWithText: true
       },
-      isColumnFilterActive: false,
+      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
+      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.INVESTIGATIONS,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
@@ -336,7 +343,6 @@ export default {
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getInvestigationList()
     },
     sortChanged({ order, prop } = {}) {
@@ -358,47 +364,6 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    calculateIsFilterColumnActive() {
-      this.isColumnFilterActive = isColumnFilterActive(this.bodyData)
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
-      )
-      if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.investigationTable.reRenderColumns(savedFilter.filterValues)
-        })
-      }
-      this.getInvestigationList()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.investigationTable.filterValues = {}
-      this.$refs.investigationTable.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.getInvestigationList()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS, JSON.stringify(tableSettings))
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
-    },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
@@ -414,14 +379,6 @@ export default {
       this.selectedPlaybookId = selectedPlaybookId
       return (this.showPlaybookModal = !this.showPlaybookModal)
     },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getInvestigationList()
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -432,9 +389,7 @@ export default {
       this.getInvestigationList()
     },
     columnFilterChanged(filter) {
-      this.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-
       this.getInvestigationList()
     },
     columnFilterCleared(fieldName) {
@@ -442,8 +397,6 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.calculateIsFilterColumnActive()
-
       if (this.$route.name === 'Investigations') {
         this.getInvestigationList()
       }
@@ -563,8 +516,7 @@ export default {
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
     }
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    this.getDefaultFilterAndSearch()
+    this.getInvestigationList()
   },
   mounted() {
     if (this.$route.params && this.$route.params.selectedEmail) {
@@ -600,22 +552,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.investigations {
-  padding: 13px 16px 16px 16px;
-  &__container {
-    min-height: 80vh;
-    &-card {
-      border-radius: 20px !important;
-      margin-top: -2px;
-      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
-      background-color: #ffffff;
-      padding: 16px 24px 0 24px;
-    }
-  }
-  .table-wrapper {
-    margin-top: 8px;
-  }
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-configuration">
+  <div class="mail-configuration" style="margin-top: 5px;">
     <app-modal
       v-if="status"
       ref="mail-configuration__modal"
@@ -539,23 +539,23 @@
         ref="refPeopleTable"
         id="mail-configurations-data-table"
         selectable
+        filterable
+        options
+        is-downloadable
+        is-server-side
         :loading="loading"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
         :addButton="tableOptions.addButton"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
-        :filterable="true"
-        :options="true"
         :pageSizes="tableOptions.pageSizes"
-        :refName="'peopleTable'"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
-        :stored-table-settings="storedTableSettings"
-        :is-downloadable="true"
-        :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :axios-payload.sync="requestBody"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         @delete="handleDelete"
         @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
@@ -563,14 +563,10 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="getTableData"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        @on-table-settings-change="handleSetRenderedColumns"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -699,11 +695,7 @@ import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { getTargetGroups } from '@/api/targetUsers'
 import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 
 export default {
   name: 'MailConfiguration',
@@ -752,7 +744,6 @@ export default {
       editData: null,
       ewsEditData: null,
       googleWorkSpaceEditData: null,
-      storedTableSettings: null,
       domainList: [],
       formValues: {
         name: null,
@@ -833,7 +824,8 @@ export default {
       loading: true,
       selectedRow: null,
       tableOptions: {
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.MAILCONFIGURATION,
         lastColumns: [],
         columns: [
           {
@@ -1118,9 +1110,6 @@ export default {
         scrollToComponent(el)
       }
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
-    },
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -1130,7 +1119,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -1147,40 +1135,6 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getTableData()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
-      if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
-          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.getTableData()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refPeopleTable.filterValues = {}
-      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.getTableData()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG,
-        JSON.stringify({
-          filter: this.requestBody.filter,
-          filterValues
-        })
-      )
     },
     testConnectionValues(isSuccess, isSave) {
       this.formValuesAfterO365Test = JSON.parse(JSON.stringify(this.formValues))
@@ -1505,7 +1459,6 @@ export default {
       }
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.requestBody
@@ -1517,17 +1470,15 @@ export default {
         fieldName,
         this.requestBody
       )
-      this.calculateIsFilterColumnActive()
       this.getTableData()
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION)
-    )
+    if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
+      this.$router.push('/incident-responder')
+    } else {
+      this.getTableData()
+    }
     getExchangeVersions().then((response) => {
       this.exchangeVersions = response.data.data
     })
@@ -1535,13 +1486,6 @@ export default {
       this.targetGroupsList = response.data.data
       this.defaultTargetGroupsList = response.data.data
     })
-  },
-  mounted() {
-    if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
-      this.$router.push('/incident-responder')
-    } else {
-      this.getDefaultFilterAndSearch()
-    }
   },
   beforeRouteLeave(to, from, next) {
     if (this.status) {
