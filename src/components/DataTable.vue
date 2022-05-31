@@ -2231,13 +2231,15 @@ export default {
       }
     },
     calculateLength(children) {
-      return children.reduce((acc, item) => {
-        if (item.children) {
-          return acc + 1 + this.calculateLength(item.children)
-        } else {
-          return acc + 1
-        }
-      }, 0)
+      return children
+        ? children.reduce((acc, item) => {
+            if (item.children) {
+              return acc + 1 + this.calculateLength(item.children)
+            } else {
+              return acc + 1
+            }
+          }, 0)
+        : 0
     },
     getTotalLength(data) {
       return this.calculateLength(data)
