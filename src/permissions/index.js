@@ -1234,5 +1234,42 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  LDAP_PERMISSIONS: {
+    SCHEDULE_SEARCH: {
+      url: `ldap-schedule/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTING_SEARCH: {
+      url: `Ldap-setting/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTING_CREATE: {
+      url: `ldap-setting`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTING_UPDATE: {
+      url: `ldap-setting/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    SETTING_DELETE: {
+      url: `ldap-setting/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    MAPPING_SEARCH: {
+      url: `ldap-setting/mapping`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CONFIG: {
+      url: `ldap-config`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }
