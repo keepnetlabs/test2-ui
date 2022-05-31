@@ -60,9 +60,9 @@ export function getBtnStatusColor(type) {
     case 'passive':
       return '#b83a3a'
     case 'cancelled':
-      return '#B83A3A'
+      return '#B6791D'
     case 'canceled':
-      return '#B83A3A'
+      return '#B6791D'
     case 'quequed':
       return '#0198AC'
     case 'phishing':
@@ -88,6 +88,8 @@ export function getBtnStatusColor(type) {
       return '#1173C1'
     case 'Not Running':
       return '#1173C1'
+    case 'not delivered':
+      return '#757575'
     case 'completed':
       return '#217124'
     case 'finished':
