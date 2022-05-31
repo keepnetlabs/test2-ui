@@ -18,6 +18,7 @@
         v-model.trim="formData.groupResourceId"
         ref="inputTargetGroup"
         clearable
+        position="top"
         :manipulate-items="handleManipulateItems"
       />
     </FormGroup>
