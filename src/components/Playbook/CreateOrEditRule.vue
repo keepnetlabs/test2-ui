@@ -187,57 +187,26 @@
         </v-stepper>
       </v-col>
     </div>
-    <!-- TODO: Convert footer block to common component -->
+
     <div class="wizard__footer">
-      <div class="text-left">
-        <v-btn
-          id="btn-cancel--playbook-rules-modal"
-          class="playbook-rule-form__button"
-          outlined
-          rounded
-          color="error"
-          @click="cancelForm"
-          >{{ labels.Cancel }}</v-btn
-        >
-      </div>
-
-      <div>
-        <v-btn
-          v-if="canPrev"
-          id="btn-back--playbook-rules-modal"
-          class="playbook-rule-form__button mr-4"
-          outlined
-          rounded
-          color="cyan"
-          @click="prevStep"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          v-if="canNext"
-          id="btn-next--playbook-rules-modal"
-          class="playbook-rule-form__button"
-          style="color: white;"
-          rounded
-          color="#2196f3"
-          @click="nextStep"
-        >
-          {{ labels.Next }}
-        </v-btn>
-
-        <v-btn
-          v-if="!canNext"
-          id="btn-save--playbook-rules-modal"
-          class="playbook-rule-form__button white--text"
-          rounded
-          color="#2196f3"
-          @click="handleSave"
-          :disabled="saveDisable"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="3"
+        :step="activeStep"
+        :ids="{
+          cancelButton: 'btn-cancel--playbook-rules-modal',
+          backButton: 'btn-back--playbook-rules-modal',
+          nextButton: 'btn-next--playbook-rules-modal',
+          saveButton: 'btn-next--add-or-edit-company-manager-modal'
+        }"
+        :disabled-statuses="{
+          nextButton: false,
+          submitButton: saveDisable
+        }"
+        @on-cancel="cancelForm"
+        @on-back="prevStep"
+        @on-next="nextStep"
+        @on-submit="handleSave"
+      />
     </div>
   </div>
 </template>
@@ -254,10 +223,12 @@ import labels from '@/model/constants/labels'
 import { isDifferent } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 export default {
   name: 'CreateOrEditRule',
   components: {
+    StepperFooter,
     KSelect,
     ActionItem,
     VueQueryBuilder,

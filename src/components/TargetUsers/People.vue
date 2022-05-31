@@ -49,6 +49,11 @@
       :status="isShowingTargetUserViewTargetGroups"
       @on-close="toggleShowingTargetUserViewTargetGroups"
     />
+    <TargetUserLDAPImportModal
+      v-if="isShowImportLDAPModal"
+      :status="isShowImportLDAPModal"
+      @on-close="toggleImportLDAPModal"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -229,10 +234,12 @@ import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
 
 export default {
   name: 'People',
   components: {
+    TargetUserLDAPImportModal,
     RowActionsMenu,
     DefaultMenuRowAction,
     DefaultErrorDialog,

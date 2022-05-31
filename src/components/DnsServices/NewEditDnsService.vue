@@ -75,29 +75,15 @@
       </v-form>
     </template>
     <template v-slot:overlay-footer>
-      <div class="text-left">
-        <v-btn
-          id="btn-cancel--mail-configurations-modal"
-          class="playbook-rule-form__button"
-          outlined
-          rounded
-          color="error"
-          @click="cancelDns"
-          >{{ labels.Cancel }}</v-btn
-        >
-      </div>
-      <div>
-        <v-btn
-          id="btn-save--mail-configurations-modal"
-          class="playbook-rule-form__button white--text"
-          rounded
-          color="#2196f3"
-          @click="submit"
-          :disabled="saveButtonDisabled"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+      <AppModalFooter
+        :ids="{
+          saveButton: 'btn-save--dns-configurations-modal',
+          cancelButton: 'btn-cancel--dns-configurations-modal'
+        }"
+        :action-button-disabled="saveButtonDisabled"
+        @on-cancel="cancelDns"
+        @on-save="submit"
+      />
     </template>
   </app-modal>
 </template>
@@ -116,9 +102,11 @@ import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api
 import * as Validations from '@/utils/validations'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import AppModalFooter from '@/components/AppModalFooter'
 export default {
   name: 'NewEditDnsService',
   components: {
+    AppModalFooter,
     AppModal,
     TestConnection,
     AppModalBodyHeader,

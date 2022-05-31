@@ -550,14 +550,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#scenarios {
-  .k-stepper {
-    overflow: visible;
-    &__items {
-      overflow: visible;
-    }
-  }
-}
-</style>

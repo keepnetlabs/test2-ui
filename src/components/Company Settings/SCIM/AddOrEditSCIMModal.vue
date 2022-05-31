@@ -62,8 +62,8 @@
             <v-form ref="refStep2Form">
               <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub" has-hint>
                 <InputTargetGroup
-                  ref="inputTargetGroup"
                   v-model.trim="formData.groupResourceId"
+                  ref="inputTargetGroup"
                   clearable
                   :placeholder="isEdit ? labels.NoneSelected : 'Select user groups'"
                   :manipulate-items="handleManipulateItems"
@@ -393,10 +393,6 @@ export default {
 </script>
 <style lang="scss">
 #new-scim-settings-modal .k-stepper {
-  overflow: visible;
-  &__items {
-    overflow: visible;
-  }
   #input--target-user-groups {
     &.v-input--is-disabled input {
       color: rgba(0, 0, 0, 0.87) !important;
