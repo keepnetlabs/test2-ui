@@ -67,6 +67,7 @@ testService.interceptors.response.use(
       AuthenticationService.removeToken()
       //if router is in login dont need to push again
       if (router?.history?.current?.name !== 'login') {
+        store.dispatch('common/resetSnackbars')
         router.push({ name: 'login', params: { isSessionExpired: 'true' } }).catch(() => {})
       }
     } else if (error.response && error.response.status !== 404) {
@@ -123,6 +124,7 @@ testService.interceptors.response.use(
         )
       }
     } else if (!AuthenticationService.getToken()) {
+      store.dispatch('common/resetSnackbars')
       router.push('/login').catch(() => {})
     }
     return Promise.reject(error)

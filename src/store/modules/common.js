@@ -79,6 +79,9 @@ const common = {
     SET_CREATE_SNACKBAR(state, payload) {
       state.snackbars = [...state.snackbars, payload]
     },
+    RESET_SNACKBARS(state) {
+      state.snackbars = []
+    },
     SET_CLOSE_SNACKBAR(state, payload) {
       state.snackbars = state.snackbars.filter((item) => {
         return JSON.stringify(item) !== JSON.stringify(payload)
@@ -122,6 +125,9 @@ const common = {
     },
     closeSnackBar({ commit }, payload) {
       commit('SET_CLOSE_SNACKBAR', payload)
+    },
+    resetSnackbars({ commit }) {
+      commit('RESET_SNACKBARS')
     },
     changeDownloadModalStatus({ commit }, payload) {
       commit('SET_DOWNLOAD_MODAL_STATUS', payload)
