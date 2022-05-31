@@ -1,7 +1,7 @@
 <template>
   <v-form ref="refForm">
     <FormGroup
-      class-name="mt-6 w-100 max-w-100"
+      class-name="w-100 max-w-100"
       :title="labels.LDAPGroups"
       :sub-title="labels.LDAPGroupsSub"
     >

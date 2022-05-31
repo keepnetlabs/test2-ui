@@ -28,6 +28,7 @@
         <v-stepper-items class="k-stepper__items">
           <v-stepper-content class="k-stepper__content" :step="1">
             <ConfigureCompanyStepHeader
+              class="mb-8"
               :title="labels.Groups"
               :subtitle="labels.LDAPImportModalStep1Subtitle"
             />
@@ -35,6 +36,7 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
+              class="mb-8"
               :title="labels.SelectUsers"
               :subtitle="labels.LDAPImportModalStep2Subtitle"
             />
