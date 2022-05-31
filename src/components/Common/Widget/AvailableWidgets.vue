@@ -45,11 +45,19 @@
             </v-list>
           </v-menu>
           <v-btn
+            id="btn-cancel--dashboard-widgets"
+            class="widget-button mr-2"
+            rounded
+            color="transparent"
+            @click="handleCancel"
+            ><v-icon class="mr-2" style="font-size: 22px;">mdi-cancel</v-icon>Cancel</v-btn
+          >
+          <v-btn
             id="btn-save--dashboard-widgets"
             class="widget-button"
             rounded
             color="transparent"
-            @click="handleEdit"
+            @click="handleSave"
             ><v-icon class="mr-2" style="font-size: 22px;">mdi-content-save</v-icon>Save
             Changes</v-btn
           >
@@ -92,8 +100,14 @@ export default {
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
     },
+    handleCancel() {
+      this.$emit('handleCancel')
+    },
     handleEdit() {
       this.$emit('handleEdit')
+    },
+    handleSave() {
+      this.$emit('handleSave')
     },
     handleOpenMenu() {
       this.$emit('handleOpenMenu')
