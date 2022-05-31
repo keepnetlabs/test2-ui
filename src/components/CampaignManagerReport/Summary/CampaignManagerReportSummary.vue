@@ -93,10 +93,14 @@ export default {
       ]
     },
     getCampaignSummaryItems() {
-      const { campaignInfo = {}, scenarioInfo = {}, settings = {} } = this.campaignSummary
-      const { endDate = '0', totalTargetUserCount = 0 } = campaignInfo
-      const { languageShortCode } = scenarioInfo
-      const { duration = '0' } = settings
+      const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
+        endDate: '0',
+        totalTargetUserCount: 0
+      }
+      const { languageShortCode = 'EN' } = this.campaignSummary?.scenarioInfo || {
+        languageShortCode: 'EN'
+      }
+      const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
@@ -332,7 +336,7 @@ export default {
           this.campaignSummary = response?.data?.data
           this.$store.dispatch(
             'common/setActivePageRouterName',
-            this.campaignSummary['phishingCampaignName'] || ''
+            this.campaignSummary?.phishingCampaignName || ''
           )
         })
         .finally(() => {
