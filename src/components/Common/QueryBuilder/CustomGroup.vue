@@ -3,10 +3,11 @@
 
   <div
     class="vqb-group pa-6 mb-2"
-    style="padding-bottom: 18px !important;"
+    style="padding-bottom: 18px;"
     :id="`playbook-query-builder-group-${index}`"
     :class="[
       depth === 1 && query.children.length <= 1 && 'vqb-disable',
+      !isRenderFirstGroupHeader && 'vqb-hide-first-group-header',
       'elevation-' + (depth - 1).toString()
     ]"
   >
@@ -19,7 +20,7 @@
       {{ $parent.query.logicalOperator }}
     </div>
     <div class="vqb-group-heading card-header">
-      <div class="match-type-container d-flex">
+      <div v-if="isRenderFirstGroupHeader" class="match-type-container d-flex">
         <div
           class="match-type-container__buttons"
           :id="`playbook-query-builder-group-logical-operator-${index}`"
@@ -98,6 +99,7 @@
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
       </div>
+      <slot name="group-footer"></slot>
     </div>
     <v-btn
       :id="`playbook-query-builder-group-add-group-${index}`"
@@ -124,6 +126,12 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     QueryBuilderRule: QueryBuilderRule
   },
+  props: {
+    hideFirstGroupHeader: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
     this.$nextTick(() => {
       if (this.query && this.query.children.length === 0) {
@@ -133,6 +141,13 @@ export default {
     })
   },
   extends: QueryBuilderGroup,
+  computed: {
+    isRenderFirstGroupHeader() {
+      return this.hideFirstGroupHeader
+        ? !(this.depth === 1 && this.query.children.length <= 1)
+        : true
+    }
+  },
   watch: {
     query() {
       this.$nextTick(() => {
@@ -473,6 +488,17 @@ export default {
     }
   }
 }
+
+.vue-query-builder .vqb-hide-first-group-header .vqb-group:not(.elevation-0) {
+  margin-left: 0 !important;
+  &:first-child:before {
+    display: none;
+  }
+}
+.vue-query-builder .vqb-hide-first-group-header .elevation-1 {
+  padding-bottom: 60px !important;
+}
+
 .custom-group-badge {
   @media (max-width: 896px) {
     top: 137px;

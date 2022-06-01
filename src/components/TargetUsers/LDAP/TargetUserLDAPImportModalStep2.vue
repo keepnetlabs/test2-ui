@@ -2,7 +2,8 @@
   <div>
     <KButtonRadioGroup v-model="selectedRadioGroupIndex" :items="radioGroupItems" />
     <div>
-      <TargetUserLdapImportManuallyStep v-if="selectedRadioGroupIndex === 0" />
+      <TargetUserLDAPImportLoader class="mt-6" v-if="false" />
+      <TargetUserLdapImportManuallyStep v-else-if="selectedRadioGroupIndex === 0" />
       <TargetUserLDAPImportSyncByQueryStep v-else />
     </div>
   </div>
@@ -12,9 +13,11 @@
 import KButtonRadioGroup from '@/components/ButtonRadioGroup/KButtonRadioGroup'
 import TargetUserLdapImportManuallyStep from '@/components/TargetUsers/LDAP/TargetUserLDAPImportManuallyStep'
 import TargetUserLDAPImportSyncByQueryStep from '@/components/TargetUsers/LDAP/TargetUserLDAPImportSyncByQueryStep'
+import TargetUserLDAPImportLoader from '@/components/TargetUsers/LDAP/TargetUserLDAPImportLoader'
 export default {
   name: 'TargetUserLDAPImportModalStep2',
   components: {
+    TargetUserLDAPImportLoader,
     TargetUserLDAPImportSyncByQueryStep,
     TargetUserLdapImportManuallyStep,
     KButtonRadioGroup
