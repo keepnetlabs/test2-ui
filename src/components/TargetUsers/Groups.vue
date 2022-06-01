@@ -99,7 +99,7 @@
         <TargetUserRowActionsEditButton
           type="groups"
           :scope="scope"
-          @on-edit="handleEditBtnClick"
+          @on-click="handleEditBtnClick"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -341,8 +341,8 @@ export default {
     }
   },
   methods: {
-    handleEditBtnClick(row, scope) {
-      this.$refs.refGroupsTable.handleEdit(row, scope.$index)
+    handleEditBtnClick(row) {
+      this.$refs.refGroupsTable.handleEdit(row)
     },
     resetPageNumber() {
       this.tableCredientials.pageNumber = 1

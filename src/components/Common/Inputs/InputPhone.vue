@@ -120,8 +120,10 @@ export default {
     },
     validatePhoneNumber() {
       this.$nextTick(() => {
-        this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
-        this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        if (this.$refs.refTelInput) {
+          this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
+          this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        }
       })
     }
   }
