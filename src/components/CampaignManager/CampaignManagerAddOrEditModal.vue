@@ -270,7 +270,6 @@ export default {
       }
     },
     getDefaultValuesOfAdvancedSettings() {
-      console.log(this.selectedRowFormData)
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
       const {
