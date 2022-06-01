@@ -1609,7 +1609,7 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.investigationListBodyData.pageNumber = pageNumber
-      this.refreshDatatable()
+      this.refreshDatatable(false, false, true)
     },
     sortChanged({ order, prop } = {}) {
       this.investigationListBodyData.ascending = order === 'ascending'
@@ -2173,12 +2173,11 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable(isOnBackground = false, isInitial = false) {
+    refreshDatatable(isOnBackground = false, isInitial = false, isPageNumberChanged = false) {
       this.leftMenuLoading = !isOnBackground
       this.topMenuLoading = !isOnBackground
       this.loading = !isOnBackground
-
-      if (this.activeMenu !== 'targetUsers') {
+      if (this.activeMenu !== 'targetUsers' && !isPageNumberChanged) {
         this.investigationListBodyData.pageNumber = 1
         this.investigationListBodyData.filter.FilterGroups[0].FilterItems[0].Value = this.activeMenu
       }
