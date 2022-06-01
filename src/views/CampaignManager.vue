@@ -35,6 +35,14 @@
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
+    <CampaignManagerNewInstanceModal
+      ref="refCampaignNewInstance"
+      v-if="isShowNewInstanceModal"
+      :status="isShowNewInstanceModal"
+      :resourceId="instanceResourceId"
+      @on-close="closeNewInstanceModal"
+      @on-submit="handleOnSubmitNewInstance"
+    />
     <CampaignManagerParentTable
       v-show="!isItemTableShowing"
       ref="campaignManagerParentTable"
@@ -69,7 +77,6 @@
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import {
   bulkDeleteCampaignReports,
@@ -83,6 +90,7 @@ import CampaignManagerPreview from '@/components/CampaignManager/CampaignManager
 import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
+import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 export default {
   name: 'CampaignManager',
   components: {
@@ -92,10 +100,12 @@ export default {
     CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
-    CampaignManagerAddOrEditModal
+    CampaignManagerAddOrEditModal,
+    CampaignManagerNewInstanceModal
   },
   data() {
     return {
+      instanceResourceId: '',
       launchResourceId: '',
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
@@ -108,6 +118,7 @@ export default {
       isItemTableShowing: false,
       isDuplicate: false,
       isShowAddOrEditCampaignManagerModal: false,
+      isShowNewInstanceModal: false,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
@@ -132,12 +143,10 @@ export default {
       if (this.isShowLaunchDialog) this.launchResourceId = ''
       this.isShowLaunchDialog = !this.isShowLaunchDialog
     },
-    handleConfirmLaunchDialog() {
-      const objRef = this.isItemTableShowing
-        ? 'campaignManagerItemTable'
-        : 'campaignManagerParentTable'
-      this.$refs[objRef].callForData()
+    handleConfirmLaunchDialog(resourceId) {
+      this.instanceResourceId = resourceId
       this.toggleShowLaunchDialog()
+      this.showNewInstanceModal()
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
@@ -185,6 +194,17 @@ export default {
         this.isDuplicate = false
       }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
+    },
+    showNewInstanceModal() {
+      this.isShowNewInstanceModal = true
+    },
+    closeNewInstanceModal() {
+      this.instanceResourceId = ''
+      this.isShowNewInstanceModal = false
+    },
+    handleOnSubmitNewInstance() {
+      this.$refs.campaignManagerParentTable.callForData()
+      this.closeNewInstanceModal()
     },
     handleOnSubmit() {
       this.$refs.campaignManagerParentTable.callForData()
