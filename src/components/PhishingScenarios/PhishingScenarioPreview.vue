@@ -57,20 +57,33 @@
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <div class="template-preview pt-3">
-            <div class="template-preview__text" v-if="!!landingPageTemplate">
+          <div class="landing-page-template-preview pt-3" v-if="hasLandingPageTemplate">
+            <div class="landing-page-template-preview__text">
               <div>
-                <span class="template-preview__text--title">Phishing URL: </span>
-                <span class="template-preview__text--body">{{
+                <span class="landing-page-template-preview__text--title">Phishing URL: </span>
+                <span class="landing-page-template-preview__text--body">{{
                   landingPageParams.urlTemplate
                 }}</span>
               </div>
+              <div class="landing-page-template-preview__control-buttons">
+                <v-btn
+                  class="mr-2"
+                  icon
+                  :disabled="!hasPreviousTemplate"
+                  @click="handlePreviousTemplate"
+                >
+                  <v-icon> mdi-chevron-left </v-icon>
+                </v-btn>
+                <v-btn icon :disabled="!hasNextTemplate" @click="handleNextTemplate">
+                  <v-icon> mdi-chevron-right </v-icon>
+                </v-btn>
+              </div>
             </div>
-            <hr class="mt-2" v-if="!!landingPageTemplate" />
+            <hr class="mt-2" v-if="!!getCurrentLandingPageTemplate" />
             <KEmailPreview
-              v-if="!!landingPageTemplate"
+              v-if="!!getCurrentLandingPageTemplate"
               ref="refPreview"
-              :html="landingPageTemplate"
+              :html="getCurrentLandingPageTemplate"
             />
           </div>
         </el-tab-pane>
@@ -97,7 +110,12 @@ import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/At
 
 export default {
   name: 'PhishingScenarioPreview',
-  components: { KEmailPreview, DatatableLoading, AppDialog, AttachmentsPreview },
+  components: {
+    KEmailPreview,
+    DatatableLoading,
+    AppDialog,
+    AttachmentsPreview
+  },
   props: {
     status: {
       type: Boolean
@@ -109,7 +127,8 @@ export default {
   data() {
     return {
       emailTemplate: null,
-      landingPageTemplate: null,
+      landingPageTemplates: [],
+      selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
       tab: 'email',
@@ -124,6 +143,18 @@ export default {
     },
     getSubtitle() {
       return this.selectedRow.name
+    },
+    hasLandingPageTemplate() {
+      return this.landingPageTemplates.length > 0
+    },
+    getCurrentLandingPageTemplate() {
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    hasNextTemplate() {
+      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
+    },
+    hasPreviousTemplate() {
+      return this.selectedLandingPageIndex > 0
     }
   },
   created() {
@@ -178,7 +209,7 @@ export default {
             method: methods[methodTypeId - 1].text,
             isAttachmentBasedTemplate: methodTypeId === 3
           }
-          this.landingPageTemplate = landingPages[0]?.content || ''
+          this.landingPageTemplates = landingPages
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -191,7 +222,21 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handlePreviousTemplate() {
+      this.selectedLandingPageIndex--
+    },
+    handleNextTemplate() {
+      this.selectedLandingPageIndex++
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.landing-page-template-preview__text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>

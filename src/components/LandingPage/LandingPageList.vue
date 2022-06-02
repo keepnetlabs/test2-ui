@@ -42,14 +42,33 @@
       <template v-slot:app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="template-preview__text" v-if="!!templateHTML">
+          <div class="landing-page-template-preview__text" v-if="hasLandingPageTemplate">
             <div>
-              <span class="template-preview__text--title">Phishing URL: </span>
-              <span class="template-preview__text--body">{{ landingPageParams.urlTemplate }}</span>
+              <span class="landing-page-template-preview__text--title">Phishing URL: </span>
+              <span class="landing-page-template-preview__text--body">{{
+                landingPageParams.urlTemplate
+              }}</span>
+            </div>
+            <div class="landing-page-template-preview__control-buttons">
+              <v-btn
+                class="mr-2"
+                icon
+                :disabled="!hasPreviousTemplate"
+                @click="handlePreviousTemplate"
+              >
+                <v-icon> mdi-chevron-left </v-icon>
+              </v-btn>
+              <v-btn icon :disabled="!hasNextTemplate" @click="handleNextTemplate">
+                <v-icon> mdi-chevron-right </v-icon>
+              </v-btn>
             </div>
           </div>
-          <hr class="mt-2" v-if="!!templateHTML" />
-          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+          <hr class="mt-2" v-if="!!getCurrentLandingPageTemplate" />
+          <KEmailPreview
+            v-if="!!getCurrentLandingPageTemplate"
+            ref="refPreview"
+            :html="getCurrentLandingPageTemplate"
+          />
         </div>
       </template>
       <template v-slot:app-dialog-footer>
@@ -198,6 +217,8 @@ export default {
       isDuplicate: false,
       emailTemplateId: null,
       landingPageParams: {},
+      selectedLandingPageIndex: 0,
+      landingPageTemplates: [],
       isPreviewLoading: false,
       labels,
       tableData: [],
@@ -367,7 +388,19 @@ export default {
     ...mapGetters({
       getLandingPageTemplatesSearchPermissions:
         'permissions/getLandingPageTemplatesSearchPermissions'
-    })
+    }),
+    hasLandingPageTemplate() {
+      return this.landingPageTemplates.length > 0
+    },
+    getCurrentLandingPageTemplate() {
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    hasNextTemplate() {
+      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
+    },
+    hasPreviousTemplate() {
+      return this.selectedLandingPageIndex > 0
+    }
   },
   created() {
     this.callForLanguages('refLandingPageList')
@@ -375,6 +408,12 @@ export default {
     this.getDatatableList()
   },
   methods: {
+    handlePreviousTemplate() {
+      this.selectedLandingPageIndex--
+    },
+    handleNextTemplate() {
+      this.selectedLandingPageIndex++
+    },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -445,6 +484,7 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
+          this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages[0].content
         })
@@ -577,5 +617,10 @@ export default {
     display: flex;
     align-items: center;
   }
+}
+.landing-page-template-preview__text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
