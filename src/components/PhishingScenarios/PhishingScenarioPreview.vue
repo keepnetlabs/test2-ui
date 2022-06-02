@@ -57,35 +57,10 @@
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <div class="landing-page-template-preview pt-3" v-if="hasLandingPageTemplate">
-            <div class="landing-page-template-preview__text">
-              <div>
-                <span class="landing-page-template-preview__text--title">Phishing URL: </span>
-                <span class="landing-page-template-preview__text--body">{{
-                  landingPageParams.urlTemplate
-                }}</span>
-              </div>
-              <div class="landing-page-template-preview__control-buttons">
-                <v-btn
-                  class="mr-2"
-                  icon
-                  :disabled="!hasPreviousTemplate"
-                  @click="handlePreviousTemplate"
-                >
-                  <v-icon> mdi-chevron-left </v-icon>
-                </v-btn>
-                <v-btn icon :disabled="!hasNextTemplate" @click="handleNextTemplate">
-                  <v-icon> mdi-chevron-right </v-icon>
-                </v-btn>
-              </div>
-            </div>
-            <hr class="mt-2" v-if="!!getCurrentLandingPageTemplate" />
-            <KEmailPreview
-              v-if="!!getCurrentLandingPageTemplate"
-              ref="refPreview"
-              :html="getCurrentLandingPageTemplate"
-            />
-          </div>
+          <LandingPageTemplateModalPreview
+            :landingPageTemplates="landingPageTemplates"
+            :phishingUrl="landingPageParams.urlTemplate"
+          />
         </el-tab-pane>
       </el-tabs>
     </template>
@@ -107,14 +82,15 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
 export default {
   name: 'PhishingScenarioPreview',
   components: {
     KEmailPreview,
     DatatableLoading,
     AppDialog,
-    AttachmentsPreview
+    AttachmentsPreview,
+    LandingPageTemplateModalPreview
   },
   props: {
     status: {
@@ -232,11 +208,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.landing-page-template-preview__text {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-</style>

@@ -41,35 +41,10 @@
     >
       <template v-slot:app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="landing-page-template-preview__text" v-if="hasLandingPageTemplate">
-            <div>
-              <span class="landing-page-template-preview__text--title">Phishing URL: </span>
-              <span class="landing-page-template-preview__text--body">{{
-                landingPageParams.urlTemplate
-              }}</span>
-            </div>
-            <div class="landing-page-template-preview__control-buttons">
-              <v-btn
-                class="mr-2"
-                icon
-                :disabled="!hasPreviousTemplate"
-                @click="handlePreviousTemplate"
-              >
-                <v-icon> mdi-chevron-left </v-icon>
-              </v-btn>
-              <v-btn icon :disabled="!hasNextTemplate" @click="handleNextTemplate">
-                <v-icon> mdi-chevron-right </v-icon>
-              </v-btn>
-            </div>
-          </div>
-          <hr class="mt-2" v-if="!!getCurrentLandingPageTemplate" />
-          <KEmailPreview
-            v-if="!!getCurrentLandingPageTemplate"
-            ref="refPreview"
-            :html="getCurrentLandingPageTemplate"
-          />
-        </div>
+        <LandingPageTemplateModalPreview
+          :landingPageTemplates="landingPageTemplates"
+          :phishingUrl="landingPageParams.urlTemplate"
+        />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -186,7 +161,6 @@ import {
   exportLandingPage,
   deleteLandingPage
 } from '@/api/landingPage'
-import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
@@ -194,6 +168,8 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+
 export default {
   name: 'EmailTemplates',
   components: {
@@ -201,11 +177,11 @@ export default {
     RowActionsMenu,
     DefaultButtonRowAction,
     DatatableLoading,
-    KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
     NewLandingPage,
-    AppDialog
+    AppDialog,
+    LandingPageTemplateModalPreview
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
