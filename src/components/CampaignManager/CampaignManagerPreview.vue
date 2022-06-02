@@ -125,9 +125,9 @@ export default {
           const { landingPageTemplate: landingPage } = phishingScenarioPreviewDto
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
-            name: phishingScenarioPreviewDto?.emailTemplate?.name,
-            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName,
-            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress
+            name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
           }
           this.landingPageTemplate = landingPage.landingPages[0].content
           this.landingPageParams = {
