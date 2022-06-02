@@ -52,13 +52,23 @@ export function searchTmpTargetUsersForLdap(payload, transactionId) {
 }
 
 export function createLDAPConfig(payload) {
-  return testRequest.post('/ldap-config', payload, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post('/ldap-config', payload)
 }
 
 export function getLDAPConfigJobs(id) {
   return testRequest.get(`ldap-schedule/jobs/${id}`)
+}
+export function updateLDAPSchedule(resourceId) {
+  return testRequest.put(`/ldap-schedule/${resourceId}`)
+}
+export function getLDAPConfigDetail(resourceId) {
+  return testRequest.get(`ldap-schedule/${resourceId}`)
+}
+
+export function deleteLDAPSchedule(resourceId) {
+  return testRequest.delete(`/ldap-schedule/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export default {
@@ -75,5 +85,8 @@ export default {
   checkLDAPMappingStatus,
   searchTmpTargetUsersForLdap,
   createLDAPConfig,
-  getLDAPConfigJobs
+  getLDAPConfigJobs,
+  updateLDAPSchedule,
+  deleteLDAPSchedule,
+  getLDAPConfigDetail
 }

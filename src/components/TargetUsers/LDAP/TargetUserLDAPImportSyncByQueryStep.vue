@@ -1,5 +1,11 @@
 <template>
   <div>
+    <TargetUserLDAPImportSyncByQueryViewUsers
+      v-if="showUsersDialog"
+      ref="refDialog"
+      :status="showUsersDialog"
+      @on-close="toggleShowUsersDialog"
+    />
     <vue-query-builder
       v-model="query"
       id="target-user-ldap-query-builder"
@@ -43,14 +49,35 @@
 <script>
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../../Common/QueryBuilder/CustomGroup'
+import TargetUserLDAPImportSyncByQueryViewUsers from '@/components/TargetUsers/LDAP/TargetUserLDAPImportSyncByQueryViewUsers'
 export default {
   name: 'TargetUserLDAPImportSyncByQueryStep',
   components: {
+    TargetUserLDAPImportSyncByQueryViewUsers,
     VueQueryBuilder,
     QueryBuilderGroup
   },
-  data() {
+  inject: ['fieldMappings', 'customFields'],
+  provide() {
     return {
+      viewUsersTableFilterParams: this.viewUsersTableFilterParams
+    }
+  },
+  data() {
+    const fieldMappings = this.fieldMappings.map((item) => ({
+      text: item.customFieldResourceId,
+      value: item.customFieldResourceId
+    }))
+    this.customFields.map((cField) => {
+      if (
+        !fieldMappings.find((fMap) => fMap.text === cField.name || fMap.text === cField.resourceId)
+      ) {
+        fieldMappings.push({ text: cField.name, value: cField.name })
+      }
+      return cField
+    })
+    return {
+      showUsersDialog: false,
       query: {
         logicalOperator: 'AND',
         children: [
@@ -68,42 +95,12 @@ export default {
           type: 'conditions',
           id: 'conditions',
           label: 'Conditions',
-          operands: [
-            'From',
-            'To',
-            'CC',
-            { text: 'Sender IP', value: 'SenderIp' },
-            'Subject',
-            'Keyword',
-            { text: 'Attachment name', value: 'AttachmentName' },
-            { text: 'Attachment hash', value: 'AttachmentHash' },
-            { text: 'Attachment extension', value: 'AttachmentExtension' }
-          ],
-          operandsFrom: ['Email', 'Domain', 'Regex'],
-          operandsTo: ['Email', 'Domain', 'Regex'],
-          operandsCC: ['Email', 'Domain', 'Regex'],
-          operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
-          operandsSenderIP: [
-            { text: 'is equal to', value: 'Equal' },
-            { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exists', value: 'Exists' },
-            { text: 'does not exist', value: 'DoesNotExist' }
-          ],
-          operandsAttachmentHash: [
-            { text: 'is equal to', value: 'Equal' },
-            { text: 'is not equal to', value: 'IsNotEqual' }
-          ],
+          operands: fieldMappings,
           operators: [
             { text: 'contains', value: 'Contains' },
             { text: 'does not contain', value: 'DoesNotContain' },
             { text: 'is equal to', value: 'Equal' },
-            { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exists', value: 'Exists' },
-            { text: 'does not exist', value: 'DoesNotExist' }
-          ],
-          keywordOperators: [
-            { text: 'contains', value: 'Contains' },
-            { text: 'does not contain', value: 'DoesNotContain' }
+            { text: 'is not equal to', value: 'IsNotEqual' }
           ]
         }
       ],
@@ -116,11 +113,46 @@ export default {
         addRule: 'ADD CONDITION',
         addGroup: 'ADD ANOTHER CONDITION SET',
         textInputPlaceholder: 'value'
+      },
+      viewUsersTableFilterParams: {
+        items: [],
+        operator: 'AND'
       }
     }
   },
+  created() {
+    console.log('this.f', this.fieldMappings)
+  },
   methods: {
-    handleViewUsers() {}
+    handleViewUsers() {
+      this.viewUsersTableFilterParams.items = this.transformQuery(this.query.children, [])
+      this.viewUsersTableFilterParams.operator =
+        this.query.children[0].query.logicalOperator === 'OR'
+      this.toggleShowUsersDialog()
+    },
+
+    transformQuery(children, filterItems) {
+      children.map((child) => {
+        if (child.children) {
+          this.transformQuery(child.children, filterItems)
+        } else if (child.query) {
+          if (child.type === 'query-builder-group') {
+            this.transformQuery(child.query.children, filterItems)
+          } else if (child.type === 'query-builder-rule') {
+            debugger
+            filterItems.push({
+              Value: child.query.value || '',
+              FieldName: child.query.operand,
+              Operator: child.query.operator
+            })
+          }
+        }
+      })
+      return filterItems
+    },
+    toggleShowUsersDialog() {
+      this.showUsersDialog = !this.showUsersDialog
+    }
   }
 }
 </script>

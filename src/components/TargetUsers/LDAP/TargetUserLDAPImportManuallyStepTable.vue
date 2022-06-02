@@ -32,6 +32,7 @@
       <div class="target-user-import-file__header-detail">
         <v-btn
           class="target-user-import-file__button target-user-import-file__button--table-notification"
+          :style="!getInvalidUserCount && { opacity: '.5', pointerEvents: 'none' }"
           outlined
           rounded
           @click="handleValidityButton"
@@ -56,36 +57,72 @@ export default {
   name: 'TargetUserLDAPImportManuallyStepTable',
   components: { DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
-  inject: ['getTransactionId', 'getMappingObject', 'setTotalNumberOfRecords', 'setSelectedUsers'],
+  props: {
+    hideFilter: {
+      type: Boolean
+    },
+    totalNumberOfRecords: {
+      type: Number,
+      default: 0
+    }
+  },
+  inject: {
+    getTransactionId: {
+      type: Function
+    },
+    getMappingObject: {
+      type: Function
+    },
+    setTotalNumberOfRecords: {
+      type: Function
+    },
+    setSelectedUsers: {
+      type: Function
+    },
+    viewUsersTableFilterParams: {
+      default: () => null
+    },
+    setViewUsersQuery: {
+      type: Function
+    }
+  },
   data() {
+    const axiosPayload = getDefaultAxiosPayload({
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'Status',
+                Operator: 'Include',
+                Value: 'New,Exists,Error'
+              }
+            ],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    })
+    if (this.viewUsersTableFilterParams && this.viewUsersTableFilterParams?.items) {
+      const index = Number(this.viewUsersTableFilterParams?.operator)
+      axiosPayload.filter.FilterGroups[index].FilterItems = [
+        ...axiosPayload.filter.FilterGroups[index].FilterItems,
+        ...this.viewUsersTableFilterParams.items
+      ]
+    }
     return {
       CONSTANTS: {
         id: 'target-user-ldap-import-manually-data-table'
       },
       isShowInvalid: false,
-      axiosPayload: getDefaultAxiosPayload({
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'Status',
-                  Operator: 'Include',
-                  Value: 'New,Exists,Error'
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }),
+      axiosPayload,
       tableData: [],
       customFields: [],
       serverSideProps: new ServerSideProps(),
@@ -106,7 +143,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
+            filterableType: this.hideFilter ? null : 'text',
             dbName: 'FirstName',
             emptyText: 'No Data'
           },
@@ -119,7 +156,7 @@ export default {
             show: true,
             type: 'text',
             width: 180,
-            filterableType: 'text',
+            filterableType: this.hideFilter ? null : 'text',
             dbName: 'LastName',
             emptyText: 'No Data'
           },
@@ -132,7 +169,7 @@ export default {
             show: true,
             type: 'text',
             width: 275,
-            filterableType: 'text',
+            filterableType: this.hideFilter ? null : 'text',
             dbName: 'Email',
             emptyText: 'No Data'
           },
@@ -145,7 +182,7 @@ export default {
             show: true,
             type: 'text',
             width: 300,
-            filterableType: 'text',
+            filterableType: this.hideFilter ? null : 'text',
             dbName: 'Department',
             emptyText: 'No Data'
           },
@@ -209,12 +246,16 @@ export default {
   computed: {
     getValidityButtonText() {
       return !this.isShowInvalid
-        ? `ONLY SHOW INVALID (${this.getMappingObject()?.invalidUserCount})`
+        ? `ONLY SHOW INVALID (${this.getInvalidUserCount})`
         : `SHOW ALL (${this.serverSideProps.totalNumberOfRecords})`
+    },
+    getInvalidUserCount() {
+      return this.getMappingObject()?.invalidUserCount
     }
   },
   created() {
     this.callForData()
+    if (this.hideFilter) this.setViewUsersQuery(this.axiosPayload.filter)
   },
   methods: {
     callForData() {
@@ -229,9 +270,10 @@ export default {
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.setTotalNumberOfRecords(totalNumberOfRecords)
+          if (!this.hideFilter) this.setTotalNumberOfRecords(totalNumberOfRecords)
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
+          this.$emit('update:totalNumberOfRecords', totalNumberOfRecords)
           if (!this.customFields.length && results?.length) {
             this.createCustomFields(results)
           }
@@ -312,8 +354,15 @@ export default {
       this.callForData()
     },
     handleSelectionChange(selection) {
+      if (this.hideFilter) return
       this.setSelectedUsers(selection)
     }
   }
 }
 </script>
+
+<style lang="scss">
+#target-user-ldap-import-manually-data-table .selection-row {
+  top: inherit !important;
+}
+</style>

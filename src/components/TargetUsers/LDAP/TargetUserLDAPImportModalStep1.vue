@@ -18,7 +18,7 @@
     </FormGroup>
     <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub">
       <KSelect
-        v-model.trim="formData.targetGroupResourceId"
+        v-model.trim="targetGroupResourceId"
         type="autocomplete"
         id="input--target-user-groups"
         outlined

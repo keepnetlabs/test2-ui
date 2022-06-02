@@ -27,7 +27,21 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @refreshAction="callForData"
-    />
+      @editAction="handleEdit"
+      @deleteAction="handleDelete"
+    >
+      <template #datatable-custom-column="{ scope }">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>{{ scope.row.name }}</span>
+          <v-tooltip bottom v-if="scope.row.errorMessage">
+            <template #activator="{ on }">
+              <v-icon v-on="on" color="#f56c6c" size="medium">mdi-alert-circle</v-icon>
+            </template>
+            <span>{{ scope.row.errorMessage }}</span>
+          </v-tooltip>
+        </div>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -47,7 +61,7 @@ export default {
   data() {
     return {
       CONSTANTS: {
-        id: 'target-user-ldap-import-manually-data-table'
+        id: 'target-user-ldap-scheduled-data-table'
       },
       axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
@@ -63,27 +77,65 @@ export default {
           {
             property: PROPERTY_STORE.NAME,
             align: 'left',
-            label: labels.GroupName,
+            label: labels.Name,
             fixed: 'left',
             sortable: true,
             show: true,
+            filterableType: 'text',
+            type: 'slot',
             width: '160'
           },
           {
-            property: PROPERTY_STORE.TARGET_USERS,
-            align: 'right',
-            editable: false,
-            label: labels.TargetUsers,
+            property: PROPERTY_STORE.STATUS,
+            align: 'center',
+            label: labels.Status,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'number',
-            filterableType: 'number',
-            emptyText: 0
+            type: 'badge',
+            width: 180,
+            filterableType: 'select',
+            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            label: labels.CreateTime,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            isEditable: true,
+            filterableType: 'date'
+          },
+          {
+            property: PROPERTY_STORE.LASTRUNTIME,
+            align: 'left',
+            label: labels.LastRunTime,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            isEditable: true,
+            filterableType: 'date'
+          },
+          {
+            property: PROPERTY_STORE.PERIODTIME,
+            align: 'right',
+            label: labels.PeriodTime,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            isEditable: true,
+            filterableType: 'text'
           }
         ],
         iEmpty: {
-          message: labels.EmptyTargetUsersPeople
+          message: labels.EmptyScheduledSyncs
         },
         addButton: {
           show: false
@@ -91,7 +143,20 @@ export default {
         downloadButton: {
           show: false
         },
-        rowActions: [],
+        rowActions: [
+          {
+            name: 'Edit',
+            icon: 'mdi-pencil',
+            action: 'editAction',
+            id: 'btn-edit--smtp-settings-row-actions'
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            id: 'btn-delete--smtp-settings-row-actions'
+          }
+        ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
@@ -101,9 +166,31 @@ export default {
   },
   methods: {
     callForData() {
-      LDAPService.searchLDAPSchedule(this.axiosPayload).then((response) => {
-        console.log('response', response)
-      })
+      this.setLoading(true)
+      LDAPService.searchLDAPSchedule(this.axiosPayload)
+        .then((response) => {
+          const {
+            totalNumberOfRecords,
+            totalNumberOfPages,
+            pageNumber,
+            results
+          } = response?.data?.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+          console.log('response', response)
+        })
+        .finally(this.setLoading)
+    },
+    handleEdit(row) {
+      this.$emit('on-edit', row)
+    },
+    handleDelete(row) {
+      this.$emit('on-delete', row)
+    },
+    unSelectRow(row) {
+      this.$refs.refTable.unSelectRow(row)
     }
   }
 }

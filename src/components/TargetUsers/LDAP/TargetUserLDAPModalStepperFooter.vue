@@ -13,7 +13,7 @@
         @click="changeStep()"
       />
       <v-btn
-        v-if="isStepIsEqualToMax"
+        v-if="isStepIsEqualToMax && selectedRadioStep === 0"
         id="btn-import-selected--target-users-import-people-modal"
         class="target-user-import-file__button target-user-import-file__button--import-selected"
         :style="!selectedItemsCount && { opacity: '.5', pointerEvents: 'none' }"
@@ -27,12 +27,15 @@
         v-if="isStepIsEqualToMax"
         id="btn-import-all--target-users-import-people-modal"
         class="target-user-import-file__button target-user-import-file__button--import-all"
-        :style="!totalNumberOfRecords && { opacity: '.5', pointerEvents: 'none' }"
+        :style="getImportButtonStyle"
         rounded
         color="#2196f3"
         @click="$emit('on-import-all')"
       >
-        {{ labels.ImportAll }} {{ totalNumberOfRecords ? `(${totalNumberOfRecords})` : '' }}
+        {{ selectedRadioStep === 0 ? labels.ImportAll : labels.Import }}
+        {{
+          selectedRadioStep === 0 ? (totalNumberOfRecords ? `(${totalNumberOfRecords})` : '') : ''
+        }}
       </v-btn>
     </template>
   </StepperFooter>
@@ -65,6 +68,9 @@ export default {
     isSubmitDisabled: {
       type: Boolean,
       default: false
+    },
+    selectedRadioStep: {
+      type: Number
     }
   },
   data() {
@@ -76,6 +82,14 @@ export default {
     },
     isRenderBackButton() {
       return this.step > 1
+    },
+    getImportButtonStyle() {
+      return (
+        (!this.totalNumberOfRecords || this.isSubmitDisabled) && {
+          opacity: '.5',
+          pointerEvents: 'none'
+        }
+      )
     }
   },
   methods: {

@@ -16,7 +16,7 @@
         ref="refManually"
         v-else-if="selectedRadioGroupIndex === 0"
       />
-      <TargetUserLDAPImportSyncByQueryStep v-else />
+      <TargetUserLDAPImportSyncByQueryStep ref="refQuery" v-else />
     </div>
   </div>
 </template>
@@ -50,6 +50,9 @@ export default {
     selectedLDAPItems: {
       type: Array,
       default: () => []
+    },
+    selectedRadioStep: {
+      type: Number
     }
   },
   inject: ['resourceId'],
@@ -74,6 +77,11 @@ export default {
   computed: {
     isIdle() {
       return this.activeStatus === TRANSACTION_STATUSES.IDLE
+    }
+  },
+  watch: {
+    selectedRadioGroupIndex(val) {
+      this.$emit('update:selectedRadioStep', val)
     }
   },
   created() {

@@ -31,6 +31,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import labels from '@/model/constants/labels'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { defaultFieldMappings } from './utils'
 export default {
   name: 'LDAPFieldMappings',
   components: { ConfigureCompanyStepHeader, SaveChangesButton, DatatableLoading, MapTable },
@@ -85,6 +86,9 @@ export default {
         this.mappingData.headers = [...mappedHeaders, ...customFields]
         this.setTableData()
         this.setLoading()
+        this.$nextTick(() => {
+          this?.$refs?.refMapTable?.setDisabilityOfSelect()
+        })
       })
     },
     setTableData() {
@@ -93,14 +97,23 @@ export default {
         return acc
       }, {})
       this.mappingData.tableData = this.tableData.map((item) => {
-        for (const key of Object.keys(customFieldDefaultValues)) {
-          if (!item[key]) item[key] = customFieldDefaultValues[key]
+        const newItem = {}
+        for (const mapper of defaultFieldMappings) {
+          newItem[mapper.customFieldResourceId] = item[mapper.customFieldResourceId] || ''
         }
-        return item
+        for (const key of Object.keys(customFieldDefaultValues)) {
+          if (!item[key]) newItem[key] = customFieldDefaultValues[key]
+          else newItem[key] = item[key]
+        }
+        return newItem
       })
     },
     callForData(isInitial = false) {
-      return LDAPService.searchADUsers({ fieldMappings: this.fieldMappings }).then((response) => {
+      return LDAPService.searchADUsers({
+        fieldMappings: this.fieldMappings.filter(
+          (mapping) => mapping.customFieldResourceId && mapping.ldapFieldResourceId
+        )
+      }).then((response) => {
         const {
           data: { data }
         } = response
@@ -164,7 +177,9 @@ export default {
       this.callForData().finally(this.setLoading)
     },
     handleSubmit() {
-      this.$emit('on-submit', { fieldMappings: this.fieldMappings })
+      this.$emit('on-submit', {
+        fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
+      })
     }
   }
 }

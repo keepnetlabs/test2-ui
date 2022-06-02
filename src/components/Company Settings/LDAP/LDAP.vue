@@ -13,7 +13,7 @@
       />
     </el-tab-pane>
     <el-tab-pane id="ldap-scheduled-syncs" label="Scheduled Syncs" name="scheduled-syncs">
-      <LDAPScheduledSyncs />
+      <LDAPScheduledSyncs v-if="tab === 'scheduled-syncs'" :resource-id="resourceId" />
     </el-tab-pane>
     <el-tab-pane id="ldap-field-mappings" label="Field Mapping" name="field-mapping">
       <template v-if="isFieldMappingDisabled" #label>
@@ -41,6 +41,10 @@ import LDAPSettings from '@/components/Company Settings/LDAP/LDAPSettings'
 import LDAPScheduledSyncs from '@/components/Company Settings/LDAP/LDAPScheduledSyncs'
 import LDAPFieldMappings from '@/components/Company Settings/LDAP/LDAPFieldMappings'
 import LDAPService from '@/api/ldap'
+import {
+  defaultFieldMappings,
+  getDefaultFieldMappingsWithCurrent
+} from '@/components/Company Settings/LDAP/utils'
 export default {
   name: 'LDAP',
   components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings },
@@ -71,7 +75,10 @@ export default {
           this.isFieldMappingDisabled = false
           data.password = data['hashPassword']
           this.resourceId = data.resourceId
-          this.fieldMappings = data.fieldMappings
+          this.fieldMappings = getDefaultFieldMappingsWithCurrent(
+            defaultFieldMappings,
+            data?.fieldMappings
+          )
           delete data['hashPassword']
           delete data['resourceId']
           delete data['fieldMappings']

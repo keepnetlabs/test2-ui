@@ -98,6 +98,17 @@ export default {
       this.mapTableData.columns[0].disabled = false
       this.$emit('on-change', { ...item, header, index })
     },
+    setDisabilityOfSelect() {
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let isDisabled = this.mapTableData.headers.find((x) => {
+          return x.selectedValue && x.selectedValue.name === i.name
+        })
+        return {
+          ...i,
+          disabled: isDisabled
+        }
+      })
+    },
     setExistItems() {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
         const isExist = this.mapTableData.headers.find((hItem) => {

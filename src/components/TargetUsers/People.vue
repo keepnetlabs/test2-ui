@@ -53,6 +53,8 @@
       v-if="isShowImportLDAPModal"
       :status="isShowImportLDAPModal"
       :resource-id="ldapResourceId"
+      :field-mappings="ldapFieldMappings"
+      :custom-fields="customFields"
       @on-close="toggleImportLDAPModal"
     />
     <datatable
@@ -171,7 +173,7 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
-                    <v-list-item :disabled="isLDAPdisabled" @click="toggleImportLDAPModal">
+                    <v-list-item :disabled="isLDAPDisabled" @click="toggleImportLDAPModal">
                       <v-list-item-content>
                         <v-list-item-title id="item--target-user-empty-import-from-ldap"
                           >Import from LDAP</v-list-item-title
@@ -238,6 +240,10 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
 import LDAPService from '@/api/ldap'
+import {
+  defaultFieldMappings,
+  getDefaultFieldMappingsWithCurrent
+} from '@/components/Company Settings/LDAP/utils'
 
 export default {
   name: 'People',
@@ -284,7 +290,8 @@ export default {
       isWantToShowAddUsersModal: false,
       isWantToShowCustomFieldsModal: false,
       deleteButtonDisabled: false,
-      isLDAPdisabled: false,
+      isLDAPDisabled: false,
+      ldapFieldMappings: [],
       tableOptions: {
         lastColumns: [
           {
@@ -436,7 +443,7 @@ export default {
         {
           text: 'Import from LDAP',
           id: 'btn-add-users-import-from-ldap--target-users-people',
-          disabled: this.isLDAPdisabled
+          disabled: this.isLDAPDisabled
         }
       ],
       serverSideProps: new ServerSideProps()
@@ -459,9 +466,13 @@ export default {
             data: { data }
           } = response
           this.ldapResourceId = data?.resourceId
+          this.ldapFieldMappings = getDefaultFieldMappingsWithCurrent(
+            defaultFieldMappings,
+            data?.fieldMappings
+          )
         })
         .catch(() => {
-          this.isLDAPdisabled = true
+          this.isLDAPDisabled = true
           this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
         })
     },
