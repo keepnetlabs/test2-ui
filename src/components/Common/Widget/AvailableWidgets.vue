@@ -15,6 +15,14 @@
           >Edit Dashboard</v-btn
         >
         <template v-else>
+          <v-btn
+            id="btn-cancel--dashboard-widgets"
+            class="widget-button mr-2"
+            rounded
+            color="transparent"
+            @click="handleCancel"
+            ><v-icon class="mr-2" style="font-size: 22px;">mdi-close</v-icon>Cancel</v-btn
+          >
           <v-menu bottom offset-y max-height="500" content-class="no-box-shadow">
             <template v-slot:activator="{ on }">
               <div v-on="on" style="display: inline-block;">
@@ -44,14 +52,6 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <v-btn
-            id="btn-cancel--dashboard-widgets"
-            class="widget-button mr-2"
-            rounded
-            color="transparent"
-            @click="handleCancel"
-            ><v-icon class="mr-2" style="font-size: 22px;">mdi-cancel</v-icon>Cancel</v-btn
-          >
           <v-btn
             id="btn-save--dashboard-widgets"
             class="widget-button"
