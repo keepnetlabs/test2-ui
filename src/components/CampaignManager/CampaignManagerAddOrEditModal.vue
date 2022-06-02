@@ -508,7 +508,7 @@ export default {
         case 2:
           const { refCampaignManagerAdvancedSettings } = this.$refs
           const { refForm: refFormAdvanced } = refCampaignManagerAdvancedSettings.$refs
-          if (refFormAdvanced.validate()) this.changeStep()
+          if (refFormAdvanced && refFormAdvanced.validate()) this.changeStep()
           else this.showErrorMessage(refFormAdvanced)
           break
         case 3:
