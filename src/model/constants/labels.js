@@ -13,6 +13,9 @@ export const labels = {
   EmailDelivery: 'Email Delivery',
   SIEMProvider: 'SIEM Provider',
   LDAP: 'LDAP',
+  FieldMapping: 'Field Mapping',
+  FieldMappingSub:
+    'Match field names from your Active Directory to the system fields to import users information correctly',
   LDAPGroups: 'LDAP Groups',
   LDAPGroupsSub: 'Select LDAP groups to import',
   Path: 'Path',

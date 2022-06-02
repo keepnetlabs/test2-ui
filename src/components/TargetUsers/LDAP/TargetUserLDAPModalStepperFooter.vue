@@ -16,19 +16,23 @@
         v-if="isStepIsEqualToMax"
         id="btn-import-selected--target-users-import-people-modal"
         class="target-user-import-file__button target-user-import-file__button--import-selected"
+        :style="!selectedItemsCount && { opacity: '.5', pointerEvents: 'none' }"
         rounded
         color="#2196f3"
+        @click="$emit('on-import-selected')"
       >
-        {{ labels.ImportSelected }}
+        {{ labels.ImportSelected }} {{ selectedItemsCount ? `(${selectedItemsCount})` : '' }}
       </v-btn>
       <v-btn
         v-if="isStepIsEqualToMax"
         id="btn-import-all--target-users-import-people-modal"
         class="target-user-import-file__button target-user-import-file__button--import-all"
+        :style="!totalNumberOfRecords && { opacity: '.5', pointerEvents: 'none' }"
         rounded
         color="#2196f3"
+        @click="$emit('on-import-all')"
       >
-        {{ labels.ImportAll }}
+        {{ labels.ImportAll }} {{ totalNumberOfRecords ? `(${totalNumberOfRecords})` : '' }}
       </v-btn>
     </template>
   </StepperFooter>
@@ -52,6 +56,12 @@ export default {
         return ['string', 'number'].includes(typeof v)
       }
     },
+    totalNumberOfRecords: {
+      type: Number
+    },
+    selectedItemsCount: {
+      type: Number
+    },
     isSubmitDisabled: {
       type: Boolean,
       default: false
@@ -70,7 +80,18 @@ export default {
   },
   methods: {
     changeStep(val = 1) {
-      this.$emit('update:step', this.step + val)
+      switch (val) {
+        case 1:
+          this.$emit('validate-step1', () => {
+            this.$emit('update:step', this.step + val)
+          })
+          break
+        case -1:
+          this.$emit('update:step', this.step + val)
+          break
+        default:
+          break
+      }
     },
     handleCancel() {
       this.$emit('on-cancel')

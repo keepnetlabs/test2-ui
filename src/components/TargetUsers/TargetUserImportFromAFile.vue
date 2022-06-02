@@ -1608,7 +1608,7 @@ export default {
       line-height: 1.29;
       letter-spacing: normal;
       color: #383b41;
-      margin-bottom: 44px;
+      margin-bottom: 32px;
     }
     &--progress {
       font-size: 10px;

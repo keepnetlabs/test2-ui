@@ -1,5 +1,5 @@
 <template>
-  <TargetUserLDAPImportManuallyStepTable class="mt-6" />
+  <TargetUserLDAPImportManuallyStepTable ref="refTable" class="mt-6" />
 </template>
 
 <script>

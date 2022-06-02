@@ -7,13 +7,10 @@
       Process is Queued
     </v-alert>
     <div class="target-user-import-file__progression--progress">
-      <div>{{ getProgressValue }}%</div>
-      <div>
-        <v-progress-linear :value="getProgressValue"></v-progress-linear>
+      <div class="mb-2">
+        <v-progress-circular :size="25" color="primary" indeterminate />
       </div>
-      <div>
-        0/240 users processed
-      </div>
+      <div>{{ getText }}</div>
     </div>
   </div>
 </template>
@@ -21,12 +18,22 @@
 <script>
 export default {
   name: 'TargetUserLDAPImportLoader',
-  computed: {
-    isIdle() {
-      return false
+  props: {
+    processedUserCount: {
+      type: Number,
+      default: 0
     },
-    getProgressValue() {
-      return 50
+    isIdle: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    getText() {
+      const isEqualToZero = this.processedUserCount === 0
+      return `${isEqualToZero ? 'No' : this.processedUserCount} user${
+        isEqualToZero ? '' : 's'
+      } processed`
     }
   }
 }

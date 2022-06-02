@@ -39,6 +39,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import LDAPService from '@/api/ldap'
 export default {
   name: 'LDAPScheduledSyncsTable',
   components: { DataTable },
@@ -99,7 +100,11 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {}
+    callForData() {
+      LDAPService.searchLDAPSchedule(this.axiosPayload).then((response) => {
+        console.log('response', response)
+      })
+    }
   }
 }
 </script>

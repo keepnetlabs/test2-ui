@@ -1,11 +1,13 @@
 <template>
   <DataTable
-    :id="CONSTANTS.id"
     ref="refTable"
+    :id="CONSTANTS.id"
+    :class="{ 'ml-n4': isLoading }"
     selectable
     filterable
     options
     is-server-side
+    row-key="displayName"
     :loading="isLoading"
     :show-filter-options="false"
     :is-settings-popup="false"
@@ -26,6 +28,7 @@
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
+    @handleSelectionChange="handleSelectionChange"
   />
 </template>
 
@@ -36,17 +39,18 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import LDAPService from '@/api/ldap'
 export default {
   name: 'TargetUserLDAPImportTable',
   components: { DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
+  inject: ['resourceId'],
   data() {
     return {
       CONSTANTS: {
         id: 'target-user-ldap-import-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'displayName' }),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -58,24 +62,27 @@ export default {
         },
         columns: [
           {
-            property: PROPERTY_STORE.NAME,
+            property: 'displayName',
             align: 'left',
+            editable: false,
             label: labels.GroupName,
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
-            width: '160'
+            type: 'text',
+            filterableType: 'text',
+            filterableCustomFieldName: 'DisplayName',
+            width: 240
           },
           {
-            property: PROPERTY_STORE.TARGET_USERS,
-            align: 'right',
+            property: 'count',
+            align: 'left',
             editable: false,
             label: labels.TargetUsers,
             fixed: false,
             sortable: true,
             show: true,
             type: 'number',
-            filterableType: 'number',
             emptyText: 0
           }
         ],
@@ -97,7 +104,27 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {}
+    callForData() {
+      this.setLoading(true)
+      console.log('this.axiosPayload', this.axiosPayload)
+      LDAPService.searchADGroups({ ...this.axiosPayload, lDAPSettingId: this.resourceId })
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          console.log('results', results)
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
+    },
+    handleSelectionChange(selection) {
+      this.$emit('on-selection-change', selection)
+    }
   }
 }
 </script>

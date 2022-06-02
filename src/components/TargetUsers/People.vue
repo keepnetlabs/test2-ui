@@ -52,6 +52,7 @@
     <TargetUserLDAPImportModal
       v-if="isShowImportLDAPModal"
       :status="isShowImportLDAPModal"
+      :resource-id="ldapResourceId"
       @on-close="toggleImportLDAPModal"
     />
     <datatable
@@ -116,6 +117,7 @@
               v-for="item in addUsersItems"
               :key="item.id"
               :id="item.id"
+              :disabled="item.disabled"
               @click="handleAddUsers(item.text)"
             >
               <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
@@ -169,7 +171,7 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
-                    <v-list-item @click="toggleImportLDAPModal">
+                    <v-list-item :disabled="isLDAPdisabled" @click="toggleImportLDAPModal">
                       <v-list-item-content>
                         <v-list-item-title id="item--target-user-empty-import-from-ldap"
                           >Import from LDAP</v-list-item-title
@@ -235,6 +237,7 @@ import { mapGetters } from 'vuex'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
+import LDAPService from '@/api/ldap'
 
 export default {
   name: 'People',
@@ -261,6 +264,7 @@ export default {
   data() {
     return {
       labels,
+      ldapResourceId: '',
       isInitial: true,
       isShowImportLDAPModal: false,
       selectedUserToViewGroups: null,
@@ -280,6 +284,7 @@ export default {
       isWantToShowAddUsersModal: false,
       isWantToShowCustomFieldsModal: false,
       deleteButtonDisabled: false,
+      isLDAPdisabled: false,
       tableOptions: {
         lastColumns: [
           {
@@ -428,7 +433,11 @@ export default {
       addUsersItems: [
         { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
         { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' },
-        { text: 'Import from LDAP', id: 'btn-add-users-import-from-ldap--target-users-people' }
+        {
+          text: 'Import from LDAP',
+          id: 'btn-add-users-import-from-ldap--target-users-people',
+          disabled: this.isLDAPdisabled
+        }
       ],
       serverSideProps: new ServerSideProps()
     }
@@ -438,7 +447,24 @@ export default {
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
     })
   },
+  created() {
+    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.checkIsLDAPConfigured()
+  },
   methods: {
+    checkIsLDAPConfigured() {
+      LDAPService.getLDAPSettingDetailForMyCompany()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.ldapResourceId = data?.resourceId
+        })
+        .catch(() => {
+          this.isLDAPdisabled = true
+          this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+        })
+    },
     toggleImportLDAPModal() {
       this.isShowImportLDAPModal = !this.isShowImportLDAPModal
     },
@@ -716,9 +742,6 @@ export default {
         })
       })
     }
-  },
-  created() {
-    this.callForGetTargetUserCustomFieldsByCompanyId()
   }
 }
 </script>
@@ -800,6 +823,12 @@ export default {
     .v-icon {
       font-size: 18px !important;
       color: white;
+    }
+  }
+  .ldap-import-table {
+    .v-list-item__content,
+    .k-form-group__content {
+      width: 100%;
     }
   }
 }
