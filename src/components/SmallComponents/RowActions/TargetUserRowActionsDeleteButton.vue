@@ -1,17 +1,18 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <v-list-item
-        v-on="on"
-        :disabled="getDisabledStatusOfAction"
-        :id="`btn-edit--target-user-${scope.$index}`"
-        @click="!getDisabledStatusOfAction && $emit('on-delete', scope.row)"
-      >
-        <v-list-item-title>
-          <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
-          <span>Delete</span>
-        </v-list-item-title>
-      </v-list-item>
+      <div v-on="on">
+        <v-list-item
+          :disabled="getDisabledStatusOfAction"
+          :id="`btn-edit--target-user-${scope.$index}`"
+          @click="!getDisabledStatusOfAction && $emit('on-delete', scope.row)"
+        >
+          <v-list-item-title>
+            <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
+            <span>Delete</span>
+          </v-list-item-title>
+        </v-list-item>
+      </div>
     </template>
     <span>{{ getTooltipMessage }}</span>
   </v-tooltip>
@@ -41,8 +42,11 @@ export default {
     }),
     getTooltipMessage() {
       const { row } = this.scope
+      const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
       return !row.isEditable
-        ? `SCIM(${row.scimSettingName}) synced users cannot be deleted`
+        ? `${indent}(${
+            indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
+          }) synced users cannot be deleted`
         : !this.getDisabledStatusOfAction
         ? this.name
         : 'No Permission'
