@@ -195,6 +195,7 @@
             :scope="scope"
             :text="tableOptions.rowActions[2].name"
             :icon="tableOptions.rowActions[2].icon"
+            @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
         </RowActionsMenu>
