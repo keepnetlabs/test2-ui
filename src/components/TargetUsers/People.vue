@@ -56,6 +56,7 @@
       :field-mappings="ldapFieldMappings"
       :custom-fields="customFields"
       @on-close="toggleImportLDAPModal"
+      @on-close-with-update="callForGetTargetUserCustomFieldsByCompanyId"
     />
     <datatable
       ref="refPeopleTable"
@@ -836,11 +837,11 @@ export default {
       color: white;
     }
   }
-  .ldap-import-table {
-    .v-list-item__content,
-    .k-form-group__content {
-      width: 100%;
-    }
+}
+.ldap-import-table {
+  .v-list-item__content,
+  .k-form-group__content {
+    width: 100%;
   }
 }
 </style>

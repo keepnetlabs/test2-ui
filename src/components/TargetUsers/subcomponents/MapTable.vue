@@ -108,6 +108,7 @@ export default {
           disabled: isDisabled
         }
       })
+      this.mapTableData.columns[0].disabled = false
     },
     setExistItems() {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {

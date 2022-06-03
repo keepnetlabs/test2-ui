@@ -122,9 +122,10 @@ export default {
       resourceId: this.resourceId,
       fieldMappings: this.fieldMappings,
       customFields: this.customFields,
+      isEdit: this.isEdit,
       setTotalNumberOfRecords: (val) => (this.totalNumberOfRecords = val),
       setSelectedUsers: (val) => (this.selectedUsers = val),
-      setViewUsersQuery: (val) => (this.usersQueryFilter = val)
+      getEditedScheduledFilter: () => this.editedScheduledFilter
     }
   },
   data() {
@@ -136,6 +137,7 @@ export default {
       totalNumberOfRecords: 0,
       selectedRadioGroupIndex: 0,
       selectedUsers: [],
+      editedScheduledFilter: null,
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -151,7 +153,15 @@ export default {
   },
   methods: {
     callForData() {
-      LDAPService.getLDAPConfigDetail(this?.selectedRow?.resourceId).then((response) => {})
+      LDAPService.getLDAPConfigDetail(this?.selectedRow?.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        const { targetGroupResourceId, ldapSettingResourceId, filter } = data
+        this.editedScheduledFilter = filter
+        this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
+        this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
+      })
     },
     handleClose() {
       this.$emit('on-close')
@@ -176,27 +186,33 @@ export default {
         importType,
         groupFilterValues: this?.$refs?.refStep2?.groupFilterValues,
         filter:
-          this?.$refs?.refStep2?.selectedRadioGroupIndex === 1
-            ? this.usersQueryFilter
+          this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit
+            ? this?.$refs?.refStep2?.$refs?.refQuery.getPayloadFilter()
             : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter,
-        isSchedule: this?.$refs?.refStep2?.selectedRadioGroupIndex === 1
+        isSchedule: this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit
       }
       //that mean partial import
       if (importType === 1) {
         payload.selectedUserResourceIds = this.selectedUsers.map((user) => user.resourceId)
       }
-      LDAPService.createLDAPConfig(payload)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: `Import process has been started`,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-information'
+      if (!this.isEdit) {
+        LDAPService.createLDAPConfig(payload)
+          .then(() => {
+            this.$store.dispatch('common/createSnackBar', {
+              message: `Import process has been started`,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-information'
+            })
+            this.$emit('on-close-with-update')
           })
-          this.handleClose()
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      } else {
+        LDAPService.updateLDAPSchedule(payload, this.selectedRow?.resourceId).then(() => {
+          this.$emit('on-close-with-update')
         })
-        .finally(() => {
-          this.isSubmitDisabled = false
-        })
+      }
     }
   }
 }

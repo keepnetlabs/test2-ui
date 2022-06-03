@@ -18,6 +18,7 @@
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
+    :count-row="hideFilter ? 5 : 10"
     :axios-payload.sync="axiosPayload"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
@@ -53,6 +54,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import LDAPService from '@/api/ldap'
+import { getAxiosPayloadOfManuallyTable } from '@/components/TargetUsers/LDAP/utils'
 export default {
   name: 'TargetUserLDAPImportManuallyStepTable',
   components: { DataTable },
@@ -81,48 +83,18 @@ export default {
     },
     viewUsersTableFilterParams: {
       default: () => null
-    },
-    setViewUsersQuery: {
-      type: Function
     }
   },
   data() {
-    const axiosPayload = getDefaultAxiosPayload({
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'New,Exists,Error'
-              }
-            ],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    })
-    if (this.viewUsersTableFilterParams && this.viewUsersTableFilterParams?.items) {
-      const index = Number(this.viewUsersTableFilterParams?.operator)
-      axiosPayload.filter.FilterGroups[index].FilterItems = [
-        ...axiosPayload.filter.FilterGroups[index].FilterItems,
-        ...this.viewUsersTableFilterParams.items
-      ]
-    }
     return {
       CONSTANTS: {
         id: 'target-user-ldap-import-manually-data-table'
       },
       isShowInvalid: false,
-      axiosPayload,
+      axiosPayload: getAxiosPayloadOfManuallyTable(
+        this.hideFilter,
+        this.viewUsersTableFilterParams
+      ),
       tableData: [],
       customFields: [],
       serverSideProps: new ServerSideProps(),
@@ -254,8 +226,10 @@ export default {
     }
   },
   created() {
+    if (this.hideFilter) {
+      this.serverSideProps.pageSize = 5
+    }
     this.callForData()
-    if (this.hideFilter) this.setViewUsersQuery(this.axiosPayload.filter)
   },
   methods: {
     callForData() {

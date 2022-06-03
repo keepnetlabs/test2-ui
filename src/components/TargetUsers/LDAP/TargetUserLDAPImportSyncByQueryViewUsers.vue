@@ -14,7 +14,7 @@
       <TargetUserLDAPImportManuallyStepTable
         ref="refTable"
         hide-filter
-        :total-number-of-records="totalNumberOfRecords"
+        :total-number-of-records.sync="totalNumberOfRecords"
       />
     </template>
     <template #app-dialog-footer>

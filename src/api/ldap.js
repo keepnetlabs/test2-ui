@@ -58,8 +58,10 @@ export function createLDAPConfig(payload) {
 export function getLDAPConfigJobs(id) {
   return testRequest.get(`ldap-schedule/jobs/${id}`)
 }
-export function updateLDAPSchedule(resourceId) {
-  return testRequest.put(`/ldap-schedule/${resourceId}`)
+export function updateLDAPSchedule(payload, resourceId) {
+  return testRequest.put(`/ldap-schedule/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function getLDAPConfigDetail(resourceId) {
   return testRequest.get(`ldap-schedule/${resourceId}`)

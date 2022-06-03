@@ -13,7 +13,7 @@
         @click="changeStep()"
       />
       <v-btn
-        v-if="isStepIsEqualToMax && selectedRadioStep === 0"
+        v-if="isStepIsEqualToMax && selectedRadioStep === 0 && !isEdit"
         id="btn-import-selected--target-users-import-people-modal"
         class="target-user-import-file__button target-user-import-file__button--import-selected"
         :style="!selectedItemsCount && { opacity: '.5', pointerEvents: 'none' }"
@@ -32,9 +32,13 @@
         color="#2196f3"
         @click="$emit('on-import-all')"
       >
-        {{ selectedRadioStep === 0 ? labels.ImportAll : labels.Import }}
+        {{ selectedRadioStep === 0 && !isEdit ? labels.ImportAll : labels.Import }}
         {{
-          selectedRadioStep === 0 ? (totalNumberOfRecords ? `(${totalNumberOfRecords})` : '') : ''
+          selectedRadioStep === 0 && !isEdit
+            ? totalNumberOfRecords
+              ? `(${totalNumberOfRecords})`
+              : ''
+            : ''
         }}
       </v-btn>
     </template>
@@ -73,6 +77,7 @@ export default {
       type: Number
     }
   },
+  inject: ['isEdit'],
   data() {
     return { labels }
   },
@@ -85,7 +90,8 @@ export default {
     },
     getImportButtonStyle() {
       return (
-        (!this.totalNumberOfRecords || this.isSubmitDisabled) && {
+        (!this.totalNumberOfRecords || this.isSubmitDisabled) &&
+        !this.isEdit && {
           opacity: '.5',
           pointerEvents: 'none'
         }

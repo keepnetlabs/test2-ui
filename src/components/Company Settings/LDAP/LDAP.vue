@@ -13,7 +13,12 @@
       />
     </el-tab-pane>
     <el-tab-pane id="ldap-scheduled-syncs" label="Scheduled Syncs" name="scheduled-syncs">
-      <LDAPScheduledSyncs v-if="tab === 'scheduled-syncs'" :resource-id="resourceId" />
+      <LDAPScheduledSyncs
+        v-if="tab === 'scheduled-syncs'"
+        :resource-id="resourceId"
+        :custom-fields="customFields"
+        :field-mappings="fieldMappings"
+      />
     </el-tab-pane>
     <el-tab-pane id="ldap-field-mappings" label="Field Mapping" name="field-mapping">
       <template v-if="isFieldMappingDisabled" #label>
@@ -28,6 +33,7 @@
       <LDAPFieldMappings
         v-if="tab === 'field-mapping'"
         :field-mappings="fieldMappings"
+        :initial-custom-fields="customFields"
         :is-loading-from-parent="isLoading"
         @on-submit="handleSubmit"
       />
@@ -45,6 +51,7 @@ import {
   defaultFieldMappings,
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 export default {
   name: 'LDAP',
   components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings },
@@ -55,11 +62,13 @@ export default {
       isFieldMappingDisabled: false,
       initialFormData: null,
       resourceId: '',
-      fieldMappings: []
+      fieldMappings: [],
+      customFields: []
     }
   },
   created() {
     this.callForData()
+    this.callForCustomFields()
   },
   methods: {
     handleBeforeLeave(val) {
@@ -93,6 +102,25 @@ export default {
           }
         })
         .finally(this.setLoading)
+    },
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.customFields = data.filter(
+          (cField) => cField.fieldDataType === 'String' && cField.isActive
+        )
+        const sortProp = 'sortOrder'
+        this.customFields.sort((a, b) => {
+          if (a[sortProp] > b[sortProp]) {
+            return 1
+          } else if (a[sortProp] === b[sortProp]) {
+            return 0
+          }
+          return -1
+        })
+      })
     },
     handleSubmit(formData) {
       //that means we are updating the settings

@@ -14,7 +14,7 @@
       />
       <TargetUserLdapImportManuallyStep
         ref="refManually"
-        v-else-if="selectedRadioGroupIndex === 0"
+        v-else-if="!isEdit && selectedRadioGroupIndex === 0"
       />
       <TargetUserLDAPImportSyncByQueryStep ref="refQuery" v-else />
     </div>
@@ -55,7 +55,7 @@ export default {
       type: Number
     }
   },
-  inject: ['resourceId'],
+  inject: ['resourceId', 'isEdit'],
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -64,8 +64,10 @@ export default {
   },
   data() {
     return {
-      radioGroupItems: [{ label: 'MANUALLY' }, { label: 'SYNC BY QUERY' }],
-      selectedRadioGroupIndex: 0,
+      radioGroupItems: this.isEdit
+        ? [{ label: 'SYNC BY QUERY' }]
+        : [{ label: 'MANUALLY' }, { label: 'SYNC BY QUERY' }],
+      selectedRadioGroupIndex: this.selectedRadioGroupIndex || 0,
       processedUserCount: 0,
       isLoading: false,
       activeStatus: 0,

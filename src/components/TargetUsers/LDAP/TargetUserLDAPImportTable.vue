@@ -106,7 +106,6 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      console.log('this.axiosPayload', this.axiosPayload)
       LDAPService.searchADGroups({ ...this.axiosPayload, lDAPSettingId: this.resourceId })
         .then((response) => {
           const {
@@ -117,7 +116,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          console.log('results', results)
           this.tableData = results || []
         })
         .finally(this.setLoading)

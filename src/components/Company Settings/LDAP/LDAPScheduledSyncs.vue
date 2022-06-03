@@ -6,7 +6,10 @@
       :status="isShowImportLDAPModal"
       :resource-id="resourceId"
       :selected-row="selectedRow"
+      :custom-fields="customFields"
+      :field-mappings="fieldMappings"
       @on-close="toggleImportLDAPModal"
+      @on-close-with-update="callForUpdatedData"
     />
     <LDAPScheduleDeleteDialog
       v-if="isShowDeleteDialog"
@@ -45,6 +48,12 @@ export default {
   props: {
     resourceId: {
       type: String
+    },
+    customFields: {
+      type: Array
+    },
+    fieldMappings: {
+      type: Array
     }
   },
   data() {
@@ -69,6 +78,10 @@ export default {
       this.$refs.refTable.unSelectRow(this.selectedRow)
       this.$refs.refTable.callForData()
       this.toggleDeleteDialog({})
+    },
+    callForUpdatedData() {
+      this.toggleImportLDAPModal({})
+      this.$refs.refTable.callForData()
     }
   }
 }

@@ -499,6 +499,12 @@ export default {
   padding-bottom: 60px !important;
 }
 
+.vue-query-builder
+  .vqb-hide-first-group-header
+  #playbook-query-builder-group-logical-operator-custom-group-badge-0 {
+  display: none;
+}
+
 .custom-group-badge {
   @media (max-width: 896px) {
     top: 137px;

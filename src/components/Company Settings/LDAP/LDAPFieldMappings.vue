@@ -29,7 +29,6 @@ import { useLoading } from '@/hooks/useLoading'
 import SaveChangesButton from '@/components/Common/Buttons/SaveChangesButton'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import labels from '@/model/constants/labels'
-import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { defaultFieldMappings } from './utils'
 export default {
@@ -42,12 +41,15 @@ export default {
     },
     isLoadingFromParent: {
       type: Boolean
+    },
+    initialCustomFields: {
+      type: Array
     }
   },
   data() {
     return {
       labels,
-      customFields: [],
+      customFields: JSON.parse(JSON.stringify(this.initialCustomFields)),
       tableData: [],
       mappingData: {
         columns: [],
@@ -62,11 +64,17 @@ export default {
   methods: {
     callApis(isInitial = false) {
       this.setLoading(true)
-      Promise.all([
-        this.callForData(isInitial),
-        this.getLDAPFields(),
-        this.callForCustomFields()
-      ]).finally(() => {
+      Promise.all([this.callForData(isInitial), this.getLDAPFields()]).finally(() => {
+        this.customFields = this.customFields.map((cField) => ({
+          name: cField.name,
+          selectedValue:
+            this.mappingData.columns.find(
+              (column) => column.resourceId === cField['ldapFieldResourceId']
+            ) || null,
+          required: false,
+          customFieldResourceId: cField.resourceId
+        }))
+
         const mappedHeaders = [
           ...this.fieldMappings.map((item) => ({
             name:
@@ -137,25 +145,6 @@ export default {
         return this
       })
     },
-    callForCustomFields() {
-      return getTargetUserCustomFieldsByCompanyId().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.customFields = data
-          .filter((cField) => cField.fieldDataType === 'String')
-          .map((cField) => ({
-            name: cField.name,
-            selectedValue:
-              this.mappingData.columns.find(
-                (column) => column.resourceId === cField['ldapFieldResourceId']
-              ) || null,
-            required: false,
-            customFieldResourceId: cField.resourceId
-          }))
-        return this
-      })
-    },
     handleMapTableSelectChange(item) {
       const findedFieldMappingIndex = this.fieldMappings.findIndex((fMap) => {
         const customField = this.customFields.find((cField) => cField.name === item.header.name)
@@ -163,8 +152,13 @@ export default {
         return fMap.customFieldResourceId === comparator
       })
       if (findedFieldMappingIndex !== -1) {
-        if (item.name === 'None Selected') this.fieldMappings.splice(findedFieldMappingIndex, 1)
-        else this.fieldMappings[findedFieldMappingIndex].ldapFieldResourceId = item.resourceId
+        if (item.name === 'None Selected') {
+          if (['LastName', 'Department', 'FirstName', 'Email'].includes(item?.header?.name)) {
+            this.fieldMappings[findedFieldMappingIndex].ldapFieldResourceId = ''
+          } else {
+            this.fieldMappings.splice(findedFieldMappingIndex, 1)
+          }
+        } else this.fieldMappings[findedFieldMappingIndex].ldapFieldResourceId = item.resourceId
       } else {
         if (item.name !== 'None Selected') {
           this.fieldMappings.push({

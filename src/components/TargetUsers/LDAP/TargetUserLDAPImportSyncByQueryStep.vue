@@ -50,6 +50,7 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../../Common/QueryBuilder/CustomGroup'
 import TargetUserLDAPImportSyncByQueryViewUsers from '@/components/TargetUsers/LDAP/TargetUserLDAPImportSyncByQueryViewUsers'
+import { getAxiosPayloadOfManuallyTable } from '@/components/TargetUsers/LDAP/utils'
 export default {
   name: 'TargetUserLDAPImportSyncByQueryStep',
   components: {
@@ -57,7 +58,13 @@ export default {
     VueQueryBuilder,
     QueryBuilderGroup
   },
-  inject: ['fieldMappings', 'customFields'],
+  inject: {
+    fieldMappings: {},
+    customFields: {},
+    getEditedScheduledFilter: {
+      type: Function
+    }
+  },
   provide() {
     return {
       viewUsersTableFilterParams: this.viewUsersTableFilterParams
@@ -68,6 +75,7 @@ export default {
       text: item.customFieldResourceId,
       value: item.customFieldResourceId
     }))
+    fieldMappings.push({ text: 'Status', value: 'Status' })
     this.customFields.map((cField) => {
       if (
         !fieldMappings.find((fMap) => fMap.text === cField.name || fMap.text === cField.resourceId)
@@ -121,16 +129,57 @@ export default {
     }
   },
   created() {
-    console.log('this.f', this.fieldMappings)
+    this.setEditedFilter()
   },
   methods: {
+    setEditedFilter() {
+      const filter = this.getEditedScheduledFilter()
+      if (filter) {
+        const andItems = filter?.filterGroups[0]?.filterItems
+        const orItems = filter?.filterGroups[1]?.filterItems
+        const condition = andItems?.length ? 'AND' : 'OR'
+        const items = condition === 'AND' ? andItems : orItems
+        items.map((item) => {
+          this.query.children[0].query.children.push({
+            query: {
+              format: item.fieldName,
+              operand: item.fieldName,
+              operator: item.operator === 'Include' ? 'Contains' : item.operator,
+              rule: 'conditions',
+              value: item.value
+            },
+            type: 'query-builder-rule'
+          })
+        })
+        this.query.children[0].query.logicalOperator = condition
+      } else {
+        this.query.children[0].query.children.push({
+          query: {
+            format: 'Status',
+            operand: 'Status',
+            operator: 'Contains',
+            rule: 'conditions',
+            value: 'New,Exists,Error'
+          },
+          type: 'query-builder-rule'
+        })
+      }
+    },
     handleViewUsers() {
+      this.setViewUsersTableFilterParams()
+      this.toggleShowUsersDialog()
+    },
+    setViewUsersTableFilterParams() {
       this.viewUsersTableFilterParams.items = this.transformQuery(this.query.children, [])
       this.viewUsersTableFilterParams.operator =
         this.query.children[0].query.logicalOperator === 'OR'
-      this.toggleShowUsersDialog()
+      return this.viewUsersTableFilterParams
     },
-
+    getPayloadFilter() {
+      this.setViewUsersTableFilterParams()
+      const { viewUsersTableFilterParams } = this
+      return getAxiosPayloadOfManuallyTable(true, viewUsersTableFilterParams)?.filter
+    },
     transformQuery(children, filterItems) {
       children.map((child) => {
         if (child.children) {
@@ -139,7 +188,6 @@ export default {
           if (child.type === 'query-builder-group') {
             this.transformQuery(child.query.children, filterItems)
           } else if (child.type === 'query-builder-rule') {
-            debugger
             filterItems.push({
               Value: child.query.value || '',
               FieldName: child.query.operand,

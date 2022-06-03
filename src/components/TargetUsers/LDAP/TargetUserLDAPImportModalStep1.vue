@@ -26,12 +26,13 @@
         persistent-hint
         position="top"
         hint="*Required"
-        :items="targetGroupItems"
-        :rules="[(v) => Validations.required(v)]"
         prepend-inner-icon="mdi-magnify"
         autocomplete="disabled"
         placeholder="Select a target group"
         no-data-text="No user group available"
+        :items="targetGroupItems"
+        :rules="[(v) => Validations.required(v)]"
+        :disabled="isEdit"
       />
     </FormGroup>
   </v-form>
@@ -52,6 +53,12 @@ export default {
     selectedLDAPItems: {
       type: Array,
       default: () => []
+    }
+  },
+  inject: {
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
