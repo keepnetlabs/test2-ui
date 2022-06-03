@@ -515,56 +515,24 @@
       </v-col>
     </div>
     <div class="wizard__footer">
-      <div class="text-left">
-        <v-btn
-          id="btn-cancel--company-modal"
-          class="playbook-rule-form__button"
-          outlined
-          rounded
-          color="error"
-          @click="handleCancel"
-          >{{ labels.Cancel }}</v-btn
-        >
-      </div>
-
-      <div>
-        <v-btn
-          v-if="canPrev"
-          id="btn-back--company-modal"
-          class="playbook-rule-form__button mr-4"
-          outlined
-          rounded
-          color="cyan"
-          @click="prevStep"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          v-if="canNext"
-          :disabled="isSecondStepDisabled"
-          id="btn-next--company-modal"
-          class="playbook-rule-form__button"
-          style="color: white;"
-          rounded
-          color="#2196f3"
-          @click="nextStep"
-        >
-          {{ labels.Next }}
-        </v-btn>
-
-        <v-btn
-          v-if="!canNext"
-          id="btn-save--company-modal"
-          class="playbook-rule-form__button white--text"
-          rounded
-          color="#2196f3"
-          @click="handleSave"
-          :disabled="saveDisable"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="4"
+        :step="activeStep"
+        :ids="{
+          cancelButton: 'btn-cancel--company-modal',
+          backButton: 'btn-back--company-modal',
+          nextButton: 'btn-next--company-modal',
+          saveButton: 'btn-save--company-modal'
+        }"
+        :disabled-statuses="{
+          nextButton: isSecondStepDisabled,
+          submitButton: saveDisable
+        }"
+        @on-cancel="handleCancel"
+        @on-back="prevStep"
+        @on-next="nextStep"
+        @on-submit="handleSave"
+      />
     </div>
   </div>
 </template>
@@ -585,6 +553,7 @@ import SelectSearchHandler from '@/directives/select-search-handler'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -593,6 +562,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    StepperFooter,
     InputAddress,
     InputDescription,
     ConfigureNewCompanyDialog,

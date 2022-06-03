@@ -502,44 +502,16 @@
         </v-stepper-items>
       </v-stepper>
     </template>
-    <template v-slot:overlay-footer>
-      <v-btn
-        @click="changeNewScenarioModalStatus"
-        class="new-phishing-scenario__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="new-phishing-scenario__right-col">
-        <v-btn
-          v-if="step > 1"
-          class="new-phishing-scenario__footer-btn-back mr-4"
-          rounded
-          @click="backStep(-1)"
-        >
-          {{ labels.Back }}
-        </v-btn>
-        <v-btn
-          @click="nextStep(+1)"
-          class="new-phishing-scenario__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isSubmitDisabled"
-          v-if="step < 4"
-        >
-          {{ labels.Next }}
-        </v-btn>
-        <v-btn
-          @click="submit"
-          class="new-phishing-scenario__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step === 4"
-          :disabled="isSubmitDisabled"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+    <template #overlay-footer>
+      <StepperFooter
+        max-step="4"
+        :step.sync="step"
+        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        @on-cancel="changeNewScenarioModalStatus"
+        @on-back="backStep"
+        @on-next="nextStep(+1)"
+        @on-submit="submit"
+      />
     </template>
   </app-modal>
 </template>
@@ -561,10 +533,12 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 export default {
   name: 'NewScenarios',
   components: {
+    StepperFooter,
     KEmailPreview,
     AppModal,
     FormGroup,
@@ -947,28 +921,7 @@ export default {
     display: none !important;
   }
 }
-.new-phishing-scenario__footer-btn-cancel {
-  color: #ff5252 !important;
-  border: 1px solid #ff5252 !important;
-  box-shadow: none !important;
-  caret-color: #ff5252 !important;
-  font-weight: 600 !important;
-}
-.new-phishing-scenario__footer-btn-back {
-  color: #00bcd4 !important;
-  border: 1px solid #00bcd4 !important;
-  caret-color: #00bcd4 !important;
-  box-shadow: none !important;
-  font-weight: 600 !important;
-}
-.new-phishing-scenario__footer-btn-next {
-  background-color: rgb(33, 150, 243) !important;
-  border-color: rgb(33, 150, 243) !important;
-  caret-color: #00bcd4 !important;
-  font-weight: 600 !important;
 
-  color: white !important;
-}
 .new-phishing-scenario {
   &__overlay {
     .v-overlay__content {

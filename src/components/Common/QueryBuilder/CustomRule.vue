@@ -363,6 +363,8 @@ export default {
           return 'Enter a regular expression'
         case 'Group':
           return 'Enter a group name'
+        default:
+          return 'Enter custom field value'
       }
     },
     getSubjectRules() {
@@ -405,6 +407,8 @@ export default {
         this.query.value = 'Phishing'
       } else if (value === 'To' || value === 'CC' || value === 'From') {
         this.query.format = 'Email'
+      } else {
+        this.query.format = 'Custom'
       }
     },
     removeRule() {

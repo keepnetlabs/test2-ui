@@ -296,13 +296,5 @@ export default {
     align-self: center;
     margin-top: -24px;
   }
-  &__advanced-search-container {
-  }
-  .k-stepper {
-    overflow: visible;
-    &__items {
-      overflow: visible;
-    }
-  }
 }
 </style>

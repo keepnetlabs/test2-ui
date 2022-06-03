@@ -9,16 +9,17 @@
           >
             {{ header.name }}
             <v-select
+              v-model="mapTableData.headers[index].selectedValue"
               :items="mapTableData.columns"
               outlined
               class="input-select standard-height mt-4 target-users-map__header-select"
               placeholder="- None Selected -"
               item-text="name"
-              @input="setSelectDisableItems"
-              @change="setSelectDisableItemsChange"
-              v-model="mapTableData.headers[index].selectedValue"
               hide-details
               return-object
+              :menu-props="{ offsetY: true }"
+              @input="setSelectDisableItems"
+              @change="setSelectDisableItemsChange($event, header, index)"
             >
             </v-select>
           </th>
@@ -47,8 +48,6 @@
 
 <script>
 import { scrollToComponent } from '@/utils/functions'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
-
 export default {
   name: 'MapTable',
   computed: {
@@ -82,7 +81,7 @@ export default {
     setSelectDisableItems(item) {
       this.changeItemName = item.name
     },
-    setSelectDisableItemsChange(item) {
+    setSelectDisableItemsChange(item, header, index) {
       item.disabled = true
       let _this = this
       item.selectedValue = item.name
@@ -95,6 +94,19 @@ export default {
           disabled: isDisabled
         }
         return obj
+      })
+      this.mapTableData.columns[0].disabled = false
+      this.$emit('on-change', { ...item, header, index })
+    },
+    setDisabilityOfSelect() {
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let isDisabled = this.mapTableData.headers.find((x) => {
+          return x.selectedValue && x.selectedValue.name === i.name
+        })
+        return {
+          ...i,
+          disabled: isDisabled
+        }
       })
       this.mapTableData.columns[0].disabled = false
     },
