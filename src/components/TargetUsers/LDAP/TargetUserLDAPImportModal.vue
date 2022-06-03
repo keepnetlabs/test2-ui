@@ -79,7 +79,6 @@ import TargetUserLDAPModalStepperFooter from '@/components/TargetUsers/LDAP/Targ
 import TargetUserLDAPImportModalStep1 from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModalStep1'
 import TargetUserLDAPImportModalStep2 from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModalStep2'
 import LDAPService from '@/api/ldap'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getDefaultFilter } from '@/utils/functions'
 export default {
   name: 'TargetUserLDAPImportModal',
@@ -160,6 +159,7 @@ export default {
         const { targetGroupResourceId, ldapSettingResourceId, filter } = data
         this.editedScheduledFilter = filter
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
+        this.$refs.refStep1.isActive = this?.selectedRow?.status
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
       })
     },
@@ -201,6 +201,9 @@ export default {
       ) {
         this.isSubmitDisabled = false
         return
+      }
+      if (this.isEdit) {
+        payload.status = Number(this?.$refs?.refStep1?.isActive)
       }
 
       if (!this.isEdit) {

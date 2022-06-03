@@ -95,7 +95,7 @@ export default {
             type: 'badge',
             width: 180,
             filterableType: 'select',
-            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
+            filterableItems: ['Active', { text: 'Passive', value: 'Passive' }]
           },
           {
             property: PROPERTY_STORE.CREATETIME,
