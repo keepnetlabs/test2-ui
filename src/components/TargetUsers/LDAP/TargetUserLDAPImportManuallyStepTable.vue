@@ -303,7 +303,9 @@ export default {
         }
       })
       this.tableOptions.columns.push(...this.customFields)
-      this.tableOptions.columns.push(this.tableOptions.statusColumn)
+      if (!this.tableOptions.columns.find((col) => col.property === PROPERTY_STORE.STATUS)) {
+        this.tableOptions.columns.push(this.tableOptions.statusColumn)
+      }
     },
     setTableData(tableData) {
       this.tableData = tableData.map((item) => {
