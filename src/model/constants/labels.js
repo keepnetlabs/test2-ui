@@ -19,6 +19,7 @@ export const labels = {
   LDAPGroups: 'LDAP Groups',
   LDAPGroupsSub: 'Select LDAP groups to import',
   Path: 'Path',
+  Passive: 'Passive',
   Connection: 'Connection',
   EmptyScheduledSyncs: 'You do not have any scheduled syncs',
   ScheduledSyncs: 'Scheduled Syncs',

@@ -75,15 +75,7 @@ export default {
       text: item.customFieldResourceId,
       value: item.customFieldResourceId
     }))
-    fieldMappings.push({ text: 'Status', value: 'Status' })
-    this.customFields.map((cField) => {
-      if (
-        !fieldMappings.find((fMap) => fMap.text === cField.name || fMap.text === cField.resourceId)
-      ) {
-        fieldMappings.push({ text: cField.name, value: cField.name })
-      }
-      return cField
-    })
+
     return {
       showUsersDialog: false,
       query: {
@@ -152,17 +144,6 @@ export default {
           })
         })
         this.query.children[0].query.logicalOperator = condition
-      } else {
-        this.query.children[0].query.children.push({
-          query: {
-            format: 'Status',
-            operand: 'Status',
-            operator: 'Contains',
-            rule: 'conditions',
-            value: 'New,Exists,Error'
-          },
-          type: 'query-builder-rule'
-        })
       }
     },
     handleViewUsers() {

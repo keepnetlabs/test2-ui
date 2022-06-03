@@ -16,7 +16,7 @@
         :error-message="getLDAPGroupsErrorMessage"
       />
     </FormGroup>
-    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub">
+    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub" has-hint>
       <KSelect
         v-model.trim="targetGroupResourceId"
         type="autocomplete"
@@ -24,15 +24,26 @@
         outlined
         clearable
         persistent-hint
-        position="top"
         hint="*Required"
         prepend-inner-icon="mdi-magnify"
         autocomplete="disabled"
         placeholder="Select a target group"
         no-data-text="No user group available"
+        position="top"
         :items="targetGroupItems"
         :rules="[(v) => Validations.required(v)]"
         :disabled="isEdit"
+      />
+    </FormGroup>
+    <FormGroup v-if="isEdit" :title="labels.Status" class="mb-6">
+      <v-switch
+        v-model.trim="isActive"
+        id="input--switch-ldap"
+        class="k-switch mt-0"
+        hide-details
+        color="#2196f3"
+        style="max-width: 100px;"
+        :label="getSwitchLabel"
       />
     </FormGroup>
   </v-form>
@@ -66,7 +77,7 @@ export default {
       labels,
       Validations,
       isLDAPGroupsValid: true,
-      formData: {},
+      isActive: true,
       targetGroupItems: [],
       targetGroupResourceId: ''
     }
@@ -74,6 +85,9 @@ export default {
   computed: {
     getLDAPGroupsErrorMessage() {
       return !this?.selectedLDAPItems?.length ? 'Required' : ''
+    },
+    getSwitchLabel() {
+      return this.isActive ? labels.Active : labels.Passive
     },
     getLDAPTargetUserTableStyle() {
       return !this.isLDAPGroupsValid
