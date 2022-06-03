@@ -75,6 +75,16 @@ export default {
       text: item.customFieldResourceId,
       value: item.customFieldResourceId
     }))
+    this.customFields.map((cField) => {
+      const index = fieldMappings.findIndex(
+        (fMap) => fMap.text === cField.name || fMap.text === cField.resourceId
+      )
+      if (index !== -1) {
+        fieldMappings[index].text = cField.name
+        fieldMappings[index].value = cField.name
+      }
+      return cField
+    })
 
     return {
       showUsersDialog: false,
