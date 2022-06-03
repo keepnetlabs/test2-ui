@@ -8,39 +8,84 @@
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
-        <div class="campaign-manager-last-step__landing-page-template-body-header">
-          <div class="campaign-manager-last-step__landing-page-template-body-header-left">
-            <div class="campaign-manager-last-step__email-template-body-header-left">
-              {{ formData.name }}
+        <el-tabs v-if="templates.length > 1" v-model="selectedTab">
+          <el-tab-pane
+            v-for="(template, index) in templates"
+            :key="index"
+            :name="`${index + 1}`"
+            :label="`Page ${index + 1}`"
+          >
+            <div class="campaign-manager-last-step__landing-page-template-body-header">
+              <div class="campaign-manager-last-step__landing-page-template-body-header-left">
+                <div class="campaign-manager-last-step__email-template-body-header-left">
+                  {{ formData.name }}
+                </div>
+              </div>
+              <div class="campaign-manager-last-step__landing-page-template-body-header-right">
+                <v-btn style="display: none;"></v-btn>
+                <Badge
+                  size="mini"
+                  :color="getBadgeColor(formData.difficulty)"
+                  :text="getBadgeText(formData.difficulty)"
+                  :outline="false"
+                />
+                <Badge
+                  size="mini"
+                  color="#E0E0E0"
+                  class-name="badge-middle px-2 py-2"
+                  :text="getBadgeText(formData.method)"
+                  :outline="false"
+                />
+                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+                  <template #content>
+                    <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
+                  </template>
+                </Badge>
+              </div>
+            </div>
+            <div class="campaign-manager-last-step__email-template-body-header-sub">
+              <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
+                >URL:</span
+              >
+              {{ formData.urlTemplate }}
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+        <div v-else>
+          <div class="campaign-manager-last-step__landing-page-template-body-header">
+            <div class="campaign-manager-last-step__landing-page-template-body-header-left">
+              <div class="campaign-manager-last-step__email-template-body-header-left">
+                {{ formData.name }}
+              </div>
+            </div>
+            <div class="campaign-manager-last-step__landing-page-template-body-header-right">
+              <v-btn style="display: none;"></v-btn>
+              <Badge
+                size="mini"
+                :color="getBadgeColor(formData.difficulty)"
+                :text="getBadgeText(formData.difficulty)"
+                :outline="false"
+              />
+              <Badge
+                size="mini"
+                color="#E0E0E0"
+                class-name="badge-middle px-2 py-2"
+                :text="getBadgeText(formData.method)"
+                :outline="false"
+              />
+              <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+                <template #content>
+                  <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
+                </template>
+              </Badge>
             </div>
           </div>
-          <div class="campaign-manager-last-step__landing-page-template-body-header-right">
-            <v-btn style="display: none;"></v-btn>
-            <Badge
-              size="mini"
-              :color="getBadgeColor(formData.difficulty)"
-              :text="getBadgeText(formData.difficulty)"
-              :outline="false"
-            />
-            <Badge
-              size="mini"
-              color="#E0E0E0"
-              class-name="badge-middle px-2 py-2"
-              :text="getBadgeText(formData.method)"
-              :outline="false"
-            />
-            <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-              <template #content>
-                <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
-              </template>
-            </Badge>
+          <div class="campaign-manager-last-step__email-template-body-header-sub">
+            <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
+              >URL:</span
+            >
+            {{ formData.urlTemplate }}
           </div>
-        </div>
-        <div class="campaign-manager-last-step__email-template-body-header-sub">
-          <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-            >URL:</span
-          >
-          {{ formData.urlTemplate }}
         </div>
       </div>
       <div
@@ -49,7 +94,7 @@
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
           <DatatableLoading v-if="isLoading" :loading="isLoading" />
-          <KEmailPreview v-else ref="refPreview" :html="emailTemplate" is-extra-height />
+          <KEmailPreview v-else ref="refPreview" :html="getCurrentTemplate" is-extra-height />
         </div>
       </div>
     </template>
@@ -66,7 +111,12 @@ import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landi
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'CampaignManagerReportSummaryLanginPage',
-  components: { DatatableLoading, KEmailPreview, Badge, CampaignManagerSummaryCard },
+  components: {
+    DatatableLoading,
+    KEmailPreview,
+    Badge,
+    CampaignManagerSummaryCard
+  },
   mixins: [useLoading],
   props: {
     formData: {
@@ -75,35 +125,40 @@ export default {
   },
   data() {
     return {
+      selectedTab: '1',
       labels,
       isShowLandingPageTemplate: false,
-      emailTemplate: null
+      templates: []
     }
   },
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    getCurrentTemplate() {
+      return this.templates?.length > 1
+        ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ''
+        : this.templates?.[0]?.content || ''
     }
   },
   watch: {
-    isShowLandingPageTemplate(val = false) {
-      if (val && !this.emailTemplate) {
-        this.callForTemplate()
-      }
+    formData: {
+      handler(fd) {
+        if (fd.resourceId && fd.jobResourceId) this.callForTemplate(fd.resourceId, fd.jobResourceId)
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
-    callForTemplate() {
+    callForTemplate(resourceId, jobResourceId) {
       this.setLoading(true)
-      getCampaignManagerLandingPageTemplatePreviewContent(
-        this.formData.resourceId,
-        this.formData.jobResourceId
-      )
+      getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId)
         .then((response) => {
           const {
             data: { data }
           } = response
-          this.emailTemplate = data.landingPages[0]?.content
+          this.templates = data.landingPages
         })
         .finally(this.setLoading)
     },

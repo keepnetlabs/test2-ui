@@ -413,7 +413,85 @@
                       </div>
                     </div>
                     <div class="summary-content">
-                      <div class="d-flex justify-space-between">
+                      <el-tabs
+                        v-if="summaryData.landingPageTemplate.landingPages.length > 1"
+                        v-model="selectedTab"
+                      >
+                        <el-tab-pane
+                          v-for="(template, index) in summaryData.landingPageTemplate.landingPages"
+                          :key="index"
+                          :name="`${index + 1}`"
+                          :label="`Page ${index + 1}`"
+                        >
+                          <div class="d-flex justify-space-between">
+                            <div class="d-flex flex-column" v-if="!!summaryData">
+                              <div class="template-summary__title">
+                                {{ summaryData.landingPageTemplate.name }}
+                              </div>
+                              <div class="template-summary__sub-title mt-2">
+                                <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                              </div>
+                            </div>
+                            <div class="d-flex" v-if="!!summaryData">
+                              <v-chip
+                                class="template-list--item template-list--item__chip p mr-2"
+                                style="
+                                  color: white;
+                                  border-radius: 6px;
+                                  height: 24px;
+                                  font-weight: 600;
+                                  font-size: 12px;
+                                "
+                                :color="getLandingPageDifficultyColor"
+                                v-if="!!summaryData"
+                              >
+                                {{
+                                  scenarioDetailsLookup.difficultyTypes.find(
+                                    (item) =>
+                                      item.value ===
+                                      summaryData.landingPageTemplate.difficultyTypeId.toString()
+                                  ).text
+                                }}
+                              </v-chip>
+                              <v-chip
+                                class="template-list--item template-list--item__chip p"
+                                style="
+                                  border-radius: 6px;
+                                  height: 24px;
+                                  font-weight: 600;
+                                  font-size: 12px;
+                                "
+                                v-if="!!summaryData"
+                              >
+                                {{
+                                  scenarioDetailsLookup.methodTypes.find(
+                                    (item) =>
+                                      item.value ===
+                                      summaryData.landingPageTemplate.methodTypeId.toString()
+                                  ).text
+                                }}
+                              </v-chip>
+                              <v-chip
+                                v-if="!!summaryData"
+                                class="template-list--item template-list--item__chip p"
+                                style="
+                                  color: white;
+                                  border-radius: 6px;
+                                  height: 24px;
+                                  font-weight: 600;
+                                  background-color: #757575;
+                                  margin-left: 8px;
+                                  font-size: 12px;
+                                "
+                              >
+                                <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
+                                >{{ summaryData.landingPageTemplate.languageShortCode }}
+                              </v-chip>
+                            </div>
+                          </div>
+                        </el-tab-pane>
+                      </el-tabs>
+                      <div class="d-flex justify-space-between" v-else>
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
                             {{ summaryData.landingPageTemplate.name }}
@@ -487,9 +565,8 @@
                     >
                       <div class="summary-template">
                         <KEmailPreview
-                          v-if="!!summaryData.landingPageTemplate.landingPages[0].content"
-                          :key="summaryData.landingPageTemplate.landingPages[0].content"
-                          :html="summaryData.landingPageTemplate.landingPages[0].content"
+                          v-if="!!getCurrentLandingPageTemplate"
+                          :html="getCurrentLandingPageTemplate"
                           is-extra-height
                         />
                       </div>
@@ -579,6 +656,7 @@ export default {
   },
   data() {
     return {
+      selectedTab: '1',
       summaryData: {},
       showTemplate1: false,
       showTemplate2: false,
@@ -775,7 +853,11 @@ export default {
       }
     }
   },
-
+  watch: {
+    landingPageTemplateResourceId() {
+      this.selectedTab = '1'
+    }
+  },
   computed: {
     getModalTitle() {
       return !this.isEdit
@@ -823,6 +905,12 @@ export default {
           (item) => item.value === this.generalDifficultyTypeId
         )?.text || ''
       )
+    },
+    getCurrentLandingPageTemplate() {
+      return this.summaryData.landingPageTemplate.landingPages.length > 1
+        ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
+            .content || ''
+        : this.summaryData.landingPageTemplate.landingPages[0].content || ''
     }
   },
   created() {
