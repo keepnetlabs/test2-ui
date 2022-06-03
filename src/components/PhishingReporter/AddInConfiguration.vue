@@ -115,41 +115,21 @@
           </v-stepper-items>
         </v-stepper>
       </template>
-      <template v-slot:overlay-footer>
-        <v-btn @click="closeOverlay" class="add-in-configuration__footer-btn-cancel" rounded>
-          {{ labels.Cancel }}
-        </v-btn>
-        <div class="add-in-configuration__footer__right-col">
-          <v-btn
-            @click="changeStep(-1)"
-            id="btn-back--phishing-reporter-settings-add-in-configuration"
-            class="add-in-configuration__footer-btn-back mr-4"
-            rounded
-            v-if="step > 1"
-          >
-            {{ labels.Back }}
-          </v-btn>
-          <v-btn
-            @click="changeStep(+1)"
-            id="btn-next--phishing-reporter-settings-add-in-configuration"
-            class="add-in-configuration__footer-btn-next"
-            color="#2196f3"
-            rounded
-            v-if="step < 4"
-          >
-            {{ labels.Next }}
-          </v-btn>
-          <v-btn
-            @click="submit"
-            id="btn-save--phishing-reporter-settings-add-in-configuration"
-            class="add-in-configuration__footer-btn-next"
-            color="#2196f3"
-            rounded
-            v-if="step === 4"
-          >
-            {{ labels.Save }}
-          </v-btn>
-        </div>
+      <template #overlay-footer>
+        <StepperFooter
+          max-step="4"
+          :step="step"
+          :ids="{
+            cancelButton: 'btn-cancel--phishing-reporter-settings-add-in-configuration',
+            backButton: 'btn-back--phishing-reporter-settings-add-in-configuration',
+            nextButton: 'btn-next--phishing-reporter-settings-add-in-configuration',
+            saveButton: 'btn-save--phishing-reporter-settings-add-in-configuration'
+          }"
+          @on-cancel="closeOverlay"
+          @on-back="changeStep(-1)"
+          @on-next="changeStep(+1)"
+          @on-submit="submit"
+        />
       </template>
     </app-modal>
   </div>
@@ -171,10 +151,12 @@ import AppModal from '../AppModal'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import labels from '@/model/constants/labels'
 import { isDifferent } from '@/utils/functions'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 export default {
   name: 'AddInConfiguration',
   components: {
+    StepperFooter,
     DiagnosticTool,
     AddinSettings,
     EmailSettings,

@@ -1,6 +1,10 @@
 .k-stepper {
   box-shadow: none !important;
   margin: 0 -96px;
+  overflow: visible;
+  &__items {
+    overflow: visible;
+  }
   @media (max-width: 500px) {
     margin: 0 -24px !important;
   }

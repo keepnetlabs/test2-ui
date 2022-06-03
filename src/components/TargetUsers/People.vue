@@ -49,6 +49,15 @@
       :status="isShowingTargetUserViewTargetGroups"
       @on-close="toggleShowingTargetUserViewTargetGroups"
     />
+    <TargetUserLDAPImportModal
+      v-if="isShowImportLDAPModal"
+      :status="isShowImportLDAPModal"
+      :resource-id="ldapResourceId"
+      :field-mappings="ldapFieldMappings"
+      :custom-fields="customFields"
+      @on-close="toggleImportLDAPModal"
+      @on-close-with-update="callForGetTargetUserCustomFieldsByCompanyId"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -111,6 +120,7 @@
               v-for="item in addUsersItems"
               :key="item.id"
               :id="item.id"
+              :disabled="item.disabled"
               @click="handleAddUsers(item.text)"
             >
               <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
@@ -161,6 +171,13 @@
                       <v-list-item-content>
                         <v-list-item-title id="item--target-user-empty-import-from-file"
                           >Import from a file</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item :disabled="isLDAPDisabled" @click="toggleImportLDAPModal">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-import-from-ldap"
+                          >Import from LDAP</v-list-item-title
                         >
                       </v-list-item-content>
                     </v-list-item>
@@ -222,10 +239,17 @@ import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
+import LDAPService from '@/api/ldap'
+import {
+  defaultFieldMappings,
+  getDefaultFieldMappingsWithCurrent
+} from '@/components/Company Settings/LDAP/utils'
 
 export default {
   name: 'People',
   components: {
+    TargetUserLDAPImportModal,
     RowActionsMenu,
     DefaultMenuRowAction,
     DefaultErrorDialog,
@@ -247,7 +271,9 @@ export default {
   data() {
     return {
       labels,
+      ldapResourceId: '',
       isInitial: true,
+      isShowImportLDAPModal: false,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
@@ -265,6 +291,8 @@ export default {
       isWantToShowAddUsersModal: false,
       isWantToShowCustomFieldsModal: false,
       deleteButtonDisabled: false,
+      isLDAPDisabled: false,
+      ldapFieldMappings: [],
       tableOptions: {
         lastColumns: [
           {
@@ -412,7 +440,12 @@ export default {
       },
       addUsersItems: [
         { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
-        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
+        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' },
+        {
+          text: 'Import from LDAP',
+          id: 'btn-add-users-import-from-ldap--target-users-people',
+          disabled: this.isLDAPDisabled
+        }
       ],
       serverSideProps: new ServerSideProps()
     }
@@ -422,7 +455,31 @@ export default {
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
     })
   },
+  created() {
+    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.checkIsLDAPConfigured()
+  },
   methods: {
+    checkIsLDAPConfigured() {
+      LDAPService.getLDAPSettingDetailForMyCompany()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.ldapResourceId = data?.resourceId
+          this.ldapFieldMappings = getDefaultFieldMappingsWithCurrent(
+            defaultFieldMappings,
+            data?.fieldMappings
+          )
+        })
+        .catch(() => {
+          this.isLDAPDisabled = true
+          this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+        })
+    },
+    toggleImportLDAPModal() {
+      this.isShowImportLDAPModal = !this.isShowImportLDAPModal
+    },
     handleViewUserGroups(selectedRow = {}) {
       this.selectedUserToViewGroups = selectedRow
       this.toggleShowingTargetUserViewTargetGroups()
@@ -479,6 +536,9 @@ export default {
           break
         case this.addUsersItems[1].text:
           this.isWantToImportFile = true
+          break
+        case this.addUsersItems[2].text:
+          this.toggleImportLDAPModal()
           break
         default:
           break
@@ -694,9 +754,6 @@ export default {
         })
       })
     }
-  },
-  created() {
-    this.callForGetTargetUserCustomFieldsByCompanyId()
   }
 }
 </script>
@@ -779,6 +836,12 @@ export default {
       font-size: 18px !important;
       color: white;
     }
+  }
+}
+.ldap-import-table {
+  .v-list-item__content,
+  .k-form-group__content {
+    width: 100%;
   }
 }
 </style>

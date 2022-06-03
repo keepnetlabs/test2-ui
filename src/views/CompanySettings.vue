@@ -70,6 +70,14 @@
           ref="refSIEMIntegrations"
         ></s-i-e-m-integrations>
       </el-tab-pane>
+      <el-tab-pane
+        v-if="getSIEMIntegrationSearchPermissions"
+        name="ldap-settings"
+        :label="labels.LDAP"
+        :id="`${labels.LDAP.toLowerCase()}-content`"
+      >
+        <LDAP v-if="tab === 'ldap-settings'" />
+      </el-tab-pane>
     </el-tabs>
   </KContainer>
 </template>
@@ -86,9 +94,11 @@ import SIEMIntegrations from '@/components/Integrations/SIEMIntegrations/SIEMInt
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
+import LDAP from '@/components/Company Settings/LDAP/LDAP'
 export default {
   name: 'CompanySettings',
   components: {
+    LDAP,
     KContainer,
     SIEMIntegrations,
     SCIMSettings,

@@ -40,7 +40,8 @@ const {
   SCIM_SETTINGS_PERMISSIONS,
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
-  ROLES_PERMISSIONS
+  ROLES_PERMISSIONS,
+  LDAP_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -84,7 +85,8 @@ const defaultState = {
   scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
-  systemRolesPermissions: ROLES_PERMISSIONS
+  systemRolesPermissions: ROLES_PERMISSIONS,
+  ldapPermissions: LDAP_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -777,7 +779,8 @@ const store = {
         'scimSettingsPermissions',
         'siemIntegrationPermissions',
         'systemUsersPermissions',
-        'systemRolesPermissions'
+        'systemRolesPermissions',
+        'ldapPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

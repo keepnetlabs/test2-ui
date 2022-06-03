@@ -145,30 +145,16 @@
         </form-group>
       </v-form>
     </template>
-    <template v-slot:overlay-footer>
-      <div class="text-left">
-        <v-btn
-          id="btn-cancel--mail-configurations-modal"
-          class="playbook-rule-form__button"
-          outlined
-          rounded
-          color="error"
-          @click="cancelDomain"
-          >{{ labels.Cancel }}</v-btn
-        >
-      </div>
-      <div>
-        <v-btn
-          id="btn-save--mail-configurations-modal"
-          class="playbook-rule-form__button white--text"
-          rounded
-          color="#2196f3"
-          @click="submit"
-          :disabled="saveButtonDisabled"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+    <template #overlay-footer>
+      <AppModalFooter
+        :ids="{
+          saveButton: 'btn-save--mail-configurations-modal',
+          cancelButton: 'btn-cancel--mail-configurations-modal'
+        }"
+        :action-button-disabled="saveButtonDisabled"
+        @on-cancel="cancelDomain"
+        @on-save="submit"
+      />
     </template>
   </app-modal>
 </template>
@@ -186,6 +172,7 @@ import * as Validations from '@/utils/validations'
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
 import TestConnection from '@/components/Domains/TestConnection'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import AppModalFooter from '@/components/AppModalFooter'
 
 const ENUMS = {
   CNAME: '1',
@@ -194,6 +181,7 @@ const ENUMS = {
 export default {
   name: 'NewEditDnsService',
   components: {
+    AppModalFooter,
     TestConnection,
     AppModal,
     AppModalBodyHeader,
