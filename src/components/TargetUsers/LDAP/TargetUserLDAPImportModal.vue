@@ -195,6 +195,14 @@ export default {
       if (importType === 1) {
         payload.selectedUserResourceIds = this.selectedUsers.map((user) => user.resourceId)
       }
+      if (
+        (this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit) &&
+        !this?.$refs?.refStep2?.$refs?.refQuery?.$refs?.refForm?.validate()
+      ) {
+        this.isSubmitDisabled = false
+        return
+      }
+
       if (!this.isEdit) {
         LDAPService.createLDAPConfig(payload)
           .then(() => {
