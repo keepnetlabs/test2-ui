@@ -52,7 +52,9 @@ export function searchTmpTargetUsersForLdap(payload, transactionId) {
 }
 
 export function createLDAPConfig(payload) {
-  return testRequest.post('/ldap-config', payload)
+  return testRequest.post('/ldap-config', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getLDAPConfigJobs(id) {

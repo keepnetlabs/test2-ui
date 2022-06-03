@@ -198,11 +198,7 @@ export default {
       if (!this.isEdit) {
         LDAPService.createLDAPConfig(payload)
           .then(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: `Import process has been started`,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-information'
-            })
+            this.handleClose()
             this.$emit('on-close-with-update')
           })
           .finally(() => {
