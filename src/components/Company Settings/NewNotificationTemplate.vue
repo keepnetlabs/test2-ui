@@ -56,6 +56,7 @@
         </form-group>
         <form-group title="Tags" sub-title="Define tags for the notification template">
           <InputTag
+            ref="refTags"
             id="input--action-tags-new-notification-template"
             v-model="formValues.tags"
             :items="[]"
@@ -509,6 +510,7 @@ export default {
         this.saveDisable = true
         const payload = {
           ...this.formValues,
+          tags: this.formValues.tags.filter((item) => item.length > 0),
           availableForRequests: refMakeAvailableFor.getAvailableForValues(
             this.formValues.availableForRequests
           )

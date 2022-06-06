@@ -162,67 +162,7 @@
       </CampaignManagerSummaryCard>
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        icon="mdi-application"
-        :show-body-detail.sync="isShowLandingPageTemplate"
-        :title="labels.LandingPageWhoUsers"
-      >
-        <template #body>
-          <div
-            v-if="isFormData"
-            class="campaign-manager-last-step__landing-page-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__landing-page-template-body-header">
-              <div class="campaign-manager-last-step__landing-page-template-body-header-left">
-                <div class="campaign-manager-last-step__email-template-body-header-left">
-                  {{ currentFormData.landingPageParams.name }}
-                </div>
-              </div>
-              <div class="campaign-manager-last-step__landing-page-template-body-header-right">
-                <v-btn style="display: none;"></v-btn>
-                <Badge
-                  size="mini"
-                  :color="getBadgeColor(currentFormData.landingPageParams.difficulty)"
-                  :text="getBadgeText(currentFormData.landingPageParams.difficulty)"
-                  :outline="false"
-                />
-                <Badge
-                  size="mini"
-                  color="#E0E0E0"
-                  class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(currentFormData.landingPageParams.method)"
-                  :outline="false"
-                />
-                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-                  <template #content>
-                    <v-icon>mdi-web</v-icon
-                    >{{ currentFormData.landingPageParams.languageShortCode }}
-                  </template>
-                </Badge>
-              </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-                >URL:</span
-              >
-              {{ currentFormData.landingPageParams.urlTemplate }}
-            </div>
-          </div>
-          <div
-            v-if="isShowLandingPageTemplate"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!currentFormData.landingPageTemplate"
-                :html="currentFormData.landingPageTemplate"
-                is-extra-height
-              />
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+      <CampaignManagerReportSummaryLandingPage :formData="currentFormData.landingPageParams" />
     </div>
   </div>
 </template>
@@ -234,7 +174,7 @@ import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/Campaign
 import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-
+import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -242,7 +182,8 @@ export default {
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
-    AttachmentsPreview
+    AttachmentsPreview,
+    CampaignManagerReportSummaryLandingPage
   },
   props: {
     formData: {
@@ -272,6 +213,7 @@ export default {
           phishingFileName: val?.emailTemplateParams?.phishingFileName || null
         },
         landingPageParams: {
+          landingPageTemplates: val?.landingPageTemplates || null,
           name: val?.landingPageParams?.name || '',
           description: val?.landingPageParams?.description || '',
           urlTemplate: val?.landingPageParams?.urlTemplate || '',
