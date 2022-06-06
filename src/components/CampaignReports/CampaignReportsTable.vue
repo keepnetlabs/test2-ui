@@ -152,7 +152,7 @@ export default {
   },
   methods: {
     getChartOptionsForRow(row) {
-      if (row.methodTypeId === 3) {
+      if (row.method === 'Attachment') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.OpenedAttachment],
@@ -192,7 +192,6 @@ export default {
             return {
               ...row,
               campaignStatus,
-              methodTypeId: index % 2 === 0 ? 3 : 2,
               progress:
                 Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) ||
                 0
