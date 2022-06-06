@@ -1,7 +1,7 @@
 <template>
   <AppModal
     :status="status"
-    icon-name="mdi-hook"
+    icon-name="$custom-new-instance"
     title="Create New Instance"
     class-name="add-in-configuration"
     title-id="create-new-instance__title"
