@@ -84,7 +84,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: false,
     show: true,
-    type: 'chart',
+    type: 'slot',
     width: 130,
     hideSort: true
   },
