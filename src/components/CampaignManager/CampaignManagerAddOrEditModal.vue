@@ -215,9 +215,9 @@ export default {
             refCampaignManagerCampaignInfo?.$refs.refCampaignManagerPhishingScenarios
               ?.emailTemplate || '',
           emailTemplateParams,
-          landingPageTemplate:
+          landingPageTemplates:
             refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-              .landingPageTemplate,
+              .landingPageTemplates,
           landingPageParams
         }
 

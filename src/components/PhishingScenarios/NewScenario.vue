@@ -491,7 +491,7 @@
                           </div>
                         </el-tab-pane>
                       </el-tabs>
-                      <div class="d-flex justify-space-between" v-else>
+                      <div v-else class="d-flex justify-space-between">
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
                             {{ summaryData.landingPageTemplate.name }}

@@ -110,7 +110,7 @@ import { useLoading } from '@/hooks/useLoading'
 import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
-  name: 'CampaignManagerReportSummaryLanginPage',
+  name: 'CampaignManagerReportSummaryLandingPage',
   components: {
     DatatableLoading,
     KEmailPreview,
@@ -133,7 +133,7 @@ export default {
   },
   computed: {
     isFormData() {
-      return Object.keys(this.formData).length
+      return Object.keys(this.formData || {}).length
     },
     getCurrentTemplate() {
       return this.templates?.length > 1
@@ -144,7 +144,11 @@ export default {
   watch: {
     formData: {
       handler(fd) {
-        if (fd.resourceId && fd.jobResourceId) this.callForTemplate(fd.resourceId, fd.jobResourceId)
+        if (fd?.landingPageTemplates) {
+          this.templates = fd.landingPageTemplates
+        } else if (fd?.resourceId && fd?.jobResourceId) {
+          this.callForTemplate(fd.resourceId, fd.jobResourceId)
+        }
       },
       deep: true,
       immediate: true

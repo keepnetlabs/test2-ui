@@ -171,11 +171,11 @@
                   <div class="template-preview">
                     <div class="template-preview__icon">
                       <v-icon
+                        v-if="!!template.content"
                         :color="'#2196f3'"
                         left
                         medium
                         @click="isTemplateDetails = true"
-                        v-if="!!template.content"
                       >
                         {{ 'mdi-eye' }}
                       </v-icon>
