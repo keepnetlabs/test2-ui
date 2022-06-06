@@ -4,8 +4,12 @@
       v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
+      :groupCount="multipleDeleteGroupCount"
+      :isMultiple="isMultipleDelete"
+      :isActionButtonDisabled="isDeleting"
       @changeModalStatus="changeDeleteModalStatus"
       @confirmDelete="deleteConfirmedItem"
+      @confirmMultipleDelete="deleteMultipleConfirmedItems"
     />
     <create-item-modal
       v-if="isShowAddModal"
@@ -21,6 +25,7 @@
       id="company-groups-data-table"
       ref="refGroupDataList"
       is-server-side
+      is-server-side-selection
       filterable
       options
       selectable
@@ -49,6 +54,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
+      @handleMultipleDelete="handleMultipleDeleteOfCompanyGroups"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -87,6 +93,7 @@ export default {
   },
   data() {
     return {
+      isDeleting: false,
       tableKey: 'key-table-company-group',
       loading: false,
       tableData: [],
@@ -96,6 +103,8 @@ export default {
       selectedExtend: {},
       selectedRow: null,
       isCompanyGroupListLoaded: false,
+      multipleDeletePayload: {},
+      multipleDeleteGroupCount: 0,
       tableOptions: {
         downloadButton: { show: false, disable: false },
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
@@ -136,7 +145,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         iEmpty: {
@@ -251,6 +260,20 @@ export default {
     }
   },
   methods: {
+    handleMultipleDeleteOfCompanyGroups(items, excludedItems, selectAll) {
+      const payload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.payload.filter
+      }
+      this.multipleDeletePayload = payload
+      this.multipleDeleteGroupCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : items.length
+      this.isMultipleDelete = true
+      this.changeDeleteModalStatus(true)
+    },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
       this.getTableData()
@@ -334,6 +357,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     handleTableItemDelete(selectedItem) {
+      this.isMultipleDelete = false
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
@@ -344,6 +368,34 @@ export default {
           this.getTableData()
         }
       })
+    },
+    deleteMultipleConfirmedItems() {
+      this.isDeleting = true
+      return new Promise((res) =>
+        setTimeout(() => {
+          this.$nextTick(() => {
+            this?.$refs?.refGroupDataList?.resetSelectableParams()
+            this.getTableData()
+          })
+          res()
+        }, 2500)
+      ).finally(() => {
+        this.isDeleting = false
+      })
+      // deleteCompanies(this.multipleDeletePayload)
+      //   .then((response) => {
+      //     nextTick(() => {
+      //       if (this.$refs?.refGroupDataList) {
+      //         this?.$refs?.refGroupDataList?.resetSelectableParams()
+      //       }
+      //     })
+      //     if (response.data && response.data.message) {
+      //       this.getTableData()
+      //     }
+      //   })
+      //   .finally(() => {
+      //     this.isDeleting = false
+      //   })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status

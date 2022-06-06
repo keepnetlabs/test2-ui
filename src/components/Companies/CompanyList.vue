@@ -29,7 +29,11 @@
       v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
+      :companyCount="multipleDeleteCompanyCount"
+      :isMultiple="isMultipleDelete"
+      :isActionButtonDisabled="isDeleting"
       @confirmDelete="deleteConfirmedItem"
+      @confirmMultipleDelete="deleteMultipleConfirmedItems"
       @changeModalStatus="changeDeleteModalStatus"
     />
     <AddGroupToModal
@@ -45,18 +49,18 @@
       :forCompany="true"
       @changeModalStatus="changeGroupModalStatus"
     />
-
     <datatable
       v-bind="bindPropsIsSafari"
       id="companies-data-table"
       ref="refDataList"
-      is-server-side
       toggle-all-row-expansion
       selectable
       groupable
       filterable
       options
       row-key="companyName"
+      is-server-side
+      is-server-side-selection
       :loading="loading"
       :table="tableData"
       :server-side-props="serverSideProps"
@@ -90,6 +94,7 @@
       @sortChangedEvent="sortChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
+      @handleMultipleDelete="handleMultipleDeleteOfCompanies"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -169,6 +174,7 @@ export default {
   },
   data() {
     return {
+      isDeleting: false,
       loading: true,
       tableData: [],
       createdCompanyResourceIdForConfigureCompany: '',
@@ -186,6 +192,8 @@ export default {
       showCreateNewGroupWithCompany: false,
       selectedExtend: {},
       selectedRow: {},
+      multipleDeletePayload: {},
+      multipleDeleteCompanyCount: 0,
       tableOptions: {
         columns: [
           {
@@ -285,7 +293,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         iEmpty: {
@@ -359,6 +367,20 @@ export default {
     }
   },
   methods: {
+    handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
+      const payload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.payload.filter
+      }
+      this.multipleDeletePayload = payload
+      this.multipleDeleteCompanyCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : items.length
+      this.isMultipleDelete = true
+      this.changeDeleteModalStatus(true)
+    },
     toggleConfigureNewCompanyModal() {
       if (this.isShowConfigureCompanyModal) {
         this.getTableData()
@@ -484,6 +506,7 @@ export default {
       this?.$refs?.refDataList?.reRenderFilters({})
     },
     handleTableItemDelete(selectedItem) {
+      this.isMultipleDelete = false
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
@@ -494,6 +517,34 @@ export default {
           this.getTableData()
         }
       })
+    },
+    deleteMultipleConfirmedItems() {
+      this.isDeleting = true
+      return new Promise((res) =>
+        setTimeout(() => {
+          this.$nextTick(() => {
+            this?.$refs?.refDataList?.resetSelectableParams()
+            this.getTableData()
+          })
+          res()
+        }, 2500)
+      ).finally(() => {
+        this.isDeleting = false
+      })
+      // deleteCompanies(this.multipleDeletePayload)
+      //   .then((response) => {
+      //     nextTick(() => {
+      //       if (this.$refs?.refDataList) {
+      //         this?.$refs?.refDataList?.resetSelectableParams()
+      //       }
+      //     })
+      //     if (response.data && response.data.message) {
+      //       this.getTableData()
+      //     }
+      //   })
+      //   .finally(() => {
+      //     this.isDeleting = false
+      //   })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
