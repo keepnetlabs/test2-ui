@@ -7,12 +7,12 @@
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
-      :title="selectedTemplateHeader"
+      :title="getSelectedTemplateHeader"
       :subtitle="'Landing Page Template Preview'"
       style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
+        <KEmailPreview v-if="!!getSelectedTemplateDetails" :html="getSelectedTemplateDetails" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -160,32 +160,67 @@
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
-            <div class="pane" :style="{ flexGrow: 1 }">
-              <div class="template-preview">
-                <div class="template-preview__icon">
-                  <v-icon
-                    :color="'#2196f3'"
-                    left
-                    medium
-                    @click="isTemplateDetails = true"
-                    v-if="!!templateHTML"
-                  >
-                    {{ 'mdi-eye' }}
-                  </v-icon>
-                </div>
-                <div class="template-preview__text pl-2" v-if="!!templateHTML">
-                  <div>
-                    <span class="template-preview__text--title">Phishing URL: </span>
-                    <span class="template-preview__text--body">{{ templateURL }}</span>
+            <div class="pane pt-4" :style="{ flexGrow: 1 }">
+              <el-tabs v-if="landingPageTemplates.length > 1" v-model="selectedTab">
+                <el-tab-pane
+                  v-for="(template, index) in landingPageTemplates"
+                  :key="index"
+                  :name="`${index + 1}`"
+                  :label="`Page ${index + 1}`"
+                >
+                  <div class="template-preview">
+                    <div class="template-preview__icon">
+                      <v-icon
+                        v-if="!!template.content"
+                        :color="'#2196f3'"
+                        left
+                        medium
+                        @click="isTemplateDetails = true"
+                      >
+                        {{ 'mdi-eye' }}
+                      </v-icon>
+                    </div>
+                    <div class="template-preview__text pl-2" v-if="!!template.content">
+                      <div>
+                        <span class="template-preview__text--title">Phishing URL: </span>
+                        <span class="template-preview__text--body">{{ templateURL }}</span>
+                      </div>
+                    </div>
+                    <hr class="mt-2" v-if="!!template.content" />
+                    <KEmailPreview
+                      v-if="!!template.content"
+                      :html="template.content"
+                      is-extra-height
+                    />
                   </div>
+                </el-tab-pane>
+              </el-tabs>
+              <div v-else>
+                <div class="template-preview">
+                  <div class="template-preview__icon">
+                    <v-icon
+                      :color="'#2196f3'"
+                      left
+                      medium
+                      @click="isTemplateDetails = true"
+                      v-if="!!getSingleTemplateDetails"
+                    >
+                      {{ 'mdi-eye' }}
+                    </v-icon>
+                  </div>
+                  <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
+                    <div>
+                      <span class="template-preview__text--title">Phishing URL: </span>
+                      <span class="template-preview__text--body">{{ templateURL }}</span>
+                    </div>
+                  </div>
+                  <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
+                  <KEmailPreview
+                    v-if="!!getSingleTemplateDetails"
+                    :html="getSingleTemplateDetails"
+                    is-extra-height
+                  />
                 </div>
-                <hr class="mt-2" v-if="!!templateHTML" />
-                <KEmailPreview
-                  v-if="!!templateHTML"
-                  :key="templateHTML"
-                  :html="templateHTML"
-                  is-extra-height
-                />
               </div>
             </div>
           </multipane>
@@ -214,13 +249,12 @@ export default {
   },
   data() {
     return {
+      selectedTab: '1',
+      landingPageTemplates: [],
       search: null,
       listData: [],
       totalNumberOfPages: 1,
       defaultListData: [],
-      templateFromName: null,
-      templateFromEmail: null,
-      activeTemplateHTML: null,
       methods: [
         { text: 'Click Only', value: 'WNZt0sCVCWB3' },
         { text: 'Data Submission', value: 'DYC0gugxJMjT' },
@@ -263,13 +297,25 @@ export default {
         }
       },
       loadingTemplatePreview: false,
-      templateHTML: null,
       isTemplateDetails: null,
-      selectedTemplateHeader: null,
       loadingTemplates: false,
-      selectedLandingPageId: null,
       templateURL: null,
       selectedPreviousIndex: 0
+    }
+  },
+  computed: {
+    getSelectedTemplateHeader() {
+      return this.landingPageTemplates?.length > 1
+        ? this.landingPageTemplates?.[parseInt(this.selectedTab) - 1]?.name || ''
+        : this.landingPageTemplates?.[0]?.name || ''
+    },
+    getSelectedTemplateDetails() {
+      return this.landingPageTemplates?.length > 1
+        ? this.landingPageTemplates?.[parseInt(this.selectedTab) - 1]?.content || ''
+        : this.landingPageTemplates?.[0]?.content || ''
+    },
+    getSingleTemplateDetails() {
+      return this.landingPageTemplates?.[0]?.content || ''
     }
   },
   mounted() {
@@ -293,8 +339,6 @@ export default {
             const { data } = response
             if (!response.data.data.results.length) {
               this.listData = []
-              this.activeTemplateHTML = this.templateHTML
-              this.templateHTML = null
             } else {
               data.data.results = data.data.results.map((item) => {
                 return {
@@ -416,10 +460,11 @@ export default {
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
-          this.templateHTML = response?.data?.data?.landingPages[0]?.content || ''
+          this.landingPageTemplates = response?.data?.data?.landingPages || []
         })
         .finally(() => {
           this.loadingTemplatePreview = false
+          this.selectedTab = '1'
         })
     },
     debounce(fn, delay) {
@@ -444,7 +489,6 @@ export default {
             ...item,
             selected: item.resourceId === this.landingPageTemplateResourceId
           }))
-          this.templateHTML = this.activeTemplateHTML || this.templateHTML
         }
       } else {
         if (newVal !== oldVal) {
@@ -458,6 +502,10 @@ export default {
 
 <style lang="scss">
 .landingPagePreview {
+  .el-tabs__item.is-top {
+    padding-left: 1rem !important;
+    padding-right: 0 !important;
+  }
   .wrapWord {
     white-space: nowrap;
     overflow: hidden !important;
