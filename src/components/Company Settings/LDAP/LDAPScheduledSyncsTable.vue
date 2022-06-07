@@ -122,9 +122,9 @@ export default {
             filterableType: 'date'
           },
           {
-            property: PROPERTY_STORE.PERIODTIME,
-            align: 'right',
-            label: labels.PeriodTime,
+            property: 'nextRunTime',
+            align: 'left',
+            label: labels.NextRunTime,
             fixed: false,
             sortable: true,
             show: true,

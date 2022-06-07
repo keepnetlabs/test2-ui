@@ -61,6 +61,7 @@
         :total-number-of-records="totalNumberOfRecords"
         :selected-radio-step="selectedRadioGroupIndex"
         :is-submit-disabled="isSubmitDisabled"
+        :is-next-button-disabled="isNextButtonDisabled"
         max-step="2"
         @on-cancel="handleClose"
         @validate-step1="handleValidateStep1"
@@ -143,6 +144,9 @@ export default {
   computed: {
     getSelectedUsersLength() {
       return this.selectedUsers.length
+    },
+    isNextButtonDisabled() {
+      return !(!!this?.selectedLDAPItems?.length && !!this?.$refs?.refStep1?.targetGroupResourceId)
     }
   },
   created() {
@@ -156,11 +160,12 @@ export default {
         const {
           data: { data }
         } = response
-        const { targetGroupResourceId, ldapSettingResourceId, filter } = data
+        const { targetGroupResourceId, ldapSettingResourceId, filter, groupFilterValues } = data
         this.editedScheduledFilter = filter
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
         this.$refs.refStep1.isActive = this?.selectedRow?.status
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
+        this.$refs.refStep1.$refs.refImportTable.initialGroupFilterValues = groupFilterValues
       })
     },
     handleClose() {

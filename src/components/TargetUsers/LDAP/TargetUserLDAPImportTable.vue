@@ -7,7 +7,7 @@
     filterable
     options
     is-server-side
-    row-key="displayName"
+    row-key="filterValue"
     :loading="isLoading"
     :show-filter-options="false"
     :is-settings-popup="false"
@@ -57,7 +57,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         columns: [
@@ -99,7 +99,8 @@ export default {
         },
         rowActions: [],
         serverSideEvents: { pagination: true, search: true, sort: true }
-      }
+      },
+      initialGroupFilterValues: []
     }
   },
   created() {
@@ -119,6 +120,13 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
+          if (this.initialGroupFilterValues.length) {
+            if (this?.$refs?.refTable?.$refs?.elTableRef) {
+              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+                this.initialGroupFilterValues.map((filterValue) => ({ filterValue }))
+              )
+            }
+          }
         })
         .finally(this.setLoading)
     },
