@@ -104,8 +104,10 @@ export default {
         acc[cField.name] = ''
         return acc
       }, {})
+      const defaultNewItem = {}
+      this.mappingData.headers.map((header) => (defaultNewItem[header.name] = ''))
       this.mappingData.tableData = this.tableData.map((item) => {
-        const newItem = {}
+        const newItem = { ...JSON.parse(JSON.stringify(defaultNewItem)) }
         for (const mapper of defaultFieldMappings) {
           newItem[mapper.customFieldResourceId] = item[mapper.customFieldResourceId] || ''
         }
