@@ -5,6 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  Okay: 'Okay',
   FastLaunch: 'Fast Launch',
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
@@ -480,6 +481,8 @@ export const labels = {
   MakeAvailableForPlaceholder: 'Search companies and groups',
   DeleteNotificationTemplateBody:
     'This notification template will be deleted. All data will be lost.',
+  DeleteDefaultTemplateBody:
+    'You cannot delete this default notification template. Assign another template as default for this template type and try again.',
   NewNotificationTemplate: 'New Notification Template',
   NewNotificationTemplateSubtitle:
     'Define notification template settings and create email template',

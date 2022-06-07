@@ -1,10 +1,10 @@
 <template>
   <div class="notification-templates">
-    <company-settings-header
+    <CompanySettingsHeader
       title="Notification Templates"
       sub-title="Manage notification email templates"
     />
-    <new-notification-template
+    <NewNotificationTemplate
       v-if="newNotificationTemplateStatus"
       ref="newNotificationTemplate"
       :edit-items-disabled="editItemsDisabled"
@@ -14,7 +14,7 @@
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
-    <delete-notification-template-modal
+    <DeleteNotificationTemplateModal
       v-if="showDeleteNotificationTemplateModal"
       :selectedItem="selectedItem"
       :isDeleteButtonDisabled="isDeleteButtonDisabled"
@@ -22,8 +22,14 @@
       @handleDelete="handleDeleteNotificationTemplate"
       @closeDialog="toggleDeleteNotificationTemplate"
     />
+    <DefaultTemplateDeleteWarningModal
+      v-if="showDeleteDefaultNotificationTemplateWarningModal"
+      :status="showDeleteDefaultNotificationTemplateWarningModal"
+      :templateName="selectedItem.name"
+      @closeOverlay="toggleDeleteDefaultTemplateWarningModal"
+    />
     <div class="notification-templates__container">
-      <data-table
+      <DataTable
         v-if="getNotificationTemplatesSearchPermissions"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
@@ -98,7 +104,7 @@
             />
           </RowActionsMenu>
         </template>
-      </data-table>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -130,6 +136,7 @@ import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/DefaultTemplateDeleteWarningModal'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -139,10 +146,12 @@ export default {
     NewNotificationTemplate,
     DeleteNotificationTemplateModal,
     DataTable,
-    CompanySettingsHeader
+    CompanySettingsHeader,
+    DefaultTemplateDeleteWarningModal
   },
   data() {
     return {
+      showDeleteDefaultNotificationTemplateWarningModal: false,
       isDuplicate: false,
       categories: [],
       loading: false,
@@ -413,6 +422,10 @@ export default {
     },
     handleDelete(row) {
       this.selectedItem = row
+      if (row.isDefault) {
+        this.showDeleteDefaultNotificationTemplateWarningModal = true
+        return
+      }
       this.toggleDeleteNotificationTemplate()
     },
     handleDuplicate(row) {
@@ -421,23 +434,31 @@ export default {
       this.toggleNewNotificationTemplate()
     },
     handleMakeDefault(row) {
-      makeDefaultTemplate(row.resourceId)
+      makeDefaultTemplate(row.resourceId).then(() => {
+        this.callForDatas()
+      })
     },
     handleDeleteNotificationTemplate(resourceId) {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
         .then(() => {
           this.$refs.refNotificationList.unSelectRow(this.selectedItem)
-          this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })
-        .finally(() => (this.isDeleteButtonDisabled = false))
+        .finally(() => {
+          this.toggleDeleteNotificationTemplate()
+          this.isDeleteButtonDisabled = false
+        })
     },
     toggleDeleteNotificationTemplate() {
       if (this.showDeleteNotificationTemplateModal) {
         this.selectedItem = null
       }
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
+    },
+    toggleDeleteDefaultTemplateWarningModal() {
+      this.showDeleteDefaultNotificationTemplateWarningModal = !this
+        .showDeleteDefaultNotificationTemplateWarningModal
     },
     checkIfCanCloseNotificationTemplateModal() {
       if (this.$refs.newNotificationTemplate) this.$refs.newNotificationTemplate.closeOverlay()
@@ -490,10 +511,6 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = templateData.results
-          // this.tableData = templateData.results.map((item) => ({
-          //   ...item,
-          //   isDefault: true,
-          // }));
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
           })
