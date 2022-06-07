@@ -158,3 +158,7 @@ export function getTemplateTypes() {
 export function getCheckCompanyLicense(resourceId = '') {
   return testRequest.get(`/companies/${resourceId}/license-check`)
 }
+
+export function makeDefaultTemplate(resourceId = '') {
+  return testRequest.put(`/companies/email-templates/make-default/${resourceId}`)
+}
