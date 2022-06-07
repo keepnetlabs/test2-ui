@@ -63,12 +63,12 @@ export default {
       this.$emit('input', newVal)
     },
     value(newVal) {
-      this.tags = newVal ? newVal : []
+      this.tags = newVal || []
     }
   },
   methods: {
     isValidItem(item) {
-      return item ? item.trim().length > 0 : false
+      return item && item.trim().length > 0
     },
     handleRemoveTag(index) {
       this.tags.splice(index, 1)
