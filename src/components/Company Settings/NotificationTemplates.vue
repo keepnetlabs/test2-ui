@@ -443,10 +443,12 @@ export default {
       deleteEmailTemplate(resourceId)
         .then(() => {
           this.$refs.refNotificationList.unSelectRow(this.selectedItem)
-          this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })
-        .finally(() => (this.isDeleteButtonDisabled = false))
+        .finally(() => {
+          this.toggleDeleteNotificationTemplate()
+          this.isDeleteButtonDisabled = false
+        })
     },
     toggleDeleteNotificationTemplate() {
       if (this.showDeleteNotificationTemplateModal) {
