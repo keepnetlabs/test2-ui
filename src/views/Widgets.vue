@@ -100,6 +100,7 @@ export default {
   data() {
     return {
       activeBreakpoint: 'lg',
+      initialLayout: [],
       layout: [],
       showPlaybookModal: false,
       selectedPlaybookId: null,
@@ -432,6 +433,7 @@ export default {
     },
     handleCancelEditMode() {
       this.editMode = false
+      this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
     layoutMounted() {
       /*
@@ -770,7 +772,10 @@ export default {
   mounted() {},
   watch: {
     editMode(val) {
-      if (val) this.handleAddShadows()
+      if (val) {
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
+        this.handleAddShadows()
+      }
     }
   }
 }
