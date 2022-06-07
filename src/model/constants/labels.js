@@ -14,6 +14,7 @@ export const labels = {
   SIEMProvider: 'SIEM Provider',
   LDAP: 'LDAP',
   FieldMapping: 'Field Mapping',
+  NextRunTime: 'Next Run Time',
   FieldMappingSub:
     'Match field names from your Active Directory to the system fields to import users information correctly',
   LDAPGroups: 'LDAP Groups',

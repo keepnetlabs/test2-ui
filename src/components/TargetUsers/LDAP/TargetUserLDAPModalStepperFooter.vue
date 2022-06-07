@@ -10,6 +10,7 @@
       <NextButton
         v-if="!isStepIsEqualToMax"
         id="btn-next--target-users-ldap-people-modal"
+        :style="isNextButtonDisabled && { opacity: '.5', pointerEvents: 'none' }"
         @click="changeStep()"
       />
       <v-btn
@@ -70,6 +71,10 @@ export default {
       type: Number
     },
     isSubmitDisabled: {
+      type: Boolean,
+      default: false
+    },
+    isNextButtonDisabled: {
       type: Boolean,
       default: false
     },

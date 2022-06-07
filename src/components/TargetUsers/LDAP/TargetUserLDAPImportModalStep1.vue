@@ -6,6 +6,7 @@
       :sub-title="labels.LDAPGroupsSub"
     >
       <TargetUserLDAPImportTable
+        ref="refImportTable"
         :style="getLDAPTargetUserTableStyle"
         @on-selection-change="handleTableSelectionChange"
       />
@@ -21,6 +22,7 @@
         v-model.trim="targetGroupResourceId"
         type="autocomplete"
         id="input--target-user-groups"
+        custom-menu-class="target-user-ldap__target-groups"
         outlined
         clearable
         persistent-hint
@@ -33,7 +35,22 @@
         :items="targetGroupItems"
         :rules="[(v) => Validations.required(v)]"
         :disabled="isEdit"
-      />
+        :slots="{ item: true }"
+      >
+        <template #item="{ item }">
+          <v-tooltip v-if="item.disabled" bottom>
+            <template #activator="{on}">
+              <span v-on="on">
+                {{ item.text }}
+              </span>
+            </template>
+            <span>This user group is already synced with LDAP</span>
+          </v-tooltip>
+          <span v-else>
+            {{ item.text }}
+          </span>
+        </template>
+      </KSelect>
     </FormGroup>
     <FormGroup v-if="isEdit" :title="labels.Status" class="mb-6">
       <v-switch
@@ -110,7 +127,10 @@ export default {
         this.targetGroupItems = data.map((item) => ({
           text: item.name,
           value: item.resourceId,
-          disabled: !item.isSelectable
+          disabled: !item.isSelectable,
+          attrs: {
+            usedLdapName: item.message
+          }
         }))
       })
     },
@@ -124,3 +144,15 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.target-user-ldap__target-groups {
+  .v-list-item--disabled {
+    pointer-events: all;
+    background-color: transparent;
+    .v-ripple__container {
+      display: none;
+    }
+  }
+}
+</style>
