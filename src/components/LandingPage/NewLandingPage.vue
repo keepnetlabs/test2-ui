@@ -126,12 +126,23 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
-                  <InputTag
+                  <k-select
+                    type="combobox"
                     ref="refTags"
                     :id="`input--action-tags`"
                     v-model="formValues.tags"
                     :items="[]"
+                    chips
+                    deletable-chips
+                    outlined
                     class="hide-caret"
+                    multiple
+                    dense
+                    persistent-hint
+                    small-chips
+                    :return-object="false"
+                    @input="handleTagItemChange"
+                    placeholder="Enter tags and press enter key"
                   />
                 </form-group>
                 <form-group
@@ -483,7 +494,7 @@ import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import InputTag from '@/components/Common/Inputs/InputTag'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'NewEmailTemplates',
@@ -494,7 +505,7 @@ export default {
     MakeAvailableFor,
     EmailTemplate,
     InputSelectLanguage,
-    InputTag
+    KSelect
   },
   data() {
     return {
