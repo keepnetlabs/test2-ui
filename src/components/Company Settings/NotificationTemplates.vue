@@ -86,6 +86,7 @@
               :scope="scope"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
+              :checkIsOwnerProperty="false"
               @on-click="handleDuplicate(scope.row)"
             />
             <DefaultMenuRowAction

@@ -30,12 +30,16 @@ export default {
     },
     disabled: {
       type: Boolean
+    },
+    checkIsOwnerProperty: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
     isDisabled() {
       const { row } = this.scope
-      if (row.hasOwnProperty('isOwner')) {
+      if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
         return this.disabled || !row.isOwner
       }
       return this.disabled
