@@ -73,6 +73,10 @@ export default {
     isEdit: {
       type: Boolean
     },
+    itemHeight: {
+      type: String,
+      default: '48'
+    },
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
@@ -106,7 +110,9 @@ export default {
       return comparator && this.textFieldRules.every((func) => func(comparator) === true)
     },
     getStyle() {
-      const style = {}
+      const style = {
+        height: `${this.itemHeight}px`
+      }
       if (!this.isValid) {
         style.backgroundColor = '#FEF7F7'
       }
@@ -148,7 +154,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 48px;
   border-top: 1px solid #e0e0e0;
   &__text {
     font-size: 12px;
@@ -156,10 +161,12 @@ export default {
     font-weight: normal;
     color: #383b41;
     line-height: 18px;
-    padding: 0 16px;
+    padding: 0px 16px;
     flex-grow: 1;
   }
   &__actions {
+    display: flex;
+    align-items: center;
     margin-right: 24px;
     .v-icon {
       font-size: 20px !important;

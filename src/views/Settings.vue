@@ -1,0 +1,90 @@
+<template>
+  <KContainer id="phishing-settings">
+    <el-tabs v-model="tab">
+      <el-tab-pane
+        v-if="getDomainSearchPermissions"
+        label="Domains"
+        name="Domains"
+        id="domains-content"
+      >
+        <DomainsList v-if="tab === 'Domains'" ref="refDomains" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getDnsSearchPermissions"
+        label="DNS Services"
+        name="DNSServices"
+        id="dns-services-content"
+      >
+        <DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList" />
+      </el-tab-pane>
+      <el-tab-pane
+        label="Exclude IP Address"
+        name="ExcludeIpAddress"
+        id="exclude-ip-address-content"
+      >
+        <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" />
+      </el-tab-pane>
+      <el-tab-pane
+        label="Exclude User Agent"
+        name="ExcludeUserAgent"
+        id="exclude-user-agent-content"
+      >
+        <ExcludeUserAgent v-if="tab === 'ExcludeUserAgent'" />
+      </el-tab-pane>
+    </el-tabs>
+  </KContainer>
+</template>
+
+<script>
+import DnsServiceList from '@/components/Settings/DnsServices/DnsServicesList'
+import DomainsList from '@/components/Settings/Domains/DomainsList'
+import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
+import ExcludeIPAddress from '@/components/Settings/ExcludeIPAddress/ExcludeIPAddress'
+import ExcludeUserAgent from '@/components/Settings/ExcludeUserAgent/ExcludeUserAgent'
+
+export default {
+  name: 'Settings',
+  components: {
+    KContainer,
+    DnsServiceList,
+    DomainsList,
+    ExcludeIPAddress,
+    ExcludeUserAgent
+  },
+  data() {
+    return {
+      tab: 'Domains'
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
+      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions'
+    })
+  },
+  created() {
+    // TODO: Set initial Tab according to permissions
+    if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
+      this.tab = 'DNSServices'
+    }
+  },
+  methods: {
+    changeTabStatus(tabStatus) {
+      this.tab = tabStatus
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refDomains, refDnsServiceList } = this.$refs
+    if (refDomains && refDomains.modalStatus) {
+      refDomains.checkIfCanCloseDomainModal()
+      next(false)
+    } else if (refDnsServiceList && refDnsServiceList.modalStatus) {
+      refDnsServiceList.checkIfCanCloseDnsServiceModal()
+      next(false)
+    } else {
+      next()
+    }
+  }
+}
+</script>
