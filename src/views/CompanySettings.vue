@@ -71,12 +71,12 @@
         ></s-i-e-m-integrations>
       </el-tab-pane>
       <el-tab-pane
-        v-if="getSIEMIntegrationSearchPermissions"
+        v-if="getLDAPDetailPermission"
         name="ldap-settings"
         :label="labels.LDAP"
         :id="`${labels.LDAP.toLowerCase()}-content`"
       >
-        <LDAP v-if="tab === 'ldap-settings'" />
+        <LDAP v-if="getLDAPDetailPermission" />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -128,7 +128,8 @@ export default {
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
-      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions'
+      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   methods: {
@@ -153,7 +154,14 @@ export default {
       { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
       { permission: this.getSAMLIntegrationSearchPermissions, name: 'saml-settings' },
       { permission: this.getSCIMSettingsSearchPermissions, name: 'scim-settings' },
-      { permission: this.getSIEMIntegrationSearchPermissions, name: 'siem-integrations' }
+      {
+        permission: this.getSIEMIntegrationSearchPermissions,
+        name: 'siem-integrations'
+      },
+      {
+        permission: this.getLDAPDetailPermission,
+        name: 'ldap-settings'
+      }
     ].find((item) => item.permission)?.name
     this.changeTabByRoute()
   },
