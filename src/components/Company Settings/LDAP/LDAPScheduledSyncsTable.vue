@@ -70,7 +70,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         columns: [
@@ -131,7 +131,7 @@ export default {
             type: 'text',
             width: 160,
             isEditable: true,
-            filterableType: 'text'
+            filterableType: 'date'
           }
         ],
         iEmpty: {
