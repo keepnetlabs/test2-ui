@@ -174,7 +174,10 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
-                    <v-list-item :disabled="isLDAPDisabled" @click="toggleImportLDAPModal">
+                    <v-list-item
+                      :disabled="isLDAPDisabled || !getLDAPCreateConfigPermission"
+                      @click="toggleImportLDAPModal"
+                    >
                       <v-list-item-content>
                         <v-list-item-title id="item--target-user-empty-import-from-ldap"
                           >Import from LDAP</v-list-item-title
@@ -445,7 +448,8 @@ export default {
         {
           text: 'Import from LDAP',
           id: 'btn-add-users-import-from-ldap--target-users-people',
-          disabled: this.isLDAPDisabled
+          disabled:
+            this.isLDAPDisabled || !this.$store.getters['permissions/getLDAPCreateConfigPermission']
         }
       ],
       serverSideProps: new ServerSideProps()
@@ -453,7 +457,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
+      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission'
     })
   },
   created() {

@@ -13,11 +13,7 @@
       :map-table-data="mappingData"
       @on-change="handleMapTableSelectChange"
     />
-    <SaveChangesButton
-      class="mt-8"
-      :style="(isLoading || isLoadingFromParent) && { opacity: '0.5', pointerEvents: 'none' }"
-      @click="handleSubmit"
-    />
+    <SaveChangesButton class="mt-8" :style="getSubmitButtonStyle" @click="handleSubmit" />
   </div>
 </template>
 
@@ -31,6 +27,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import labels from '@/model/constants/labels'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { defaultFieldMappings } from './utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'LDAPFieldMappings',
   components: { ConfigureCompanyStepHeader, SaveChangesButton, DatatableLoading, MapTable },
@@ -60,6 +57,17 @@ export default {
   },
   created() {
     this.callApis(true)
+  },
+  computed: {
+    ...mapGetters({
+      getLDAPSettingCreatePermission: 'permissions/getLDAPSettingCreatePermission'
+    }),
+    getSubmitButtonStyle() {
+      const { isLoading, isLoadingFromParent, getLDAPSettingCreatePermission } = this
+      const disabledStyle = { opacity: '0.5', pointerEvents: 'none' }
+      if (!getLDAPSettingCreatePermission) return disabledStyle
+      return (isLoading || isLoadingFromParent) && disabledStyle
+    }
   },
   methods: {
     callApis(isInitial = false) {
