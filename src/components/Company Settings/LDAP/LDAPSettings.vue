@@ -96,6 +96,9 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    fieldMappings: {
+      type: Array
     }
   },
   data() {
@@ -169,7 +172,11 @@ export default {
         })
     },
     handleSubmit() {
-      if (this.isTestConnectionValid) this.$emit('on-submit', this.formData)
+      if (this.isTestConnectionValid)
+        this.$emit('on-submit', {
+          ...this.formData,
+          fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
+        })
       else this.handleTestConnection(true)
     }
   }

@@ -349,7 +349,7 @@ export default {
               (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
             ]
           default:
-            break
+            return [(v) => this.validations.required(v, labels.Required)]
         }
       }
     },
