@@ -275,7 +275,9 @@
                           <span @click="showPopupModal = true" style="cursor: pointer;">
                             <a
                               v-if="
-                                scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'
+                                scope.row.analysisEnginePermalink &&
+                                scope.row.result !== 'Excluded' &&
+                                scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               :href="scope.row.analysisEnginePermalink"
@@ -316,7 +318,7 @@ import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/f
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
-
+import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 export default {
   components: {
     KEmailPreview,
@@ -331,6 +333,7 @@ export default {
   },
   props: {},
   data: () => ({
+    INTEGRATION_TYPES,
     isPreviewRender: false,
     isLoading: true,
     panel: [],
