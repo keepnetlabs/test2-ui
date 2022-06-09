@@ -9,6 +9,7 @@
       <LDAPSettings
         :initial-form-data="initialFormData"
         :is-loading="isLoading"
+        :field-mappings="fieldMappings"
         @on-submit="handleSubmit"
       />
     </el-tab-pane>

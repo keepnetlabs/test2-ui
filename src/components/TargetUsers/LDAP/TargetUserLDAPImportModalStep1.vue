@@ -1,6 +1,13 @@
 <template>
   <v-form ref="refForm">
+    <KButtonRadioGroup
+      v-model="selectedRadioGroupIndex"
+      class="mb-8"
+      :items="radioGroupItems"
+      @on-item-click="handleRadioGroupItemClick"
+    />
     <FormGroup
+      v-if="selectedRadioGroupIndex === 1"
       class-name="w-100 max-w-100 ldap-import-table"
       :title="labels.LDAPGroups"
       :sub-title="labels.LDAPGroupsSub"
@@ -74,13 +81,24 @@ import labels from '@/model/constants/labels'
 import LDAPService from '@/api/ldap'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+import KButtonRadioGroup from '@/components/ButtonRadioGroup/KButtonRadioGroup'
 export default {
   name: 'TargetUserLDAPImportModalStep1',
-  components: { KSelect, CustomError, TargetUserLDAPImportTable, FormGroup },
+  components: { KButtonRadioGroup, KSelect, CustomError, TargetUserLDAPImportTable, FormGroup },
   props: {
     selectedLDAPItems: {
       type: Array,
       default: () => []
+    },
+    isLDAPGroupsValid: {
+      type: Boolean
+    },
+    step1TargetGroupResourceId: {
+      type: String,
+      default: ''
+    },
+    step1Step: {
+      type: Number
     }
   },
   inject: {
@@ -93,10 +111,11 @@ export default {
     return {
       labels,
       Validations,
-      isLDAPGroupsValid: true,
       isActive: true,
       targetGroupItems: [],
-      targetGroupResourceId: ''
+      targetGroupResourceId: '',
+      selectedRadioGroupIndex: 0,
+      radioGroupItems: [{ label: 'ENTIRE LDAP' }, { label: 'SELECT LDAP GROUPS' }]
     }
   },
   computed: {
@@ -113,6 +132,14 @@ export default {
             borderRadius: '12px !important'
           }
         : {}
+    }
+  },
+  watch: {
+    targetGroupResourceId(newValue) {
+      this.$emit('update:step1TargetGroupResourceId', newValue)
+    },
+    selectedRadioGroupIndex(newValue) {
+      this.$emit('update:step1Step', newValue)
     }
   },
   created() {
@@ -135,11 +162,19 @@ export default {
       })
     },
     validateForm() {
-      return this?.$refs?.refForm?.validate() && this?.selectedLDAPItems?.length
+      const comparator = this.selectedRadioGroupIndex === 1 ? this?.selectedLDAPItems?.length : true
+      return this?.$refs?.refForm?.validate() && comparator
     },
     handleTableSelectionChange(selectedLDAPItems) {
-      if (selectedLDAPItems.length) this.isLDAPGroupsValid = true
+      if (selectedLDAPItems.length) this.$emit('update:isLDAPGroupsValid', true)
+      else this.$emit('update:isLDAPGroupsValid', false)
       this.$emit('update:selectedLDAPItems', selectedLDAPItems)
+    },
+    handleRadioGroupItemClick(item) {
+      if (item.label === this.radioGroupItems[0].label) {
+        this.handleTableSelectionChange([])
+        this.$emit('update:isLDAPGroupsValid', true)
+      }
     }
   }
 }
