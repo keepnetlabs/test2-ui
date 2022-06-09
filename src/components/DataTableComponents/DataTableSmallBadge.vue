@@ -135,16 +135,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.small-badge {
-  &__container {
-    div {
-      display: inline-block;
-    }
-    .k-badge {
-      margin-right: 5px;
-    }
-  }
-}
-</style>

@@ -133,31 +133,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.switch-account__container {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 8px 0;
-  border-radius: 8px;
-  box-shadow: 0 5px 12px 2px rgba(91, 91, 91, 0.12), 0 3px 18px 2px rgba(56, 59, 65, 0.04);
-  position: absolute;
-  top: 46px;
-  z-index: 99;
-  background: white;
-  width: 100%;
-  will-change: visibility;
-  visibility: hidden;
-  & * {
-    transition: none !important;
-  }
-  .v-treeview-node__prepend {
-    margin-right: 0;
-  }
-}
-.switch-account__select-footer {
-  span {
-    color: #383b41;
-    font-size: 13px;
-  }
-}
-</style>

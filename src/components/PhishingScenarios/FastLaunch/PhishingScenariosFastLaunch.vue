@@ -324,12 +324,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.phishing-scenarios-fast-launch-step-1-header {
-  .add-in-configuration__subtitle {
-    max-width: 554px;
-    white-space: normal;
-  }
-}
-</style>

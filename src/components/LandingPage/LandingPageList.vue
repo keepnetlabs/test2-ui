@@ -585,20 +585,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.emailTemplates {
-  min-height: 90vh;
-}
-.emailTemplates__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-.landing-page-template-preview__text {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-</style>

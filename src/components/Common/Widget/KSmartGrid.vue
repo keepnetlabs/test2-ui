@@ -131,21 +131,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.vue-grid-layout {
-  background: transparent;
-  // .vue-grid-item {}
-  .smartwidget {
-    height: inherit;
-    width: inherit;
-    border: none !important;
-    border-radius: 12px;
-
-    &.smartwidget-fullscreen {
-      height: 100%;
-      width: 100%;
-    }
-  }
-}
-</style>

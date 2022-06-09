@@ -322,22 +322,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-#campaign-manager-item-data-table {
-  .table-header-disable {
-    opacity: 1;
-    pointer-events: visible;
-    * {
-      opacity: 0.85;
-      pointer-events: none;
-    }
-    #btn-back--campaign-manager-clustered-table {
-      pointer-events: visible;
-      opacity: 1;
-    }
-  }
-  .selection-row {
-    top: 131px;
-  }
-}
-</style>

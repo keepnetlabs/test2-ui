@@ -826,5 +826,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" src="./CreateOrEditRule.scss" />

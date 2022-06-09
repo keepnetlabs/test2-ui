@@ -438,11 +438,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.dns-customize-records-detail {
-  .k-form-group__content {
-    display: flex;
-  }
-}
-</style>

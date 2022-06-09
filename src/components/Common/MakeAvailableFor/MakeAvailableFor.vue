@@ -306,39 +306,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-[data-id='AllCompanies'],
-[data-id='MyCompanyOnly'] {
-  .vue-treeselect__checkbox-container {
-    display: none;
-  }
-}
-.make-available-for.vue-treeselect {
-  svg {
-    color: #e0e0e0 !important;
-    fill: #e0e0e0 !important;
-    path {
-      color: #e0e0e0 !important;
-      fill: #e0e0e0 !important;
-    }
-  }
-  .vue-treeselect__control .vue-treeselect__control-arrow-container {
-    margin-right: 12px;
-    svg {
-      color: rgba(0, 0, 0, 0.54) !important;
-      fill: rgba(0, 0, 0, 0.54) !important;
-      path {
-        color: rgba(0, 0, 0, 0.54) !important;
-        fill: rgba(0, 0, 0, 0.54) !important;
-      }
-    }
-  }
-  .vue-treeselect__multi-value-item {
-    pointer-events: none;
-    .vue-treeselect__value-remove {
-      pointer-events: all;
-    }
-  }
-}
-</style>

@@ -188,18 +188,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.ldap-field-mapping-map-table {
-  overflow-x: auto;
-  table {
-    width: 100%;
-  }
-  tr {
-    display: table-row !important;
-  }
-  td {
-    display: table-cell !important;
-    height: 48px !important;
-  }
-}
-</style>

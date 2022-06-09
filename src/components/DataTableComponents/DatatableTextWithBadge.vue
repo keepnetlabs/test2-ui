@@ -158,23 +158,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.data-table-text-with-badge {
-  .k-badge {
-    margin: 0 12px;
-  }
-
-  &__tooltip {
-    white-space: pre-line;
-    line-height: 1.6;
-  }
-  &__container {
-    display: flex;
-  }
-  &__span {
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}
-</style>

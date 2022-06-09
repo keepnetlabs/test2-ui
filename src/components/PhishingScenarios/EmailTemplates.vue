@@ -668,15 +668,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.emailTemplates {
-  min-height: 90vh;
-}
-.emailTemplates__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

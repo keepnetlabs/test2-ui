@@ -403,15 +403,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.dnsServiceList {
-  min-height: 90vh;
-}
-.dnsServiceList__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

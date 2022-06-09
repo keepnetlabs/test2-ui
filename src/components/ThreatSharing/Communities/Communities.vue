@@ -1231,4 +1231,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./Communities.scss"></style>

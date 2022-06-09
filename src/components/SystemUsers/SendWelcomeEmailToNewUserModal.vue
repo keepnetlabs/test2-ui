@@ -140,30 +140,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.send-welcome-email {
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-    &-button {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      color: #00bcd4;
-    }
-  }
-  &__radio-group {
-    &.v-input--selection-controls {
-      margin-top: 0;
-      padding-top: 0;
-    }
-  }
-
-  &__date-picker {
-    margin-left: 24px;
-  }
-}
-</style>

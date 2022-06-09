@@ -3259,4 +3259,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./PostIncident.scss"></style>

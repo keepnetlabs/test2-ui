@@ -182,12 +182,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.w-25 {
-  width: 25%;
-}
-.w-5 {
-  width: 5%;
-}
-</style>

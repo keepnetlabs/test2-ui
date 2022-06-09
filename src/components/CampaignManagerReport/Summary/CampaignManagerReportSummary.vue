@@ -351,32 +351,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-report-summary {
-  &__general-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .campaign-manager-summary-card__body-item {
-    justify-content: space-between;
-  }
-  &-scenario-stats {
-    &__chart {
-      &-container {
-        max-width: 350px;
-        margin: -60px auto;
-        max-height: 350px;
-      }
-    }
-  }
-  &-campaign-info {
-    &__right-side {
-      margin-right: 24px;
-      button {
-        min-width: 102px !important;
-      }
-    }
-  }
-}
-</style>

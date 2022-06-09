@@ -1,0 +1,42 @@
+.k-form-group {
+    min-height: auto !important;
+    max-width: 554px;
+    margin-bottom: 1px;
+
+    .v-list-item__content {
+        overflow: visible;
+        padding: 0;
+    }
+
+    &.v-list-item {
+        padding: 0;
+    }
+
+    .v-list-item__content>*:not(:last-child) {
+        margin-bottom: 0;
+    }
+
+    &__title {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.2 !important;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+    }
+
+    &__sub-title {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5 !important;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+    }
+
+    &__content {
+        margin-top: 8px;
+
+        &-hint {
+            margin-bottom: 13px;
+        }
+    }
+}
