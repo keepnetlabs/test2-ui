@@ -35,6 +35,9 @@
             <TargetUserLDAPImportModalStep1
               ref="refStep1"
               :selected-l-d-a-p-items.sync="selectedLDAPItems"
+              :is-l-d-a-p-groups-valid.sync="isLDAPGroupsValid"
+              :step1-target-group-resource-id.sync="step1TargetGroupResourceId"
+              :step1-step.sync="step1Step"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -138,6 +141,9 @@ export default {
       selectedRadioGroupIndex: 0,
       selectedUsers: [],
       editedScheduledFilter: null,
+      isLDAPGroupsValid: true,
+      step1TargetGroupResourceId: '',
+      step1Step: 0,
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -146,7 +152,9 @@ export default {
       return this.selectedUsers.length
     },
     isNextButtonDisabled() {
-      return !(!!this?.selectedLDAPItems?.length && !!this?.$refs?.refStep1?.targetGroupResourceId)
+      const comparetor =
+        this.step1Step === 0 ? this.isLDAPGroupsValid : !!this?.selectedLDAPItems?.length
+      return !(comparetor && !!this.step1TargetGroupResourceId)
     }
   },
   created() {
@@ -165,7 +173,12 @@ export default {
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
         this.$refs.refStep1.isActive = this?.selectedRow?.status
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
-        this.$refs.refStep1.$refs.refImportTable.initialGroupFilterValues = groupFilterValues
+        const index = groupFilterValues?.length ? 1 : 0
+        this.$refs.refStep1.selectedRadioGroupIndex = index
+        if (index)
+          this.$nextTick(() => {
+            this.$refs.refStep1.$refs.refImportTable.initialGroupFilterValues = groupFilterValues
+          })
       })
     },
     handleClose() {
@@ -178,7 +191,7 @@ export default {
       this.totalNumberOfRecords = 0
       if (!step1.validateForm()) {
         if (!this.selectedLDAPItems?.length) {
-          step1.isLDAPGroupsValid = false
+          this.isLDAPGroupsValid = false
         }
       } else callback()
     },

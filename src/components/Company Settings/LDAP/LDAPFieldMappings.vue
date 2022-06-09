@@ -100,6 +100,7 @@ export default {
           return !mappedHeaders.find((mappedHeader) => mappedHeader.name === cField.name)
         })
         this.mappingData.headers = [...mappedHeaders, ...customFields]
+        this.mappingData.headers[0].isSelectDisabled = true
         this.setTableData()
         this.setLoading()
         this.$nextTick(() => {
