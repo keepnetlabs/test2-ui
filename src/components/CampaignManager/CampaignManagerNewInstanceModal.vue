@@ -182,7 +182,7 @@ import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignMa
 import CustomError from '@/components/CustomError'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { searchTargetGroups } from '@/api/targetUsers'
-import { createCampaignInstance } from '@/api/phishingsimulator'
+import { createCampaignInstance, launchPhishingCampaign } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 import { isDifferent } from '@/utils/functions'
 import * as validations from '@/utils/validations'
@@ -462,7 +462,14 @@ export default {
       }
       if (this.isDateValid && this.isTargetGroupsValid) {
         this.setActionButtonDisability(true)
-        createCampaignInstance(this.resourceId, this.formValues)
+        const payload = {
+          ...this.formValues,
+          scheduleTypeId: parseInt(this.formValues.scheduleTypeId),
+          targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(
+            (target) => target.value
+          )
+        }
+        launchPhishingCampaign(this.resourceId, payload)
           .then(() => {
             this.$emit(EMITS.ON_SUBMIT)
           })
