@@ -87,6 +87,7 @@ import SaveChangesButton from '@/components/Common/Buttons/SaveChangesButton'
 import LDAPService from '@/api/ldap'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { mapGetters } from 'vuex'
+import { isDifferent } from '@/utils/functions'
 export default {
   name: 'LDAPSettings',
   components: { DatatableLoading, SaveChangesButton, InputUrl, FormGroup },
@@ -136,6 +137,8 @@ export default {
         ? this.getLDAPSettingUpdatePermission
         : this.getLDAPSettingCreatePermission
       if (!permissionIsValid) return this.disabledStyle
+      const isDiff = this.initialFormData ? isDifferent(this.formData, this.initialFormData) : true
+      if (!isDiff) return this.disabledStyle
       return this.isTestingConnection || !this.isFormValid ? this.disabledStyle : {}
     },
     getSwitchLabel() {
