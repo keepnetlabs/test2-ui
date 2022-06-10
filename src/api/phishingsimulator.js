@@ -192,6 +192,13 @@ export function updateCampaignManager(resourceId = '', payload = {}) {
   })
 }
 
+export function createCampaignInstance(resourceId = '', payload = {}) {
+  return new Promise((res) => setTimeout(() => res(), 2500))
+  // return testRequest.post(`/phishing-simulator/phishing-campaign/${resourceId}/create-instance`, payload, {
+  //   snackbar: COMMON_SNACKBAR
+  // })
+}
+
 export function getCampaignManager(resourceId = '') {
   return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
 }
@@ -390,14 +397,10 @@ export function resumePhishingCampaignJob(id) {
   })
 }
 
-export function launchPhishingCampaign(id) {
-  return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job/start/${id}`,
-    {},
-    {
-      snackbar: COMMON_SNACKBAR
-    }
-  )
+export function launchPhishingCampaign(id, payload = {}) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/start/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function resendPhishingCampaignToUsers(payload, id) {
