@@ -24,13 +24,6 @@
       >
         <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" />
       </el-tab-pane>
-      <el-tab-pane
-        label="Exclude User Agent"
-        name="ExcludeUserAgent"
-        id="exclude-user-agent-content"
-      >
-        <ExcludeUserAgent v-if="tab === 'ExcludeUserAgent'" />
-      </el-tab-pane>
     </el-tabs>
   </KContainer>
 </template>
@@ -41,7 +34,6 @@ import DomainsList from '@/components/Settings/Domains/DomainsList'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import ExcludeIPAddress from '@/components/Settings/ExcludeIPAddress/ExcludeIPAddress'
-import ExcludeUserAgent from '@/components/Settings/ExcludeUserAgent/ExcludeUserAgent'
 
 export default {
   name: 'Settings',
@@ -49,8 +41,7 @@ export default {
     KContainer,
     DnsServiceList,
     DomainsList,
-    ExcludeIPAddress,
-    ExcludeUserAgent
+    ExcludeIPAddress
   },
   data() {
     return {
