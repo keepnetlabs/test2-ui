@@ -57,22 +57,10 @@
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <div class="template-preview pt-3">
-            <div class="template-preview__text" v-if="!!landingPageTemplate">
-              <div>
-                <span class="template-preview__text--title">Phishing URL: </span>
-                <span class="template-preview__text--body">{{
-                  landingPageParams.urlTemplate
-                }}</span>
-              </div>
-            </div>
-            <hr class="mt-2" v-if="!!landingPageTemplate" />
-            <KEmailPreview
-              v-if="!!landingPageTemplate"
-              ref="refPreview"
-              :html="landingPageTemplate"
-            />
-          </div>
+          <LandingPageTemplateModalPreview
+            :landingPageTemplates="landingPageTemplates"
+            :phishingUrl="landingPageParams.urlTemplate"
+          />
         </el-tab-pane>
       </el-tabs>
     </template>
@@ -94,10 +82,16 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
 export default {
   name: 'PhishingScenarioPreview',
-  components: { KEmailPreview, DatatableLoading, AppDialog, AttachmentsPreview },
+  components: {
+    KEmailPreview,
+    DatatableLoading,
+    AppDialog,
+    AttachmentsPreview,
+    LandingPageTemplateModalPreview
+  },
   props: {
     status: {
       type: Boolean
@@ -109,7 +103,8 @@ export default {
   data() {
     return {
       emailTemplate: null,
-      landingPageTemplate: null,
+      landingPageTemplates: [],
+      selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
       tab: 'email',
@@ -124,6 +119,18 @@ export default {
     },
     getSubtitle() {
       return this.selectedRow.name
+    },
+    hasLandingPageTemplate() {
+      return this.landingPageTemplates.length > 0
+    },
+    getCurrentLandingPageTemplate() {
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    hasNextTemplate() {
+      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
+    },
+    hasPreviousTemplate() {
+      return this.selectedLandingPageIndex > 0
     }
   },
   created() {
@@ -178,7 +185,7 @@ export default {
             method: methods[methodTypeId - 1].text,
             isAttachmentBasedTemplate: methodTypeId === 3
           }
-          this.landingPageTemplate = landingPages[0]?.content || ''
+          this.landingPageTemplates = landingPages
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -191,6 +198,12 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handlePreviousTemplate() {
+      this.selectedLandingPageIndex--
+    },
+    handleNextTemplate() {
+      this.selectedLandingPageIndex++
     }
   }
 }

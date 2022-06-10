@@ -1,0 +1,165 @@
+<template>
+  <el-tabs
+    v-model="tab"
+    id="settings-el-tabs"
+    :class="['k-sub-tab', { 'ldap-field-mapping-disabled': isFieldMappingDisabled }]"
+    :before-leave="handleBeforeLeave"
+  >
+    <el-tab-pane id="ldap-settings" label="Settings" name="settings">
+      <LDAPSettings
+        :initial-form-data="initialFormData"
+        :is-loading="isLoading"
+        :field-mappings="fieldMappings"
+        @on-submit="handleSubmit"
+      />
+    </el-tab-pane>
+    <el-tab-pane
+      v-if="getLDAPSettingSchedulePermission"
+      id="ldap-scheduled-syncs"
+      label="Scheduled Syncs"
+      name="scheduled-syncs"
+    >
+      <LDAPScheduledSyncs
+        v-if="tab === 'scheduled-syncs'"
+        :resource-id="resourceId"
+        :custom-fields="customFields"
+        :field-mappings="fieldMappings"
+      />
+    </el-tab-pane>
+    <el-tab-pane
+      v-if="getLDAPFieldMappingPermissions"
+      id="ldap-field-mappings"
+      label="Field Mapping"
+      name="field-mapping"
+    >
+      <template v-if="isFieldMappingDisabled" #label>
+        Field Mapping
+        <v-tooltip bottom>
+          <template #activator="{ on }">
+            <v-icon v-on="on" class="mr-2" size="18">mdi-alert-circle</v-icon>
+          </template>
+          <span>You must first connect to active directory to map fields.</span>
+        </v-tooltip>
+      </template>
+      <LDAPFieldMappings
+        v-if="tab === 'field-mapping'"
+        :field-mappings="fieldMappings"
+        :initial-custom-fields="customFields"
+        :is-loading-from-parent="isLoading"
+        @on-submit="handleSubmit"
+      />
+    </el-tab-pane>
+  </el-tabs>
+</template>
+
+<script>
+import { useLoading } from '@/hooks/useLoading'
+import LDAPSettings from '@/components/Company Settings/LDAP/LDAPSettings'
+import LDAPScheduledSyncs from '@/components/Company Settings/LDAP/LDAPScheduledSyncs'
+import LDAPFieldMappings from '@/components/Company Settings/LDAP/LDAPFieldMappings'
+import LDAPService from '@/api/ldap'
+import {
+  defaultFieldMappings,
+  getDefaultFieldMappingsWithCurrent
+} from '@/components/Company Settings/LDAP/utils'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
+import { mapGetters } from 'vuex'
+export default {
+  name: 'LDAP',
+  components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings },
+  mixins: [useLoading],
+  data() {
+    return {
+      tab: 'settings',
+      isFieldMappingDisabled: false,
+      initialFormData: null,
+      resourceId: '',
+      fieldMappings: [],
+      customFields: []
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getLDAPSettingSchedulePermission: 'permissions/getLDAPSettingSchedulePermission',
+      getLDAPFieldMappingPermissions: 'permissions/getLDAPFieldMappingPermissions'
+    })
+  },
+  created() {
+    this.callForData()
+    this.callForCustomFields()
+  },
+  methods: {
+    handleBeforeLeave(val) {
+      return !(this.isFieldMappingDisabled && val === 'field-mapping')
+    },
+    callForData() {
+      this.setLoading(true)
+      LDAPService.getLDAPSettingDetailForMyCompany()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.isFieldMappingDisabled = false
+          data.password = data['hashPassword']
+          this.resourceId = data.resourceId
+          this.fieldMappings = getDefaultFieldMappingsWithCurrent(
+            defaultFieldMappings,
+            data?.fieldMappings
+          )
+          delete data['hashPassword']
+          delete data['resourceId']
+          delete data['fieldMappings']
+          delete data['name']
+          this.initialFormData = data
+        })
+        .catch((e) => {
+          const { response } = e
+          if (response?.status === 404) {
+            this.isFieldMappingDisabled = true
+            if (this.tab === 'field-mapping') this.tab = 'settings'
+          }
+        })
+        .finally(this.setLoading)
+    },
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.customFields = data.filter(
+          (cField) => cField.fieldDataType === 'String' && cField.isActive
+        )
+        const sortProp = 'sortOrder'
+        this.customFields.sort((a, b) => {
+          if (a[sortProp] > b[sortProp]) {
+            return 1
+          } else if (a[sortProp] === b[sortProp]) {
+            return 0
+          }
+          return -1
+        })
+      })
+    },
+    handleSubmit(formData) {
+      //that means we are updating the settings
+      this.setLoading(true)
+      if (this.initialFormData) {
+        LDAPService.updateLDAPSetting(
+          { ...this.initialFormData, ...formData },
+          this.resourceId
+        ).finally(this.setLoading)
+      } else {
+        LDAPService.createLDAPSetting(formData).then(this.callForData)
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.ldap-field-mapping-disabled #tab-field-mapping {
+  color: #383b41 !important;
+  opacity: 0.5;
+  cursor: auto;
+}
+</style>

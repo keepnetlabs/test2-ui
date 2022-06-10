@@ -1,0 +1,193 @@
+<template>
+  <v-form ref="refForm">
+    <KButtonRadioGroup
+      v-model="selectedRadioGroupIndex"
+      class="mb-8"
+      :items="radioGroupItems"
+      @on-item-click="handleRadioGroupItemClick"
+    />
+    <FormGroup
+      v-if="selectedRadioGroupIndex === 1"
+      class-name="w-100 max-w-100 ldap-import-table"
+      :title="labels.LDAPGroups"
+      :sub-title="labels.LDAPGroupsSub"
+    >
+      <TargetUserLDAPImportTable
+        ref="refImportTable"
+        :style="getLDAPTargetUserTableStyle"
+        @on-selection-change="handleTableSelectionChange"
+      />
+      <CustomError
+        class="mb-6 ml-2"
+        style="margin-top: 2px;"
+        :is-valid="isLDAPGroupsValid"
+        :error-message="getLDAPGroupsErrorMessage"
+      />
+    </FormGroup>
+    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub" has-hint>
+      <KSelect
+        v-model.trim="targetGroupResourceId"
+        type="autocomplete"
+        id="input--target-user-groups"
+        custom-menu-class="target-user-ldap__target-groups"
+        outlined
+        clearable
+        persistent-hint
+        hint="*Required"
+        prepend-inner-icon="mdi-magnify"
+        autocomplete="disabled"
+        placeholder="Select a target group"
+        no-data-text="No user group available"
+        position="top"
+        :items="targetGroupItems"
+        :rules="[(v) => Validations.required(v)]"
+        :disabled="isEdit"
+        :slots="{ item: true }"
+      >
+        <template #item="{ item }">
+          <v-tooltip v-if="item.disabled" bottom>
+            <template #activator="{on}">
+              <span v-on="on">
+                {{ item.text }}
+              </span>
+            </template>
+            <span>This user group is already synced with LDAP</span>
+          </v-tooltip>
+          <span v-else>
+            {{ item.text }}
+          </span>
+        </template>
+      </KSelect>
+    </FormGroup>
+    <FormGroup v-if="isEdit" :title="labels.Status" class="mb-6">
+      <v-switch
+        v-model.trim="isActive"
+        id="input--switch-ldap"
+        class="k-switch mt-0"
+        hide-details
+        color="#2196f3"
+        style="max-width: 100px;"
+        :label="getSwitchLabel"
+      />
+    </FormGroup>
+  </v-form>
+</template>
+
+<script>
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import TargetUserLDAPImportTable from '@/components/TargetUsers/LDAP/TargetUserLDAPImportTable'
+import CustomError from '@/components/CustomError'
+import labels from '@/model/constants/labels'
+import LDAPService from '@/api/ldap'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import * as Validations from '@/utils/validations'
+import KButtonRadioGroup from '@/components/ButtonRadioGroup/KButtonRadioGroup'
+export default {
+  name: 'TargetUserLDAPImportModalStep1',
+  components: { KButtonRadioGroup, KSelect, CustomError, TargetUserLDAPImportTable, FormGroup },
+  props: {
+    selectedLDAPItems: {
+      type: Array,
+      default: () => []
+    },
+    isLDAPGroupsValid: {
+      type: Boolean
+    },
+    step1TargetGroupResourceId: {
+      type: String,
+      default: ''
+    },
+    step1Step: {
+      type: Number
+    }
+  },
+  inject: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      labels,
+      Validations,
+      isActive: true,
+      targetGroupItems: [],
+      targetGroupResourceId: '',
+      selectedRadioGroupIndex: 0,
+      radioGroupItems: [{ label: 'ENTIRE LDAP' }, { label: 'SELECT LDAP GROUPS' }]
+    }
+  },
+  computed: {
+    getLDAPGroupsErrorMessage() {
+      return !this?.selectedLDAPItems?.length ? 'Required' : ''
+    },
+    getSwitchLabel() {
+      return this.isActive ? labels.Active : labels.Passive
+    },
+    getLDAPTargetUserTableStyle() {
+      return !this.isLDAPGroupsValid
+        ? {
+            border: '1px solid rgb(255, 82, 82) !important',
+            borderRadius: '12px !important'
+          }
+        : {}
+    }
+  },
+  watch: {
+    targetGroupResourceId(newValue) {
+      this.$emit('update:step1TargetGroupResourceId', newValue)
+    },
+    selectedRadioGroupIndex(newValue) {
+      this.$emit('update:step1Step', newValue)
+    }
+  },
+  created() {
+    this.callForTargetGroups()
+  },
+  methods: {
+    callForTargetGroups() {
+      LDAPService.getTargetGroupsForLDAP().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.targetGroupItems = data.map((item) => ({
+          text: item.name,
+          value: item.resourceId,
+          disabled: !item.isSelectable,
+          attrs: {
+            usedLdapName: item.message
+          }
+        }))
+      })
+    },
+    validateForm() {
+      const comparator = this.selectedRadioGroupIndex === 1 ? this?.selectedLDAPItems?.length : true
+      return this?.$refs?.refForm?.validate() && comparator
+    },
+    handleTableSelectionChange(selectedLDAPItems) {
+      if (selectedLDAPItems.length) this.$emit('update:isLDAPGroupsValid', true)
+      else this.$emit('update:isLDAPGroupsValid', false)
+      this.$emit('update:selectedLDAPItems', selectedLDAPItems)
+    },
+    handleRadioGroupItemClick(item) {
+      if (item.label === this.radioGroupItems[0].label) {
+        this.handleTableSelectionChange([])
+        this.$emit('update:isLDAPGroupsValid', true)
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.target-user-ldap__target-groups {
+  .v-list-item--disabled {
+    pointer-events: all;
+    background-color: transparent;
+    .v-ripple__container {
+      display: none;
+    }
+  }
+}
+</style>

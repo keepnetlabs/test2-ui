@@ -38,8 +38,11 @@ export default {
     }),
     getTooltipMessage() {
       const { row } = this.scope
+      const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
       return !row.isEditable
-        ? `SCIM(${row.scimSettingName}) synced ${this.type} cannot be edited`
+        ? `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
+            this.type
+          } cannot be edited`
         : !this.getDisabledStatusOfAction
         ? this.name
         : 'No Permission'

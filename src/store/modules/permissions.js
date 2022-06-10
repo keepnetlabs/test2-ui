@@ -40,7 +40,8 @@ const {
   SCIM_SETTINGS_PERMISSIONS,
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
-  ROLES_PERMISSIONS
+  ROLES_PERMISSIONS,
+  LDAP_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -84,7 +85,8 @@ const defaultState = {
   scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
-  systemRolesPermissions: ROLES_PERMISSIONS
+  systemRolesPermissions: ROLES_PERMISSIONS,
+  ldapPermissions: LDAP_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -716,6 +718,31 @@ const store = {
     getMailConfigurationPermissions(state) {
       return state?.mailConfigurationPermissions
     },
+    getLDAPDetailPermission(state) {
+      return state?.ldapPermissions?.DETAIL?.hasPermission
+    },
+    getLDAPSettingCreatePermission(state) {
+      return state?.ldapPermissions?.SETTING_CREATE?.hasPermission
+    },
+    getLDAPSettingUpdatePermission(state) {
+      return state?.ldapPermissions?.SETTING_UPDATE?.hasPermission
+    },
+    getLDAPSettingSchedulePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission
+    },
+    getLDAPFieldMappingPermissions(state) {
+      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions
+      return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission
+    },
+    getLDAPCreateConfigPermission(state) {
+      return state?.ldapPermissions?.CREATE_CONFIG?.hasPermission
+    },
+    getLDAPScheduleUpdatePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_UPDATE?.hasPermission
+    },
+    getLDAPScheduleDeletePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_DELETE?.hasPermission
+    },
     getWidgetsPermissions(state, getters) {
       return {
         runningInvestigation: getters?.getIncidentResponderRunningInvestigationsPermission,
@@ -777,7 +804,8 @@ const store = {
         'scimSettingsPermissions',
         'siemIntegrationPermissions',
         'systemUsersPermissions',
-        'systemRolesPermissions'
+        'systemRolesPermissions',
+        'ldapPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

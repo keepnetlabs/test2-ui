@@ -77,36 +77,24 @@
       </v-stepper>
     </template>
     <template #overlay-footer>
-      <v-btn
-        @click="closeOverlay"
-        id="btn-cancel--add-or-edit-company-manager-modal"
-        class="add-in-configuration__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="add-in-configuration__footer__right-col">
-        <v-btn
-          @click="changeStep(-1)"
-          id="btn-back--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-back mr-4"
-          rounded
-          v-if="step > 1"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          id="btn-next--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isActionButtonDisabled"
-          @click="handleSubmit"
-        >
-          {{ [1, 2].includes(step) ? labels.Next : getLastStepText }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="3"
+        :ids="{
+          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+          backButton: 'btn-back--add-or-edit-company-manager-modal',
+          saveButton: 'btn-next--add-or-edit-company-manager-modal'
+        }"
+        :step="step"
+        :disabled-statuses="{
+          nextButton: isActionButtonDisabled,
+          submitButton: isActionButtonDisabled
+        }"
+        :save-button-text="getSaveButtonText"
+        @on-cancel="closeOverlay"
+        @on-back="changeStep(-1)"
+        @on-next="handleSubmit"
+        @on-submit="handleSubmit"
+      />
     </template>
   </AppModal>
 </template>
@@ -127,6 +115,7 @@ import {
 import { searchTargetGroups } from '@/api/targetUsers'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -136,6 +125,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    StepperFooter,
     CampaignManagerSummary,
     CampaignManagerAdvancedSettings,
     CampaignManagerCampaignInfo,
@@ -180,6 +170,9 @@ export default {
         ? labels.Start
         : labels.Save
     },
+    getSaveButtonText() {
+      return [1, 2].includes(this.step) ? labels.Next : this.getLastStepText
+    },
     getSelectedPhishingScenario() {
       let selectedScenario = {}
       if (this.step === 2) {
@@ -215,9 +208,9 @@ export default {
             refCampaignManagerCampaignInfo?.$refs.refCampaignManagerPhishingScenarios
               ?.emailTemplate || '',
           emailTemplateParams,
-          landingPageTemplate:
+          landingPageTemplates:
             refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-              .landingPageTemplate,
+              .landingPageTemplates,
           landingPageParams
         }
 
@@ -508,7 +501,7 @@ export default {
         case 2:
           const { refCampaignManagerAdvancedSettings } = this.$refs
           const { refForm: refFormAdvanced } = refCampaignManagerAdvancedSettings.$refs
-          if (refFormAdvanced.validate()) this.changeStep()
+          if (refFormAdvanced && refFormAdvanced.validate()) this.changeStep()
           else this.showErrorMessage(refFormAdvanced)
           break
         case 3:

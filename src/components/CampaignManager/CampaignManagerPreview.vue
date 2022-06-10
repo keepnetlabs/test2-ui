@@ -44,22 +44,10 @@
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <div class="template-preview pt-3">
-            <div class="template-preview__text" v-if="!!landingPageTemplate">
-              <div>
-                <span class="template-preview__text--title">Phishing URL: </span>
-                <span class="template-preview__text--body">{{
-                  landingPageParams.urlTemplate
-                }}</span>
-              </div>
-            </div>
-            <hr class="mt-2" v-if="!!landingPageTemplate" />
-            <KEmailPreview
-              v-if="!!landingPageTemplate"
-              ref="refPreview"
-              :html="landingPageTemplate"
-            />
-          </div>
+          <LandingPageTemplateModalPreview
+            :landingPageTemplates="landingPageTemplates"
+            :phishingUrl="landingPageParams.urlTemplate"
+          />
         </el-tab-pane>
       </el-tabs>
     </template>
@@ -79,9 +67,11 @@ import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+
 export default {
   name: 'CampaignManagerPreview',
-  components: { KEmailPreview, DatatableLoading, AppDialog },
+  components: { KEmailPreview, DatatableLoading, AppDialog, LandingPageTemplateModalPreview },
   props: {
     status: {
       type: Boolean
@@ -93,7 +83,7 @@ export default {
   data() {
     return {
       emailTemplate: null,
-      landingPageTemplate: null,
+      landingPageTemplates: [],
       emailTemplateParams: {},
       landingPageParams: {},
       tab: 'email',
@@ -125,15 +115,15 @@ export default {
           const { landingPageTemplate: landingPage } = phishingScenarioPreviewDto
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
-            name: emailTemplate.name,
-            fromName: emailTemplate.fromName,
-            fromAddress: emailTemplate.fromAddress
+            name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
           }
-          this.landingPageTemplate = landingPage.landingPages[0].content
+          this.landingPageTemplates = landingPage?.landingPages || []
           this.landingPageParams = {
-            name: landingPage.name,
-            description: landingPage.description,
-            urlTemplate: landingPage.urlTemplate
+            name: landingPage?.name || '',
+            description: landingPage?.description || '',
+            urlTemplate: landingPage?.urlTemplate || ''
           }
         })
         .finally(() => {

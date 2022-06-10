@@ -1,10 +1,10 @@
 <template>
   <div class="notification-templates">
-    <company-settings-header
+    <CompanySettingsHeader
       title="Notification Templates"
       sub-title="Manage notification email templates"
     />
-    <new-notification-template
+    <NewNotificationTemplate
       v-if="newNotificationTemplateStatus"
       ref="newNotificationTemplate"
       :edit-items-disabled="editItemsDisabled"
@@ -14,7 +14,7 @@
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
-    <delete-notification-template-modal
+    <DeleteNotificationTemplateModal
       v-if="showDeleteNotificationTemplateModal"
       :selectedItem="selectedItem"
       :isDeleteButtonDisabled="isDeleteButtonDisabled"
@@ -22,8 +22,14 @@
       @handleDelete="handleDeleteNotificationTemplate"
       @closeDialog="toggleDeleteNotificationTemplate"
     />
+    <DefaultTemplateDeleteWarningModal
+      v-if="showDeleteDefaultNotificationTemplateWarningModal"
+      :status="showDeleteDefaultNotificationTemplateWarningModal"
+      :templateName="selectedItem.name"
+      @closeOverlay="toggleDeleteDefaultTemplateWarningModal"
+    />
     <div class="notification-templates__container">
-      <data-table
+      <DataTable
         v-if="getNotificationTemplatesSearchPermissions"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
@@ -54,22 +60,19 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
       >
-        <!-- <template v-slot:datatable-custom-column="{ scope }">
+        <template v-slot:datatable-custom-column="{ scope }">
           <div>
             <span>{{ scope.row.name }}</span>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1"
-                class="pl-2"
+                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1" class="pl-2"
                   >mdi-star-circle</v-icon
                 >
               </template>
-              <span>{{
-                `Default option for  “${scope.row.typeName}"  template type`
-              }}</span>
+              <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
             </v-tooltip>
           </div>
-        </template> -->
+        </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :scope="scope"
@@ -83,82 +86,26 @@
               :scope="scope"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
-              @on-click="handleDuplicate(scope.row, true)"
+              :checkIsOwnerProperty="false"
+              @on-click="handleDuplicate(scope.row)"
             />
             <DefaultMenuRowAction
               :scope="scope"
               :disabled="tableOptions.rowActions[2].disabled"
               :icon="tableOptions.rowActions[2].icon"
               :text="tableOptions.rowActions[2].name"
-              @on-click="handleDelete(scope.row, true)"
+              @on-click="handleDelete(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :scope="scope"
+              :disabled="tableOptions.rowActions[3].disabled"
+              :icon="tableOptions.rowActions[3].icon"
+              :text="tableOptions.rowActions[3].name"
+              @on-click="handleMakeDefault(scope.row)"
             />
           </RowActionsMenu>
-          <!-- <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                class="btn-hover"
-                icon
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
-                @click.native="handleDelete(scope.row)"
-              >
-                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[1].name }}</span>
-          </v-tooltip> -->
-          <!-- <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index"
-                  >mdi-dots-vertical</v-icon
-                >
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleDelete(scope.row)"
-              >
-                <v-list-item-title class="sub-menu-el__title">
-                  <v-icon
-                    class="
-                      notification-templates__row-actions__overflow-menu__icon
-                    "
-                    >{{ tableOptions.rowActions[1].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
-                :id="`${tableOptions.rowActions[2].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleMakeDefault(scope.row)"
-              >
-                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
-                  <v-icon
-                    class="
-                      notification-templates__row-actions__overflow-menu__icon
-                    "
-                    >{{ tableOptions.rowActions[2].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu> -->
         </template>
-      </data-table>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -179,7 +126,8 @@ import {
   getCategories,
   searchEmailTemplate,
   exportEmailTemplate,
-  getTemplateTypes
+  getTemplateTypes,
+  makeDefaultTemplate
 } from '@/api/company'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -189,6 +137,7 @@ import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/DefaultTemplateDeleteWarningModal'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -198,10 +147,12 @@ export default {
     NewNotificationTemplate,
     DeleteNotificationTemplateModal,
     DataTable,
-    CompanySettingsHeader
+    CompanySettingsHeader,
+    DefaultTemplateDeleteWarningModal
   },
   data() {
     return {
+      showDeleteDefaultNotificationTemplateWarningModal: false,
       isDuplicate: false,
       categories: [],
       loading: false,
@@ -369,14 +320,14 @@ export default {
             id: 'btn-delete--notification-template-row-actions',
             action: 'handleDelete',
             disabled: !this.$store.getters['permissions/getNotificationTemplatesDeletePermissions']
+          },
+          {
+            name: 'Make Default',
+            icon: 'mdi-star-circle',
+            id: 'btn-make-default--notification-template-row-actions',
+            action: 'handleMakeDefault',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           }
-          // {
-          //   name: "Make Default",
-          //   icon: "mdi-star-circle",
-          //   id: "btn-make-default--notification-template-row-actions",
-          //   action: "makeDefaultAction",
-          //   disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
-          // },
         ],
         selectEvent: {
           clipboard: true,
@@ -472,6 +423,10 @@ export default {
     },
     handleDelete(row) {
       this.selectedItem = row
+      if (row.isDefault) {
+        this.showDeleteDefaultNotificationTemplateWarningModal = true
+        return
+      }
       this.toggleDeleteNotificationTemplate()
     },
     handleDuplicate(row) {
@@ -479,22 +434,32 @@ export default {
       this.isDuplicate = true
       this.toggleNewNotificationTemplate()
     },
-    handleMakeDefault(selectedRow) {},
+    handleMakeDefault(row) {
+      makeDefaultTemplate(row.resourceId).then(() => {
+        this.callForDatas()
+      })
+    },
     handleDeleteNotificationTemplate(resourceId) {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
         .then(() => {
           this.$refs.refNotificationList.unSelectRow(this.selectedItem)
-          this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })
-        .finally(() => (this.isDeleteButtonDisabled = false))
+        .finally(() => {
+          this.toggleDeleteNotificationTemplate()
+          this.isDeleteButtonDisabled = false
+        })
     },
     toggleDeleteNotificationTemplate() {
       if (this.showDeleteNotificationTemplateModal) {
         this.selectedItem = null
       }
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
+    },
+    toggleDeleteDefaultTemplateWarningModal() {
+      this.showDeleteDefaultNotificationTemplateWarningModal = !this
+        .showDeleteDefaultNotificationTemplateWarningModal
     },
     checkIfCanCloseNotificationTemplateModal() {
       if (this.$refs.newNotificationTemplate) this.$refs.newNotificationTemplate.closeOverlay()
@@ -547,10 +512,6 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = templateData.results
-          // this.tableData = templateData.results.map((item) => ({
-          //   ...item,
-          //   isDefault: true,
-          // }));
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
           })

@@ -380,9 +380,11 @@ export default {
       }`
     },
     getSelectedSmtpDelayOverTimeType() {
-      return this.formDetails['distributionSmtpDelayTimeTypes'].find(
-        (item) => item.value === this.formData.distributionSmtpDelayTimeTypeId
-      )?.text
+      return this.formDetails['distributionSmtpDelayTimeTypes']
+        ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
+            (item) => item.value === this.formData.distributionSmtpDelayTimeTypeId
+          )?.text
+        : ''
     },
     getSelectedEmailTimeType() {
       return this.formDetails['distributionEmailOverTimeTypes'].find(

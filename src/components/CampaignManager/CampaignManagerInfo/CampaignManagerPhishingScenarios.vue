@@ -7,12 +7,12 @@
       max-height-size="900"
       :subtitle="labels.TemplatePreview"
       :status="isShowTemplate"
-      :title="selectedTemplateHeader"
+      :title="getTemplateHeader"
       style="overflow: hidden;"
       @changeStatus="toggleTemplateDialog"
     >
       <template #app-dialog-body>
-        <KEmailPreview v-if="!!selectedTemplate" :key="selectedTemplate" :html="selectedTemplate" />
+        <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -149,7 +149,7 @@
                           :color="'#2196f3'"
                           left
                           medium
-                          @click="handleClickEmailTemplateFullScreen"
+                          @click="handleClickPreview"
                         >
                           mdi-eye
                         </v-icon>
@@ -195,19 +195,57 @@
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
                   >
-                    <div class="template-preview pt-3">
+                    <el-tabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
+                      <el-tab-pane
+                        v-for="(template, index) in landingPageTemplates"
+                        :key="index"
+                        :label="`Page ${index + 1}`"
+                        :name="`${index + 1}`"
+                      >
+                        <div class="template-preview pt-3">
+                          <div class="template-preview__icon">
+                            <v-icon
+                              v-if="!!template.content"
+                              :color="'#2196f3'"
+                              left
+                              medium
+                              @click="handleClickPreview"
+                            >
+                              mdi-eye
+                            </v-icon>
+                          </div>
+                          <div v-if="!!template.content" class="template-preview__text pl-2">
+                            <div>
+                              <span class="template-preview__text--title">Name: </span>
+                              <span class="template-preview__text--body">{{
+                                landingPageParams.name
+                              }}</span>
+                            </div>
+                            <div>
+                              <span class="template-preview__text--title">Description: </span>
+                              <span class="template-preview__text--body">{{
+                                landingPageParams.description
+                              }}</span>
+                            </div>
+                          </div>
+                          <hr class="mt-2" v-if="!!template.content" />
+                          <KEmailPreview v-if="!!template.content" :html="template.content" />
+                        </div>
+                      </el-tab-pane>
+                    </el-tabs>
+                    <div v-else class="template-preview pt-3">
                       <div class="template-preview__icon">
                         <v-icon
-                          v-if="!!landingPageTemplate"
+                          v-if="!!getSingleTemplateDetails"
                           :color="'#2196f3'"
                           left
                           medium
-                          @click="handleClickLandingPageTemplate"
+                          @click="handleClickPreview"
                         >
                           mdi-eye
                         </v-icon>
                       </div>
-                      <div class="template-preview__text pl-2" v-if="!!landingPageTemplate">
+                      <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
                           <span class="template-preview__text--title">Name: </span>
                           <span class="template-preview__text--body">{{
@@ -221,11 +259,10 @@
                           }}</span>
                         </div>
                       </div>
-                      <hr class="mt-2" v-if="!!landingPageTemplate" />
+                      <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
-                        v-if="!!landingPageTemplate"
-                        :key="landingPageTemplate"
-                        :html="landingPageTemplate"
+                        v-if="!!getSingleTemplateDetails"
+                        :html="getSingleTemplateDetails"
                       />
                     </div>
                   </el-tab-pane>
@@ -316,7 +353,6 @@ export default {
       labels,
       search: '',
       isShowTemplate: false,
-      selectedTemplateHeader: '',
       selectedTemplate: null,
       methods,
       difficulties,
@@ -326,6 +362,8 @@ export default {
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
+      selectedLandingPageTab: '1',
+      landingPageTemplates: [],
       phishingScenarioItems: []
     }
   },
@@ -363,10 +401,33 @@ export default {
         style.alignItems = 'center'
       }
       return style
+    },
+    getTemplatePreviewContent() {
+      if (this.tab === 'email') {
+        return this.emailTemplate
+      } else {
+        return this.getCurrentLandingPageTemplate
+      }
+    },
+    getCurrentLandingPageTemplate() {
+      return this.landingPageTemplates?.length > 1
+        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
+        : this.landingPageTemplates?.[0]?.content || ''
+    },
+    getTemplateHeader() {
+      return this.landingPageParams?.name || ''
+    },
+    isLandingPageTabsVisible() {
+      return this.landingPageTemplates?.length > 1
+    },
+    getSingleTemplateDetails() {
+      return this.landingPageTemplates?.[0]?.content || ''
     }
   },
   watch: {
     value() {
+      this.tab = 'email'
+      this.selectedLandingPageTab = '1'
       this.callForSelectedPhishingScenario()
     },
     search(val) {
@@ -463,7 +524,7 @@ export default {
               method: methods[methodTypeId - 1].text,
               languageTypeResourceId
             }
-            this.landingPageTemplate = landingPages[0].content
+            this.landingPageTemplates = landingPages || []
           }
         )
       })
@@ -495,14 +556,7 @@ export default {
     setSelectedTemplate(val) {
       this.$emit(EMITS.ON_ITEM_CHANGE, val)
     },
-    handleClickEmailTemplateFullScreen() {
-      this.selectedTemplate = this.emailTemplate
-      this.selectedTemplateHeader = this.emailTemplateParams.name
-      this.toggleTemplateDialog()
-    },
-    handleClickLandingPageTemplate() {
-      this.selectedTemplate = this.landingPageTemplate
-      this.selectedTemplateHeader = this.landingPageParams.name
+    handleClickPreview() {
       this.toggleTemplateDialog()
     },
     debounce(fn, delay) {

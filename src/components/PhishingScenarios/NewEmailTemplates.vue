@@ -10,7 +10,7 @@
         : 'Edit Email Template'
     "
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -227,43 +227,16 @@
         </v-stepper-items>
       </v-stepper>
     </template>
-    <template v-slot:overlay-footer>
-      <v-btn
-        @click="changeNewEmailTemplateModalStatus"
-        class="new-email-template__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="new-email-template__right-col">
-        <v-btn
-          @click="backStep(-1)"
-          class="new-email-template__footer-btn-back mr-4"
-          rounded
-          v-if="step > 1"
-        >
-          {{ labels.Back }}
-        </v-btn>
-        <v-btn
-          @click="nextStep(+1)"
-          class="new-email-template__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step < 2"
-        >
-          {{ labels.Next }}
-        </v-btn>
-        <v-btn
-          @click="submit"
-          class="new-email-template__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step === 2"
-          :disabled="isSubmitDisabled"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+    <template #overlay-footer>
+      <StepperFooter
+        max-step="2"
+        :step.sync="step"
+        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        @on-cancel="changeNewEmailTemplateModalStatus"
+        @on-back="backStep(-1)"
+        @on-next="nextStep(+1)"
+        @on-submit="submit"
+      />
     </template>
   </app-modal>
 </template>
@@ -350,10 +323,12 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
+    StepperFooter,
     KSelect,
     AppModal,
     FormGroup,

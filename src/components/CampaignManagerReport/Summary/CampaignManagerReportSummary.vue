@@ -150,7 +150,7 @@ export default {
       } = campaignInfo
       return {
         'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
-        Duration: `${emailDeliveryDuration} hours`,
+        Duration: `${emailDeliveryDuration}`,
         'Delivery Status': ''
       }
     },
