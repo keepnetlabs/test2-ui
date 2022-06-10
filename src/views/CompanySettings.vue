@@ -76,7 +76,7 @@
         :label="labels.LDAP"
         :id="`${labels.LDAP.toLowerCase()}-content`"
       >
-        <LDAP v-if="getLDAPDetailPermission" />
+        <LDAP v-if="tab === 'ldap-settings'" />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
