@@ -477,10 +477,15 @@ export default {
             defaultFieldMappings,
             data?.fieldMappings
           )
+          this.isLDAPDisabled = !data.isActive
         })
         .catch(() => {
           this.isLDAPDisabled = true
-          this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+        })
+        .finally(() => {
+          if (this.isLDAPDisabled) {
+            this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+          }
         })
     },
     toggleImportLDAPModal() {
