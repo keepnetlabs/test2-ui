@@ -5,6 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  Create: 'Create',
   Okay: 'Okay',
   FastLaunch: 'Fast Launch',
   ZoneID: 'Zone ID',
@@ -75,6 +76,10 @@ export const labels = {
   TimesReported: 'Times Reported',
   ViewReport: 'View Report',
   CreateNewInstance: 'Create new instance',
+  CampaignInstance: 'Campaign Instance',
+  CampaignInstanceSub:
+    'Select target groups and schedule options for this phishing campaign instance',
+  MarkAsTest: 'Mark as Test',
   LastReported: 'Last Reported',
   Data: 'Data',
   EmailInformation: 'Email Information',
