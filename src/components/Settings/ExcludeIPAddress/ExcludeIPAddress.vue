@@ -89,7 +89,9 @@ export default {
       this.isLoading = true
       getExcludedIPAddresses()
         .then((response) => {
-          this.dataContainerWithSearchItems = response?.data?.data?.excludedIPs || []
+          this.dataContainerWithSearchItems =
+            response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
+            []
         })
         .finally(() => {
           this.isLoading = false
