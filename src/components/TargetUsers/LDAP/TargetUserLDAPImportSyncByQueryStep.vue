@@ -137,8 +137,14 @@ export default {
     setEditedFilter() {
       const filter = this.getEditedScheduledFilter()
       if (filter) {
-        const andItems = filter?.filterGroups[0]?.filterItems
-        const orItems = filter?.filterGroups[1]?.filterItems
+        let andItems, orItems
+        if (filter?.filterGroups?.length) {
+          andItems = filter?.filterGroups[0]?.filterItems
+          orItems = filter?.filterGroups[1]?.filterItems
+        } else {
+          andItems = filter?.FilterGroups[0]?.FilterItems
+          orItems = filter?.FilterGroups[1]?.FilterItems
+        }
         const condition = andItems?.length ? 'AND' : 'OR'
         const items = condition === 'AND' ? andItems : orItems
         items.map((item) => {

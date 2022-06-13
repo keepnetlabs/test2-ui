@@ -51,6 +51,8 @@
               ref="refStep2"
               :selected-l-d-a-p-items="selectedLDAPItems"
               :selected-radio-step.sync="selectedRadioGroupIndex"
+              :step1-step="step1Step"
+              :step2-step="step2Step"
               @on-error="step -= 1"
             />
           </v-stepper-content>
@@ -83,7 +85,7 @@ import TargetUserLDAPModalStepperFooter from '@/components/TargetUsers/LDAP/Targ
 import TargetUserLDAPImportModalStep1 from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModalStep1'
 import TargetUserLDAPImportModalStep2 from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModalStep2'
 import LDAPService from '@/api/ldap'
-import { getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 export default {
   name: 'TargetUserLDAPImportModal',
   components: {
@@ -144,6 +146,7 @@ export default {
       isLDAPGroupsValid: true,
       step1TargetGroupResourceId: '',
       step1Step: 0,
+      step2Step: 0,
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -152,9 +155,9 @@ export default {
       return this.selectedUsers.length
     },
     isNextButtonDisabled() {
-      const comparetor =
+      const comparator =
         this.step1Step === 0 ? this.isLDAPGroupsValid : !!this?.selectedLDAPItems?.length
-      return !(comparetor && !!this.step1TargetGroupResourceId)
+      return !comparator
     }
   },
   created() {
@@ -169,7 +172,12 @@ export default {
           data: { data }
         } = response
         const { targetGroupResourceId, ldapSettingResourceId, filter, groupFilterValues } = data
-        this.editedScheduledFilter = filter
+        if (!groupFilterValues.length && !filter?.filterGroups?.length) {
+          this.step2Step = 1
+        }
+        this.editedScheduledFilter = !filter?.filterGroups?.length
+          ? getDefaultAxiosPayload().filter
+          : filter
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
         this.$refs.refStep1.isActive = this?.selectedRow?.status
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
@@ -197,24 +205,29 @@ export default {
     },
     submit(importType) {
       this.isSubmitDisabled = true
+      const isSchedule =
+        [1, 2].includes(this?.$refs?.refStep2?.selectedRadioGroupIndex) || this.isEdit
+      const filter =
+        this.selectedRadioGroupIndex === 1
+          ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+          : this.selectedRadioGroupIndex === 2
+          ? getDefaultAxiosPayload()
+          : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
       const payload = {
         ldapSettingResourceId: this.resourceId,
         targetGroupResourceId: this?.$refs?.refStep1?.targetGroupResourceId || '',
         transactionId: this?.$refs?.refStep2?.transactionId,
         importType,
         groupFilterValues: this?.$refs?.refStep2?.groupFilterValues,
-        filter:
-          this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit
-            ? this?.$refs?.refStep2?.$refs?.refQuery.getPayloadFilter()
-            : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter,
-        isSchedule: this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit
+        filter,
+        isSchedule
       }
       //that mean partial import
       if (importType === 1) {
         payload.selectedUserResourceIds = this.selectedUsers.map((user) => user.resourceId)
       }
       if (
-        (this?.$refs?.refStep2?.selectedRadioGroupIndex === 1 || this.isEdit) &&
+        (this.isEdit ? this.step2Step === 0 : this.step2Step === 1) &&
         !this?.$refs?.refStep2?.$refs?.refQuery?.$refs?.refForm?.validate()
       ) {
         this.isSubmitDisabled = false
