@@ -476,3 +476,13 @@ export function bulkDeleteCampaignReports(payload) {
 export function calculateSendingInfo(payload) {
   return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-sending-info`, payload)
 }
+
+export function getExcludedIPAddresses() {
+  return testRequest.get(`/phishing-simulator/excluded-ip-list`)
+}
+
+export function postExcludedIPAddresses(payload = {}) {
+  return testRequest.post(`/phishing-simulator/excluded-ip`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

@@ -18,6 +18,7 @@
         <DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList" />
       </el-tab-pane>
       <el-tab-pane
+        v-if="getExcludedIpAddressGetPermissions"
         label="Exclude IP Address"
         name="ExcludeIpAddress"
         id="exclude-ip-address-content"
@@ -51,13 +52,19 @@ export default {
   computed: {
     ...mapGetters({
       getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions'
+      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
+      getExcludedIpAddressGetPermissions: 'permissions/getExcludedIpAddressGetPermissions'
     })
   },
   created() {
-    // TODO: Set initial Tab according to permissions
     if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
       this.tab = 'DNSServices'
+    } else if (
+      !this.getDomainSearchPermissions &&
+      !this.getDnsSearchPermissions &&
+      this.getExcludedIpAddressGetPermissions
+    ) {
+      this.tab = 'ExcludeIpAddress'
     }
   },
   methods: {

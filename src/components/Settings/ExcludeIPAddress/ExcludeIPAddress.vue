@@ -57,6 +57,7 @@ import DataContainerWithSearch from '@/components/Common/Others/DataContainerWit
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { getExcludedIPAddresses, postExcludedIPAddresses } from '@/api/phishingsimulator'
 
 export default {
   name: 'ExcludeIPAddress',
@@ -71,7 +72,9 @@ export default {
     return {
       isLoading: false,
       Validations,
-      isActionButtonDisabled: false,
+      isActionButtonDisabled: !this.$store.getters[
+        'permissions/getExcludedIpAddressPostPermissions'
+      ],
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
@@ -84,10 +87,13 @@ export default {
   methods: {
     getExcludedIPAddresses() {
       this.isLoading = true
-      return new Promise((res) => setTimeout(() => res(), 2000)).finally(() => {
-        this.isLoading = false
-      })
-      // TODO: Make API call to get excluded IP addresses
+      getExcludedIPAddresses()
+        .then((response) => {
+          this.dataContainerWithSearchItems = response?.data?.data?.excludedIPs || []
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
     handleBatchImport(data = []) {
       if (!data.length) return
@@ -106,7 +112,13 @@ export default {
     handleSaveChanges() {
       if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
         return
-      // TODO: Make API call to save changes
+      this.isActionButtonDisabled = true
+      const payload = {
+        excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+      }
+      postExcludedIPAddresses(payload).finally(() => {
+        this.isActionButtonDisabled = false
+      })
     }
   }
 }

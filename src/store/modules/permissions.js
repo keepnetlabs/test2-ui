@@ -21,6 +21,7 @@ const {
   CAMPAIGN_REPORTS_PERMISSIONS,
   DOMAIN_PERMISSIONS,
   DNS_PERMISSIONS,
+  EXCLUDE_IP_ADDRESS_PERMISSIONS,
   INCIDENT_RESPONDER_OTHER_PERMISSIONS,
   INVESTIGATION_PERMISSIONS,
   INTEGRATION_PERMISSIONS,
@@ -86,7 +87,8 @@ const defaultState = {
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
-  ldapPermissions: LDAP_PERMISSIONS
+  ldapPermissions: LDAP_PERMISSIONS,
+  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -291,6 +293,12 @@ const store = {
     },
     getDnsExportPermissions(state) {
       return state?.dnsPermissions?.EXPORT?.hasPermission
+    },
+    getExcludedIpAddressGetPermissions(state) {
+      return state?.excludeIpAddressPermissions?.GET?.hasPermission
+    },
+    getExcludedIpAddressPostPermissions(state) {
+      return state?.excludeIpAddressPermissions?.POST?.hasPermission
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -780,7 +788,8 @@ const store = {
         'siemIntegrationPermissions',
         'systemUsersPermissions',
         'systemRolesPermissions',
-        'ldapPermissions'
+        'ldapPermissions',
+        'excludeIpAddressPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }
