@@ -89,7 +89,9 @@ export default {
       this.isLoading = true
       getExcludedIPAddresses()
         .then((response) => {
-          this.dataContainerWithSearchItems = response?.data?.data?.excludedIPs || []
+          this.dataContainerWithSearchItems =
+            response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
+            []
         })
         .finally(() => {
           this.isLoading = false
@@ -110,15 +112,21 @@ export default {
       this.ipAddressSearch = ''
     },
     handleSaveChanges() {
-      if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
+      this.$refs.dataContainerWithSearch.checkAllValid()
+      if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid) {
         return
+      }
       this.isActionButtonDisabled = true
       const payload = {
         excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
       }
-      postExcludedIPAddresses(payload).finally(() => {
-        this.isActionButtonDisabled = false
-      })
+      postExcludedIPAddresses(payload)
+        .then(() => {
+          this.getExcludedIPAddresses()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }
