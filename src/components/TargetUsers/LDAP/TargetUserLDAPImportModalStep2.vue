@@ -16,7 +16,10 @@
         ref="refManually"
         v-else-if="!isEdit && selectedRadioGroupIndex === 0"
       />
-      <TargetUserLDAPImportSyncByQueryStep ref="refQuery" v-else />
+      <TargetUserLDAPImportSyncByQueryStep
+        ref="refQuery"
+        v-else-if="isEdit ? selectedRadioGroupIndex === 0 : selectedRadioGroupIndex === 1"
+      />
     </div>
   </div>
 </template>
@@ -51,7 +54,11 @@ export default {
       type: Array,
       default: () => []
     },
-    selectedRadioStep: {
+    step2Step: {
+      type: Number,
+      default: 0
+    },
+    step1Step: {
       type: Number
     }
   },
@@ -63,11 +70,28 @@ export default {
     }
   },
   data() {
+    const radioGroupItems = [
+      {
+        label: 'SYNC BY QUERY',
+        infoText:
+          'Select this option to sync users by criteria. The syncronization process will repeat every 24 hours.'
+      }
+    ]
+    if (!this.isEdit)
+      radioGroupItems.unshift({
+        label: 'MANUALLY',
+        infoText: 'Select this option to import users manually without auto-sync.'
+      })
+    if (this.step1Step === 0) {
+      radioGroupItems.push({
+        label: 'SYNC ALL USERS',
+        infoText:
+          'Select this option to sync all users in selected LDAP groups. The syncronization process will repeat every 24 hours.'
+      })
+    }
     return {
-      radioGroupItems: this.isEdit
-        ? [{ label: 'SYNC BY QUERY' }]
-        : [{ label: 'MANUALLY' }, { label: 'SYNC BY QUERY' }],
-      selectedRadioGroupIndex: this.selectedRadioGroupIndex || 0,
+      radioGroupItems,
+      selectedRadioGroupIndex: radioGroupItems.length === 1 ? 0 : this.step2Step || 0,
       processedUserCount: 0,
       isLoading: false,
       activeStatus: 0,
@@ -83,7 +107,7 @@ export default {
   },
   watch: {
     selectedRadioGroupIndex(val) {
-      this.$emit('update:selectedRadioStep', val)
+      this.$emit('update:step2Step', val)
     }
   },
   created() {

@@ -32,15 +32,12 @@
         custom-menu-class="target-user-ldap__target-groups"
         outlined
         clearable
-        persistent-hint
-        hint="*Required"
         prepend-inner-icon="mdi-magnify"
         autocomplete="disabled"
-        placeholder="Select a target group"
+        placeholder="- All Users -"
         no-data-text="No user group available"
         position="top"
         :items="targetGroupItems"
-        :rules="[(v) => Validations.required(v)]"
         :disabled="isEdit"
         :slots="{ item: true }"
       >
@@ -115,7 +112,16 @@ export default {
       targetGroupItems: [],
       targetGroupResourceId: '',
       selectedRadioGroupIndex: 0,
-      radioGroupItems: [{ label: 'ENTIRE LDAP' }, { label: 'SELECT LDAP GROUPS' }]
+      radioGroupItems: [
+        {
+          label: 'ENTIRE LDAP',
+          infoText: 'Select this option to sync all users in your active directory.'
+        },
+        {
+          label: 'SELECT LDAP GROUPS',
+          infoText: 'Select this option to sync users in certain LDAP groups.'
+        }
+      ]
     }
   },
   computed: {
@@ -188,6 +194,11 @@ export default {
     .v-ripple__container {
       display: none;
     }
+  }
+}
+#input--target-user-groups {
+  input::placeholder {
+    color: #383b41;
   }
 }
 </style>
