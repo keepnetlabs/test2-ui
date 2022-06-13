@@ -665,7 +665,7 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
-import SettingsModal from '@/components/Settings/SettingsModal'
+import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
