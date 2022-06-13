@@ -50,9 +50,8 @@
               v-if="step === 2"
               ref="refStep2"
               :selected-l-d-a-p-items="selectedLDAPItems"
-              :selected-radio-step.sync="selectedRadioGroupIndex"
               :step1-step="step1Step"
-              :step2-step="step2Step"
+              :step2-step.sync="step2Step"
               @on-error="step -= 1"
             />
           </v-stepper-content>
@@ -64,7 +63,7 @@
         :step.sync="step"
         :selected-items-count="getSelectedUsersLength"
         :total-number-of-records="totalNumberOfRecords"
-        :selected-radio-step="selectedRadioGroupIndex"
+        :selected-radio-step="step2Step"
         :is-submit-disabled="isSubmitDisabled"
         :is-next-button-disabled="isNextButtonDisabled"
         max-step="2"
@@ -140,7 +139,6 @@ export default {
       isSubmitDisabled: false,
       selectedLDAPItems: [],
       totalNumberOfRecords: 0,
-      selectedRadioGroupIndex: 0,
       selectedUsers: [],
       editedScheduledFilter: null,
       isLDAPGroupsValid: true,
@@ -178,8 +176,9 @@ export default {
         this.editedScheduledFilter = !filter?.filterGroups?.length
           ? getDefaultAxiosPayload().filter
           : filter
+
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
-        this.$refs.refStep1.isActive = this?.selectedRow?.status
+        this.$refs.refStep1.isActive = !!this?.selectedRow?.status
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
         const index = groupFilterValues?.length ? 1 : 0
         this.$refs.refStep1.selectedRadioGroupIndex = index
@@ -194,7 +193,6 @@ export default {
     },
     handleValidateStep1(callback) {
       const step1 = this?.$refs?.refStep1
-      this.selectedRadioGroupIndex = 0
       this.selectedUsers = []
       this.totalNumberOfRecords = 0
       if (!step1.validateForm()) {
@@ -205,14 +203,21 @@ export default {
     },
     submit(importType) {
       this.isSubmitDisabled = true
-      const isSchedule =
-        [1, 2].includes(this?.$refs?.refStep2?.selectedRadioGroupIndex) || this.isEdit
-      const filter =
-        this.selectedRadioGroupIndex === 1
-          ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
-          : this.selectedRadioGroupIndex === 2
-          ? getDefaultAxiosPayload()
-          : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
+      const isSchedule = [1, 2].includes(this?.$refs?.refStep2?.step2Step) || this.isEdit
+      let filter
+      if (this.isEdit) {
+        filter =
+          this.step2Step === 0
+            ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+            : getDefaultAxiosPayload()
+      } else {
+        filter =
+          this.step2Step === 1
+            ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+            : this.step2Step === 2
+            ? getDefaultAxiosPayload()
+            : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
+      }
       const payload = {
         ldapSettingResourceId: this.resourceId,
         targetGroupResourceId: this?.$refs?.refStep1?.targetGroupResourceId || '',

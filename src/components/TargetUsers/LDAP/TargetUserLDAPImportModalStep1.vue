@@ -24,7 +24,7 @@
         :error-message="getLDAPGroupsErrorMessage"
       />
     </FormGroup>
-    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub" has-hint>
+    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub">
       <KSelect
         v-model.trim="targetGroupResourceId"
         type="autocomplete"
