@@ -145,8 +145,12 @@ export default {
     },
     handleConfirmLaunchDialog(resourceId) {
       this.instanceResourceId = resourceId
+      const objRef = this.isItemTableShowing
+        ? 'campaignManagerItemTable'
+        : 'campaignManagerParentTable'
+      this.$refs[objRef].callForData()
       this.toggleShowLaunchDialog()
-      this.showNewInstanceModal()
+      // this.showNewInstanceModal()
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {

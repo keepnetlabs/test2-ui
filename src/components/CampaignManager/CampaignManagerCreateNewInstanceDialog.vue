@@ -52,7 +52,15 @@ export default {
       this.$emit('on-close')
     },
     handleConfirm() {
-      this.$emit('on-confirm', this.resourceId)
+      // this.$emit('on-confirm', this.resourceId)
+      this.isActionButtonDisabled = true
+      launchPhishingCampaign(this.resourceId)
+        .then(() => {
+          this.$emit('on-confirm')
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }
