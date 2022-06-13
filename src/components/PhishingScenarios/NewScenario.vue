@@ -909,9 +909,21 @@ export default {
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
-            this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
               availableForList
             )
+            if (!availableForListFromBackend.length) {
+              this.formValues.availableForRequests = [
+                {
+                  id: 'MyCompanyOnly',
+                  label: 'My company only',
+                  type: 'MyCompanyOnly',
+                  resourceId: null
+                }
+              ]
+            } else {
+              this.formValues.availableForRequests = availableForListFromBackend
+            }
           }
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })

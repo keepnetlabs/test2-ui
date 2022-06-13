@@ -57,7 +57,7 @@
           v-if="getItems.length"
           :key="scrollKey"
           max-height="300"
-          item-height="48"
+          :item-height="itemHeight"
           :items="getItems"
         >
           <template #default="{item,index}">
@@ -65,6 +65,7 @@
               :key="getItems[index].key"
               :value="getItems[index].val"
               :index="index"
+              :item-height="itemHeight"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
@@ -102,6 +103,10 @@ export default {
       default() {
         return {}
       }
+    },
+    itemHeight: {
+      type: String,
+      default: '48'
     },
     textFieldPlaceholder: {
       type: String,

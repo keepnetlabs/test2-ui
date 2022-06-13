@@ -79,7 +79,7 @@ export default {
     ]
     if (!this.isEdit)
       radioGroupItems.unshift({
-        label: 'MANUALLY',
+        label: 'SELECT Manually',
         infoText: 'Select this option to import users manually without auto-sync.'
       })
     if (this.step1Step === 0) {

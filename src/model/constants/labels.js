@@ -5,6 +5,13 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  ExcludeIPAddress: 'Exclude IP Address',
+  ExcludeIPAddressSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
+  ExcludeUserAgent: 'Exclude User Agent',
+  ExcludeUserAgentSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
+  ExcludeUserAgentBatchImportPlaceholder:
+    'Mozilla/5.0 (iPhone9,3; U; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1',
+  ExcludeUserAgentBatchImportSubtitle: 'Import multiple user agents separated by line-break',
   Create: 'Create',
   Okay: 'Okay',
   FastLaunch: 'Fast Launch',
@@ -188,7 +195,8 @@ export const labels = {
   CompanyGroupNameSecondLower: 'Company group name',
   BatchImport: 'Batch Import',
   BatchImportPopupSubtitle: 'Import multiple domains separated by line-break or comma',
-  BatchImportPopupIpAddressSubtitle: 'Import multiple IP address separated by line-break or comma',
+  BatchImportPopupIpAddressSubtitle:
+    'Import multiple IP addresses separated by line-break or comma',
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
   CompanyAdmin: 'Company Admin',
