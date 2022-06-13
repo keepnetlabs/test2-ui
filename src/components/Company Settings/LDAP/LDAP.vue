@@ -9,10 +9,16 @@
       <LDAPSettings
         :initial-form-data="initialFormData"
         :is-loading="isLoading"
+        :field-mappings="fieldMappings"
         @on-submit="handleSubmit"
       />
     </el-tab-pane>
-    <el-tab-pane id="ldap-scheduled-syncs" label="Scheduled Syncs" name="scheduled-syncs">
+    <el-tab-pane
+      v-if="getLDAPSettingSchedulePermission"
+      id="ldap-scheduled-syncs"
+      label="Scheduled Syncs"
+      name="scheduled-syncs"
+    >
       <LDAPScheduledSyncs
         v-if="tab === 'scheduled-syncs'"
         :resource-id="resourceId"
@@ -20,7 +26,12 @@
         :field-mappings="fieldMappings"
       />
     </el-tab-pane>
-    <el-tab-pane id="ldap-field-mappings" label="Field Mapping" name="field-mapping">
+    <el-tab-pane
+      v-if="getLDAPFieldMappingPermissions"
+      id="ldap-field-mappings"
+      label="Field Mapping"
+      name="field-mapping"
+    >
       <template v-if="isFieldMappingDisabled" #label>
         Field Mapping
         <v-tooltip bottom>
@@ -52,6 +63,7 @@ import {
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
+import { mapGetters } from 'vuex'
 export default {
   name: 'LDAP',
   components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings },
@@ -65,6 +77,12 @@ export default {
       fieldMappings: [],
       customFields: []
     }
+  },
+  computed: {
+    ...mapGetters({
+      getLDAPSettingSchedulePermission: 'permissions/getLDAPSettingSchedulePermission',
+      getLDAPFieldMappingPermissions: 'permissions/getLDAPFieldMappingPermissions'
+    })
   },
   created() {
     this.callForData()

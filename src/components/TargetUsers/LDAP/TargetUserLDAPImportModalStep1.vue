@@ -1,6 +1,13 @@
 <template>
   <v-form ref="refForm">
+    <KButtonRadioGroup
+      v-model="selectedRadioGroupIndex"
+      class="mb-8"
+      :items="radioGroupItems"
+      @on-item-click="handleRadioGroupItemClick"
+    />
     <FormGroup
+      v-if="selectedRadioGroupIndex === 1"
       class-name="w-100 max-w-100 ldap-import-table"
       :title="labels.LDAPGroups"
       :sub-title="labels.LDAPGroupsSub"
@@ -17,7 +24,7 @@
         :error-message="getLDAPGroupsErrorMessage"
       />
     </FormGroup>
-    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub" has-hint>
+    <FormGroup :title="labels.SelectTargetGroup" :sub-title="labels.SelectTargetGroupSub">
       <KSelect
         v-model.trim="targetGroupResourceId"
         type="autocomplete"
@@ -25,15 +32,12 @@
         custom-menu-class="target-user-ldap__target-groups"
         outlined
         clearable
-        persistent-hint
-        hint="*Required"
         prepend-inner-icon="mdi-magnify"
         autocomplete="disabled"
-        placeholder="Select a target group"
+        placeholder="- All Users -"
         no-data-text="No user group available"
         position="top"
         :items="targetGroupItems"
-        :rules="[(v) => Validations.required(v)]"
         :disabled="isEdit"
         :slots="{ item: true }"
       >
@@ -74,13 +78,24 @@ import labels from '@/model/constants/labels'
 import LDAPService from '@/api/ldap'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+import KButtonRadioGroup from '@/components/ButtonRadioGroup/KButtonRadioGroup'
 export default {
   name: 'TargetUserLDAPImportModalStep1',
-  components: { KSelect, CustomError, TargetUserLDAPImportTable, FormGroup },
+  components: { KButtonRadioGroup, KSelect, CustomError, TargetUserLDAPImportTable, FormGroup },
   props: {
     selectedLDAPItems: {
       type: Array,
       default: () => []
+    },
+    isLDAPGroupsValid: {
+      type: Boolean
+    },
+    step1TargetGroupResourceId: {
+      type: String,
+      default: ''
+    },
+    step1Step: {
+      type: Number
     }
   },
   inject: {
@@ -93,10 +108,20 @@ export default {
     return {
       labels,
       Validations,
-      isLDAPGroupsValid: true,
       isActive: true,
       targetGroupItems: [],
-      targetGroupResourceId: ''
+      targetGroupResourceId: '',
+      selectedRadioGroupIndex: 0,
+      radioGroupItems: [
+        {
+          label: 'ENTIRE LDAP',
+          infoText: 'Select this option to sync all users in your active directory.'
+        },
+        {
+          label: 'SELECT LDAP GROUPS',
+          infoText: 'Select this option to sync users in certain LDAP groups.'
+        }
+      ]
     }
   },
   computed: {
@@ -113,6 +138,14 @@ export default {
             borderRadius: '12px !important'
           }
         : {}
+    }
+  },
+  watch: {
+    targetGroupResourceId(newValue) {
+      this.$emit('update:step1TargetGroupResourceId', newValue)
+    },
+    selectedRadioGroupIndex(newValue) {
+      this.$emit('update:step1Step', newValue)
     }
   },
   created() {
@@ -135,11 +168,19 @@ export default {
       })
     },
     validateForm() {
-      return this?.$refs?.refForm?.validate() && this?.selectedLDAPItems?.length
+      const comparator = this.selectedRadioGroupIndex === 1 ? this?.selectedLDAPItems?.length : true
+      return this?.$refs?.refForm?.validate() && comparator
     },
     handleTableSelectionChange(selectedLDAPItems) {
-      if (selectedLDAPItems.length) this.isLDAPGroupsValid = true
+      if (selectedLDAPItems.length) this.$emit('update:isLDAPGroupsValid', true)
+      else this.$emit('update:isLDAPGroupsValid', false)
       this.$emit('update:selectedLDAPItems', selectedLDAPItems)
+    },
+    handleRadioGroupItemClick(item) {
+      if (item.label === this.radioGroupItems[0].label) {
+        this.handleTableSelectionChange([])
+        this.$emit('update:isLDAPGroupsValid', true)
+      }
     }
   }
 }
@@ -153,6 +194,11 @@ export default {
     .v-ripple__container {
       display: none;
     }
+  }
+}
+#input--target-user-groups {
+  input::placeholder {
+    color: #383b41;
   }
 }
 </style>

@@ -18,6 +18,7 @@
               hide-details
               return-object
               :menu-props="{ offsetY: true }"
+              :disabled="header.isSelectDisabled"
               @input="setSelectDisableItems"
               @change="setSelectDisableItemsChange($event, header, index)"
             >

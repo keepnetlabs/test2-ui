@@ -113,12 +113,13 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber, pageSize }
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
+          this.serverSideProps.pageSize = pageSize
           this.tableData = results || []
           if (this.initialGroupFilterValues.length) {
             if (this?.$refs?.refTable?.$refs?.elTableRef) {

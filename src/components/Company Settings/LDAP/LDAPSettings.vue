@@ -86,6 +86,8 @@ import InputUrl from '@/components/Common/Inputs/InputUrl'
 import SaveChangesButton from '@/components/Common/Buttons/SaveChangesButton'
 import LDAPService from '@/api/ldap'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { mapGetters } from 'vuex'
+import { isDifferent } from '@/utils/functions'
 export default {
   name: 'LDAPSettings',
   components: { DatatableLoading, SaveChangesButton, InputUrl, FormGroup },
@@ -95,6 +97,9 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    fieldMappings: {
+      type: Array
     }
   },
   data() {
@@ -114,6 +119,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getLDAPSettingCreatePermission: 'permissions/getLDAPSettingCreatePermission',
+      getLDAPSettingUpdatePermission: 'permissions/getLDAPSettingUpdatePermission'
+    }),
     getTestConnectionButtonStyle() {
       return {
         width: this.isTestingConnection ? '210px' : this.isTestConnectionValid ? '185px' : '160px',
@@ -124,6 +133,12 @@ export default {
       return this.isFormValid ? {} : this.disabledStyle
     },
     getButtonStyle() {
+      const permissionIsValid = this.initialFormData
+        ? this.getLDAPSettingUpdatePermission
+        : this.getLDAPSettingCreatePermission
+      if (!permissionIsValid) return this.disabledStyle
+      const isDiff = this.initialFormData ? isDifferent(this.formData, this.initialFormData) : true
+      if (!isDiff) return this.disabledStyle
       return this.isTestingConnection || !this.isFormValid ? this.disabledStyle : {}
     },
     getSwitchLabel() {
@@ -160,7 +175,11 @@ export default {
         })
     },
     handleSubmit() {
-      if (this.isTestConnectionValid) this.$emit('on-submit', this.formData)
+      if (this.isTestConnectionValid)
+        this.$emit('on-submit', {
+          ...this.formData,
+          fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
+        })
       else this.handleTestConnection(true)
     }
   }

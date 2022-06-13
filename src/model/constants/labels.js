@@ -12,6 +12,7 @@ export const labels = {
   ExcludeUserAgentBatchImportPlaceholder:
     'Mozilla/5.0 (iPhone9,3; U; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1',
   ExcludeUserAgentBatchImportSubtitle: 'Import multiple user agents separated by line-break',
+  Create: 'Create',
   Okay: 'Okay',
   FastLaunch: 'Fast Launch',
   ZoneID: 'Zone ID',
@@ -82,6 +83,10 @@ export const labels = {
   TimesReported: 'Times Reported',
   ViewReport: 'View Report',
   CreateNewInstance: 'Create new instance',
+  CampaignInstance: 'Campaign Instance',
+  CampaignInstanceSub:
+    'Select target groups and schedule options for this phishing campaign instance',
+  MarkAsTest: 'Mark as Test',
   LastReported: 'Last Reported',
   Data: 'Data',
   EmailInformation: 'Email Information',

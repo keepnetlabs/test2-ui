@@ -726,6 +726,31 @@ const store = {
     getMailConfigurationPermissions(state) {
       return state?.mailConfigurationPermissions
     },
+    getLDAPDetailPermission(state) {
+      return state?.ldapPermissions?.DETAIL?.hasPermission
+    },
+    getLDAPSettingCreatePermission(state) {
+      return state?.ldapPermissions?.SETTING_CREATE?.hasPermission
+    },
+    getLDAPSettingUpdatePermission(state) {
+      return state?.ldapPermissions?.SETTING_UPDATE?.hasPermission
+    },
+    getLDAPSettingSchedulePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission
+    },
+    getLDAPFieldMappingPermissions(state) {
+      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions
+      return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission
+    },
+    getLDAPCreateConfigPermission(state) {
+      return state?.ldapPermissions?.CREATE_CONFIG?.hasPermission
+    },
+    getLDAPScheduleUpdatePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_UPDATE?.hasPermission
+    },
+    getLDAPScheduleDeletePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_DELETE?.hasPermission
+    },
     getWidgetsPermissions(state, getters) {
       return {
         runningInvestigation: getters?.getIncidentResponderRunningInvestigationsPermission,
