@@ -293,9 +293,26 @@ export default {
     if (this.isEdit && this.resourceId) {
       this.formValues = this.permissionEditData
       this.$nextTick(() => {
-        this.availableForRequests = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
-          this.permissionEditData.availableForList
-        )
+        if (
+          this?.$refs?.refMakeAvailableForNewPermissions &&
+          this.permissionEditData.availableForList.length
+        ) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+            this.permissionEditData.availableForList
+          )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
+        }
         this.availableForKey = 'updatedKey'
       })
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

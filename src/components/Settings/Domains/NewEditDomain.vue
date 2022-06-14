@@ -311,14 +311,25 @@ export default {
         }
 
         delete this.formValues.availableForList
-        if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            res.data.data.availableForList
+        const availableForList = res?.data?.data?.availableForList
+        if (this.$refs.refMakeAvailableFor && availableForList?.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            res.data.data.availableForList
-          )
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
