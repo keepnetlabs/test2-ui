@@ -620,11 +620,10 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = templateData.results
-          // this.tableData = templateData.results.map((item) => ({
-          //   ...item,
-          //   isDefault: true,
-          // }));
+          this.tableData = templateData.results.map((item) => ({
+            ...item,
+            tags: item.tags?.filter((tag) => tag.trim().length > 0)
+          }))
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
           })
