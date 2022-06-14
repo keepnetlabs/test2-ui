@@ -786,11 +786,24 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
+        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList

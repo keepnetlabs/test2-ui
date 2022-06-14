@@ -1006,11 +1006,24 @@ export default {
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
         this.handleChangeDomainRecord(this.formValues.domainRecordId)
+        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList
