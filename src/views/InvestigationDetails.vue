@@ -1,5 +1,5 @@
 <template>
-  <div class="investigation-details-wrapper">
+  <div class="investigation-details-wrapper" style="margin-top: 6px;">
     <div
       class="investigation-details"
       v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"
@@ -903,14 +903,15 @@
                 just-compare-row-key
                 is-server-side-selection
                 :show-filter-options="false"
-                :is-column-filter-active="isColumnFilterActive"
                 :refName="'investigationDetailsListTable'"
+                :manage-column-filter-status-from-parent="emailsColumnFilterStatus"
                 :columns="columns"
                 :table="investigationDetailsList"
+                :axios-payload.sync="investigationListBodyData"
                 :rowActions="rowActions"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
-                :stored-table-settings="storedTableDetailsList"
+                :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
                 :chartOptions="chartOptions"
                 :server-side-props="serverSideProps"
                 :server-side-events="{
@@ -928,10 +929,6 @@
                 @columnFilterCleared="columnFilterCleared"
                 @refreshAction="refreshDatatable"
                 @on-all-records-button-click="handleAllRecordsInboxClick"
-                @set-default-search="handleSetDefaultSearch"
-                @restore-default-search="handleRestoreDefaultSearch"
-                @clear-filters="handleClearFilters"
-                @on-table-settings-change="handleSetRenderedColumnsDetailsList"
                 @server-side-page-number-changed="serverSidePageNumberChanged"
                 @server-side-size-changed="serverSideSizeChanged"
                 @sortChangedEvent="sortChanged"
@@ -1052,6 +1049,7 @@
                 id="investigationDetailsTargetUsersList"
                 ref="investigationDetailsTargetUsersList"
                 refName="investigationDetailsTargetUsersListTable"
+                :manage-column-filter-status-from-parent="targetUserColumnFilterStatus"
                 is-server-side
                 filterable
                 options
@@ -1060,7 +1058,6 @@
                   investigationDetailsTargetUsersListData &&
                   investigationDetailsTargetUsersListData.results
                 "
-                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 :selectable="false"
                 :show-filter-options="false"
                 :empty="iEmpty"
@@ -1068,6 +1065,10 @@
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :server-side-props="serverSidePropsForTargetUsers"
+                :saved-table-settings-local-storage-key="
+                  savedTableSettingsLocalStorageKeyForTargetUsers
+                "
+                :axios-payload.sync="investigationTargetUsersListBodyData"
                 :server-side-events="{
                   pagination: true,
                   search: true,
@@ -1077,11 +1078,6 @@
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
                 @refreshAction="refreshDatatable"
-                @on-all-records-button-click="handleAllRecordsTargetUsersClick"
-                @set-default-search="handleSetDefaultSearchForTargetUsers"
-                @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
-                @clear-filters="handleClearFiltersForTargetUsers"
-                @on-table-settings-change="handleSetRenderedColumnsTargetUser"
                 @server-side-page-number-changed="serverSidePageNumberChangedForTargetUsers"
                 @server-side-size-changed="serverSideSizeChangedForTargetUsers"
                 @sortChangedEvent="sortChangedForTargetUsers"
@@ -1160,7 +1156,6 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import {
-  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
@@ -1179,11 +1174,7 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   components: {
     DatatableLoading,
@@ -1205,15 +1196,15 @@ export default {
     autoRefreshInterval: null,
     timeoutId: null,
     isRunning: false,
-    storedTableDetailsList: null,
+    savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST,
+    savedTableSettingsLocalStorageKeyForTargetUsers:
+      TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_TARGET_USER,
     storedTableTargetUser: null,
     totalNumberOfRecordsFolder: 0,
     warningButtonDisabled: false,
     warnAndDeleteButtonDisabled: false,
     stopButtonDisabled: false,
     labels,
-    isColumnFilterActive: false,
-    isColumnFilterActiveTargetUsers: false,
     loading: true,
     topMenuLoading: true,
     leftMenuLoading: true,
@@ -1222,6 +1213,8 @@ export default {
     progressValue: null,
     notifyMessage: null,
     notifyMessageWithDelete: null,
+    targetUserColumnFilterStatus: { status: false },
+    emailsColumnFilterStatus: { status: false },
     diffDays: null,
     totalHours: 0,
     totalMinutes: 0,
@@ -1547,6 +1540,22 @@ export default {
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
     },
+    calculateInvestigateListFilterActive() {
+      this.emailsColumnFilterStatus.status = this.isColumnFilterActive(
+        this.investigationListBodyData
+      )
+    },
+    calculateTargetUserListFilterActive() {
+      this.targetUserColumnFilterStatus.status = this.isColumnFilterActive(
+        this.investigationTargetUsersListBodyData
+      )
+    },
+    isColumnFilterActive(axiosPayload) {
+      return !!(
+        axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length > 1 ||
+        axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length
+      )
+    },
     getMailCountByFolderName(folderName = '') {
       const { statsAndMenuData } = this
       return (
@@ -1554,19 +1563,16 @@ export default {
       )
     },
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
-      //generic
       this.investigationTargetUsersListBodyData.pageSize = pageSize
       this.serverSidePropsForTargetUsers.pageSize = pageSize
       this.resetPageNumberForTargetUsers()
       this.refreshDatatable()
     },
     resetPageNumberForTargetUsers() {
-      //generic
       this.investigationTargetUsersListBodyData.pageNumber = 1
       this.serverSidePropsForTargetUsers.pageNumber = 1
     },
     handleSearchChangeForTargetUsers(searchFilter = {}) {
-      //generic
       this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -1575,28 +1581,19 @@ export default {
       this.refreshDatatable()
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
-      //generic
       this.investigationTargetUsersListBodyData.pageNumber = pageNumber
       this.refreshDatatable()
     },
     sortChangedForTargetUsers({ order, prop } = {}) {
-      //generic
       this.investigationTargetUsersListBodyData.ascending = order === 'ascending'
       this.investigationTargetUsersListBodyData.orderBy = prop
       this.refreshDatatable()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.investigationListBodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.refreshDatatable()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST,
-        JSON.stringify(tableSettings)
-      )
     },
     resetPageNumber() {
       this.investigationListBodyData.pageNumber = 1
@@ -1612,106 +1609,17 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.investigationListBodyData.pageNumber = pageNumber
-      this.refreshDatatable()
+      this.refreshDatatable(false, false, true)
     },
     sortChanged({ order, prop } = {}) {
       this.investigationListBodyData.ascending = order === 'ascending'
       this.investigationListBodyData.orderBy = prop
       this.refreshDatatable()
     },
-    getDefaultFilterAndSearch(isInitial = false) {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
-      )
-      if (savedFilter) {
-        this.investigationListBodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refInvestigationListData.filterValues = savedFilter.filterValues
-          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.refreshDatatable(false, isInitial)
-    },
     handleClearFilters(isAutoTrue) {
       if (!isAutoTrue) return false
-      this.isRestoredOrClearedFilters = true
       this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$nextTick(() => {
-        if (this.$refs.refInvestigationListData) {
-          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        }
-      })
       this.refreshDatatable(isAutoTrue)
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER,
-        JSON.stringify({
-          filter: this.investigationListBodyData.filter,
-          filterValues
-        })
-      )
-    },
-    handleSetRenderedColumnsTargetUser(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_TARGET_USER,
-        JSON.stringify(tableSettings)
-      )
-    },
-    handleSetRenderedColumnsDetailsList(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST,
-        JSON.stringify(tableSettings)
-      )
-    },
-    getDefaultFilterAndSearchForTargetUsers() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
-      )
-      if (savedFilter) {
-        this.investigationTargetUsersListBodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.investigationDetailsTargetUsersList.filterValues = savedFilter.filterValues
-          this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.refreshDatatable()
-    },
-    handleClearFiltersForTargetUsers() {
-      this.isRestoredOrClearedFilters = true
-      this.investigationTargetUsersListBodyData = JSON.parse(
-        JSON.stringify(this.defaultRequestBodyForTargetUsers)
-      )
-      this.$refs.investigationDetailsTargetUsersList.filterValues = {}
-      this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.refreshDatatable()
-    },
-    handleRestoreDefaultSearchForTargetUsers() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearchForTargetUsers()
-    },
-    handleSetDefaultSearchForTargetUsers(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS,
-        JSON.stringify({
-          filter: this.investigationTargetUsersListBodyData.filter,
-          filterValues
-        })
-      )
     },
     getUserFriendlyName(activeMenu) {
       let name
@@ -1739,10 +1647,6 @@ export default {
           break
       }
       return name
-    },
-    handleAllRecordsTargetUsersClick() {
-      this.investigationTargetUsersListBodyData.pageSize = 75000
-      this.refreshDatatable()
     },
     handleAllRecordsInboxClick() {
       this.investigationListBodyData.pageSize = 75000
@@ -2269,12 +2173,11 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable(isOnBackground = false, isInitial = false) {
+    refreshDatatable(isOnBackground = false, isInitial = false, isPageNumberChanged = false) {
       this.leftMenuLoading = !isOnBackground
       this.topMenuLoading = !isOnBackground
       this.loading = !isOnBackground
-
-      if (this.activeMenu !== 'targetUsers') {
+      if (this.activeMenu !== 'targetUsers' && !isPageNumberChanged) {
         this.investigationListBodyData.pageNumber = 1
         this.investigationListBodyData.filter.FilterGroups[0].FilterItems[0].Value = this.activeMenu
       }
@@ -2364,7 +2267,6 @@ export default {
       } else {
         this.notifyMessage = ''
       }
-
       this.isWantToWarn = true
       this.warningMessageSubtitle =
         Array.isArray(value) && value.length && value.length > 1
@@ -2475,8 +2377,8 @@ export default {
       this.isWantToAddNewInvestigation = true
     },
     columnFilterChanged(filter) {
-      this.isColumnFilterActive = true
       this.resetPageNumber()
+      this.emailsColumnFilterStatus.status = true
       this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.investigationListBodyData
@@ -2494,7 +2396,7 @@ export default {
     },
     columnFilterChangedTargetUsers(filter) {
       this.resetPageNumberForTargetUsers()
-      this.isColumnFilterActiveTargetUsers = true
+      this.targetUserColumnFilterStatus.status = true
       this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.investigationTargetUsersListBodyData
@@ -2509,22 +2411,6 @@ export default {
       )
       this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
-    },
-    calculateInvestigateListFilterActive() {
-      this.isColumnFilterActive = isColumnFilterActive(this.investigationListBodyData)
-    },
-    calculateTargetUserListFilterActive() {
-      this.isColumnFilterActiveTargetUsers = isColumnFilterActive(
-        this.investigationTargetUsersListBodyData
-      )
-    },
-    setStoredTableSettings() {
-      this.storedTableDetailsList = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST)
-      )
-      this.storedTableTargetUser = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_TARGET_USER)
-      )
     }
   },
   computed: {
@@ -2846,9 +2732,7 @@ export default {
     }
   },
   created() {
-    this.setStoredTableSettings()
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
-    this.getDefaultFilterAndSearch(true)
+    this.refreshDatatable(false, true)
   },
   beforeDestroy() {
     this.isRunning = false

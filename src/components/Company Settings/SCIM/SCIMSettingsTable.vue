@@ -8,16 +8,17 @@
     is-server-side
     :loading="isLoading"
     :table="tableData"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :columns="tableOptions.columns"
     :empty="tableOptions.empty"
     :download-button="tableOptions.downloadButton"
-    :stored-table-settings="storedTableSettings"
     :addButton="tableOptions.addButton"
     :select-event="tableOptions.selectEvent"
     :row-actions="tableOptions.rowActions"
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
+    :axios-payload.sync="axiosPayload"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     @editAction="handleEdit"
     @deleteAction="handleDelete"
     @revokeAction="handleRevoke"
@@ -27,10 +28,6 @@
     @columnFilterCleared="columnFilterCleared"
     @refreshAction="callForData"
     @downloadEvent="exportSCIMSettingsList"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
@@ -46,13 +43,9 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { exportSCIMSettings, searchSCIMSettings } from '@/api/scimSettings'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'
@@ -63,7 +56,6 @@ export default {
   data() {
     return {
       tableData: [],
-      storedTableSettings: null,
       isEdit: false,
       tableOptions: {
         columns: [
@@ -116,7 +108,8 @@ export default {
             width: 180
           }
         ],
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SCIM_SETTINGS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCIM_SETTINGS_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -178,8 +171,6 @@ export default {
     })
   },
   created() {
-    this.getStoredTableSettings()
-    this.setDefaultFilter()
     this.callForData()
   },
   methods: {
@@ -209,16 +200,10 @@ export default {
     handleRevoke(row = {}) {
       this.$emit('on-revoke', row)
     },
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.SCIM_SETTINGS_TABLE)
-      )
-    },
     handleAddNewSCIM() {
       this.$emit('on-add')
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -230,52 +215,7 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForData()
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      this.axiosPayload.filter.FilterGroups[1] = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SCIM_SETTINGS,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    setDefaultFilter() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SCIM_SETTINGS)
-      )
-      if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const {
-        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
-        filterValues
-      } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
-      this.$nextTick(() => {
-        this.$refs.refTable.reRenderColumns(filterValues)
-      })
-    },
-    handleRestoreDefaultSearch() {
-      this.setDefaultFilter()
-      this.callForData()
-    },
-    handleClearFilters() {
-      this.axiosPayload = getDefaultAxiosPayload()
-      this.$refs.refTable.reRenderColumns({})
-      this.callForData()
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SCIM_SETTINGS_TABLE, JSON.stringify(tableSettings))
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.axiosPayload.pageNumber = pageNumber
@@ -305,7 +245,6 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForData()
     },
     exportSCIMSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {

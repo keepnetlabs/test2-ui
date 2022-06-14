@@ -1,5 +1,5 @@
 <template>
-  <div class="phishing-reporter__header" id="phishing-reporter">
+  <div class="phishing-reporter__header" id="phishing-reporter" style="margin-top: 5px;">
     <div class="phishing-reporter__header-container" v-if="getPhishingReporterSummaryPermissions">
       <div class="phishing-reporter__stats">
         <div

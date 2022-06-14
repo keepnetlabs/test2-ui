@@ -15,6 +15,14 @@
           >Edit Dashboard</v-btn
         >
         <template v-else>
+          <v-btn
+            id="btn-cancel--dashboard-widgets"
+            class="widget-button mr-2"
+            rounded
+            color="transparent"
+            @click="handleCancel"
+            ><v-icon class="mr-2" style="font-size: 22px;">mdi-close</v-icon>Cancel</v-btn
+          >
           <v-menu bottom offset-y max-height="500" content-class="no-box-shadow">
             <template v-slot:activator="{ on }">
               <div v-on="on" style="display: inline-block;">
@@ -49,7 +57,7 @@
             class="widget-button"
             rounded
             color="transparent"
-            @click="handleEdit"
+            @click="handleSave"
             ><v-icon class="mr-2" style="font-size: 22px;">mdi-content-save</v-icon>Save
             Changes</v-btn
           >
@@ -92,8 +100,14 @@ export default {
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
     },
+    handleCancel() {
+      this.$emit('handleCancel')
+    },
     handleEdit() {
       this.$emit('handleEdit')
+    },
+    handleSave() {
+      this.$emit('handleSave')
     },
     handleOpenMenu() {
       this.$emit('handleOpenMenu')

@@ -11,7 +11,7 @@
         : 'Edit Landing Page Template'
     "
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -126,22 +126,12 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
-                  <k-select
-                    type="combobox"
+                  <InputTag
+                    ref="refTags"
                     :id="`input--action-tags`"
                     v-model="formValues.tags"
                     :items="[]"
-                    chips
-                    deletable-chips
-                    outlined
                     class="hide-caret"
-                    multiple
-                    dense
-                    persistent-hint
-                    small-chips
-                    :return-object="false"
-                    @input="handleTagItemChange"
-                    placeholder="Enter tags and press enter key"
                   />
                 </form-group>
                 <form-group
@@ -403,43 +393,16 @@
         </v-stepper-items>
       </v-stepper>
     </template>
-    <template v-slot:overlay-footer>
-      <v-btn
-        @click="changeNewEmailTemplateModalStatus"
-        class="new-email-template__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="new-email-template__right-col">
-        <v-btn
-          @click="backStep(-1)"
-          class="new-email-template__footer-btn-back mr-4"
-          rounded
-          v-if="step > 1"
-        >
-          {{ labels.Back }}
-        </v-btn>
-        <v-btn
-          @click="nextStep(+1)"
-          class="new-email-template__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step < 2"
-        >
-          {{ labels.Next }}
-        </v-btn>
-        <v-btn
-          @click="submit"
-          class="new-email-template__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step === 2"
-          :disabled="isSubmitDisabled"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
+    <template #overlay-footer>
+      <StepperFooter
+        max-step="2"
+        :step.sync="step"
+        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        @on-cancel="changeNewEmailTemplateModalStatus"
+        @on-back="backStep(-1)"
+        @on-next="nextStep(+1)"
+        @on-submit="submit"
+      />
     </template>
   </app-modal>
 </template>
@@ -447,7 +410,6 @@
 <script>
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import AppModal from '../AppModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -520,16 +482,19 @@ import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
+import StepperFooter from '@/components/Stepper/StepperFooter'
+import InputTag from '@/components/Common/Inputs/InputTag'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
-    KSelect,
+    StepperFooter,
     AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputTag
   },
   data() {
     return {
@@ -1041,11 +1006,24 @@ export default {
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
         this.handleChangeDomainRecord(this.formValues.domainRecordId)
+        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList

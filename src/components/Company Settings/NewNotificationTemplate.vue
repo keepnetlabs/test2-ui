@@ -56,6 +56,7 @@
         </form-group>
         <form-group title="Tags" sub-title="Define tags for the notification template">
           <InputTag
+            ref="refTags"
             id="input--action-tags-new-notification-template"
             v-model="formValues.tags"
             :items="[]"
@@ -296,8 +297,37 @@ export default {
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
             if (value.length) {
-              this.formValues['availableForRequests'] = getAvailableForListFromBackend(value)
-              this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
+              const availableForListFromBackend = getAvailableForListFromBackend(value)
+              if (!availableForListFromBackend.length) {
+                this.formValues['availableForRequests'] = [
+                  {
+                    id: 'MyCompanyOnly',
+                    label: 'My company only',
+                    type: 'MyCompanyOnly',
+                    resourceId: null
+                  }
+                ]
+                this.nonEditableAvailableForRequests = [
+                  {
+                    id: 'MyCompanyOnly',
+                    label: 'My company only',
+                    type: 'MyCompanyOnly',
+                    resourceId: null
+                  }
+                ]
+              } else {
+                this.formValues['availableForRequests'] = availableForListFromBackend
+                this.nonEditableAvailableForRequests = availableForListFromBackend
+              }
+            } else {
+              this.formValues['availableForRequests'] = [
+                {
+                  id: 'MyCompanyOnly',
+                  label: 'My company only',
+                  type: 'MyCompanyOnly',
+                  resourceId: null
+                }
+              ]
             }
             continue
           }
@@ -509,6 +539,7 @@ export default {
         this.saveDisable = true
         const payload = {
           ...this.formValues,
+          tags: this.formValues.tags.filter((item) => item.length > 0),
           availableForRequests: refMakeAvailableFor.getAvailableForValues(
             this.formValues.availableForRequests
           )

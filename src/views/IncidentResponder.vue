@@ -1,5 +1,5 @@
 <template>
-  <div class="incident-responder-parent">
+  <div class="incident-responder-parent mt-2">
     <div class="incident-responder">
       <ReAnalyzeIncidentDialog
         v-if="showReAnalyzeIncidentDialog"
@@ -352,23 +352,20 @@
             </div>
             <div class="table">
               <datatable
-                ref="refTopRules"
                 id="incident-responder-top-rules-data-table"
                 class="no-sub-border-datatable"
                 :loading="investigationsLoading || topRulesLoading"
-                :refName="'topRules'"
                 :columns="topRules.columns"
                 :table="topRules.table"
                 :pageSizes="[]"
-                :defaultSort="'status'"
                 :selectable="false"
                 :filterable="false"
+                :border="false"
+                :showHeader="false"
                 :rowActions="[]"
                 :addUsers="topRules.addMenu"
                 :empty="topRules.iEmpty"
                 :selectEvent="topRules.selectEvent"
-                :border="false"
-                :showHeader="false"
                 @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
               >
                 <template v-slot:datatable-column-popup="{ scope, col }">
@@ -427,23 +424,20 @@
             </div>
             <div class="table investigations">
               <datatable
+                id="incident-responder-investigations-data-table"
+                class="no-sub-border-datatable"
                 :loading="investigationsLoading || topRulesLoading"
                 :table="investigationsData"
-                :refName="'recentInv'"
-                ref="refRecentInv"
-                id="incident-responder-investigations-data-table"
                 :columns="recentInv.columns"
-                :pageSizes="[]"
-                :defaultSort="'priority'"
                 :selectable="false"
                 :filterable="false"
+                :border="false"
+                :showHeader="false"
                 :rowActions="[]"
+                :pageSizes="[]"
                 :addUsers="recentInv.addMenu"
                 :empty="recentInv.iEmpty"
                 :selectEvent="recentInv.selectEvent"
-                :border="false"
-                :showHeader="false"
-                class="no-sub-border-datatable"
                 @onEmptyBtnClicked="onEmptyBtnClicked"
               />
             </div>
@@ -476,14 +470,17 @@
             is-server-side
             options
             :table="clusteredTableData"
-            :serverSideProps="serverSideClusteredProps"
+            :axios-payload.sync="clusteredTableAxios"
+            :saved-filters-local-storage-key="clusteredTable.savedFiltersLocalStorageKey"
+            :saved-table-settings-local-storage-key="
+              clusteredTable.savedTableSettingsLocalStorageKey
+            "
+            :server-side-props="serverSideClusteredProps"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :extended-view-loading="extendedViewLoading"
-            :is-column-filter-active="clusteredTable.isColumnFilterActive"
             :extended-view-options="clusteredTable.extendedViewOptions"
             :columns="clusteredTable.columns"
             :empty="clusteredTable.iEmpty"
-            :stored-table-settings="storedReportedEmailClusteredSettings"
             :loading="isReportedEmailsClusteredLoading"
             :row-actions="clusteredTable.rowActions"
             :extendedViewValue="extendedViewValue"
@@ -503,10 +500,6 @@
             @server-side-size-changed="serverSideClusteredSizeChanged"
             @searchChangedEvent="handleClusteredSearchChange"
             @sortChangedEvent="sortClusteredChanged"
-            @set-default-search="handleSetDefaultSearchReportedEmailClustered"
-            @restore-default-search="handleRestoreDefaultSearchReportedEmailClustered"
-            @clear-filters="handleClearFiltersReportedEmailClustered"
-            @on-table-settings-change="handleSetRenderedColumnsClusteredReportedEmail"
             @on-extended-view-status-change="handleOnExtendedViewStatusChange"
           >
             <template #table-search-left-side>
@@ -615,37 +608,36 @@
           <datatable
             v-show="!isShowingClusteredTable"
             v-bind="dynamicReportedEmailProps"
-            is-server-side
             ref="refReportedEmails"
             id="incident-responder-reported-emails-data-table"
-            active-cluster=""
+            is-server-side
+            selectable
+            filterable
+            options
+            groupable
             is-server-side-selection
+            disable-extended-view-transition
+            change-footer-position
+            active-cluster=""
+            :axios-payload.sync="requestBodyReportedEmails"
+            :saved-filters-local-storage-key="emails.savedFiltersLocalStorageKey"
+            :saved-table-settings-local-storage-key="emails.savedTableSettingsLocalStorageKey"
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
-            :is-column-filter-active="emails.isColumnFilterActive"
-            :extendedViewDisableChanger="extendedViewDisableChanger"
             :table="reportedEmailsData"
-            :refName="'reportedEmails'"
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
-            :changeFooterPosition="true"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
-            :pageSizes="emails.pageSizes"
-            :selectable="true"
-            :filterable="true"
-            :options="true"
-            @clusterChanged="clusterChanged"
             :rowActions="emails.rowActions"
             :addUsers="emails.addUsers"
             :empty="emails.iEmpty"
-            :groupable="true"
             :selectEvent="emails.selectEvent"
-            :disableExtendedViewTransition="true"
             :server-side-props="serverSideProps"
-            :stored-table-settings="storedReportedEmailTableSettings"
+            :extendedViewDisableChanger="extendedViewDisableChanger"
+            @clusterChanged="clusterChanged"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -662,10 +654,6 @@
             @server-side-size-changed="serverSideSizeChanged"
             @searchChangedEvent="handleSearchChange"
             @sortChangedEvent="sortChanged"
-            @set-default-search="handleSetDefaultSearchReportedEmail"
-            @restore-default-search="handleRestoreDefaultSearchReportedEmail"
-            @clear-filters="handleClearFiltersReportedEmail"
-            @on-table-settings-change="handleSetRenderedColumnsReportedEmail"
             @on-extended-view-status-change="handleOnExtendedViewStatusChange"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
@@ -840,11 +828,7 @@ import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeInc
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
 import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   components: {
     SelectEmailTemplateModal,
@@ -884,8 +868,6 @@ export default {
     defaultSelectedTemplateResourceId: '',
     labels,
     clusteredRow: null,
-    storedReportedEmailTableSettings: null,
-    storedReportedEmailClusteredSettings: null,
     isConfirmButtonDisabled: false,
     topRulesLoading: false,
     isCustomMessageMultiple: false,
@@ -1024,7 +1006,8 @@ export default {
       selectEvent: {}
     },
     emails: {
-      isColumnFilterActive: false,
+      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL,
+      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.REPORTED_EMAIL,
       table: [],
       extendedViewOptions: {
         titleKey: 'subject',
@@ -1368,7 +1351,6 @@ export default {
         isEditable: false,
         filterableType: 'text'
       },
-      pageSizes: [5, 10, 25],
       rowActions: [
         {
           name: labels.Edit,
@@ -1438,6 +1420,8 @@ export default {
     defaultRequestBodyReportedEmails: getDefaultAxiosPayload(),
     isReportedEmailsClusteredLoading: false,
     clusteredTable: {
+      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
+      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
@@ -1572,7 +1556,6 @@ export default {
         icon: 'mdi-arrow-right',
         id: 'btn-empty--incident-responder-cluster-phishing-reporter'
       },
-      isColumnFilterActive: false,
       extendedViewOptions: {
         titleKey: 'subject',
         footer: [
@@ -1871,14 +1854,13 @@ export default {
   },
   mounted() {
     this.incidentLoading = true
+    this.addQuery()
+  },
+  created() {
     this.$store.dispatch('investigations/getIrSummary').finally(() => {
       this.showDatatable = true
       this.incidentLoading = false
     })
-    this.addQuery()
-  },
-  created() {
-    this.setStoredTableSettings()
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
@@ -1947,18 +1929,12 @@ export default {
       if (this.isLoadState) {
         const persistentStateContainer = this.isPersistentState()
         if (persistentStateContainer) {
-          const { filterValues = {} } = persistentStateContainer.tableState
           this.requestBodyReportedEmails = persistentStateContainer.requestBodyReportedEmails
-          if (Object.keys(filterValues).length) {
-            this.emails.isColumnFilterActive = true
-          }
           this.initMethods(true)
           const { tableState, serverSideProps, selectedCluster } = persistentStateContainer
           this.serverSideProps = serverSideProps
           if (selectedCluster) {
-            this.$nextTick(() => {
-              this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
-            })
+            this.changeFirstColumnWidth(360)
           }
           this.selectedCluster = selectedCluster
           this.dynamicReportedEmailProps = { persistentState: tableState }
@@ -1977,52 +1953,6 @@ export default {
         this.callForClusteredTable()
       }
       this.$store.dispatch('investigations/getIrSummary')
-    },
-    getDefaultFilterAndSearchReportedEmail(callApi = true) {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL)
-      )
-      if (savedFilter) {
-        this.requestBodyReportedEmails.filter = savedFilter.filter
-        this.emails.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refReportedEmails.filterValues = savedFilter.filterValues
-          this.$refs.refReportedEmails.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      if (callApi) {
-        this.callForSearchNotifiedMail()
-      }
-    },
-    setStoredTableSettings() {
-      this.storedReportedEmailTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.REPORTED_EMAIL)
-      )
-      this.storedReportedEmailClusteredSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL)
-      )
-    },
-    getDefaultFilterAndSearchReportedEmailClustered(callApi = true) {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
-      )
-      if (savedFilter) {
-        this.clusteredTableAxios.filter = savedFilter.filter
-        this.clusteredTable.isColumnFilterActive = true
-        this.$nextTick(() => {
-          if (callApi) {
-            this.$refs.refReportedEmailsClustered.filterValues = savedFilter.filterValues
-            this.$refs.refReportedEmailsClustered.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
-          }
-        })
-      }
-      if (callApi) {
-        this.callForClusteredTable()
-      }
     },
     toggleShowReAnalyzeDialog() {
       this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
@@ -2054,11 +1984,7 @@ export default {
         clusteredTableState
       } = persistentStateContainer
 
-      const { filterValues = {} } = clusteredTableState
       this.clusteredTableAxios = clusteredTableAxios
-      if (Object.keys(filterValues).length) {
-        this.clusteredTable.isColumnFilterActive = true
-      }
       this.serverSideClusteredProps = serverSideClusteredProps
       this.clusteredRow = clusteredRow
       this.dynamicClusterProps = { persistentState: clusteredTableState }
@@ -2146,10 +2072,7 @@ export default {
     clusterChanged(selectedCluster = '') {
       this.resetTableFilters()
       this.changeColumnsOrder(selectedCluster)
-      this.getDefaultFilterAndSearchReportedEmail(false)
-      this.$nextTick(() => {
-        this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
-      })
+      this.changeFirstColumnWidth(360)
       this.requestBodyReportedEmails.pageNumber = 1
       this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(selectedCluster)
       this.isCustomOverflowedColumn = true
@@ -2158,9 +2081,10 @@ export default {
     },
     resetTableFilters() {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = []
-      this.$refs.refReportedEmails.filterValues = {}
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = []
       if (this.$refs.refReportedEmails) {
         const { refReportedEmails } = this.$refs
+        refReportedEmails.search = ''
         refReportedEmails.$refs.elTableRef.clearSelection()
         refReportedEmails.serverSideSelectionCount = 0
         refReportedEmails.excludedResourceIdList = []
@@ -2173,13 +2097,11 @@ export default {
         refReportedEmailsClustered.isSelectedAllEver = false
         refReportedEmailsClustered.serverSideSelectionCount = 0
       }
-
-      this.$refs.refReportedEmails.columnKey = `key-${Math.random().toString().substring(0, 7)}`
+      this.$refs.refReportedEmails.reRenderFilters({})
     },
     handleRecordButtonClick(row) {
       this.clusteredRow = row
       this.dynamicClusterProps = null
-      this.getDefaultFilterAndSearchReportedEmailClustered(false)
       this.setClusteredTableFilters()
       const persistentStateContainer = this.$refs.refReportedEmails.getState()
       let { filterValues = {}, search, sortProps } = persistentStateContainer
@@ -2196,7 +2118,7 @@ export default {
           expandedRows: [],
           firstColFixed: true,
           filteredDataLength: 0,
-          search,
+          search: JSON.parse(JSON.stringify(search)),
           showfilteredData: false,
           tableData: [],
           initialData: [],
@@ -2274,60 +2196,12 @@ export default {
     toggleIsShowingClusteredTable() {
       this.isShowingClusteredTable = !this.isShowingClusteredTable
     },
-    handleSetDefaultSearchReportedEmail(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL,
-        JSON.stringify({
-          filter: this.requestBodyReportedEmails.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearchReportedEmail() {
-      this.getDefaultFilterAndSearchReportedEmail()
-    },
-    handleClearFiltersReportedEmail() {
-      this.requestBodyReportedEmails = JSON.parse(
-        JSON.stringify(this.defaultRequestBodyReportedEmails)
-      )
-      if (this.selectedCluster) {
-        this.requestBodyReportedEmails.pageNumber = 1
-        this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(this.selectedCluster)
-      }
-      this.$refs.refReportedEmails.filterValues = {}
-      this.$refs.refReportedEmails.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.callForSearchNotifiedMail()
-    },
-    handleSetDefaultSearchReportedEmailClustered(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
-        JSON.stringify({
-          filter: this.clusteredTableAxios.filter,
-          filterValues
-        })
-      )
-    },
-    handleRestoreDefaultSearchReportedEmailClustered() {
-      this.getDefaultFilterAndSearchReportedEmailClustered()
-    },
-    handleClearFiltersReportedEmailClustered() {
-      this.clusteredTableAxios = JSON.parse(JSON.stringify(this.clusteredTableDefaultAxios))
-      this.$refs.refReportedEmailsClustered.filterValues = {}
-      this.$refs.refReportedEmailsClustered.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.setClusteredTableFilters()
-      this.callForClusteredTable()
-    },
     handleListBulletedClick() {
-      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 200
+      this.changeFirstColumnWidth()
       this.requestBodyReportedEmails.clusteredBy = ''
       this.isCustomOverflowedColumn = false
       this.selectedCluster = ''
       this.resetTableFilters()
-      this.getDefaultFilterAndSearchReportedEmail(false)
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
@@ -2345,17 +2219,7 @@ export default {
       })
       this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForSearchNotifiedMail()
-    },
-    handleSetRenderedColumnsReportedEmail(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.REPORTED_EMAIL, JSON.stringify(tableSettings))
-    },
-    handleSetRenderedColumnsClusteredReportedEmail(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
-        JSON.stringify(tableSettings)
-      )
     },
     handleClusteredSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
@@ -2366,7 +2230,6 @@ export default {
       })
       this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetClusteredPageNumber()
-      this.calculateClusteredIsFilterColumnActive()
       this.callForClusteredTable()
     },
     resetPageNumber() {
@@ -2377,7 +2240,7 @@ export default {
       this.callForGetRunningInvestigations()
       this.callForGetTopRules()
       if (!isLoadState) {
-        this.getDefaultFilterAndSearchReportedEmail()
+        this.callForSearchNotifiedMail()
       }
       if (this.getIncidentResponderROISettingGetPermission) {
         this.callForGetRoiSettings()
@@ -2692,15 +2555,16 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             this.reportedEmailsData = results || []
             if (this.selectedCluster) {
-              this.$nextTick(() => {
-                this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
-              })
+              this.changeFirstColumnWidth(360)
             }
           })
           .finally(() => {
             this.reportedEmailsLoading = false
           })
       }
+    },
+    changeFirstColumnWidth(width = 200) {
+      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = width
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
@@ -2887,7 +2751,6 @@ export default {
       })
     },
     clusteredColumnFilterChanged(filter = {}) {
-      this.clusteredTable.isColumnFilterActive = true
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.clusteredTableAxios
@@ -2904,10 +2767,8 @@ export default {
         this.callForClusteredTable()
       }
       this.resetClusteredPageNumber()
-      this.calculateClusteredIsFilterColumnActive()
     },
     columnFilterChanged(filter) {
-      this.emails.isColumnFilterActive = true
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.requestBodyReportedEmails
@@ -2921,14 +2782,7 @@ export default {
         this.requestBodyReportedEmails
       )
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForSearchNotifiedMail()
-    },
-    calculateIsFilterColumnActive() {
-      this.emails.isColumnFilterActive = isColumnFilterActive(this.requestBodyReportedEmails)
-    },
-    calculateClusteredIsFilterColumnActive() {
-      this.clusteredTable.isColumnFilterActive = isColumnFilterActive(this.clusteredTableAxios)
     }
   },
 

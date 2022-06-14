@@ -230,41 +230,35 @@
                 <div class="validate-data-table-wrapper">
                   <data-table
                     v-if="mappingStatus && showDatatable"
-                    :loading="step3Loading"
-                    :is-column-filter-active="tableOptions.isColumnFilterActive"
-                    :table="tableData"
-                    id="validate-data-table"
                     ref="refValidateList"
+                    id="validate-data-table"
+                    selectable
+                    filterable
+                    options
+                    is-server-side
+                    :loading="step3Loading"
+                    :table="tableData"
                     :empty="tableOptions.empty"
-                    :refName="'validateList'"
                     :columns="tableOptions.columns"
-                    :selectable="true"
-                    :filterable="true"
-                    :options="true"
-                    :sizeable="true"
-                    :pageSizes="tableOptions.pageSizes"
                     :select-event="tableOptions.selectEvent"
                     :row-actions="tableOptions.rowActions"
                     :addButton="tableOptions.addButton"
+                    :server-side-props="serverSideProps"
+                    :server-side-events="{ pagination: true, search: true, sort: true }"
+                    :downloadButton="{
+                      show: true
+                    }"
+                    :show-filter-options="false"
                     @downloadEvent="exportIntegrationList"
                     @sortChangedEvent="sortChangedEvent($event)"
                     @paginationChangedEvent="paginationChangedEvent($event)"
                     @searchChangedEvent="searchChangedEvent($event)"
-                    :dataLength="tableData && tableData.totalNumberOfRecords"
-                    :requestParams="bodyData"
-                    is-server-side
-                    :server-side-props="serverSideProps"
-                    :server-side-events="{ pagination: true, search: true, sort: true }"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
-                    :downloadButton="{
-                      show: true
-                    }"
                     @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
                     @server-side-page-number-changed="serverSidePageNumberChanged"
                     @server-side-size-changed="serverSideSizeChanged"
                     @handleSelectionChange="handleSelectionChange"
-                    :show-filter-options="false"
                   >
                     <template v-slot:table-notification>
                       <div class="target-user-import-file__header-detail">
@@ -578,7 +572,6 @@ export default {
   data() {
     return {
       allCustomColumns: null,
-      stopMappingData: false,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
       selectedActionName: null,
@@ -619,7 +612,6 @@ export default {
       },
       tableData: [],
       tableOptions: {
-        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,
@@ -788,7 +780,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_DATA
         }
@@ -823,25 +814,20 @@ export default {
     }
   },
   methods: {
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
-
+    handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -849,35 +835,8 @@ export default {
       this.getDatatableList()
     },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    getExcelName(item) {
-      if (item.selectedValue === 'First Name') item.selectedValue.name = 'First Name'
-      if (item.selectedValue === 'First Name') item.selectedValue.dbName = 'First Name'
-      if (item.selectedValue === 'Last Name') item.selectedValue.name = 'Last Name'
-      if (item.selectedValue === 'Last Name') item.selectedValue.dbName = 'Last Name'
-      if (item.selectedValue === 'FirstName') item.selectedValue.name = 'First Name'
-      if (item.selectedValue === 'FirstName') item.selectedValue.dbName = 'First Name'
-      if (item.selectedValue === 'LastName') item.selectedValue.name = 'Last Name'
-      if (item.selectedValue === 'LastName') item.selectedValue.dbName = 'Last Name'
-      return (
-        (item.selectedValue && item.selectedValue.dbName) ||
-        (item.selectedValue && item.selectedValue.name) ||
-        item.name
-      )
-    },
-    getFieldName(item) {
-      if (item.selectedValue === 'First Name') item.selectedValuename = 'FirstName'
-      if (item.selectedValue === 'First Name') item.selectedValuedbName = 'FirstName'
-      if (item.selectedValue === 'Last Name') item.selectedValuename = 'LastName'
-      if (item.selectedValue === 'Last Name') item.selectedValuedbName = 'LastName'
-      return (
-        (item.selectedValue && item.selectedValue.dbName) ||
-        (item.selectedValue && item.selectedValue.name) ||
-        item.name
-      )
     },
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
@@ -1122,7 +1081,6 @@ export default {
         })
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.step3Loading = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
@@ -1165,8 +1123,6 @@ export default {
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.getDatatableList()
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
@@ -1178,12 +1134,10 @@ export default {
       this.getDatatableList()
     },
     searchChangedEvent(searchFilter = {}, filterActive = false) {
-      //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
@@ -1654,7 +1608,7 @@ export default {
       line-height: 1.29;
       letter-spacing: normal;
       color: #383b41;
-      margin-bottom: 44px;
+      margin-bottom: 32px;
     }
     &--progress {
       font-size: 10px;

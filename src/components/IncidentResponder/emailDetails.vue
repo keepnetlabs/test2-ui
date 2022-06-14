@@ -37,16 +37,14 @@
                     <datatable
                       ref="refRelayTable"
                       id="relay-data-table"
+                      filterable
+                      options
                       :loading="isLoading"
                       :table="relayTable.data"
-                      :refName="'relayTable'"
                       :columns="relayTable.columns"
                       :selectable="false"
-                      :filterable="true"
-                      :options="true"
                       :empty="relayTable.iEmpty"
                       :selectEvent="selectEvent"
-                      :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                     />
@@ -62,18 +60,16 @@
                     <datatable
                       ref="refHeadersTable"
                       id="headers-data-table"
+                      filterable
+                      options
                       :loading="isLoading"
                       :table="headersTable.data"
-                      :refName="'headersTable'"
                       :columns="headersTable.columns"
                       :countRow="25"
                       :defaultSort="'date'"
                       :selectable="false"
-                      :filterable="true"
-                      :options="true"
                       :empty="headersTable.iEmpty"
                       :selectEvent="selectEvent"
-                      :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                       @onPageChanged="adjustScroll"
@@ -268,7 +264,6 @@
                         id="attachmentsTable"
                         ref="refAttachmentsTable"
                         :loading="isLoading"
-                        :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :table="attachmentTableOptions.tableData[index].analysisList"
                         :options="false"
@@ -280,7 +275,9 @@
                           <span @click="showPopupModal = true" style="cursor: pointer;">
                             <a
                               v-if="
-                                scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'
+                                scope.row.analysisEnginePermalink &&
+                                scope.row.result !== 'Excluded' &&
+                                scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               :href="scope.row.analysisEnginePermalink"
@@ -321,7 +318,7 @@ import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/f
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
-
+import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 export default {
   components: {
     KEmailPreview,
@@ -336,6 +333,7 @@ export default {
   },
   props: {},
   data: () => ({
+    INTEGRATION_TYPES,
     isPreviewRender: false,
     isLoading: true,
     panel: [],

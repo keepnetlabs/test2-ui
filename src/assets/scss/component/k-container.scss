@@ -1,5 +1,11 @@
 .k-container {
-  padding: 0 16px 16px 16px;
+  padding: 16px;
+
+  &__no-tab{
+    .k-card{
+      padding-top:24px !important;
+    }
+  }
 
   &__tab-container {
     padding-left: 0 !important;

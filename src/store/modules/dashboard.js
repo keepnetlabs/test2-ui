@@ -85,6 +85,9 @@ const dashboard = {
           AuthenticationService.removeToken()
           router.push('/login')
         })
+        .finally(() => {
+          commit('common/RESET_SNACKBARS', undefined, { root: true })
+        })
     },
     getMenus({ commit }) {
       getMenus().then((response) => {

@@ -12,28 +12,35 @@
     <template #app-dialog-body>
       <DataTable
         id="target-users-group-users-modal-data-table"
+        options
+        selectable
+        is-server-side
+        filterable
         :count-row="5"
-        :refName="'refGroupsTable'"
         :loading="loading"
         :columns="tableOptions.columns"
-        filterable
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
         :is-settings-popup="false"
+        :show-filter-options="false"
         :empty="tableOptions.iEmpty"
-        options
         :downloadButton="tableOptions.downloadButton"
-        selectable
+        :axios-payload.sync="axiosPayload"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @handleSelectionChange="handleSelectionChange"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
         @refreshAction="callForTargetGroups"
+        @searchChangedEvent="handleSearchChange"
       />
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
-        @handleClose="closeOverlay"
         :confirmButtonDisabled="getConfirmButtonDisabled"
+        @handleClose="closeOverlay"
         @handleConfirm="handleConfirm"
       />
     </template>
@@ -51,6 +58,9 @@ import {
   PROPERTY_STORE
 } from '@/model/constants/commonConstants'
 import { createTargetGroupUsers, searchTargetGroups } from '@/api/targetUsers'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'AddToAnExistingGroupModal',
   components: {
@@ -69,22 +79,8 @@ export default {
   },
   data() {
     return {
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 5000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
+      serverSideProps: new ServerSideProps(),
       confirmButtonDisabled: true,
       loading: false,
       tableData: [],
@@ -125,7 +121,6 @@ export default {
           }
         ],
         downloadButton: { show: false },
-        isColumnFilterActive: false,
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
           btn: 'ADD A GROUP',
@@ -146,6 +141,7 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
     this.callForTargetGroups()
   },
   methods: {
@@ -153,56 +149,63 @@ export default {
       this.loading = true
       searchTargetGroups(this.axiosPayload)
         .then((response) => {
-          let data = response.data.data
-          this.tableData = data.results.length ? data.results : []
+          const {
+            totalNumberOfRecords,
+            totalNumberOfPages,
+            pageNumber,
+            results
+          } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results?.length ? results : []
         })
         .finally(() => (this.loading = false))
     },
     closeOverlay() {
       this.$emit('closeOverlay')
     },
+    resetPageNumber() {
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.callForTargetGroups()
+    },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      )
+      this.resetPageNumber()
       this.callForTargetGroups()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      )
+      this.resetPageNumber()
       this.callForTargetGroups()
-
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForTargetGroups()
+    },
+    serverSideSizeChanged(pageSize = 5) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForTargetGroups()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.orderBy = prop
+      this.callForTargetGroups()
     },
     handleConfirm() {
       const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)

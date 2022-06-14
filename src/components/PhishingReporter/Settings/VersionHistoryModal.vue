@@ -4,12 +4,12 @@
     icon="mdi-timer-sand-full"
     title="Download History"
     subtitle="Download past versions of the add-in"
-    @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
     :custom-size="'800'"
     maxHeightSize="665"
     title-id="text--phishing-reporters-download-history-title"
     subtitle-id="text--phishing-reporters-download-history-subtitle"
     class-name="matching-modal version-history"
+    @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
   >
     <template v-slot:app-dialog-body>
       <v-card light>
@@ -19,6 +19,7 @@
           :refName="'versionHistory'"
           :table="tableData"
           :columns="table.columns"
+          :show-filter-options="false"
           :showHeader="true"
           :selectable="false"
           :pageSizes="[5, 10, 25]"

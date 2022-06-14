@@ -1,5 +1,10 @@
 <template>
-  <CampaignManagerSummaryCard icon="mdi-send" :title="labels.EmailDelivery" :items="items">
+  <CampaignManagerSummaryCard
+    :isLoading="isLoading"
+    icon="mdi-send"
+    :title="labels.EmailDelivery"
+    :items="items"
+  >
     <template #DeliveryStatus="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
@@ -38,6 +43,10 @@ export default {
     },
     helperData: {
       type: Object
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

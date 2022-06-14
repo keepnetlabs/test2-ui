@@ -1,81 +1,85 @@
 <template>
-  <div class="company-settings" id="company-settings">
-    <v-layout wrap class="company-settings__container">
-      <v-card class="company-settings__container-card">
-        <el-tabs v-model="tab" ref="refTabContainer">
-          <el-tab-pane
-            v-if="getSMTPSettingsSearchPermissions"
-            label="SMTP Settings"
-            name="smtp-settings"
-            id="smtp-settings-content"
-          >
-            <s-m-t-p-settings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
-          /></el-tab-pane>
-          <el-tab-pane
-            v-if="getNotificationTemplatesSearchPermissions"
-            label="Notification Templates"
-            name="notification-template"
-            id="notification-template-content"
-          >
-            <notification-templates
-              v-if="tab === 'notification-template'"
-              ref="refNotificationTemplates"
-          /></el-tab-pane>
-          <el-tab-pane
-            v-if="getRestApiSearchPermissions"
-            label="Rest API"
-            name="custom-api"
-            id="custom-api-content"
-          >
-            <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
-          /></el-tab-pane>
-          <el-tab-pane
-            vif="getWhiteLabelingGetPermissions"
-            label="White Labeling"
-            name="white-labeling"
-            id="white-labeling-content"
-          >
-            <white-labeling v-if="tab === 'white-labeling'" ref="refWhitelabeling"
-          /></el-tab-pane>
-          <el-tab-pane
-            v-if="getProxySettingsSearchPermissions"
-            label="Proxy Settings"
-            name="proxy-settings"
-            id="proxy-settings-content"
-          >
-            <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
-          </el-tab-pane>
-          <el-tab-pane
-            v-if="getSAMLIntegrationSearchPermissions"
-            label="SAML Settings"
-            name="saml-settings"
-            id="saml-settings-content"
-          >
-            <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
-          /></el-tab-pane>
-          <el-tab-pane
-            v-if="getSCIMSettingsSearchPermissions"
-            label="SCIM Settings"
-            name="scim-settings"
-            id="scim-settings-content"
-          >
-            <s-c-i-m-settings v-if="tab === 'scim-settings'" ref="refScimSettings" />
-          </el-tab-pane>
-          <el-tab-pane
-            v-if="getSIEMIntegrationSearchPermissions"
-            name="siem-integrations"
-            :label="labels.SIEMIntegrations"
-            :id="`${labels.SIEMIntegrations.toLowerCase()}-content`"
-          >
-            <s-i-e-m-integrations
-              v-if="tab === 'siem-integrations'"
-              ref="refSIEMIntegrations"
-            ></s-i-e-m-integrations>
-          </el-tab-pane>
-        </el-tabs>
-      </v-card>
-    </v-layout>
-  </div>
+  <KContainer id="company-settings">
+    <el-tabs v-model="tab" ref="refTabContainer">
+      <el-tab-pane
+        v-if="getSMTPSettingsSearchPermissions"
+        label="SMTP Settings"
+        name="smtp-settings"
+        id="smtp-settings-content"
+      >
+        <s-m-t-p-settings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getNotificationTemplatesSearchPermissions"
+        label="Notification Templates"
+        name="notification-template"
+        id="notification-template-content"
+      >
+        <notification-templates
+          v-if="tab === 'notification-template'"
+          ref="refNotificationTemplates"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getRestApiSearchPermissions"
+        label="Rest API"
+        name="custom-api"
+        id="custom-api-content"
+      >
+        <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
+      /></el-tab-pane>
+      <el-tab-pane
+        vif="getWhiteLabelingGetPermissions"
+        label="White Labeling"
+        name="white-labeling"
+        id="white-labeling-content"
+      >
+        <white-labeling v-if="tab === 'white-labeling'" ref="refWhitelabeling"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getProxySettingsSearchPermissions"
+        label="Proxy Settings"
+        name="proxy-settings"
+        id="proxy-settings-content"
+      >
+        <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getSAMLIntegrationSearchPermissions"
+        label="SAML Settings"
+        name="saml-settings"
+        id="saml-settings-content"
+      >
+        <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getSCIMSettingsSearchPermissions"
+        label="SCIM Settings"
+        name="scim-settings"
+        id="scim-settings-content"
+      >
+        <s-c-i-m-settings v-if="tab === 'scim-settings'" ref="refScimSettings" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getSIEMIntegrationSearchPermissions"
+        name="siem-integrations"
+        :label="labels.SIEMIntegrations"
+        :id="`${labels.SIEMIntegrations.toLowerCase()}-content`"
+      >
+        <s-i-e-m-integrations
+          v-if="tab === 'siem-integrations'"
+          ref="refSIEMIntegrations"
+        ></s-i-e-m-integrations>
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getLDAPDetailPermission"
+        name="ldap-settings"
+        :label="labels.LDAP"
+        :id="`${labels.LDAP.toLowerCase()}-content`"
+      >
+        <LDAP v-if="tab === 'ldap-settings'" />
+      </el-tab-pane>
+    </el-tabs>
+  </KContainer>
 </template>
 
 <script>
@@ -89,9 +93,13 @@ import SCIMSettings from '@/components/Company Settings/SCIM/SCIMSettings'
 import SIEMIntegrations from '@/components/Integrations/SIEMIntegrations/SIEMIntegrations'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
+import LDAP from '@/components/Company Settings/LDAP/LDAP'
 export default {
   name: 'CompanySettings',
   components: {
+    LDAP,
+    KContainer,
     SIEMIntegrations,
     SCIMSettings,
     SamlSettings,
@@ -120,7 +128,8 @@ export default {
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
-      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions'
+      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   methods: {
@@ -145,7 +154,14 @@ export default {
       { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
       { permission: this.getSAMLIntegrationSearchPermissions, name: 'saml-settings' },
       { permission: this.getSCIMSettingsSearchPermissions, name: 'scim-settings' },
-      { permission: this.getSIEMIntegrationSearchPermissions, name: 'siem-integrations' }
+      {
+        permission: this.getSIEMIntegrationSearchPermissions,
+        name: 'siem-integrations'
+      },
+      {
+        permission: this.getLDAPDetailPermission,
+        name: 'ldap-settings'
+      }
     ].find((item) => item.permission)?.name
     this.changeTabByRoute()
   },
@@ -192,8 +208,6 @@ export default {
 
 <style lang="scss">
 .company-settings {
-  min-height: 80vh !important;
-  padding-top: 10px;
   &__header {
     .v-list-item {
       padding: 0;

@@ -1,10 +1,10 @@
 <template>
   <div class="notification-templates">
-    <company-settings-header
+    <CompanySettingsHeader
       title="Notification Templates"
       sub-title="Manage notification email templates"
     />
-    <new-notification-template
+    <NewNotificationTemplate
       v-if="newNotificationTemplateStatus"
       ref="newNotificationTemplate"
       :edit-items-disabled="editItemsDisabled"
@@ -14,7 +14,7 @@
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
-    <delete-notification-template-modal
+    <DeleteNotificationTemplateModal
       v-if="showDeleteNotificationTemplateModal"
       :selectedItem="selectedItem"
       :isDeleteButtonDisabled="isDeleteButtonDisabled"
@@ -22,8 +22,14 @@
       @handleDelete="handleDeleteNotificationTemplate"
       @closeDialog="toggleDeleteNotificationTemplate"
     />
+    <DefaultTemplateDeleteWarningModal
+      v-if="showDeleteDefaultNotificationTemplateWarningModal"
+      :status="showDeleteDefaultNotificationTemplateWarningModal"
+      :templateName="selectedItem.name"
+      @closeOverlay="toggleDeleteDefaultTemplateWarningModal"
+    />
     <div class="notification-templates__container">
-      <data-table
+      <DataTable
         v-if="getNotificationTemplatesSearchPermissions"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
@@ -31,15 +37,15 @@
         options
         selectable
         is-server-side
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
         :loading="loading"
+        :axios-payload.sync="axiosPayload"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         :addButton="tableOptions.addButton"
-        :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
-        :stored-table-settings="storedTableSettings"
         :select-event="tableOptions.selectEvent"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -48,144 +54,58 @@
         @downloadEvent="exportNotificationTemplate"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
         @refreshAction="callForDatas"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        @on-table-settings-change="handleSetRenderedColumns"
       >
-        <!-- <template v-slot:datatable-custom-column="{ scope }">
+        <template v-slot:datatable-custom-column="{ scope }">
           <div>
             <span>{{ scope.row.name }}</span>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1"
-                class="pl-2"
+                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1" class="pl-2"
                   >mdi-star-circle</v-icon
                 >
               </template>
-              <span>{{
-                `Default option for  “${scope.row.typeName}"  template type`
-              }}</span>
+              <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
             </v-tooltip>
           </div>
-        </template> -->
-        <template #datatable-row-actions="{ scope }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                :id="`${tableOptions.rowActions[0].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                class="btn-hover mr-1"
-                icon
-                :disabled="!scope.row.isOwner || tableOptions.rowActions[0].disabled"
-                @click.native="handleEdit(scope.row)"
-              >
-                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[0].name }}</span>
-          </v-tooltip>
-          <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list class="v-cart-dropdown-list el-table__action-buttons scenarios__row-actions">
-              <v-list-item
-                :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
-                class="sub-menu-el"
-              >
-                <v-list-item-title @click="handleDuplicate(scope.row, true)">
-                  <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                :id="`${tableOptions.rowActions[2].id}-${scope.$index}`"
-                class="sub-menu-el"
-                :disabled="!scope.row.isOwner || tableOptions.rowActions[2].disabled"
-              >
-                <v-list-item-title @click="handleDelete(scope.row, true)">
-                  <v-icon class="pr-3">{{ tableOptions.rowActions[2].icon }}</v-icon>
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <!-- <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                class="btn-hover"
-                icon
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
-                @click.native="handleDelete(scope.row)"
-              >
-                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ tableOptions.rowActions[1].name }}</span>
-          </v-tooltip> -->
-          <!-- <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index"
-                  >mdi-dots-vertical</v-icon
-                >
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleDelete(scope.row)"
-              >
-                <v-list-item-title class="sub-menu-el__title">
-                  <v-icon
-                    class="
-                      notification-templates__row-actions__overflow-menu__icon
-                    "
-                    >{{ tableOptions.rowActions[1].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
-                :id="`${tableOptions.rowActions[2].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleMakeDefault(scope.row)"
-              >
-                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
-                  <v-icon
-                    class="
-                      notification-templates__row-actions__overflow-menu__icon
-                    "
-                    >{{ tableOptions.rowActions[2].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu> -->
         </template>
-      </data-table>
+        <template #datatable-row-actions="{ scope }">
+          <DefaultButtonRowAction
+            :scope="scope"
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :disabled="tableOptions.rowActions[0].disabled"
+            @on-click="handleEdit(scope.row)"
+          />
+          <RowActionsMenu>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              :checkIsOwnerProperty="false"
+              @on-click="handleDuplicate(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :scope="scope"
+              :disabled="tableOptions.rowActions[2].disabled"
+              :icon="tableOptions.rowActions[2].icon"
+              :text="tableOptions.rowActions[2].name"
+              @on-click="handleDelete(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :scope="scope"
+              :disabled="tableOptions.rowActions[3].disabled"
+              :icon="tableOptions.rowActions[3].icon"
+              :text="tableOptions.rowActions[3].name"
+              @on-click="handleMakeDefault(scope.row)"
+            />
+          </RowActionsMenu>
+        </template>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -206,32 +126,36 @@ import {
   getCategories,
   searchEmailTemplate,
   exportEmailTemplate,
-  getTemplateTypes
+  getTemplateTypes,
+  makeDefaultTemplate
 } from '@/api/company'
 import labels from '@/model/constants/labels'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/DefaultTemplateDeleteWarningModal'
 export default {
   name: 'NotificationTemplates',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
+    DefaultButtonRowAction,
     NewNotificationTemplate,
     DeleteNotificationTemplateModal,
     DataTable,
-    CompanySettingsHeader
+    CompanySettingsHeader,
+    DefaultTemplateDeleteWarningModal
   },
   data() {
     return {
+      showDeleteDefaultNotificationTemplateWarningModal: false,
       isDuplicate: false,
       categories: [],
       loading: false,
-      storedTableSettings: null,
       tableData: [],
       editItemsDisabled: false,
       tableOptions: {
@@ -365,7 +289,8 @@ export default {
           id: 'btn-add--notification-template',
           disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
         },
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE,
         empty: {
           message: labels.EmptyNotificationTemplate,
           subMes: labels.EmptyNotificationTemplateSub,
@@ -395,14 +320,14 @@ export default {
             id: 'btn-delete--notification-template-row-actions',
             action: 'handleDelete',
             disabled: !this.$store.getters['permissions/getNotificationTemplatesDeletePermissions']
+          },
+          {
+            name: 'Make Default',
+            icon: 'mdi-star-circle',
+            id: 'btn-make-default--notification-template-row-actions',
+            action: 'handleMakeDefault',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           }
-          // {
-          //   name: "Make Default",
-          //   icon: "mdi-star-circle",
-          //   id: "btn-make-default--notification-template-row-actions",
-          //   action: "makeDefaultAction",
-          //   disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
-          // },
         ],
         selectEvent: {
           clipboard: true,
@@ -411,7 +336,6 @@ export default {
           download: false
         }
       },
-      isRestoredOrClearedFilters: false,
       isDeleteButtonDisabled: false,
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
@@ -432,15 +356,11 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE, JSON.stringify(tableSettings))
-    },
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForDatas()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -463,7 +383,6 @@ export default {
       this.toggleNewNotificationTemplate()
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -475,60 +394,18 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.checkIsColumnFilterActive()
       this.callForDatas()
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE,
-        JSON.stringify({
-          filter: this.axiosPayload.filter,
-          filterValues
-        })
-      )
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.callForDatas()
-      this.$nextTick(() => {
-        if (this.$refs.refNotificationList) {
-          this.$refs.refNotificationList.filterValues = {}
-          this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        }
-      })
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    exportNotificationTemplate({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
-        this.$refs.refNotificationList,
-        'CreateTime'
-      )
-      if (this.$refs.refNotificationList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (
-        this.$refs.refNotificationList.sortProps &&
-        this.$refs.refNotificationList.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-      exportTypes.map((exportType) => {
+    exportNotificationTemplate(downloadTypes) {
+      downloadTypes.exportTypes.map((exportType) => {
         const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
+          filter: this.axiosPayload.filter
         }
         exportEmailTemplate(payload).then((response) => {
           const { data } = response
@@ -546,6 +423,10 @@ export default {
     },
     handleDelete(row) {
       this.selectedItem = row
+      if (row.isDefault) {
+        this.showDeleteDefaultNotificationTemplateWarningModal = true
+        return
+      }
       this.toggleDeleteNotificationTemplate()
     },
     handleDuplicate(row) {
@@ -553,22 +434,32 @@ export default {
       this.isDuplicate = true
       this.toggleNewNotificationTemplate()
     },
-    handleMakeDefault(selectedRow) {},
+    handleMakeDefault(row) {
+      makeDefaultTemplate(row.resourceId).then(() => {
+        this.callForDatas()
+      })
+    },
     handleDeleteNotificationTemplate(resourceId) {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
         .then(() => {
           this.$refs.refNotificationList.unSelectRow(this.selectedItem)
-          this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })
-        .finally(() => (this.isDeleteButtonDisabled = false))
+        .finally(() => {
+          this.toggleDeleteNotificationTemplate()
+          this.isDeleteButtonDisabled = false
+        })
     },
     toggleDeleteNotificationTemplate() {
       if (this.showDeleteNotificationTemplateModal) {
         this.selectedItem = null
       }
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
+    },
+    toggleDeleteDefaultTemplateWarningModal() {
+      this.showDeleteDefaultNotificationTemplateWarningModal = !this
+        .showDeleteDefaultNotificationTemplateWarningModal
     },
     checkIfCanCloseNotificationTemplateModal() {
       if (this.$refs.newNotificationTemplate) this.$refs.newNotificationTemplate.closeOverlay()
@@ -638,17 +529,10 @@ export default {
             ...this.tableOptions.columns[2],
             filterableItems: this.templateTypeItems
           })
-          this.$nextTick(() => {
-            if (this.$refs.refNotificationList) {
-              this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-                .toString()
-                .substring(0, 5)}`
-            }
-          })
+          this?.$refs?.refNotificationList?.reRenderFilters()
         })
         .finally(() => {
           this.loading = false
-          this.isRestoredOrClearedFilters = false
         })
     },
     handleEdit(row) {
@@ -658,34 +542,10 @@ export default {
       this.selectedItem = row
       this.isDuplicate = false
       this.toggleNewNotificationTemplate()
-    },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE)
-      )
-      if (savedFilter) {
-        this.axiosPayload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          if (this.$refs.refNotificationList) {
-            this.$refs.refNotificationList.filterValues = savedFilter.filterValues
-            this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
-          }
-        })
-      }
-      this.callForDatas()
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE)
-    )
-    this.getDefaultFilterAndSearch()
+    this.callForDatas()
   }
 }
 </script>

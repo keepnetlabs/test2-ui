@@ -30,35 +30,30 @@
         options
         selectable
         :loading="loading"
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
-        :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :select-event="tableOptions.selectEvent"
-        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :axios-payload.sync="requestBody"
+        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @deleteAction="handleDelete"
         @downloadEvent="exportSystemUsers"
         @editAction="handleEdit"
-        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @set-default-search="handleSetDefaultSearch"
-        @restore-default-search="handleRestoreDefaultSearch"
-        @clear-filters="handleClearFilters"
         @refreshAction="callForListSystemUsers"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        @on-table-settings-change="handleSetRenderedColumns"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
       />
     </div>
@@ -85,11 +80,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  isColumnFilterActive
-} from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 export default {
   name: 'People',
@@ -102,7 +93,6 @@ export default {
     return {
       deleteButtonDisabled: false,
       loading: true,
-      storedTableSettings: null,
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       multipleSystemUserPayload: {},
@@ -112,7 +102,8 @@ export default {
           show: true,
           disabled: !this.$store.getters['permissions/getSystemUsersExportPermission']
         },
-        isColumnFilterActive: false,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE,
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,
@@ -226,7 +217,6 @@ export default {
           delete: true,
           download: false
         },
-        pageSizes: [5, 10, 25],
         rowActions: [
           {
             name: 'Edit',
@@ -277,9 +267,6 @@ export default {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings))
-    },
     handleSearchChange(searchFilter = {}) {
       this.requestBody.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -293,7 +280,6 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -336,44 +322,6 @@ export default {
       this.resetPageNumber()
       this.callForListSystemUsers()
     },
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
-      )
-      if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues
-          this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForListSystemUsers()
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refSystemUsersList.filterValues = {}
-      this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
-      this.callForListSystemUsers()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE,
-        JSON.stringify({
-          filter: this.requestBody.filter,
-          filterValues
-        })
-      )
-    },
     exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.requestBody.filter)),
@@ -415,7 +363,6 @@ export default {
         })
       })
     },
-    handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
       if (!this.showCreateOrEditSystemUserModal) {
@@ -452,7 +399,6 @@ export default {
       this.callForMultipleDelete()
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.requestBody
@@ -464,7 +410,6 @@ export default {
         fieldName,
         this.requestBody
       )
-      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
     },
     handleEdit(row) {
@@ -501,16 +446,10 @@ export default {
       if (this.$refs.systemUserModal) {
         this.$refs.systemUserModal.closeOverlay()
       }
-    },
-    checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE)
-    )
-    this.getDefaultFilterAndSearch()
+    this.callForListSystemUsers()
   }
 }
 </script>

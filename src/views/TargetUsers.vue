@@ -1,39 +1,33 @@
 <template>
-  <div class="k-container" id="target-users">
-    <v-layout wrap style="min-height: 80vh;">
-      <v-col class="k-container__tab-container" cols="12">
-        <v-card class="k-card">
-          <target-users-check-license-dialog
-            v-if="showLicenseExceededDialog"
-            :status="showLicenseExceededDialog"
-            :dialogBody="getDialogBody"
-            @close-overlay="toggleShowLicenseExceededDialog"
-          />
-          <el-tabs v-model="tab">
-            <el-tab-pane
-              label="People"
-              name="target-users--people"
-              id="target-users--people-content"
-              v-if="getTargetUsersSearchPermissions"
-              ><people
-                ref="refPeople"
-                v-if="tab === 'target-users--people'"
-                :company-license="companyLicense"
-                @call-for-company-licenses="callForLicenseCheck"
-            /></el-tab-pane>
-            <el-tab-pane
-              label="Groups"
-              name="target-users--group"
-              id="target-users--group-content"
-              v-if="getTargetGroupsSearchPermissions"
-            >
-              <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
-            /></el-tab-pane>
-          </el-tabs>
-        </v-card>
-      </v-col>
-    </v-layout>
-  </div>
+  <KContainer id="target-users">
+    <target-users-check-license-dialog
+      v-if="showLicenseExceededDialog"
+      :status="showLicenseExceededDialog"
+      :dialogBody="getDialogBody"
+      @close-overlay="toggleShowLicenseExceededDialog"
+    />
+    <el-tabs v-model="tab">
+      <el-tab-pane
+        label="People"
+        name="target-users--people"
+        id="target-users--people-content"
+        v-if="getTargetUsersSearchPermissions"
+        ><people
+          ref="refPeople"
+          v-if="tab === 'target-users--people'"
+          :company-license="companyLicense"
+          @call-for-company-licenses="callForLicenseCheck"
+      /></el-tab-pane>
+      <el-tab-pane
+        label="Groups"
+        name="target-users--group"
+        id="target-users--group-content"
+        v-if="getTargetGroupsSearchPermissions"
+      >
+        <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
+      /></el-tab-pane>
+    </el-tabs>
+  </KContainer>
 </template>
 
 <script>
@@ -42,8 +36,10 @@ import Groups from '../components/TargetUsers/Groups'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
 export default {
   components: {
+    KContainer,
     TargetUsersCheckLicenseDialog,
     People,
     Groups

@@ -15,7 +15,6 @@
         :id="CONSTANTS.id"
         ref="refTable"
         is-server-side
-        :refName="'campaignManagerTargetGroupUsersTable'"
         :showPagination="false"
         :loading="getLoadingStatus"
         :table="tableData"

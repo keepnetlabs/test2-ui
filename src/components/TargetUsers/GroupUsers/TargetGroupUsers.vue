@@ -1,60 +1,58 @@
 <template>
-  <div class="target-users-group-users">
-    <div class="target-users-group-users__container">
-      <DefaultErrorDialog
-        v-if="!!bulkDeleteErrorMessage"
-        :status="!!bulkDeleteErrorMessage"
-        :error-message="bulkDeleteErrorMessage"
-        @on-close="bulkDeleteErrorMessage = ''"
-      />
-      <TargetUserEditUserModal
-        v-if="showEditUserModal"
-        :editData="selectedRow"
-        :custom-fields="customFields"
-        :status="showEditUserModal"
-        @closeAddUserModal="toggleEditUserModal"
-        @closeAddUserModalWithUpdate="closeEditUserModalWithUpdate"
-      />
-      <TargetGroupUsersAddToAnExistingGroupModal
-        v-if="showAddToAnExistingGroupModal"
-        :selected-rows="getSelectedRow"
-        :status="showAddToAnExistingGroupModal"
-        @closeOverlay="toggleShowAddToAnExistingGroupModal"
-        @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
-      />
-      <TargetGroupUsersAddUsersModal
-        v-if="showAddUsersModal"
-        :status="showAddUsersModal"
-        :group-name="getGroupName"
-        :resource-id="resourceId"
-        @closeOverlay="toggleAddUserModal"
-        @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
-      />
-      <TargetGroupsUsersRemoveFromGroups
-        v-if="showRemoveUserModal"
-        :status="showRemoveUserModal"
-        :selected-rows="getSelectedRow"
-        :group-name="getGroupName"
-        :resource-id="resourceId"
-        :bulk-delete-error-message.sync="bulkDeleteErrorMessage"
-        @closeDialog="toggleShowRemoveUserModal"
-        @handleRemoveUsers="handleRemoveUsers"
-      />
-      <TargetGroupUsersTable
-        ref="refTable"
-        has-selection-slot
-        class="pb-0"
-        :resource-id="resourceId"
-        @handleAddAction="toggleAddUserModal"
-        @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
-        @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
-        @handleEditTargetUser="handleEditTargetUser"
-        @handleRemoveToGroup="handleRemoveToGroup"
-        @handleRemoveUsersSelectionClick="handleRemoveUsersSelectionClick"
-        @handleRouteBackToTargetUsers="handleRouteBackToTargetUsers"
-      />
-    </div>
-  </div>
+  <KContainer tabless>
+    <DefaultErrorDialog
+      v-if="!!bulkDeleteErrorMessage"
+      :status="!!bulkDeleteErrorMessage"
+      :error-message="bulkDeleteErrorMessage"
+      @on-close="bulkDeleteErrorMessage = ''"
+    />
+    <TargetUserEditUserModal
+      v-if="showEditUserModal"
+      :editData="selectedRow"
+      :custom-fields="customFields"
+      :status="showEditUserModal"
+      @closeAddUserModal="toggleEditUserModal"
+      @closeAddUserModalWithUpdate="closeEditUserModalWithUpdate"
+    />
+    <TargetGroupUsersAddToAnExistingGroupModal
+      v-if="showAddToAnExistingGroupModal"
+      :selected-rows="getSelectedRow"
+      :status="showAddToAnExistingGroupModal"
+      @closeOverlay="toggleShowAddToAnExistingGroupModal"
+      @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
+    />
+    <TargetGroupUsersAddUsersModal
+      v-if="showAddUsersModal"
+      :status="showAddUsersModal"
+      :group-name="getGroupName"
+      :resource-id="resourceId"
+      @closeOverlay="toggleAddUserModal"
+      @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
+    />
+    <TargetGroupsUsersRemoveFromGroups
+      v-if="showRemoveUserModal"
+      :status="showRemoveUserModal"
+      :selected-rows="getSelectedRow"
+      :group-name="getGroupName"
+      :resource-id="resourceId"
+      :bulk-delete-error-message.sync="bulkDeleteErrorMessage"
+      @closeDialog="toggleShowRemoveUserModal"
+      @handleRemoveUsers="handleRemoveUsers"
+    />
+    <TargetGroupUsersTable
+      ref="refTable"
+      has-selection-slot
+      class="pb-0"
+      :resource-id="resourceId"
+      @handleAddAction="toggleAddUserModal"
+      @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
+      @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
+      @handleEditTargetUser="handleEditTargetUser"
+      @handleRemoveToGroup="handleRemoveToGroup"
+      @handleRemoveUsersSelectionClick="handleRemoveUsersSelectionClick"
+      @handleRouteBackToTargetUsers="handleRouteBackToTargetUsers"
+    />
+  </KContainer>
 </template>
 
 <script>
@@ -65,9 +63,11 @@ import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import TargetGroupsUsersRemoveFromGroups from '@/components/TargetUsers/GroupUsers/TargetGroupsUsersRemoveFromGroups'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import KContainer from '@/components/KContainer/KContainer'
 export default {
   name: 'TargetGroupUsers',
   components: {
+    KContainer,
     DefaultErrorDialog,
     TargetGroupsUsersRemoveFromGroups,
     TargetGroupUsersAddUsersModal,
@@ -207,15 +207,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.target-users-group-users {
-  background-color: white;
-  margin: 16px;
-  border-radius: 20px;
-  box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-  &__container {
-    padding: 24px;
-  }
-}
-</style>

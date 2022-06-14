@@ -74,18 +74,20 @@
               options
               :loading="isLoading"
               :table="url['analysisList']"
-              :refName="'urlAnalysisTable'"
               :columns="columns"
               :empty="iEmpty"
               :selectEvent="selectEvent"
-              :sizeable="true"
               :download-button="downloadButton"
               @refreshAction="$emit('get-post-details')"
             >
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
-                    v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
+                    v-if="
+                      scope.row.analysisEnginePermalink &&
+                      scope.row.result !== 'Excluded' &&
+                      scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+                    "
                     :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row['analysisEnginePermalink']"
                     target="_blank"
@@ -120,9 +122,15 @@
 <script>
 import Badge from '@/components/Badge'
 import DataTable from '@/components/DataTable'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE,
+  INTEGRATION_TYPES
+} from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getBtnStatusColor, copyToClipboard } from '@/utils/functions'
+
 export default {
   name: 'EmailDetailsUrl',
   components: {
@@ -139,6 +147,7 @@ export default {
   },
   data() {
     return {
+      INTEGRATION_TYPES,
       panel: [],
       showSecondCollapse: [],
       iEmpty: {

@@ -1,38 +1,32 @@
 <template>
-  <div class="k-container" id="phishingSimulator">
-    <v-layout id="ts-layout" wrap style="min-height: 80vh;">
-      <v-col class="k-container__tab-container" cols="12">
-        <v-card id="phishing-simulator-card" class="k-card">
-          <el-tabs v-model="tab">
-            <el-tab-pane
-              v-if="getPhishingScenariosSearchPermissions"
-              label="Scenarios"
-              name="scenarios"
-              id="emailTemplates-scenarios"
-            >
-              <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
-            </el-tab-pane>
-            <el-tab-pane
-              v-if="getEmailTemplatesSearchPermissions"
-              label="Email Templates"
-              name="emailTemplates"
-              id="emailTemplates-content"
-            >
-              <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
-            </el-tab-pane>
-            <el-tab-pane
-              v-if="getLandingPageTemplatesSearchPermissions"
-              label="Landing Page Templates"
-              name="landingPage"
-              id="landing-page-content"
-            >
-              <LandingPageList v-if="tab === 'landingPage'" ref="refLandingPageList" />
-            </el-tab-pane>
-          </el-tabs>
-        </v-card>
-      </v-col>
-    </v-layout>
-  </div>
+  <KContainer id="phishing-simulator">
+    <el-tabs v-model="tab">
+      <el-tab-pane
+        v-if="getPhishingScenariosSearchPermissions"
+        label="Scenarios"
+        name="scenarios"
+        id="emailTemplates-scenarios"
+      >
+        <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getEmailTemplatesSearchPermissions"
+        label="Email Templates"
+        name="emailTemplates"
+        id="emailTemplates-content"
+      >
+        <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="getLandingPageTemplatesSearchPermissions"
+        label="Landing Page Templates"
+        name="landingPage"
+        id="landing-page-content"
+      >
+        <LandingPageList v-if="tab === 'landingPage'" ref="refLandingPageList" />
+      </el-tab-pane>
+    </el-tabs>
+  </KContainer>
 </template>
 
 <script>
@@ -40,10 +34,12 @@ import EmailTemplates from '@/components/PhishingScenarios/EmailTemplates'
 import LandingPageList from '@/components/LandingPage/LandingPageList'
 import Scenarios from '@/components/PhishingScenarios/Scenarios'
 import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
   name: 'PhishingSimulator',
   components: {
+    KContainer,
     EmailTemplates,
     LandingPageList,
     Scenarios

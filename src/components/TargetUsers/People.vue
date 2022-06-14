@@ -49,6 +49,15 @@
       :status="isShowingTargetUserViewTargetGroups"
       @on-close="toggleShowingTargetUserViewTargetGroups"
     />
+    <TargetUserLDAPImportModal
+      v-if="isShowImportLDAPModal"
+      :status="isShowImportLDAPModal"
+      :resource-id="ldapResourceId"
+      :field-mappings="ldapFieldMappings"
+      :custom-fields="customFields"
+      @on-close="toggleImportLDAPModal"
+      @on-close-with-update="callForGetTargetUserCustomFieldsByCompanyId"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -58,19 +67,19 @@
       options
       selectable
       :loading="loading"
-      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :refName="'peopleTable'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
-      :stored-table-settings="storedTableSettings"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="payload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="handleDelete"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="handleClickEmptyBtnClicked"
@@ -83,10 +92,6 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
-      @clear-filters="handleClearFilters"
-      @on-table-settings-change="handleSetRenderedColumns"
       @viewUserGroups="handleViewUserGroups"
     >
       <template v-slot:addUsers>
@@ -115,6 +120,7 @@
               v-for="item in addUsersItems"
               :key="item.id"
               :id="item.id"
+              :disabled="item.disabled"
               @click="handleAddUsers(item.text)"
             >
               <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
@@ -168,6 +174,16 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
+                    <v-list-item
+                      :disabled="isLDAPDisabled || !getLDAPCreateConfigPermission"
+                      @click="toggleImportLDAPModal"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-import-from-ldap"
+                          >Import from LDAP</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-list-item-group>
                 </v-list>
               </div>
@@ -176,8 +192,16 @@
         </div>
       </template>
       <template #datatable-row-actions="{scope}">
-        <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
-        <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+        <TargetUserRowActionsEditButton :scope="scope" @on-click="handleEditTargetUsers" />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :text="tableOptions.rowActions[2].name"
+            :icon="tableOptions.rowActions[2].icon"
+            @on-click="handleViewUserGroups(scope.row)"
+          />
+          <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+        </RowActionsMenu>
       </template>
     </datatable>
   </div>
@@ -211,17 +235,27 @@ import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUser
 import {
   columnFilterChanged,
   columnFilterCleared,
-  createCustomFieldColumns,
-  isColumnFilterActive
+  createCustomFieldColumns
 } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
-import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
+import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
+import LDAPService from '@/api/ldap'
+import {
+  defaultFieldMappings,
+  getDefaultFieldMappingsWithCurrent
+} from '@/components/Company Settings/LDAP/utils'
 
 export default {
   name: 'People',
   components: {
+    TargetUserLDAPImportModal,
+    RowActionsMenu,
+    DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetUserRowActionsDeleteButton,
     TargetUserRowActionsEditButton,
@@ -241,10 +275,11 @@ export default {
   data() {
     return {
       labels,
+      ldapResourceId: '',
       isInitial: true,
+      isShowImportLDAPModal: false,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
-      storedTableSettings: null,
       defaultRequestBody: getDefaultAxiosPayload(),
       isWantToImportFile: false,
       isShowingTargetUserViewTargetGroups: false,
@@ -258,12 +293,11 @@ export default {
       selectedRow: null,
       customFields: [],
       isWantToShowAddUsersModal: false,
-      showPopupModal: false,
-      isWantToShowImportUsersFromFileModal: false,
       isWantToShowCustomFieldsModal: false,
       deleteButtonDisabled: false,
+      isLDAPDisabled: false,
+      ldapFieldMappings: [],
       tableOptions: {
-        isColumnFilterActive: false,
         lastColumns: [
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -362,6 +396,8 @@ export default {
             dbName: 'Department'
           }
         ],
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE,
         downloadButton: {
           show: true
         },
@@ -408,36 +444,52 @@ export default {
       },
       addUsersItems: [
         { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
-        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
+        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' },
+        {
+          text: 'Import from LDAP',
+          id: 'btn-add-users-import-from-ldap--target-users-people',
+          disabled:
+            this.isLDAPDisabled || !this.$store.getters['permissions/getLDAPCreateConfigPermission']
+        }
       ],
       serverSideProps: new ServerSideProps()
     }
   },
   computed: {
     ...mapGetters({
-      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
+      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission'
     })
   },
+  created() {
+    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.checkIsLDAPConfigured()
+  },
   methods: {
-    getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
-      )
-      if (savedFilter) {
-        this.payload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          if (this?.$refs?.refPeopleTable) {
-            this.$refs.refPeopleTable.search =
-              savedFilter?.filter?.FilterGroups[1]?.FilterItems[0]?.Value
-            this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
-            this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
+    checkIsLDAPConfigured() {
+      LDAPService.getLDAPSettingDetailForMyCompany()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.ldapResourceId = data?.resourceId
+          this.ldapFieldMappings = getDefaultFieldMappingsWithCurrent(
+            defaultFieldMappings,
+            data?.fieldMappings
+          )
+          this.isLDAPDisabled = !data.isActive
+        })
+        .catch(() => {
+          this.isLDAPDisabled = true
+        })
+        .finally(() => {
+          if (this.isLDAPDisabled) {
+            this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
           }
         })
-      }
-      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    toggleImportLDAPModal() {
+      this.isShowImportLDAPModal = !this.isShowImportLDAPModal
     },
     handleViewUserGroups(selectedRow = {}) {
       this.selectedUserToViewGroups = selectedRow
@@ -445,30 +497,6 @@ export default {
     },
     toggleShowingTargetUserViewTargetGroups() {
       this.isShowingTargetUserViewTargetGroups = !this.isShowingTargetUserViewTargetGroups
-    },
-    handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE, JSON.stringify(tableSettings))
-    },
-    handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.tableOptions.isColumnFilterActive = false
-      this.payload = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refPeopleTable.filterValues = {}
-      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
-        JSON.stringify({
-          filter: this.payload.filter,
-          filterValues
-        })
-      )
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
@@ -490,14 +518,12 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
       this.resetPageNumber()
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     handleSearchChange(searchFilter = {}) {
@@ -505,7 +531,6 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     closeImportModal() {
@@ -522,6 +547,9 @@ export default {
           break
         case this.addUsersItems[1].text:
           this.isWantToImportFile = true
+          break
+        case this.addUsersItems[2].text:
+          this.toggleImportLDAPModal()
           break
         default:
           break
@@ -635,7 +663,6 @@ export default {
             })
         )
       ]
-      this.payload.newVersion = true
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -660,7 +687,6 @@ export default {
       } else {
         getTargetUserCustomFieldsByCompanyId()
           .then((response) => {
-            this.payload = getDefaultAxiosPayload()
             const { data } = response
             this.customFields = data.data.filter((item) => {
               return item.isActive
@@ -694,9 +720,10 @@ export default {
                 findedColumn.show = column.show
               })
             }
-            if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
+            const renderedColumns = this?.$refs.refPeopleTable?.renderedColumns
+            if (renderedColumns?.length) {
               newColumns.forEach((column) => {
-                const item = this.storedTableSettings.renderedColumns.find(
+                const item = renderedColumns.find(
                   (renderedColumnProp) => renderedColumnProp === column.property
                 )
                 column.show = !!item
@@ -737,16 +764,7 @@ export default {
           link.click()
         })
       })
-    },
-    calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
-  },
-  created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE)
-    )
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>
@@ -829,6 +847,12 @@ export default {
       font-size: 18px !important;
       color: white;
     }
+  }
+}
+.ldap-import-table {
+  .v-list-item__content,
+  .k-form-group__content {
+    width: 100%;
   }
 }
 </style>

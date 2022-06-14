@@ -925,6 +925,18 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  EXCLUDE_IP_ADDRESS_PERMISSIONS: {
+    GET: {
+      url: `phishing-simulator/excluded-ip-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    POST: {
+      url: `phishing-simulator/excluded-ip`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   SMTP_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: 'companies/smtp-settings',
@@ -1231,6 +1243,69 @@ export default {
     },
     EXPORT: {
       url: `roles/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  LDAP_PERMISSIONS: {
+    DETAIL: {
+      url: `ldap-setting/detail`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SCHEDULE_SEARCH: {
+      url: `ldap-schedule/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SCHEDULE_DELETE: {
+      url: `ldap-schedule/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    SCHEDULE_UPDATE: {
+      url: `ldap-schedule/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+
+    SETTING_SEARCH: {
+      url: `Ldap-setting/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTING_CREATE: {
+      url: `ldap-setting`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTING_UPDATE: {
+      url: `ldap-setting/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    SETTING_DELETE: {
+      url: `ldap-setting/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    MAPPING_SEARCH: {
+      url: `ldap-setting/mapping`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE_CONFIG: {
+      url: `ldap-config`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    LDAP_FIELDS: {
+      url: `ldap-fields`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    FIELD_MAPPING_USERS: {
+      url: `active-directory/users`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

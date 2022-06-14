@@ -23,7 +23,9 @@
         :edit-mode="editMode"
         :available-widgets="availableWidgets"
         :permissions="permissions"
-        @handleEdit="changeWidgetStatus"
+        @handleEdit="handleEditMode"
+        @handleCancel="handleCancelEditMode"
+        @handleSave="handleSaveChanges"
         @addWidget="addWidget"
         @handleOpenMenu="handleOpenMenu"
       />
@@ -98,6 +100,7 @@ export default {
   data() {
     return {
       activeBreakpoint: 'lg',
+      initialLayout: [],
       layout: [],
       showPlaybookModal: false,
       selectedPlaybookId: null,
@@ -425,8 +428,12 @@ export default {
       )
     },
     layoutResized() {},
-    changeWidgetStatus() {
-      this.editMode = !this.editMode
+    handleEditMode() {
+      this.editMode = true
+    },
+    handleCancelEditMode() {
+      this.editMode = false
+      this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
     layoutMounted() {
       /*
@@ -722,7 +729,13 @@ export default {
         },
         { settings: [] }
       )
-      postWidgets(payload)
+      postWidgets(payload).finally(() => {
+        this.editMode = false
+      })
+    },
+    handleSaveChanges() {
+      this.handleDeleteShadows()
+      this.callForPostWidgets()
     }
   },
   async created() {
@@ -759,10 +772,8 @@ export default {
   mounted() {},
   watch: {
     editMode(val) {
-      if (!val) {
-        this.handleDeleteShadows()
-        this.callForPostWidgets()
-      } else {
+      if (val) {
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
         this.handleAddShadows()
       }
     }

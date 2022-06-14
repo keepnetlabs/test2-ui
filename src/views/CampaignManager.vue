@@ -1,82 +1,82 @@
 <template>
-  <div class="campaign-manager" id="campaign-manager">
-    <div class="campaign-manager__content">
-      <CampaignManagerCreateNewInstanceDialog
-        v-if="isShowLaunchDialog"
-        :status="isShowLaunchDialog"
-        :resource-id="launchResourceId"
-        @on-close="toggleShowLaunchDialog"
-        @on-confirm="handleConfirmLaunchDialog"
-      />
-      <CampaignManagerDeleteDialog
-        v-if="isShowDeleteDialog"
-        :status="isShowDeleteDialog"
-        :item="selectedRow"
-        :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
-        :is-multiple="isMultipleDelete"
-        :user-count="multipleDeletedUserCount"
-        @on-close="toggleShowDeleteDialog"
-        @on-delete="handleOnDelete"
-        @on-multiple-delete="handleOnMultipleDelete"
-      />
-      <CampaignManagerPreview
-        v-if="isShowPreviewDialog"
-        :status="isShowPreviewDialog"
-        :selectedRow="selectedRow"
-        @on-close="toggleShowPreviewDialog"
-      />
-      <CampaignManagerAddOrEditModal
-        ref="refCampaignModal"
-        v-if="isShowAddOrEditCampaignManagerModal"
-        :status="isShowAddOrEditCampaignManagerModal"
-        :is-edit="isEdit"
-        :selected-row="selectedRow"
-        :form-details="formDetails"
-        :is-duplicate="isDuplicate"
-        @on-close="toggleAddCampaignManagerModal"
-        @on-submit="handleOnSubmit"
-      />
-      <CampaignManagerParentTable
-        v-show="!isItemTableShowing"
-        ref="campaignManagerParentTable"
-        :axios-payload.sync="axiosPayloadOfParent"
-        :is-loading.sync="isParentTableLoading"
-        :status-items="getStatusItems"
-        @on-record-button-click="handleOnRecordButtonClick"
-        @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
-        @reset-axios-payload="handleResetAxiosPayloadOfParent"
-        @on-edit="handleItemOnEdit"
-        @on-preview="handleItemOnPreview"
-        @on-delete="handleItemOnDelete"
-        @on-duplicate="handleItemOnDuplicate"
-        @on-pause="handleOnPause"
-        @on-run="handleOnRun"
-        @on-stop="handleStop"
-        @on-launch="handleLaunch"
-        @on-multiple-delete="handleMultipleDelete"
-      />
-      <CampaignManagerItemTable
-        v-if="isItemTableShowing"
-        ref="campaignManagerItemTable"
-        :axios-payload.sync="axiosPayloadOfItem"
-        :is-loading="isItemTableLoading"
-        :item="selectedParentItem"
-        :status-items="getStatusItems"
-        @on-launch="handleLaunch"
-        @on-back-click="handleOnBackClick"
-        @reset-axios-payload="handleResetAxiosPayloadOfItem"
-        @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
-      />
-    </div>
-  </div>
+  <KContainer tabless class="campaign-manager">
+    <CampaignManagerCreateNewInstanceDialog
+      v-if="isShowLaunchDialog"
+      :status="isShowLaunchDialog"
+      :resource-id="launchResourceId"
+      @on-close="toggleShowLaunchDialog"
+      @on-confirm="handleConfirmLaunchDialog"
+    />
+    <CampaignManagerDeleteDialog
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :item="selectedRow"
+      :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
+      :is-multiple="isMultipleDelete"
+      :user-count="multipleDeletedUserCount"
+      @on-close="toggleShowDeleteDialog"
+      @on-delete="handleOnDelete"
+      @on-multiple-delete="handleOnMultipleDelete"
+    />
+    <CampaignManagerPreview
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selectedRow="selectedRow"
+      @on-close="toggleShowPreviewDialog"
+    />
+    <CampaignManagerAddOrEditModal
+      ref="refCampaignModal"
+      v-if="isShowAddOrEditCampaignManagerModal"
+      :status="isShowAddOrEditCampaignManagerModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      :form-details="formDetails"
+      :is-duplicate="isDuplicate"
+      @on-close="toggleAddCampaignManagerModal"
+      @on-submit="handleOnSubmit"
+    />
+    <CampaignManagerNewInstanceModal
+      ref="refCampaignNewInstance"
+      v-if="isShowNewInstanceModal"
+      :status="isShowNewInstanceModal"
+      :resourceId="instanceResourceId"
+      @on-close="closeNewInstanceModal"
+      @on-submit="handleOnSubmitNewInstance"
+    />
+    <CampaignManagerParentTable
+      v-show="!isItemTableShowing"
+      ref="campaignManagerParentTable"
+      :is-loading.sync="isParentTableLoading"
+      :status-items="getStatusItems"
+      @on-record-button-click="handleOnRecordButtonClick"
+      @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
+      @on-edit="handleItemOnEdit"
+      @on-preview="handleItemOnPreview"
+      @on-delete="handleItemOnDelete"
+      @on-duplicate="handleItemOnDuplicate"
+      @on-pause="handleOnPause"
+      @on-run="handleOnRun"
+      @on-stop="handleStop"
+      @on-launch="handleLaunch"
+      @on-multiple-delete="handleMultipleDelete"
+    />
+    <CampaignManagerItemTable
+      v-if="isItemTableShowing"
+      ref="campaignManagerItemTable"
+      :is-loading="isItemTableLoading"
+      :item="selectedParentItem"
+      :status-items="getStatusItems"
+      @on-launch="handleLaunch"
+      @on-back-click="handleOnBackClick"
+      @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
+    />
+  </KContainer>
 </template>
 
 <script>
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
-import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import {
   bulkDeleteCampaignReports,
@@ -89,23 +89,26 @@ import {
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
+import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 export default {
   name: 'CampaignManager',
   components: {
+    KContainer,
     CampaignManagerCreateNewInstanceDialog,
     CampaignManagerPreview,
     CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
-    CampaignManagerAddOrEditModal
+    CampaignManagerAddOrEditModal,
+    CampaignManagerNewInstanceModal
   },
   data() {
     return {
+      instanceResourceId: '',
       launchResourceId: '',
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
-      axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
-      axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       selectedParentItem: null,
       selectedRow: null,
       isShowPreviewDialog: false,
@@ -115,6 +118,7 @@ export default {
       isItemTableShowing: false,
       isDuplicate: false,
       isShowAddOrEditCampaignManagerModal: false,
+      isShowNewInstanceModal: false,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
@@ -131,11 +135,6 @@ export default {
       return this.formDetails.status
     }
   },
-  watch: {
-    isItemTableShowing(val) {
-      if (!val) this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'StartDate' })
-    }
-  },
   created() {
     this.callForFormDetails()
   },
@@ -144,12 +143,10 @@ export default {
       if (this.isShowLaunchDialog) this.launchResourceId = ''
       this.isShowLaunchDialog = !this.isShowLaunchDialog
     },
-    handleConfirmLaunchDialog() {
-      const objRef = this.isItemTableShowing
-        ? 'campaignManagerItemTable'
-        : 'campaignManagerParentTable'
-      this.$refs[objRef].callForData()
+    handleConfirmLaunchDialog(resourceId) {
+      this.instanceResourceId = resourceId
       this.toggleShowLaunchDialog()
+      this.showNewInstanceModal()
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
@@ -198,15 +195,20 @@ export default {
       }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     },
+    showNewInstanceModal() {
+      this.isShowNewInstanceModal = true
+    },
+    closeNewInstanceModal() {
+      this.instanceResourceId = ''
+      this.isShowNewInstanceModal = false
+    },
+    handleOnSubmitNewInstance() {
+      this.$refs.campaignManagerParentTable.callForData()
+      this.closeNewInstanceModal()
+    },
     handleOnSubmit() {
       this.$refs.campaignManagerParentTable.callForData()
       this.toggleAddCampaignManagerModal()
-    },
-    handleResetAxiosPayloadOfParent() {
-      this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
-    },
-    handleResetAxiosPayloadOfItem() {
-      this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'CreatedDate' })
     },
     handleItemOnEdit(row) {
       this.selectedRow = row
@@ -291,14 +293,6 @@ export default {
 
 <style lang="scss">
 .campaign-manager {
-  min-height: 80vh;
-  padding: 11px 16px 16px 16px;
-  &__content {
-    background: white;
-    box-shadow: 0 10px 15px -5px hsla(0, 0%, 80.4%, 0.5) !important;
-    padding: 24px 24px 0 24px !important;
-    border-radius: 20px !important;
-  }
   &__table-all-records {
     color: #2196f3;
     font-weight: 600;
@@ -321,14 +315,6 @@ export default {
     margin-left: 24px;
     align-self: center;
     margin-top: -24px;
-  }
-  &__advanced-search-container {
-  }
-  .k-stepper {
-    overflow: visible;
-    &__items {
-      overflow: visible;
-    }
   }
 }
 </style>
