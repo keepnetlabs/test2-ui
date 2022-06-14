@@ -17,14 +17,14 @@
       >
         <DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList" />
       </el-tab-pane>
-      <el-tab-pane
+      <!-- <el-tab-pane
         v-if="getExcludedIpAddressGetPermissions"
         label="Exclude IP Address"
         name="ExcludeIpAddress"
         id="exclude-ip-address-content"
       >
         <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" />
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </KContainer>
 </template>
@@ -34,15 +34,15 @@ import DnsServiceList from '@/components/Settings/DnsServices/DnsServicesList'
 import DomainsList from '@/components/Settings/Domains/DomainsList'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
-import ExcludeIPAddress from '@/components/Settings/ExcludeIPAddress/ExcludeIPAddress'
+// import ExcludeIPAddress from '@/components/Settings/ExcludeIPAddress/ExcludeIPAddress'
 
 export default {
   name: 'Settings',
   components: {
     KContainer,
     DnsServiceList,
-    DomainsList,
-    ExcludeIPAddress
+    DomainsList
+    // ExcludeIPAddress
   },
   data() {
     return {
@@ -59,13 +59,14 @@ export default {
   created() {
     if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
       this.tab = 'DNSServices'
-    } else if (
-      !this.getDomainSearchPermissions &&
-      !this.getDnsSearchPermissions &&
-      this.getExcludedIpAddressGetPermissions
-    ) {
-      this.tab = 'ExcludeIpAddress'
-    }
+    } 
+    // else if (
+    //   !this.getDomainSearchPermissions &&
+    //   !this.getDnsSearchPermissions &&
+    //   this.getExcludedIpAddressGetPermissions
+    // ) {
+    //   this.tab = 'ExcludeIpAddress'
+    // }
   },
   methods: {
     changeTabStatus(tabStatus) {
