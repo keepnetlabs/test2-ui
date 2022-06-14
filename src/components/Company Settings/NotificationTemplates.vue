@@ -513,7 +513,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = templateData.results.map((item) => ({
             ...item,
-            tags: item.tags?.filter((tag) => tag.trim().length > 0)
+            tags: item.tags ? item.tags.filter((tag) => tag.trim().length > 0) : []
           }))
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }

@@ -130,6 +130,10 @@ export default {
           this.maximumRenderedBadgeCount--
           this.unRenderedBadgeCount++
         }
+      } else if (!badges?.length) {
+        this.badges = []
+        this.unRenderedBadgeCount = 0
+        this.maximumRenderedBadgeCount = 0
       }
     }
   }
