@@ -23,7 +23,6 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { launchPhishingCampaign } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerCreateNewInstanceDialog',
   components: { AppDialogFooter, AppDialog },
@@ -52,15 +51,7 @@ export default {
       this.$emit('on-close')
     },
     handleConfirm() {
-      // this.$emit('on-confirm', this.resourceId)
-      this.isActionButtonDisabled = true
-      launchPhishingCampaign(this.resourceId)
-        .then(() => {
-          this.$emit('on-confirm')
-        })
-        .finally(() => {
-          this.isActionButtonDisabled = false
-        })
+      this.$emit('on-confirm', this.resourceId)
     }
   }
 }
