@@ -161,7 +161,7 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import AppModal from '../AppModal'
+import AppModal from '@/components/AppModal'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -170,7 +170,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
-import TestConnection from '@/components/Domains/TestConnection'
+import TestConnection from '@/components/Settings/Domains/TestConnection'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import AppModalFooter from '@/components/AppModalFooter'
 

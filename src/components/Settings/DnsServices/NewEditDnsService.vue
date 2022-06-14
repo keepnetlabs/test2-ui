@@ -90,7 +90,7 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import AppModal from '../AppModal'
+import AppModal from '@/components/AppModal'
 import TestConnection from './TestConnection'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { scrollToComponent, isDifferent } from '@/utils/functions'

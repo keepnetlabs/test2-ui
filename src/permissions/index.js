@@ -925,6 +925,18 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  EXCLUDE_IP_ADDRESS_PERMISSIONS: {
+    GET: {
+      url: `phishing-simulator/excluded-ip-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    POST: {
+      url: `phishing-simulator/excluded-ip`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   SMTP_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: 'companies/smtp-settings',
