@@ -14,7 +14,7 @@
             class="k-stepper__step"
             :complete="step > 1"
             :step="1"
-            >{{ labels.SelectGroups }}
+            >{{ labels.SyncOptions }}
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
@@ -29,8 +29,8 @@
           <v-stepper-content class="k-stepper__content" :step="1">
             <ConfigureCompanyStepHeader
               class="mb-8"
-              :title="labels.Groups"
-              :subtitle="labels.LDAPImportModalStep1Subtitle"
+              :title="labels.SyncOptions"
+              :subtitle="labels.SyncOptionsSub"
             />
             <TargetUserLDAPImportModalStep1
               ref="refStep1"

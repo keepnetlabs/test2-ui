@@ -42,6 +42,8 @@ export const labels = {
   SelectTargetGroupSub: 'Select a target group to add users to',
   SelectUsers: 'Select Users',
   Groups: 'Groups',
+  SyncOptions: 'Sync Options',
+  SyncOptionsSub: 'Sync with entire active directory or select groups',
   LastRunTime: 'Last Run',
   LDAPImportModalStep1Subtitle: 'Selection for LDAP groups and target group ',
   LDAPImportModalStep2Subtitle: 'Select users to import',
