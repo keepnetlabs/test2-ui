@@ -3,7 +3,7 @@
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <v-form v-show="!isLoading" v-model="isFormValid" ref="refForm">
       <FormGroup :title="labels.Path" has-hint>
-        <InputUrl v-model="formData.url" id="input--ldap-path" />
+        <InputUrl v-model="formData.url" id="input--ldap-path" placeholder="Enter LDAP path" />
       </FormGroup>
       <FormGroup :title="labels.UserName" has-hint>
         <v-text-field
@@ -12,7 +12,7 @@
           outlined
           dense
           persistent-hint
-          placeholder="Enter LDAP username"
+          placeholder="Your LDAP username"
           hint="*Required"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
@@ -26,7 +26,7 @@
           dense
           persistent-hint
           hint="*Required"
-          placeholder="Enter LDAP password"
+          placeholder="LDAP password"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
       </FormGroup>

@@ -62,7 +62,7 @@ export default {
       type: Number
     }
   },
-  inject: ['resourceId', 'isEdit'],
+  inject: ['resourceId', 'isEdit', 'setSelectedUsers'],
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -74,7 +74,7 @@ export default {
       {
         label: 'SYNC BY QUERY',
         infoText:
-          'Select this option to sync users by criteria. The syncronization process will repeat every 24 hours.'
+          'Select this option to sync users by criteria. The synchronization process will repeat every 24 hours.'
       }
     ]
     if (!this.isEdit)
@@ -86,7 +86,7 @@ export default {
       radioGroupItems.push({
         label: 'SYNC ALL USERS',
         infoText:
-          'Select this option to sync all users in selected LDAP groups. The syncronization process will repeat every 24 hours.'
+          'Select this option to sync all users in your active directory. The synchronization process will repeat every 24 hours.'
       })
     }
     return {
@@ -107,6 +107,7 @@ export default {
   },
   watch: {
     selectedRadioGroupIndex(val) {
+      this.setSelectedUsers([])
       this.$emit('update:step2Step', val)
     }
   },
