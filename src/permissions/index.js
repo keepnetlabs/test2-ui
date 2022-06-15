@@ -999,6 +999,11 @@ export default {
       url: `companies/email-templates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    MAKE_DEFAULT: {
+      url: `companies/email-templates/make-default/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
     }
   },
   REST_API_PERMISSIONS: {
