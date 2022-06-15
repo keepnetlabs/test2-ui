@@ -153,6 +153,14 @@ export default {
             this.availableForRequests = availableForListFromBackend
           }
         } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
