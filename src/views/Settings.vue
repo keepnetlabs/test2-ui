@@ -59,7 +59,7 @@ export default {
   created() {
     if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
       this.tab = 'DNSServices'
-    } 
+    }
     // else if (
     //   !this.getDomainSearchPermissions &&
     //   !this.getDnsSearchPermissions &&

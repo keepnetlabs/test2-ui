@@ -924,6 +924,15 @@ export default {
             } else {
               this.formValues.availableForRequests = availableForListFromBackend
             }
+          } else {
+            this.formValues.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
           }
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })

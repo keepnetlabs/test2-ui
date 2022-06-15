@@ -1008,7 +1008,7 @@ export default {
         this.handleChangeDomainRecord(this.formValues.domainRecordId)
         const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor) {
+        if (this.$refs.refMakeAvailableFor && availableForList.length) {
           const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
           )
@@ -1025,6 +1025,14 @@ export default {
             this.availableForRequests = availableForListFromBackend
           }
         } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList
           )
