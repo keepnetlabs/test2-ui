@@ -312,6 +312,15 @@ export default {
           } else {
             this.availableForRequests = availableForListFromBackend
           }
+        } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
         }
         this.availableForKey = 'updatedKey'
       })

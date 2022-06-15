@@ -217,9 +217,7 @@ export default {
   },
   computed: {
     getValidityButtonText() {
-      return !this.isShowInvalid
-        ? `ONLY SHOW INVALID (${this.getInvalidUserCount})`
-        : `SHOW ALL (${this.serverSideProps.totalNumberOfRecords})`
+      return !this.isShowInvalid ? `ONLY SHOW INVALID (${this.getInvalidUserCount})` : `SHOW ALL`
     },
     getInvalidUserCount() {
       return this.getMappingObject()?.invalidUserCount
@@ -324,9 +322,17 @@ export default {
     },
     handleValidityButton() {
       this.isShowInvalid = !this.isShowInvalid
-      this.axiosPayload.filter.FilterGroups[0]['FilterItems'].find(
+      const statusField = this.axiosPayload.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
-      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      )
+      if (statusField) statusField.Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      else if (this.hideFilter) {
+        this.axiosPayload.filter.FilterGroups[0]['FilterItems'].unshift({
+          FieldName: 'Status',
+          Operator: 'Include',
+          Value: this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+        })
+      }
       this.callForData()
     },
     handleSelectionChange(selection) {

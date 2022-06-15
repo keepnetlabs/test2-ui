@@ -521,6 +521,9 @@ const store = {
     getNotificationTemplatesExportPermissions(state) {
       return state?.notificationTemplatesPermissions?.EXPORT?.hasPermission
     },
+    getNotificationTemplatesMakeDefaultPermissions(state) {
+      return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
+    },
     getRestApiSearchPermissions(state) {
       return state?.restApiPermissions?.SEARCH?.hasPermission
     },

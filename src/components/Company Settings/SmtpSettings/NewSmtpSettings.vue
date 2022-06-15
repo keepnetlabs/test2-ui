@@ -527,6 +527,14 @@ export default {
             this.formValues.availableForRequests = availableForListFromBackend
           }
         } else {
+          this.formValues.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.formValues.cC = cc

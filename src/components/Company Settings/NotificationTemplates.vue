@@ -101,6 +101,7 @@
               :disabled="tableOptions.rowActions[3].disabled"
               :icon="tableOptions.rowActions[3].icon"
               :text="tableOptions.rowActions[3].name"
+              :checkIsOwnerProperty="false"
               @on-click="handleMakeDefault(scope.row)"
             />
           </RowActionsMenu>
@@ -326,7 +327,9 @@ export default {
             icon: 'mdi-star-circle',
             id: 'btn-make-default--notification-template-row-actions',
             action: 'handleMakeDefault',
-            disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
+            disabled: !this.$store.getters[
+              'permissions/getNotificationTemplatesMakeDefaultPermissions'
+            ]
           }
         ],
         selectEvent: {
