@@ -12,12 +12,22 @@
           >
           <v-divider class="k-stepper__divider" />
 
-          <v-stepper-step class="k-stepper__step" :complete="step > 3" :step="3"
+          <v-stepper-step
+            v-if="!isAttachmentBasedScenario"
+            :class="{
+              'k-stepper__step': true,
+              'k-stepper__step--hidden': isAttachmentBasedScenario
+            }"
+            :complete="step > 3"
+            :step="3"
             >Landing Page</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
 
-          <v-stepper-step class="k-stepper__step" :complete="step > 4" :step="4"
+          <v-stepper-step
+            class="k-stepper__step"
+            :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
+            :step="isAttachmentBasedScenario ? 3 : 4"
             >Summary</v-stepper-step
           >
         </v-stepper-header>
@@ -833,6 +843,9 @@ export default {
     }
   },
   computed: {
+    isAttachmentBasedScenario() {
+      return this.formValues.methodTypeId === '3'
+    },
     getModalTitle() {
       return !this.isEdit
         ? 'New Phishing Scenario'
