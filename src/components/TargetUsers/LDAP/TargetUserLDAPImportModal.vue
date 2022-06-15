@@ -170,7 +170,7 @@ export default {
           data: { data }
         } = response
         const { targetGroupResourceId, ldapSettingResourceId, filter, groupFilterValues } = data
-        if (!groupFilterValues.length && !filter?.filterGroups?.length) {
+        if (!filter?.filterGroups?.length) {
           this.step2Step = 1
         }
         this.editedScheduledFilter = !filter?.filterGroups?.length

@@ -20,6 +20,7 @@
     :download-button="tableOptions.downloadButton"
     :count-row="hideFilter ? 5 : 10"
     :axios-payload.sync="axiosPayload"
+    :no-padding-bottom="hideFilter"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
