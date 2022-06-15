@@ -62,7 +62,7 @@ export default {
       type: Number
     }
   },
-  inject: ['resourceId', 'isEdit'],
+  inject: ['resourceId', 'isEdit', 'setSelectedUsers'],
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -107,6 +107,7 @@ export default {
   },
   watch: {
     selectedRadioGroupIndex(val) {
+      this.setSelectedUsers([])
       this.$emit('update:step2Step', val)
     }
   },
