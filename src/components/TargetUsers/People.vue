@@ -458,12 +458,13 @@ export default {
   computed: {
     ...mapGetters({
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
-      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission'
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.checkIsLDAPConfigured()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   methods: {
     checkIsLDAPConfigured() {
