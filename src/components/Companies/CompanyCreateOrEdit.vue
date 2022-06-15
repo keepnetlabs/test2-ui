@@ -168,7 +168,7 @@
                             <div class="add-in-settings__image-container">
                               <img
                                 class="add-in-settings__image"
-                                :src="getImagePreview(getPreviewLogoUrl)"
+                                :src="getImagePreview"
                                 alt="logo-preview"
                               />
                             </div>
@@ -655,6 +655,11 @@ export default {
     }
   },
   computed: {
+    getImagePreview() {
+      return this.getPreviewLogoUrl && typeof this.getPreviewLogoUrl === 'string'
+        ? this.getPreviewLogoUrl
+        : URL.createObjectURL(this.getPreviewLogoUrl)
+    },
     noCompanyGroupText() {
       return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
     },
@@ -749,9 +754,6 @@ export default {
       } else {
         this.$emit('cancelForm')
       }
-    },
-    getImagePreview(url) {
-      return url && typeof url === 'string' ? url : URL.createObjectURL(url)
     },
     isFormDataChanged() {
       return Object.keys(this.formData).some((key) => {
@@ -937,6 +939,7 @@ export default {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     onFileChanged(file) {
+      this.formData.logoURL = ''
       this.formData.File = file
     },
     clickUnlimited() {
