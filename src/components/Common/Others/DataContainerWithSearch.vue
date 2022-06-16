@@ -94,6 +94,7 @@
 import DataContainerWithSearchItem from '@/components/Common/Others/DataContainerWithSearchItem'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+
 export default {
   name: 'DataContainerWithSearch',
   components: { DataContainerWithSearchItem },
@@ -103,6 +104,10 @@ export default {
       default() {
         return {}
       }
+    },
+    removeDuplicates: {
+      type: Boolean,
+      default: false
     },
     itemHeight: {
       type: String,
@@ -187,6 +192,13 @@ export default {
       this.value[indexOfOldValue] = newVal
       this.$set(item, 'isEdit', false)
       item.key = Math.random().toString(8)
+
+      if (this.removeDuplicates) {
+        const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))
+        this.resetOptions()
+        this.setOptions()
+        this.$emit('input', newItems)
+      }
       this.checkAllValid()
     },
     checkAllValid() {
@@ -198,6 +210,9 @@ export default {
       this.value.forEach((val) => {
         if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val, funcName)
       })
+    },
+    resetOptions() {
+      this.options = []
     },
     addItemToOptions(val, funcName = 'unshift') {
       this.options[funcName]({
