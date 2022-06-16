@@ -331,6 +331,7 @@
                       </div>
                     </div>
                     <div
+                      v-if="summaryData.emailTemplate.attachments.length > 0"
                       class="summary-content"
                       style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
                     >
@@ -344,29 +345,11 @@
                             class="attachment blue-attach"
                             :id="'single-post-attachments-' + att.name"
                           >
-                            <v-tooltip bottom opacity="1" z-index="9999">
-                              <template v-slot:activator="{ on }">
-                                <div
-                                  v-on="on"
-                                  id="text--attachment-preview-no-flaged"
-                                  class="attach-icon blue-icon"
-                                >
-                                  <v-icon color="white" style="font-size: 20px;"
-                                    >mdi-paperclip</v-icon
-                                  >
-                                </div>
-                                <div
-                                  v-on="on"
-                                  id="text--attachment-preview-name"
-                                  class="file-name safari-hide-tooltip max-char pl-2"
-                                >
-                                  {{ att.fileName }}
-                                </div>
-                              </template>
-                              <span id="text--attachment-preview-tooltip-email-template">{{
-                                att.fileName
-                              }}</span>
-                            </v-tooltip>
+                            <AttachmentsPreview
+                              :deletable="false"
+                              :att="att"
+                              :isEmailTemplate="true"
+                            />
                           </div>
                         </div>
                       </div>
