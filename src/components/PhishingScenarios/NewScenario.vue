@@ -999,6 +999,10 @@ export default {
         padding: 10px;
         border-bottom: 1px solid #e0e0e0;
       }
+      &__collapsable {
+        max-height: 480px !important;
+        overflow-y: auto;
+      }
     }
   }
 }
