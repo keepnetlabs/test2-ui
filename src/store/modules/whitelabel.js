@@ -98,6 +98,7 @@ const whitelabel = {
           state[key] = payload[key]
         }
       }
+      localStorage.setItem('whitelabelData', JSON.stringify(payload))
     },
     SET_SYSTEM_VERSION(state = {}, payload = {}) {
       state.systemVersion = payload

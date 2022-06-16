@@ -209,13 +209,13 @@ export default {
         filter =
           this.step2Step === 0
             ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
-            : getDefaultAxiosPayload()
+            : getDefaultAxiosPayload().filter
       } else {
         filter =
           this.step2Step === 1
             ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
             : this.step2Step === 2
-            ? getDefaultAxiosPayload()
+            ? getDefaultAxiosPayload().filter
             : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
       }
       const payload = {
