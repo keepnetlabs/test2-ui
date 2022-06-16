@@ -13,13 +13,12 @@
           <v-divider class="k-stepper__divider" />
 
           <v-stepper-step
-            v-if="!isAttachmentBasedScenario"
             :class="{
               'k-stepper__step': true,
               'k-stepper__step--hidden': isAttachmentBasedScenario
             }"
-            :complete="step > 3"
-            :step="3"
+            :complete="isAttachmentBasedScenario ? false : step > 3"
+            :step="isAttachmentBasedScenario ? 10 : 3"
             >Landing Page</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
@@ -164,7 +163,7 @@
               </v-list-item>
             </div>
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="3">
+          <v-stepper-content class="k-stepper__content" :step="isAttachmentBasedScenario ? 10 : 3">
             <div class="email-settings">
               <v-list-item>
                 <v-list-item-content>
@@ -179,7 +178,6 @@
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <LandingPageListPreview
-                    v-if="step === 3"
                     ref="RefEmailTemplateListPreview"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
@@ -192,8 +190,11 @@
               </v-list-item>
             </div>
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content summary-step" :step="4">
-            <div class="email-settings" v-if="step === 4">
+          <v-stepper-content
+            class="k-stepper__content summary-step"
+            :step="isAttachmentBasedScenario ? 3 : 4"
+          >
+            <div class="email-settings">
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="new-phishing-scenario__title">
@@ -265,10 +266,11 @@
                       <div class="d-flex justify-space-between">
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
-                            {{ summaryData.emailTemplate.name }}
+                            {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
                           </div>
                           <div class="template-summary__sub-title mt-2">
-                            From: {{ summaryData.emailTemplate.fromAddress }}
+                            From:
+                            {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
                           <div
                             v-if="getPhishingFile"
@@ -295,7 +297,7 @@
                               font-size: 12px;
                             "
                             :color="getEmailDifficultyChipColor"
-                            v-if="!!summaryData"
+                            v-if="!!summaryData && !!summaryData.emailTemplate"
                           >
                             {{
                               difficulties.find(
@@ -312,7 +314,7 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!summaryData"
+                            v-if="!!summaryData && !!summaryData.emailTemplate"
                           >
                             {{
                               methods.find(
@@ -335,12 +337,16 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ summaryData.emailTemplate.languageShortCode }}
+                            >{{
+                              summaryData.emailTemplate &&
+                              summaryData.emailTemplate.languageShortCode
+                            }}
                           </v-chip>
                         </div>
                       </div>
                     </div>
                     <div
+                      v-if="!!summaryData.emailTemplate"
                       class="summary-content"
                       style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
                     >
@@ -398,7 +404,7 @@
                   </div>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
+              <v-list-item v-if="!isAttachmentBasedScenario">
                 <v-list-item-content>
                   <div class="summary">
                     <div class="summary-header">
@@ -422,7 +428,7 @@
                         >
                       </div>
                     </div>
-                    <div class="summary-content">
+                    <div v-if="summaryData.landingPageTemplate" class="summary-content">
                       <el-tabs
                         v-if="summaryData.landingPageTemplate.landingPages.length > 1"
                         v-model="selectedTab"
@@ -436,7 +442,10 @@
                           <div class="d-flex justify-space-between">
                             <div class="d-flex flex-column" v-if="!!summaryData">
                               <div class="template-summary__title">
-                                {{ summaryData.landingPageTemplate.name }}
+                                {{
+                                  summaryData.landingPageTemplate &&
+                                  summaryData.landingPageTemplate.name
+                                }}
                               </div>
                               <div class="template-summary__sub-title mt-2">
                                 <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
@@ -495,7 +504,10 @@
                                 "
                               >
                                 <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                                >{{ summaryData.landingPageTemplate.languageShortCode }}
+                                >{{
+                                  summaryData.landingPageTemplate &&
+                                  summaryData.landingPageTemplate.languageShortCode
+                                }}
                               </v-chip>
                             </div>
                           </div>
@@ -504,7 +516,10 @@
                       <div v-else class="d-flex justify-space-between">
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
-                            {{ summaryData.landingPageTemplate.name }}
+                            {{
+                              summaryData.landingPageTemplate &&
+                              summaryData.landingPageTemplate.name
+                            }}
                           </div>
                           <div class="template-summary__sub-title mt-2">
                             <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
@@ -563,7 +578,10 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ summaryData.landingPageTemplate.languageShortCode }}
+                            >{{
+                              summaryData.landingPageTemplate &&
+                              summaryData.landingPageTemplate.languageShortCode
+                            }}
                           </v-chip>
                         </div>
                       </div>
@@ -591,7 +609,7 @@
     </template>
     <template #overlay-footer>
       <StepperFooter
-        max-step="4"
+        :max-step="isAttachmentBasedScenario ? 3 : 4"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
         @on-cancel="changeNewScenarioModalStatus"
@@ -610,6 +628,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
+import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -763,13 +782,13 @@ export default {
       })
     },
     nextStep() {
-      const prevStep = JSON.parse(JSON.stringify(this.step))
+      const currentStep = JSON.parse(JSON.stringify(this.step))
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
-      if (prevStep === 1) {
+      if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate() && isValid) {
           this.step += 1
         } else {
@@ -777,12 +796,32 @@ export default {
           scrollToComponent(el)
         }
       }
-      if (prevStep === 2) {
+      if (currentStep === 2 && !this.isAttachmentBasedScenario) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
           this.step += 1
         }
       }
-      if (prevStep === 3) {
+      if (currentStep === 2 && this.isAttachmentBasedScenario) {
+        if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
+          this.isSubmitDisabled = true
+          getEmailTemplatePreviewContent(this.emailTemplateResourceId)
+            .then((response) => {
+              const languageShortCode = this.languageOptions.find(
+                (language) => language.value === response?.data?.data?.languageTypeResourceId
+              )?.description
+              const emailTemplateData = {
+                ...response.data.data,
+                languageShortCode
+              }
+              this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
+              this.step += 1
+            })
+            .finally(() => {
+              this.isSubmitDisabled = false
+            })
+        }
+      }
+      if (currentStep === 3 && !this.isAttachmentBasedScenario) {
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
           this.isSubmitDisabled = true
           getSummaryOfScenario(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
@@ -862,11 +901,19 @@ export default {
     },
     getEmailDifficultyChipColor() {
       return this.difficulties.find(
-        (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
+        (item) =>
+          item.value ===
+          (this.summaryData?.emailTemplate
+            ? this.summaryData.emailTemplate.difficultyResourceId
+            : '')
       )?.text === 'Easy'
         ? '#217124'
         : this.difficulties.find(
-            (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
+            (item) =>
+              item.value ===
+              (this.summaryData?.emailTemplate
+                ? this.summaryData.emailTemplate.difficultyResourceId
+                : '')
           )?.text === 'Medium'
         ? '#2196F3'
         : '#F56C6C'
@@ -894,7 +941,7 @@ export default {
       )
     },
     getCurrentLandingPageTemplate() {
-      return this.summaryData.landingPageTemplate.landingPages.length > 1
+      return this.summaryData.landingPageTemplate?.landingPages?.length > 1
         ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
             .content || ''
         : this.summaryData.landingPageTemplate.landingPages[0].content || ''
