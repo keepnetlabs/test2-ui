@@ -855,5 +855,8 @@ export default {
   .k-form-group__content {
     width: 100%;
   }
+  .v-skeleton-loader.v-skeleton-loader--is-loading {
+    border-radius: 12px;
+  }
 }
 </style>
