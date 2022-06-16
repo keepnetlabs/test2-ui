@@ -75,6 +75,12 @@ export default {
         label: 'SYNC BY QUERY',
         infoText:
           'Select this option to sync users by criteria. The synchronization process will repeat every 24 hours.'
+      },
+      {
+        label: 'SYNC ALL USERS',
+        infoText: `Select this option to sync all users in ${
+          this.step2Step === 0 ? 'your active directory' : 'selected LDAP groups'
+        }. The synchronization process will repeat every 24 hours.`
       }
     ]
     if (!this.isEdit)
@@ -82,16 +88,10 @@ export default {
         label: 'SELECT Manually',
         infoText: 'Select this option to import users manually without auto-sync.'
       })
-    if (this.step1Step === 0) {
-      radioGroupItems.push({
-        label: 'SYNC ALL USERS',
-        infoText:
-          'Select this option to sync all users in your active directory. The synchronization process will repeat every 24 hours.'
-      })
-    }
+
     return {
       radioGroupItems,
-      selectedRadioGroupIndex: radioGroupItems.length === 1 ? 0 : this.step2Step || 0,
+      selectedRadioGroupIndex: this.step2Step || 0,
       processedUserCount: 0,
       isLoading: false,
       activeStatus: 0,
