@@ -79,7 +79,7 @@ export default {
       {
         label: 'SYNC ALL USERS',
         infoText: `Select this option to sync all users in ${
-          this.step2Step === 0 ? 'your active directory' : 'selected LDAP groups'
+          this.step1Step === 0 ? 'your active directory' : 'selected LDAP groups'
         }. The synchronization process will repeat every 24 hours.`
       }
     ]
