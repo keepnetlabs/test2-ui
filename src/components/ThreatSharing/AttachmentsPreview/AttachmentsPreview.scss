@@ -65,10 +65,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 100%;
+    line-height: 44px;
     height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    display: inline-block;
+    vertical-align: middle;
   }
 }
