@@ -157,7 +157,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/company-group-details/:groupId',
+          path: '/company/companies/company-group-details/:groupId',
           name: 'Company Group Details',
           component: Companies,
           meta: {
@@ -355,7 +355,7 @@ const router = new Router({
           props: true
         },
         {
-          path: '/incident-responder/investigation-details/:id',
+          path: '/incident-responder/investigations/investigation-details/:id',
           name: 'Investigation Details',
           component: InvestigationDetailsComponent,
           meta: {

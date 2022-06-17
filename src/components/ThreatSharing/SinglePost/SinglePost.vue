@@ -1295,7 +1295,7 @@ export default {
           communitiesData
         })
         this.$router.push({
-          path: `/community/${post.communityResourceId}`
+          path: `/threat-sharing/community/${post.communityResourceId}`
         })
       }
     },
