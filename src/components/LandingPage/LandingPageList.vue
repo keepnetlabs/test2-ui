@@ -42,6 +42,7 @@
       <template v-slot:app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <LandingPageTemplateModalPreview
+          v-show="!isPreviewLoading"
           :landingPageTemplates="landingPageTemplates"
           :phishingUrl="landingPageParams.urlTemplate"
         />
