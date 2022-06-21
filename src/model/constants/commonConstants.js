@@ -427,6 +427,7 @@ export const COMMON_PROPS = {
     placeholder: labels.MakeAvailableForPlaceholder,
     valueFormat: 'object',
     clearOnSelect: true,
+    defaultOptions: true,
     disableBranchNodes: true,
     multiple: true,
     searchNexted: true,
