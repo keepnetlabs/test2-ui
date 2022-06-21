@@ -191,6 +191,7 @@
                     </div>
                   </el-tab-pane>
                   <el-tab-pane
+                    v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
@@ -323,6 +324,9 @@ export default {
       type: String
     },
     isPhishingScenariosLoading: {
+      type: Boolean
+    },
+    isAttachmentBasedScenario: {
       type: Boolean
     }
   },

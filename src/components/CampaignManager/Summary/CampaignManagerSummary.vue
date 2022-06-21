@@ -162,7 +162,10 @@
       </CampaignManagerSummaryCard>
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerReportSummaryLandingPage :formData="currentFormData.landingPageParams" />
+      <CampaignManagerReportSummaryLandingPage
+        v-if="!isAttachmentBasedScenario"
+        :formData="currentFormData.landingPageParams"
+      />
     </div>
   </div>
 </template>
@@ -238,6 +241,9 @@ export default {
     },
     getAttachments() {
       return this?.currentFormData?.emailTemplateParams?.attachments || []
+    },
+    isAttachmentBasedScenario() {
+      return this.formData?.selectedPhishingScenario?.method === 'Attachment' || false
     },
     getScenarioInfoItems() {
       const { selectedPhishingScenario = {} } = this.formData

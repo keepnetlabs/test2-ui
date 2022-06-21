@@ -962,7 +962,7 @@ export default {
           _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
           this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
+          // this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
