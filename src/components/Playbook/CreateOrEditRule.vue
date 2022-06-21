@@ -456,7 +456,7 @@ export default {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+            emailTemplateId: this.$refs.refActionItem.notifyTemplates[i]
           }
           index++
         }
@@ -550,7 +550,7 @@ export default {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+            emailTemplateId: this.$refs.refActionItem.notifyTemplates[i]
           }
           index++
         }
