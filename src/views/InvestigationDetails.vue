@@ -934,6 +934,22 @@
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
               >
+                <template #datatable-row-actions="{scope}">
+                  <DefaultButtonRowAction
+                    :icon="rowActions[0].icon"
+                    :text="rowActions[0].name"
+                    :scope="scope"
+                    :disabled="rowActions[0].disabled"
+                    @on-click="deleteInvestigationDetails(scope.row)"
+                  />
+                  <DefaultButtonRowAction
+                    :icon="rowActions[1].icon"
+                    :text="rowActions[1].name"
+                    :scope="scope"
+                    :disabled="rowActions[1].disabled"
+                    @on-click="sendInvestigationDetailsWarningMessage(scope.row)"
+                  />
+                </template>
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
                     <span class="d-flex align-center">
@@ -1175,6 +1191,8 @@ import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   components: {
     DatatableLoading,
@@ -1185,7 +1203,8 @@ export default {
     ShowMore,
     InvestigationDetailsLeftBarLoading,
     InvestigationDetailsTopBarLoading,
-    ThreeRowLoading
+    ThreeRowLoading,
+    DefaultButtonRowAction
   },
   data: () => ({
     isInvestigationWarningSelectAll: false,
