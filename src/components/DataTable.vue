@@ -1950,7 +1950,7 @@ export default {
           this.isSelectedAllEver = false
           this.isSelectedAll = false
           this.$refs.elTableRef.clearSelection()
-          this.$emit('on-selected-all-click', false)
+          this.$emit('on-selected-all-click')
         } else {
           if (this.serverSideProps.totalNumberOfRecords > this.rowCount) {
             this.isSelectedAllEver = true
@@ -1959,6 +1959,7 @@ export default {
           this.isSelectedAll = true
           this.excludedResourceIdList = []
           this.serverSideSelectionCount = this.serverSideProps.totalNumberOfRecords
+          this.$emit('on-selected-all-click')
         }
       } else {
         if (this.isSelectedAll) {
@@ -2849,12 +2850,13 @@ export default {
           false,
           true
         )
-
         if (selectedItems.length) {
           for (let selectedItem of selectedItems) {
             const thisTableItem = this.isServerSide
               ? this.tableData.find((item) => {
-                  return JSON.stringify(item) === JSON.stringify(selectedItem)
+                  return this.justCompareRowKey
+                    ? selectedItem[this.rowKey] === item[this.rowKey]
+                    : JSON.stringify(item) === JSON.stringify(selectedItem)
                 })
               : selectedItem
             this.$refs.elTableRef.toggleRowSelection(thisTableItem)

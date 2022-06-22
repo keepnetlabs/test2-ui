@@ -7,6 +7,8 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
+    just-compare-row-key
     row-key="filterValue"
     :loading="isLoading"
     :show-filter-options="false"
@@ -29,6 +31,7 @@
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
     @handleSelectionChange="handleSelectionChange"
+    @on-selected-all-click="handleSelectedAll"
   />
 </template>
 
@@ -44,9 +47,17 @@ export default {
   name: 'TargetUserLDAPImportTable',
   components: { DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
-  inject: ['resourceId'],
+  inject: {
+    resourceId: {
+      type: String
+    },
+    handleServerSideSelectionParams: {
+      type: Function
+    }
+  },
   data() {
     return {
+      isInitial: true,
       CONSTANTS: {
         id: 'target-user-ldap-import-data-table'
       },
@@ -121,18 +132,30 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.serverSideProps.pageSize = pageSize
           this.tableData = results || []
-          if (this.initialGroupFilterValues.length) {
+          if (this.initialGroupFilterValues.length && this.isInitial) {
             if (this?.$refs?.refTable?.$refs?.elTableRef) {
               this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
                 this.initialGroupFilterValues.map((filterValue) => ({ filterValue }))
               )
+              this.$refs.refTable.serverSideSelectionCount = this.initialGroupFilterValues.length
+              if (this.initialGroupFilterValues.length === totalNumberOfRecords) {
+                this.$refs.refTable.isSelectedAllEver = true
+              }
+              this.handleServerSideSelectionParams(
+                this.$refs.refTable.getServerSideSelectionParams()
+              )
             }
           }
+          this.isInitial = false
         })
         .finally(this.setLoading)
     },
     handleSelectionChange(selection) {
+      this.handleServerSideSelectionParams(this.$refs.refTable.getServerSideSelectionParams())
       this.$emit('on-selection-change', selection)
+    },
+    handleSelectedAll() {
+      this.handleServerSideSelectionParams(this.$refs.refTable.getServerSideSelectionParams())
     }
   }
 }

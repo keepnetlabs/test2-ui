@@ -129,7 +129,10 @@ export default {
       isEdit: this.isEdit,
       setTotalNumberOfRecords: (val) => (this.totalNumberOfRecords = val),
       setSelectedUsers: (val) => (this.selectedUsers = val),
-      getEditedScheduledFilter: () => this.editedScheduledFilter
+      getEditedScheduledFilter: () => this.editedScheduledFilter,
+      handleServerSideSelectionParams: (serverSideSelectionParams) =>
+        (this.serverSideSelectionParams = serverSideSelectionParams),
+      getServerSideSelectionParams: () => this.serverSideSelectionParams
     }
   },
   data() {
@@ -145,6 +148,7 @@ export default {
       step1TargetGroupResourceId: '',
       step1Step: 0,
       step2Step: 0,
+      serverSideSelectionParams: { isSelectedAllEver: false, excludedResourceIdList: [] },
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -154,7 +158,11 @@ export default {
     },
     isNextButtonDisabled() {
       const comparator =
-        this.step1Step === 0 ? this.isLDAPGroupsValid : !!this?.selectedLDAPItems?.length
+        this.step1Step === 0
+          ? this.isLDAPGroupsValid
+          : this.serverSideSelectionParams?.isSelectedAllEver
+          ? this.serverSideSelectionParams?.isSelectedAllEver
+          : !!this.selectedLDAPItems?.length
       return !comparator
     }
   },
@@ -196,7 +204,10 @@ export default {
       this.selectedUsers = []
       this.totalNumberOfRecords = 0
       if (!step1.validateForm()) {
-        if (!this.selectedLDAPItems?.length) {
+        const comparator = this.serverSideSelectionParams?.isSelectedAllEver
+          ? this.serverSideSelectionParams?.isSelectedAllEver
+          : this.selectedLDAPItems?.length
+        if (!comparator) {
           this.isLDAPGroupsValid = false
         }
       } else callback()
@@ -225,7 +236,9 @@ export default {
         importType,
         groupFilterValues: this?.$refs?.refStep2?.groupFilterValues,
         filter,
-        isSchedule
+        isSchedule,
+        selectAll: this.serverSideSelectionParams?.isSelectedAllEver || false,
+        excludedItems: this.serverSideSelectionParams?.excludedResourceIdList || []
       }
       //that mean partial import
       if (importType === 1) {
