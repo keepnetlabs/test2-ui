@@ -377,13 +377,15 @@ export default {
       }
     },
     handleCopyToClipboard(data = '') {
-      copyToClipboard(data).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(data)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     handleManipulateItems(items = []) {
       return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))

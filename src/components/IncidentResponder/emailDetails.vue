@@ -639,7 +639,7 @@ export default {
           this.isCopiedMd5Clipboard.splice(pushedIndex, 1)
         }, 5000)
       }
-      copyToClipboard(value)
+      copyToClipboard(value).catch(() => {})
     },
     handleDownloadEmail() {
       this.downloadModalStatus = true

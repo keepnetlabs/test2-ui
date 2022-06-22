@@ -222,13 +222,15 @@ export default {
       return analysisList.some((item) => item.isSendFile || item.isSendFileHash)
     },
     handleCopyUrl(url = '') {
-      copyToClipboard(url).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(url)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {
