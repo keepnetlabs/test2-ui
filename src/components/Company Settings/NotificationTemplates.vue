@@ -61,13 +61,11 @@
         @searchChangedEvent="handleSearchChange"
       >
         <template v-slot:datatable-custom-column="{ scope }">
-          <div>
+          <div class="notification-templates__name-column">
             <span>{{ scope.row.name }}</span>
-            <v-tooltip bottom>
+            <v-tooltip v-if="scope.row.isDefault" bottom>
               <template v-slot:activator="{ on }">
-                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1" class="pl-2"
-                  >mdi-star-circle</v-icon
-                >
+                <v-icon v-on="on" size="20" color="#1173C1" class="pl-2">mdi-star-circle</v-icon>
               </template>
               <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
             </v-tooltip>
@@ -94,15 +92,15 @@
               :disabled="tableOptions.rowActions[2].disabled"
               :icon="tableOptions.rowActions[2].icon"
               :text="tableOptions.rowActions[2].name"
-              @on-click="handleDelete(scope.row)"
+              :checkIsOwnerProperty="false"
+              @on-click="handleMakeDefault(scope.row)"
             />
             <DefaultMenuRowAction
               :scope="scope"
               :disabled="tableOptions.rowActions[3].disabled"
               :icon="tableOptions.rowActions[3].icon"
               :text="tableOptions.rowActions[3].name"
-              :checkIsOwnerProperty="false"
-              @on-click="handleMakeDefault(scope.row)"
+              @on-click="handleDelete(scope.row)"
             />
           </RowActionsMenu>
         </template>
@@ -168,8 +166,8 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            type: 'text',
-            // type: "slot",
+            // type: 'text',
+            type: 'slot',
             width: 280,
             filterableType: 'text'
           },
@@ -316,13 +314,6 @@ export default {
             // disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            id: 'btn-delete--notification-template-row-actions',
-            action: 'handleDelete',
-            disabled: !this.$store.getters['permissions/getNotificationTemplatesDeletePermissions']
-          },
-          {
             name: 'Make Default',
             icon: 'mdi-star-circle',
             id: 'btn-make-default--notification-template-row-actions',
@@ -330,6 +321,13 @@ export default {
             disabled: !this.$store.getters[
               'permissions/getNotificationTemplatesMakeDefaultPermissions'
             ]
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            id: 'btn-delete--notification-template-row-actions',
+            action: 'handleDelete',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesDeletePermissions']
           }
         ],
         selectEvent: {
@@ -558,6 +556,10 @@ export default {
   margin-right: 16px;
 }
 .sub-menu-el__title {
+  display: flex;
+  align-items: center;
+}
+.notification-templates__name-column {
   display: flex;
   align-items: center;
 }
