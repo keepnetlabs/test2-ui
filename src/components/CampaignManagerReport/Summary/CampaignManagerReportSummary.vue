@@ -27,6 +27,7 @@
     <div class="campaign-manager-report-summary__general-info mt-4"></div>
     <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" :isLoading="isLoading" />
     <CampaignManagerReportSummaryLandingPage
+      v-if="!isAttachment"
       :form-data="getLandingPageTemplateData"
       :isLoading="isLoading"
     />
@@ -78,10 +79,10 @@ export default {
   },
   computed: {
     isAttachment() {
-      return this.campaignSummary?.landingPageTemplateInfo?.methodTypeId === 3 || false
+      return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
     },
     getPercents() {
-      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0]
+      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0, 0]
       const cardsData = this.getCardsData
       return [
         cardsData.openedEmail.userPercent,
@@ -89,7 +90,8 @@ export default {
         cardsData.submittedEmail.userPercent,
         cardsData.noResponse.userPercent,
         cardsData.notDelivered.userPercent,
-        cardsData.attachmentOpenedEmail.userPercent
+        cardsData.attachmentOpenedEmail.userPercent,
+        cardsData.phishingReporter.userPercent
       ]
     },
     getCampaignSummaryItems() {
@@ -227,7 +229,8 @@ export default {
         submittedEmail = 0,
         noResponseEmail = 0,
         notDelivered = 0,
-        attachmentOpenedEmail = 0
+        attachmentOpenedEmail = 0,
+        phishingReporter = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -253,6 +256,10 @@ export default {
         notDelivered: {
           userCount: notDelivered,
           userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
+        },
+        phishingReporter: {
+          userCount: phishingReporter,
+          userPercent: ((phishingReporter / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
