@@ -52,23 +52,21 @@ const investigations = {
     SET_STATSANDMENUDATA(state, payload) {
       state.getStatsAndMenuData = payload?.data
     },
-    SET_INVESTIGATIONLIST(state, payload = {}) {
-      if (payload?.data) {
-        let data = payload.data
-        data.results.userStats = payload.data.results
-        let stateData = data.results.map((item) => {
-          const { completedUsersCount = 0, scannedUsersCount = 0 } = item
-          return {
-            ...item,
-            userStatus: [completedUsersCount, scannedUsersCount - completedUsersCount],
-            scanStatusText: `${completedUsersCount} / ${scannedUsersCount}`
-          }
-        })
-
-        state.investigationList = {
-          totalNumberOfRecords: data.totalNumberOfRecords,
-          data: stateData
+    SET_INVESTIGATIONLIST(state, payload) {
+      let data = payload?.data
+      data.results.userStats = payload?.data?.results
+      let stateData = data?.results?.map((item) => {
+        const { completedUsersCount = 0, scannedUsersCount = 0 } = item
+        return {
+          ...item,
+          userStatus: [completedUsersCount, scannedUsersCount - completedUsersCount],
+          scanStatusText: `${completedUsersCount} / ${scannedUsersCount}`
         }
+      })
+
+      state.investigationList = {
+        totalNumberOfRecords: data?.totalNumberOfRecords,
+        data: stateData
       }
     },
     SET_IRSUMMARY(state, payload) {

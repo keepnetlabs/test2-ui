@@ -1305,7 +1305,7 @@ export default {
           new Date(this.investigationDetailsData.expireDate).getDate() -
           new Date(this.investigationDetailsData.createTime).getDate()
         this.targetUserType = this.investigationDetailsData.targetUserType
-        if (this.investigationDetailsData.targetUserType == 'Groups') {
+        if (this.investigationDetailsData.targetUserType === 'Groups') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
             let obj = {
               name: item.targetUser,
@@ -1313,14 +1313,14 @@ export default {
             }
             return obj
           })
-        } else if (this.investigationDetailsData.targetUserType == 'SpecificUsers') {
+        } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
             (item) => item.targetUser
           )
         }
-        const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
+        const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
-            if (value && key != 'resourceId') {
+            if (value && key !== 'resourceId') {
               acc.push({ option: key, text: value })
             }
           }
@@ -1328,7 +1328,7 @@ export default {
         }, [])
         const body = this.investigationDetailsData.bodies.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
-            if (value && key != 'resourceId') {
+            if (value && key !== 'resourceId') {
               acc.push({ option: key, text: value })
             }
           }

@@ -14,6 +14,7 @@
         'make-available-for',
         { 'k-treeselect--error': !isAvailableForValid }
       ]"
+      async
       :value="value"
       :options="treeSelectOptions"
       :disabled="disabled"
@@ -22,7 +23,6 @@
       @close="validateAvailableFor"
       @open="handleMenuOpen"
       @input="handleInputChange"
-      @search-change="handleSearchChange"
     >
       <template #after-list>
         <v-progress-circular
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import Treeselect from '@riophae/vue-treeselect'
+import Treeselect, { ASYNC_SEARCH } from '@riophae/vue-treeselect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { searchAvailableFor } from '@/api/smtpSettings'
 import labels from '@/model/constants/labels'
@@ -95,14 +95,20 @@ export default {
       isAvailableForValidated: false,
       maximumApiCount: 1,
       apiCount: 0,
+      isScrolling: false,
+      disableScroll: false,
       searchAvailableForPayload: {
         pageNumber: 1,
-        pageSize: 25,
+        pageSize: 100,
         orderBy: 'CreateTime',
-        ascending: false
+        ascending: false,
+        name: ''
       },
       treeSelectOptions: null,
-      treeSelectionStatus: false
+      treeSelectionStatus: false,
+      defaultCompanyItems: [],
+      defaultCompanyGroupItems: [],
+      scrollablePageNumber: 1
     }
   },
   computed: {
@@ -115,32 +121,70 @@ export default {
     }
   },
   methods: {
-    loadOptions({ callback }) {
-      this.callForSearchAvailableFor().then(() => {
-        callback()
-      })
+    loadOptions({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        this.debounce(() => {
+          this.disableScroll = true
+          this.searchAvailableForPayload.name = searchQuery
+          this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
+          this.callForSearchAvailableFor(searchQuery).then(() => {
+            callback(null, this.treeSelectOptions)
+            if (this.isScrolling) {
+              const element = document
+                .getElementById('input--make-available-for')
+                .querySelector('.vue-treeselect__menu')
+              if (element) {
+                this.$nextTick(() => {
+                  element.scroll({ top: element.scrollHeight - 500 })
+                })
+              }
+            }
+            this.$nextTick(() => {
+              this.disableScroll = false
+              this.isScrolling = false
+            })
+            const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
+            keys.map((key) => {
+              this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
+            })
+          })
+        }, 500)
+      }
     },
-    handleSearchChange(val) {},
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     handleMenuOpen() {
       this.$nextTick(() => {
         this.menuElement = document
           .getElementById('input--make-available-for')
           .querySelector('.vue-treeselect__menu')
-        this.menuElement.addEventListener('scroll', ({ target }) => {
-          const { scrollTop, scrollHeight, offsetHeight } = target
-          const { isInfiniteLoading, maximumApiCount, apiCount } = this
-          if (
-            scrollTop - (scrollHeight - offsetHeight) < 10 &&
-            scrollTop - (scrollHeight - offsetHeight) > -10 &&
-            !isInfiniteLoading &&
-            apiCount < maximumApiCount
-          ) {
-            this.handleInfiniteLoading()
-          }
-        })
+        if (this.menuElement) {
+          this.menuElement.addEventListener('scroll', ({ target }) => {
+            if (this.$refs.refTreeSelect.rootOptionsStates.isLoading) return
+            const { scrollTop, scrollHeight, offsetHeight } = target
+            const { isInfiniteLoading, maximumApiCount, apiCount, disableScroll } = this
+            if (
+              scrollTop - (scrollHeight - offsetHeight) < 10 &&
+              scrollTop - (scrollHeight - offsetHeight) > -10 &&
+              !isInfiniteLoading &&
+              apiCount < maximumApiCount &&
+              !disableScroll &&
+              !this.$refs.refTreeSelect.trigger.searchQuery
+            ) {
+              this.isScrolling = true
+              this.handleInfiniteLoading()
+            }
+          })
+        }
       })
     },
-    callForSearchAvailableFor() {
+    callForSearchAvailableFor(search) {
       return searchAvailableFor(this.searchAvailableForPayload)
         .then((response) => {
           this.treeSelectOptions = [
@@ -173,49 +217,60 @@ export default {
             this.maximumApiCount = Math.max(companies.totalNumberOfPages, groups.totalNumberOfPages)
           }
           this.apiCount++
-
+          const defaultCompanyItems = companies?.results
+            ? companies.results.map((item) => {
+                return {
+                  id: item['companyResourceId'],
+                  label: item.companyName,
+                  resourceId: item['companyResourceId'],
+                  type: 'Company',
+                  isDisabled: this.treeSelectionStatus
+                }
+              })
+            : []
+          if (!search)
+            this.defaultCompanyItems = [...this.defaultCompanyItems, ...defaultCompanyItems]
           this.$set(this.treeSelectOptions, 3, {
             ...this.treeSelectOptions[3],
-            children: companies?.results
-              ? companies.results.map((item) => {
-                  return {
-                    id: item['companyResourceId'],
-                    label: item.companyName,
-                    resourceId: item['companyResourceId'],
-                    type: 'Company',
-                    isDisabled: this.treeSelectionStatus
-                  }
-                })
-              : []
+            children: search ? defaultCompanyItems : this.defaultCompanyItems
           })
+
+          const defaultCompanyGroupItems = groups?.results
+            ? groups.results.map((item) => {
+                return {
+                  id: item.resourceId,
+                  resourceId: item.resourceId,
+                  label: item.name,
+                  type: 'Group',
+                  isDisabled: this.treeSelectionStatus
+                }
+              })
+            : []
+          if (!search)
+            this.defaultCompanyGroupItems = [
+              ...this.defaultCompanyGroupItems,
+              ...defaultCompanyGroupItems
+            ]
           this.$set(this.treeSelectOptions, 2, {
             ...this.treeSelectOptions[2],
-            children: groups?.results
-              ? groups.results.map((item) => {
-                  return {
-                    id: item.resourceId,
-                    resourceId: item.resourceId,
-                    label: item.name,
-                    type: 'Group',
-                    isDisabled: this.treeSelectionStatus
-                  }
-                })
-              : []
+            children: search ? defaultCompanyGroupItems : this.defaultCompanyGroupItems
           })
         })
         .finally(() => {
-          this.isInfiniteLoading = false
+          this.$nextTick(() => {
+            this.isInfiniteLoading = false
+          })
         })
     },
     handleInfiniteLoading() {
-      this.searchAvailableForPayload.pageSize += 25
+      this.scrollablePageNumber++
       this.isInfiniteLoading = true
-      this.callForSearchAvailableFor()
+      this.$refs.refTreeSelect.remoteSearch = {}
+      this.$refs.refTreeSelect.handleRemoteSearch()
     },
     handleInputChange(newVal) {
       let oldVal = this.value
       let emittedVal = newVal
-
       if (newVal) {
         if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
           if (
@@ -246,7 +301,9 @@ export default {
           this.$emit('input', emittedVal)
           if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
             if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
+              this?.menuElement?.scroll({ top: 0 })
               this.$refs.refTreeSelect['menu'].isOpen = false
+              this.$refs.refTreeSelect.trigger.searchQuery = ''
             }
           }
         }
@@ -257,20 +314,19 @@ export default {
       if (!this.treeSelectOptions) {
         return
       }
-      this.$set(this.treeSelectOptions, 2, {
-        ...this.treeSelectOptions[2],
-        children: this.treeSelectOptions[2].children.map((item) => {
-          return {
-            ...item,
-            isDisabled
-          }
-        })
+      this.treeSelectOptions[2].children.map((item) => {
+        item.isDisabled = isDisabled
       })
-      this.$set(this.treeSelectOptions, 3, {
-        ...this.treeSelectOptions[3],
-        children: this.treeSelectOptions[3].children.map((item) => {
-          return { ...item, isDisabled }
-        })
+      this.treeSelectOptions[3].children.map((item) => {
+        item.isDisabled = isDisabled
+      })
+      const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
+      keys.map((key) => {
+        const object = this.$refs.refTreeSelect.remoteSearch[key]
+        if (object) {
+          object?.options[2]?.children?.map((item) => (item.isDisabled = isDisabled))
+          object?.options[3]?.children?.map((item) => (item.isDisabled = isDisabled))
+        }
       })
     },
     validateAvailableFor(value = {}) {
@@ -302,6 +358,7 @@ export default {
         }
       ])
     }
+
     if (this.placeholder) this.isAvailableForProps.placeholder = this.placeholder
   }
 }
