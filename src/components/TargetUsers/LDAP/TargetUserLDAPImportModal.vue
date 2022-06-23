@@ -177,8 +177,17 @@ export default {
         const {
           data: { data }
         } = response
-        const { targetGroupResourceId, ldapSettingResourceId, filter, groupFilterValues } = data
-        if (!filter?.filterGroups?.length) {
+        const {
+          targetGroupResourceId,
+          ldapSettingResourceId,
+          filter,
+          groupFilterValues,
+          status
+        } = data
+        if (
+          !filter?.filterGroups?.[0]?.filterItems?.length ||
+          !filter?.filterGroups?.[1]?.filterItems?.length
+        ) {
           this.step2Step = 1
         }
         this.editedScheduledFilter = !filter?.filterGroups?.length
@@ -186,7 +195,7 @@ export default {
           : filter
 
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
-        this.$refs.refStep1.isActive = !!this?.selectedRow?.status
+        this.$refs.refStep1.isActive = Boolean(status)
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
         const index = groupFilterValues?.length ? 1 : 0
         this.$refs.refStep1.selectedRadioGroupIndex = index

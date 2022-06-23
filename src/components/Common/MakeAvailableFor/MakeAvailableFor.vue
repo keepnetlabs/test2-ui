@@ -99,13 +99,16 @@ export default {
       disableScroll: false,
       searchAvailableForPayload: {
         pageNumber: 1,
-        pageSize: 25,
+        pageSize: 100,
         orderBy: 'CreateTime',
         ascending: false,
         name: ''
       },
       treeSelectOptions: null,
-      treeSelectionStatus: false
+      treeSelectionStatus: false,
+      defaultCompanyItems: [],
+      defaultCompanyGroupItems: [],
+      scrollablePageNumber: 1
     }
   },
   computed: {
@@ -123,10 +126,8 @@ export default {
         this.debounce(() => {
           this.disableScroll = true
           this.searchAvailableForPayload.name = searchQuery
-          this.searchAvailableForPayload.pageSize = searchQuery
-            ? 5000
-            : this.searchAvailableForPayload.pageSize
-          this.callForSearchAvailableFor().then(() => {
+          this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
+          this.callForSearchAvailableFor(searchQuery).then(() => {
             callback(null, this.treeSelectOptions)
             if (this.isScrolling) {
               const element = document
@@ -183,7 +184,7 @@ export default {
         }
       })
     },
-    callForSearchAvailableFor() {
+    callForSearchAvailableFor(search) {
       return searchAvailableFor(this.searchAvailableForPayload)
         .then((response) => {
           this.treeSelectOptions = [
@@ -216,34 +217,43 @@ export default {
             this.maximumApiCount = Math.max(companies.totalNumberOfPages, groups.totalNumberOfPages)
           }
           this.apiCount++
-
+          const defaultCompanyItems = companies?.results
+            ? companies.results.map((item) => {
+                return {
+                  id: item['companyResourceId'],
+                  label: item.companyName,
+                  resourceId: item['companyResourceId'],
+                  type: 'Company',
+                  isDisabled: this.treeSelectionStatus
+                }
+              })
+            : []
+          if (!search)
+            this.defaultCompanyItems = [...this.defaultCompanyItems, ...defaultCompanyItems]
           this.$set(this.treeSelectOptions, 3, {
             ...this.treeSelectOptions[3],
-            children: companies?.results
-              ? companies.results.map((item) => {
-                  return {
-                    id: item['companyResourceId'],
-                    label: item.companyName,
-                    resourceId: item['companyResourceId'],
-                    type: 'Company',
-                    isDisabled: this.treeSelectionStatus
-                  }
-                })
-              : []
+            children: search ? defaultCompanyItems : this.defaultCompanyItems
           })
+
+          const defaultCompanyGroupItems = groups?.results
+            ? groups.results.map((item) => {
+                return {
+                  id: item.resourceId,
+                  resourceId: item.resourceId,
+                  label: item.name,
+                  type: 'Group',
+                  isDisabled: this.treeSelectionStatus
+                }
+              })
+            : []
+          if (!search)
+            this.defaultCompanyGroupItems = [
+              ...this.defaultCompanyGroupItems,
+              ...defaultCompanyGroupItems
+            ]
           this.$set(this.treeSelectOptions, 2, {
             ...this.treeSelectOptions[2],
-            children: groups?.results
-              ? groups.results.map((item) => {
-                  return {
-                    id: item.resourceId,
-                    resourceId: item.resourceId,
-                    label: item.name,
-                    type: 'Group',
-                    isDisabled: this.treeSelectionStatus
-                  }
-                })
-              : []
+            children: search ? defaultCompanyGroupItems : this.defaultCompanyGroupItems
           })
         })
         .finally(() => {
@@ -253,7 +263,7 @@ export default {
         })
     },
     handleInfiniteLoading() {
-      this.searchAvailableForPayload.pageSize += 25
+      this.scrollablePageNumber++
       this.isInfiniteLoading = true
       this.$refs.refTreeSelect.remoteSearch = {}
       this.$refs.refTreeSelect.handleRemoteSearch()
