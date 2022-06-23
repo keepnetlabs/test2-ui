@@ -129,7 +129,10 @@ export default {
       isEdit: this.isEdit,
       setTotalNumberOfRecords: (val) => (this.totalNumberOfRecords = val),
       setSelectedUsers: (val) => (this.selectedUsers = val),
-      getEditedScheduledFilter: () => this.editedScheduledFilter
+      getEditedScheduledFilter: () => this.editedScheduledFilter,
+      handleServerSideSelectionParams: (serverSideSelectionParams) =>
+        (this.serverSideSelectionParams = serverSideSelectionParams),
+      getServerSideSelectionParams: () => this.serverSideSelectionParams
     }
   },
   data() {
@@ -145,6 +148,7 @@ export default {
       step1TargetGroupResourceId: '',
       step1Step: 0,
       step2Step: 0,
+      serverSideSelectionParams: { isSelectedAllEver: false, excludedResourceIdList: [] },
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -154,7 +158,11 @@ export default {
     },
     isNextButtonDisabled() {
       const comparator =
-        this.step1Step === 0 ? this.isLDAPGroupsValid : !!this?.selectedLDAPItems?.length
+        this.step1Step === 0
+          ? this.isLDAPGroupsValid
+          : this.serverSideSelectionParams?.isSelectedAllEver
+          ? this.serverSideSelectionParams?.isSelectedAllEver
+          : !!this.selectedLDAPItems?.length
       return !comparator
     }
   },
@@ -169,8 +177,17 @@ export default {
         const {
           data: { data }
         } = response
-        const { targetGroupResourceId, ldapSettingResourceId, filter, groupFilterValues } = data
-        if (!filter?.filterGroups?.length) {
+        const {
+          targetGroupResourceId,
+          ldapSettingResourceId,
+          filter,
+          groupFilterValues,
+          status
+        } = data
+        if (
+          !filter?.filterGroups?.[0]?.filterItems?.length ||
+          !filter?.filterGroups?.[1]?.filterItems?.length
+        ) {
           this.step2Step = 1
         }
         this.editedScheduledFilter = !filter?.filterGroups?.length
@@ -178,7 +195,7 @@ export default {
           : filter
 
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
-        this.$refs.refStep1.isActive = !!this?.selectedRow?.status
+        this.$refs.refStep1.isActive = Boolean(status)
         this.selectedRow.ldapSettingResourceId = ldapSettingResourceId
         const index = groupFilterValues?.length ? 1 : 0
         this.$refs.refStep1.selectedRadioGroupIndex = index
@@ -196,7 +213,10 @@ export default {
       this.selectedUsers = []
       this.totalNumberOfRecords = 0
       if (!step1.validateForm()) {
-        if (!this.selectedLDAPItems?.length) {
+        const comparator = this.serverSideSelectionParams?.isSelectedAllEver
+          ? this.serverSideSelectionParams?.isSelectedAllEver
+          : this.selectedLDAPItems?.length
+        if (!comparator) {
           this.isLDAPGroupsValid = false
         }
       } else callback()
@@ -225,7 +245,9 @@ export default {
         importType,
         groupFilterValues: this?.$refs?.refStep2?.groupFilterValues,
         filter,
-        isSchedule
+        isSchedule,
+        selectAll: this.serverSideSelectionParams?.isSelectedAllEver || false,
+        excludedItems: this.serverSideSelectionParams?.excludedResourceIdList || []
       }
       //that mean partial import
       if (importType === 1) {

@@ -2686,7 +2686,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData?.headers || []))
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName

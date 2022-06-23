@@ -1,5 +1,3 @@
-import jwt_decode from 'jwt-decode'
-
 export function getBtnStatusColor(type) {
   if (typeof type === 'boolean' && type) {
     type = 'yes'

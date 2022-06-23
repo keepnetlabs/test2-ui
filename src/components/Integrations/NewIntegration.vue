@@ -1290,7 +1290,7 @@ export default {
       return label
     },
     getErrorMessageOfApiKey(item) {
-      const message = item.errorMessage || 'Error'
+      const message = item?.errorMessage || 'Error'
       return `${message.substring(0, 75)}...`
     },
     isShowSeeMore(item) {
@@ -1449,7 +1449,9 @@ export default {
         })
     },
     handleTagItemChange(value) {
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      value[value.length - 1] = value[value.length - 1]
+        ? value[value.length - 1].substring(0, 20)
+        : ''
     },
     submit() {
       const refForm = this.$refs.form

@@ -62,7 +62,20 @@ export default {
       type: Number
     }
   },
-  inject: ['resourceId', 'isEdit', 'setSelectedUsers'],
+  inject: {
+    resourceId: {
+      type: String
+    },
+    isEdit: {
+      type: Boolean
+    },
+    setSelectedUsers: {
+      type: Function
+    },
+    getServerSideSelectionParams: {
+      type: Function
+    }
+  },
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -118,9 +131,12 @@ export default {
     createLDAPMapping() {
       this.isLoading = true
       this.groupFilterValues = this.selectedLDAPItems.map((item) => item.filterValue)
+      const serverSideSelectionParams = this.getServerSideSelectionParams()
       LDAPService.createLDAPMapping({
         ldapSettingId: this.resourceId,
-        groupFilterValues: this.groupFilterValues
+        groupFilterValues: this.groupFilterValues,
+        selectAll: serverSideSelectionParams?.isSelectedAllEver || false,
+        excludedItems: serverSideSelectionParams?.excludedResourceIdList || []
       })
         .then((response) => {
           this.transactionId = response?.data?.data?.transactionId

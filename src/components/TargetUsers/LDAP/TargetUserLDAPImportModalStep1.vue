@@ -102,6 +102,12 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    getServerSideSelectionParams: {
+      type: Function
+    },
+    handleServerSideSelectionParams: {
+      type: Function
     }
   },
   data() {
@@ -168,7 +174,13 @@ export default {
       })
     },
     validateForm() {
-      const comparator = this.selectedRadioGroupIndex === 1 ? this?.selectedLDAPItems?.length : true
+      const serverSideSelectionParams = this.getServerSideSelectionParams()
+      const comparator =
+        this.selectedRadioGroupIndex === 1
+          ? serverSideSelectionParams?.isSelectedAllEver
+            ? true
+            : this?.selectedLDAPItems?.length
+          : true
       return this?.$refs?.refForm?.validate() && comparator
     },
     handleTableSelectionChange(selectedLDAPItems) {
@@ -180,6 +192,10 @@ export default {
       if (item.label === this.radioGroupItems[0].label) {
         this.handleTableSelectionChange([])
         this.$emit('update:isLDAPGroupsValid', true)
+        this.handleServerSideSelectionParams({
+          isSelectedAllEver: false,
+          excludedResourceIdList: []
+        })
       }
     }
   }
