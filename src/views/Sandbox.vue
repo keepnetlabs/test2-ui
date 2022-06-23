@@ -575,7 +575,7 @@ export default {
       }
     },
     setCompanies(response) {
-      this.companyItems = [...this.companyItems, ...response.data.data.results]
+      this.companyItems = [...this.companyItems, ...(response?.data?.data?.results || [])]
     },
     setFilterOptions() {
       if (this.companyValue) localStorage.setItem('sandboxCompany', this.companyValue.toString())

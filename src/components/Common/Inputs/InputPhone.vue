@@ -114,7 +114,7 @@ export default {
       }
     },
     setValueSubStr(length, newVal) {
-      const val = newVal.substring(0, length)
+      const val = newVal ? newVal.substring(0, length) : ''
       this.$refs.refTelInput.phone = val
       this.$emit('input', val)
     },
