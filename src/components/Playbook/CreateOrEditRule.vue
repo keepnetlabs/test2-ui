@@ -390,7 +390,9 @@ export default {
       if (!lastValue) {
         value.splice(value.length - 1, 1)
       } else {
-        value[value.length - 1] = value[value.length - 1].substring(0, 20)
+        value[value.length - 1] = value[value.length - 1]
+          ? value[value.length - 1].substring(0, 20)
+          : ''
       }
     },
     addAction() {
@@ -456,7 +458,7 @@ export default {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+            emailTemplateId: this.$refs.refActionItem.notifyTemplates[i]
           }
           index++
         }
@@ -550,7 +552,7 @@ export default {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+            emailTemplateId: this.$refs.refActionItem.notifyTemplates[i]
           }
           index++
         }

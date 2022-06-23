@@ -1240,12 +1240,14 @@ export default {
       }
     },
     contentCopy(contentBody) {
-      copyToClipboard(contentBody).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Copied Successfully!'
+      copyToClipboard(contentBody)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Copied Successfully!'
+          })
         })
-      })
+        .catch(() => {})
     },
     openShareModalFunc(post) {
       this.sharedIncitedId = post.communityPostResourceId
