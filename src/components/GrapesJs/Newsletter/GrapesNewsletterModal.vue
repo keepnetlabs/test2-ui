@@ -882,13 +882,15 @@ export default {
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
-            copyToClipboard(codeViewer.editor.getValue()).then(() => {
-              this.$store.dispatch('common/createSnackBar', {
-                message: 'COPIED TO CLIPBOARD',
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: 'mdi-check-circle'
+            copyToClipboard(codeViewer.editor.getValue())
+              .then(() => {
+                this.$store.dispatch('common/createSnackBar', {
+                  message: 'COPIED TO CLIPBOARD',
+                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                  icon: 'mdi-check-circle'
+                })
               })
-            })
+              .catch(() => {})
           }
           codeViewer.set({
             codeName: 'htmlmixed',

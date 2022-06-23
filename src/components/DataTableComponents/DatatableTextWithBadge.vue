@@ -101,20 +101,23 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     mapper() {
-      return this.scope.row[this.col.property].map((item) => {
-        let uppercaseCount = 0
-        let index
-        for (let i = 1; i < item.length; i++) {
-          if (item[i] === item[i].toUpperCase()) {
-            uppercaseCount++
+      return this.scope.row[this.col.property]
+        .map((item) => {
+          if (!item) return null
+          let uppercaseCount = 0
+          let index
+          for (let i = 1; i < item.length; i++) {
+            if (item[i] === item[i].toUpperCase()) {
+              uppercaseCount++
+            }
+            if (uppercaseCount === 1) {
+              index = i
+              break
+            }
           }
-          if (uppercaseCount === 1) {
-            index = i
-            break
-          }
-        }
-        return item.substring(0, index) + ' ' + item.substring(index)
-      })
+          return item.substring(0, index) + ' ' + item.substring(index)
+        })
+        .filter(Boolean)
     },
     getBadges() {
       if (this.col.maxItemsPerCell) {

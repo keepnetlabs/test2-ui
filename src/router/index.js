@@ -421,23 +421,25 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   //global guard structure
-  const storeRef = store
-  if (to.meta.isAuthenticated) {
-    let authenticationStatus = AuthenticationService.getAuthenticationStatus()
-    if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
-      if (storeRef.state.common.downloadModalStatus) {
-        storeRef.dispatch('common/changeDownloadModalStatus', false)
-        next(false)
+  try {
+    const storeRef = store
+    if (to.meta.isAuthenticated) {
+      let authenticationStatus = AuthenticationService.getAuthenticationStatus()
+      if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
+        if (storeRef.state.common.downloadModalStatus) {
+          storeRef.dispatch('common/changeDownloadModalStatus', false)
+          next(false)
+        } else {
+          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
+          else next(from.name ? false : '/')
+        }
       } else {
-        if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
-        else next(from.name ? false : '/')
+        next('/login')
       }
     } else {
-      next('/login')
+      next()
     }
-  } else {
-    next()
-  }
+  } catch (err) {}
 })
 
 export default router

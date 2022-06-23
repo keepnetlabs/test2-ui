@@ -390,7 +390,9 @@ export default {
       if (!lastValue) {
         value.splice(value.length - 1, 1)
       } else {
-        value[value.length - 1] = value[value.length - 1].substring(0, 20)
+        value[value.length - 1] = value[value.length - 1]
+          ? value[value.length - 1].substring(0, 20)
+          : ''
       }
     },
     addAction() {

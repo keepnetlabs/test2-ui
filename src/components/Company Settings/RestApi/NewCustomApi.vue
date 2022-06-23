@@ -368,13 +368,15 @@ export default {
         this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
     },
     handleCopyToClipboard(data = '') {
-      copyToClipboard(data).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(data)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     handleGenerateClientBtnClick() {
       if (!(this.selectedRow && this.selectedRow.resourceId)) {
