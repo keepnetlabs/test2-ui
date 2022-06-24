@@ -367,7 +367,7 @@ const threatSharing = {
           })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           setTimeout(function () {
-            router.push('/community/' + id)
+            router.push('/threat-sharing/community/' + id)
           }, 500)
         })
         .catch(() => {

@@ -1427,7 +1427,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-information'
         })
-        this.$router.push('/job-log')
+        this.$router.push('/company/job-log')
       })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
