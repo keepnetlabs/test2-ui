@@ -409,11 +409,12 @@ export default {
       }
       &-preview {
         background: #f2f2f2;
-        margin: 24px 0;
         padding: 16px;
         &-container {
           border-top: 1px solid #b3d4fc;
-          margin: 24px 24px 0 24px;
+          padding: 24px;
+          max-height: 480px;
+          overflow-y: auto;
         }
       }
     }
