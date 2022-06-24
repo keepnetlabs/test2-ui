@@ -2244,7 +2244,9 @@ export default {
     },
     onAddClose(resp) {
       if (resp?.data?.data?.resourceId) {
-        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
       }
       if (this.timeoutId) {
         clearTimeout(this.timeoutId)

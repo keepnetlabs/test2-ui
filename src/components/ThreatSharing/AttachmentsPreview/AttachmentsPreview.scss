@@ -16,7 +16,7 @@
   .attachment {
     // width: 260px;
     // min-width: 260px;
-    height: 32px;
+    height: 44px;
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -65,10 +65,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 100%;
+    line-height: 44px;
     height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    display: inline-block;
+    vertical-align: middle;
   }
 }

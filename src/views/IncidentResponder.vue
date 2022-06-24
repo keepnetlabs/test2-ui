@@ -343,7 +343,7 @@
                   class="btn-action btn-playbook"
                   block
                   rounded
-                  @click="$router.push('/playbook')"
+                  @click="$router.push('/incident-responder/playbook')"
                 >
                   {{ labels.Playbook }}
                   <v-icon class="pl-2">mdi-arrow-right</v-icon>
@@ -415,7 +415,7 @@
                   style="padding: 0 13px !important;"
                   block
                   rounded
-                  @click.native="$router.push('/investigations')"
+                  @click.native="$router.push('/incident-responder/investigations')"
                 >
                   {{ labels.Investigations }}
                   <v-icon class="pl-2">mdi-arrow-right</v-icon>
@@ -962,7 +962,7 @@ export default {
           sortable: false,
           show: true,
           type: 'link',
-          href: '/investigation-details',
+          href: '/incident-responder/investigations/investigation-details',
           hrefKey: 'resourceId',
           minWidth: '40'
         },
@@ -2277,7 +2277,9 @@ export default {
     },
     handleRouteToInvestigationDetails(resp) {
       if (resp?.data?.data?.resourceId) {
-        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
       }
     },
     handeRuleNameClick(resourceId) {
@@ -2572,12 +2574,12 @@ export default {
     },
     onEmptyBtnClicked() {
       this.$router.push({
-        path: '/investigations',
+        path: '/incident-responder/investigations',
         query: { openPopup: true }
       })
     },
     onTopRulesEmptyBtnClicked() {
-      this.$router.push({ path: '/playbook', query: { openPopup: true } })
+      this.$router.push({ path: '/incident-responder/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
@@ -2694,7 +2696,7 @@ export default {
       this.$router.push('/phishing-reporter')
     },
     emptyInvestigationButtonClick() {
-      this.$router.push('/investigations')
+      this.$router.push('/incident-responder/investigations')
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
