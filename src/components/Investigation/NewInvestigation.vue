@@ -288,7 +288,7 @@
                   :items="durations"
                   outlined
                   class="input-select standard-height"
-                  v-model.trim="selectedDuration"
+                  v-model.trim="duration"
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
@@ -499,7 +499,7 @@ export default {
       date: [],
       startDate: '',
       endDate: '',
-      selectedDuration: 1,
+      duration: 1,
       selectedAction: 'NoAction',
       name: '',
       description: '',
@@ -854,7 +854,7 @@ export default {
           filterList: this.filterList,
           date: this.date,
           scanTypes: this.scanTypes,
-          selectedDuration: this.selectedDuration,
+          duration: this.duration,
           selectedAction: this.selectedAction
         }
         const isChanged = isDifferent(currentFormValues, this.initialFormValues)
@@ -1211,10 +1211,10 @@ export default {
           name: this.investigationName,
           startDate,
           endDate,
-          expireDate: this.newExpireDate(startDate, this.selectedDuration),
+          duration: this.duration,
           targetUserType: this.targetUserType,
           targetUsers:
-            this.targetUserType == 'Groups'
+            this.targetUserType === 'Groups'
               ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
@@ -1251,46 +1251,6 @@ export default {
       if (this.name.length && !this.name.startsWith(' '))
         this.$store.dispatch('threatSharing/checkName', this.name)
     },
-    minDate() {
-      // set min date
-      var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear()
-
-      if (month.length < 2) month = '0' + month
-      if (day.length < 2) day = '0' + day
-
-      return [year - 1, month, day].join('-')
-    },
-    maxDate() {
-      // set max date
-      var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear()
-
-      if (month.length < 2) month = '0' + month
-      if (day.length < 2) day = '0' + day
-
-      return [year + 1, month, day].join('-')
-    },
-    newExpireDate(endDate, duration) {
-      // set expire date with duration value
-      // backend allows to iso string
-      function addDays(date, days) {
-        var result = new Date(date)
-        result.setDate(result.getDate() + days)
-        return result
-      }
-      let now = new Date()
-      let newDate = addDays(now, duration)
-      let date = new Date(newDate).toISOString()
-      return this.$moment(date).format(getTimeZoneForMoment())
-    },
-    allowedDates(val) {
-      // return val < this.endDate;
-    },
     checkIsEdit() {
       if (this.isEdit) {
         this.investigationName = this?.investigationDetailsData?.name || ''
@@ -1300,10 +1260,7 @@ export default {
             type
           })
         )
-        //this.date.push(this.investigationDetailsData.endDate)
-        this.selectedDuration =
-          new Date(this.investigationDetailsData.expireDate).getDate() -
-          new Date(this.investigationDetailsData.createTime).getDate()
+        this.duration = 3
         this.targetUserType = this.investigationDetailsData.targetUserType
         if (this.investigationDetailsData.targetUserType === 'Groups') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
@@ -1461,7 +1418,7 @@ export default {
       filterList: this.filterList,
       date: this.date,
       scanTypes: this.scanTypes,
-      selectedDuration: this.selectedDuration,
+      duration: this.duration,
       selectedAction: this.selectedAction
     }
   },
