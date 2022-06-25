@@ -328,7 +328,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/incident-responder/sandbox',
+          path: '/incident-responder/cross-company-integration',
           name: 'Cross Company Integration',
           component: Sandbox,
           meta: {

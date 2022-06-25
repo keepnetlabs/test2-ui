@@ -379,7 +379,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/incident-responder/sandbox"
+                  to="/incident-responder/cross-company-integration"
                   id="btn--link-navigator-menu-sandbox"
                   route-name="Cross Company Integration"
                   :router-name="routerName"
