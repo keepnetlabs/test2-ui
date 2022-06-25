@@ -135,9 +135,9 @@ export default {
       if (id) {
         getCampaignJobSummary(this.$route?.params?.id)
           .then((response) => {
-            if (response?.data?.data?.landingPageTemplateInfo?.methodTypeId === 3) {
+            if (response?.data?.data?.scenarioInfo?.methodTypeId === 3) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-              if (tabIndex) {
+              if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {
                   label: labels.OpenedAttachment,
                   name: labels.OpenedAttachment,
@@ -147,6 +147,10 @@ export default {
                     'permissions/getCampaignReportsOpenedAttachmentPermissions'
                   ]
                 }
+              }
+              const clickedTabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+              if (clickedTabIndex !== -1) {
+                this.tabItems.splice(clickedTabIndex, 1)
               }
             }
           })
