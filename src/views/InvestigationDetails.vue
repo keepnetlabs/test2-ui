@@ -2244,7 +2244,9 @@ export default {
     },
     onAddClose(resp) {
       if (resp?.data?.data?.resourceId) {
-        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
       }
       if (this.timeoutId) {
         clearTimeout(this.timeoutId)
@@ -2686,7 +2688,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData?.headers || []))
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName

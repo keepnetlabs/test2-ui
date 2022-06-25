@@ -458,12 +458,13 @@ export default {
   computed: {
     ...mapGetters({
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
-      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission'
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.checkIsLDAPConfigured()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   methods: {
     checkIsLDAPConfigured() {
@@ -853,6 +854,9 @@ export default {
   .v-list-item__content,
   .k-form-group__content {
     width: 100%;
+  }
+  .v-skeleton-loader.v-skeleton-loader--is-loading {
+    border-radius: 12px;
   }
 }
 </style>

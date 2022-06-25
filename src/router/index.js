@@ -32,8 +32,6 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
-import SimpleReports from '@/views/SimpleReports'
-import SimpleReportDetails from '@/views/SimpleReportDetails'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -102,7 +100,7 @@ const router = new Router({
           props: true
         },
         {
-          path: '/community/:id',
+          path: '/threat-sharing/community/:id',
           name: 'Community',
           component: Community,
           meta: {
@@ -115,7 +113,7 @@ const router = new Router({
           force: true
         },
         {
-          path: '/job-log',
+          path: '/company/job-log',
           name: 'Job Log',
           component: ShowAllJobs,
           meta: {
@@ -125,7 +123,7 @@ const router = new Router({
           }
         },
         {
-          path: '/target-users',
+          path: '/company/target-users',
           name: 'Target Users',
           component: TargetUsers,
           meta: {
@@ -135,7 +133,7 @@ const router = new Router({
           }
         },
         {
-          path: '/target-users/:id',
+          path: '/company/target-users/:id',
           name: 'Target Group Users',
           component: TargetGroupUsers,
           meta: {
@@ -147,7 +145,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/companies',
+          path: '/company/companies',
           name: 'Companies',
           component: Companies,
           meta: {
@@ -159,7 +157,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/company-group-details/:groupId',
+          path: '/company/companies/company-group-details/:groupId',
           name: 'Company Group Details',
           component: Companies,
           meta: {
@@ -171,7 +169,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/phishing-scenarios',
+          path: '/phishing-simulator/phishing-scenarios',
           name: 'Phishing Scenarios',
           component: PhishingSimulator,
           meta: {
@@ -183,7 +181,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/settings',
+          path: '/phishing-simulator/settings',
           name: 'Settings',
           component: Settings,
           meta: {
@@ -195,7 +193,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/campaign-manager',
+          path: '/phishing-simulator/campaign-manager',
           name: 'Campaign Manager',
           component: CampaignManager,
           meta: {
@@ -207,7 +205,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/campaign-report/:id',
+          path: '/reports/campaign-reports/campaign-report/:id',
           name: 'Campaign Report',
           component: CampaignManagerReport,
           meta: {
@@ -231,7 +229,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/company-settings',
+          path: '/company/company-settings',
           name: 'Company Settings',
           component: CompanySettings,
           meta: {
@@ -243,7 +241,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/system-users',
+          path: '/company/system-users',
           name: 'System Users',
           component: SystemUsers,
           meta: {
@@ -279,7 +277,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/integrations',
+          path: '/incident-responder/integrations',
           name: 'Integrations',
           component: Integrations,
           meta: {
@@ -291,7 +289,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/playbook',
+          path: '/incident-responder/playbook',
           name: 'Playbook',
           component: Playbook,
           meta: {
@@ -301,7 +299,7 @@ const router = new Router({
           }
         },
         {
-          path: '/audit',
+          path: '/company/audit',
           name: 'Audit',
           component: Audit,
           meta: {
@@ -313,7 +311,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/mailConfiguration',
+          path: '/incident-responder/mailConfiguration',
           name: 'Mail Configurations',
           component: MailConfiguration,
           meta: {
@@ -330,7 +328,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/sandbox',
+          path: '/incident-responder/sandbox',
           name: 'Cross Company Integration',
           component: Sandbox,
           meta: {
@@ -342,7 +340,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/investigations',
+          path: '/incident-responder/investigations',
           name: 'Investigations',
           component: InvestigationComponent,
           meta: {
@@ -357,7 +355,7 @@ const router = new Router({
           props: true
         },
         {
-          path: '/investigation-details/:id',
+          path: '/incident-responder/investigations/investigation-details/:id',
           name: 'Investigation Details',
           component: InvestigationDetailsComponent,
           meta: {
@@ -369,47 +367,57 @@ const router = new Router({
           params: true
         },
         {
-          path: '/reports',
-          name: 'Reports',
-          component: Reports,
+          path: '/reports/campaign-reports',
+          name: 'Campaign Reports',
+          component: CampaignReports,
           meta: {
             isAuthenticated: true,
+            parentName: 'Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-          },
-          children: [
-            {
-              path: '/campaign-reports',
-              name: 'Campaign Reports',
-              component: CampaignReports,
-              meta: {
-                isAuthenticated: true,
-                parentName: 'Reports',
-                permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-              }
-            }
-            /*
-            {
-              path: '/simple-reports',
-              name: 'Simple Reports',
-              component: SimpleReports,
-              meta: {
-                isAuthenticated: true,
-                parentName: 'Reports'
-              }
-            },
-            {
-              path: `/simple-reports/:id`,
-              name: 'Simple Report Details',
-              component: SimpleReportDetails,
-              meta: {
-                isAuthenticated: true,
-                parentName: 'Reports'
-              }
-            }
-
-             */
-          ]
+          }
         }
+        // {
+        //   path: '/reports',
+        //   name: 'Reports',
+        //   component: Reports,
+        //   meta: {
+        //     isAuthenticated: true,
+        //     permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+        //   },
+        //   children: [
+        //     {
+        //       path: '/campaign-reports',
+        //       name: 'Campaign Reports',
+        //       component: CampaignReports,
+        //       meta: {
+        //         isAuthenticated: true,
+        //         parentName: 'Reports',
+        //         permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+        //       }
+        //     }
+        //     /*
+        //     {
+        //       path: '/simple-reports',
+        //       name: 'Simple Reports',
+        //       component: SimpleReports,
+        //       meta: {
+        //         isAuthenticated: true,
+        //         parentName: 'Reports'
+        //       }
+        //     },
+        //     {
+        //       path: `/simple-reports/:id`,
+        //       name: 'Simple Report Details',
+        //       component: SimpleReportDetails,
+        //       meta: {
+        //         isAuthenticated: true,
+        //         parentName: 'Reports'
+        //       }
+        //     }
+
+        //      */
+        //   ]
+        // }
       ]
     },
     {
@@ -421,23 +429,25 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   //global guard structure
-  const storeRef = store
-  if (to.meta.isAuthenticated) {
-    let authenticationStatus = AuthenticationService.getAuthenticationStatus()
-    if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
-      if (storeRef.state.common.downloadModalStatus) {
-        storeRef.dispatch('common/changeDownloadModalStatus', false)
-        next(false)
+  try {
+    const storeRef = store
+    if (to.meta.isAuthenticated) {
+      let authenticationStatus = AuthenticationService.getAuthenticationStatus()
+      if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
+        if (storeRef.state.common.downloadModalStatus) {
+          storeRef.dispatch('common/changeDownloadModalStatus', false)
+          next(false)
+        } else {
+          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
+          else next(from.name ? false : '/')
+        }
       } else {
-        if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
-        else next(from.name ? false : '/')
+        next('/login')
       }
     } else {
-      next('/login')
+      next()
     }
-  } else {
-    next()
-  }
+  } catch (err) {}
 })
 
 export default router

@@ -147,7 +147,7 @@ export default {
         LDAPService.updateLDAPSetting(
           { ...this.initialFormData, ...formData },
           this.resourceId
-        ).finally(this.setLoading)
+        ).finally(this.callForData)
       } else {
         LDAPService.createLDAPSetting(formData).then(this.callForData)
       }

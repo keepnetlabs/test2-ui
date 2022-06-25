@@ -449,8 +449,16 @@
             flex-direction: column;
           }
           &-disable{
-            opacity: .5;
-            pointer-events: none;
+            .table-search{
+              opacity: .5;
+              pointer-events: none;
+            }
+            .table-settings{
+              [id^="btn-download"],[id^="btn-refresh"],[id^="btn-settings"],.clust-btn,.cluster__left,.cluster__right{
+                opacity: .5;
+                pointer-events: none;
+              }
+            }
           }
 
           @media only screen and (max-width: 500px) {

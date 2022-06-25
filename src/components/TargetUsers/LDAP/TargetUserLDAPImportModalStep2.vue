@@ -62,7 +62,20 @@ export default {
       type: Number
     }
   },
-  inject: ['resourceId', 'isEdit'],
+  inject: {
+    resourceId: {
+      type: String
+    },
+    isEdit: {
+      type: Boolean
+    },
+    setSelectedUsers: {
+      type: Function
+    },
+    getServerSideSelectionParams: {
+      type: Function
+    }
+  },
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -74,7 +87,13 @@ export default {
       {
         label: 'SYNC BY QUERY',
         infoText:
-          'Select this option to sync users by criteria. The syncronization process will repeat every 24 hours.'
+          'Select this option to sync users by criteria. The synchronization process will repeat every 24 hours.'
+      },
+      {
+        label: 'SYNC ALL USERS',
+        infoText: `Select this option to sync all users in ${
+          this.step1Step === 0 ? 'your active directory' : 'selected LDAP groups'
+        }. The synchronization process will repeat every 24 hours.`
       }
     ]
     if (!this.isEdit)
@@ -82,16 +101,10 @@ export default {
         label: 'SELECT Manually',
         infoText: 'Select this option to import users manually without auto-sync.'
       })
-    if (this.step1Step === 0) {
-      radioGroupItems.push({
-        label: 'SYNC ALL USERS',
-        infoText:
-          'Select this option to sync all users in selected LDAP groups. The syncronization process will repeat every 24 hours.'
-      })
-    }
+
     return {
       radioGroupItems,
-      selectedRadioGroupIndex: radioGroupItems.length === 1 ? 0 : this.step2Step || 0,
+      selectedRadioGroupIndex: this.step2Step || 0,
       processedUserCount: 0,
       isLoading: false,
       activeStatus: 0,
@@ -107,6 +120,7 @@ export default {
   },
   watch: {
     selectedRadioGroupIndex(val) {
+      this.setSelectedUsers([])
       this.$emit('update:step2Step', val)
     }
   },
@@ -117,9 +131,12 @@ export default {
     createLDAPMapping() {
       this.isLoading = true
       this.groupFilterValues = this.selectedLDAPItems.map((item) => item.filterValue)
+      const serverSideSelectionParams = this.getServerSideSelectionParams()
       LDAPService.createLDAPMapping({
         ldapSettingId: this.resourceId,
-        groupFilterValues: this.groupFilterValues
+        groupFilterValues: this.groupFilterValues,
+        selectAll: serverSideSelectionParams?.isSelectedAllEver || false,
+        excludedItems: serverSideSelectionParams?.excludedResourceIdList || []
       })
         .then((response) => {
           this.transactionId = response?.data?.data?.transactionId

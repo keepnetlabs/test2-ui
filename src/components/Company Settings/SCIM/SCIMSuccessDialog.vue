@@ -75,14 +75,16 @@ export default {
       this.$emit('on-close')
     },
     handleCopyToClipboard() {
-      copyToClipboard(this.apiKey).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(this.apiKey)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.handleClose()
         })
-        this.handleClose()
-      })
+        .catch(() => {})
     }
   }
 }
