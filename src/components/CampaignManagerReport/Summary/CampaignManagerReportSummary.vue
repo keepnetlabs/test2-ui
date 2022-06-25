@@ -230,7 +230,7 @@ export default {
         noResponseEmail = 0,
         notDelivered = 0,
         attachmentOpenedEmail = 0,
-        phishingReporter = 0
+        reportedEmail = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -258,8 +258,8 @@ export default {
           userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
         },
         phishingReporter: {
-          userCount: phishingReporter,
-          userPercent: ((phishingReporter / this.getTotalUsers) * 100).toFixed()
+          userCount: reportedEmail,
+          userPercent: ((reportedEmail / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
