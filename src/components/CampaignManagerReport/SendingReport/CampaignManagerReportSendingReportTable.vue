@@ -222,7 +222,10 @@ export default {
       return events
         ? events.map((event) => ({
             status:
-              event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
+              event?.eventName === 'bounce'
+                ? event?.bounceType?.substring(0, 1)?.toUpperCase() +
+                  event?.bounceType?.substring(1)
+                : event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
             date: event.processedDate,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
