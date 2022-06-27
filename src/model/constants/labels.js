@@ -18,6 +18,7 @@ export const labels = {
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
   Completed: 'Completed',
+  RecentCampaigns: 'Recent Campaigns',
   RequiredStar: '*Required',
   EmailDelivery: 'Email Delivery',
   SIEMProvider: 'SIEM Provider',

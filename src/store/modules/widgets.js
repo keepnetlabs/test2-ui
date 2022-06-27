@@ -11,7 +11,8 @@ const widgetsStore = {
     topRulesCard: [],
     recentInvestigationsCard: [],
     reportersCard: [],
-    reportedEmailTrendsCard: []
+    reportedEmailTrendsCard: [],
+    recentCampaignsCard: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -22,7 +23,21 @@ const widgetsStore = {
     getTopRulesCard: (state) => state.topRulesCard,
     getRecentInvestigationsCard: (state) => state.recentInvestigationsCard,
     getReportersCard: (state) => state.reportersCard,
-    getReportedEmailTrendsCard: (state) => state.reportedEmailTrendsCard
+    getReportedEmailTrendsCard: (state) => state.reportedEmailTrendsCard,
+    getRecentCampaignsCard: (state) =>
+      state.recentCampaignsCard.map((row) => {
+        const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+        if (row.method === 'Attachment') {
+          campaignStatus.push(row['totalAttachmentOpenedCount'])
+        } else {
+          campaignStatus.push(row['totalClickedCount'])
+          campaignStatus.push(row['totalSubmittedCount'])
+        }
+        return {
+          ...row,
+          campaignStatus
+        }
+      })
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -51,6 +66,9 @@ const widgetsStore = {
     },
     SET_REPORTED_EMAIL_TRENDS(state, payload) {
       state.reportedEmailTrendsCard = payload
+    },
+    SET_RECENT_CAMPAIGNS(state, payload) {
+      state.recentCampaignsCard = payload
     }
   },
   actions: {
@@ -63,7 +81,8 @@ const widgetsStore = {
             dashboardTopRules,
             runningInvestigations,
             topReporters,
-            reportedEmailTrends
+            reportedEmailTrends,
+            recentPhishingCampaigns
           } = response.data
           const {
             investigationTypeCount,
@@ -71,10 +90,12 @@ const widgetsStore = {
             phishingReporterUserStatusCount,
             roiSummary
           } = dashboardSummary.data
+
           commit('SET_INVESTIGATION_CARD', investigationTypeCount)
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
           commit('SET_ROI_SUMMARY', roiSummary)
+          commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns.data)
 
           const { data: topRules } = dashboardTopRules
 

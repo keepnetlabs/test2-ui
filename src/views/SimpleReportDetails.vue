@@ -56,8 +56,6 @@ export default {
               data: { ticket }
             }
           } = response || { data: { data: { ticket: '' } } }
-          console.log('qlikTicket', ticket)
-
           const companyResourceId =
             localStorage.getItem('isSelectCompany') === 'true'
               ? localStorage.getItem('companyRequestId')
