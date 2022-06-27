@@ -499,13 +499,14 @@ export default {
               attachments,
               languageTypeResourceId: languageOfEmailTemplate,
               phishingFileName
-            } = emailTemplate
+            } = emailTemplate || {}
 
             this.emailTemplateParams = {
               fromName,
               fromAddress,
               name,
-              difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+              difficulty:
+                difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
               attachments,
               languageTypeResourceId: languageOfEmailTemplate,
               phishingFileName
@@ -519,13 +520,13 @@ export default {
               difficultyTypeId,
               methodTypeId,
               languageTypeResourceId
-            } = landingPageTemplate
+            } = landingPageTemplate || {}
             this.landingPageParams = {
               name: landingPageName,
               description,
               urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text,
+              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+              method: methods[methodTypeId - 1]?.text || '',
               languageTypeResourceId
             }
             this.landingPageTemplates = landingPages || []
