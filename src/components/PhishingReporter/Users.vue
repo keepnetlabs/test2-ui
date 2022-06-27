@@ -198,6 +198,7 @@ export default {
             filterableItems: [
               'Online',
               'Offline',
+              'Inactive',
               'Disabled',
               { text: 'Not Installed', value: 'NotInstalled' }
             ]
