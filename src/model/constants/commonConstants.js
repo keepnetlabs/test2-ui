@@ -500,7 +500,8 @@ export const INTEGRATION_TYPES = {
   SPAMHOUSE: 'Zen Spamhaus',
   CUSTOMINTEGRATION: 'Cross Company Integration',
   ROKSIT: 'Cyber X-Ray',
-  CyberXRay: 'Cyber X-Ray'
+  CyberXRay: 'Cyber X-Ray',
+  GOOGLEWEBRISK: 'Google Web Risk'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',

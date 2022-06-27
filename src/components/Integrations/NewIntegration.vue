@@ -166,7 +166,8 @@
               isIbmXForce ||
               isGoogleSafeBrowser ||
               isCustomIntegration ||
-              isRoksit
+              isRoksit ||
+              isGoogleWebRisk
             "
           >
             <v-list-item-content>
@@ -1134,6 +1135,9 @@ export default {
         this.selectedIntegrationType.name
       )
     },
+    isGoogleWebRisk() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.GOOGLEWEBRISK
+    },
     isIbmXForce() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
     },
@@ -1177,6 +1181,7 @@ export default {
       if (this.integrationId) promises.push(this.callForData(this.integrationId))
       Promise.all(promises).then((response) => {
         const { engineTypes, lookups, proxies } = response[0].data.data
+        console.log('engineTyes', engineTypes)
         this.integrationTypes = engineTypes.data.map((item) => {
           return {
             ...item,
@@ -1284,6 +1289,9 @@ export default {
         case INTEGRATION_TYPES.ROKSIT:
           label = INTEGRATION_LABELS.CyberXRay
           break
+        case INTEGRATION_TYPES.GOOGLEWEBRISK:
+          label = INTEGRATION_TYPES.GOOGLEWEBRISK
+          break
         default:
           return
       }
@@ -1319,7 +1327,8 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
@@ -1484,7 +1493,8 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
@@ -1558,7 +1568,8 @@ export default {
           INTEGRATION_TYPES.IBMXFORCE,
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
           INTEGRATION_TYPES.SPAMHOUSE,
-          INTEGRATION_TYPES.ROKSIT
+          INTEGRATION_TYPES.ROKSIT,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
@@ -1665,7 +1676,8 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
@@ -1795,6 +1807,13 @@ export default {
 
       if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.GOOGLEWEBRISK) {
+        this.formValues.apiUrl = 'https://webrisk.googleapis.com/v1'
         if (!this.formValues.apiKeys) {
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
