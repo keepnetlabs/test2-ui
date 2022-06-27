@@ -113,6 +113,7 @@
       :isAttachmentBasedScenario="isAttachmentBasedScenario"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
+      @onItemDetailsChange="handleItemDetailsChange"
     />
     <CustomError
       v-if="showPhishingScenarios"
@@ -381,14 +382,6 @@ export default {
     }
   },
   watch: {
-    formData: {
-      handler(val) {
-        this.isAttachmentBasedScenario =
-          val?.phishingScenario?.method === 'Attachment' ? true : false
-      },
-      deep: true,
-      immediate: true
-    },
     phishingScenarioSelectItems(newItems) {
       const selectedScenarioIndex = newItems.findIndex(
         (item) => item.value === this.formData?.phishingScenario?.value
@@ -606,6 +599,9 @@ export default {
     },
     toggleShowAdvancedSearchPhishing() {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
+    },
+    handleItemDetailsChange(item = {}) {
+      this.isAttachmentBasedScenario = item.methodTypeId === 3 ? true : false
     },
     handleOnPhishingScenarioChange(item = {}) {
       this.formData.phishingScenario = {

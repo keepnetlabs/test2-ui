@@ -58,6 +58,10 @@ export default {
     htmlData: {
       required: false
     },
+    isAttachmentBasedTemplate: {
+      type: Boolean,
+      default: false
+    },
     blockManagerComponents: {
       type: Object,
       default() {
@@ -174,15 +178,19 @@ export default {
       }
     },
     setMergedTextsForLinks() {
-      Object.keys(this.blockManagerComponents).forEach((key) => {
+      const blockManagerComponents = JSON.parse(JSON.stringify(this.blockManagerComponents))
+      if (this.isAttachmentBasedTemplate) {
+        delete blockManagerComponents['{PHISHINGURL}']
+      }
+      Object.keys(blockManagerComponents).forEach((key) => {
         if (
-          this.blockManagerComponents[key] &&
-          this.blockManagerComponents[key].attributes &&
-          this.blockManagerComponents[key].attributes.isUrl
+          blockManagerComponents[key] &&
+          blockManagerComponents[key].attributes &&
+          blockManagerComponents[key].attributes.isUrl
         )
           this.urlMergedTexts.push({
             value: key,
-            name: this.blockManagerComponents[key].label,
+            name: blockManagerComponents[key].label,
             title: 'Title'
           })
       })
@@ -762,7 +770,11 @@ export default {
         'border-radius': '4px',
         display: 'inline-block'
       })
-      for (const [key, value] of Object.entries(this.blockManagerComponents)) {
+      const blockManagerComponents = JSON.parse(JSON.stringify(this.blockManagerComponents))
+      if (this.isAttachmentBasedTemplate) {
+        delete blockManagerComponents['{PHISHINGURL}']
+      }
+      for (const [key, value] of Object.entries(blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
           const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
           value.content.components[0].src = logoUrl
