@@ -486,6 +486,7 @@ export default {
           this.phishingScenarioItems.push(data)
         }
 
+        this.$emit('onItemDetailsChange', data)
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
           (response) => {
             const { data: { data = {} } = {} } = response
