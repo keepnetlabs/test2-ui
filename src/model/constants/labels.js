@@ -6,7 +6,8 @@ export const labels = {
     return `${val} must have at least ${length} characters`
   },
   ExcludeIPAddress: 'Exclude IP Address',
-  ExcludeIPAddressSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
+  ExcludeIPAddressSubtitle:
+    'The interactions from the listed IP addresses will not be registered in your campaign statistics. ',
   ExcludeUserAgent: 'Exclude User Agent',
   ExcludeUserAgentSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
   ExcludeUserAgentBatchImportPlaceholder:
