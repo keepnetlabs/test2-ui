@@ -45,7 +45,7 @@
                   id="btn-move-to-trash--investigation-details-delete-emails-popup"
                   class="k-dialog__button"
                   text
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isMoveToTrashDisabled"
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
@@ -55,7 +55,7 @@
                   class="k-dialog__button"
                   text
                   color="#2196f3"
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isPermanentlyDeleteDisabled"
                   @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
@@ -946,7 +946,7 @@
                     :icon="rowActions[1].icon"
                     :text="rowActions[1].name"
                     :scope="scope"
-                    :disabled="rowActions[1].disabled"
+                    :disabled="rowActions[1].disabled || getWarningEmailDisableStatus(scope.row)"
                     @on-click="sendInvestigationDetailsWarningMessage(scope.row)"
                   />
                 </template>
@@ -1207,6 +1207,7 @@ export default {
     DefaultButtonRowAction
   },
   data: () => ({
+    deleteValue: null,
     isInvestigationWarningSelectAll: false,
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
@@ -2332,6 +2333,34 @@ export default {
       this.isWantToDelete = true
       this.deleteValue = value
     },
+    // getDeleteEmailDisableStatus(row) {
+    //   if (!row.emailLastAction) {
+    //     return false
+    //   }
+
+    //   if (
+    //     row.emailLastAction.actionType === 'Delete' &&
+    //     row.emailLastAction.status !== 'CompletedWithError'
+    //   ) {
+    //     return true
+    //   }
+
+    //   return false
+    // },
+    getWarningEmailDisableStatus(row) {
+      if (!row.emailLastAction) {
+        return false
+      }
+
+      if (
+        row.emailLastAction.actionType === 'Warning' &&
+        row.emailLastAction.status !== 'CompletedWithError'
+      ) {
+        return true
+      }
+
+      return false
+    },
     isWantToDeleteConfirm(val, message, hasForm = true) {
       if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
         return
@@ -2442,6 +2471,36 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    isMoveToTrashDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === false
+      ) {
+        return true
+      }
+
+      return false
+    },
+    isPermanentlyDeleteDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === true
+      ) {
+        return true
+      }
+
+      return false
+    },
     itemStats() {
       return {
         targetUsers: {
