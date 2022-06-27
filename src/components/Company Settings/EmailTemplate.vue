@@ -19,6 +19,7 @@
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
+          :isAttachmentBasedTemplate="isPhishingTemplate"
         />
       </template>
     </app-modal>
