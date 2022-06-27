@@ -82,6 +82,7 @@ import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiS
 import { postWidgets } from '@/api/widgets'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
+import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPhishedUsers'
 export default {
   name: 'Widgets',
   components: {
@@ -300,9 +301,30 @@ export default {
           key: 'RecentCampaigns',
           title: 'Recent Campaigns',
           isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        MostPhishedUsers: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       },
       availableWidgets: [
+        {
+          name: 'Most Phished Users',
+          key: 'MostPhishedUsers',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
         {
           name: 'Recent Campaigns',
           key: 'RecentCampaigns',
@@ -485,6 +507,8 @@ export default {
           return RecentInvestigations
         case 'RecentCampaigns':
           return RecentCampaigns
+        case 'MostPhishedUsers':
+          return MostPhishedUsers
         case 'Reporters':
           return Reporters
         case 'TopRules':
@@ -747,6 +771,22 @@ export default {
           key: 'RecentCampaigns',
           title: 'Recent Campaigns',
           isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        {
+          x: 0,
+          y: 27,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       ]
       widgets = widgets.reduce((acc, widget) => {

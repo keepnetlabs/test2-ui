@@ -767,7 +767,8 @@ const store = {
         widgets: getters?.getDashboardWidgetsPermission,
         phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
         roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
-        recentCampaignsCard: getters?.getCampaignReportsGetPermissions
+        recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
+        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
       }
     }
   },

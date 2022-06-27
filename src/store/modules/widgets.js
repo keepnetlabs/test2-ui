@@ -12,7 +12,8 @@ const widgetsStore = {
     recentInvestigationsCard: [],
     reportersCard: [],
     reportedEmailTrendsCard: [],
-    recentCampaignsCard: []
+    recentCampaignsCard: [],
+    mostPhishedUsers: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -37,7 +38,8 @@ const widgetsStore = {
           ...row,
           campaignStatus
         }
-      })
+      }),
+    getMostPhishedUsersCard: (state) => state.mostPhishedUsers
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -69,6 +71,9 @@ const widgetsStore = {
     },
     SET_RECENT_CAMPAIGNS(state, payload) {
       state.recentCampaignsCard = payload
+    },
+    SET_MOST_PHISHED_USERS(state, payload) {
+      state.mostPhishedUsers = payload
     }
   },
   actions: {
@@ -82,7 +87,8 @@ const widgetsStore = {
             runningInvestigations,
             topReporters,
             reportedEmailTrends,
-            recentPhishingCampaigns
+            recentPhishingCampaigns,
+            mostPhishedUsers
           } = response.data
           const {
             investigationTypeCount,
@@ -90,12 +96,12 @@ const widgetsStore = {
             phishingReporterUserStatusCount,
             roiSummary
           } = dashboardSummary.data
-
           commit('SET_INVESTIGATION_CARD', investigationTypeCount)
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
           commit('SET_ROI_SUMMARY', roiSummary)
           commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns.data)
+          commit('SET_MOST_PHISHED_USERS', mostPhishedUsers.data)
 
           const { data: topRules } = dashboardTopRules
 
