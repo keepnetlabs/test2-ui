@@ -346,7 +346,7 @@
                       </div>
                     </div>
                     <div
-                      v-if="summaryData.emailTemplate.attachments.length > 0"
+                      v-if="hasEmailAttachments"
                       class="summary-content"
                       style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
                     >
@@ -864,6 +864,9 @@ export default {
     }
   },
   computed: {
+    hasEmailAttachments() {
+      return this.summaryData?.emailTemplate?.attachments?.length > 0
+    },
     isAttachmentBasedScenario() {
       return this.formValues.methodTypeId === '3'
     },
