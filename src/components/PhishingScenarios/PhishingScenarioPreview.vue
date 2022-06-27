@@ -53,6 +53,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane
+          v-if="!isAttachmentBasedScenario"
           :label="labels.LandingPage"
           name="landing-page"
           id="campaign-manager-info--landing-content"
@@ -114,6 +115,9 @@ export default {
     }
   },
   computed: {
+    isAttachmentBasedScenario() {
+      return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
+    },
     getTitle() {
       return 'Scenario Preview'
     },
