@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import RecentCampaigns from '@/components/Common/Widget/WidgetComponents/RecentCampaigns'
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
@@ -81,6 +82,7 @@ import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiS
 import { postWidgets } from '@/api/widgets'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
+import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPhishedUsers'
 export default {
   name: 'Widgets',
   components: {
@@ -283,9 +285,51 @@ export default {
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
+        },
+        RecentCampaigns: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'RecentCampaigns',
+          title: 'Recent Campaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        MostPhishedUsers: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       },
       availableWidgets: [
+        {
+          name: 'Most Phished Users',
+          key: 'MostPhishedUsers',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
+        {
+          name: 'Recent Campaigns',
+          key: 'RecentCampaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
         {
           name: 'Recent Investigations',
           key: 'RecentInvestigations',
@@ -461,6 +505,10 @@ export default {
       switch (componentString) {
         case 'RecentInvestigations':
           return RecentInvestigations
+        case 'RecentCampaigns':
+          return RecentCampaigns
+        case 'MostPhishedUsers':
+          return MostPhishedUsers
         case 'Reporters':
           return Reporters
         case 'TopRules':
@@ -707,6 +755,38 @@ export default {
           key: 'TopRules',
           title: 'Top Rules',
           isAllowed: this?.permissions?.topRules
+        },
+        {
+          x: 0,
+          y: 24,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'RecentCampaigns',
+          title: 'Recent Campaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        {
+          x: 0,
+          y: 27,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       ]
       widgets = widgets.reduce((acc, widget) => {
