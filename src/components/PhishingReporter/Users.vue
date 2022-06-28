@@ -342,6 +342,14 @@ export default {
           text += textOutlookArchitecture
           text += textOS
           break
+        case 'Inactive':
+          text = 'Addin is inactivated by user\n'
+          text += 'User is offline\n'
+          text += textHKLM
+          text += textOutlookVersion
+          text += textOutlookArchitecture
+          text += textOS
+          break
         case 'Offline':
           text = 'Add-in is installed\n'
           text += 'User is offline\n'
