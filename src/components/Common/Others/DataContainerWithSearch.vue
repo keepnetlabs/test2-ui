@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="value.length"
     class="data-container-with-search"
     :style="getStyle"
     :class="['data-container-with-search', !isAllValid && 'data-container-with-search--error']"

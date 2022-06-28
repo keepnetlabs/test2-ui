@@ -19,7 +19,6 @@
       </template>
     </DataContainerWithSearchInput>
     <DataContainerWithSearch
-      v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
       removeDuplicates
       ref="dataContainerWithSearch"
@@ -117,21 +116,23 @@ export default {
       this.ipAddressSearch = ''
     },
     handleSaveChanges() {
-      this.$refs.dataContainerWithSearch.checkAllValid()
-      if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid) {
-        return
+      if (this.$refs.dataContainerWithSearch) {
+        this.$refs.dataContainerWithSearch.checkAllValid()
+        if (!this.$refs.dataContainerWithSearch.isAllValid) {
+          return
+        }
+        this.isActionButtonDisabled = true
+        const payload = {
+          excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+        }
+        postExcludedIPAddresses(payload)
+          .then(() => {
+            this.getExcludedIPAddresses()
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
       }
-      this.isActionButtonDisabled = true
-      const payload = {
-        excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
-      }
-      postExcludedIPAddresses(payload)
-        .then(() => {
-          this.getExcludedIPAddresses()
-        })
-        .finally(() => {
-          this.isActionButtonDisabled = false
-        })
     }
   }
 }
