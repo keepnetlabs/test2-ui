@@ -100,8 +100,8 @@ const widgetsStore = {
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
           commit('SET_ROI_SUMMARY', roiSummary)
-          commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns.data)
-          commit('SET_MOST_PHISHED_USERS', mostPhishedUsers.data)
+          commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns?.data || [])
+          commit('SET_MOST_PHISHED_USERS', mostPhishedUsers?.data || [])
 
           const { data: topRules } = dashboardTopRules
 

@@ -75,6 +75,7 @@
                   :outline="false"
                 />
                 <Badge
+                  v-if="currentFormData.landingPageParams.method"
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"

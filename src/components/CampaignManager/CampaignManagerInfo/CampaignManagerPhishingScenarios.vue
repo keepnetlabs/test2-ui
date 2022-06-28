@@ -514,7 +514,7 @@ export default {
             }
             this.emailTemplate = template
             const {
-              name: landingPageName,
+              name: landingPageName = '',
               description,
               landingPages,
               urlTemplate,
