@@ -108,9 +108,8 @@ export default {
           operands: fieldMappings,
           operators: [
             { text: 'contains', value: 'Contains' },
-            { text: 'does not contain', value: 'DoesNotContain' },
-            { text: 'is equal to', value: 'Equal' },
-            { text: 'is not equal to', value: 'IsNotEqual' }
+            { text: 'is equal to', value: '=' },
+            { text: 'is not equal to', value: '!=' }
           ]
         }
       ],
