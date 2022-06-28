@@ -25,11 +25,14 @@
       />
     </div>
     <div class="campaign-manager-report-summary__general-info mt-4"></div>
-    <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" :isLoading="isLoading" />
+    <CampaignManagerReportSummaryEmail
+      :form-data="getEmailTemplateData"
+      :isFetchingSummary="isLoading"
+    />
     <CampaignManagerReportSummaryLandingPage
       v-if="!isAttachment"
       :form-data="getLandingPageTemplateData"
-      :isLoading="isLoading"
+      :isFetchingSummary="isLoading"
     />
   </div>
 </template>
