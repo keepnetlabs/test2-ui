@@ -19,7 +19,7 @@
       <CampaignManagerReportSummaryInfoCard
         v-bind="isAttachment ? getPhishingReporterData : getClickedData"
         background-color="#F56C6C"
-        :title="isAttachment ? labels.PhishingReporter : labels.ClickedLink"
+        :title="isAttachment ? labels.Reporters : labels.ClickedLink"
         :is-loading="isLoading"
         :icon-src="clickedLinkIcon"
       />
