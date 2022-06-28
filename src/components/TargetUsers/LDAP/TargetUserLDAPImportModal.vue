@@ -185,9 +185,11 @@ export default {
           status
         } = data
         if (
-          !filter?.filterGroups?.[0]?.filterItems?.length ||
-          !filter?.filterGroups?.[1]?.filterItems?.length
+          filter?.filterGroups?.[0]?.filterItems?.length ||
+          filter?.filterGroups?.[1]?.filterItems?.length
         ) {
+          this.step2Step = 0
+        } else {
           this.step2Step = 1
         }
         this.editedScheduledFilter = !filter?.filterGroups?.length
