@@ -1181,7 +1181,6 @@ export default {
       if (this.integrationId) promises.push(this.callForData(this.integrationId))
       Promise.all(promises).then((response) => {
         const { engineTypes, lookups, proxies } = response[0].data.data
-        console.log('engineTyes', engineTypes)
         this.integrationTypes = engineTypes.data.map((item) => {
           return {
             ...item,
