@@ -85,7 +85,7 @@ export default {
         {
           name: labels.PhishingReporter,
           id: 'campaign-manager-report-phishing-report-content',
-          label: labels.PhishingReporter,
+          label: labels.Reporters,
           component: CampaignManagerReportPhishingReport,
           isVisible: this.$store.getters[
             'permissions/getCampaignReportsPhishingReporterPermissions'
