@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-email"
+    :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowEmailTemplate"
     :title="labels.EmailThatWill"
   >
@@ -86,6 +87,9 @@ export default {
   props: {
     formData: {
       type: Object
+    },
+    isFetchingSummary: {
+      type: Boolean
     }
   },
   data() {
