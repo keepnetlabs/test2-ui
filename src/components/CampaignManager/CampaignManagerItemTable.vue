@@ -314,8 +314,8 @@ export default {
         this.callForData()
       })
     },
-    handleLaunch() {
-      launchPhishingCampaign(this.item.resourceId).then(() => {
+    handleLaunch(row = {}) {
+      launchPhishingCampaign(row.resourceId).then(() => {
         this.callForData()
       })
     }
