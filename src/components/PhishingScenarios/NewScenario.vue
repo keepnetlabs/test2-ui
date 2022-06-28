@@ -296,7 +296,7 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            :color="getEmailDifficultyChipColor"
+                            :color="emailDifficultyChipColor"
                             v-if="!!summaryData && !!summaryData.emailTemplate"
                           >
                             {{
@@ -641,6 +641,8 @@ export default {
   },
   data() {
     return {
+      emailDifficultyChipColor: '#217124',
+      isFetched: false,
       selectedTab: '1',
       summaryData: {},
       showTemplate1: false,
@@ -707,6 +709,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isAttachmentBased: {
+      type: Boolean,
+      default: false
+    },
     scenarioId: {
       type: String
     },
@@ -727,8 +733,9 @@ export default {
     selectedLandingPageTemplateResourceId(id) {
       this.landingPageTemplateResourceId = id
     },
-    selectedEmailTemplateChange(id) {
+    selectedEmailTemplateChange(id, item) {
       this.formValues.emailTemplateId = id
+      this.selectedEmailTemplate = item
     },
     selectedLandingPageChange(id) {
       this.formValues.landingPageTemplateId = id
@@ -763,6 +770,21 @@ export default {
         }
       })
     },
+    getDifficultyColor(difficulty) {
+      if (difficulty === 'Easy') {
+        return '#217124'
+      }
+
+      if (difficulty === 'Medium') {
+        return '#2196F3'
+      }
+
+      if (difficulty === 'Hard') {
+        return '#F56C6C'
+      }
+
+      return '#217124'
+    },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step))
       let isValid = true
@@ -795,6 +817,18 @@ export default {
                 ...response.data.data,
                 languageShortCode
               }
+              if (this.selectedEmailTemplate) {
+                this.generalDifficultyTypeId =
+                  this.scenarioDetailsLookup['difficultyTypes']
+                    ?.find(
+                      (difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName
+                    )
+                    ?.value.toString() || ''
+                const difficultyColor = this.getDifficultyColor(
+                  this.selectedEmailTemplate.difficultyName
+                )
+                this.emailDifficultyChipColor = difficultyColor
+              }
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.step += 1
             })
@@ -817,6 +851,10 @@ export default {
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
               )?.description
+              const difficultyColor = this.getDifficultyColor(
+                this.selectedEmailTemplate.difficultyName
+              )
+              this.emailDifficultyChipColor = difficultyColor
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.step += 1
@@ -864,11 +902,23 @@ export default {
     }
   },
   computed: {
+    isAttachmentBasedScenario() {
+      if (
+        this.isAttachmentBased !== undefined &&
+        (this.isEdit || this.isDuplicate) &&
+        !this.isFetched
+      ) {
+        return this.isAttachmentBased
+      }
+
+      if (this.formValues?.methodTypeId) {
+        return this.formValues?.methodTypeId === '3'
+      }
+
+      return false
+    },
     hasEmailAttachments() {
       return this.summaryData?.emailTemplate?.attachments?.length > 0
-    },
-    isAttachmentBasedScenario() {
-      return this.formValues.methodTypeId === '3'
     },
     getModalTitle() {
       return !this.isEdit
@@ -883,25 +933,6 @@ export default {
             name: this.summaryData?.emailTemplate?.phishingFileName
           }
         : null
-    },
-    getEmailDifficultyChipColor() {
-      return this.difficulties.find(
-        (item) =>
-          item.value ===
-          (this.summaryData?.emailTemplate
-            ? this.summaryData.emailTemplate.difficultyResourceId
-            : '')
-      )?.text === 'Easy'
-        ? '#217124'
-        : this.difficulties.find(
-            (item) =>
-              item.value ===
-              (this.summaryData?.emailTemplate
-                ? this.summaryData.emailTemplate.difficultyResourceId
-                : '')
-          )?.text === 'Medium'
-        ? '#2196F3'
-        : '#F56C6C'
     },
     getLandingPageDifficultyColor() {
       return this.scenarioDetailsLookup.difficultyTypes.find(
@@ -980,6 +1011,7 @@ export default {
             ]
           }
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isFetched = true
         })
         .finally(() => {
           this.isSubmitDisabled = false

@@ -430,7 +430,7 @@ export default {
       }
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
-      this.$emit('selectedEmailTemplateChange', item.id)
+      this.$emit('selectedEmailTemplateChange', item.id, item)
       this.$emit('selectedEmailTemplateResourceId', item.resourceId)
       if (isInitial) {
         this.$emit('initialEmailTemplateId', item.id)
