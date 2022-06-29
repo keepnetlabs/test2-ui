@@ -208,6 +208,20 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  VISHING_LEFT_MENU_PERMISSIONS: {
+    VISHING_TEMPLATES: {
+      url: `vishing/vishing-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  VISHING_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `vishing/vishing-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   PHISHING_SCENARIO_LEFT_MENU_PERMISSIONS: {
     EMAIL_TEMPLATE: {
       url: `phishing-simulator/email-templates`,

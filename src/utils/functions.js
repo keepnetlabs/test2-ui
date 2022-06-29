@@ -1095,3 +1095,18 @@ export function copyToClipboard(textToCopy) {
     })
   }
 }
+
+export function formatSeconds(seconds = 0) {
+  var secondType = typeof seconds
+
+  if (secondType === 'number' || secondType === 'string') {
+    seconds = parseInt(seconds)
+
+    var mimute = Math.floor(seconds / 60)
+    seconds = seconds - mimute * 60
+
+    return ('0' + mimute).slice(-2) + ':' + ('0' + seconds).slice(-2)
+  } else {
+    return '00:00'
+  }
+}

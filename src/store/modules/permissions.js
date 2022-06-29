@@ -42,7 +42,9 @@ const {
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
   ROLES_PERMISSIONS,
-  LDAP_PERMISSIONS
+  LDAP_PERMISSIONS,
+  VISHING_LEFT_MENU_PERMISSIONS,
+  VISHING_TEMPLATES_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -88,7 +90,9 @@ const defaultState = {
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
   ldapPermissions: LDAP_PERMISSIONS,
-  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS
+  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
+  vishingLeftMenuPermissions: VISHING_LEFT_MENU_PERMISSIONS,
+  vishingTemplatesPermissions: VISHING_TEMPLATES_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -299,6 +303,13 @@ const store = {
     },
     getExcludedIpAddressPostPermissions(state) {
       return state?.excludeIpAddressPermissions?.POST?.hasPermission
+    },
+    // TODO: Add vishing permissions
+    getVishingLeftMenuPermissions(state) {
+      return state?.vishingLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getVishingTemplatesLeftMenuPermissions(state) {
+      return state?.vishingTemplatesPermissions?.isOneOfThemPermitted
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -776,6 +787,7 @@ const store = {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
       state.permissions = permissions
     },
+    // TODO: Add vishing permissions
     SET_ALL_PERMISSIONS(state = {}) {
       const statePermissionKeys = [
         'playbookPermissions',
@@ -819,7 +831,9 @@ const store = {
         'systemUsersPermissions',
         'systemRolesPermissions',
         'ldapPermissions',
-        'excludeIpAddressPermissions'
+        'excludeIpAddressPermissions',
+        'vishingLeftMenuPermissions',
+        'vishingTemplatesPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

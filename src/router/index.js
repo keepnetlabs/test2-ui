@@ -32,6 +32,8 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import VishingRoute from '@/views/VishingRoute'
+import VishingTemplates from '@/views/VishingTemplates'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -86,6 +88,26 @@ const router = new Router({
             permissionStoreKey: 'permissions/getPhishingSimulatorLeftMenuPermissions'
           },
           component: PhishingSimulatorRoute
+        },
+        {
+          path: '/vishing',
+          name: 'Vishing',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getVishingLeftMenuPermissions'
+          },
+          component: VishingRoute
+        },
+        {
+          path: '/vishing/vishing-templates',
+          name: 'Vishing Templates',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Vishing',
+            permissionStoreKey: 'permissions/getVishingTemplatesLeftMenuPermissions'
+          },
+          component: VishingTemplates
         },
         {
           path: '/threat-sharing',
@@ -438,7 +460,9 @@ router.beforeEach((to, from, next) => {
           storeRef.dispatch('common/changeDownloadModalStatus', false)
           next(false)
         } else {
-          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
+          // TODO: Remove all access
+          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey] || true)
+            next()
           else next(from.name ? false : '/')
         }
       } else {

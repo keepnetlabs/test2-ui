@@ -292,6 +292,34 @@
           </v-list-group>
 
           <v-list-group
+            v-if="getVishingLeftMenuPermissions || true"
+            id="btn--link-navigator-menu-phishing-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
+            :prepend-icon="iconPaths.mdiPhoneInTalk"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Vishing</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getVishingTemplatesLeftMenuPermissions || true"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/vishing-templates"
+                  id="btn--link-navigator-menu-vishing-templates"
+                  route-name="Vishing Templates"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group
             v-if="getIncidentResponderListGroupPermissions"
             id="btn--link-navigator-menu-incident-responder-list-group"
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
@@ -650,7 +678,8 @@ import {
   mdiEqualizer,
   mdiBriefcaseVariant,
   mdiMenu,
-  mdiHelpCircle
+  mdiHelpCircle,
+  mdiPhoneInTalk
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -705,7 +734,8 @@ export default {
         mdiEqualizer,
         mdiBriefcaseVariant,
         mdiMenu,
-        mdiHelpCircle
+        mdiHelpCircle,
+        mdiPhoneInTalk
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -864,6 +894,8 @@ export default {
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',
       getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
+      getVishingLeftMenuPermissions: 'permissions/getVishingLeftMenuPermissions',
+      getVishingTemplatesLeftMenuPermissions: 'permissions/getVishingTemplatesLeftMenuPermissions',
       getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
       getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
       getIncidentResponderListGroupPermissions:
@@ -933,6 +965,14 @@ export default {
         routerName === 'System Users' ||
         routerName === 'Job Log' ||
         routerName === 'Audit'
+      return {
+        'primary--text active-menu-parent': isSelected,
+        'un-selected-list-item': !isSelected
+      }
+    },
+    getVishingClasses() {
+      const routerName = this.routerName
+      const isSelected = routerName === 'Vishing' || routerName === 'Vishing Templates'
       return {
         'primary--text active-menu-parent': isSelected,
         'un-selected-list-item': !isSelected
@@ -1275,6 +1315,11 @@ export default {
 .hook-menu {
   .v-list-group__header__prepend-icon {
     transform: rotate(-25deg);
+  }
+}
+.vishing-menu {
+  .v-list-group__header__prepend-icon {
+    transform: rotateY(-180deg);
   }
 }
 .layout-container {
