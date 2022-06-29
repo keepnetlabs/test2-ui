@@ -51,21 +51,6 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
-                    :items="scenarioDetailsLookup.methodTypes"
-                    placeholder="Type"
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="text"
-                    outlined
-                    persistent-hint
-                    @change="getTemplatesForSearch"
-                    class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
-                  ></v-select>
-                </div>
-                <div>
-                  <v-select
                     :items="scenarioDetailsLookup.difficultyTypes"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -241,13 +226,19 @@ export default {
   name: 'LandingPageListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
-    landingPageTemplateResourceId: { required: false }
+    landingPageTemplateResourceId: { required: false },
+    categoryResourceId: { type: String, default: '' }
   },
   components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   directives: {
     'infinite-scroll': InfiniteScroll
   },
   data() {
+    const methods = [
+      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+      { text: 'Attachment', value: '7dLrW2kdBTDs' }
+    ]
     return {
       selectedTab: '1',
       landingPageTemplates: [],
@@ -255,11 +246,7 @@ export default {
       listData: [],
       totalNumberOfPages: 1,
       defaultListData: [],
-      methods: [
-        { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-        { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-        { text: 'Attachment', value: '7dLrW2kdBTDs' }
-      ],
+      methods,
       difficulties: [
         { text: 'Easy', value: 'mT0CeYGgKsVb' },
         { text: 'Medium', value: 'Z5XeVlpw6Dps' },
@@ -276,7 +263,11 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                { Value: '', FieldName: 'method', Operator: 'Include' },
+                {
+                  value: methods[Number(this.categoryResourceId) - 1].value,
+                  FieldName: 'CategoryResourceId',
+                  Operator: 'Include'
+                },
                 { Value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
               FilterGroups: []

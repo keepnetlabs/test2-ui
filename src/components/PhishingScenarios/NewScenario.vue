@@ -71,13 +71,13 @@
                   sub-title="Select the phishing technique for this scenario"
                 >
                   <v-select
+                    v-bind="commonRules"
+                    v-model="formValues.methodTypeId"
                     :items="scenarioDetailsLookup.methodTypes"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="formValues.methodTypeId"
                     item-value="value"
                     outlined
-                    v-bind="commonRules"
                     hint="*Required"
                     required
                     persistent-hint
@@ -142,9 +142,9 @@
                   <v-list-item-title class="new-phishing-scenario__title">
                     Select Email Template</v-list-item-title
                   >
-                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
-                    >Choose your email template</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title">{{
+                    getStep2Subtitle
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item style="margin-top: -10px;">
@@ -154,6 +154,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     ref="RefEmailTemplateListPreview"
                     :emailTemplateResourceId="emailTemplateResourceId"
+                    :category-resource-id="formValues.methodTypeId"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -170,17 +171,19 @@
                   <v-list-item-title class="new-phishing-scenario__title">
                     Select Landing Page Template</v-list-item-title
                   >
-                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
-                    >Choose your landing page template</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title">{{
+                    getStep3Subtitle
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <LandingPageListPreview
+                    v-if="!isAttachmentBasedScenario && step === 3"
                     ref="RefEmailTemplateListPreview"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                    :category-resource-id="formValues.methodTypeId"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -899,9 +902,36 @@ export default {
   watch: {
     landingPageTemplateResourceId() {
       this.selectedTab = '1'
+    },
+    'formValues.methodTypeId'(val, oldVal) {
+      console.log('iam deleted')
+      if (val !== oldVal) {
+        this.formValues.emailTemplateId = null
+        this.formValues.landingPageTemplateId = null
+        this.landingPageTemplateId = null
+        this.emailTemplateResourceId = null
+      }
     }
   },
   computed: {
+    getStep2Subtitle() {
+      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+        (mType) => mType.value === this.formValues.methodTypeId
+      )?.text
+      if (mTypeText === 'Click-Only') return 'Choose your click only type email template'
+      else if (mTypeText === 'Data Submission')
+        return 'Choose your data submission type email template'
+      else return 'Choose your attachment type email template'
+    },
+    getStep3Subtitle() {
+      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+        (mType) => mType.value === this.formValues.methodTypeId
+      )?.text
+      if (mTypeText === 'Click-Only') return 'Choose your click only type landing page'
+      else if (mTypeText === 'Data Submission')
+        return 'Choose your data submission type landing page'
+      else return 'Choose your attachment type landing page'
+    },
     isAttachmentBasedScenario() {
       if (
         this.isAttachmentBased !== undefined &&
