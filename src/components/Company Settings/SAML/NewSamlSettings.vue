@@ -583,8 +583,12 @@ export default {
       this.setCertificateText(file)
     },
     async setCertificateText(file) {
-      this.certificateText = await file.text()
-      this.isCertificateTextDisabled = true
+      try {
+        this.certificateText = await file.text()
+        this.isCertificateTextDisabled = true
+      } catch (e) {
+        this.certificateText = ''
+      }
     },
     onMetadataFileChange(file) {
       this.callForParseMetadata(file)
