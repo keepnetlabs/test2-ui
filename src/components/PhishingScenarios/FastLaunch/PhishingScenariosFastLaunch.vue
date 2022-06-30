@@ -95,7 +95,6 @@ import {
   getPhishingScenarioLandingPageAndEmailTemplate
 } from '@/api/phishingsimulator'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
-import { getScenario } from '@/api/scenarios'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
@@ -147,7 +146,7 @@ export default {
           sendingLimit: 50,
           duration: 3,
           emailTemplateParams: this.emailTemplateParams,
-          landingPageTemplate: this.landingPageTemplate,
+          landingPageTemplates: this.landingPageTemplate,
           landingPageParams: this.landingPageParams
         }
 
@@ -198,22 +197,24 @@ export default {
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
           }
           this.emailTemplate = template
-          const {
-            name: landingPageName,
-            description,
-            landingPages,
-            urlTemplate,
-            difficultyTypeId,
-            methodTypeId
-          } = landingPageTemplate
-          this.landingPageParams = {
-            name: landingPageName,
-            description,
-            urlTemplate,
-            difficulty: difficulties[difficultyTypeId - 1].text,
-            method: methods[methodTypeId - 1].text
+          if (landingPageTemplate) {
+            const {
+              name: landingPageName,
+              description,
+              landingPages,
+              urlTemplate,
+              difficultyTypeId,
+              methodTypeId
+            } = landingPageTemplate
+            this.landingPageParams = {
+              name: landingPageName,
+              description,
+              urlTemplate,
+              difficulty: difficulties[difficultyTypeId - 1].text,
+              method: methods[methodTypeId - 1].text
+            }
+            this.landingPageTemplate = landingPages
           }
-          this.landingPageTemplate = landingPages[0].content
         }
       )
     },
