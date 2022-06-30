@@ -529,7 +529,9 @@ export default {
           const payload = response.data.data
           if (payload.faviconUrl) {
             const favIcon = document.querySelector('link[rel="icon"]')
-            favIcon.href = payload.faviconUrl
+            if (favIcon) {
+              favIcon.href = payload.faviconUrl
+            }
           }
           this.configureCompanyWhitelabelingResourceId = payload.resourceId
           delete payload.resourceId

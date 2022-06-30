@@ -37,12 +37,6 @@ const login = {
           state.loginWhiteLabel[key] = payload[key]
         }
       }
-    },
-    WRONG_LOGIN_ATTEMPT(state, payload) {
-      state.wrongLoginAttempt += payload
-    },
-    EMPTY_LOGIN_ATTEMPT(state, empty) {
-      state.wrongLoginAttempt = empty
     }
   },
   actions: {
