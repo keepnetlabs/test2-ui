@@ -644,6 +644,7 @@ export default {
   },
   data() {
     return {
+      isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
       selectedTab: '1',
@@ -904,8 +905,7 @@ export default {
       this.selectedTab = '1'
     },
     'formValues.methodTypeId'(val, oldVal) {
-      console.log('iam deleted')
-      if (val !== oldVal) {
+      if (val !== oldVal && !this.isInitial) {
         this.formValues.emailTemplateId = null
         this.formValues.landingPageTemplateId = null
         this.landingPageTemplateId = null
@@ -1045,8 +1045,9 @@ export default {
         })
         .finally(() => {
           this.isSubmitDisabled = false
+          this.isInitial = false
         })
-    }
+    } else this.isInitial = false
   }
 }
 </script>
