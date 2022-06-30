@@ -55,6 +55,7 @@
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
             placeholder="Enter SIEM URL"
+            :rules="apiUrlRules"
           />
         </FormGroup>
         <FormGroup :title="labels.SecretToken" has-hint>
@@ -159,6 +160,11 @@ export default {
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.SecretToken, 2000))
       ],
+      apiUrlRules: [
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.urlOrIpAddress(v),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+      ],
       isActionButtonDisabled: false,
       labels,
       Validations
@@ -177,7 +183,7 @@ export default {
         !this.formData.token ||
         !this.formData.typeId ||
         this.isTesting ||
-        Validations.url(this.formData.apiUrl, 'Invalid URL') === 'Invalid URL'
+        Validations.urlOrIpAddress(v) === 'Invalid URL'
       )
     },
     getTestConnectionStyle() {
