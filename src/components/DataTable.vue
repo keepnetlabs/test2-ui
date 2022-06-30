@@ -1581,7 +1581,9 @@ export default {
         }
       } else {
         const disabledCol = this.columns.filter((c) => c.fixed === false)
-        disabledCol[0].fixed = 'left'
+        if (disabledCol && disabledCol[0]) {
+          disabledCol[0].fixed = 'left'
+        }
         this.firstColFixed = true
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
           this.$refs.elTableRef.columns[0].fixed = true
@@ -1778,7 +1780,11 @@ export default {
       if (storedTableSettings) {
         this.setStoredTableSettings(storedTableSettings)
       } else {
-        if (!firstColFixed) this.columns[0].fixed = false
+        if (!firstColFixed) {
+          if (this.columns && this.columns[0]) {
+            this.columns[0].fixed = false
+          }
+        }
         if (!lastColFixed) this.actionFixed = false
         //setting rendered columns
         if (!renderedColumns.length) {
@@ -2195,10 +2201,11 @@ export default {
       }
     },
     setStoredTableSettings(storedTableSettings) {
-      const { firstColFixed, lastColFixed, renderedColumns } = storedTableSettings
+      const { firstColFixed = false, lastColFixed = false, renderedColumns = false } =
+        storedTableSettings || {}
       if (!firstColFixed) {
         this.firstColFixed = firstColFixed
-        this.columns[0].fixed = false
+        if (this.columns && this.columns[0]) this.columns[0].fixed = false
       }
       if (!lastColFixed) {
         this.actionFixed = false
