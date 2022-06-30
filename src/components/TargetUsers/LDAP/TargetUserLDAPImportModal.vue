@@ -52,6 +52,7 @@
               :selected-l-d-a-p-items="selectedLDAPItems"
               :step1-step="step1Step"
               :step2-step.sync="step2Step"
+              :is-loading.sync="isStep2Loading"
               @on-error="step -= 1"
             />
           </v-stepper-content>
@@ -66,6 +67,7 @@
         :selected-radio-step="step2Step"
         :is-submit-disabled="isSubmitDisabled"
         :is-next-button-disabled="isNextButtonDisabled"
+        :is-step2-loading="isStep2Loading"
         max-step="2"
         @on-cancel="handleClose"
         @validate-step1="handleValidateStep1"
@@ -148,6 +150,7 @@ export default {
       step1TargetGroupResourceId: '',
       step1Step: 0,
       step2Step: 0,
+      isStep2Loading: false,
       serverSideSelectionParams: { isSelectedAllEver: false, excludedResourceIdList: [] },
       usersQueryFilter: getDefaultFilter()
     }
@@ -213,7 +216,9 @@ export default {
     handleValidateStep1(callback) {
       const step1 = this?.$refs?.refStep1
       this.selectedUsers = []
-      this.totalNumberOfRecords = 0
+      if (!((this.isEdit && [0, 1].includes(this.step2Step)) || [1, 2].includes(this.step2Step))) {
+        this.totalNumberOfRecords = 0
+      }
       if (!step1.validateForm()) {
         const comparator = this.serverSideSelectionParams?.isSelectedAllEver
           ? this.serverSideSelectionParams?.isSelectedAllEver

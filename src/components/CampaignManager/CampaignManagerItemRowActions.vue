@@ -6,7 +6,6 @@
           v-on="on"
           :id="getId"
           class="btn-hover"
-          :style="getStyle"
           icon
           @click="handleItemClick({ action: actionStatus })"
         >
@@ -98,12 +97,10 @@ export default {
     },
     getRowActions() {
       const rowActions = this.rowActions
-      if (
-        this.actionStatus === ACTION_STATUSES.RUNNING ||
-        this.actionStatus === ACTION_STATUSES.PAUSE
-      ) {
+      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
         const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
-        copyOfRowActions.splice(1, 0, {
+        copyOfRowActions.splice(0, 1)
+        copyOfRowActions.splice(0, 0, {
           name: labels.ViewReport,
           id: 'btn-view-report-row-actions-campaign-item-manager',
           icon: 'mdi-text-box',
@@ -118,11 +115,10 @@ export default {
         case ACTION_STATUSES.COMPLETE:
         case ACTION_STATUSES.CANCEL:
           return 'mdi-text-box'
+        case ACTION_STATUSES.RUNNING:
+          return 'mdi-stop'
         case ACTION_STATUSES.IDLE:
           return 'mdi-send'
-        case ACTION_STATUSES.PAUSE:
-        case ACTION_STATUSES.RUNNING:
-          return 'mdi-pause'
         default:
           return 'mdi-eye'
       }
@@ -134,23 +130,13 @@ export default {
           return labels.ViewReport
         case ACTION_STATUSES.IDLE:
           return labels.Launch
-        case ACTION_STATUSES.PAUSE:
-          return labels.Resume
-        case ACTION_STATUSES.RUNNING:
-          return labels.Pause
         case ACTION_STATUSES.DELETE:
           return labels.Delete
+        case ACTION_STATUSES.RUNNING:
+          return labels.Stop
         default:
           return labels.Preview
       }
-    },
-    getStyle() {
-      const style = {}
-      if (this.actionStatus === ACTION_STATUSES.PAUSE) {
-        style.backgroundColor = '#E6A23C'
-        style.opacity = 0.66
-      }
-      return style
     }
   },
   methods: {
@@ -166,14 +152,11 @@ export default {
       }
       let eventName = act.action
       switch (act.action) {
-        case ACTION_STATUSES.RUNNING:
-          eventName = 'on-pause'
-          break
-        case ACTION_STATUSES.PAUSE:
-          eventName = 'on-resume'
-          break
         case ACTION_STATUSES.IDLE:
           eventName = 'on-launch'
+          break
+        case ACTION_STATUSES.RUNNING:
+          eventName = 'on-stop'
           break
         default:
           eventName = act.action
