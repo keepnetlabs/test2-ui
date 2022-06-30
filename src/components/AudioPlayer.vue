@@ -31,6 +31,7 @@
           v-model="sliderTime"
           class="audio-player__track-slider"
           :show-tooltip="false"
+          :disabled="!canPlay"
           @change="onChangeCurrentTime"
         />
       </div>
@@ -75,9 +76,7 @@ export default {
   },
   methods: {
     onChangeCurrentTime(index) {
-      this.onPauseAudio()
       this.$refs.refAudio.currentTime = parseInt((index / 100) * this.audio.maxTime)
-      this.onPlayAudio()
     },
     onTogglePlay() {
       return this.audio.playing ? this.onPauseAudio() : this.onPlayAudio()
@@ -124,7 +123,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: 1rem 0px;
   .el-slider__runway {
     height: 4px !important;
     background-color: #e0e0e0 !important;

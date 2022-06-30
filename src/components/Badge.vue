@@ -13,7 +13,8 @@
             props.fullWidth ? 'full-width' : '',
             $options.getBadgeSize(props.size, props),
             props.className,
-            { 'k-badge--default': !props.outline }
+            { 'k-badge--default': !props.outline },
+            { 'k-badge--black': props.isBlackText }
           ]"
         >
           {{ props.text }}
@@ -33,7 +34,8 @@
         props.fullWidth ? 'full-width' : '',
         $options.getBadgeSize(props.size, props),
         props.className,
-        { 'k-badge--default': !props.outline }
+        { 'k-badge--default': !props.outline },
+        { 'k-badge--black': props.isBlackText }
       ]"
     >
       <slot name="content">
@@ -54,6 +56,10 @@ export default {
     color: {
       type: String,
       default: ''
+    },
+    isBlackText: {
+      type: Boolean,
+      default: false
     },
     defaultBackgroundColor: {
       type: String,
@@ -103,6 +109,8 @@ export default {
       case 'mini':
         retValue = 'k-badge__sizes--mini'
         break
+      case 'auto':
+        retValue = 'k-badge__sizes--auto'
       default:
         break
     }
@@ -143,6 +151,12 @@ export default {
       opacity: 0 !important;
     }
   }
+
+  &--black {
+    .v-btn__content {
+      color: #383b41 !important;
+    }
+  }
   .v-btn__content {
     font-size: 12px !important;
     font-weight: 600 !important;
@@ -153,6 +167,15 @@ export default {
     text-transform: none !important;
   }
   &__sizes {
+    &--auto {
+      &.v-btn {
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        max-width: unset !important;
+        height: auto !important;
+        padding: 4px 6px !important;
+      }
+    }
     &--medium {
       &.v-btn {
         border-radius: 4px;
