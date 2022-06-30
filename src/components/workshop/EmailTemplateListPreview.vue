@@ -51,21 +51,6 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
-                    :items="methods"
-                    placeholder="Type"
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    persistent-hint
-                    @change="getTemplatesForSearch"
-                    class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
-                  ></v-select>
-                </div>
-                <div>
-                  <v-select
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -233,7 +218,8 @@ export default {
   name: 'EmailTemplateListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
-    emailTemplateResourceId: { required: false }
+    emailTemplateResourceId: { required: false },
+    categoryResourceId: { type: String, default: '' }
   },
   directives: {
     'infinite-scroll': InfiniteScroll
@@ -247,7 +233,13 @@ export default {
     AttachmentsPreview
   },
   data() {
+    const methods = [
+      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+      { text: 'Attachment', value: '7dLrW2kdBTDs' }
+    ]
     return {
+      phishingFile: null,
       search: null,
       listData: [],
       defaultListData: [],
@@ -255,11 +247,7 @@ export default {
       templateSubject: null,
       totalNumberOfPages: 1,
       templateFromEmail: null,
-      methods: [
-        { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-        { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-        { text: 'Attachment', value: '7dLrW2kdBTDs' }
-      ],
+      methods,
       difficulties: [
         { text: 'Easy', value: 'mT0CeYGgKsVb' },
         { text: 'Medium', value: 'Z5XeVlpw6Dps' },
@@ -276,7 +264,11 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                { value: '', FieldName: 'CategoryResourceId', Operator: 'Include' },
+                {
+                  value: methods[Number(this.categoryResourceId) - 1].value,
+                  FieldName: 'CategoryResourceId',
+                  Operator: 'Include'
+                },
                 { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
               ],
               FilterGroups: []

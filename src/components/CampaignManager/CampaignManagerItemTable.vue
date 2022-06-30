@@ -54,8 +54,6 @@
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
           @on-stop="handleStop"
-          @on-resume="handleResume"
-          @on-pause="handlePause"
           @on-launch="handleLaunch"
         />
       </template>
@@ -151,6 +149,7 @@ export default {
         rowActions: [
           {
             name: labels.Stop,
+            isNotShow: true,
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
             action: 'on-stop',
@@ -301,16 +300,6 @@ export default {
     },
     handleStop(row = {}) {
       stopPhishingCampaignJob(row.resourceId).then(() => {
-        this.callForData()
-      })
-    },
-    handleResume(row = {}) {
-      resumePhishingCampaignJob(row.resourceId).then(() => {
-        this.callForData()
-      })
-    },
-    handlePause(row = {}) {
-      pausePhishingCampaignJob(row.resourceId).then(() => {
         this.callForData()
       })
     },

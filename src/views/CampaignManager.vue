@@ -203,6 +203,9 @@ export default {
       this.isShowNewInstanceModal = false
     },
     handleOnSubmitNewInstance() {
+      if (this.isItemTableShowing) {
+        this.$refs.campaignManagerItemTable.callForData()
+      }
       this.$refs.campaignManagerParentTable.callForData()
       this.closeNewInstanceModal()
     },

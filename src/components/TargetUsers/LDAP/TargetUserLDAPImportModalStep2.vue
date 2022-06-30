@@ -60,6 +60,9 @@ export default {
     },
     step1Step: {
       type: Number
+    },
+    isLoading: {
+      type: Boolean
     }
   },
   inject: {
@@ -106,7 +109,6 @@ export default {
       radioGroupItems,
       selectedRadioGroupIndex: this.step2Step || 0,
       processedUserCount: 0,
-      isLoading: false,
       activeStatus: 0,
       transactionId: '',
       mappingObject: {},
@@ -129,7 +131,7 @@ export default {
   },
   methods: {
     createLDAPMapping() {
-      this.isLoading = true
+      this.$emit('update:isLoading', true)
       this.groupFilterValues = this.selectedLDAPItems.map((item) => item.filterValue)
       const serverSideSelectionParams = this.getServerSideSelectionParams()
       LDAPService.createLDAPMapping({
@@ -143,7 +145,7 @@ export default {
           this.checkLDAPMappingStatus(this.transactionId)
         })
         .catch(() => {
-          this.isLoading = false
+          this.$emit('update:isLoading', false)
         })
     },
     checkLDAPMappingStatus(transactionId = '') {
@@ -170,7 +172,7 @@ export default {
           })
           this.$emit('on-error')
         } else if (status === TRANSACTION_STATUSES.FINISHED) {
-          this.isLoading = false
+          this.$emit('update:isLoading', false)
         } else {
           setTimeout(() => {
             this.checkLDAPMappingStatus(transactionId)
