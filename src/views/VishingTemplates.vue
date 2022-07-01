@@ -1,4 +1,4 @@
-<!-- TODO: add this to DataTable v-if="getEmailTemplatesSearchPermissions" -->
+<!-- TODO: add this line to DataTable v-if="getEmailTemplatesSearchPermissions" -->
 <template>
   <KContainer id="vishing-templates">
     <VishingTemplatePreview
@@ -6,6 +6,12 @@
       :status="isPreviewVisible"
       :selectedRow="selectedTemplate"
       @on-close="onToggleShowPreviewModal"
+    />
+    <DeleteVishingTemplateDialog
+      :status="isDeleteModalVisible"
+      :selectedTemplate="selectedTemplate"
+      @onCancel="onCloseDeleteModal"
+      @onConfirm="handleDeleteConfirm"
     />
     <DataTable
       id="vishing-templates-data-table"
@@ -104,8 +110,13 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { exportVishingTemplates, getVishingTemplateList } from '@/api/vishing'
+import {
+  exportVishingTemplates,
+  getVishingTemplateList,
+  deleteVishingTemplate
+} from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
 export default {
   name: 'VishingTemplates',
   components: {
@@ -114,7 +125,8 @@ export default {
     DataTable,
     DefaultButtonRowAction,
     RowActionsMenu,
-    DefaultMenuRowAction
+    DefaultMenuRowAction,
+    DeleteVishingTemplateDialog
   },
   data() {
     return {
@@ -125,7 +137,8 @@ export default {
       isEdit: false,
       isDuplicate: false,
       tableData: [],
-      showDeleteModal: false,
+      isDeleteModalVisible: false,
+      // TODO: Give selected template initial value of null
       selectedTemplate: {
         resourceId: '123',
         name: 'Template Name'
@@ -418,14 +431,18 @@ export default {
       // this.$router.push('/')
       // }
     },
-    handleDeleteConfirm() {
+    onCloseDeleteModal() {
       this.selectedTemplate = null
-      this.showDeleteModal = false
-      this.getDatatableList()
+      this.isDeleteModalVisible = false
+    },
+    handleDeleteConfirm() {
+      deleteVishingTemplate(this.selectedTemplate.resourceId)
+        .then(this.getDatatableList)
+        .finally(this.onCloseDeleteModal)
     },
     handleActionDelete(row) {
       this.selectedTemplate = row
-      this.showDeleteModal = true
+      this.isDeleteModalVisible = true
     },
     columnFilterChanged(filter) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)

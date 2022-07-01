@@ -64,7 +64,7 @@ export default {
   methods: {
     onClick() {
       if (this.isDisabled) return
-      this.$emit('on-click', scope)
+      this.$emit('on-click', this.scope)
     }
   }
 }

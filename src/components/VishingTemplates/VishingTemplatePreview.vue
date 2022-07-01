@@ -38,7 +38,7 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import { getVishingTemplate } from '@/api/vishing'
+import { getVishingTemplatePreview } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
@@ -83,7 +83,7 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      getVishingTemplate(this.selectedRow.resourceId)
+      getVishingTemplatePreview(this.selectedRow.resourceId)
         .then((response) => {
           this.templateName = response.name
           this.steps = response.steps

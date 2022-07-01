@@ -1,6 +1,6 @@
 import testRequest from '../utils/testRequest'
 
-export function getVishingTemplate(id) {
+export function getVishingTemplatePreview(id) {
   // TODO: Add correct endpoint
   // return testRequest.post(`/vishing-templates/${id}`)
   return new Promise((res) => {
@@ -32,9 +32,12 @@ export function getVishingTemplate(id) {
   })
 }
 
-export function exportVishingTemplates(payload = {}) {}
+export function exportVishingTemplates(payload = {}) {
+  // TODO: Add correct endpoint
+}
 
 export function getVishingTemplateList(payload = {}) {
+  // TODO: Add correct endpoint
   return new Promise((res) => {
     setTimeout(() => {
       res({
@@ -85,6 +88,15 @@ export function getVishingTemplateList(payload = {}) {
           validationMessages: []
         }
       })
+    }, 1000)
+  })
+}
+
+export function deleteVishingTemplate(id) {
+  // TODO: Add correct endpoint
+  return new Promise((res) => {
+    setTimeout(() => {
+      res()
     }, 1000)
   })
 }
