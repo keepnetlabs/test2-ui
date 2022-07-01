@@ -113,12 +113,9 @@ export default {
       }
     },
     getCampaignSummaryHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary
-      const {
-        randomlyUsersCount = 0,
-        sendOnlyActiveUsers = false,
-        sendRandomlyUsers = false
-      } = targetUsers
+      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary || {}
+      const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
+        targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
         randomlyUsersCount,

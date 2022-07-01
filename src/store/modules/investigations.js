@@ -146,8 +146,7 @@ const investigations = {
     async getIrSummary({ commit, dispatch }, obj) {
       dispatch('setWidgetsLoading', true)
       return await irSummary(obj).then((response) => {
-        const result = response.data
-        commit('SET_IRSUMMARY', result)
+        commit('SET_IRSUMMARY', response?.data || {})
         dispatch('setWidgetsLoading', false)
       })
     },
