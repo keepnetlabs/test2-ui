@@ -340,6 +340,47 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS: {
+    TRAININGS: {
+      url: `trainings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    ENROLLMENTS: {
+      url: `trainings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  TRAINING_PERMISSIONS: {
+    SEARCH: {
+      url: `trainings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: 'trainings/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `target-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `target-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
+  ENROLLMENTS_PERMISSIONS: {
+    SEARCH: {
+      url: `notified-emails/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   INCIDENT_RESPONDER_LIST_GROUP_PERMISSIONS: {
     NOTIFIED_EMAIL: {
       url: `notified-emails/search`,

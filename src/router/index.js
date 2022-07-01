@@ -32,6 +32,9 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import TrainingList from '@/views/TrainingList'
+import Enrollments from '@/views/Enrollments'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -111,6 +114,38 @@ const router = new Router({
           props: true,
           params: true,
           force: true
+        },
+        {
+          path: '/awareness-educator',
+          name: 'Awareness Educator',
+          component: AwarenessEducator,
+          meta: {
+            parentName: 'Dashboard',
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+          },
+          children: [
+            {
+              path: 'training-list',
+              name: 'Training List',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              component: TrainingList
+            },
+            {
+              path: 'enrollments',
+              name: 'Enrollments',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              component: Enrollments
+            }
+          ]
         },
         {
           path: '/company/job-log',
@@ -376,48 +411,6 @@ const router = new Router({
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         }
-        // {
-        //   path: '/reports',
-        //   name: 'Reports',
-        //   component: Reports,
-        //   meta: {
-        //     isAuthenticated: true,
-        //     permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //   },
-        //   children: [
-        //     {
-        //       path: '/campaign-reports',
-        //       name: 'Campaign Reports',
-        //       component: CampaignReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports',
-        //         permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //       }
-        //     }
-        //     /*
-        //     {
-        //       path: '/simple-reports',
-        //       name: 'Simple Reports',
-        //       component: SimpleReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     },
-        //     {
-        //       path: `/simple-reports/:id`,
-        //       name: 'Simple Report Details',
-        //       component: SimpleReportDetails,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     }
-
-        //      */
-        //   ]
-        // }
       ]
     },
     {

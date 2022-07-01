@@ -241,7 +241,7 @@
             v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
-            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
+            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorClasses]"
             :prepend-icon="iconPaths.mdiHook"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -285,6 +285,42 @@
                   to="/phishing-simulator/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   route-name="Settings"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
+            id="btn--link-navigator-menu-awareness-educator-list-group"
+            :class="[
+              'menu-with-item menu-link-default un-selected-list-item',
+              getAwarenessEducatorClasses
+            ]"
+            no-action
+            :prepend-icon="iconPaths.mdiBook"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Awareness Educator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/training-list"
+                  id="btn--link-navigator-menu-training-list"
+                  route-name="Training List"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/enrollments"
+                  id="btn--link-navigator-menu-enrollments"
+                  route-name="Enrollments"
                   :router-name="routerName"
                 />
               </v-list-item-content>
@@ -650,7 +686,8 @@ import {
   mdiEqualizer,
   mdiBriefcaseVariant,
   mdiMenu,
-  mdiHelpCircle
+  mdiHelpCircle,
+  mdiBook
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -705,7 +742,8 @@ export default {
         mdiEqualizer,
         mdiBriefcaseVariant,
         mdiMenu,
-        mdiHelpCircle
+        mdiHelpCircle,
+        mdiBook
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -954,7 +992,7 @@ export default {
         'un-selected-list-item': !isSelected
       }
     },
-    getPhishingSimulatorPermissions() {
+    getPhishingSimulatorClasses() {
       const routerName = this.routerName
       return {
         'primary--text active-menu-parent':
@@ -965,6 +1003,14 @@ export default {
           routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
+      }
+    },
+    getAwarenessEducatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Training List' || routerName === 'Enrollments',
+        'un-selected-list-item': routerName !== 'Training List' || routerName !== 'Enrollments'
       }
     },
     getCommunityName() {
