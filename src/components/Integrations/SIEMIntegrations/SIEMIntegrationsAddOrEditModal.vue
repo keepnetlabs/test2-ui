@@ -183,7 +183,7 @@ export default {
         !this.formData.token ||
         !this.formData.typeId ||
         this.isTesting ||
-        Validations.urlOrIpAddress(v) === 'Invalid URL'
+        Validations.urlOrIpAddress(this.formData.apiUrl) === 'Invalid URL'
       )
     },
     getTestConnectionStyle() {
