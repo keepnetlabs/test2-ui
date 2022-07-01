@@ -1932,7 +1932,7 @@ export default {
         this.totalMinutes = Math.floor(remainingTime / 60)
         const totalSeconds = parseInt((expireDate - createDate) / 1000, 10)
         this.progressValue =
-          this.statsAndMenuData.status === 'Finished'
+          this?.statsAndMenuData?.status === 'Finished'
             ? 100
             : (parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
       }

@@ -243,7 +243,7 @@ export const COLUMNS = {
     property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
-    fixed: 'false',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
