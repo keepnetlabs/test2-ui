@@ -92,7 +92,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // get IR Reports data via vuex.
       phishingReporterUserStatusCount: 'widgets/getPhishingReporterCard',
       isLoading: 'widgets/getIsLoading'
     })

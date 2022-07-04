@@ -73,6 +73,10 @@ export default {
     isEdit: {
       type: Boolean
     },
+    itemHeight: {
+      type: String,
+      default: '48'
+    },
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
@@ -106,7 +110,9 @@ export default {
       return comparator && this.textFieldRules.every((func) => func(comparator) === true)
     },
     getStyle() {
-      const style = {}
+      const style = {
+        height: `${this.itemHeight}px`
+      }
       if (!this.isValid) {
         style.backgroundColor = '#FEF7F7'
       }

@@ -458,12 +458,13 @@ export default {
   computed: {
     ...mapGetters({
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
-      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission'
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.checkIsLDAPConfigured()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   methods: {
     checkIsLDAPConfigured() {
@@ -477,10 +478,15 @@ export default {
             defaultFieldMappings,
             data?.fieldMappings
           )
+          this.isLDAPDisabled = !data.isActive
         })
         .catch(() => {
           this.isLDAPDisabled = true
-          this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+        })
+        .finally(() => {
+          if (this.isLDAPDisabled) {
+            this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+          }
         })
     },
     toggleImportLDAPModal() {

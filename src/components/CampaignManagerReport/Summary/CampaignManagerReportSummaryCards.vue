@@ -17,9 +17,9 @@
     </div>
     <div class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
-        v-bind="getClickedData"
+        v-bind="isAttachment ? getPhishingReporterData : getClickedData"
         background-color="#F56C6C"
-        :title="labels.ClickedLink"
+        :title="isAttachment ? labels.Reporters : labels.ClickedLink"
         :is-loading="isLoading"
         :icon-src="clickedLinkIcon"
       />
@@ -91,6 +91,10 @@ export default {
     getClickedData() {
       const { clickedEmail } = this.items
       return clickedEmail ? clickedEmail : {}
+    },
+    getPhishingReporterData() {
+      const { phishingReporter } = this.items
+      return phishingReporter ? phishingReporter : {}
     }
   }
 }

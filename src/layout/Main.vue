@@ -256,7 +256,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/phishing-scenarios"
+                  to="/phishing-simulator/phishing-scenarios"
                   id="btn--link-navigator-menu-phishing-scenario"
                   route-name="Phishing Scenarios"
                   :router-name="routerName"
@@ -269,7 +269,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/campaign-manager"
+                  to="/phishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
                   :active-class-comparator="() => routerName === 'Campaign Manager'"
@@ -282,7 +282,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/settings"
+                  to="/phishing-simulator/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
@@ -325,7 +325,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/investigations"
+                  to="/incident-responder/investigations"
                   id="btn--link-navigator-menu-investigations"
                   route-name="Investigations"
                   :active-class-comparator="
@@ -340,7 +340,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/integrations"
+                  to="/incident-responder/integrations"
                   id="btn--link-navigator-menu-integrations"
                   route-name="Integrations"
                   :router-name="routerName"
@@ -353,7 +353,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/playbook"
+                  to="/incident-responder/playbook"
                   id="btn--link-navigator-menu-playbook"
                   route-name="Playbook"
                   :router-name="routerName"
@@ -366,7 +366,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/mailConfiguration"
+                  to="/incident-responder/mailConfiguration"
                   id="btn--link-navigator-menu-mail-configuration"
                   route-name="Mail Configurations"
                   :router-name="routerName"
@@ -379,7 +379,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/sandbox"
+                  to="/incident-responder/cross-company-integration"
                   id="btn--link-navigator-menu-sandbox"
                   route-name="Cross Company Integration"
                   :router-name="routerName"
@@ -412,7 +412,7 @@
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/campaign-reports"
+                  to="/reports/campaign-reports"
                   id="btn--link-navigator-menu-reports"
                   route-name="Campaign Reports"
                   :active-class-comparator="
@@ -425,7 +425,7 @@
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/simple-reports"
+                  to="/reports/simple-reports"
                   id="btn--link-navigator-menu-simple-reports"
                   route-name="Simple Reports"
                   :active-class-comparator="
@@ -455,7 +455,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/target-users"
+                  to="/company/target-users"
                   id="btn--link-navigator-menu-target-users"
                   route-name="Target Users"
                   :active-class-comparator="
@@ -470,7 +470,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/companies"
+                  to="/company/companies"
                   id="btn--link-navigator-menu-companies"
                   route-name="Companies"
                   :active-class-comparator="
@@ -485,7 +485,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/company-settings"
+                  to="/company/company-settings"
                   id="btn--link-navigator-menu-company-settings"
                   route-name="Company Settings"
                   :router-name="routerName"
@@ -498,7 +498,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/system-users"
+                  to="/company/system-users"
                   id="btn--link-navigator-menu-system-users"
                   route-name="System Users"
                   :router-name="routerName"
@@ -511,7 +511,7 @@
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <app-router-link
-                  to="/audit"
+                  to="/company/audit"
                   id="btn--link-navigator-menu-audit-log"
                   route-name="Audit Log"
                   :active-class-comparator="() => routerName === 'Audit'"
@@ -524,7 +524,7 @@
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <app-router-link
-                  to="/job-log"
+                  to="/company/job-log"
                   id="btn--link-navigator-menu-job-log"
                   route-name="Job Log"
                   :router-name="routerName"
@@ -665,7 +665,7 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
-import SettingsModal from '@/components/Settings/SettingsModal'
+import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'

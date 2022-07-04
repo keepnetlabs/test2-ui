@@ -1,5 +1,3 @@
-import jwt_decode from 'jwt-decode'
-
 export function getBtnStatusColor(type) {
   if (typeof type === 'boolean' && type) {
     type = 'yes'
@@ -24,7 +22,7 @@ export function getBtnStatusColor(type) {
     case 'warning':
       return '#b6791d'
     case 'processing':
-      return '#0198AC'
+      return '#1173C1'
     case 'processed':
       return '#217124'
     case 'delivered':

@@ -297,8 +297,37 @@ export default {
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
             if (value.length) {
-              this.formValues['availableForRequests'] = getAvailableForListFromBackend(value)
-              this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
+              const availableForListFromBackend = getAvailableForListFromBackend(value)
+              if (!availableForListFromBackend.length) {
+                this.formValues['availableForRequests'] = [
+                  {
+                    id: 'MyCompanyOnly',
+                    label: 'My company only',
+                    type: 'MyCompanyOnly',
+                    resourceId: null
+                  }
+                ]
+                this.nonEditableAvailableForRequests = [
+                  {
+                    id: 'MyCompanyOnly',
+                    label: 'My company only',
+                    type: 'MyCompanyOnly',
+                    resourceId: null
+                  }
+                ]
+              } else {
+                this.formValues['availableForRequests'] = availableForListFromBackend
+                this.nonEditableAvailableForRequests = availableForListFromBackend
+              }
+            } else {
+              this.formValues['availableForRequests'] = [
+                {
+                  id: 'MyCompanyOnly',
+                  label: 'My company only',
+                  type: 'MyCompanyOnly',
+                  resourceId: null
+                }
+              ]
             }
             continue
           }

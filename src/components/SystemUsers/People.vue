@@ -55,7 +55,24 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
-      />
+      >
+        <template #datatable-row-actions="{scope}">
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[0].disabled"
+            @on-click="handleEdit(scope.row)"
+          />
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled || scope.row.email === getUser.email"
+            @on-click="handleDelete(scope.row)"
+          />
+        </template>
+      </data-table>
     </div>
   </div>
 </template>
@@ -82,12 +99,15 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   name: 'People',
   components: {
     DataTable,
     CreateOrEditSystemUser,
-    DeleteSystemUserModal
+    DeleteSystemUserModal,
+    DefaultButtonRowAction
   },
   data() {
     return {
@@ -259,7 +279,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission'
+      getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission',
+      getUser: 'auth/userGetter'
     })
   },
   methods: {

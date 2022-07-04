@@ -53,9 +53,9 @@ const investigations = {
       state.getStatsAndMenuData = payload?.data
     },
     SET_INVESTIGATIONLIST(state, payload) {
-      let data = payload.data
-      data.results.userStats = payload.data.results
-      let stateData = data.results.map((item) => {
+      let data = payload?.data
+      data.results.userStats = payload?.data?.results
+      let stateData = data?.results?.map((item) => {
         const { completedUsersCount = 0, scannedUsersCount = 0 } = item
         return {
           ...item,
@@ -65,7 +65,7 @@ const investigations = {
       })
 
       state.investigationList = {
-        totalNumberOfRecords: data.totalNumberOfRecords,
+        totalNumberOfRecords: data?.totalNumberOfRecords,
         data: stateData
       }
     },
@@ -146,8 +146,7 @@ const investigations = {
     async getIrSummary({ commit, dispatch }, obj) {
       dispatch('setWidgetsLoading', true)
       return await irSummary(obj).then((response) => {
-        const result = response.data
-        commit('SET_IRSUMMARY', result)
+        commit('SET_IRSUMMARY', response?.data || {})
         dispatch('setWidgetsLoading', false)
       })
     },

@@ -185,7 +185,7 @@ export default {
       localStorage.setItem('communityName', row.communityName)
       localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
       this.$router.push({
-        path: `/community/${row.communityResourceId}`,
+        path: `/threat-sharing/community/${row.communityResourceId}`,
         query: {
           postId: row.communityPostResourceId,
           communityName: localStorage.getItem('communityName'),
@@ -197,7 +197,7 @@ export default {
       localStorage.setItem('communityName', row.communityName)
       localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
       this.$router.push({
-        path: `/community/${row.communityResourceId}`
+        path: `/threat-sharing/community/${row.communityResourceId}`
       })
     }
   }

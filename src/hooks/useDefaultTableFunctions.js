@@ -22,6 +22,7 @@ export default {
     },
     serverSideSizeChanged(pageSize = 5) {
       this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForData()
     },

@@ -557,13 +557,15 @@ export default {
       }
     },
     handleCopyToClipboard(key = '') {
-      copyToClipboard(this.formValues[key] || this[key]).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(this.formValues[key] || this[key])
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     handleDomainToAddButtonClick() {
       if (
@@ -581,8 +583,12 @@ export default {
       this.setCertificateText(file)
     },
     async setCertificateText(file) {
-      this.certificateText = await file.text()
-      this.isCertificateTextDisabled = true
+      try {
+        this.certificateText = await file.text()
+        this.isCertificateTextDisabled = true
+      } catch (e) {
+        this.certificateText = ''
+      }
     },
     onMetadataFileChange(file) {
       this.callForParseMetadata(file)

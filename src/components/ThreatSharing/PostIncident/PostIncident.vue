@@ -2612,12 +2612,14 @@ export default {
       return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
     },
     contentCopy(contentBody) {
-      copyToClipboard(contentBody).then(() => [
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Content has been copied'
-        })
-      ])
+      copyToClipboard(contentBody)
+        .then(() => [
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Content has been copied'
+          })
+        ])
+        .catch(() => {})
     },
     findCategory(id) {
       switch (id) {

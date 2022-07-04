@@ -83,7 +83,11 @@
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
-                    v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
+                    v-if="
+                      scope.row.analysisEnginePermalink &&
+                      scope.row.result !== 'Excluded' &&
+                      scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+                    "
                     :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row['analysisEnginePermalink']"
                     target="_blank"
@@ -118,9 +122,15 @@
 <script>
 import Badge from '@/components/Badge'
 import DataTable from '@/components/DataTable'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE,
+  INTEGRATION_TYPES
+} from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getBtnStatusColor, copyToClipboard } from '@/utils/functions'
+
 export default {
   name: 'EmailDetailsUrl',
   components: {
@@ -137,6 +147,7 @@ export default {
   },
   data() {
     return {
+      INTEGRATION_TYPES,
       panel: [],
       showSecondCollapse: [],
       iEmpty: {
@@ -211,13 +222,15 @@ export default {
       return analysisList.some((item) => item.isSendFile || item.isSendFileHash)
     },
     handleCopyUrl(url = '') {
-      copyToClipboard(url).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(url)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {

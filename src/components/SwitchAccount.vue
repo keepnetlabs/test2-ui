@@ -190,7 +190,7 @@ export default {
     },
     companiesRouterClick() {
       this.setSwitchDialog(false)
-      this.$router.push('/companies')
+      this.$router.push('/company/companies')
     },
     sort(items, value) {
       return value

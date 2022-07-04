@@ -80,6 +80,9 @@ export default {
     },
     selectedRadioStep: {
       type: Number
+    },
+    isStep2Loading: {
+      type: Boolean
     }
   },
   inject: ['isEdit'],
@@ -94,9 +97,9 @@ export default {
       return this.step > 1
     },
     getImportButtonStyle() {
+      const comparator = this.isEdit ? false : !this.totalNumberOfRecords
       return (
-        (!this.totalNumberOfRecords || this.isSubmitDisabled) &&
-        !this.isEdit && {
+        (this.isStep2Loading || comparator || this.isSubmitDisabled) && {
           opacity: '.5',
           pointerEvents: 'none'
         }

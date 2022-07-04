@@ -40,6 +40,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane
+          v-if="!isAttachmentBasedScenario"
           :label="labels.LandingPage"
           name="landing-page"
           id="campaign-manager-info--landing-content"
@@ -82,6 +83,7 @@ export default {
   },
   data() {
     return {
+      isAttachmentBasedScenario: false,
       emailTemplate: null,
       landingPageTemplates: [],
       emailTemplateParams: {},
@@ -112,7 +114,8 @@ export default {
       getCampaignManagerPreview(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-          const { landingPageTemplate: landingPage } = phishingScenarioPreviewDto
+          const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
+          this.isAttachmentBasedScenario = methodTypeId === 3 ? true : false
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
             name: phishingScenarioPreviewDto?.emailTemplate?.name || '',

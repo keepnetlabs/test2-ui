@@ -45,7 +45,7 @@
                   id="btn-move-to-trash--investigation-details-delete-emails-popup"
                   class="k-dialog__button"
                   text
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isMoveToTrashDisabled"
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
@@ -55,7 +55,7 @@
                   class="k-dialog__button"
                   text
                   color="#2196f3"
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isPermanentlyDeleteDisabled"
                   @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
@@ -934,6 +934,22 @@
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
               >
+                <template #datatable-row-actions="{scope}">
+                  <DefaultButtonRowAction
+                    :icon="rowActions[0].icon"
+                    :text="rowActions[0].name"
+                    :scope="scope"
+                    :disabled="rowActions[0].disabled"
+                    @on-click="deleteInvestigationDetails(scope.row)"
+                  />
+                  <DefaultButtonRowAction
+                    :icon="rowActions[1].icon"
+                    :text="rowActions[1].name"
+                    :scope="scope"
+                    :disabled="rowActions[1].disabled || getWarningEmailDisableStatus(scope.row)"
+                    @on-click="sendInvestigationDetailsWarningMessage(scope.row)"
+                  />
+                </template>
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
                     <span class="d-flex align-center">
@@ -1175,6 +1191,8 @@ import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   components: {
     DatatableLoading,
@@ -1185,9 +1203,11 @@ export default {
     ShowMore,
     InvestigationDetailsLeftBarLoading,
     InvestigationDetailsTopBarLoading,
-    ThreeRowLoading
+    ThreeRowLoading,
+    DefaultButtonRowAction
   },
   data: () => ({
+    deleteValue: null,
     isInvestigationWarningSelectAll: false,
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
@@ -1912,7 +1932,7 @@ export default {
         this.totalMinutes = Math.floor(remainingTime / 60)
         const totalSeconds = parseInt((expireDate - createDate) / 1000, 10)
         this.progressValue =
-          this.statsAndMenuData.status === 'Finished'
+          this?.statsAndMenuData?.status === 'Finished'
             ? 100
             : (parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
       }
@@ -2244,7 +2264,9 @@ export default {
     },
     onAddClose(resp) {
       if (resp?.data?.data?.resourceId) {
-        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
       }
       if (this.timeoutId) {
         clearTimeout(this.timeoutId)
@@ -2312,6 +2334,34 @@ export default {
         : 1
       this.isWantToDelete = true
       this.deleteValue = value
+    },
+    // getDeleteEmailDisableStatus(row) {
+    //   if (!row.emailLastAction) {
+    //     return false
+    //   }
+
+    //   if (
+    //     row.emailLastAction.actionType === 'Delete' &&
+    //     row.emailLastAction.status !== 'CompletedWithError'
+    //   ) {
+    //     return true
+    //   }
+
+    //   return false
+    // },
+    getWarningEmailDisableStatus(row) {
+      if (!row.emailLastAction) {
+        return false
+      }
+
+      if (
+        row.emailLastAction.actionType === 'Warning' &&
+        row.emailLastAction.status !== 'CompletedWithError'
+      ) {
+        return true
+      }
+
+      return false
     },
     isWantToDeleteConfirm(val, message, hasForm = true) {
       if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
@@ -2423,6 +2473,36 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    isMoveToTrashDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === false
+      ) {
+        return true
+      }
+
+      return false
+    },
+    isPermanentlyDeleteDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === true
+      ) {
+        return true
+      }
+
+      return false
+    },
     itemStats() {
       return {
         targetUsers: {
@@ -2686,7 +2766,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData?.headers || []))
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName

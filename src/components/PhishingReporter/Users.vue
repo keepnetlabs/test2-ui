@@ -198,6 +198,7 @@ export default {
             filterableItems: [
               'Online',
               'Offline',
+              'Inactive',
               'Disabled',
               { text: 'Not Installed', value: 'NotInstalled' }
             ]
@@ -337,6 +338,14 @@ export default {
           text = 'Add-in is installed and active\n'
           text += textHKLM
           text += textBootTime
+          text += textOutlookVersion
+          text += textOutlookArchitecture
+          text += textOS
+          break
+        case 'Inactive':
+          text = 'Addin is inactivated by user\n'
+          text += 'User is offline\n'
+          text += textHKLM
           text += textOutlookVersion
           text += textOutlookArchitecture
           text += textOS

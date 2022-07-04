@@ -90,7 +90,7 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import AppModal from '../AppModal'
+import AppModal from '@/components/AppModal'
 import TestConnection from './TestConnection'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -135,14 +135,33 @@ export default {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
-        if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            res.data.data.availableForList
+        const availableForList = res?.data?.data?.availableForList
+        if (this.$refs.refMakeAvailableFor && availableForList?.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            res.data.data.availableForList
-          )
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })

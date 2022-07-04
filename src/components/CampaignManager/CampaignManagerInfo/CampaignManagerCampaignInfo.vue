@@ -110,8 +110,10 @@
       ref="refCampaignManagerPhishingScenarios"
       :items="phishingScenarioItems"
       :value="formData.phishingScenarioResourceId"
+      :isAttachmentBasedScenario="isAttachmentBasedScenario"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
+      @onItemDetailsChange="handleItemDetailsChange"
     />
     <CustomError
       v-if="showPhishingScenarios"
@@ -287,6 +289,7 @@ export default {
   },
   data() {
     return {
+      isAttachmentBasedScenario: false,
       axiosPayloadOfPhishingScenarios,
       initial: true,
       phishingInitial: true,
@@ -379,13 +382,32 @@ export default {
     }
   },
   watch: {
+    phishingScenarioSelectItems(newItems) {
+      const selectedScenarioIndex = newItems.findIndex(
+        (item) => item.value === this.formData?.phishingScenario?.value
+      )
+      if (selectedScenarioIndex !== -1)
+        this.formData.phishingScenario = {
+          ...newItems[selectedScenarioIndex]
+        }
+    },
     defaultValues(val) {
       for (const key of Object.keys(val)) {
         if (key === 'targetGroups') {
           this.defaultTargetGroups = val[key]
           this.addDefaultTargetGroupItems(this.defaultTargetGroups)
         } else if (key === 'phishingScenario') {
-          this.formData.phishingScenario = val[key]
+          const selectedScenarioIndex = this.phishingScenarioItems.findIndex(
+            (item) => item.resourceId === val[key].value
+          )
+          if (selectedScenarioIndex !== -1) {
+            this.formData.phishingScenario = {
+              ...val[key],
+              method: this.phishingScenarioItems[selectedScenarioIndex].method
+            }
+          } else {
+            this.formData.phishingScenario = val[key]
+          }
           this.formData.phishingScenarioResourceId = val[key].value
         } else {
           this.formData[key] = val[key]
@@ -544,8 +566,10 @@ export default {
             this.phishingScenarioSelectItems = data.results.map((item) => ({
               text: item.name,
               value: item.resourceId,
+              method: item.method,
               extraDatas: null
             }))
+
             if (
               this.phishingScenarioSelectItems.length &&
               !this.isEdit &&
@@ -576,10 +600,14 @@ export default {
     toggleShowAdvancedSearchPhishing() {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
     },
+    handleItemDetailsChange(item = {}) {
+      this.isAttachmentBasedScenario = item.methodTypeId === 3 ? true : false
+    },
     handleOnPhishingScenarioChange(item = {}) {
       this.formData.phishingScenario = {
         text: item.name,
         value: item.resourceId,
+        method: item.method,
         extraDatas: null
       }
       if (

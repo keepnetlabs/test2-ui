@@ -25,10 +25,14 @@
       />
     </div>
     <div class="campaign-manager-report-summary__general-info mt-4"></div>
-    <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" :isLoading="isLoading" />
+    <CampaignManagerReportSummaryEmail
+      :form-data="getEmailTemplateData"
+      :isFetchingSummary="isLoading"
+    />
     <CampaignManagerReportSummaryLandingPage
+      v-if="!isAttachment"
       :form-data="getLandingPageTemplateData"
-      :isLoading="isLoading"
+      :isFetchingSummary="isLoading"
     />
   </div>
 </template>
@@ -78,10 +82,10 @@ export default {
   },
   computed: {
     isAttachment() {
-      return this.campaignSummary?.landingPageTemplateInfo?.methodTypeId === 3 || false
+      return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
     },
     getPercents() {
-      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0]
+      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0, 0]
       const cardsData = this.getCardsData
       return [
         cardsData.openedEmail.userPercent,
@@ -89,7 +93,8 @@ export default {
         cardsData.submittedEmail.userPercent,
         cardsData.noResponse.userPercent,
         cardsData.notDelivered.userPercent,
-        cardsData.attachmentOpenedEmail.userPercent
+        cardsData.attachmentOpenedEmail.userPercent,
+        cardsData.phishingReporter.userPercent
       ]
     },
     getCampaignSummaryItems() {
@@ -108,12 +113,9 @@ export default {
       }
     },
     getCampaignSummaryHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary
-      const {
-        randomlyUsersCount = 0,
-        sendOnlyActiveUsers = false,
-        sendRandomlyUsers = false
-      } = targetUsers
+      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary || {}
+      const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
+        targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
         randomlyUsersCount,
@@ -150,7 +152,7 @@ export default {
       } = campaignInfo
       return {
         'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
-        Duration: `${emailDeliveryDuration} hours`,
+        Duration: `${emailDeliveryDuration}`,
         'Delivery Status': ''
       }
     },
@@ -227,7 +229,8 @@ export default {
         submittedEmail = 0,
         noResponseEmail = 0,
         notDelivered = 0,
-        attachmentOpenedEmail = 0
+        attachmentOpenedEmail = 0,
+        reportedEmail = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -253,6 +256,10 @@ export default {
         notDelivered: {
           userCount: notDelivered,
           userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
+        },
+        phishingReporter: {
+          userCount: reportedEmail,
+          userPercent: ((reportedEmail / this.getTotalUsers) * 100).toFixed()
         }
       }
     },

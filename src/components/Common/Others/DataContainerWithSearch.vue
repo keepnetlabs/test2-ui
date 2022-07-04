@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="value.length"
     class="data-container-with-search"
     :style="getStyle"
     :class="['data-container-with-search', !isAllValid && 'data-container-with-search--error']"
@@ -57,7 +58,7 @@
           v-if="getItems.length"
           :key="scrollKey"
           max-height="300"
-          item-height="48"
+          :item-height="itemHeight"
           :items="getItems"
         >
           <template #default="{item,index}">
@@ -65,6 +66,7 @@
               :key="getItems[index].key"
               :value="getItems[index].val"
               :index="index"
+              :item-height="itemHeight"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
@@ -93,6 +95,7 @@
 import DataContainerWithSearchItem from '@/components/Common/Others/DataContainerWithSearchItem'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+
 export default {
   name: 'DataContainerWithSearch',
   components: { DataContainerWithSearchItem },
@@ -102,6 +105,14 @@ export default {
       default() {
         return {}
       }
+    },
+    removeDuplicates: {
+      type: Boolean,
+      default: false
+    },
+    itemHeight: {
+      type: String,
+      default: '48'
     },
     textFieldPlaceholder: {
       type: String,
@@ -182,6 +193,13 @@ export default {
       this.value[indexOfOldValue] = newVal
       this.$set(item, 'isEdit', false)
       item.key = Math.random().toString(8)
+
+      if (this.removeDuplicates) {
+        const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))
+        this.resetOptions()
+        this.setOptions()
+        this.$emit('input', newItems)
+      }
       this.checkAllValid()
     },
     checkAllValid() {
@@ -193,6 +211,9 @@ export default {
       this.value.forEach((val) => {
         if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val, funcName)
       })
+    },
+    resetOptions() {
+      this.options = []
     },
     addItemToOptions(val, funcName = 'unshift') {
       this.options[funcName]({

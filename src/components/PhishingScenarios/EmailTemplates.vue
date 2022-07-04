@@ -25,7 +25,7 @@
       @changeStatus="onCloseRenameAttachmentModal"
     >
       <template v-slot:app-dialog-body>
-        <v-form ref="refAttachmentNameForm">
+        <v-form ref="refAttachmentNameForm" @submit.prevent>
           <v-text-field
             v-model.trim="attachmentName"
             v-bind="commonRules"
@@ -36,6 +36,7 @@
             outlined
             dense
             persistent-hint
+            @keyup.enter="onConfirmRenameAttachment"
           />
         </v-form>
       </template>

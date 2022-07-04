@@ -167,8 +167,9 @@
                           <div>
                             <div class="add-in-settings__image-container">
                               <img
+                                v-if="!!getImagePreview"
                                 class="add-in-settings__image"
-                                :src="getImagePreview(getPreviewLogoUrl)"
+                                :src="getImagePreview"
                                 alt="logo-preview"
                               />
                             </div>
@@ -540,7 +541,7 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { getSelectSearchPayload, scrollToComponent } from '@/utils/functions'
+import { getSelectSearchPayload, scrollToComponent, isDifferent } from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
@@ -655,6 +656,21 @@ export default {
     }
   },
   computed: {
+    getImagePreview() {
+      if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length > 0) {
+        return this.getPreviewLogoUrl[0]
+      }
+
+      if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length === 0) {
+        return null
+      }
+
+      if (typeof this.getPreviewLogoUrl === 'string') {
+        return this.getPreviewLogoUrl
+      }
+
+      return URL.createObjectURL(this.getPreviewLogoUrl)
+    },
     noCompanyGroupText() {
       return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
     },
@@ -750,16 +766,15 @@ export default {
         this.$emit('cancelForm')
       }
     },
-    getImagePreview(url) {
-      return url && typeof url === 'string' ? url : URL.createObjectURL(url)
-    },
     isFormDataChanged() {
-      return Object.keys(this.formData).some((key) => {
-        if (Array.isArray(this.formData[key])) {
-          return this.formData[key].length !== this.defaultFormData[key].length
-        }
-        return this.formData[key] !== this.defaultFormData[key]
-      })
+      const isChanged = isDifferent(this.formData, this.defaultFormData)
+      return isChanged
+      // return Object.keys(this.formData).some((key) => {
+      //   if (Array.isArray(this.formData[key])) {
+      //     return this.formData[key].length !== this.defaultFormData[key].length
+      //   }
+      //   return this.formData[key] !== this.defaultFormData[key]
+      // })
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []
@@ -937,11 +952,8 @@ export default {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     onFileChanged(file) {
-      if (Array.isArray(file) && file.length === 0) {
-        this.formData.File = ''
-      } else {
-        this.formData.File = file
-      }
+      this.formData.logoURL = ''
+      this.formData.File = file
     },
     clickUnlimited() {
       this.formData.IsNumberOfUsersLimited = !this.formData.IsNumberOfUsersLimited

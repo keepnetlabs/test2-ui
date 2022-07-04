@@ -841,11 +841,11 @@ export default {
       })
     },
     redirectToThreatSharingCommunity() {
-      this.$router.push(`/threat-sharing/${this.$route.query.CommunityId}`)
+      this.$router.push(`/threat-sharing/community/${this.$route.query.CommunityId}`)
     },
     redirectToInvestigationDetails() {
       this.$router.push(
-        `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+        `/incident-responder/investigations/investigation-details/${this.$route.query.investigationDetailsResourceId}`
       )
     },
     redirectToAnalysisDetails() {
@@ -855,7 +855,7 @@ export default {
     },
     redirectToCommunityPost() {
       this.$router.push(
-        `/community/${this.$route.query.communityResourceId}?postId=${
+        `/threat-sharing/community/${this.$route.query.communityResourceId}?postId=${
           this.$route.query.communityPostResourceId ||
           this.$route.query['amp;communityPostResourceId']
         }`

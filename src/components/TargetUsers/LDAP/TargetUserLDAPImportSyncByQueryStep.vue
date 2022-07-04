@@ -108,9 +108,8 @@ export default {
           operands: fieldMappings,
           operators: [
             { text: 'contains', value: 'Contains' },
-            { text: 'does not contain', value: 'DoesNotContain' },
-            { text: 'is equal to', value: 'Equal' },
-            { text: 'is not equal to', value: 'IsNotEqual' }
+            { text: 'is equal to', value: '=' },
+            { text: 'is not equal to', value: '!=' }
           ]
         }
       ],
@@ -137,8 +136,14 @@ export default {
     setEditedFilter() {
       const filter = this.getEditedScheduledFilter()
       if (filter) {
-        const andItems = filter?.filterGroups[0]?.filterItems
-        const orItems = filter?.filterGroups[1]?.filterItems
+        let andItems, orItems
+        if (filter?.filterGroups?.length) {
+          andItems = filter?.filterGroups[0]?.filterItems
+          orItems = filter?.filterGroups[1]?.filterItems
+        } else {
+          andItems = filter?.FilterGroups[0]?.FilterItems
+          orItems = filter?.FilterGroups[1]?.FilterItems
+        }
         const condition = andItems?.length ? 'AND' : 'OR'
         const items = condition === 'AND' ? andItems : orItems
         items.map((item) => {

@@ -191,6 +191,7 @@
                     </div>
                   </el-tab-pane>
                   <el-tab-pane
+                    v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
@@ -323,6 +324,9 @@ export default {
       type: String
     },
     isPhishingScenariosLoading: {
+      type: Boolean
+    },
+    isAttachmentBasedScenario: {
       type: Boolean
     }
   },
@@ -482,6 +486,7 @@ export default {
           this.phishingScenarioItems.push(data)
         }
 
+        this.$emit('onItemDetailsChange', data)
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
           (response) => {
             const { data: { data = {} } = {} } = response
@@ -495,33 +500,34 @@ export default {
               attachments,
               languageTypeResourceId: languageOfEmailTemplate,
               phishingFileName
-            } = emailTemplate
+            } = emailTemplate || {}
 
             this.emailTemplateParams = {
               fromName,
               fromAddress,
               name,
-              difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+              difficulty:
+                difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
               attachments,
               languageTypeResourceId: languageOfEmailTemplate,
               phishingFileName
             }
             this.emailTemplate = template
             const {
-              name: landingPageName,
+              name: landingPageName = '',
               description,
               landingPages,
               urlTemplate,
               difficultyTypeId,
               methodTypeId,
               languageTypeResourceId
-            } = landingPageTemplate
+            } = landingPageTemplate || {}
             this.landingPageParams = {
               name: landingPageName,
               description,
               urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text,
+              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+              method: methods[methodTypeId - 1]?.text || '',
               languageTypeResourceId
             }
             this.landingPageTemplates = landingPages || []

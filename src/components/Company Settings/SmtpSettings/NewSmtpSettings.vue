@@ -510,11 +510,31 @@ export default {
             } = {}
           } = {}
         } = response
-        if (this.$refs.refMakeAvailableFor) {
-          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+        if (this.$refs.refMakeAvailableFor && availableForList?.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.formValues.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.formValues.availableForRequests = availableForListFromBackend
+          }
         } else {
+          this.formValues.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.formValues.cC = cc

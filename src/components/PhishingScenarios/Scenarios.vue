@@ -23,6 +23,7 @@
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
         :scenarioDetailsLookup="scenarioDetailsLookup"
+        :isAttachmentBased="isAttachmentBasedScenario"
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
@@ -352,7 +353,10 @@ export default {
   computed: {
     ...mapGetters({
       getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
-    })
+    }),
+    isAttachmentBasedScenario() {
+      return this.selectedRow?.method === 'Attachment' || undefined
+    }
   },
   methods: {
     toggleShowPreviewDialog() {
@@ -434,6 +438,7 @@ export default {
       this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
+      this.selectedRow = row
       this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
@@ -455,6 +460,9 @@ export default {
       this.scenarioId = null
       this.isEdit = false
       this.isDuplicate = false
+      if (!status) {
+        this.selectedRow = null
+      }
       if (restart) {
         this.editableFormValues = {}
         this.scenarioId = null

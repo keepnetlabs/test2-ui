@@ -1175,7 +1175,7 @@ export default {
               incidentsData
             })
             this.$router.push({
-              path: `/community/${communityId}`,
+              path: `/threat-sharing/community/${communityId}`,
               params: { communityName: communityName }
             })
           } else {

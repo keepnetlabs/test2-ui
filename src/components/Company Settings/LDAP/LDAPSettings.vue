@@ -3,7 +3,7 @@
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <v-form v-show="!isLoading" v-model="isFormValid" ref="refForm">
       <FormGroup :title="labels.Path" has-hint>
-        <InputUrl v-model="formData.url" id="input--ldap-path" />
+        <InputUrl v-model="formData.url" id="input--ldap-path" placeholder="Enter LDAP path" />
       </FormGroup>
       <FormGroup :title="labels.UserName" has-hint>
         <v-text-field
@@ -12,7 +12,7 @@
           outlined
           dense
           persistent-hint
-          placeholder="Enter LDAP username"
+          placeholder="Your LDAP username"
           hint="*Required"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
@@ -26,7 +26,7 @@
           dense
           persistent-hint
           hint="*Required"
-          placeholder="Enter LDAP password"
+          placeholder="LDAP password"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
       </FormGroup>
@@ -87,6 +87,7 @@ import SaveChangesButton from '@/components/Common/Buttons/SaveChangesButton'
 import LDAPService from '@/api/ldap'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { mapGetters } from 'vuex'
+import { isDifferent } from '@/utils/functions'
 export default {
   name: 'LDAPSettings',
   components: { DatatableLoading, SaveChangesButton, InputUrl, FormGroup },
@@ -96,6 +97,9 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    fieldMappings: {
+      type: Array
     }
   },
   data() {
@@ -133,6 +137,8 @@ export default {
         ? this.getLDAPSettingUpdatePermission
         : this.getLDAPSettingCreatePermission
       if (!permissionIsValid) return this.disabledStyle
+      const isDiff = this.initialFormData ? isDifferent(this.formData, this.initialFormData) : true
+      if (!isDiff) return this.disabledStyle
       return this.isTestingConnection || !this.isFormValid ? this.disabledStyle : {}
     },
     getSwitchLabel() {
@@ -169,7 +175,11 @@ export default {
         })
     },
     handleSubmit() {
-      if (this.isTestConnectionValid) this.$emit('on-submit', this.formData)
+      if (this.isTestConnectionValid)
+        this.$emit('on-submit', {
+          ...this.formData,
+          fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
+        })
       else this.handleTestConnection(true)
     }
   }

@@ -26,7 +26,11 @@
       <template v-slot:datatable-custom-column="{ scope, col }">
         <span v-if="col.property === PROPERTY_STORE.ANALYSISENGINEPERMALINK">
           <a
-            v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
+            v-if="
+              scope.row.analysisEnginePermalink &&
+              scope.row.result !== 'Excluded' &&
+              scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+            "
             :href="scope.row.analysisEnginePermalink"
             target="_blank"
             class="attachments-table__link"
@@ -59,7 +63,7 @@
 </template>
 <script>
 import DataTable from '@/components/DataTable'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 export default {
   name: 'EmailDetailsSenderIpBlacklistCheck',
@@ -76,6 +80,7 @@ export default {
     return {
       tableData: [],
       PROPERTY_STORE,
+      INTEGRATION_TYPES,
       tableOptions: {
         columns: [
           {

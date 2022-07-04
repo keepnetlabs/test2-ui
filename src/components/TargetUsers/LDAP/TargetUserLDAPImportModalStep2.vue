@@ -16,7 +16,10 @@
         ref="refManually"
         v-else-if="!isEdit && selectedRadioGroupIndex === 0"
       />
-      <TargetUserLDAPImportSyncByQueryStep ref="refQuery" v-else />
+      <TargetUserLDAPImportSyncByQueryStep
+        ref="refQuery"
+        v-else-if="isEdit ? selectedRadioGroupIndex === 0 : selectedRadioGroupIndex === 1"
+      />
     </div>
   </div>
 </template>
@@ -51,11 +54,31 @@ export default {
       type: Array,
       default: () => []
     },
-    selectedRadioStep: {
+    step2Step: {
+      type: Number,
+      default: 0
+    },
+    step1Step: {
       type: Number
+    },
+    isLoading: {
+      type: Boolean
     }
   },
-  inject: ['resourceId', 'isEdit'],
+  inject: {
+    resourceId: {
+      type: String
+    },
+    isEdit: {
+      type: Boolean
+    },
+    setSelectedUsers: {
+      type: Function
+    },
+    getServerSideSelectionParams: {
+      type: Function
+    }
+  },
   provide() {
     return {
       getTransactionId: () => this.transactionId,
@@ -63,13 +86,29 @@ export default {
     }
   },
   data() {
+    const radioGroupItems = [
+      {
+        label: 'SYNC BY QUERY',
+        infoText:
+          'Select this option to sync users by criteria. The synchronization process will repeat every 24 hours.'
+      },
+      {
+        label: 'SYNC ALL USERS',
+        infoText: `Select this option to sync all users in ${
+          this.step1Step === 0 ? 'your active directory' : 'selected LDAP groups'
+        }. The synchronization process will repeat every 24 hours.`
+      }
+    ]
+    if (!this.isEdit)
+      radioGroupItems.unshift({
+        label: 'SELECT Manually',
+        infoText: 'Select this option to import users manually without auto-sync.'
+      })
+
     return {
-      radioGroupItems: this.isEdit
-        ? [{ label: 'SYNC BY QUERY' }]
-        : [{ label: 'MANUALLY' }, { label: 'SYNC BY QUERY' }],
-      selectedRadioGroupIndex: this.selectedRadioGroupIndex || 0,
+      radioGroupItems,
+      selectedRadioGroupIndex: this.step2Step || 0,
       processedUserCount: 0,
-      isLoading: false,
       activeStatus: 0,
       transactionId: '',
       mappingObject: {},
@@ -83,7 +122,8 @@ export default {
   },
   watch: {
     selectedRadioGroupIndex(val) {
-      this.$emit('update:selectedRadioStep', val)
+      this.setSelectedUsers([])
+      this.$emit('update:step2Step', val)
     }
   },
   created() {
@@ -91,18 +131,21 @@ export default {
   },
   methods: {
     createLDAPMapping() {
-      this.isLoading = true
+      this.$emit('update:isLoading', true)
       this.groupFilterValues = this.selectedLDAPItems.map((item) => item.filterValue)
+      const serverSideSelectionParams = this.getServerSideSelectionParams()
       LDAPService.createLDAPMapping({
         ldapSettingId: this.resourceId,
-        groupFilterValues: this.groupFilterValues
+        groupFilterValues: this.groupFilterValues,
+        selectAll: serverSideSelectionParams?.isSelectedAllEver || false,
+        excludedItems: serverSideSelectionParams?.excludedResourceIdList || []
       })
         .then((response) => {
           this.transactionId = response?.data?.data?.transactionId
           this.checkLDAPMappingStatus(this.transactionId)
         })
         .catch(() => {
-          this.isLoading = false
+          this.$emit('update:isLoading', false)
         })
     },
     checkLDAPMappingStatus(transactionId = '') {
@@ -129,7 +172,7 @@ export default {
           })
           this.$emit('on-error')
         } else if (status === TRANSACTION_STATUSES.FINISHED) {
-          this.isLoading = false
+          this.$emit('update:isLoading', false)
         } else {
           setTimeout(() => {
             this.checkLDAPMappingStatus(transactionId)
