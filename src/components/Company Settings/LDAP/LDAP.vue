@@ -155,11 +155,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.ldap-field-mapping-disabled #tab-field-mapping {
-  color: #383b41 !important;
-  opacity: 0.5;
-  cursor: auto;
-}
-</style>

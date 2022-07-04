@@ -129,10 +129,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.hidden-icon-link {
-  background-color: #757575;
-  color: #ffffff;
-}
-</style>

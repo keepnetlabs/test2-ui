@@ -1581,7 +1581,9 @@ export default {
         }
       } else {
         const disabledCol = this.columns.filter((c) => c.fixed === false)
-        disabledCol[0].fixed = 'left'
+        if (disabledCol && disabledCol[0]) {
+          disabledCol[0].fixed = 'left'
+        }
         this.firstColFixed = true
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
           this.$refs.elTableRef.columns[0].fixed = true
@@ -1778,7 +1780,11 @@ export default {
       if (storedTableSettings) {
         this.setStoredTableSettings(storedTableSettings)
       } else {
-        if (!firstColFixed) this.columns[0].fixed = false
+        if (!firstColFixed) {
+          if (this.columns && this.columns[0]) {
+            this.columns[0].fixed = false
+          }
+        }
         if (!lastColFixed) this.actionFixed = false
         //setting rendered columns
         if (!renderedColumns.length) {
@@ -2195,10 +2201,11 @@ export default {
       }
     },
     setStoredTableSettings(storedTableSettings) {
-      const { firstColFixed, lastColFixed, renderedColumns } = storedTableSettings
+      const { firstColFixed = false, lastColFixed = false, renderedColumns = false } =
+        storedTableSettings || {}
       if (!firstColFixed) {
         this.firstColFixed = firstColFixed
-        this.columns[0].fixed = false
+        if (this.columns && this.columns[0]) this.columns[0].fixed = false
       }
       if (!lastColFixed) {
         this.actionFixed = false
@@ -3055,49 +3062,6 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.datatable-row-action-list {
-  padding: 0 !important;
-  line-height: inherit !important;
-  min-height: 24px !important;
-  .v-list-item__title {
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    min-height: 40px;
-  }
-}
-.dataTableText-validation-error {
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #f56c6c;
-  position: absolute;
-  top: 4px;
-}
-.dataTableText-main-error {
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  letter-spacing: normal;
-  color: #f56c6c;
-}
-.v-menu__content.theme--light.menuable__content__active.data-table-filter__date-picker {
-  &-select {
-    &-menu {
-      z-index: 9999999999 !important;
-    }
-  }
-}
-.k-table__wrapper--no-padding {
-  padding-bottom: 0 !important;
-}
-</style>
 <!--
   DataTable COMPONENT
   - Element UI's Table component used

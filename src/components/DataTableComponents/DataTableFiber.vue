@@ -37,20 +37,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.datatable-fiber {
-  &__container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  &__item {
-    > img {
-      margin-top: 7px;
-      margin-right: 3px;
-    }
-  }
-}
-</style>

@@ -112,23 +112,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.show-more-tags {
-  .k-badge {
-    min-width: auto !important;
-    height: 24px !important;
-  }
-  &__tooltip {
-    white-space: pre-line;
-    line-height: 1.6;
-  }
-  &__container {
-    display: flex;
-  }
-  &__span {
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}
-</style>

@@ -47,15 +47,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.datatable-service-icon-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  img {
-    max-width: 16px;
-    max-height: 16px;
-  }
-}
-</style>

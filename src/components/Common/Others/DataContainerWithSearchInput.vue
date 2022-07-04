@@ -66,14 +66,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.btn-data-container-invalid {
-  color: #757575 !important;
-  border-color: #757575;
-}
-.data-container-with-search-input {
-  .v-input {
-    max-width: 452px;
-  }
-}
-</style>

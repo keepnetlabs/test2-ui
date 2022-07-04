@@ -393,31 +393,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-#new-scim-settings-modal .k-stepper {
-  #input--target-user-groups {
-    &.v-input--is-disabled input {
-      color: rgba(0, 0, 0, 0.87) !important;
-    }
-  }
-}
-.map-custom-and-scim-fields {
-  &-item {
-    display: flex;
-    align-items: center;
-    &__select {
-      flex-basis: 50%;
-      width: 360px;
-      .v-list.v-select-list .v-list-item .v-list-item__title {
-        word-break: break-all;
-        white-space: break-spaces;
-      }
-    }
-  }
-  &-loading {
-    .v-skeleton-loader__bone {
-      padding-left: 0;
-    }
-  }
-}
-</style>

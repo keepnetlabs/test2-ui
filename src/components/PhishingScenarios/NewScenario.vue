@@ -71,13 +71,13 @@
                   sub-title="Select the phishing technique for this scenario"
                 >
                   <v-select
+                    v-bind="commonRules"
+                    v-model="formValues.methodTypeId"
                     :items="scenarioDetailsLookup.methodTypes"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="formValues.methodTypeId"
                     item-value="value"
                     outlined
-                    v-bind="commonRules"
                     hint="*Required"
                     required
                     persistent-hint
@@ -142,9 +142,9 @@
                   <v-list-item-title class="new-phishing-scenario__title">
                     Select Email Template</v-list-item-title
                   >
-                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
-                    >Choose your email template</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title">{{
+                    getStep2Subtitle
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item style="margin-top: -10px;">
@@ -154,6 +154,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     ref="RefEmailTemplateListPreview"
                     :emailTemplateResourceId="emailTemplateResourceId"
+                    :category-resource-id="formValues.methodTypeId"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -170,17 +171,19 @@
                   <v-list-item-title class="new-phishing-scenario__title">
                     Select Landing Page Template</v-list-item-title
                   >
-                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
-                    >Choose your landing page template</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title">{{
+                    getStep3Subtitle
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <LandingPageListPreview
+                    v-if="!isAttachmentBasedScenario && step === 3"
                     ref="RefEmailTemplateListPreview"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                    :category-resource-id="formValues.methodTypeId"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -641,6 +644,7 @@ export default {
   },
   data() {
     return {
+      isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
       selectedTab: '1',
@@ -899,9 +903,35 @@ export default {
   watch: {
     landingPageTemplateResourceId() {
       this.selectedTab = '1'
+    },
+    'formValues.methodTypeId'(val, oldVal) {
+      if (val !== oldVal && !this.isInitial) {
+        this.formValues.emailTemplateId = null
+        this.formValues.landingPageTemplateId = null
+        this.landingPageTemplateId = null
+        this.emailTemplateResourceId = null
+      }
     }
   },
   computed: {
+    getStep2Subtitle() {
+      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+        (mType) => mType.value === this.formValues.methodTypeId
+      )?.text
+      if (mTypeText === 'Click-Only') return 'Choose your click only type email template'
+      else if (mTypeText === 'Data Submission')
+        return 'Choose your data submission type email template'
+      else return 'Choose your attachment type email template'
+    },
+    getStep3Subtitle() {
+      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+        (mType) => mType.value === this.formValues.methodTypeId
+      )?.text
+      if (mTypeText === 'Click-Only') return 'Choose your click only type landing page'
+      else if (mTypeText === 'Data Submission')
+        return 'Choose your data submission type landing page'
+      else return 'Choose your attachment type landing page'
+    },
     isAttachmentBasedScenario() {
       if (
         this.isAttachmentBased !== undefined &&
@@ -1015,127 +1045,9 @@ export default {
         })
         .finally(() => {
           this.isSubmitDisabled = false
+          this.isInitial = false
         })
-    }
+    } else this.isInitial = false
   }
 }
 </script>
-
-<style lang="scss">
-.summary-step {
-  .summary-template {
-    border-top: 1px solid #b3d4fc;
-  }
-  .template-summary {
-    &__title {
-      font-style: normal;
-      font-weight: 600;
-      font-size: 20px;
-      line-height: 24px;
-      color: #383b41;
-    }
-    &__subtitle {
-      font-style: normal;
-      font-weight: normal;
-      font-size: 16px;
-      line-height: 22px;
-      color: #383b41;
-    }
-  }
-  .summary {
-    max-width: calc(100% - 96px);
-    display: flex;
-    flex-flow: column;
-    margin-top: 32px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    box-sizing: border-box;
-    border-radius: 12px;
-
-    &-header {
-      justify-content: space-between;
-      display: flex;
-      padding: 24px 24px 16px 24px;
-      align-items: center;
-      div {
-        font-style: normal;
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 22px;
-        color: #2196f3 !important;
-      }
-    }
-    &-content {
-      border-top: 1px solid #e0e0e0;
-      background: #fafafa;
-      border-radius: 0 0 12px 12px;
-      padding: 24px;
-      &__title {
-        font-style: normal;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 19px;
-        color: #383b41;
-        width: 55px;
-        min-width: 55px;
-        max-width: 55px;
-        margin-right: 30px;
-        display: inline-block;
-      }
-      &__body {
-        font-style: normal;
-        font-weight: normal;
-        font-size: 12px;
-        line-height: 19px;
-        color: #383b41;
-      }
-      &-details {
-        padding: 10px;
-        border-bottom: 1px solid #e0e0e0;
-      }
-      &__collapsable {
-        max-height: 480px !important;
-        overflow-y: auto;
-      }
-    }
-  }
-}
-.phishing-scenario {
-  .phishing-scenario__container {
-    padding: 24px !important;
-  }
-}
-#input--action-tags-new-scenario.hide-caret,
-#input--action-tags-new-notification-template.hide-caret {
-  .v-input__append-inner {
-    display: none !important;
-  }
-}
-
-.new-phishing-scenario {
-  &__overlay {
-    .v-overlay__content {
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      left: 0;
-      top: 0;
-      overflow-y: auto;
-    }
-  }
-  &__title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 24px;
-    line-height: 31px;
-    color: #383b41;
-  }
-  &__sub-title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 21px !important;
-    color: #383b41 !important;
-  }
-}
-</style>

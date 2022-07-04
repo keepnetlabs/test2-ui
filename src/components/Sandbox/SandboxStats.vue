@@ -418,9 +418,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.sandbox-stats {
-  min-height: 90vh;
-}
-</style>

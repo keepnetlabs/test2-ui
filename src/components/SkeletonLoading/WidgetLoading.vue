@@ -21,9 +21,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.data-table-loading {
-  height: 100%;
-}
-</style>

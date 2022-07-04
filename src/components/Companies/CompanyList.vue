@@ -609,23 +609,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.company-list {
-  margin-top: 24px;
-}
-.company-create-edit {
-  .k-overlay__container {
-    padding: 0 !important;
-  }
-  .v-overlay__content {
-    overflow-x: hidden;
-  }
-  .v-stepper__items {
-    min-height: 75vh;
-  }
-}
-.number-of-users-exceed {
-  color: red;
-}
-</style>

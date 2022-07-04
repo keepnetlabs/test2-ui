@@ -203,6 +203,9 @@ export default {
       this.isShowNewInstanceModal = false
     },
     handleOnSubmitNewInstance() {
+      if (this.isItemTableShowing) {
+        this.$refs.campaignManagerItemTable.callForData()
+      }
       this.$refs.campaignManagerParentTable.callForData()
       this.closeNewInstanceModal()
     },
@@ -290,31 +293,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager {
-  &__table-all-records {
-    color: #2196f3;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 25px;
-    margin-left: 24px;
-    margin-bottom: 24px;
-  }
-  &__target-groups {
-    max-width: 1100px;
-    .k-form-group__content {
-      display: flex;
-    }
-  }
-  &__close-advanced-search {
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 0 8px !important;
-    margin-left: 24px;
-    align-self: center;
-    margin-top: -24px;
-  }
-}
-</style>

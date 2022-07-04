@@ -114,28 +114,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.mfa-setup {
-  &--dashboard {
-    .mfa-setup__content-textfield {
-      .v-text-field__slot {
-        input {
-          padding-bottom: 0 !important;
-          padding-top: 0 !important;
-        }
-      }
-    }
-    .v-card__text {
-      padding-top: 0;
-    }
-    .mfa-setup__content {
-      .row {
-        :first-child {
-          padding-top: 0;
-        }
-      }
-    }
-  }
-}
-</style>

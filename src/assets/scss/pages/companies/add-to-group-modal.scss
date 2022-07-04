@@ -1,0 +1,36 @@
+.create-company-group {
+    &__label {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 23px;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+        margin-bottom: 16px !important;
+
+        &--sub {
+            font-size: 14px;
+            line-height: 21px;
+            color: rgba(0, 0, 0, 0.87);
+            margin-bottom: 16px !important;
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+
+        &-button {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.71;
+            letter-spacing: normal;
+        }
+    }
+}
+
+.add-to-group-modal {
+    .k-table__wrapper {
+        padding-bottom: 0;
+    }
+}

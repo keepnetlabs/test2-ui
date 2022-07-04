@@ -434,15 +434,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.sandbox {
-  min-height: 90vh;
-}
-.sandbox__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>
