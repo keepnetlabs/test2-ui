@@ -518,18 +518,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.users {
-  padding-top: 24px;
-  &__button {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-  }
-  &__tooltip {
-    white-space: pre-wrap;
-  }
-}
-</style>

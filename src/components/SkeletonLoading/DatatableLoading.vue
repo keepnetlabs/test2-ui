@@ -27,10 +27,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.data-table-loading {
-  height: 100%;
-  margin-bottom: 20px;
-}
-</style>

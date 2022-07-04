@@ -47,22 +47,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.default-button-row-action {
-  &--disabled {
-    opacity: 0.5;
-    cursor: auto;
-    background-color: transparent !important;
-    &:before {
-      background-color: transparent !important;
-    }
-    &:hover,
-    &:focus {
-      &:before,
-      &:after {
-        background-color: transparent !important;
-      }
-    }
-  }
-}
-</style>

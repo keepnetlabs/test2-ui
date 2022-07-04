@@ -129,31 +129,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.download-modal {
-  &__checkbox {
-    padding-top: 0;
-    margin-top: 5px !important;
-  }
-  &__checkbox:first-child {
-    margin-top: 0 !important;
-  }
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-  }
-  &__button {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-  }
-
-  &__confirm {
-  }
-  .k-dialog__body {
-    padding: 12px 12px 12px 96px;
-  }
-}
-</style>

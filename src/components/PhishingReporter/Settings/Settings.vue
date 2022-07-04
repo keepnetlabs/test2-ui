@@ -219,38 +219,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.settings {
-  &__in-modal {
-    border-radius: 20px;
-    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-    background-color: #ffffff;
-    padding: 24px 24px 16px 24px;
-    margin-top: -8px;
-    margin-bottom: 24px;
-    &--diagnostic-tool {
-      padding-left: 24px;
-      padding-top: 24px;
-      margin-bottom: 0;
-    }
-  }
-  .el-tabs__header {
-    background-color: rgb(245, 247, 250);
-    border-color: rgb(245, 247, 250);
-    margin-top: 8px;
-    margin-bottom: 24px;
-  }
-  .el-tabs__nav {
-    margin-left: 16px;
-  }
-  .el-tabs__item {
-    font-size: 14px !important;
-    height: 48px;
-    line-height: 48px;
-  }
-  .el-tabs__active-bar {
-    min-width: 100px !important;
-  }
-}
-</style>

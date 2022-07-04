@@ -438,17 +438,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.permission-logs {
-  width: 100%;
-  //min-height: 90vh;
-  &__container {
-    border-radius: 20px !important;
-    background: white;
-  }
-  &__datatable {
-    padding: 0;
-  }
-}
-</style>

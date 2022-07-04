@@ -69,18 +69,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.k-button-radio-group {
-  &__info {
-    display: inline-block;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 21px;
-    background: #f1f8fe;
-    padding: 12px 16px;
-    border: 1px solid #f1f8fe;
-    border-radius: 8px;
-  }
-}
-</style>

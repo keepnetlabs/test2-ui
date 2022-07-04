@@ -235,30 +235,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#campaign-manager-target-groups-data-table.k-table__wrapper {
-  padding-bottom: 0;
-  .table-wrapper {
-    padding-top: 0;
-  }
-  .card .table-wrapper .selection-row {
-    top: 1px;
-  }
-}
-.campaign-manager-highlighted-row {
-  background-color: #fefdf2 !important;
-  color: #2196f3 !important;
-  font-weight: 600 !important;
-  div,
-  span {
-    color: #2196f3 !important;
-  }
-
-  button.k-badge {
-    span {
-      color: inherit !important;
-    }
-  }
-}
-</style>

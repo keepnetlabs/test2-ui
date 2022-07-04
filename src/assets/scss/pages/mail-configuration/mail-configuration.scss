@@ -1,0 +1,135 @@
+.mail-configuration {
+    padding: 11px 16px 16px 16px;
+    min-height: 80vh;
+
+    .v-input__append-inner {
+        display: block;
+    }
+
+    .v-menu__content.theme--light.menuable__content__active.k-select__menu.menu--ews-target-users {
+        z-index: 999999 !important;
+    }
+
+    &__no-data {
+        &__header {
+            font-size: 24px !important;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.29 !important;
+            letter-spacing: normal !important;
+            color: rgba(0, 0, 0, 0.87);
+            text-align: center;
+        }
+
+        &__body {
+            font-size: 14px !important;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.5;
+            letter-spacing: normal !important;
+            color: rgba(0, 0, 0, 0.87);
+            text-align: center;
+        }
+
+        &__buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 24px;
+
+            &--button {
+                border-radius: 18px;
+                box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+                border: solid 1px #2196f3;
+                background-color: #ffffff;
+                align-items: center;
+                justify-content: center;
+                display: flex;
+                padding: 6px 16px;
+                cursor: pointer;
+
+                &:last-child {
+                    margin-left: 16px;
+                }
+
+                img {
+                    margin-left: 8px;
+                    height: 24px;
+                }
+            }
+        }
+    }
+
+    .add-user-overlay {
+        max-width: 774px;
+
+        &__list-item {
+            margin-bottom: 24px;
+        }
+    }
+
+    .test-connection-wrapper {
+        max-width: 774px !important;
+    }
+
+    &__modal {
+        padding: 0 6rem;
+    }
+
+    &__content {
+        background: white;
+        box-shadow: 0 10px 15px -5px hsla(0, 0%, 80.4%, 0.5) !important;
+        padding: 24px 24px 0 24px !important;
+        border-radius: 20px !important;
+    }
+
+    .v-skeleton-loader {
+        border-radius: 0 !important;
+    }
+
+    .add-users__title {
+        font-size: 14px;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+    }
+
+    .edit-fields {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.71;
+        letter-spacing: normal;
+        margin-top: 10px;
+        cursor: pointer;
+        color: #2196f3;
+    }
+
+    .btn-add {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+        background-color: #2196f3;
+        color: white;
+
+        .v-icon {
+            font-size: 18px !important;
+            color: white;
+        }
+    }
+
+    .ews-target-groups-select__radio-group {
+
+        &.v-input--selection-controls.v-input,
+        .v-input--selection-controls.v-input {
+            margin-top: 0 !important;
+        }
+
+        .v-messages {
+            min-height: 9px !important;
+        }
+    }
+}

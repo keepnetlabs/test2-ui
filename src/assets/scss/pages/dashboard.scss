@@ -1,0 +1,60 @@
+.k-widget {
+    &__container {
+        padding: 11px 16px 16px 16px;
+        width: 100%;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.widget__header {
+    &-icon {
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        z-index: 999999;
+        cursor: pointer;
+    }
+}
+
+.widget-body__content {
+    overflow: hidden;
+    border-radius: 12px;
+
+    .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    .incident-responder-parent .columns-row .dashboard-cards .card-footer {
+        line-height: 1;
+    }
+
+    .users {
+        padding-top: 0;
+
+        .v-card {
+            padding-bottom: 0 !important;
+        }
+    }
+}
+
+.vue-grid-layout {
+    margin-left: -12px;
+    margin-right: -10px;
+}
+
+.widget-header__title {
+    padding-left: 12px !important;
+    font-weight: 600 !important;
+    color: #2196f3;
+    display: flex !important;
+    align-items: center;
+}
+
+[title] {
+    content: none;
+}

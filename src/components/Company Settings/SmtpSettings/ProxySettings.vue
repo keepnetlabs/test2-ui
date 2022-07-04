@@ -226,7 +226,7 @@ export default {
               { text: 'Yes', value: 'Yes' },
               { text: 'No', value: 'No' }
             ],
-            width: 160
+            width: 165
           },
           {
             property: 'createTime',
@@ -448,14 +448,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.proxy-settings__row-actions__overflow-menu__icon {
-  margin-right: 16px;
-}
-
-.sub-menu-el__title {
-  display: flex;
-  align-items: center;
-}
-</style>

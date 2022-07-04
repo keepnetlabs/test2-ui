@@ -201,20 +201,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.target-user-ldap__target-groups {
-  .v-list-item--disabled {
-    pointer-events: all;
-    background-color: transparent;
-    .v-ripple__container {
-      display: none;
-    }
-  }
-}
-#input--target-user-groups {
-  input::placeholder {
-    color: #383b41;
-  }
-}
-</style>

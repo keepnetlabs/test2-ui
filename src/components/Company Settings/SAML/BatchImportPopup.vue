@@ -86,10 +86,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.batch-import-popup {
-  .k-dialog__body {
-    padding-bottom: 0;
-  }
-}
-</style>

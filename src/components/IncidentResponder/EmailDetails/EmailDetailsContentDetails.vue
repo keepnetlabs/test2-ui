@@ -191,28 +191,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.details-content-header {
-  &__container {
-    display: flex;
-    div:first-child {
-      color: #00bcd4;
-    }
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-    }
-  }
-
-  &__item--disabled {
-    pointer-events: none;
-    color: rgba(0, 0, 0, 0.12) !important;
-    .selection-icons {
-      color: rgba(0, 0, 0, 0.12) !important;
-    }
-  }
-}
-</style>

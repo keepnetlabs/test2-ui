@@ -62,26 +62,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#app {
-  .breadcrumb {
-    color: white;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    font-weight: bold;
-    a {
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 18px;
-      color: rgb(255, 255, 255);
-      text-decoration-line: none;
-      &.active-link {
-        opacity: 0.7;
-      }
-    }
-  }
-}
-</style>

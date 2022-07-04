@@ -343,9 +343,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#target-user-ldap-import-manually-data-table .selection-row {
-  top: inherit !important;
-}
-</style>

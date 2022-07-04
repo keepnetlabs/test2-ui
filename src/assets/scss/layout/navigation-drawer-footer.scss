@@ -1,0 +1,54 @@
+.navigation-drawer-footer {
+    &__item {
+        min-height: 36px !important;
+        max-height: 36px !important;
+
+        .v-list-item {
+            &__title {
+                font-size: 14px !important;
+                color: #383b41 !important;
+                line-height: normal !important;
+                letter-spacing: normal !important;
+                font-weight: normal !important;
+            }
+
+            &__icon {
+                margin-top: 7px !important;
+                margin-right: 16px !important;
+            }
+        }
+    }
+
+    &__bottom {
+        margin-left: 24px;
+        margin-bottom: 8px;
+    }
+
+    &__version {
+        font-size: 12px;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #000000;
+    }
+
+    &__release-notes {
+        font-size: 12px;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #2196f3 !important;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}
+
+.v-navigation-drawer--mini-variant {
+    .navigation-drawer-footer {
+        &__item {
+            padding-left: 12px !important;
+        }
+    }
+}

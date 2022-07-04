@@ -20,24 +20,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-report-header {
-  &-container {
-    display: flex;
-    flex-direction: column;
-  }
-  &__title {
-    font-weight: 600;
-    font-size: 20px;
-    color: #383b41;
-    line-height: 24px;
-  }
-  &__subtitle {
-    font-weight: normal;
-    font-size: 16px;
-    color: #383b41;
-    line-height: 22px;
-  }
-}
-</style>
