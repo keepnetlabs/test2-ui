@@ -1,0 +1,13 @@
+.send-training-select-users{
+  &-by-campaign{
+      &__container{
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.12), 0px 0px 1px rgba(0, 0, 0, 0.25);
+        background-color: #fff;
+        border-radius: 12px;
+      }
+    &__search{
+      display: flex;
+      padding: 16px 24px 0 24px
+    }
+  }
+}

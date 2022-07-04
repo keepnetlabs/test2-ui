@@ -18,6 +18,7 @@ export const labels = {
   ExcludeUserAgentBatchImportSubtitle: 'Import multiple user agents separated by line-break',
   Create: 'Create',
   ByUserGroups: 'By User Groups',
+  SendTrainingTargetUsersSub: 'Select users you want to send this training',
   ByCampaign: 'By Campaign',
   PhishingCampaigns: 'Phishing Campaigns',
   PhishingCampaignsSub: 'Select user groups below to send the training exercise',

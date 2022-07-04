@@ -7,7 +7,8 @@ export const EMITS = {
   ON_ACTION_DELETE: 'on-action-delete',
   ON_EDIT: 'on-edit',
   ON_CLOSE: 'on-close',
-  ON_TRAINING: 'on-training'
+  ON_TRAINING: 'on-training',
+  ON_ITEM_CHANGE: 'on-item-change'
 }
 
 export const COLUMNS = {
