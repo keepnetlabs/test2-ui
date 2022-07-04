@@ -23,7 +23,7 @@
         {{ item.label }}
       </v-btn>
     </div>
-    <span class="k-button-radio-group__info mt-4">
+    <span v-if="items[selectedIndex].infoText" class="k-button-radio-group__info mt-4">
       {{ items[selectedIndex].infoText }}
     </span>
   </div>

@@ -28,6 +28,7 @@
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
     @onEmptyBtnClicked="handleAdd"
+    @add-training="handleAdd"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -57,9 +58,9 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[4].disabled"
-          :icon="tableOptions.rowActions[4].icon"
-          :text="tableOptions.rowActions[4].name"
+          :disabled="tableOptions.rowActions[3].disabled"
+          :icon="tableOptions.rowActions[3].icon"
+          :text="tableOptions.rowActions[3].name"
           @on-click="handleActionDelete(scope.row)"
         />
       </RowActionsMenu>
@@ -98,7 +99,27 @@ export default {
         id: 'awareness-educator-training-list-data-table'
       },
       axiosPayload: getDefaultAxiosPayload(),
-      tableData: [],
+      tableData: [
+        {
+          companyId: 18638,
+          resourceId: 'assasaösla',
+          name: 'Dynamic Security Agent',
+          description: 'Ipsam error commodi et.',
+          categoryId: '6aaf79c9-b86c-4baf-99e1-7440e5e3aec1',
+          targetAudienceId: 'cddfded4-2efb-42ec-ba1c-c1df7be89d07',
+          emailTemplateId: '4c783a5b-4fb0-4c72-a634-f9200d41240c',
+          trainingTypeId: '1',
+          coverImageUrl: 'coverImageUrl',
+          hasQuiz: true,
+          trainingContents: [
+            {
+              languageId: 'a460fbcf-b7ad-4e96-aa3e-474863d55156',
+              contentUrl: 'ContetURL'
+            }
+          ],
+          tagNames: ['tag1', 'tag2', 'tag3']
+        }
+      ],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIST,
@@ -161,12 +182,15 @@ export default {
   },
   methods: {
     callForData() {
-      AwarenessEducatorService.searchTraining(this.axiosPayload).then((response) => {
-        console.log('response', response)
-      })
+      this.setLoading(true)
+      AwarenessEducatorService.searchTraining(this.axiosPayload)
+        .then((response) => {
+          console.log('response', response)
+        })
+        .finally(this.setLoading)
     },
     handleSendTraining(row) {
-      //todo training call
+      this.$emit(EMITS.ON_TRAINING, row)
     },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
