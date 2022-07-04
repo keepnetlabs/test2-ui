@@ -43,33 +43,3 @@ export default {
   created() {}
 }
 </script>
-
-<style lang="scss">
-.datatable-progress {
-  max-width: 60px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-
-  .v-progress-linear {
-    max-width: 48px;
-    margin-top: 1px;
-  }
-  &__per {
-    font-size: 10px;
-    font-weight: normal;
-    line-height: 1.9;
-    letter-spacing: normal;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-  &__stats {
-    opacity: 0.64;
-    font-size: 10px;
-    color: rgba(0, 0, 0, 0.87) !important;
-    text-align: center;
-    line-height: 19px;
-  }
-}
-</style>

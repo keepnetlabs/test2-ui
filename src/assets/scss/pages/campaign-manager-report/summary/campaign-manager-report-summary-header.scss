@@ -1,0 +1,52 @@
+.campaign-manager-report-summary-header {
+    display: flex;
+    justify-content: space-between;
+
+    &__left {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__right {
+        display: flex;
+    }
+
+    &__title {
+        font-weight: 600;
+        font-size: 20px;
+        color: #383b41;
+        line-height: 24px;
+    }
+
+    &__subtitle {
+        font-weight: normal;
+        font-size: 16px;
+        color: #383b41;
+        line-height: 22px;
+    }
+
+    &__btn {
+        &-download-report {
+            .v-btn__content {
+                font-weight: 600;
+                font-size: 14px;
+            }
+        }
+
+        &-resend-campaign {
+
+            &,
+            &:focus,
+            &:active {
+                box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.08);
+                filter: drop-shadow(0px 1px 4px rgba(17, 115, 193, 0.25));
+            }
+
+            .v-btn__content {
+                font-weight: 600;
+                font-size: 14px;
+                color: #ffffff;
+            }
+        }
+    }
+}

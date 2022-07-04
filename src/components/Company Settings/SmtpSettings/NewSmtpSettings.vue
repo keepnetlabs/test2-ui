@@ -581,18 +581,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.new-smtp-setting {
-  &__server-address-container {
-    display: flex;
-    & > div:first-child {
-      flex-basis: 90%;
-    }
-    & > div:last-child {
-      flex-basis: 15%;
-      margin-left: 16px;
-    }
-  }
-}
-</style>

@@ -594,5 +594,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" src="./Incidents.scss"></style>

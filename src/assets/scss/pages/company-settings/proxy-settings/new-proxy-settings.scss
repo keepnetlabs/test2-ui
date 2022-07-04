@@ -1,0 +1,36 @@
+.new-proxy-setting {
+    &__server-address-container {
+        display: flex;
+
+        &>div:first-child {
+            flex-basis: 90%;
+        }
+
+        &>div:last-child {
+            flex-basis: 15%;
+            margin-left: 16px;
+        }
+    }
+
+    .btn-save-changes {
+        color: #2196f3 !important;
+        box-shadow: none !important;
+        border-radius: 18px;
+        border: solid 1px #2196f3 !important;
+    }
+
+    .proxy-test-connection {
+        display: flex;
+
+        .v-input {
+            padding-right: 8px;
+        }
+
+        .test-connection-success {
+            color: #217124;
+            position: absolute;
+            right: -190px;
+            bottom: 36px;
+        }
+    }
+}

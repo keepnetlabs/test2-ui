@@ -1450,5 +1450,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" src="./SinglePost.scss"></style>

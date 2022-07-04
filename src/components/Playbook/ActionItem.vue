@@ -1290,4 +1290,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./ActionItem.scss" />

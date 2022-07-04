@@ -207,20 +207,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.matching-modal.version-history {
-  .k-table__wrapper {
-    .card .table-wrapper .el-table th > .cell.actions-label {
-      margin-left: 0 !important;
-    }
-  }
-}
-.matching-modal.version-history::-webkit-scrollbar {
-  display: none;
-}
-.matching-modal.version-history {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;
-}
-</style>
