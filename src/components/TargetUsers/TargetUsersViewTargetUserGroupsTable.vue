@@ -197,9 +197,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#target-users-view-target-users-group-data-table.k-table__wrapper {
-  padding-bottom: 0;
-}
-</style>

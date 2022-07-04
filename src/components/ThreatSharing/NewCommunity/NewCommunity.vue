@@ -406,4 +406,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./NewCommunity.scss"></style>

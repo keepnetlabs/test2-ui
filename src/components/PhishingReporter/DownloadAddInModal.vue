@@ -305,30 +305,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.btn-download-add-in {
-  padding: 2px 16px 2px 22px !important;
-  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
-  &:focus {
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
-  }
-  .v-icon {
-    margin-top: 2px;
-  }
-  .v-btn__loader {
-    padding-right: 8px;
-  }
-}
-.logos-buttons__first-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.logo-and-button {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-</style>

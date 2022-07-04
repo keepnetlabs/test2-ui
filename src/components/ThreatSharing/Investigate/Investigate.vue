@@ -616,4 +616,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped src="./Investiage.scss"></style>

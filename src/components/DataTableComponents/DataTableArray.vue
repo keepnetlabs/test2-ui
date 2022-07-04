@@ -36,16 +36,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.external-data {
-  border-radius: 4px;
-  background-color: #2196f3;
-  color: #ffffff;
-  width: 26px;
-  position: absolute;
-  right: 5px;
-  text-align: center;
-  top: 12px;
-}
-</style>

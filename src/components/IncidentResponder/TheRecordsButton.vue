@@ -67,21 +67,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.the-records-button {
-  .v-btn__content {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    color: #2196f3;
-    letter-spacing: normal;
-    text-transform: lowercase;
-  }
-  &--disabled {
-    .v-btn__content {
-      color: #757575 !important;
-    }
-  }
-}
-</style>
