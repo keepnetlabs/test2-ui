@@ -6,7 +6,8 @@ export const EMITS = {
   ON_PREVIEW: 'on-preview',
   ON_ACTION_DELETE: 'on-action-delete',
   ON_EDIT: 'on-edit',
-  ON_CLOSE: 'on-close'
+  ON_CLOSE: 'on-close',
+  ON_TRAINING: 'on-training'
 }
 
 export const COLUMNS = {
@@ -52,7 +53,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 160,
+    width: 180,
     filterableType: 'select',
     filterableItems: []
   },

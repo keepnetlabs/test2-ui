@@ -5,7 +5,11 @@
         :id="getItemId(item)"
         :key="index"
         :to="{ name: item }"
-        :style="[['Company', 'Phishing Simulator'].includes(item) && { pointerEvents: 'none' }]"
+        :style="[
+          ['Company', 'Phishing Simulator', 'Awareness Educator'].includes(item) && {
+            pointerEvents: 'none'
+          }
+        ]"
       >
         {{ index === 0 ? baseName : item }}
       </router-link>
