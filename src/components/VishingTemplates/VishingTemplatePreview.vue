@@ -100,21 +100,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.template-preview__text--body {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.template-preview__steps {
-  background-color: #fafafa;
-  border-radius: 8px;
-  border: 1px solid #e7e7e7;
-  margin-top: 12px;
-
-  hr {
-    border-top: 1px solid #e7e7e7;
-  }
-}
-</style>

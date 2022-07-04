@@ -953,3 +953,9 @@
         }
     }
 }
+
+.vishing-menu {
+    .v-list-group__header__prepend-icon {
+      transform: rotateY(-180deg);
+    }
+  }

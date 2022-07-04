@@ -1,0 +1,28 @@
+.vishing-template-dialog-step {
+    padding: 12px !important;
+    margin-bottom: 8px;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap:1rem;
+    }
+
+    &__header-left{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__header-right{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__header-text {
+        font-weight: 600;
+        font-size: 18px;
+    }
+}

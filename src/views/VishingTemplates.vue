@@ -13,6 +13,15 @@
       @onCancel="onCloseDeleteModal"
       @onConfirm="handleDeleteConfirm"
     />
+    <VishingTemplateModal
+      ref="refVishingTemplateModal"
+      v-if="modalStatus"
+      :status="modalStatus"
+      :templateId="selectedTemplate.resourceId"
+      :isEdit="isEdit"
+      :isDuplicate="isDuplicate"
+      @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus(false)"
+    />
     <DataTable
       id="vishing-templates-data-table"
       ref="refVishingTemplatesList"
@@ -36,7 +45,7 @@
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
-      @addAction="changeNewEmailTemplateModalStatus(true)"
+      @addAction="changeNewVishingTemplateModalStatus(true)"
       @downloadEvent="exportVishingTemplates"
       @handleMultipleDelete="handleActionDelete"
       @paginationChangedEvent="paginationChangedEvent($event)"
@@ -117,6 +126,7 @@ import {
 } from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
+import VishingTemplateModal from '@/components/VishingTemplates/VishingTemplateModal'
 export default {
   name: 'VishingTemplates',
   components: {
@@ -126,12 +136,13 @@ export default {
     DefaultButtonRowAction,
     RowActionsMenu,
     DefaultMenuRowAction,
-    DeleteVishingTemplateDialog
+    DeleteVishingTemplateDialog,
+    VishingTemplateModal
   },
   data() {
     return {
       vishingTemplateId: null,
-      modalStatus: false,
+      modalStatus: true,
       isPreviewVisible: false,
       loading: true,
       isEdit: false,
@@ -458,9 +469,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.vishing-templates__menu-row-action-tooltip {
-  pointer-events: all;
-}
-</style>
