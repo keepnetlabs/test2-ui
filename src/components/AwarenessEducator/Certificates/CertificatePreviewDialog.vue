@@ -1,0 +1,57 @@
+<template>
+  <AppDialog
+    v-if="status"
+    custom-size="1600"
+    max-height
+    max-height-size="900"
+    :status="status"
+    icon="mdi-eye"
+    size="ultraMaximum"
+    :title="getTitle"
+    @changeStatus="handleClose"
+  >
+    <template #app-dialog-body>
+      <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
+    </template>
+    <template #app-dialog-footer>
+      <div class="d-flex" style="justify-content: flex-end;">
+        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
+          >CLOSE
+        </v-btn>
+      </div>
+    </template>
+  </AppDialog>
+</template>
+
+<script>
+import AppDialog from '@/components/AppDialog'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { EMITS } from '@/components/AwarenessEducator/utils'
+export default {
+  name: 'CertificatePreviewDialog',
+  components: { DatatableLoading, AppDialog },
+  props: {
+    status: {
+      type: Boolean
+    },
+    selectedRow: {
+      type: Object
+    }
+  },
+  data() {
+    return {
+      isPreviewLoading: false,
+      templates: []
+    }
+  },
+  created() {
+    this.callForData()
+  },
+  methods: {
+    callForData() {},
+    handleClose() {
+      this.$emit(EMITS.ON_CLOSE)
+    }
+  }
+}
+</script>

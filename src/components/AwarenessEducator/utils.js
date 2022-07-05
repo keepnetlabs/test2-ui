@@ -20,6 +20,39 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     filterableType: 'text',
+    type: 'text',
+    width: 160
+  },
+  DISTRIBUTED: {
+    property: PROPERTY_STORE.DISTRIBUTED,
+    align: 'left',
+    label: labels.Distributed,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 160
+  },
+  OWNER: {
+    property: PROPERTY_STORE.OWNER,
+    align: 'left',
+    label: labels.Owner,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 160
+  },
+  CERTIFICATE_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.TrainingName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
     type: 'slot',
     width: 160
   },

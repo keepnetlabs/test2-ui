@@ -325,6 +325,16 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/certificates"
+                  id="btn--link-navigator-menu-certificates"
+                  route-name="Certificates"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
 
           <v-list-group

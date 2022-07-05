@@ -35,6 +35,7 @@ import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import AwarenessEducator from '@/views/AwarenessEducator'
 import TrainingList from '@/views/TrainingList'
 import Enrollments from '@/views/Enrollments'
+import Certificates from '@/views/Certificates'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -144,6 +145,16 @@ const router = new Router({
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
               component: Enrollments
+            },
+            {
+              path: 'certificates',
+              name: 'Certificates',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              component: Certificates
             }
           ]
         },
