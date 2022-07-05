@@ -48,7 +48,7 @@
               </FormGroup>
               <FormGroup
                 title="Difficulty"
-                sub-title="Select a detection difficulty level for this vishing template"
+                subTitle="Select a detection difficulty level for this vishing template"
                 class-name="mb-6"
               >
                 <v-radio-group
@@ -100,13 +100,117 @@
                 />
               </FormGroup>
               <FormGroup title="Steps" sub-title="Define your vishing template step by step">
-                <VishingTemplateDialogStep
-                  v-for="(step, index) in formValues.steps"
-                  :step="step"
-                  :index="index + 1"
-                  :key="index"
-                  @removeStep="onRemoveStep(index)"
-                />
+                <div
+                  :class="{
+                    'vishing-template__steps': true,
+                    'vishing-template__steps--error': !isFailStepSelected
+                  }"
+                >
+                  <VishingTemplateDialogStep
+                    v-for="(step, index) in formValues.steps"
+                    v-model="formValues.steps[index]"
+                    :index="index"
+                    :key="index"
+                    @removeStep="onRemoveStep(index)"
+                    @failStepChange="onFailStepChange"
+                  />
+                </div>
+                <span v-if="!isFailStepSelected" class="vishing-template__steps-error-text mt-2">
+                  One step must be selected as fail step
+                </span>
+                <div class="mb-6">
+                  <v-menu :offset-y="true" bottom right>
+                    <template v-slot:activator="{ on: menu }">
+                      <v-tooltip bottom opacity="1" :disabled="!isAddStepDisabled">
+                        <template v-slot:activator="{ on: tooltip }">
+                          <div v-on="tooltip" style="display: inline-block;">
+                            <v-btn
+                              v-on="{ ...menu }"
+                              class="add-step-button button-new mt-3"
+                              rounded
+                              color="#2196f3"
+                              :disabled="isAddStepDisabled"
+                            >
+                              <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;"
+                                >mdi-plus</v-icon
+                              >
+                              <span class="add-step-button__text">ADD STEP</span>
+                            </v-btn>
+                          </div>
+                        </template>
+                        <span class="tooltip-span"> Only 5 steps can be added. </span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        v-for="(item, index) in addStepItems"
+                        :key="index"
+                        @click="onAddStep(item.value)"
+                      >
+                        <v-list-item-title class="add-users__title">
+                          <div class="add-step-menu-item">
+                            <span class="add-step-menu-item__text">
+                              {{ item.text }}
+                            </span>
+                            <span class="add-step-menu-item__description">
+                              {{ item.description }}
+                            </span>
+                          </div>
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
+              </FormGroup>
+              <FormGroup
+                title="Invalid Dialing Notice"
+                subTitle="This notice will be played when the user fails to enter a number correctly"
+              >
+                <v-card class="px-4 pt-3 mt-2">
+                  <span class="vishing-template__invalid-dialing-notice-title">Notice</span>
+                  <FormGroup
+                    title="Method"
+                    subTitle="Choose playback method"
+                    labelClassName="vishing-template-dialog-step__form-label"
+                  >
+                    <k-select
+                      type="select"
+                      v-model.trim="formValues.dialogNoticeType"
+                      :items="dialogNoticeItems"
+                      persistent-hint
+                      dense
+                      item-text="text"
+                      item-value="value"
+                      outlined
+                    ></k-select>
+                  </FormGroup>
+                  <FormGroup
+                    v-if="formValues.dialogNoticeType === 'textToSpeech'"
+                    className="mt-2"
+                    labelClassName="vishing-template-dialog-step__form-label"
+                    title="Text"
+                    subTitle="Enter your text to be voiced by AI"
+                  >
+                    <InputDescription
+                      v-model.trim="formValues.dialogNoticeTextToSpeech"
+                      initialPlaceholder="Enter text here"
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    v-if="formValues.dialogNoticeType === 'uploadAudio'"
+                    className="mt-2 pb-3"
+                    labelClassName="vishing-template-dialog-step__form-label"
+                    title="Audio File"
+                    subTitle="Upload an audio file"
+                  >
+                    <KFileUpload
+                      hint="Only MP3 files. Max. file size 1MB"
+                      :extensions="['mp3']"
+                      :size="1"
+                      @inputFile="onFileChanged"
+                    />
+                  </FormGroup>
+                </v-card>
               </FormGroup>
             </v-form>
           </v-stepper-content>
@@ -142,6 +246,7 @@ import { isDifferent, scrollToComponent } from '@/utils/functions'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import VishingTemplateDialogStep from '@/components/VishingTemplates/VishingTemplateDialogStep'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 export default {
   name: 'VishingTemplateModal',
   components: {
@@ -154,7 +259,8 @@ export default {
     InputDescription,
     MakeAvailableFor,
     KSelect,
-    VishingTemplateDialogStep
+    VishingTemplateDialogStep,
+    KFileUpload
   },
   props: {
     status: {
@@ -177,6 +283,7 @@ export default {
   },
   data() {
     return {
+      isFailStepSelected: true,
       editItemsDisabled: false,
       step: 1,
       isSubmitDisabled: false,
@@ -187,18 +294,66 @@ export default {
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
         availableForRequests: [],
+        dialogNoticeType: 'textToSpeech',
+        dialogNoticeTextToSpeech: '',
+        dialogNoticeFile: null,
         steps: [
           {
-            type: 'textToSpeech'
+            type: 'textToSpeech',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
           },
           {
-            type: 'uploadAudio'
+            type: 'uploadAudio',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
           },
           {
-            type: 'pause'
+            type: 'pause',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
           }
         ]
       },
+      addStepItems: [
+        {
+          value: 'textToSpeech',
+          text: 'Text to speech',
+          description: 'Create AI dub from text'
+        },
+        {
+          value: 'uploadAudio',
+          text: 'File upload',
+          description: 'Upload a sound file'
+        },
+        {
+          value: 'pause',
+          text: 'Pause',
+          description: 'Give a pause'
+        }
+      ],
+      dialogNoticeItems: [
+        {
+          value: 'textToSpeech',
+          text: 'Text to speech'
+        },
+        {
+          value: 'uploadAudio',
+          text: 'File upload'
+        }
+      ],
       difficultyItems: [
         {
           resourceId: 'mT0CeYGgKsVb',
@@ -244,12 +399,78 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    isAddStepDisabled() {
+      return this.formValues.steps.length > 4
+    }
+  },
+  watch: {
+    'formValues.steps': {
+      handler(val) {
+        this.isFailStepSelected = this.validateFailStep()
+      },
+      deep: true
     }
   },
   created() {},
   methods: {
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
+    },
+    onAddStep(type) {
+      let newItem
+      switch (type) {
+        case 'textToSpeech':
+          newItem = {
+            type: 'textToSpeech',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
+          }
+          break
+        case 'uploadAudio':
+          newItem = {
+            type: 'uploadAudio',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
+          }
+          break
+        case 'pause':
+          newItem = {
+            type: 'pause',
+            textToSpeech: '',
+            requiredDigitCount: 0,
+            pauseDuration: 0,
+            isFailStep: false,
+            fileName: '',
+            fileUrl: ''
+          }
+        default:
+          break
+      }
+      this.formValues.steps.push(newItem)
+    },
+    onFailStepChange(index) {
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        if (index === i) {
+          this.formValues.steps[i].isFailStep = true
+        } else {
+          this.formValues.steps[i].isFailStep = false
+        }
+      }
+    },
+    validateFailStep() {
+      return this.formValues.steps.some((step) => step.isFailStep)
+    },
+    onFileChanged(file) {
+      this.formValues.dialogNoticeFile = file
     },
     changeVishingTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)

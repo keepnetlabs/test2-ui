@@ -1,6 +1,10 @@
 .vishing-template-dialog-step {
     padding: 12px !important;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+
+    &:last-child {
+        margin-bottom: 0px !important;
+    }
 
     &__header {
         display: flex;
@@ -24,5 +28,10 @@
     &__header-text {
         font-weight: 600;
         font-size: 18px;
+    }
+
+    &__form-label {
+        font-weight: 600;
+        font-size: 16px;
     }
 }

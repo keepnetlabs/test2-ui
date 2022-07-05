@@ -2,7 +2,7 @@
   <v-list-item :class="['k-form-group', className]">
     <v-list-item-content>
       <slot name="title">
-        <label class="k-form-group__title" v-if="title">
+        <label :class="['k-form-group__title', labelClassName]" v-if="title">
           {{ title }}
         </label>
       </slot>
@@ -33,6 +33,9 @@ export default {
       default: false
     },
     className: {
+      type: String
+    },
+    labelClassName: {
       type: String
     }
   }
