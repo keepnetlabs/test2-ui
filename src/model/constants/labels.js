@@ -7,8 +7,13 @@ export const labels = {
   },
   ExcludeIPAddress: 'Exclude IP Address',
   TargetUserGroups: 'Target User Groups',
+  UserWhoOpenedEmail: 'Users who opened the e-mail',
   TargetUserGroupsSub: 'Select user groups below to send the training exercise',
   TrainingName: 'Training Name',
+  UserWhoClickedEmail: 'Users who clicked the phishing link',
+  UserWhoSubmittedData: 'Users who submitted data',
+  UserWhoReportedAsSuspicious: 'Users who reported as suspicious',
+  ContentLanguage: 'Content Language',
   ExcludeIPAddressSubtitle:
     'The interactions from the listed IP addresses will not be registered in your campaign statistics. ',
   ExcludeUserAgent: 'Exclude User Agent',

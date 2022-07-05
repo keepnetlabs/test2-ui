@@ -9,8 +9,12 @@ const deleteTraining = (resourceId) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+const createDraftTraining = (payload) => {
+  return testRequest.post('/trainings/draft', payload)
+}
+
 const getTraining = (resourceId) => {}
-const createTraining = (payload) => {}
 const updateTraining = (payload, resourceId) => {}
 const searchCertificate = (payload) => {
   return testRequest.post('/certificates/search', payload)
@@ -40,7 +44,7 @@ export default {
   searchTraining,
   deleteTraining,
   getTraining,
-  createTraining,
+  createDraftTraining,
   updateTraining,
   searchCertificate,
   deleteCertificate,

@@ -63,7 +63,15 @@ export default {
       isEdit: false
     }
   },
+  created() {
+    this.callForCategories()
+    this.callForLanguages()
+    this.callForTargetAudiences()
+  },
   methods: {
+    callForCategories() {},
+    callForLanguages() {},
+    callForTargetAudiences() {},
     toggleShowDeleteTrainingDialog(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)
       if (this.isShowDeleteTrainingDialog) this.selectedRow = null

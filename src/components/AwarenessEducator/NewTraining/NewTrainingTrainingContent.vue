@@ -15,7 +15,7 @@
     </FormGroup>
     <FormGroup>
       <v-checkbox
-        v-model="formData.isQuiz"
+        v-model="formData.hasQuiz"
         id="input--new-training-modal-quiz"
         class="mb-8"
         label="Quiz"
@@ -54,7 +54,7 @@ export default {
       contentTypeItems: [],
       formData: {
         contentType: '',
-        isQuiz: false,
+        hasQuiz: false,
         contentByLanguage: [{ file: null, languageTypeResourceId: '' }]
       }
     }

@@ -32,7 +32,7 @@
               :title="labels.TrainingCourseInformation"
               :subtitle="labels.TrainingCourseInformationSub"
             />
-            <NewTrainingCourseInformation />
+            <NewTrainingCourseInformation ref="refTrainingCourseInformation" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -75,6 +75,8 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import NewTrainingCourseInformation from '@/components/AwarenessEducator/NewTraining/NewTrainingCourseInformation'
 import NewTrainingTrainingContent from '@/components/AwarenessEducator/NewTraining/NewTrainingTrainingContent'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'NewTrainingModal',
   components: {
@@ -102,7 +104,8 @@ export default {
     return {
       labels,
       isActionButtonDisabled: false,
-      step: 1
+      step: 1,
+      trainingId: this?.selectedRow?.resourceId || ''
     }
   },
   computed: {
@@ -120,8 +123,27 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
+      const { refTrainingCourseInformation } = this.$refs
       if (this.step === 1 && flag === 1) {
-        this.step += flag
+        if (refTrainingCourseInformation.validateForm()) {
+          const { formData } = refTrainingCourseInformation
+          const { name, description, category, targetAudience, tagNames } = formData
+          this.isActionButtonDisabled = true
+          AwarenessEducatorService.createDraftTraining({
+            name,
+            description,
+            category,
+            targetAudience,
+            tagNames
+          })
+            .then((response) => {
+              this.trainingId = response?.data?.data?.trainingId || ''
+              this.step++
+            })
+            .finally(() => {
+              this.isActionButtonDisabled = false
+            })
+        }
       } else {
         this.step += flag
       }

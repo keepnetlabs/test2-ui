@@ -92,6 +92,7 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'NewTrainingCourseInformation',
   components: {
@@ -146,6 +147,18 @@ export default {
         return (this.formData.file = null)
       }
       this.formData.file = file
+    },
+    validateForm() {
+      const { refForm } = this.$refs
+      if (refForm.validate()) {
+        return true
+      } else {
+        this.$nextTick(() => {
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
+      }
+      return false
     }
   }
 }
