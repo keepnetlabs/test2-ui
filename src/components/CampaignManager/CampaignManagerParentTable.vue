@@ -68,7 +68,6 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { COLUMNS } from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -80,6 +79,7 @@ import CampaignManagerRowActions from '@/components/CampaignManager/CampaignMana
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -107,6 +107,7 @@ export default {
     }
   },
   emits: EMITS,
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       CONSTANTS: {
@@ -233,49 +234,6 @@ export default {
     },
     setLoading(flag = false) {
       this.$emit('update:is-loading', flag)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     handleRecordButtonClick(row) {
       this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)

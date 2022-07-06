@@ -13,6 +13,8 @@ export const labels = {
   UserWhoClickedEmail: 'Users who clicked the phishing link',
   UserWhoSubmittedData: 'Users who submitted data',
   UserWhoReportedAsSuspicious: 'Users who reported as suspicious',
+  TrainingDistributionSub:
+    'Send trainings with selected intervals or over a specified time period. Limit number of trainings to be sent in each batch.',
   ContentLanguage: 'Content Language',
   ExcludeIPAddressSubtitle:
     'The interactions from the listed IP addresses will not be registered in your campaign statistics. ',

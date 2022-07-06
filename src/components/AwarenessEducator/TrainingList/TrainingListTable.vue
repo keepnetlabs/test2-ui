@@ -93,6 +93,12 @@ export default {
     DataTable
   },
   mixins: [useLoading, useDefaultTableFunctions],
+  inject: {
+    languages: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       CONSTANTS: {
@@ -175,6 +181,11 @@ export default {
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
+    }
+  },
+  watch: {
+    languages(val) {
+      console.log('val', val)
     }
   },
   created() {

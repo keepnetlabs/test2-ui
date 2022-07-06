@@ -40,6 +40,9 @@ const makeDefaultCertificate = (resourceId) => {
   return testRequest.post(`/certificates/${resourceId}/default`)
 }
 
+const getCategories = () => {}
+const getTargetAudiences = () => {}
+const getLanguages = () => {}
 export default {
   searchTraining,
   deleteTraining,
@@ -51,5 +54,8 @@ export default {
   createCertificate,
   updateCertificate,
   getCertificate,
-  makeDefaultCertificate
+  makeDefaultCertificate,
+  getCategories,
+  getTargetAudiences,
+  getLanguages
 }

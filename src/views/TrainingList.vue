@@ -43,6 +43,8 @@ import DeleteTrainingDialog from '@/components/AwarenessEducator/TrainingList/De
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrainingModal'
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 export default {
   name: 'TrainingList',
   components: {
@@ -53,6 +55,15 @@ export default {
     KContainer,
     TrainingPreviewDialog
   },
+  provide() {
+    return {
+      categories: this.categories,
+      targetAudiences: this.targetAudiences,
+      languages: this.languages,
+      getDistributionSmtpDelayTimeTypes: () => this.distributionSmtpDelayTimeTypes,
+      getDistributionEmailOverTimeTypes: () => this.distributionEmailOverTimeTypes
+    }
+  },
   data() {
     return {
       isShowPreviewDialog: false,
@@ -60,18 +71,39 @@ export default {
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
       selectedRow: null,
-      isEdit: false
+      isEdit: false,
+      categories: [],
+      languages: [],
+      targetAudiences: [],
+      distributionEmailOverTimeTypes: [],
+      distributionSmtpDelayTimeTypes: []
     }
   },
   created() {
     this.callForCategories()
     this.callForLanguages()
     this.callForTargetAudiences()
+    this.callForFormDetails()
   },
   methods: {
-    callForCategories() {},
-    callForLanguages() {},
-    callForTargetAudiences() {},
+    callForCategories() {
+      AwarenessEducatorService.getCategories()
+    },
+    callForLanguages() {
+      AwarenessEducatorService.getLanguages()
+    },
+    callForTargetAudiences() {
+      AwarenessEducatorService.getTargetAudiences()
+    },
+    callForFormDetails() {
+      getCampaignManagerFormDetails().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.distributionEmailOverTimeTypes = data?.distributionEmailOverTimeTypes || []
+        this.distributionSmtpDelayTimeTypes = data?.distributionSmtpDelayTimeTypes || []
+      })
+    },
     toggleShowDeleteTrainingDialog(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)
       if (this.isShowDeleteTrainingDialog) this.selectedRow = null

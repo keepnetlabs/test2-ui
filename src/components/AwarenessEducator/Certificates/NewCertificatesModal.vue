@@ -95,11 +95,7 @@ export default {
   },
   computed: {
     getModalTitle() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplate
-          : labels.EditNotificationTemplate
-        : labels.NewNotificationTemplate
+      return this.selectedItem ? labels.EditCertificate : labels.CreateNewCertificate
     },
     getBodyTitle() {
       return labels.TrainingCertificateInformation

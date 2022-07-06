@@ -28,7 +28,7 @@
         hint="*Required"
         placeholder="Select category"
         :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="categoryItems"
+        :items="categories"
       ></KSelect>
     </FormGroup>
     <FormGroup has-hint :title="labels.TargetAudience" :sub-title="labels.TargetAudienceSub">
@@ -41,7 +41,7 @@
         hint="*Required"
         placeholder="Select category"
         :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="targetAudienceItems"
+        :items="targetAudiences"
       ></KSelect>
     </FormGroup>
     <FormGroup :title="labels.Tags" :sub-title="labels.TagTrainingSub">
@@ -104,12 +104,20 @@ export default {
     InputEntityName,
     FormGroup
   },
+  inject: {
+    categories: {
+      type: Array,
+      default: () => []
+    },
+    targetAudiences: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       Validations,
       labels,
-      categoryItems: [],
-      targetAudienceItems: [],
       formData: {
         file: null,
         name: '',

@@ -48,6 +48,7 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
+            <SendTrainingSettings />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -88,9 +89,16 @@ import { EMITS } from '@/components/AwarenessEducator/utils'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import SendTrainingSelectUsers from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsers'
+import SendTrainingSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSettings'
 export default {
   name: 'SendTrainingModal',
-  components: { SendTrainingSelectUsers, ConfigureCompanyStepHeader, StepperFooter, AppModal },
+  components: {
+    SendTrainingSettings,
+    SendTrainingSelectUsers,
+    ConfigureCompanyStepHeader,
+    StepperFooter,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean
