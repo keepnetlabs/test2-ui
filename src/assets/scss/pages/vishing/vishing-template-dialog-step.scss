@@ -1,5 +1,4 @@
 .vishing-template-dialog-step {
-    padding: 12px !important;
     margin-bottom: 12px;
 
     &:last-child {
@@ -11,6 +10,8 @@
         align-items: center;
         justify-content: space-between;
         gap:1rem;
+        padding: 12px !important;
+        cursor: move;
     }
 
     &__header-left{
@@ -30,8 +31,31 @@
         font-size: 18px;
     }
 
+    &__form-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 8px;
+        margin-top: 1rem;
+    }
+
+    &__form-subtitle {
+        font-size: 14px;
+    }
+
+    &__form-title-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
     &__form-label {
         font-weight: 600;
         font-size: 16px;
+    }
+
+    &__body {
+        padding: 0px 12px !important;
     }
 }

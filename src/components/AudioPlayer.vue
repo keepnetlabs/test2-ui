@@ -10,7 +10,17 @@
       @timeupdate="onTimeupdate($event)"
       @loadedmetadata="onLoadedmetadata($event)"
     />
-    <div class="audio-player">
+    <div v-if="isPreview && src" class="audio-player audio-player--preview">
+      <v-btn small text color="#2196F3" :disabled="!canPlay" @click="onTogglePlay">
+        <v-icon left>
+          {{ audio.playing ? 'mdi-pause' : 'mdi-play' }}
+        </v-icon>
+        <span class="audio-player__preview-text">
+          Preview
+        </span>
+      </v-btn>
+    </div>
+    <div v-else class="audio-player">
       <v-btn
         small
         icon
@@ -50,8 +60,11 @@ export default {
       default: 'client' // server or client
     },
     src: {
-      type: String,
-      default: 'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+      type: String
+    },
+    isPreview: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -117,31 +130,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  .el-slider__runway {
-    height: 4px !important;
-    background-color: #e0e0e0 !important;
-  }
-  .el-slider__bar {
-    height: 4px !important;
-    background-color: #757575 !important;
-  }
-  .el-slider__button-wrapper {
-    display: none !important;
-  }
-}
-.audio-player__track {
-  flex: 1;
-  max-width: 450px;
-}
-.audio-payer__time-text {
-  color: #383b41;
-  font-weight: 400;
-  font-size: 14px;
-}
-</style>

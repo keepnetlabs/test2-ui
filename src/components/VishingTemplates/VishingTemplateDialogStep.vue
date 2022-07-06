@@ -38,20 +38,27 @@
             @input="onPauseDurationChange"
           />
         </FormGroup>
-        <FormGroup
-          v-if="value.type === 'uploadAudio'"
-          className="mt-4"
-          labelClassName="vishing-template-dialog-step__form-label"
-          title="Audio File"
-          subTitle="Upload an audio file"
-        >
+        <div v-if="value.type === 'uploadAudio'">
+          <div class="vishing-template-dialog-step__form-title">
+            <div class="vishing-template-dialog-step__form-title-left">
+              <label class="vishing-template-dialog-step__form-label">Audio File</label>
+              <span class="vishing-template-dialog-step__form-subtitle">Upload an audio file</span>
+            </div>
+            <div class="vishing-template-dialog-step__form--title-right">
+              <AudioPlayer
+                v-if="value.type === 'uploadAudio' && value.fileUrl"
+                isPreview
+                :src="value.fileUrl"
+              />
+            </div>
+          </div>
           <KFileUpload
             hint="Only MP3 files. Max. file size 1MB"
             :extensions="['mp3']"
             :size="1"
             @inputFile="onFileChanged"
           />
-        </FormGroup>
+        </div>
         <FormGroup
           v-if="value.type === 'textToSpeech'"
           className="mt-4"
@@ -94,9 +101,16 @@ import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import AudioPlayer from '@/components/AudioPlayer'
 export default {
   name: 'VishingTemplateDialogStep',
-  components: { KButtonCheckbox, FormGroup, InputDescription, KFileUpload },
+  components: {
+    KButtonCheckbox,
+    FormGroup,
+    InputDescription,
+    KFileUpload,
+    AudioPlayer
+  },
   emits: ['removeStep'],
   props: {
     value: {
@@ -156,7 +170,16 @@ export default {
       }
     },
     onFileChanged(file) {
-      this.$emit('input', { ...this.value, file })
+      if (Array.isArray(file) && file.length === 0) {
+        this.$emit('input', { ...this.value, fileName: '', file: null, fileUrl: '' })
+      } else {
+        this.$emit('input', {
+          ...this.value,
+          fileName: file.name,
+          file,
+          fileUrl: URL.createObjectURL(file)
+        })
+      }
     }
   }
   // interface Step {

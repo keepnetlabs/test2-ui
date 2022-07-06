@@ -106,14 +106,21 @@
                     'vishing-template__steps--error': !isFailStepSelected
                   }"
                 >
-                  <VishingTemplateDialogStep
-                    v-for="(step, index) in formValues.steps"
-                    v-model="formValues.steps[index]"
-                    :index="index"
-                    :key="index"
-                    @removeStep="onRemoveStep(index)"
-                    @failStepChange="onFailStepChange"
-                  />
+                  <draggable
+                    v-bind="dragOptions"
+                    v-model="formValues.steps"
+                    group="a"
+                    handle=".vishing-template-dialog-step__header"
+                  >
+                    <VishingTemplateDialogStep
+                      v-for="(step, index) in formValues.steps"
+                      v-model="formValues.steps[index]"
+                      :index="index"
+                      :key="index"
+                      @removeStep="onRemoveStep(index)"
+                      @failStepChange="onFailStepChange"
+                    />
+                  </draggable>
                 </div>
                 <span v-if="!isFailStepSelected" class="vishing-template__steps-error-text mt-2">
                   One step must be selected as fail step
@@ -196,20 +203,41 @@
                       initialPlaceholder="Enter text here"
                     />
                   </FormGroup>
-                  <FormGroup
+                  <!-- <FormGroup
                     v-if="formValues.dialogNoticeType === 'uploadAudio'"
                     className="mt-2 pb-3"
                     labelClassName="vishing-template-dialog-step__form-label"
                     title="Audio File"
                     subTitle="Upload an audio file"
-                  >
+                  > -->
+
+                  <div v-if="formValues.dialogNoticeType === 'uploadAudio'" class="mt-2 pb-3">
+                    <div class="vishing-template-dialog-step__form-title">
+                      <div class="vishing-template-dialog-step__form-title-left">
+                        <label class="vishing-template-dialog-step__form-label">Audio File</label>
+                        <span class="vishing-template-dialog-step__form-subtitle"
+                          >Upload an audio file</span
+                        >
+                      </div>
+                      <div class="vishing-template-dialog-step__form--title-right">
+                        <AudioPlayer
+                          v-if="
+                            formValues.dialogNoticeType === 'uploadAudio' &&
+                            formValues.dialogNoticeFileUrl
+                          "
+                          isPreview
+                          :src="formValues.dialogNoticeFileUrl"
+                        />
+                      </div>
+                    </div>
                     <KFileUpload
                       hint="Only MP3 files. Max. file size 1MB"
                       :extensions="['mp3']"
                       :size="1"
                       @inputFile="onFileChanged"
                     />
-                  </FormGroup>
+                  </div>
+                  <!-- </FormGroup> -->
                 </v-card>
               </FormGroup>
             </v-form>
@@ -247,6 +275,8 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import KSelect from '@/components/Common/Inputs/KSelect'
 import VishingTemplateDialogStep from '@/components/VishingTemplates/VishingTemplateDialogStep'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import Draggable from 'vuedraggable'
+import AudioPlayer from '@/components/AudioPlayer'
 export default {
   name: 'VishingTemplateModal',
   components: {
@@ -260,7 +290,9 @@ export default {
     MakeAvailableFor,
     KSelect,
     VishingTemplateDialogStep,
-    KFileUpload
+    KFileUpload,
+    Draggable,
+    AudioPlayer
   },
   props: {
     status: {
@@ -287,6 +319,10 @@ export default {
       editItemsDisabled: false,
       step: 1,
       isSubmitDisabled: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost'
+      },
       initialFormValues: {},
       formValues: {
         name: '',
@@ -297,6 +333,7 @@ export default {
         dialogNoticeType: 'textToSpeech',
         dialogNoticeTextToSpeech: '',
         dialogNoticeFile: null,
+        dialogNoticeFileUrl: '',
         steps: [
           {
             type: 'textToSpeech',
@@ -315,6 +352,7 @@ export default {
             isFailStep: false,
             fileName: '',
             fileUrl: ''
+            // fileUrl: 'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
           },
           {
             type: 'pause',
@@ -470,7 +508,13 @@ export default {
       return this.formValues.steps.some((step) => step.isFailStep)
     },
     onFileChanged(file) {
-      this.formValues.dialogNoticeFile = file
+      if (Array.isArray(file) && file.length === 0) {
+        this.formValues.dialogNoticeFile = null
+        this.formValues.dialogNoticeFileUrl = ''
+      } else {
+        this.formValues.dialogNoticeFile = file
+        this.formValues.dialogNoticeFileUrl = URL.createObjectURL(file)
+      }
     },
     changeVishingTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
