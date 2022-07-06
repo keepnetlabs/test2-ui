@@ -72,7 +72,7 @@ export function listBusinessCategories() {
 }
 
 export function searchNotifiedMail(payload) {
-  return testRequest.post(`notified-emails/search`, payload, { loading: true })
+  return testRequest.post(`notified-emails/search`, payload)
 }
 
 export function getSelectedEmailPreview(id) {
