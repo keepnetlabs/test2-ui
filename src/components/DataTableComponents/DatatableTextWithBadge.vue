@@ -120,19 +120,20 @@ export default {
         .filter(Boolean)
     },
     getBadges() {
-      if (this.col.maxItemsPerCell) {
-        this.maximumRenderedBadgeCount = this.col.maxItemsPerCell
-        this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-        return
-      }
-
       if (this.badges.length > 0) {
         let renderedCount = 0
-        let totalWidth = this.unRenderedBadgeCount
-          ? this.scope.column.width - 40
-          : this.scope.column.width
+        const width = Math.floor(this.scope.column.width) || 40
+        let totalWidth = 0,
+          itemsTotalWidth = 0
         for (let item of this.badges) {
-          let itemWidth = item.length * 8 + this.col.cellPadding
+          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
+          itemsTotalWidth += itemWidth
+        }
+        totalWidth = width > itemsTotalWidth ? width : width - 40
+        for (let item of this.badges) {
+          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
           if (itemWidth > totalWidth) {
             break
           } else {

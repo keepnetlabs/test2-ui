@@ -1340,8 +1340,8 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        maxItemsPerCell: 1,
         minWidth: 260,
+        width: 260,
         cellPadding: 8
       },
       {
