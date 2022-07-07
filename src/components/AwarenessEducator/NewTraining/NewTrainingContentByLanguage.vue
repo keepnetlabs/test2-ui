@@ -23,7 +23,10 @@
         Remove
       </v-btn>
     </FormGroupHorizontalContent>
-    <FormGroupHorizontalContent style="justify-content: flex-start;" :label="labels.UploadFile">
+    <FormGroupHorizontalContent
+      style="justify-content: flex-start; max-width: 456px;"
+      :label="labels.UploadFile"
+    >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
