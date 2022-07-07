@@ -14,6 +14,12 @@ const createDraftTraining = (payload) => {
   return testRequest.post('/trainings/draft', payload)
 }
 
+const exportTrainingList = (payload) => {
+  return testRequest.post('/trainings/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 const getTraining = (resourceId) => {}
 const updateTraining = (payload, resourceId) => {}
 const searchCertificate = (payload) => {
@@ -40,9 +46,15 @@ const makeDefaultCertificate = (resourceId) => {
   return testRequest.post(`/certificates/${resourceId}/default`)
 }
 
-const getCategories = () => {}
-const getTargetAudiences = () => {}
-const getLanguages = () => {}
+const getCategories = () => {
+  return testRequest.get('/trainings/categories')
+}
+const getTargetAudiences = () => {
+  return testRequest.get('/trainings/target-audiences')
+}
+const getLanguages = () => {
+  return testRequest.get('/trainings/languages')
+}
 export default {
   searchTraining,
   deleteTraining,
@@ -57,5 +69,6 @@ export default {
   makeDefaultCertificate,
   getCategories,
   getTargetAudiences,
-  getLanguages
+  getLanguages,
+  exportTrainingList
 }

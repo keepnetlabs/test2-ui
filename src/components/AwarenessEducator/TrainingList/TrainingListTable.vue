@@ -97,6 +97,14 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    categories: {
+      type: Array,
+      default: () => []
+    },
+    targetAudiences: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -105,27 +113,7 @@ export default {
         id: 'awareness-educator-training-list-data-table'
       },
       axiosPayload: getDefaultAxiosPayload(),
-      tableData: [
-        {
-          companyId: 18638,
-          resourceId: 'assasaösla',
-          name: 'Dynamic Security Agent',
-          description: 'Ipsam error commodi et.',
-          categoryId: '6aaf79c9-b86c-4baf-99e1-7440e5e3aec1',
-          targetAudienceId: 'cddfded4-2efb-42ec-ba1c-c1df7be89d07',
-          emailTemplateId: '4c783a5b-4fb0-4c72-a634-f9200d41240c',
-          trainingTypeId: '1',
-          coverImageUrl: 'coverImageUrl',
-          hasQuiz: true,
-          trainingContents: [
-            {
-              languageId: 'a460fbcf-b7ad-4e96-aa3e-474863d55156',
-              contentUrl: 'ContetURL'
-            }
-          ],
-          tagNames: ['tag1', 'tag2', 'tag3']
-        }
-      ],
+      tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIST,
@@ -185,6 +173,12 @@ export default {
   },
   watch: {
     languages(val) {
+      console.log('val', val)
+    },
+    categories(val) {
+      console.log('val', val)
+    },
+    targetAudiences(val) {
       console.log('val', val)
     }
   },

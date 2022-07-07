@@ -87,13 +87,19 @@ export default {
   },
   methods: {
     callForCategories() {
-      AwarenessEducatorService.getCategories()
+      AwarenessEducatorService.getCategories().then((response) => {
+        this.categories = response?.data?.data || []
+      })
     },
     callForLanguages() {
-      AwarenessEducatorService.getLanguages()
+      AwarenessEducatorService.getLanguages().then((response) => {
+        this.languages = response?.data?.data || []
+      })
     },
     callForTargetAudiences() {
-      AwarenessEducatorService.getTargetAudiences()
+      AwarenessEducatorService.getTargetAudiences().then((response) => {
+        this.targetAudiences = response?.data?.data || []
+      })
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
