@@ -30,6 +30,7 @@
           v-model="formData.contentByLanguage[index]"
           class="mb-4"
           :language-items="languages"
+          :training-resource-id="resourceId"
           @on-file-start="isActionButtonDisabled = true"
           @on-file-end="isActionButtonDisabled = false"
         />
@@ -56,6 +57,9 @@ export default {
   props: {
     isActionButtonDisabled: {
       type: Boolean
+    },
+    resourceId: {
+      type: String
     }
   },
   inject: {

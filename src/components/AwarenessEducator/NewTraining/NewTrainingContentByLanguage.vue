@@ -43,6 +43,9 @@ export default {
     languageItems: {
       type: Array,
       default: () => []
+    },
+    trainingResourceId: {
+      type: String
     }
   },
   data() {
@@ -69,7 +72,7 @@ export default {
       payload.append('languageId', this.value.languageId)
       this.isLanguageDisabled = true
       this.$emit('on-file-start')
-      AwarenessEducatorService.uploadTrainingContent(payload)
+      AwarenessEducatorService.uploadTrainingContent(payload, this.trainingResourceId)
         .then(() => {
           this.$emit('input', { ...this.value, file })
         })
