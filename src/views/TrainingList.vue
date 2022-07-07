@@ -101,7 +101,7 @@ export default {
         this.languages =
           response?.data?.data?.map((language) => ({
             text: language.name,
-            value: language.code
+            value: language.id
           })) || []
       })
     },

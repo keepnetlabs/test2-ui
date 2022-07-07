@@ -20,8 +20,18 @@ const exportTrainingList = (payload) => {
   })
 }
 
-const getTraining = (resourceId) => {}
-const updateTraining = (payload, resourceId) => {}
+const uploadTrainingContent = (payload, resourceId) => {
+  return testRequest.post(`/trainings/${resourceId}/upload-content`, payload)
+}
+
+const getTraining = (resourceId) => {
+  return testRequest.get(`/trainings/${resourceId}`)
+}
+const updateTraining = (payload, resourceId) => {
+  return testRequest.put(`/trainings/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 const searchCertificate = (payload) => {
   return testRequest.post('/certificates/search', payload)
 }
@@ -70,5 +80,6 @@ export default {
   getCategories,
   getTargetAudiences,
   getLanguages,
-  exportTrainingList
+  exportTrainingList,
+  uploadTrainingContent
 }

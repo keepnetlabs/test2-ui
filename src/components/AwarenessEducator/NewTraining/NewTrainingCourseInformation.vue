@@ -116,7 +116,7 @@ export default {
       Validations,
       labels,
       formData: {
-        file: null,
+        coverImage: null,
         name: '',
         description: '',
         category: '',
@@ -134,7 +134,7 @@ export default {
       return this.getTargetAudiences()
     },
     getPreviewOfCoverImage() {
-      return this.formData.file
+      return this.formData.coverImage
     },
     getCoverImagePreview() {
       if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length > 0) {
@@ -155,9 +155,9 @@ export default {
   methods: {
     handleCoverImageChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        return (this.formData.file = null)
+        return (this.formData.coverImage = null)
       }
-      this.formData.file = file
+      this.formData.coverImage = file
     },
     validateForm() {
       const { refForm } = this.$refs

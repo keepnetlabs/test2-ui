@@ -40,7 +40,7 @@
               :title="labels.TrainingContent"
               :subtitle="labels.TrainingContentSub"
             />
-            <NewTrainingTrainingContent />
+            <NewTrainingTrainingContent ref="refTrainingContent" />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -156,7 +156,35 @@ export default {
         this.step += flag
       }
     },
-    handleSubmit() {}
+    handleSubmit() {
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+      const {
+        formData: {
+          coverImage,
+          name,
+          description,
+          category,
+          targetAudience,
+          tagNames,
+          availableForRequests
+        }
+      } = refTrainingCourseInformation
+      const {
+        formData: { hasQuiz }
+      } = refTrainingContent
+      const payload = new FormData()
+      const trainingDetail = {
+        name,
+        description,
+        category,
+        targetAudience,
+        tagNames,
+        availableForRequests
+      }
+      payload.append('coverImage', coverImage)
+
+      AwarenessEducatorService.updateTraining(payload, this.trainingId)
+    }
   }
 }
 </script>
