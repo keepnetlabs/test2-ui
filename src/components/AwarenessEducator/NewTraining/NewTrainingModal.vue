@@ -134,9 +134,9 @@ export default {
           hasQuiz,
           description,
           tags: tagNames,
-          targetAudience,
-          availableForRequests
+          targetAudience
         })
+        refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
       })
     }
   },

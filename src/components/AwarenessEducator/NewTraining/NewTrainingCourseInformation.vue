@@ -25,6 +25,8 @@
         dense
         outlined
         autocomplete="off"
+        item-text="text"
+        item-value="text"
         hint="*Required"
         placeholder="Select category"
         :rules="[(v) => Validations.required(v, labels.Required)]"
@@ -38,6 +40,8 @@
         dense
         outlined
         autocomplete="off"
+        item-text="text"
+        item-value="text"
         hint="*Required"
         placeholder="Select category"
         :rules="[(v) => Validations.required(v, labels.Required)]"
@@ -135,7 +139,7 @@ export default {
       return this.getTargetAudiences()
     },
     getPreviewOfCoverImage() {
-      return this.formData.coverImage
+      return this.formData.coverImage || this.formData.coverImageUrl
     },
     getCoverImagePreview() {
       if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length > 0) {
@@ -176,6 +180,34 @@ export default {
       this.formData = {
         ...this.formData,
         ...formData
+      }
+    },
+    setMakeAvailableForData(availableForList = []) {
+      if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
+        const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          availableForList
+        )
+        if (!availableForListFromBackend.length) {
+          this.formValues.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
+        } else {
+          this.formValues.availableForRequests = availableForListFromBackend
+        }
+      } else {
+        this.formValues.availableForRequests = [
+          {
+            id: 'MyCompanyOnly',
+            label: 'My company only',
+            type: 'MyCompanyOnly',
+            resourceId: null
+          }
+        ]
       }
     }
   }
