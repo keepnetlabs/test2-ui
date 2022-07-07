@@ -137,6 +137,7 @@ export default {
           targetAudience
         })
         refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
+        refTrainingContent.setFormData({ trainingContents, hasQuiz })
       })
     }
   },
