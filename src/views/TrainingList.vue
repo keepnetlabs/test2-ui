@@ -27,6 +27,9 @@
     />
     <TrainingListTable
       ref="refTable"
+      :categories="categories"
+      :languages="languages"
+      :target-audiences="targetAudiences"
       @on-action-delete="handleDeleteRowClick"
       @on-preview="toggleShowPreviewDialog"
       @on-add="toggleShowNewTrainingModal"
@@ -57,9 +60,9 @@ export default {
   },
   provide() {
     return {
-      categories: this.categories,
-      targetAudiences: this.targetAudiences,
-      languages: this.languages,
+      getCategories: () => this.categories,
+      getTargetAudiences: () => this.targetAudiences,
+      getLanguages: () => this.languages,
       getDistributionSmtpDelayTimeTypes: () => this.distributionSmtpDelayTimeTypes,
       getDistributionEmailOverTimeTypes: () => this.distributionEmailOverTimeTypes
     }

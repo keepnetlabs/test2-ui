@@ -93,7 +93,7 @@ export default {
     DataTable
   },
   mixins: [useLoading, useDefaultTableFunctions],
-  inject: {
+  props: {
     languages: {
       type: Array,
       default: () => []
@@ -173,13 +173,28 @@ export default {
   },
   watch: {
     languages(val) {
-      console.log('val', val)
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'language'),
+        'filterableItems',
+        val
+      )
+      this?.$refs?.refTable?.reRenderFilters()
     },
     categories(val) {
-      console.log('val', val)
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'category'),
+        'filterableItems',
+        val
+      )
+      this?.$refs?.refTable?.reRenderFilters()
     },
     targetAudiences(val) {
-      console.log('val', val)
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'targetAudience'),
+        'filterableItems',
+        val
+      )
+      this?.$refs?.refTable?.reRenderFilters()
     }
   },
   created() {

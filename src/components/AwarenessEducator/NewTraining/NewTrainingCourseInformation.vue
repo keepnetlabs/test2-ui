@@ -105,13 +105,11 @@ export default {
     FormGroup
   },
   inject: {
-    categories: {
-      type: Array,
-      default: () => []
+    getCategories: {
+      type: Function
     },
-    targetAudiences: {
-      type: Array,
-      default: () => []
+    getTargetAudiences: {
+      type: Function
     }
   },
   data() {
@@ -130,6 +128,12 @@ export default {
     }
   },
   computed: {
+    categories() {
+      return this.getCategories()
+    },
+    targetAudiences() {
+      return this.getTargetAudiences()
+    },
     getPreviewOfCoverImage() {
       return this.formData.file
     },
