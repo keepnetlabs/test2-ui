@@ -188,7 +188,7 @@ export default {
           availableForList
         )
         if (!availableForListFromBackend.length) {
-          this.formValues.availableForRequests = [
+          this.formData.availableForRequests = [
             {
               id: 'MyCompanyOnly',
               label: 'My company only',
@@ -197,10 +197,10 @@ export default {
             }
           ]
         } else {
-          this.formValues.availableForRequests = availableForListFromBackend
+          this.formData.availableForRequests = availableForListFromBackend
         }
       } else {
-        this.formValues.availableForRequests = [
+        this.formData.availableForRequests = [
           {
             id: 'MyCompanyOnly',
             label: 'My company only',
