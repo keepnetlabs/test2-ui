@@ -21,7 +21,9 @@ const exportTrainingList = (payload) => {
 }
 
 const uploadTrainingContent = (payload, resourceId) => {
-  return testRequest.post(`/trainings/${resourceId}/upload-content`, payload)
+  return testRequest.post(`/trainings/${resourceId}/upload-content`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const getTraining = (resourceId) => {

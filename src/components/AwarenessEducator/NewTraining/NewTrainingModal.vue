@@ -40,7 +40,10 @@
               :title="labels.TrainingContent"
               :subtitle="labels.TrainingContentSub"
             />
-            <NewTrainingTrainingContent ref="refTrainingContent" />
+            <NewTrainingTrainingContent
+              ref="refTrainingContent"
+              :is-action-button-disabled.sync="isActionButtonDisabled"
+            />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>

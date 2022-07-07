@@ -30,6 +30,8 @@
           v-model="formData.contentByLanguage[index]"
           class="mb-4"
           :language-items="languages"
+          @on-file-start="isActionButtonDisabled = true"
+          @on-file-end="isActionButtonDisabled = false"
         />
       </div>
       <div class="d-flex mt-2 ml-4 cursor-pointer" @click="handleAddLanguage">
@@ -51,6 +53,11 @@ import NewTrainingContentByLanguage from '@/components/AwarenessEducator/NewTrai
 export default {
   name: 'NewTrainingTrainingContent',
   components: { NewTrainingContentByLanguage, KSelect, FormGroup },
+  props: {
+    isActionButtonDisabled: {
+      type: Boolean
+    }
+  },
   inject: {
     getLanguages: {
       type: Function

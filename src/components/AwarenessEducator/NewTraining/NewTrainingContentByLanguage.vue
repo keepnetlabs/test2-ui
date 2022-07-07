@@ -67,10 +67,15 @@ export default {
       const payload = new FormData()
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
-      AwarenessEducatorService.uploadTrainingContent(payload).then((res) => {
-        this.$emit('input', { ...this.value, file })
-        this.isLanguageDisabled = true
-      })
+      this.isLanguageDisabled = true
+      this.$emit('on-file-start')
+      AwarenessEducatorService.uploadTrainingContent(payload)
+        .then(() => {
+          this.$emit('input', { ...this.value, file })
+        })
+        .finally(() => {
+          this.$emit('on-file-end')
+        })
     },
     handleLanguageChange(val) {
       this.$emit('input', { ...this.value, languageId: val })
