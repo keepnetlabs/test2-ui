@@ -125,7 +125,8 @@ export default {
           tagNames,
           targetAudience,
           trainingContents,
-          availableForRequests
+          availableForRequests,
+          category
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         refTrainingCourseInformation.setFormData({
@@ -134,9 +135,11 @@ export default {
           hasQuiz,
           description,
           tags: tagNames,
-          targetAudience
+          targetAudience,
+          category,
+          availableForRequests
         })
-        refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
+        //refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
         refTrainingContent.setFormData({ trainingContents, hasQuiz })
       })
     }
