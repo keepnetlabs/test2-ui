@@ -31,8 +31,8 @@
           class="mb-4"
           :language-items="languages"
           :training-resource-id="resourceId"
-          @on-file-start="isActionButtonDisabled = true"
-          @on-file-end="isActionButtonDisabled = false"
+          @on-file-start="$emit('update:isActionButtonDisabled', true)"
+          @on-file-end="$emit('update:isActionButtonDisabled', false)"
         />
       </div>
       <div class="d-flex mt-2 ml-4 cursor-pointer" @click="handleAddLanguage">
