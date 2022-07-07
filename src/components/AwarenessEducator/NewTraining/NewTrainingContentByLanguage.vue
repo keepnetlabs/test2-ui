@@ -38,7 +38,7 @@ export default {
   props: {
     value: {
       type: Object,
-      default: () => ({ languageId: '', file: '' })
+      default: () => ({ languageId: 'f9288272-d0a1-4edc-93d3-534e56983e4f', file: '' })
     },
     languageItems: {
       type: Array,
@@ -73,7 +73,7 @@ export default {
       })
     },
     handleLanguageChange(val) {
-      this.$emit('input', { ...this.value, languageTypeResourceId: val })
+      this.$emit('input', { ...this.value, languageId: val })
     }
   }
 }
