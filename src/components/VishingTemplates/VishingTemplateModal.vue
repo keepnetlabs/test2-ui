@@ -81,13 +81,13 @@
               title="Dialog Settings"
               subtitle="Enter basic information about this template"
             />
-            <v-form ref="refDialogSettingsForm" lazy-validation>
+            <v-form ref="refFormStep2" lazy-validation>
               <FormGroup
                 title="Language"
                 sub-title="Select the language of this template and text-to-speech speaker"
               >
                 <KSelect
-                  v-model="formValues.language"
+                  v-model="formValues.languageResourceId"
                   :items="languageItems"
                   placeholder="Select language"
                   item-disabled="disabled"
@@ -203,14 +203,6 @@
                       initialPlaceholder="Enter text here"
                     />
                   </FormGroup>
-                  <!-- <FormGroup
-                    v-if="formValues.dialogNoticeType === 'uploadAudio'"
-                    className="mt-2 pb-3"
-                    labelClassName="vishing-template-dialog-step__form-label"
-                    title="Audio File"
-                    subTitle="Upload an audio file"
-                  > -->
-
                   <div v-if="formValues.dialogNoticeType === 'uploadAudio'" class="mt-2 pb-3">
                     <div class="vishing-template-dialog-step__form-title">
                       <div class="vishing-template-dialog-step__form-title-left">
@@ -237,7 +229,6 @@
                       @inputFile="onFileChanged"
                     />
                   </div>
-                  <!-- </FormGroup> -->
                 </v-card>
               </FormGroup>
             </v-form>
@@ -277,6 +268,23 @@ import VishingTemplateDialogStep from '@/components/VishingTemplates/VishingTemp
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
+
+const initialFormValues = {
+  name: '',
+  description: '',
+  tags: [],
+  difficultyResourceId: 'mT0CeYGgKsVb',
+  languageResourceId: 'WNZt0sCVCWB3',
+  availableForRequests: [],
+  dialogNoticeType: 'textToSpeech',
+  dialogNoticeTextToSpeech: '',
+  dialogNoticeFile: null,
+  dialogNoticeFileUrl: '',
+  steps: []
+}
+
 export default {
   name: 'VishingTemplateModal',
   components: {
@@ -323,48 +331,9 @@ export default {
         animation: 200,
         ghostClass: 'ghost'
       },
-      initialFormValues: {},
-      formValues: {
-        name: '',
-        description: '',
-        tags: [],
-        difficultyResourceId: 'mT0CeYGgKsVb',
-        availableForRequests: [],
-        dialogNoticeType: 'textToSpeech',
-        dialogNoticeTextToSpeech: '',
-        dialogNoticeFile: null,
-        dialogNoticeFileUrl: '',
-        steps: [
-          {
-            type: 'textToSpeech',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: ''
-          },
-          {
-            type: 'uploadAudio',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: ''
-            // fileUrl: 'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
-          },
-          {
-            type: 'pause',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: ''
-          }
-        ]
-      },
+      initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
+      formValues: JSON.parse(JSON.stringify(initialFormValues)),
+      nonEditableAvailableForRequests: [],
       addStepItems: [
         {
           value: 'textToSpeech',
@@ -450,7 +419,50 @@ export default {
       deep: true
     }
   },
-  created() {},
+  created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    if (this.isEdit || this.isDuplicate) {
+      getVishingTemplate(this.templateId).then((response) => {
+        // TODO: Make necessary assignments
+        //  this.formValues = {
+        //   ...response.data.data,
+        // }
+        // if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+        // if (this.$refs.refMakeAvailableFor && availableForList.length) {
+        //   const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+        //     availableForList
+        //   )
+        //   if (!availableForListFromBackend.length) {
+        //     this.availableForRequests = [
+        //       {
+        //         id: 'MyCompanyOnly',
+        //         label: 'My company only',
+        //         type: 'MyCompanyOnly',
+        //         resourceId: null
+        //       }
+        //     ]
+        //   } else {
+        //     this.availableForRequests = availableForListFromBackend
+        //   }
+        // } else {
+        //   this.availableForRequests = [
+        //     {
+        //       id: 'MyCompanyOnly',
+        //       label: 'My company only',
+        //       type: 'MyCompanyOnly',
+        //       resourceId: null
+        //     }
+        //   ]
+        //   this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
+        //     response.data.data.availableForList
+        //   )
+        // }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      })
+    }
+  },
   methods: {
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
@@ -544,7 +556,41 @@ export default {
     backStep() {
       this.step -= 1
     },
-    submit() {}
+    submit() {
+      this.isSubmitDisabled = true
+      this.isFailStepSelected = this.validateFailStep()
+      if (!this.isFailStepSelected) {
+        const el = this.$refs.refFormStep2.$el.querySelector('.v-messages__message')
+        scrollToComponent(el)
+        this.isSubmitDisabled = false
+        return
+      }
+
+      if (!this.$refs.refFormStep2.validate()) {
+        const el = this.$refs.refFormStep2.$el.querySelector('.v-messages__message')
+        scrollToComponent(el)
+        this.isSubmitDisabled = false
+        return
+      }
+
+      if (this.isEdit) {
+        updateVishingTemplate(this.templateId, this.formValues)
+          .then(() => {
+            this.$emit('changeVishingTemplateModalStatus', false)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      } else {
+        createVishingTemplate(this.formValues)
+          .then(() => {
+            this.$emit('changeVishingTemplateModalStatus', false)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      }
+    }
   }
 }
 </script>

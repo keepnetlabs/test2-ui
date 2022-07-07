@@ -100,3 +100,30 @@ export function deleteVishingTemplate(id) {
     }, 1000)
   })
 }
+
+export function updateVishingTemplate(id, payload = {}) {
+  // TODO: Add correct endpoint
+  return new Promise((res) => {
+    setTimeout(() => {
+      res()
+    }, 1000)
+  })
+}
+
+export function createVishingTemplate(payload = {}) {
+  // TODO: Add correct endpoint
+  return new Promise((res) => {
+    setTimeout(() => {
+      res()
+    }, 1000)
+  })
+}
+
+export function getVishingTemplate(id) {
+  // TODO: Add correct endpoint
+  return new Promise((res) => {
+    setTimeout(() => {
+      res()
+    }, 1000)
+  })
+}

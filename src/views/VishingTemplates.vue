@@ -17,7 +17,7 @@
       ref="refVishingTemplateModal"
       v-if="modalStatus"
       :status="modalStatus"
-      :templateId="selectedTemplate.resourceId"
+      :templateId="getTemplateId"
       :isEdit="isEdit"
       :isDuplicate="isDuplicate"
       @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus(false)"
@@ -142,18 +142,14 @@ export default {
   data() {
     return {
       vishingTemplateId: null,
-      modalStatus: true,
+      modalStatus: false,
       isPreviewVisible: false,
       loading: true,
       isEdit: false,
       isDuplicate: false,
       tableData: [],
       isDeleteModalVisible: false,
-      // TODO: Give selected template initial value of null
-      selectedTemplate: {
-        resourceId: '123',
-        name: 'Template Name'
-      },
+      selectedTemplate: null,
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHINGTEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHINGTEMPLATES,
@@ -235,7 +231,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'textArray',
+            type: 'smallBadge',
             width: 150,
             hasTooltip: true,
             filterableType: 'text',
@@ -311,6 +307,11 @@ export default {
       },
       bodyData: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
+    }
+  },
+  computed: {
+    getTemplateId() {
+      return this.selectedTemplate ? this.selectedTemplate.resourceId : ''
     }
   },
   created() {
