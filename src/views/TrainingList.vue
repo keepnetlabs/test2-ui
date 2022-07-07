@@ -88,17 +88,27 @@ export default {
   methods: {
     callForCategories() {
       AwarenessEducatorService.getCategories().then((response) => {
-        this.categories = response?.data?.data || []
+        this.categories =
+          response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
+          []
       })
     },
     callForLanguages() {
       AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages = response?.data?.data || []
+        this.languages =
+          response?.data?.data?.map((language) => ({
+            text: language.name,
+            value: language.code
+          })) || []
       })
     },
     callForTargetAudiences() {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
-        this.targetAudiences = response?.data?.data || []
+        this.targetAudiences =
+          response?.data?.data?.map((targetAudience) => ({
+            text: targetAudience.name,
+            value: targetAudience.id
+          })) || []
       })
     },
     callForFormDetails() {
