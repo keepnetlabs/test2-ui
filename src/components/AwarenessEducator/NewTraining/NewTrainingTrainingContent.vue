@@ -31,6 +31,7 @@
           :class="['mb-4', index > 0 && 'mt-6']"
           :language-items="languages"
           :training-resource-id="resourceId"
+          :is-removable="index > 0"
           @on-file-start="$emit('update:isActionButtonDisabled', true)"
           @on-file-end="$emit('update:isActionButtonDisabled', false)"
           @on-remove="handleRemove(index)"

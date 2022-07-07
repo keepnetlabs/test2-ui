@@ -12,6 +12,7 @@
         @change="handleLanguageChange"
       />
       <v-btn
+        v-if="isRemovable"
         outlined
         class="new-training-content-by-language__button"
         :ripple="false"
@@ -60,6 +61,9 @@ export default {
     },
     trainingResourceId: {
       type: String
+    },
+    isRemovable: {
+      type: Boolean
     }
   },
   data() {
