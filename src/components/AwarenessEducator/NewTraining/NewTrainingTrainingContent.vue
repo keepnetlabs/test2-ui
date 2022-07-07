@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormGroup v-if="false" :title="labels.ContentType">
+    <FormGroup :title="labels.ContentType">
       <KSelect
         v-model.trim="formData.contentType"
         persistent-hint
@@ -51,7 +51,7 @@ export default {
     return {
       labels,
       Validations,
-      contentTypeItems: [],
+      contentTypeItems: ['SCORM12'],
       formData: {
         contentType: 'SCORM12',
         hasQuiz: false,
