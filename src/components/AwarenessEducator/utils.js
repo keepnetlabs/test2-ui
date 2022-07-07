@@ -21,7 +21,7 @@ export const COLUMNS = {
     show: true,
     filterableType: 'text',
     type: 'text',
-    width: 160
+    width: 200
   },
   DISTRIBUTED: {
     property: PROPERTY_STORE.DISTRIBUTED,
@@ -87,7 +87,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 220,
     filterableType: 'select',
     filterableItems: []
   },
@@ -112,7 +112,8 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'text'
+    filterableType: 'select',
+    filterableItems: ['SCORM12']
   },
   CREATED_BY: {
     property: PROPERTY_STORE.CREATEDBY,
