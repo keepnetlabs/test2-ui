@@ -127,14 +127,22 @@ export default {
       if (this.step === 1 && flag === 1) {
         if (refTrainingCourseInformation.validateForm()) {
           const { formData } = refTrainingCourseInformation
-          const { name, description, category, targetAudience, tagNames } = formData
+          const {
+            name,
+            description,
+            category,
+            targetAudience,
+            tagNames,
+            availableForRequests
+          } = formData
           this.isActionButtonDisabled = true
           AwarenessEducatorService.createDraftTraining({
             name,
             description,
             category,
             targetAudience,
-            tagNames
+            tagNames,
+            availableForRequests
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.trainingId || ''

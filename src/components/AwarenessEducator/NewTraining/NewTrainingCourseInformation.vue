@@ -50,7 +50,6 @@
         ref="refTags"
         id="input--action-tags-new-training-course-information"
         :items="[]"
-        class="hide-caret"
       />
     </FormGroup>
     <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadPngJpgOrPdf">
@@ -74,7 +73,7 @@
       </v-list-item>
     </FormGroup>
     <MakeAvailableFor
-      v-model="formData.makeAvailableFor"
+      v-model="formData.availableForRequests"
       ref="refMakeAvailableFor"
       open-direction="above"
       sub-title="Companies that will see this setting in their libraries"
@@ -123,7 +122,7 @@ export default {
         category: '',
         targetAudience: '',
         tags: [],
-        makeAvailableFor: []
+        availableForRequests: []
       }
     }
   },
