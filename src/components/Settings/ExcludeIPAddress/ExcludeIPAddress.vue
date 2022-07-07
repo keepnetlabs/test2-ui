@@ -22,7 +22,7 @@
       v-model.trim="dataContainerWithSearchItems"
       removeDuplicates
       ref="dataContainerWithSearch"
-      text-field-error-message="This is not a valid IP address"
+      text-field-error-message="Invalid IP address"
       text-field-placeholder="Enter IP address"
       invalid-message="There are invalid entries, please change them."
       :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
