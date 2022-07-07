@@ -115,7 +115,9 @@ export default {
   },
   created() {
     if (this.isEdit) {
-      //todo call for data
+      AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
+        console.log('response', response)
+      })
     }
   },
   methods: {
@@ -126,6 +128,7 @@ export default {
       const { refTrainingCourseInformation } = this.$refs
       if (this.step === 1 && flag === 1) {
         if (refTrainingCourseInformation.validateForm()) {
+          if (this.isEdit) return this.step++
           const { formData } = refTrainingCourseInformation
           const {
             name,
