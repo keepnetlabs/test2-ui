@@ -184,7 +184,7 @@ export default {
             if (row.method === 'Attachment') {
               campaignStatus.push(row['totalAttachmentOpenedCount'])
             } else {
-              campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.splice(1, 0, row['totalClickedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
             }
             return {
