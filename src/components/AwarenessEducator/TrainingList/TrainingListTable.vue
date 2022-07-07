@@ -174,7 +174,7 @@ export default {
   watch: {
     languages(val) {
       this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'language'),
+        this.tableOptions.columns.find((col) => col.property === 'languages'),
         'filterableItems',
         val
       )
@@ -205,7 +205,15 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.searchTraining(this.axiosPayload)
         .then((response) => {
-          console.log('response', response)
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },

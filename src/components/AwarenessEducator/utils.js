@@ -13,7 +13,7 @@ export const EMITS = {
 
 export const COLUMNS = {
   NAME: {
-    property: PROPERTY_STORE.NAME,
+    property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
     label: labels.TrainingName,
     fixed: 'left',

@@ -1019,8 +1019,13 @@ export default {
       const routerName = this.routerName
       return {
         'primary--text active-menu-parent':
-          routerName === 'Training List' || routerName === 'Enrollments',
-        'un-selected-list-item': routerName !== 'Training List' || routerName !== 'Enrollments'
+          routerName === 'Training List' ||
+          routerName === 'Enrollments' ||
+          routerName === 'Certificates',
+        'un-selected-list-item':
+          routerName !== 'Training List' ||
+          routerName !== 'Enrollments' ||
+          routerName !== 'Certificates'
       }
     },
     getCommunityName() {
