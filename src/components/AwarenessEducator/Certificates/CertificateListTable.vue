@@ -154,7 +154,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTraining(this.axiosPayload)
+      AwarenessEducatorService.searchCertificate(this.axiosPayload)
         .then((response) => {
           console.log('response', response)
         })
