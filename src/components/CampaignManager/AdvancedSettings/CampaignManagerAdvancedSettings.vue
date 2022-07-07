@@ -531,6 +531,7 @@ export default {
     },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length) return
+      if (!this.formData.distributionSmtpDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
