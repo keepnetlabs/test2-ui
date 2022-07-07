@@ -115,6 +115,7 @@ export default {
   },
   created() {
     if (this.isEdit) {
+      this.trainingId = this.selectedRow.resourceId
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
         console.log('response', response)
       })
