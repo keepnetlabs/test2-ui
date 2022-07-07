@@ -26,7 +26,11 @@
     </FormGroup>
     <FormGroup :title="labels.Content" :sub-title="labels.ContentSub">
       <div v-for="index in formData.contentByLanguage.length" :key="index">
-        <NewTrainingContentByLanguage v-model="formData.contentByLanguage[index]" class="mb-4" />
+        <NewTrainingContentByLanguage
+          v-model="formData.contentByLanguage[index]"
+          class="mb-4"
+          :language-items="languages"
+        />
       </div>
       <div class="d-flex mt-2 ml-4 cursor-pointer" @click="handleAddLanguage">
         <v-icon color="#2196f3">mdi-plus</v-icon>
@@ -47,6 +51,11 @@ import NewTrainingContentByLanguage from '@/components/AwarenessEducator/NewTrai
 export default {
   name: 'NewTrainingTrainingContent',
   components: { NewTrainingContentByLanguage, KSelect, FormGroup },
+  inject: {
+    getLanguages: {
+      type: Function
+    }
+  },
   data() {
     return {
       labels,
@@ -57,6 +66,11 @@ export default {
         hasQuiz: false,
         contentByLanguage: [{ file: null, languageTypeResourceId: '' }]
       }
+    }
+  },
+  computed: {
+    languages() {
+      return this.getLanguages()
     }
   },
   methods: {

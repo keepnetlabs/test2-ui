@@ -39,12 +39,15 @@ export default {
     value: {
       type: Object,
       default: () => ({ languageId: '', file: '' })
+    },
+    languageItems: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       labels,
-      languageItems: [],
       isLanguageDisabled: false,
       commonRules: {
         hint: '*Required',
