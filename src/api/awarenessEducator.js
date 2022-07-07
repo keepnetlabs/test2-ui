@@ -53,7 +53,13 @@ const getCertificate = (resourceId) => {
 }
 
 const makeDefaultCertificate = (resourceId) => {
-  return testRequest.post(`/certificates/${resourceId}/default`)
+  return testRequest.post(
+    `/certificates/${resourceId}/default`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const getCategories = () => {

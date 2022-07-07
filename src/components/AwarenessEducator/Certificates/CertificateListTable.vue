@@ -83,6 +83,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'CertificateListTable',
   components: {
@@ -151,8 +152,17 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
-    handleMakeDefault(row) {},
+    callForData() {
+      this.setLoading(true)
+      AwarenessEducatorService.searchTraining(this.axiosPayload)
+        .then((response) => {
+          console.log('response', response)
+        })
+        .finally(this.setLoading)
+    },
+    handleMakeDefault(row) {
+      AwarenessEducatorService.makeDefaultCertificate(row.resourceId)
+    },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
     },

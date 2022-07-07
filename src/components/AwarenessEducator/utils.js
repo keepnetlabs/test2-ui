@@ -80,7 +80,7 @@ export const COLUMNS = {
     filterableItems: []
   },
   AUDIENCE: {
-    property: PROPERTY_STORE.AUDIENCE,
+    property: PROPERTY_STORE.TARGET_AUDIENCE,
     align: 'left',
     editable: false,
     label: labels.TargetAudience,

@@ -165,6 +165,7 @@ export const PROPERTY_STORE = {
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   AUDIENCE: 'audience',
+  TARGET_AUDIENCE: 'targetAudience',
   TAGS: 'tags',
   COUNT: 'count',
   ENROLLED_BY: 'enrolledBy',
