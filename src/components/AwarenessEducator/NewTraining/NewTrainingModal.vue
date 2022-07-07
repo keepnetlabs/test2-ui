@@ -117,7 +117,26 @@ export default {
     if (this.isEdit) {
       this.trainingId = this.selectedRow.trainingId
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
-        console.log('response', response)
+        const {
+          coverImageUrl,
+          name,
+          hasQuiz,
+          description,
+          tagNames,
+          targetAudience,
+          trainingContents,
+          availableForRequests
+        } = response?.data?.data || {}
+        const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+        refTrainingCourseInformation.setFormData({
+          coverImageUrl,
+          name,
+          hasQuiz,
+          description,
+          tags: tagNames,
+          targetAudience,
+          availableForRequests
+        })
       })
     }
   },

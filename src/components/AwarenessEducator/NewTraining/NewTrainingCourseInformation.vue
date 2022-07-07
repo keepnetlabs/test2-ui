@@ -122,7 +122,8 @@ export default {
         category: '',
         targetAudience: '',
         tags: [],
-        availableForRequests: []
+        availableForRequests: [],
+        coverImageUrl: null
       }
     }
   },
@@ -170,6 +171,12 @@ export default {
         })
       }
       return false
+    },
+    setFormData(formData = {}) {
+      this.formData = {
+        ...this.formData,
+        ...formData
+      }
     }
   }
 }

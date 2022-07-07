@@ -62,6 +62,12 @@ export default {
   methods: {
     handleAddLanguage() {
       this.formData.contentByLanguage.push({ file: null, languageTypeResourceId: '' })
+    },
+    setFormData(formData = {}) {
+      this.formData = {
+        ...this.formData,
+        ...formData
+      }
     }
   }
 }
