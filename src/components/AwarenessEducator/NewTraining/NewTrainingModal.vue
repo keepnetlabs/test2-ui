@@ -210,11 +210,19 @@ export default {
         category,
         targetAudience,
         tagNames,
-        availableForRequests
+        availableForRequests,
+        hasQuiz
       }
       payload.append('coverImage', coverImage)
-
+      payload.append('trainingDetail', JSON.stringify(trainingDetail))
+      this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
+        .then(() => {
+          this.$emit('on-close', true)
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

@@ -11,8 +11,19 @@
         :disabled="isLanguageDisabled"
         @change="handleLanguageChange"
       />
+      <v-btn
+        outlined
+        class="new-training-content-by-language__button"
+        :ripple="false"
+        @click="handleRemove"
+      >
+        <v-icon left>
+          mdi-delete
+        </v-icon>
+        Remove
+      </v-btn>
     </FormGroupHorizontalContent>
-    <FormGroupHorizontalContent :label="labels.UploadFile">
+    <FormGroupHorizontalContent style="justify-content: flex-start;" :label="labels.UploadFile">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
@@ -82,6 +93,9 @@ export default {
     },
     handleLanguageChange(val) {
       this.$emit('input', { ...this.value, languageId: val })
+    },
+    handleRemove() {
+      this.$emit('on-remove')
     }
   }
 }

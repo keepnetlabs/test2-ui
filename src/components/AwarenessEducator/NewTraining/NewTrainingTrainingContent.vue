@@ -28,11 +28,12 @@
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <NewTrainingContentByLanguage
           v-model="formData.contentByLanguage[index]"
-          class="mb-4"
+          :class="['mb-4', index > 0 && 'mt-6']"
           :language-items="languages"
           :training-resource-id="resourceId"
           @on-file-start="$emit('update:isActionButtonDisabled', true)"
           @on-file-end="$emit('update:isActionButtonDisabled', false)"
+          @on-remove="handleRemove(index)"
         />
       </div>
       <div class="d-flex mt-2 ml-4 cursor-pointer" @click="handleAddLanguage">
@@ -93,6 +94,9 @@ export default {
         ...this.formData,
         ...formData
       }
+    },
+    handleRemove(index) {
+      this.formData.contentByLanguage.splice(index, 1)
     }
   }
 }

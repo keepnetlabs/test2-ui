@@ -29,6 +29,7 @@
     @refreshAction="callForData"
     @onEmptyBtnClicked="handleAdd"
     @add-training="handleAdd"
+    @downloadEvent="exportTrainingList"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -84,6 +85,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
+import { exportCampaignManager } from '@/api/phishingsimulator'
 export default {
   name: 'TrainingListTable',
   components: {
@@ -231,6 +233,28 @@ export default {
     },
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
+    },
+    exportTrainingList(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportTrainingList(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Training-List.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     }
   }
 }

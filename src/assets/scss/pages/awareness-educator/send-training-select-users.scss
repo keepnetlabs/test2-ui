@@ -11,3 +11,16 @@
     }
   }
 }
+.new-training-content-by-language__button{
+  border: none !important;
+  font-size: 14px;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: #383b41;
+  margin-top: -16px;
+  font-weight: 600;
+  padding: 0;
+  &:before{
+    display: none;
+  }
+}
