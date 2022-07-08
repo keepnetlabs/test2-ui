@@ -213,8 +213,10 @@ export default {
         availableForRequests,
         hasQuiz
       }
+      Object.keys(trainingDetail).map((key) => {
+        payload.append(key, trainingDetail[key])
+      })
       payload.append('coverImage', coverImage)
-      payload.append('trainingDetail', JSON.stringify(trainingDetail))
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
