@@ -130,7 +130,8 @@ export default {
           targetAudience,
           trainingContents,
           availableForRequests,
-          category
+          category,
+          type
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         refTrainingCourseInformation.setFormData({
@@ -144,7 +145,7 @@ export default {
           availableForRequests
         })
         //refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
-        refTrainingContent.setFormData({ trainingContents, hasQuiz })
+        refTrainingContent.setFormData({ trainingContents, hasQuiz, type })
       })
     }
   },
@@ -202,7 +203,7 @@ export default {
         }
       } = refTrainingCourseInformation
       const {
-        formData: { hasQuiz }
+        formData: { hasQuiz, type }
       } = refTrainingContent
       const payload = new FormData()
       const trainingDetail = {
@@ -213,6 +214,7 @@ export default {
         tagNames: tags,
         availableForRequests,
         hasQuiz,
+        type,
         companyName: 'Root Company'
       }
       payload.append('coverImage', coverImage)

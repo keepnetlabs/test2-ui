@@ -2,7 +2,7 @@
   <div>
     <FormGroup :title="labels.ContentType">
       <KSelect
-        v-model.trim="formData.contentType"
+        v-model.trim="formData.type"
         persistent-hint
         dense
         outlined
@@ -75,7 +75,7 @@ export default {
       Validations,
       contentTypeItems: ['SCORM12'],
       formData: {
-        contentType: 'SCORM12',
+        type: 'SCORM12',
         hasQuiz: false,
         contentByLanguage: [{ file: null, languageTypeResourceId: '' }]
       }
