@@ -174,7 +174,7 @@ export default {
             targetAudience,
             tagNames,
             availableForRequests,
-            companyName: 'Root'
+            companyName: 'Root Company'
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.trainingId || ''
@@ -213,7 +213,7 @@ export default {
         tagNames: tags,
         availableForRequests,
         hasQuiz,
-        companyName: 'Root'
+        companyName: 'Root Company'
       }
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail', JSON.stringify(trainingDetail))
