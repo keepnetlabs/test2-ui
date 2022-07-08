@@ -54,7 +54,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      AwarenessEducatorService.deleteTraining(this.selectedRow.resourceId)
+      AwarenessEducatorService.deleteTraining(this.selectedRow.trainingId)
         .then(() => {
           this.handleClose(true)
         })
