@@ -196,7 +196,7 @@ export default {
           description,
           category,
           targetAudience,
-          tagNames,
+          tags,
           availableForRequests
         }
       } = refTrainingCourseInformation
@@ -209,7 +209,7 @@ export default {
         description,
         category,
         targetAudience,
-        tagNames,
+        tagNames: tags,
         availableForRequests,
         hasQuiz
       }
