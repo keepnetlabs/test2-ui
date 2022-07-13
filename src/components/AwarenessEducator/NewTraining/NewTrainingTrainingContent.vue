@@ -77,7 +77,7 @@ export default {
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
-        contentByLanguage: [{ file: null, languageTypeResourceId: '' }]
+        contentByLanguage: [{ file: null, languageId: this.languages[0].value || '' }]
       }
     }
   },
@@ -88,11 +88,9 @@ export default {
   },
   methods: {
     handleAddLanguage() {
-      console.log('this.languages', this.languages)
-      console.log(' this.languages[0].value', this.languages[0].value)
       this.formData.contentByLanguage.unshift({
         file: null,
-        languageTypeResourceId: this.languages[0].value
+        languageId: this.languages[0].value || ''
       })
     },
     setFormData(formData = {}) {
