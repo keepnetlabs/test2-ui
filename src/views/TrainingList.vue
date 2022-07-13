@@ -28,7 +28,7 @@
     <TrainingListTable
       ref="refTable"
       :categories="categories"
-      :languages="languages"
+      :languages="tableLanguageFilter"
       :target-audiences="targetAudiences"
       @on-action-delete="handleDeleteRowClick"
       @on-preview="toggleShowPreviewDialog"
@@ -77,6 +77,7 @@ export default {
       isEdit: false,
       categories: [],
       languages: [],
+      tableLanguageFilter: [],
       targetAudiences: [],
       distributionEmailOverTimeTypes: [],
       distributionSmtpDelayTimeTypes: []
@@ -102,6 +103,11 @@ export default {
           response?.data?.data?.map((language) => ({
             text: language.name,
             value: language.id
+          })) || []
+        this.tableLanguageFilter =
+          response?.data?.data?.map((language) => ({
+            text: language.name,
+            value: language.code
           })) || []
       })
     },

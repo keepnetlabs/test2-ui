@@ -129,7 +129,7 @@ export default {
           tagNames,
           targetAudience,
           trainingContents,
-          availableForRequests,
+          availableForList,
           category,
           type
         } = response?.data?.data || {}
@@ -141,10 +141,9 @@ export default {
           description,
           tags: tagNames,
           targetAudience,
-          category,
-          availableForRequests
+          category
         })
-        //refTrainingCourseInformation.setMakeAvailableForData(availableForRequests)
+        refTrainingCourseInformation.setMakeAvailableForData(availableForList)
         refTrainingContent.setFormData({ trainingContents, hasQuiz, type })
       })
     }
@@ -212,7 +211,6 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.tagNames[0]', 'Changed')
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })
