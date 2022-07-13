@@ -206,18 +206,23 @@ export default {
         formData: { hasQuiz, type }
       } = refTrainingContent
       const payload = new FormData()
-      const trainingDetail = {
-        name,
-        description,
-        category,
-        targetAudience,
-        tagNames: tags,
-        availableForRequests,
-        hasQuiz,
-        type
-      }
       payload.append('coverImage', coverImage)
-      payload.append('trainingDetail', JSON.stringify(trainingDetail))
+      payload.append('trainingDetail.name', name)
+      payload.append('trainingDetail.description', description)
+      payload.append('trainingDetail.category', category)
+      payload.append('trainingDetail.targetAudience', targetAudience)
+      payload.append('trainingDetail.hasQuiz', hasQuiz)
+      payload.append('trainingDetail.tagNames[0]', 'Changed')
+      tags.map((tag, index) => {
+        payload.append(`trainingDetail.tagNames[${index}]`, tag)
+      })
+      availableForRequests.map((request, index) => {
+        payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)
+        payload.append(
+          `trainingDetail.availableForRequests[${index}].resourceId`,
+          request.resourceId
+        )
+      })
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
