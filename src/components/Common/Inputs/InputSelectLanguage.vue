@@ -1,5 +1,5 @@
 <template>
-  <v-select
+  <KSelect
     outlined
     :required="required"
     :persistent-hint="persistentHint"
@@ -16,8 +16,10 @@
 </template>
 
 <script>
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'InputSelectLanguage',
+  components: { KSelect },
   props: {
     items: {
       type: Array,
