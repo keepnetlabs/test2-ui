@@ -178,7 +178,6 @@ export default {
             companyName: 'Root Company'
           })
             .then((response) => {
-              debugger
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
             })
@@ -215,8 +214,7 @@ export default {
         tagNames: tags,
         availableForRequests,
         hasQuiz,
-        type,
-        companyName: 'Root Company'
+        type
       }
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail', JSON.stringify(trainingDetail))
