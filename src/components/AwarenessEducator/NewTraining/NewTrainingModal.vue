@@ -178,6 +178,7 @@ export default {
             companyName: 'Root Company'
           })
             .then((response) => {
+              debugger
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
             })
