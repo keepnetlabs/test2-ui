@@ -97,7 +97,7 @@ export default {
       }
     },
     handleRemove(index) {
-      this.formData.contentByLanguage.splice(index, 1)
+      this.formData.contentByLanguage.splice(index - 1, 1)
     }
   }
 }

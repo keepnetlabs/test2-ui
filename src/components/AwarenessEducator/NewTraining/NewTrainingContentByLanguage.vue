@@ -3,7 +3,7 @@
     <FormGroupHorizontalContent
       :label="labels.LANGUAGE"
       class="mb-2"
-      style="justify-content: flex-start; max-width: 456px;"
+      :style="!isRemovable && { justifyContent: 'flex-start', maxWidth: '456px' }"
     >
       <InputSelectLanguage
         v-bind="commonRules"
