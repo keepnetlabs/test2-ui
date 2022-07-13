@@ -63,6 +63,10 @@ export default {
     outlined: {
       type: Boolean,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

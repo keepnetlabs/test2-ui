@@ -12,7 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isLanguageDisabled"
+        :disabled="isDisabled"
         @change="handleLanguageChange"
       />
       <v-btn
@@ -38,6 +38,7 @@
         hint="Scorm 1.2 .zip file. Max. file size 40mb"
         style="width: 205px !important;"
         :extensions="['.zip']"
+        :disabled="isDisabled"
         @inputFile="handleFileChange"
       />
     </FormGroupHorizontalContent>
@@ -73,7 +74,7 @@ export default {
   data() {
     return {
       labels,
-      isLanguageDisabled: false,
+      isDisabled: false,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -92,7 +93,7 @@ export default {
       const payload = new FormData()
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
-      this.isLanguageDisabled = true
+      this.isDisabled = true
       this.$emit('on-file-start')
       AwarenessEducatorService.uploadTrainingContent(payload, this.trainingResourceId)
         .then(() => {
