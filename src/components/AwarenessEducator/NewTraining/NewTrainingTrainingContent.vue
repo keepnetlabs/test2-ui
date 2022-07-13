@@ -77,7 +77,7 @@ export default {
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
-        contentByLanguage: [{ file: null, languageId: this.languages[0].value || '' }]
+        contentByLanguage: [{ file: null, languageId: '' }]
       }
     }
   },
