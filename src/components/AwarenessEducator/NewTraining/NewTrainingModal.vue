@@ -178,7 +178,7 @@ export default {
             companyName: 'Root Company'
           })
             .then((response) => {
-              this.trainingId = response?.data?.data?.trainingId || ''
+              this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
             })
             .finally(() => {
