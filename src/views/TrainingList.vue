@@ -104,6 +104,7 @@ export default {
             text: language.name,
             value: language.id
           })) || []
+
         this.tableLanguageFilter =
           response?.data?.data?.map((language) => ({
             text: language.name,

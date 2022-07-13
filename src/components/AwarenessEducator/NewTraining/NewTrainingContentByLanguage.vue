@@ -104,6 +104,7 @@ export default {
         })
     },
     handleLanguageChange(val) {
+      console.log('val', val)
       this.$emit('input', { ...this.value, languageId: val })
     },
     handleRemove() {

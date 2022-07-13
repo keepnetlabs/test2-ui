@@ -88,6 +88,8 @@ export default {
   },
   methods: {
     handleAddLanguage() {
+      console.log('this.languages', this.languages)
+      console.log(' this.languages[0].value', this.languages[0].value)
       this.formData.contentByLanguage.unshift({
         file: null,
         languageTypeResourceId: this.languages[0].value
