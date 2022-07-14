@@ -7,13 +7,13 @@
     >
       <InputSelectLanguage
         v-bind="commonRules"
-        :value="value.languageId"
+        v-model="value.languageId"
         style="max-width: 205px !important;"
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
         :disabled="isDisabled"
-        @change="handleLanguageChange"
+    
       />
       <v-btn
         v-if="isRemovable"
@@ -38,8 +38,10 @@
         hint="Scorm 1.2 .zip file. Max. file size 40mb"
         style="width: 205px !important;"
         :extensions="['.zip']"
+        :file-previews="filePreviews"
         :disabled="isDisabled"
         @inputFile="handleFileChange"
+        @on-clear="handleClearFile"
       />
     </FormGroupHorizontalContent>
   </div>
@@ -69,6 +71,9 @@ export default {
     },
     isRemovable: {
       type: Boolean
+    },
+    filePreviews:{
+      type:Array
     }
   },
   data() {
@@ -103,12 +108,14 @@ export default {
           this.$emit('on-file-end')
         })
     },
-    handleLanguageChange(val) {
-      console.log('val', val)
-      this.$emit('input', { ...this.value, languageId: val })
-    },
     handleRemove() {
       this.$emit('on-remove')
+    },
+    handleClearFile(){
+      if(this.filePreviews.length){
+        this.$emit('input',{...this.value,filePreviews:null})
+      }
+      this.isDisabled=false
     }
   }
 }

@@ -9,6 +9,7 @@
     :item-value="itemValue"
     :value="value"
     :hint="hint"
+    :disabled="disabled"
     :menu-props="menuProps"
     :placeholder="placeholder"
     @input="handleLanguageChange"

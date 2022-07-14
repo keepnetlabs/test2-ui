@@ -31,7 +31,8 @@
           :class="['mb-4', index > 0 && 'mt-6']"
           :language-items="languages"
           :training-resource-id="resourceId"
-          :is-removable="index > 1"
+          :is-removable="formData.contentByLanguage.length > 1"
+          :file-previews="formData.contentByLanguage[index-1].filePreviews"
           @on-file-start="$emit('update:isActionButtonDisabled', true)"
           @on-file-end="$emit('update:isActionButtonDisabled', false)"
           @on-remove="handleRemove(index - 1)"
@@ -88,7 +89,7 @@ export default {
   },
   methods: {
     handleAddLanguage() {
-      this.formData.contentByLanguage.unshift({
+      this.formData.contentByLanguage.push({
         file: null,
         languageId: this.languages[0].value || ''
       })
@@ -98,6 +99,9 @@ export default {
         ...this.formData,
         ...formData
       }
+    },
+    setTrainingContents(trainingContents=[]){
+      this.formData.contentByLanguage=trainingContents.map(content=>({languageId:content.languageId,file:null,filePreviews:[{name:content.name,size:content.size}]}))
     },
     handleRemove(index) {
       this.formData.contentByLanguage.splice(index, 1)

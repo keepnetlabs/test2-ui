@@ -144,7 +144,8 @@ export default {
           category
         })
         refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-        refTrainingContent.setFormData({ trainingContents, hasQuiz, type })
+        refTrainingContent.setFormData({ hasQuiz, type })
+        refTrainingContent.setTrainingContents(trainingContents)
       })
     }
   },
