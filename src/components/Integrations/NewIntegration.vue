@@ -825,7 +825,7 @@
               </v-checkbox>
               <span>Enable caching and enter duration(hours)</span>
               <v-text-field
-                v-model="formValues.cacheDuration"
+                v-model.number="formValues.cacheDuration"
                 v-mask="'#######'"
                 id="input--integrations-cache-duration"
                 outlined
@@ -836,7 +836,7 @@
               ></v-text-field>
               <span>and query count</span>
               <v-text-field
-                v-model="formValues.cacheQueryCount"
+                v-model.number="formValues.cacheQueryCount"
                 v-mask="'#######'"
                 id="input--integrations-cache-query-count"
                 outlined
