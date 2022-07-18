@@ -75,7 +75,7 @@ const exportEnrollments = (payload) => {
 }
 
 const getEnrollmentsContentLanguages = (resourceId) => {
-  return testRequest.post(`enrollments/${resourceId}/languages`)
+  return testRequest.post(`/enrollments/${resourceId}/languages`)
 }
 
 const getCategories = () => {
@@ -87,6 +87,20 @@ const getTargetAudiences = () => {
 const getLanguages = () => {
   return testRequest.get('/trainings/languages')
 }
+
+const lmsInitialize = (payload) => {
+  return testRequest.post('/scorm/LMSInitialize', payload)
+}
+const lmsGetValue = (payload) => {
+  return testRequest.post('/scorm/LMSGetValue', payload)
+}
+const lmsSetValue = (payload) => {
+  return testRequest.post('/scorm/LMSSetValue', payload)
+}
+const lmsFinish = (payload) => {
+  return testRequest.post('/scorm/LMSFinish', payload)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -106,5 +120,9 @@ export default {
   uploadTrainingContent,
   searchEnrollments,
   exportEnrollments,
-  getEnrollmentsContentLanguages
+  getEnrollmentsContentLanguages,
+  lmsInitialize,
+  lmsSetValue,
+  lmsGetValue,
+  lmsFinish
 }
