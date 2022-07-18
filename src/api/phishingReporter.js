@@ -81,3 +81,10 @@ export function generateO365AddIn() {
 export function searchGeneratedApplicationHistory(payload) {
   return testRequest.post(`/phishing-reporter/history/search`, payload)
 }
+
+export function bulkDeletePhishingUsers(payload = {}) {
+  return testRequest.delete('/phishing-reporter/bulk-delete', {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}

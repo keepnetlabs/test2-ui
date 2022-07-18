@@ -65,7 +65,7 @@ export default {
     getSubTitle() {
       return `${
         this.isMultiple ? `${this.userCount} user(s)` : 'The system user'
-      } will deleted permanently`
+      } will be deleted permanently`
     }
   },
   methods: {
