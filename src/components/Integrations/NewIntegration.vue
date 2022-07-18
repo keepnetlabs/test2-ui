@@ -809,6 +809,44 @@
               ></v-checkbox>
             </div>
           </form-group>
+          <form-group
+            v-if="isVmrayOrVirusTotal"
+            title="Cache"
+            class-name="mt-4"
+            style="max-width: 565px;"
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="formValues.isCachingEnabled"
+                id="input--integration-caching"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Enable caching and enter duration(hours)</span>
+              <v-text-field
+                v-model.number="formValues.cacheDuration"
+                v-mask="'#######'"
+                id="input--integrations-cache-duration"
+                outlined
+                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="numberValidation"
+              ></v-text-field>
+              <span>and query count</span>
+              <v-text-field
+                v-model.number="formValues.cacheQueryCount"
+                v-mask="'#######'"
+                id="input--integrations-cache-query-count"
+                outlined
+                class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="numberValidation"
+              ></v-text-field>
+            </div>
+          </form-group>
           <v-list-item class="px-0 mt-6 mb-6">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -958,6 +996,7 @@ import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import * as validations from '@/utils/validations'
 export default {
   name: 'NewIntegration',
   components: {
@@ -1003,10 +1042,13 @@ export default {
       loadingState: [],
       initialFormValues: null,
       formValues: {
+        isCachingEnabled: false,
         userName: '',
         password: '',
         description: null,
         analysisEngineTypeResourceId: null,
+        cacheDuration: 4,
+        cacheQueryCount: 4,
         tags: [],
         isActive: true,
         isSendUrl: false,
@@ -1035,6 +1077,11 @@ export default {
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
       showConfirmModal: false,
+      numberValidation: [
+        (v) => Validations.required(v, 'Enter a number higher than 0'),
+        (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+        (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+      ],
       nameValidation: {
         required: (v) => Validations.required(v),
         maxLength: (v) =>
@@ -1320,6 +1367,11 @@ export default {
     },
     saveIntegration() {
       const data = { ...this.formValues }
+      if (!this.isVmrayOrVirusTotal) {
+        delete data.isCachingEnabled
+        delete data.cacheDuration
+        delete data.cacheQueryCount
+      }
       this.integrationTypeDisabled = true
       if (
         [
