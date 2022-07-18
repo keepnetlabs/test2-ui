@@ -64,6 +64,20 @@ const makeDefaultCertificate = (resourceId) => {
   )
 }
 
+const searchEnrollments = (payload) => {
+  return testRequest.post('/enrollments/search', payload)
+}
+
+const exportEnrollments = (payload) => {
+  return testRequest.post('/enrollments/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
+const getEnrollmentsContentLanguages = (resourceId) => {
+  return testRequest.post(`enrollments/${resourceId}/languages`)
+}
+
 const getCategories = () => {
   return testRequest.get('/trainings/categories')
 }
@@ -89,5 +103,8 @@ export default {
   getTargetAudiences,
   getLanguages,
   exportTrainingList,
-  uploadTrainingContent
+  uploadTrainingContent,
+  searchEnrollments,
+  exportEnrollments,
+  getEnrollmentsContentLanguages
 }

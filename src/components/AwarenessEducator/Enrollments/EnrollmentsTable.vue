@@ -27,6 +27,7 @@
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
+    @downloadEvent="exportEnrollments"
   >
     <template #datatable-row-actions="{ scope }">
       <EnrollmentsTableRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
@@ -41,12 +42,13 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { EMITS, COLUMNS } from '../utils'
+import { COLUMNS } from '../utils'
 import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'EnrollmentsTable',
   components: {
@@ -115,7 +117,41 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {}
+    callForData() {
+      AwarenessEducatorService.searchEnrollments(this.axiosPayload).then((response) => {
+        const {
+          data: {
+            data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+          }
+        } = response
+        this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+        this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+        this.serverSideProps.pageNumber = pageNumber
+        this.tableData = results || []
+      })
+    },
+    exportEnrollments(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportEnrollments(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Training-List.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    }
   }
 }
 </script>
