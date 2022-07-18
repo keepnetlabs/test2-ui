@@ -477,7 +477,6 @@ export function bulkDeleteCampaignReports(payload) {
 }
 
 export function calculateSendingInfo(payload) {
-  if (!payload.distributionSmtpDelayEvery) return
   return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-sending-info`, payload)
 }
 
