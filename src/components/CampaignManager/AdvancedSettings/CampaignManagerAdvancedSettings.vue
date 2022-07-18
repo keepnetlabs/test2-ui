@@ -546,14 +546,16 @@ export default {
           sendRandomlyUsersCount: this.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.formData.sendRandomlyUsersCalculateTypeId
         }
-        calculateSendingInfo(payload).then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalSendSecond, batchEverySendSecond } = data
-          this.totalSendSecond = totalSendSecond
-          this.batchEverySendSecond = batchEverySendSecond
-        })
+        if (payload.distributionSmtpDelayEvery) {
+          calculateSendingInfo(payload).then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalSendSecond, batchEverySendSecond } = data
+            this.totalSendSecond = totalSendSecond
+            this.batchEverySendSecond = batchEverySendSecond
+          })
+        }
       }, 500)
     },
     handleTestConnectionChange() {
