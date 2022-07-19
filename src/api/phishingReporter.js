@@ -83,7 +83,7 @@ export function searchGeneratedApplicationHistory(payload) {
 }
 
 export function bulkDeletePhishingUsers(payload = {}) {
-  return testRequest.delete('/phishing-reporter/bulk-delete', {
+  return testRequest.delete('/phishing-reporter-users/bulk-delete', {
     snackbar: COMMON_SNACKBAR,
     data: payload
   })
