@@ -67,7 +67,12 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '@/api/company'
+import {
+  deleteCompanyGroup,
+  exportCompanyGroup,
+  searchCompanyGroups,
+  bulkDeleteCompanyGroups
+} from '@/api/company'
 import DeleteModal from './DeleteModal'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -371,31 +376,16 @@ export default {
     },
     deleteMultipleConfirmedItems() {
       this.isDeleting = true
-      return new Promise((res) =>
-        setTimeout(() => {
-          this.$nextTick(() => {
+      bulkDeleteCompanyGroups(this.multipleDeletePayload)
+        .then((response) => {
+          if (this.$refs?.refGroupDataList) {
             this?.$refs?.refGroupDataList?.resetSelectableParams()
-            this.getTableData()
-          })
-          res()
-        }, 2500)
-      ).finally(() => {
-        this.isDeleting = false
-      })
-      // deleteCompanies(this.multipleDeletePayload)
-      //   .then((response) => {
-      //     nextTick(() => {
-      //       if (this.$refs?.refGroupDataList) {
-      //         this?.$refs?.refGroupDataList?.resetSelectableParams()
-      //       }
-      //     })
-      //     if (response.data && response.data.message) {
-      //       this.getTableData()
-      //     }
-      //   })
-      //   .finally(() => {
-      //     this.isDeleting = false
-      //   })
+          }
+          this.getTableData()
+        })
+        .finally(() => {
+          this.isDeleting = false
+        })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status

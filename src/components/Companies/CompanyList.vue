@@ -141,7 +141,13 @@
 
 <script>
 import Datatable from '@/components/DataTable'
-import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
+import {
+  deleteCompany,
+  exportCompanies,
+  getCompanyByID,
+  searchCompanies,
+  bulkDeleteCompanies
+} from '@/api/company'
 import DeleteModal from './DeleteModal'
 import labels from '@/model/constants/labels'
 import {
@@ -369,7 +375,7 @@ export default {
   methods: {
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
       const payload = {
-        items: selectAll ? [] : items.map((item) => item.resourceId),
+        items: selectAll ? [] : items.map((item) => item.companyResourceId),
         excludedItems,
         selectAll,
         filter: this.payload.filter
@@ -520,31 +526,16 @@ export default {
     },
     deleteMultipleConfirmedItems() {
       this.isDeleting = true
-      return new Promise((res) =>
-        setTimeout(() => {
-          this.$nextTick(() => {
+      bulkDeleteCompanies(this.multipleDeletePayload)
+        .then((response) => {
+          if (this.$refs?.refDataList) {
             this?.$refs?.refDataList?.resetSelectableParams()
-            this.getTableData()
-          })
-          res()
-        }, 2500)
-      ).finally(() => {
-        this.isDeleting = false
-      })
-      // deleteCompanies(this.multipleDeletePayload)
-      //   .then((response) => {
-      //     nextTick(() => {
-      //       if (this.$refs?.refDataList) {
-      //         this?.$refs?.refDataList?.resetSelectableParams()
-      //       }
-      //     })
-      //     if (response.data && response.data.message) {
-      //       this.getTableData()
-      //     }
-      //   })
-      //   .finally(() => {
-      //     this.isDeleting = false
-      //   })
+          }
+          this.getTableData()
+        })
+        .finally(() => {
+          this.isDeleting = false
+        })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
