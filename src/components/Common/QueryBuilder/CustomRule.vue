@@ -349,7 +349,7 @@ export default {
               (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
             ]
           default:
-            break
+            return [(v) => this.validations.required(v, labels.Required)]
         }
       }
     },
@@ -432,22 +432,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.custom-rule-badge {
-  @media (max-width: 896px) {
-    top: 137px;
-  }
-  position: absolute;
-  left: -57px;
-  top: 64px;
-  padding: 4px 6px;
-  border-radius: 4px;
-  line-height: 1.33;
-  font-weight: 600;
-  background-color: #e3f2fd;
-  font-size: 12px;
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  color: #2196f3;
-  z-index: 9;
-}
-</style>

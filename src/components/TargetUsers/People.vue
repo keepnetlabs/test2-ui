@@ -174,7 +174,10 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
-                    <v-list-item :disabled="isLDAPDisabled" @click="toggleImportLDAPModal">
+                    <v-list-item
+                      :disabled="isLDAPDisabled || !getLDAPCreateConfigPermission"
+                      @click="toggleImportLDAPModal"
+                    >
                       <v-list-item-content>
                         <v-list-item-title id="item--target-user-empty-import-from-ldap"
                           >Import from LDAP</v-list-item-title
@@ -445,7 +448,8 @@ export default {
         {
           text: 'Import from LDAP',
           id: 'btn-add-users-import-from-ldap--target-users-people',
-          disabled: this.isLDAPDisabled
+          disabled:
+            this.isLDAPDisabled || !this.$store.getters['permissions/getLDAPCreateConfigPermission']
         }
       ],
       serverSideProps: new ServerSideProps()
@@ -453,12 +457,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
+      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
+      getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.checkIsLDAPConfigured()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   methods: {
     checkIsLDAPConfigured() {
@@ -472,10 +478,15 @@ export default {
             defaultFieldMappings,
             data?.fieldMappings
           )
+          this.isLDAPDisabled = !data.isActive
         })
         .catch(() => {
           this.isLDAPDisabled = true
-          this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+        })
+        .finally(() => {
+          if (this.isLDAPDisabled) {
+            this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+          }
         })
     },
     toggleImportLDAPModal() {
@@ -758,91 +769,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.people {
-  &__no-data {
-    &__header {
-      font-size: 24px !important;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.29 !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.87);
-      text-align: center;
-    }
-    &__body {
-      font-size: 14px !important;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.87);
-      text-align: center;
-    }
-    &__buttons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 24px;
-      &--button {
-        border-radius: 18px;
-        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
-        border: solid 1px #2196f3;
-        background-color: #2196f3;
-        align-items: center;
-        justify-content: center;
-        display: flex;
-        padding: 6px 16px;
-        cursor: pointer;
-        color: white;
-        font-size: 14px;
-        &:last-child {
-          margin-left: 16px;
-        }
-        img {
-          margin-left: 8px;
-          height: 24px;
-        }
-      }
-    }
-  }
-  .add-users__title {
-    font-size: 14px;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-  .edit-fields {
-    display: flex;
-    justify-content: flex-end;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-    margin-top: 10px;
-    cursor: pointer;
-    color: #2196f3;
-  }
-  .btn-add {
-    width: 36px;
-    height: 36px;
-    border-radius: 18px;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
-    background-color: #2196f3;
-    color: white;
-
-    .v-icon {
-      font-size: 18px !important;
-      color: white;
-    }
-  }
-}
-.ldap-import-table {
-  .v-list-item__content,
-  .k-form-group__content {
-    width: 100%;
-  }
-}
-</style>

@@ -520,7 +520,7 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        const fileExtension = file.name.substring(file.name.length - 4)
+        const fileExtension = file.name ? file.name.substring(file.name.length - 4) : ''
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
@@ -786,12 +786,33 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
+        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
+        if (this.$refs.refMakeAvailableFor && availableForList.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList
           )
@@ -819,63 +840,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.email-template {
-  .email-template__container {
-  }
-}
-.new-email-template__footer-btn-cancel {
-  color: #ff5252 !important;
-  border: 1px solid #ff5252 !important;
-  box-shadow: none !important;
-  caret-color: #ff5252 !important;
-  font-weight: 600 !important;
-}
-.new-email-template__footer-btn-back {
-  color: #00bcd4 !important;
-  border: 1px solid #00bcd4 !important;
-  caret-color: #00bcd4 !important;
-  box-shadow: none !important;
-  font-weight: 600 !important;
-}
-.new-email-template__footer-btn-next {
-  background-color: rgb(33, 150, 243) !important;
-  border-color: rgb(33, 150, 243) !important;
-  caret-color: #00bcd4 !important;
-  font-weight: 600 !important;
-
-  color: white !important;
-}
-.new-email-template {
-  &__overlay {
-    .v-overlay__content {
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      left: 0;
-      top: 0;
-      overflow-y: auto;
-    }
-  }
-  &__title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 24px;
-    line-height: 31px;
-    color: #383b41;
-  }
-  &__sub-title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 21px !important;
-    color: #383b41 !important;
-  }
-}
-.email-template-info .hide-caret {
-  .v-input__append-inner {
-    display: none !important;
-  }
-}
-</style>

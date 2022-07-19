@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import RecentCampaigns from '@/components/Common/Widget/WidgetComponents/RecentCampaigns'
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
@@ -81,6 +82,7 @@ import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiS
 import { postWidgets } from '@/api/widgets'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
+import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPhishedUsers'
 export default {
   name: 'Widgets',
   components: {
@@ -100,6 +102,7 @@ export default {
   data() {
     return {
       activeBreakpoint: 'lg',
+      initialLayout: [],
       layout: [],
       showPlaybookModal: false,
       selectedPlaybookId: null,
@@ -282,9 +285,51 @@ export default {
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
+        },
+        RecentCampaigns: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'RecentCampaigns',
+          title: 'Recent Campaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        MostPhishedUsers: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       },
       availableWidgets: [
+        {
+          name: 'Most Phished Users',
+          key: 'MostPhishedUsers',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
+        {
+          name: 'Recent Campaigns',
+          key: 'RecentCampaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
         {
           name: 'Recent Investigations',
           key: 'RecentInvestigations',
@@ -432,6 +477,7 @@ export default {
     },
     handleCancelEditMode() {
       this.editMode = false
+      this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
     layoutMounted() {
       /*
@@ -459,6 +505,10 @@ export default {
       switch (componentString) {
         case 'RecentInvestigations':
           return RecentInvestigations
+        case 'RecentCampaigns':
+          return RecentCampaigns
+        case 'MostPhishedUsers':
+          return MostPhishedUsers
         case 'Reporters':
           return Reporters
         case 'TopRules':
@@ -705,6 +755,38 @@ export default {
           key: 'TopRules',
           title: 'Top Rules',
           isAllowed: this?.permissions?.topRules
+        },
+        {
+          x: 0,
+          y: 24,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'RecentCampaigns',
+          title: 'Recent Campaigns',
+          isAllowed: this?.permissions?.recentCampaignsCard
+        },
+        {
+          x: 0,
+          y: 27,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostPhishedUsers',
+          title: 'Most Phished Users',
+          isAllowed: this?.permissions?.mostPhishedUsersCard
         }
       ]
       widgets = widgets.reduce((acc, widget) => {
@@ -770,61 +852,11 @@ export default {
   mounted() {},
   watch: {
     editMode(val) {
-      if (val) this.handleAddShadows()
+      if (val) {
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
+        this.handleAddShadows()
+      }
     }
   }
 }
 </script>
-
-<style lang="scss">
-.k-widget {
-  &__container {
-    padding: 11px 16px 16px 16px;
-    width: 100%;
-  }
-  &__header {
-    display: flex;
-    align-items: center;
-  }
-}
-.widget__header {
-  &-icon {
-    position: absolute;
-    top: 12px;
-    right: 10px;
-    z-index: 999999;
-    cursor: pointer;
-  }
-}
-.widget-body__content {
-  overflow: hidden;
-  border-radius: 12px;
-  .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
-    white-space: nowrap;
-    line-height: 1;
-  }
-  .incident-responder-parent .columns-row .dashboard-cards .card-footer {
-    line-height: 1;
-  }
-  .users {
-    padding-top: 0;
-    .v-card {
-      padding-bottom: 0 !important;
-    }
-  }
-}
-.vue-grid-layout {
-  margin-left: -12px;
-  margin-right: -10px;
-}
-.widget-header__title {
-  padding-left: 12px !important;
-  font-weight: 600 !important;
-  color: #2196f3;
-  display: flex !important;
-  align-items: center;
-}
-[title] {
-  content: none;
-}
-</style>

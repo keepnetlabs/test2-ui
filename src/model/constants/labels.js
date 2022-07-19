@@ -5,15 +5,29 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  ExcludeIPAddress: 'Exclude IP Address',
+  ExcludeIPAddressSubtitle:
+    'The interactions from the listed IP addresses will not be registered in your campaign statistics. ',
+  ExcludeUserAgent: 'Exclude User Agent',
+  ExcludeUserAgentSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
+  ExcludeUserAgentBatchImportPlaceholder:
+    'Mozilla/5.0 (iPhone9,3; U; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1',
+  ExcludeUserAgentBatchImportSubtitle: 'Import multiple user agents separated by line-break',
+  Create: 'Create',
+  Okay: 'Okay',
   FastLaunch: 'Fast Launch',
+  MostPhishedUsers: 'Most Phished Users',
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
   Completed: 'Completed',
+  RecentCampaigns: 'Recent Campaigns',
   RequiredStar: '*Required',
+  Phished: 'Phished',
   EmailDelivery: 'Email Delivery',
   SIEMProvider: 'SIEM Provider',
   LDAP: 'LDAP',
   FieldMapping: 'Field Mapping',
+  NextRunTime: 'Next Run Time',
   FieldMappingSub:
     'Match field names from your Active Directory to the system fields to import users information correctly',
   LDAPGroups: 'LDAP Groups',
@@ -22,6 +36,7 @@ export const labels = {
   Passive: 'Passive',
   Connection: 'Connection',
   EmptyScheduledSyncs: 'You do not have any scheduled syncs',
+  EmptyMostPhishedUsersWidget: 'You do not have any phished users',
   ScheduledSyncs: 'Scheduled Syncs',
   ScheduledSyncsSub: 'Scheduled syncronizations with LDAP',
   PeriodTime: 'Period Time',
@@ -32,6 +47,8 @@ export const labels = {
   SelectTargetGroupSub: 'Select a target group to add users to',
   SelectUsers: 'Select Users',
   Groups: 'Groups',
+  SyncOptions: 'Sync Options',
+  SyncOptionsSub: 'Sync with entire active directory or select groups',
   LastRunTime: 'Last Run',
   LDAPImportModalStep1Subtitle: 'Selection for LDAP groups and target group ',
   LDAPImportModalStep2Subtitle: 'Select users to import',
@@ -73,6 +90,10 @@ export const labels = {
   TimesReported: 'Times Reported',
   ViewReport: 'View Report',
   CreateNewInstance: 'Create new instance',
+  CampaignInstance: 'Campaign Instance',
+  CampaignInstanceSub:
+    'Select target groups and schedule options for this phishing campaign instance',
+  MarkAsTest: 'Mark as Test',
   LastReported: 'Last Reported',
   Data: 'Data',
   EmailInformation: 'Email Information',
@@ -181,7 +202,8 @@ export const labels = {
   CompanyGroupNameSecondLower: 'Company group name',
   BatchImport: 'Batch Import',
   BatchImportPopupSubtitle: 'Import multiple domains separated by line-break or comma',
-  BatchImportPopupIpAddressSubtitle: 'Import multiple IP address separated by line-break or comma',
+  BatchImportPopupIpAddressSubtitle:
+    'Import multiple IP addresses separated by line-break or comma',
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
   CompanyAdmin: 'Company Admin',
@@ -479,6 +501,8 @@ export const labels = {
   MakeAvailableForPlaceholder: 'Search companies and groups',
   DeleteNotificationTemplateBody:
     'This notification template will be deleted. All data will be lost.',
+  DeleteDefaultTemplateBody:
+    'You cannot delete this default notification template. Assign another template as default for this template type and try again.',
   NewNotificationTemplate: 'New Notification Template',
   NewNotificationTemplateSubtitle:
     'Define notification template settings and create email template',

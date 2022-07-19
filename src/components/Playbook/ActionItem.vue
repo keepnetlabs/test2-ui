@@ -319,12 +319,12 @@
         <v-col
           v-if="actionsValues[index].val === 'notify'"
           md="2"
-          @mouseover="handleMouseOverOnNotifyTemplates"
+          @mouseover="handleMouseOverOnNotifyTemplates($event, index)"
           @mouseleave="handleMouseOutNotifyTemplates"
         >
           <k-select
             ref="refNotifyTemplatesSelect"
-            v-model="notifyTemplate"
+            v-model="notifyTemplates[index]"
             :id="`input--action-notify-templates-${index}`"
             :items="act.notifyTemplates"
             item-value="resourceId"
@@ -462,7 +462,7 @@ export default {
       markAsOpts: 'Undetected',
       acceptCheckbox: false,
       targetUserType: [],
-      notifyTemplate: '1c95cf86d193',
+      notifyTemplates: [],
       targets: [],
       targetUsers: [],
       tarUsers: [],
@@ -615,7 +615,7 @@ export default {
         })
         .finally(() => (this.isSystemUsersLoading = false))
     },
-    handleMouseOverOnNotifyTemplates(e) {
+    handleMouseOverOnNotifyTemplates(e, index) {
       e.stopPropagation()
       if (this.$refs.refNotifyTemplatesSelect[0].$refs.refComponent.$_menuProps.value) {
         this.showOverFlowTooltip = false
@@ -633,7 +633,7 @@ export default {
           left: `${parentRect.left + 4}px`
         }
         this.overFlowTooltipContent = this.act.notifyTemplates.find(
-          (notifyTemplate) => notifyTemplate.resourceId === this.notifyTemplate
+          (notifyTemplate) => notifyTemplate.resourceId === this.notifyTemplates[index]
         )?.name
         this.showOverFlowTooltip = true
       }
@@ -954,8 +954,9 @@ export default {
       if (oldValue.val === 'notify') {
         this.targetUserType[index] = null
         this.tarUsers[index] = null
+        this.notifyTemplates[index] = null
       }
-      if (oldValue.val === 'markAs' && value.val === 'analyze') {
+      if (oldValue.val === 'markAs') {
         this.playbookAction.markType = ''
       }
 
@@ -1085,6 +1086,7 @@ export default {
       if (actionVal === 'notify') {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
+        this.notifyTemplates.splice(index, 1)
       } else {
         for (let j = 0; j <= this.targetUserType.length - 1; j++) {
           if (j > index) {
@@ -1092,6 +1094,7 @@ export default {
             this.tarUsers[j - 1] = this.tarUsers[j]
             this.tarUsers[j] = null
             this.targetUserType[j] = null
+            this.notifyTemplates[j - 1] = this.notifyTemplates[j]
           }
         }
       }
@@ -1260,9 +1263,9 @@ export default {
     },
     editedNotifications(val) {
       val.map((item) => {
-        this.addAction('notify')
+        const length = this.addAction('notify')
         if (item.emailTemplateId) {
-          this.notifyTemplate = item.emailTemplateId
+          this.notifyTemplates[length - 1] = item.emailTemplateId
         }
       })
       let valIndex = 0
@@ -1287,4 +1290,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./ActionItem.scss" />

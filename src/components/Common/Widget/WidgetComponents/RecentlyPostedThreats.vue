@@ -185,7 +185,7 @@ export default {
       localStorage.setItem('communityName', row.communityName)
       localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
       this.$router.push({
-        path: `/community/${row.communityResourceId}`,
+        path: `/threat-sharing/community/${row.communityResourceId}`,
         query: {
           postId: row.communityPostResourceId,
           communityName: localStorage.getItem('communityName'),
@@ -197,37 +197,9 @@ export default {
       localStorage.setItem('communityName', row.communityName)
       localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
       this.$router.push({
-        path: `/community/${row.communityResourceId}`
+        path: `/threat-sharing/community/${row.communityResourceId}`
       })
     }
   }
 }
 </script>
-
-<style lang="scss">
-.right-side-like-comment-wrapper {
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  font-weight: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: #4a4a4a;
-}
-.right-side-like {
-  display: flex;
-  align-items: center;
-}
-.right-side-message {
-  display: flex;
-  align-items: center;
-  padding-top: 2px;
-}
-.like-count {
-  margin-left: 2px;
-}
-.comment-count {
-  margin-left: 2px;
-  margin-top: -2px;
-}
-</style>

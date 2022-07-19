@@ -126,22 +126,12 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
-                  <k-select
-                    type="combobox"
+                  <InputTag
+                    ref="refTags"
                     :id="`input--action-tags`"
                     v-model="formValues.tags"
                     :items="[]"
-                    chips
-                    deletable-chips
-                    outlined
                     class="hide-caret"
-                    multiple
-                    dense
-                    persistent-hint
-                    small-chips
-                    :return-object="false"
-                    @input="handleTagItemChange"
-                    placeholder="Enter tags and press enter key"
                   />
                 </form-group>
                 <form-group
@@ -420,7 +410,6 @@
 <script>
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import AppModal from '../AppModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -494,17 +483,18 @@ import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import InputTag from '@/components/Common/Inputs/InputTag'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
     StepperFooter,
-    KSelect,
     AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputTag
   },
   data() {
     return {
@@ -1016,12 +1006,33 @@ export default {
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
         this.handleChangeDomainRecord(this.formValues.domainRecordId)
+        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor) {
-          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
+        if (this.$refs.refMakeAvailableFor && availableForList.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
           )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
         } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList
           )
@@ -1032,95 +1043,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.email-template {
-  .email-template__container {
-  }
-}
-.new-email-template__footer-btn-cancel {
-  color: #ff5252 !important;
-  border: 1px solid #ff5252 !important;
-  box-shadow: none !important;
-  caret-color: #ff5252 !important;
-  font-weight: 600 !important;
-}
-.new-email-template__footer-btn-back {
-  color: #00bcd4 !important;
-  border: 1px solid #00bcd4 !important;
-  caret-color: #00bcd4 !important;
-  box-shadow: none !important;
-  font-weight: 600 !important;
-}
-.new-email-template__footer-btn-next {
-  background-color: rgb(33, 150, 243) !important;
-  border-color: rgb(33, 150, 243) !important;
-  caret-color: #00bcd4 !important;
-  font-weight: 600 !important;
-
-  color: white !important;
-}
-.new-email-template {
-  &__overlay {
-    .v-overlay__content {
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      left: 0;
-      top: 0;
-      overflow-y: auto;
-    }
-  }
-  &__title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 24px;
-    line-height: 31px;
-    color: #383b41;
-  }
-  &__sub-title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 21px !important;
-    color: #383b41 !important;
-  }
-}
-
-.same-width {
-  flex: 1 1 0;
-  width: 0;
-}
-.landing-page-tab-content {
-  box-shadow: 0 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
-    0px 1px 5px rgba(80, 80, 80, 0.2);
-  padding: 24px;
-  .el-tabs__content {
-    margin-top: 0 !important;
-  }
-  .email-template__container {
-    box-shadow: none !important;
-  }
-  #tab-addPage {
-    padding-left: 0 !important;
-  }
-  &__button {
-    background: none !important;
-    font-size: 20px !important;
-    margin-left: 4px;
-    margin-top: 1px;
-    &:after {
-      background: none !important;
-    }
-  }
-}
-.landing-page-tab__label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 14px;
-  color: #2196f3;
-  text-transform: none;
-}
-</style>

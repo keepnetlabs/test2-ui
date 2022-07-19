@@ -13,11 +13,7 @@
       :map-table-data="mappingData"
       @on-change="handleMapTableSelectChange"
     />
-    <SaveChangesButton
-      class="mt-8"
-      :style="(isLoading || isLoadingFromParent) && { opacity: '0.5', pointerEvents: 'none' }"
-      @click="handleSubmit"
-    />
+    <SaveChangesButton class="mt-8" :style="getSubmitButtonStyle" @click="handleSubmit" />
   </div>
 </template>
 
@@ -31,6 +27,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import labels from '@/model/constants/labels'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { defaultFieldMappings } from './utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'LDAPFieldMappings',
   components: { ConfigureCompanyStepHeader, SaveChangesButton, DatatableLoading, MapTable },
@@ -60,6 +57,17 @@ export default {
   },
   created() {
     this.callApis(true)
+  },
+  computed: {
+    ...mapGetters({
+      getLDAPSettingCreatePermission: 'permissions/getLDAPSettingCreatePermission'
+    }),
+    getSubmitButtonStyle() {
+      const { isLoading, isLoadingFromParent, getLDAPSettingCreatePermission } = this
+      const disabledStyle = { opacity: '0.5', pointerEvents: 'none' }
+      if (!getLDAPSettingCreatePermission) return disabledStyle
+      return (isLoading || isLoadingFromParent) && disabledStyle
+    }
   },
   methods: {
     callApis(isInitial = false) {
@@ -92,6 +100,7 @@ export default {
           return !mappedHeaders.find((mappedHeader) => mappedHeader.name === cField.name)
         })
         this.mappingData.headers = [...mappedHeaders, ...customFields]
+        this.mappingData.headers[0].isSelectDisabled = true
         this.setTableData()
         this.setLoading()
         this.$nextTick(() => {
@@ -104,8 +113,10 @@ export default {
         acc[cField.name] = ''
         return acc
       }, {})
+      const defaultNewItem = {}
+      this.mappingData.headers.map((header) => (defaultNewItem[header.name] = ''))
       this.mappingData.tableData = this.tableData.map((item) => {
-        const newItem = {}
+        const newItem = { ...JSON.parse(JSON.stringify(defaultNewItem)) }
         for (const mapper of defaultFieldMappings) {
           newItem[mapper.customFieldResourceId] = item[mapper.customFieldResourceId] || ''
         }
@@ -178,18 +189,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.ldap-field-mapping-map-table {
-  overflow-x: auto;
-  table {
-    width: 100%;
-  }
-  tr {
-    display: table-row !important;
-  }
-  td {
-    display: table-cell !important;
-    height: 48px !important;
-  }
-}
-</style>

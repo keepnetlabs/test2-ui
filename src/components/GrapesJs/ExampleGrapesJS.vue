@@ -86,12 +86,3 @@ export default {
   components: { AppModal, GrapesNewsletterModal, GrapesWebPageModal }
 }
 </script>
-
-<style lang="scss">
-.grapes-example {
-  padding: 20px;
-}
-.demo-button {
-  background: white !important;
-}
-</style>

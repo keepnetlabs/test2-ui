@@ -130,21 +130,12 @@ export default {
           this.maximumRenderedBadgeCount--
           this.unRenderedBadgeCount++
         }
+      } else if (!badges?.length) {
+        this.badges = []
+        this.unRenderedBadgeCount = 0
+        this.maximumRenderedBadgeCount = 0
       }
     }
   }
 }
 </script>
-
-<style lang="scss">
-.small-badge {
-  &__container {
-    div {
-      display: inline-block;
-    }
-    .k-badge {
-      margin-right: 5px;
-    }
-  }
-}
-</style>

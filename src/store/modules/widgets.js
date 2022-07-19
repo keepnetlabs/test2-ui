@@ -11,7 +11,9 @@ const widgetsStore = {
     topRulesCard: [],
     recentInvestigationsCard: [],
     reportersCard: [],
-    reportedEmailTrendsCard: []
+    reportedEmailTrendsCard: [],
+    recentCampaignsCard: [],
+    mostPhishedUsers: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -22,7 +24,22 @@ const widgetsStore = {
     getTopRulesCard: (state) => state.topRulesCard,
     getRecentInvestigationsCard: (state) => state.recentInvestigationsCard,
     getReportersCard: (state) => state.reportersCard,
-    getReportedEmailTrendsCard: (state) => state.reportedEmailTrendsCard
+    getReportedEmailTrendsCard: (state) => state.reportedEmailTrendsCard,
+    getRecentCampaignsCard: (state) =>
+      state.recentCampaignsCard.map((row) => {
+        const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+        if (row.method === 'Attachment') {
+          campaignStatus.push(row['totalAttachmentOpenedCount'])
+        } else {
+          campaignStatus.splice(1, 0, row['totalClickedCount'])
+          campaignStatus.push(row['totalSubmittedCount'])
+        }
+        return {
+          ...row,
+          campaignStatus
+        }
+      }),
+    getMostPhishedUsersCard: (state) => state.mostPhishedUsers
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -51,6 +68,12 @@ const widgetsStore = {
     },
     SET_REPORTED_EMAIL_TRENDS(state, payload) {
       state.reportedEmailTrendsCard = payload
+    },
+    SET_RECENT_CAMPAIGNS(state, payload) {
+      state.recentCampaignsCard = payload
+    },
+    SET_MOST_PHISHED_USERS(state, payload) {
+      state.mostPhishedUsers = payload
     }
   },
   actions: {
@@ -63,7 +86,9 @@ const widgetsStore = {
             dashboardTopRules,
             runningInvestigations,
             topReporters,
-            reportedEmailTrends
+            reportedEmailTrends,
+            recentPhishingCampaigns,
+            mostPhishedUsers
           } = response.data
           const {
             investigationTypeCount,
@@ -75,6 +100,8 @@ const widgetsStore = {
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
           commit('SET_ROI_SUMMARY', roiSummary)
+          commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns?.data || [])
+          commit('SET_MOST_PHISHED_USERS', mostPhishedUsers?.data || [])
 
           const { data: topRules } = dashboardTopRules
 

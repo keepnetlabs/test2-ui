@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-application"
+    :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
     :title="labels.LandingPageWhoUsers"
   >
@@ -121,6 +122,9 @@ export default {
   props: {
     formData: {
       type: Object
+    },
+    isFetchingSummary: {
+      type: Boolean
     }
   },
   data() {

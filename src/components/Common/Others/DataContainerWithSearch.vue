@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="value.length"
     class="data-container-with-search"
     :style="getStyle"
     :class="['data-container-with-search', !isAllValid && 'data-container-with-search--error']"
@@ -57,7 +58,7 @@
           v-if="getItems.length"
           :key="scrollKey"
           max-height="300"
-          item-height="48"
+          :item-height="itemHeight"
           :items="getItems"
         >
           <template #default="{item,index}">
@@ -65,6 +66,7 @@
               :key="getItems[index].key"
               :value="getItems[index].val"
               :index="index"
+              :item-height="itemHeight"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
@@ -93,6 +95,7 @@
 import DataContainerWithSearchItem from '@/components/Common/Others/DataContainerWithSearchItem'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+
 export default {
   name: 'DataContainerWithSearch',
   components: { DataContainerWithSearchItem },
@@ -102,6 +105,14 @@ export default {
       default() {
         return {}
       }
+    },
+    removeDuplicates: {
+      type: Boolean,
+      default: false
+    },
+    itemHeight: {
+      type: String,
+      default: '48'
     },
     textFieldPlaceholder: {
       type: String,
@@ -182,6 +193,13 @@ export default {
       this.value[indexOfOldValue] = newVal
       this.$set(item, 'isEdit', false)
       item.key = Math.random().toString(8)
+
+      if (this.removeDuplicates) {
+        const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))
+        this.resetOptions()
+        this.setOptions()
+        this.$emit('input', newItems)
+      }
       this.checkAllValid()
     },
     checkAllValid() {
@@ -193,6 +211,9 @@ export default {
       this.value.forEach((val) => {
         if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val, funcName)
       })
+    },
+    resetOptions() {
+      this.options = []
     },
     addItemToOptions(val, funcName = 'unshift') {
       this.options[funcName]({
@@ -226,51 +247,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.data-container-with-search {
-  width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  &--error {
-    border: 1px solid #f56c6c;
-  }
-  &__menu {
-    .filter__body-container {
-      padding: 16px 16px 6px 16px;
-    }
-    .filter__footer {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      .v-btn__content {
-        font-weight: 600;
-      }
-    }
-  }
-  &__input {
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .filter__icon {
-      margin-left: 16px;
-      cursor: pointer;
-    }
-  }
-  &__content {
-    background: #fafafa;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
-  &__error {
-    position: absolute;
-    margin-top: 4px;
-    margin-left: -4px;
-    font-size: 9px;
-    line-height: 12px;
-    color: #f56c6c;
-  }
-}
-</style>

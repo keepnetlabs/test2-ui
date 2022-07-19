@@ -7,7 +7,9 @@
     filterable
     options
     is-server-side
-    row-key="displayName"
+    is-server-side-selection
+    just-compare-row-key
+    row-key="filterValue"
     :loading="isLoading"
     :show-filter-options="false"
     :is-settings-popup="false"
@@ -29,6 +31,7 @@
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
     @handleSelectionChange="handleSelectionChange"
+    @on-selected-all-click="handleSelectedAll"
   />
 </template>
 
@@ -44,9 +47,17 @@ export default {
   name: 'TargetUserLDAPImportTable',
   components: { DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
-  inject: ['resourceId'],
+  inject: {
+    resourceId: {
+      type: String
+    },
+    handleServerSideSelectionParams: {
+      type: Function
+    }
+  },
   data() {
     return {
+      isInitial: true,
       CONSTANTS: {
         id: 'target-user-ldap-import-data-table'
       },
@@ -57,7 +68,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         columns: [
@@ -99,7 +110,8 @@ export default {
         },
         rowActions: [],
         serverSideEvents: { pagination: true, search: true, sort: true }
-      }
+      },
+      initialGroupFilterValues: []
     }
   },
   created() {
@@ -112,18 +124,38 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber, pageSize }
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
+          this.serverSideProps.pageSize = pageSize
           this.tableData = results || []
+          if (this.initialGroupFilterValues.length && this.isInitial) {
+            if (this?.$refs?.refTable?.$refs?.elTableRef) {
+              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+                this.initialGroupFilterValues.map((filterValue) => ({ filterValue }))
+              )
+              this.$refs.refTable.serverSideSelectionCount = this.initialGroupFilterValues.length
+              if (this.initialGroupFilterValues.length === totalNumberOfRecords) {
+                this.$refs.refTable.isSelectedAllEver = true
+              }
+              this.handleServerSideSelectionParams(
+                this.$refs.refTable.getServerSideSelectionParams()
+              )
+            }
+          }
+          this.isInitial = false
         })
         .finally(this.setLoading)
     },
     handleSelectionChange(selection) {
+      this.handleServerSideSelectionParams(this.$refs.refTable.getServerSideSelectionParams())
       this.$emit('on-selection-change', selection)
+    },
+    handleSelectedAll() {
+      this.handleServerSideSelectionParams(this.$refs.refTable.getServerSideSelectionParams())
     }
   }
 }

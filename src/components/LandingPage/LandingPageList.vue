@@ -42,6 +42,7 @@
       <template v-slot:app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <LandingPageTemplateModalPreview
+          v-show="!isPreviewLoading"
           :landingPageTemplates="landingPageTemplates"
           :phishingUrl="landingPageParams.urlTemplate"
         />
@@ -109,6 +110,7 @@
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
@@ -125,6 +127,7 @@
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
+            :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
@@ -298,8 +301,8 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesPreviewPermissions']
+            action: 'handlePreview'
+            // disabled: !this.$store.getters['permissions/getLandingPageTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
@@ -310,8 +313,8 @@ export default {
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'duplicate',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
+            action: 'duplicate'
+            // disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
@@ -583,20 +586,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.emailTemplates {
-  min-height: 90vh;
-}
-.emailTemplates__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-.landing-page-template-preview__text {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-</style>

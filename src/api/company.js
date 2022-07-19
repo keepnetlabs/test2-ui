@@ -172,3 +172,9 @@ export function bulkDeleteCompanyGroups(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function makeDefaultTemplate(resourceId = '', payload = {}) {
+  return testRequest.put(`/companies/email-templates/make-default/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

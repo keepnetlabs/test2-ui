@@ -10,6 +10,7 @@
       <NextButton
         v-if="!isStepIsEqualToMax"
         id="btn-next--target-users-ldap-people-modal"
+        :style="isNextButtonDisabled && { opacity: '.5', pointerEvents: 'none' }"
         @click="changeStep()"
       />
       <v-btn
@@ -73,8 +74,15 @@ export default {
       type: Boolean,
       default: false
     },
+    isNextButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     selectedRadioStep: {
       type: Number
+    },
+    isStep2Loading: {
+      type: Boolean
     }
   },
   inject: ['isEdit'],
@@ -89,9 +97,9 @@ export default {
       return this.step > 1
     },
     getImportButtonStyle() {
+      const comparator = this.isEdit ? false : !this.totalNumberOfRecords
       return (
-        (!this.totalNumberOfRecords || this.isSubmitDisabled) &&
-        !this.isEdit && {
+        (this.isStep2Loading || comparator || this.isSubmitDisabled) && {
           opacity: '.5',
           pointerEvents: 'none'
         }

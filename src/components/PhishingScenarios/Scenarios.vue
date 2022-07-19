@@ -23,6 +23,7 @@
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
         :scenarioDetailsLookup="scenarioDetailsLookup"
+        :isAttachmentBased="isAttachmentBasedScenario"
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
@@ -84,6 +85,7 @@
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
           @on-click="handleFastLaunch(scope.row)"
         />
         <RowActionsMenu>
@@ -100,6 +102,7 @@
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
+            :checkIsOwnerProperty="false"
             @on-click="handlePreview(scope.row)"
           />
           <DefaultMenuRowAction
@@ -107,6 +110,7 @@
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
             :text="tableOptions.rowActions[3].name"
+            :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
@@ -297,14 +301,14 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            action: 'handlePreview'
+            // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
-            action: 'handlePreview',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
+            action: 'handleEdit'
+            // disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
           },
           {
             name: labels.Delete,
@@ -349,7 +353,10 @@ export default {
   computed: {
     ...mapGetters({
       getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
-    })
+    }),
+    isAttachmentBasedScenario() {
+      return this.selectedRow?.method === 'Attachment' || undefined
+    }
   },
   methods: {
     toggleShowPreviewDialog() {
@@ -431,6 +438,7 @@ export default {
       this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
+      this.selectedRow = row
       this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
@@ -452,6 +460,9 @@ export default {
       this.scenarioId = null
       this.isEdit = false
       this.isDuplicate = false
+      if (!status) {
+        this.selectedRow = null
+      }
       if (restart) {
         this.editableFormValues = {}
         this.scenarioId = null

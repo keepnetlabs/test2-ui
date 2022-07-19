@@ -25,7 +25,7 @@
       @changeStatus="onCloseRenameAttachmentModal"
     >
       <template v-slot:app-dialog-body>
-        <v-form ref="refAttachmentNameForm">
+        <v-form ref="refAttachmentNameForm" @submit.prevent>
           <v-text-field
             v-model.trim="attachmentName"
             v-bind="commonRules"
@@ -36,6 +36,7 @@
             outlined
             dense
             persistent-hint
+            @keyup.enter="onConfirmRenameAttachment"
           />
         </v-form>
       </template>
@@ -154,8 +155,9 @@
         <DefaultButtonRowAction
           :scope="scope"
           :icon="tableOptions.rowActions[0].icon"
-          :disabled="tableOptions.rowActions[0].disable"
+          :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
+          :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
@@ -172,6 +174,7 @@
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
+            :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
@@ -375,8 +378,8 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
+            action: 'handlePreview'
+            // disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
@@ -387,8 +390,8 @@ export default {
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'disable',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+            action: 'disable'
+            // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
@@ -666,15 +669,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.emailTemplates {
-  min-height: 90vh;
-}
-.emailTemplates__row-actions {
-  .v-list-item__title {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

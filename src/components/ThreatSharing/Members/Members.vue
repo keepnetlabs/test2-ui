@@ -639,5 +639,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" src="./Members.scss"></style>

@@ -30,12 +30,16 @@ export default {
     },
     disabled: {
       type: Boolean
+    },
+    checkIsOwnerProperty: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
     isDisabled() {
       const { row } = this.scope
-      if (row.hasOwnProperty('isOwner')) {
+      if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
         return this.disabled || !row.isOwner
       }
       return this.disabled
@@ -43,22 +47,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.default-button-row-action {
-  &--disabled {
-    opacity: 0.5;
-    cursor: auto;
-    background-color: transparent !important;
-    &:before {
-      background-color: transparent !important;
-    }
-    &:hover,
-    &:focus {
-      &:before,
-      &:after {
-        background-color: transparent !important;
-      }
-    }
-  }
-}
-</style>

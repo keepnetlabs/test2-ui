@@ -63,6 +63,8 @@ export const LABEL_STORE = {
   FIRSTNAME: 'First Name',
   RELIABILITYPOINT: 'Reliability Point',
   LASTNAME: 'Last Name',
+  LAUNCH_DATE: 'Launch Date',
+  STATS: 'Stats',
   EMAIL: 'Email',
   HOSTNAME: 'Device',
   LASTSEEN: 'Last Seen',
@@ -163,8 +165,12 @@ export const PROPERTY_STORE = {
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   TAGS: 'tags',
+  COUNT: 'count',
   TOEMAIL: 'toEmail',
+  EMAİL: 'email',
   FROMEMAIL: 'fromEmail',
+  CAMPAIGN_STATUS: 'campaignStatus',
+  STARTDATE: 'startDate',
   TARGET_USERS: 'targetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
   PERIODTIME: 'periodTime',
@@ -427,6 +433,7 @@ export const COMMON_PROPS = {
     placeholder: labels.MakeAvailableForPlaceholder,
     valueFormat: 'object',
     clearOnSelect: true,
+    defaultOptions: true,
     disableBranchNodes: true,
     multiple: true,
     searchNexted: true,
@@ -499,7 +506,8 @@ export const INTEGRATION_TYPES = {
   SPAMHOUSE: 'Zen Spamhaus',
   CUSTOMINTEGRATION: 'Cross Company Integration',
   ROKSIT: 'Cyber X-Ray',
-  CyberXRay: 'Cyber X-Ray'
+  CyberXRay: 'Cyber X-Ray',
+  GOOGLEWEBRISK: 'Google Web Risk'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',

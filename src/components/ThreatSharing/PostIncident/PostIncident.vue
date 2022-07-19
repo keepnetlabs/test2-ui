@@ -664,6 +664,7 @@
                   <v-btn
                     id="threat-sharing-post-incident-edit-html-button"
                     class="create-btn v-btn v-btn--flat v-btn--text theme--dark v-size--default edit-html-template-button"
+                    style="z-index: 1;"
                     @click="editHtmlTemplate"
                   >
                     <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
@@ -2612,12 +2613,14 @@ export default {
       return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
     },
     contentCopy(contentBody) {
-      copyToClipboard(contentBody).then(() => [
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Content has been copied'
-        })
-      ])
+      copyToClipboard(contentBody)
+        .then(() => [
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Content has been copied'
+          })
+        ])
+        .catch(() => {})
     },
     findCategory(id) {
       switch (id) {
@@ -3259,4 +3262,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" src="./PostIncident.scss"></style>

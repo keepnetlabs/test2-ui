@@ -101,35 +101,39 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     mapper() {
-      return this.scope.row[this.col.property].map((item) => {
-        let uppercaseCount = 0
-        let index
-        for (let i = 1; i < item.length; i++) {
-          if (item[i] === item[i].toUpperCase()) {
-            uppercaseCount++
+      return this.scope.row[this.col.property]
+        .map((item) => {
+          if (!item) return null
+          let uppercaseCount = 0
+          let index
+          for (let i = 1; i < item.length; i++) {
+            if (item[i] === item[i].toUpperCase()) {
+              uppercaseCount++
+            }
+            if (uppercaseCount === 1) {
+              index = i
+              break
+            }
           }
-          if (uppercaseCount === 1) {
-            index = i
-            break
-          }
-        }
-        return item.substring(0, index) + ' ' + item.substring(index)
-      })
+          return item.substring(0, index) + ' ' + item.substring(index)
+        })
+        .filter(Boolean)
     },
     getBadges() {
-      if (this.col.maxItemsPerCell) {
-        this.maximumRenderedBadgeCount = this.col.maxItemsPerCell
-        this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-        return
-      }
-
       if (this.badges.length > 0) {
         let renderedCount = 0
-        let totalWidth = this.unRenderedBadgeCount
-          ? this.scope.column.width - 40
-          : this.scope.column.width
+        const width = Math.floor(this.scope.column.width) || 40
+        let totalWidth = 0,
+          itemsTotalWidth = 0
         for (let item of this.badges) {
-          let itemWidth = item.length * 8 + this.col.cellPadding
+          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
+          itemsTotalWidth += itemWidth
+        }
+        totalWidth = width > itemsTotalWidth ? width : width - 40
+        for (let item of this.badges) {
+          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
           if (itemWidth > totalWidth) {
             break
           } else {
@@ -158,23 +162,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.data-table-text-with-badge {
-  .k-badge {
-    margin: 0 12px;
-  }
-
-  &__tooltip {
-    white-space: pre-line;
-    line-height: 1.6;
-  }
-  &__container {
-    display: flex;
-  }
-  &__span {
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}
-</style>

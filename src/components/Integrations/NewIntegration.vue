@@ -166,7 +166,8 @@
               isIbmXForce ||
               isGoogleSafeBrowser ||
               isCustomIntegration ||
-              isRoksit
+              isRoksit ||
+              isGoogleWebRisk
             "
           >
             <v-list-item-content>
@@ -808,6 +809,44 @@
               ></v-checkbox>
             </div>
           </form-group>
+          <form-group
+            v-if="isVmrayOrVirusTotal"
+            title="Cache"
+            class-name="mt-4"
+            style="max-width: 565px;"
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="formValues.isCachingEnabled"
+                id="input--integration-caching"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Enable caching and enter duration(hours)</span>
+              <v-text-field
+                v-model.number="formValues.cacheDuration"
+                v-mask="'#######'"
+                id="input--integrations-cache-duration"
+                outlined
+                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="numberValidation"
+              ></v-text-field>
+              <span>and query count</span>
+              <v-text-field
+                v-model.number="formValues.cacheQueryCount"
+                v-mask="'#######'"
+                id="input--integrations-cache-query-count"
+                outlined
+                class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="numberValidation"
+              ></v-text-field>
+            </div>
+          </form-group>
           <v-list-item class="px-0 mt-6 mb-6">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -957,6 +996,7 @@ import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import * as validations from '@/utils/validations'
 export default {
   name: 'NewIntegration',
   components: {
@@ -1002,10 +1042,13 @@ export default {
       loadingState: [],
       initialFormValues: null,
       formValues: {
+        isCachingEnabled: false,
         userName: '',
         password: '',
         description: null,
         analysisEngineTypeResourceId: null,
+        cacheDuration: 4,
+        cacheQueryCount: 4,
         tags: [],
         isActive: true,
         isSendUrl: false,
@@ -1034,6 +1077,11 @@ export default {
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
       showConfirmModal: false,
+      numberValidation: [
+        (v) => Validations.required(v, 'Enter a number higher than 0'),
+        (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+        (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+      ],
       nameValidation: {
         required: (v) => Validations.required(v),
         maxLength: (v) =>
@@ -1133,6 +1181,9 @@ export default {
       return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
         this.selectedIntegrationType.name
       )
+    },
+    isGoogleWebRisk() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.GOOGLEWEBRISK
     },
     isIbmXForce() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
@@ -1284,13 +1335,16 @@ export default {
         case INTEGRATION_TYPES.ROKSIT:
           label = INTEGRATION_LABELS.CyberXRay
           break
+        case INTEGRATION_TYPES.GOOGLEWEBRISK:
+          label = INTEGRATION_TYPES.GOOGLEWEBRISK
+          break
         default:
           return
       }
       return label
     },
     getErrorMessageOfApiKey(item) {
-      const message = item.errorMessage || 'Error'
+      const message = item?.errorMessage || 'Error'
       return `${message.substring(0, 75)}...`
     },
     isShowSeeMore(item) {
@@ -1313,13 +1367,19 @@ export default {
     },
     saveIntegration() {
       const data = { ...this.formValues }
+      if (!this.isVmrayOrVirusTotal) {
+        delete data.isCachingEnabled
+        delete data.cacheDuration
+        delete data.cacheQueryCount
+      }
       this.integrationTypeDisabled = true
       if (
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
@@ -1449,7 +1509,9 @@ export default {
         })
     },
     handleTagItemChange(value) {
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      value[value.length - 1] = value[value.length - 1]
+        ? value[value.length - 1].substring(0, 20)
+        : ''
     },
     submit() {
       const refForm = this.$refs.form
@@ -1482,7 +1544,8 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
@@ -1556,7 +1619,8 @@ export default {
           INTEGRATION_TYPES.IBMXFORCE,
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
           INTEGRATION_TYPES.SPAMHOUSE,
-          INTEGRATION_TYPES.ROKSIT
+          INTEGRATION_TYPES.ROKSIT,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
@@ -1663,7 +1727,8 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
@@ -1798,6 +1863,13 @@ export default {
         }
         this.formValues.userName = ''
         this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.GOOGLEWEBRISK) {
+        this.formValues.apiUrl = 'https://webrisk.googleapis.com/v1'
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
       } else if (name === INTEGRATION_TYPES.ROKSIT) {
         this.formValues.apiUrl = 'https://reputation.roksit.com/api/query/'
       } else if (name === INTEGRATION_TYPES.VMRAY) {
@@ -1844,402 +1916,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.loading-spin {
-  animation-name: spin;
-  animation-duration: 1000ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.position-relative {
-  position: relative;
-}
-
-.max-width__form {
-  position: relative;
-  max-width: 554px !important;
-}
-
-.new-integration {
-  .p-relative {
-    position: relative;
-  }
-  .client-secret {
-    .k-form-group__content {
-      margin-bottom: 0 !important;
-    }
-  }
-  .menuable__content__active.k-select__menu {
-    z-index: 99999999 !important;
-  }
-  .edit-select {
-    .v-input__append-inner {
-      display: none;
-    }
-  }
-  &__select {
-    .v-menu__content {
-      z-index: 900000 !important;
-    }
-  }
-  .v-list-item {
-    //margin-bottom: 1px;
-  }
-
-  .v-list-item__content > *:not(:last-child) {
-    margin-bottom: 0;
-  }
-
-  .new-integration__api-key__textfield {
-    .v-text-field__details {
-      margin-bottom: 0;
-    }
-  }
-
-  .connection-error-state {
-    font-size: 9px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    background: white;
-    color: #ff5252 !important;
-
-    position: absolute;
-    top: 42px;
-    left: 13px;
-
-    &__border {
-      fieldset {
-        border-color: #d0021b;
-      }
-    }
-  }
-
-  .test-connection {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center;
-    color: #00bcd4;
-  }
-
-  .retry-button {
-    color: #f56c6c;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-  }
-
-  &__container {
-    padding: 24px 0 0 96px !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
-  &__api-keys {
-    &:hover {
-      .new-integration__api-keys__delete {
-        display: flex;
-      }
-    }
-
-    &__connection-status {
-      width: 44px;
-      height: 40px;
-      color: #757575;
-      position: absolute;
-      right: -50px;
-      top: 6px;
-      justify-content: center;
-    }
-
-    &__delete {
-      width: 44px;
-      height: 40px;
-      color: #757575;
-      position: absolute;
-      right: -40px;
-      top: -2px;
-      justify-content: center;
-      display: none;
-    }
-  }
-
-  &__overlay {
-    .v-overlay__content {
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      position: fixed;
-      left: 0;
-      top: 0;
-      overflow-y: auto;
-      padding-bottom: 68px !important;
-    }
-  }
-
-  &__title {
-    font-family: 'Open Sans', sans-serif !important;
-    opacity: 0.9;
-    font-size: 24px;
-    font-weight: normal;
-    line-height: 1.29 !important;
-    margin-top: 31px !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  &__subtitle {
-    opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.5 !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  &__label {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-
-  &__select {
-    max-width: 554px !important;
-  }
-
-  &__textfield {
-    max-width: 554px !important;
-  }
-
-  &__footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #f5f7fa;
-    padding: 16px 96px !important;
-    display: flex;
-    justify-content: space-between;
-
-    &-btn-cancel {
-      color: #f56c6c !important;
-      border: 1px solid #f56c6c !important;
-      box-shadow: none !important;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      width: 86px;
-      height: 36px !important;
-    }
-
-    &-btn-save {
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      width: 72px;
-      height: 36px !important;
-      border-radius: 18px;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
-      background-color: #2196f3;
-    }
-  }
-
-  &__api-key {
-    &__subtitle {
-      font-size: 14px;
-      font-weight: normal;
-      line-height: 1.5 !important;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87) !important;
-
-      &__upload-subtitle {
-        margin-left: 30px;
-      }
-    }
-
-    &__combobox {
-      .v-chip {
-        margin: 4px !important;
-      }
-    }
-
-    &__textfield {
-      ::v-deep .v-text-field__details {
-        display: none !important;
-      }
-    }
-
-    &__footer {
-      display: flex;
-      max-width: 554px !important;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-      margin-bottom: 12px;
-
-      &-left-side {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
-    &__text {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: #2196f3;
-      cursor: pointer;
-    }
-
-    &__test-text {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      color: #757575 !important;
-      opacity: 0.8;
-    }
-
-    &__disabled-text {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      color: #757575 !important;
-      opacity: 0.8;
-      pointer-events: none !important;
-    }
-  }
-
-  &.v-card {
-    padding: 24px 0 0 96px !important;
-  }
-
-  .v-input--switch {
-    .v-label {
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1.2;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-
-  .type-text {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  .v-list-item__content {
-    padding: 0 !important;
-  }
-
-  .v-input--checkbox {
-    .v-messages {
-      display: none;
-    }
-  }
-
-  .checkbox-tooltip {
-    .mdi-help-circle {
-      position: absolute;
-      top: 3px;
-      left: 180px;
-    }
-  }
-}
-
-.new-integration__confirm-modal {
-  .v-overlay__scrim {
-    opacity: 0 !important;
-    background-color: white !important;
-  }
-
-  &__header {
-    padding: 32px 24px;
-    font-size: 20px;
-    font-weight: 600;
-
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: #2196f3;
-  }
-
-  &__content {
-    font-size: 13px;
-    font-weight: 600;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-    padding: 8px 24px;
-  }
-
-  &__footer {
-    padding: 16px 24px;
-    text-align: right;
-  }
-
-  &__btn-continue {
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: #2196f3;
-  }
-
-  &__btn-cancel {
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center;
-    color: #f56c6c;
-  }
-}
-.integration-error-message-popup {
-  .k-dialog__header {
-    padding: 12px 24px !important;
-    .v-cart-icon-wrapper {
-      display: none;
-    }
-  }
-
-  .k-dialog__title {
-    color: #f56c6c !important;
-  }
-}
-</style>

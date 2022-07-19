@@ -26,7 +26,9 @@ const login = {
       for (const key of Object.keys(state.loginWhiteLabel)) {
         if (key === 'favIconUrl' && payload['faviconUrl']) {
           const favIcon = document.querySelector('link[rel="icon"]')
-          favIcon.href = payload['faviconUrl']
+          if (favIcon) {
+            favIcon.href = payload['faviconUrl']
+          }
           state.loginWhiteLabel[key] = payload['faviconUrl']
         } else if (key === 'brandName' && payload[key]) {
           document.title = payload[key]
@@ -35,12 +37,6 @@ const login = {
           state.loginWhiteLabel[key] = payload[key]
         }
       }
-    },
-    WRONG_LOGIN_ATTEMPT(state, payload) {
-      state.wrongLoginAttempt += payload
-    },
-    EMPTY_LOGIN_ATTEMPT(state, empty) {
-      state.wrongLoginAttempt = empty
     }
   },
   actions: {

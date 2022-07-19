@@ -1,0 +1,105 @@
+.company-list-extend {
+    top: 0;
+    position: absolute;
+    right: 0;
+    overflow: hidden;
+    z-index: 5;
+    width: 360px;
+    min-height: 300px;
+    border-radius: 12px;
+    box-shadow: 0 1px 1px -1px rgba(204, 204, 204, 0.12), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        0 1px 3px 0 rgba(142, 142, 142, 0.2);
+    border: solid 1px #2196f3;
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.87);
+
+    &__header {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+
+        &-title {
+            line-height: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: normal;
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &-icon {
+            width: auto;
+            padding: 0 10px;
+
+            &:nth-child(2) {
+                padding-left: 0;
+            }
+
+            &:nth-child(3) {
+                padding-right: 0;
+            }
+        }
+    }
+
+    &__body {
+        padding: 8px 16px 16px 16px;
+
+        &-item {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        &-key {
+            min-width: 105px;
+            line-height: 17px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        &-value {
+            line-height: 19px;
+            font-size: 12px;
+            max-width: 230px;
+            display: flex;
+            flex-wrap: wrap;
+
+            .fixxer {
+                display: inline-block;
+                max-width: 200px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                line-height: 19px;
+                overflow: hidden;
+                padding-right: 4px;
+            }
+
+            a {
+                text-decoration-line: none;
+            }
+        }
+    }
+
+    &__footer {
+        padding: 16px;
+        background-color: #f1f8fe;
+        display: flex;
+
+        &-item {
+            margin-right: 48px;
+        }
+
+        &-key {
+            line-height: 17px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        &-value {
+            line-height: 19px;
+            font-size: 12px;
+        }
+    }
+}

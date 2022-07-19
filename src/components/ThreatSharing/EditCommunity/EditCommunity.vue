@@ -279,4 +279,3 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss" src="./EditCommunity.scss"></style>

@@ -1,7 +1,7 @@
 <template>
   <div class="target-user-import-file__progression">
     <div class="target-user-import-file__progression--text">
-      Please wait while we are processing the file
+      Please wait while we are processing
     </div>
     <v-alert dense outlined type="info" v-if="isIdle">
       Process is Queued

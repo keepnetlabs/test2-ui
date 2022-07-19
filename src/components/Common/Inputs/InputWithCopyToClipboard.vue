@@ -49,12 +49,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.input-copy-to-clipboard {
-  max-width: 745px;
-  .v-text-field__details {
-    display: none;
-  }
-}
-</style>

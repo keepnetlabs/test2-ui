@@ -557,13 +557,15 @@ export default {
       }
     },
     handleCopyToClipboard(key = '') {
-      copyToClipboard(this.formValues[key] || this[key]).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'COPIED TO CLIPBOARD',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      copyToClipboard(this.formValues[key] || this[key])
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'COPIED TO CLIPBOARD',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-      })
+        .catch(() => {})
     },
     handleDomainToAddButtonClick() {
       if (
@@ -581,8 +583,12 @@ export default {
       this.setCertificateText(file)
     },
     async setCertificateText(file) {
-      this.certificateText = await file.text()
-      this.isCertificateTextDisabled = true
+      try {
+        this.certificateText = await file.text()
+        this.isCertificateTextDisabled = true
+      } catch (e) {
+        this.certificateText = ''
+      }
     },
     onMetadataFileChange(file) {
       this.callForParseMetadata(file)
@@ -660,60 +666,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.btn-domain-add {
-  .v-btn__content {
-    margin: 0 10px;
-  }
-  .v-icon {
-    margin-right: 4px !important;
-  }
-}
-.saml-settings__certificate-text {
-  max-height: 100px;
-  overflow: auto;
-  padding: 12px;
-  line-height: 1.4;
-  border: 1px solid darkgray;
-  font-size: 13px;
-  background: #f2f2f2 !important;
-  border-radius: 4px;
-  word-break: break-all;
-  margin-top: 4px;
-}
-.saml-settings {
-  .form-group-horizontal-content {
-    max-width: 648px;
-    margin-bottom: 8px;
-  }
-  &-text-area-disabled {
-    .v-input__slot {
-      background: #e0e0e0 !important;
-    }
-  }
-  &-disabled-area {
-    .form-group-horizontal-content {
-      max-width: 840px;
-      margin-bottom: 8px;
-      > *:first-child {
-        margin-top: 0;
-      }
-    }
-  }
-  &__mapping {
-    align-items: flex-start;
-    label {
-      margin-top: 16px !important;
-    }
-    button {
-      align-self: center;
-    }
-  }
-}
-.copy-to-clipboard__container.saml-domain {
-  .v-text-field__details {
-    display: block !important;
-  }
-}
-</style>

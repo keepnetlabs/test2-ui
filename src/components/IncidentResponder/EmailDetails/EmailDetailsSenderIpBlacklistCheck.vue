@@ -26,7 +26,11 @@
       <template v-slot:datatable-custom-column="{ scope, col }">
         <span v-if="col.property === PROPERTY_STORE.ANALYSISENGINEPERMALINK">
           <a
-            v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
+            v-if="
+              scope.row.analysisEnginePermalink &&
+              scope.row.result !== 'Excluded' &&
+              scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+            "
             :href="scope.row.analysisEnginePermalink"
             target="_blank"
             class="attachments-table__link"
@@ -59,7 +63,7 @@
 </template>
 <script>
 import DataTable from '@/components/DataTable'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 export default {
   name: 'EmailDetailsSenderIpBlacklistCheck',
@@ -76,6 +80,7 @@ export default {
     return {
       tableData: [],
       PROPERTY_STORE,
+      INTEGRATION_TYPES,
       tableOptions: {
         columns: [
           {
@@ -151,39 +156,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.sender-ip-blacklist-check {
-  margin-top: 32px;
-  &__header {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2196f3;
-  }
-}
-.single-wrapper .sender-ip-blacklist-check .v-btn:not(.v-btn--round).v-size--default,
-.single-wrapper .sender-ip-blacklist-check .v-btn--icon.v-size--default {
-  height: 24px !important;
-  border-radius: 4px !important;
-}
-.single-wrapper
-  .sender-ip-blacklist-check
-  .k-table__wrapper
-  .card
-  .table-wrapper
-  .el-table
-  td
-  > .cell {
-  padding-left: 16px !important;
-}
-.single-wrapper
-  .sender-ip-blacklist-check
-  .k-table__wrapper
-  .card
-  .table-wrapper
-  .el-table
-  th
-  > .cell {
-  padding-left: 16px !important;
-}
-</style>

@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     displayFileName(fileName) {
-      return fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...'
+      return fileName ? (fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...') : ''
     },
     inputFile() {
       this.$emit('inputFile', this.files[0]?.file || [])
@@ -183,75 +183,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.k-file-uploads {
-  &--readonly {
-    pointer-events: none;
-  }
-
-  &__wrapper {
-    min-height: 40px;
-    border-radius: 8px;
-    border: solid 1px #dcdfe6;
-    & > .file-uploads {
-      padding: 10px;
-      font-size: 12px !important ;
-      font-weight: 600 !important;
-      color: rgba(0, 0, 0, 87);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
-  &__item {
-    padding: 10px;
-    border-top: solid 1px #dcdfe6;
-    display: flex;
-    &-details {
-      flex-grow: 1;
-      &--filename {
-        font-size: 13px;
-        line-height: 18px;
-        color: rgba(0, 0, 0, 0.72);
-      }
-      &--filesize {
-        font-size: 9px;
-        line-height: 13px;
-        color: #474747;
-        display: flex;
-        justify-content: space-between;
-      }
-      &--fileprogress {
-        margin-top: 6px;
-      }
-      &--progress-value {
-        font-size: 9px;
-        line-height: 13px;
-        font-weight: 600;
-        color: #2196f3;
-        display: flex;
-        justify-content: space-between;
-      }
-    }
-    &-actions {
-      width: 24px;
-      text-align: right;
-      & > .v-icon.v-icon {
-        font-size: 14px;
-      }
-    }
-  }
-  &__hint {
-    margin-top: 1px;
-    font-size: 9px;
-    line-height: 13px;
-    color: #474747;
-  }
-  .file-uploads.file-uploads-html4 input,
-  .file-uploads.file-uploads-html5 label {
-    top: 21px;
-  }
-}
-</style>

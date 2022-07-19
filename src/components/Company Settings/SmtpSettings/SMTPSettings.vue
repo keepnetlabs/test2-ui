@@ -477,14 +477,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.smtp-settings__row-actions__overflow-menu__icon {
-  margin-right: 16px;
-}
-
-.sub-menu-el__title {
-  display: flex;
-  align-items: center;
-}
-</style>

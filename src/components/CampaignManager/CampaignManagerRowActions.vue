@@ -96,8 +96,8 @@ export default {
         name: labels.Duplicate,
         id: 'btn-duplicate--row-actions-campaign-manager',
         icon: 'mdi-content-copy',
-        action: 'on-duplicate',
-        disabled: !this.getCampaignManagerParentCreatePermissions
+        action: 'on-duplicate'
+        // disabled: !this.getCampaignManagerParentCreatePermissions
       }
       const deleteItem = {
         name: labels.Delete,

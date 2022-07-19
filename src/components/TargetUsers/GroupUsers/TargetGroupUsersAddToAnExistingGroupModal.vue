@@ -232,8 +232,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-#target-users-group-users-modal-data-table.k-table__wrapper {
-  padding-bottom: 0;
-}
-</style>

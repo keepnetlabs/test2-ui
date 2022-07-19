@@ -961,7 +961,7 @@ export default {
       this.$forceUpdate()
     },
     writeTextToClipBoard(text) {
-      copyToClipboard(text)
+      copyToClipboard(text).catch(() => {})
     }
   },
   created() {

@@ -154,8 +154,8 @@ export default {
     getChartOptionsForRow(row) {
       if (row.method === 'Attachment') {
         return {
-          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
-          labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.OpenedAttachment],
+          backgroundColor: ['#67C23A', '#FBF280', '#F56C6C'],
+          labels: [labels.NoResponse, labels.Opened, labels.OpenedAttachment],
           showTooltipLine: true
         }
       } else {
@@ -178,16 +178,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row, index) => {
-            const campaignStatus = [
-              row['totalNoResponseCount'],
-              row['totalClickedCount'],
-              row['totalOpenedCount']
-            ]
-            if (index % 2 === 0) {
-              campaignStatus.push(row['totalSubmittedCount'])
-            } else {
+          this.tableData = results.map((row) => {
+            const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+            if (row.method === 'Attachment') {
               campaignStatus.push(row['totalAttachmentOpenedCount'])
+            } else {
+              campaignStatus.splice(1, 0, row['totalClickedCount'])
+              campaignStatus.push(row['totalSubmittedCount'])
             }
             return {
               ...row,

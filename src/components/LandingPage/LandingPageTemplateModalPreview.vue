@@ -70,11 +70,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.landing-page-template-preview__text {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-</style>

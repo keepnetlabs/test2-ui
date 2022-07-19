@@ -17,9 +17,9 @@
     </div>
     <div class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
-        v-bind="getClickedData"
+        v-bind="isAttachment ? getPhishingReporterData : getClickedData"
         background-color="#F56C6C"
-        :title="labels.ClickedLink"
+        :title="isAttachment ? labels.Reporters : labels.ClickedLink"
         :is-loading="isLoading"
         :icon-src="clickedLinkIcon"
       />
@@ -91,103 +91,11 @@ export default {
     getClickedData() {
       const { clickedEmail } = this.items
       return clickedEmail ? clickedEmail : {}
+    },
+    getPhishingReporterData() {
+      const { phishingReporter } = this.items
+      return phishingReporter ? phishingReporter : {}
     }
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-report-summary-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  @media (max-width: 1300px) {
-    grid-template-columns: 1fr;
-    .campaign-manager-report-summary-info-card {
-      max-width: 300px;
-    }
-    &__right {
-      margin-left: 0 !important;
-    }
-    @media (max-width: 620px) {
-      &__left,
-      &__right {
-        flex-direction: column;
-        margin-left: 0 !important;
-      }
-      .campaign-manager-report-summary-info-card {
-        margin-left: 0 !important;
-      }
-    }
-  }
-  &__left {
-    display: flex;
-    .campaign-manager-report-summary-info-card:last-child {
-      margin-left: 16px;
-    }
-    @media (min-width: 1201px) {
-      flex-basis: 50%;
-    }
-    .campaign-manager-report-summary-info-card {
-      flex-basis: 50%;
-    }
-  }
-  &__right {
-    display: flex;
-    margin-left: 16px;
-    & > div:last-child {
-      margin-left: 16px;
-    }
-    & > .campaign-manager-report-summary-info-card:first-child {
-      .campaign-manager-report-summary-info-card-body__icon {
-        right: -2px !important;
-        bottom: -2px !important;
-      }
-    }
-    @media (min-width: 1201px) {
-      flex-basis: 50%;
-    }
-    .campaign-manager-report-summary-info-card {
-      flex-basis: 50%;
-    }
-  }
-  .campaign-manager-report-summary-info-card {
-    margin-top: 24px;
-    margin-left: 16px;
-
-    &:first-child {
-      margin-left: 0 !important;
-      .campaign-manager-report-summary-info-card-body__icon {
-        right: -10px;
-        bottom: -12px;
-        img {
-          max-height: 80px;
-          max-width: 80px;
-        }
-      }
-    }
-    &:nth-child(3) {
-      @media (max-width: 1024px) {
-        margin-left: 0;
-      }
-      margin-right: 16px;
-    }
-
-    &--submitted-data {
-      &-icon {
-        background-color: #ffffff;
-        mix-blend-mode: normal;
-        opacity: 0.3;
-        border-radius: 6px;
-        height: 64px;
-        width: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .campaign-manager-report-summary-info-card-body__icon {
-        bottom: 4px;
-      }
-    }
-  }
-}
-</style>

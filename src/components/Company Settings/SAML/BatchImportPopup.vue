@@ -50,6 +50,10 @@ export default {
     },
     textAreaPlaceholder: {
       type: String
+    },
+    overrideDelimiter: {
+      type: String,
+      required: false
     }
   },
   emits: ['on-confirm', 'on-close'],
@@ -65,22 +69,20 @@ export default {
     },
     handleConfirm() {
       const { text } = this
-      this.$emit(
-        'on-confirm',
-        text
-          .replace(new RegExp('\n', 'g'), ',')
-          .split(',')
-          .filter((item) => item)
-      )
+      if (this.overrideDelimiter) {
+        const items = text.split('\n').filter((item) => item)
+        this.$emit('on-confirm', items)
+      } else {
+        this.$emit(
+          'on-confirm',
+          text
+            .replace(new RegExp('\n', 'g'), ',')
+            .split(',')
+            .filter((item) => item)
+        )
+      }
       this.handleCloseDialog()
     }
   }
 }
 </script>
-<style lang="scss">
-.batch-import-popup {
-  .k-dialog__body {
-    padding-bottom: 0;
-  }
-}
-</style>

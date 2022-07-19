@@ -37,15 +37,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.datatable-link {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: #2196f3 !important;
-  text-decoration: none;
-  cursor: pointer;
-}
-</style>

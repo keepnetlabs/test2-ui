@@ -155,8 +155,8 @@
                       hint="Upload, png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
                       id="input--company-logo"
                       :extensions="['jpg', 'jpeg', 'png', 'bmp', 'svg']"
-                      @inputFile="onFileChanged"
                       :size="2"
+                      @inputFile="onFileChanged"
                     />
                     <div>
                       <v-list-item
@@ -167,8 +167,9 @@
                           <div>
                             <div class="add-in-settings__image-container">
                               <img
+                                v-if="!!getImagePreview"
                                 class="add-in-settings__image"
-                                :src="getImagePreview(getPreviewLogoUrl)"
+                                :src="getImagePreview"
                                 alt="logo-preview"
                               />
                             </div>
@@ -540,7 +541,7 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { getSelectSearchPayload, scrollToComponent } from '@/utils/functions'
+import { getSelectSearchPayload, scrollToComponent, isDifferent } from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
@@ -655,6 +656,21 @@ export default {
     }
   },
   computed: {
+    getImagePreview() {
+      if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length > 0) {
+        return this.getPreviewLogoUrl[0]
+      }
+
+      if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length === 0) {
+        return null
+      }
+
+      if (typeof this.getPreviewLogoUrl === 'string') {
+        return this.getPreviewLogoUrl
+      }
+
+      return URL.createObjectURL(this.getPreviewLogoUrl)
+    },
     noCompanyGroupText() {
       return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
     },
@@ -750,16 +766,15 @@ export default {
         this.$emit('cancelForm')
       }
     },
-    getImagePreview(url) {
-      return url && typeof url === 'string' ? url : URL.createObjectURL(url)
-    },
     isFormDataChanged() {
-      return Object.keys(this.formData).some((key) => {
-        if (Array.isArray(this.formData[key])) {
-          return this.formData[key].length !== this.defaultFormData[key].length
-        }
-        return this.formData[key] !== this.defaultFormData[key]
-      })
+      const isChanged = isDifferent(this.formData, this.defaultFormData)
+      return isChanged
+      // return Object.keys(this.formData).some((key) => {
+      //   if (Array.isArray(this.formData[key])) {
+      //     return this.formData[key].length !== this.defaultFormData[key].length
+      //   }
+      //   return this.formData[key] !== this.defaultFormData[key]
+      // })
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []
@@ -937,6 +952,7 @@ export default {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     onFileChanged(file) {
+      this.formData.logoURL = ''
       this.formData.File = file
     },
     clickUnlimited() {
@@ -1074,290 +1090,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.company-create-modal {
-  &__btn-unlimited {
-    height: 40px !important;
-    margin-left: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-  }
-  &__side-label {
-    display: inline-flex;
-    align-items: center;
-    font-size: 16px;
-    height: 40px;
-    line-height: 22px;
-    margin-left: 32px;
-    margin-right: 8px;
-  }
-  &__edit-link {
-    font-size: 14px;
-    line-height: 21px;
-    color: #2196f3;
-  }
-}
-.fullscreen-form {
-  min-height: 100vh;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  //overflow-y: auto;
-
-  .v-text-field.v-text-field--enclosed .v-text-field__details {
-    margin-bottom: 6px;
-  }
-
-  .v-list-item__content > *:not(:last-child) {
-    margin-bottom: 0;
-  }
-
-  .v-card.header {
-    padding: 32px 96px 0 96px;
-    margin-bottom: 24px;
-    flex-shrink: 0;
-    @media (max-width: 767px) {
-      padding: 2rem 2rem;
-    }
-
-    .v-btn__icon-wrapper {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      margin-right: 24px;
-      box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-      border: solid 1px rgba(100, 181, 246, 0.5);
-      background-color: #e3f2fd;
-    }
-
-    .v-list-item__title {
-      font-size: 20px;
-      font-weight: 600;
-      color: #2196f3;
-      line-height: 24px;
-    }
-  }
-
-  &__radio-group {
-    .v-input--selection-controls {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
-    }
-
-    .v-input__slot {
-      margin-bottom: 0 !important;
-    }
-
-    .v-messages.theme--light {
-    }
-
-    .v-input--selection-controls.v-input .v-label {
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-
-  &__switch {
-    margin-top: 24px;
-    padding-top: 0;
-
-    .v-input--selection-controls__input {
-      order: -1;
-      margin-top: 1px;
-    }
-
-    .v-label {
-      order: -2;
-      font-size: 14px;
-      font-weight: 600;
-      margin-right: 16px;
-      line-height: 1.71;
-      letter-spacing: normal;
-    }
-  }
-
-  .hide-caret {
-    .v-input__append-inner {
-      display: none !important;
-    }
-  }
-
-  .v-stepper__items {
-    padding-bottom: 68px;
-  }
-
-  .v-list-item__content {
-    padding: 0;
-    margin-bottom: 18px;
-    overflow: visible;
-  }
-
-  .v-autocomplete:not(.v-input--is-focused).v-select--chips input {
-    max-height: initial;
-  }
-
-  &__button {
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center;
-  }
-}
-
-.wizard {
-  align-self: stretch;
-  box-shadow: none;
-  overflow: visible;
-  .v-stepper__items {
-    //overflow: visible;
-  }
-  &__header.v-stepper__header {
-    justify-content: flex-start;
-    padding: 0 6rem;
-    height: 4rem;
-    box-shadow: none;
-    background-color: #f5f7fa;
-    @media (max-width: 767px) {
-      padding: 0 3rem;
-    }
-
-    .v-divider {
-      max-width: 65px;
-      border-color: #757575 !important;
-      margin: 0px -8px;
-    }
-
-    & > div:nth-child(1) {
-      padding-left: 0;
-    }
-
-    .v-stepper__step {
-      padding: 0 24px;
-
-      .v-stepper__step__step {
-        font-size: 14px;
-        line-height: 24px;
-      }
-    }
-
-    .v-stepper__step--active {
-      .v-stepper__step__step {
-        background-color: transparent !important;
-        color: #2196f3 !important;
-        border: 1px solid #2196f3 !important;
-      }
-    }
-
-    .v-stepper__step--inactive {
-      .v-stepper__step__step {
-        background-color: transparent !important;
-        color: #909399 !important;
-        border: 1.5px solid #909399 !important;
-      }
-
-      .v-stepper__label {
-        color: rgba(0, 0, 0, 0.87) !important;
-      }
-    }
-
-    .v-stepper__step--complete {
-      .v-stepper__step__step {
-        background-color: #2196f3 !important;
-        color: white !important;
-
-        .v-icon.v-icon {
-          font-size: 1.325rem;
-        }
-      }
-
-      .v-stepper__label {
-        color: rgba(0, 0, 0, 0.87) !important;
-      }
-    }
-  }
-
-  .v-stepper__content {
-    padding: 32px 6rem;
-    @media (max-width: 767px) {
-      padding: 32px 1rem;
-    }
-
-    .v-stepper__wrapper {
-      overflow: visible;
-    }
-  }
-
-  &__footer {
-    justify-content: space-between;
-    padding: 16px 6rem;
-    align-items: center;
-    background-color: #f5f7fa;
-    height: 68px;
-    display: flex;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-  .v-input .v-list-item {
-    max-width: 100% !important;
-  }
-  .v-list-item {
-    padding: 0;
-    max-width: 554px !important;
-
-    &__content {
-      & > label {
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 1.2;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
-      }
-
-      .bottom-margin {
-        margin-bottom: 8px;
-      }
-
-      .v-radio {
-        label {
-          margin-bottom: 0;
-        }
-      }
-    }
-  }
-}
-.company-checkbox__container {
-  .k-checkbox:nth-child(n) {
-    min-width: 200px;
-  }
-  .k-checkbox:nth-child(2n) {
-    margin-left: 120px;
-  }
-}
-
-.company__license-end-date__container {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-
-  #input--company-license-end-date {
-    // margin-top: -1rem;
-  }
-}
-</style>

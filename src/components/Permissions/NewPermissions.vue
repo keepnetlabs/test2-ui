@@ -293,9 +293,35 @@ export default {
     if (this.isEdit && this.resourceId) {
       this.formValues = this.permissionEditData
       this.$nextTick(() => {
-        this.availableForRequests = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
-          this.permissionEditData.availableForList
-        )
+        if (
+          this?.$refs?.refMakeAvailableForNewPermissions &&
+          this.permissionEditData.availableForList.length
+        ) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+            this.permissionEditData.availableForList
+          )
+          if (!availableForListFromBackend.length) {
+            this.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.availableForRequests = availableForListFromBackend
+          }
+        } else {
+          this.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
+        }
         this.availableForKey = 'updatedKey'
       })
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -303,88 +329,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.new-permissions {
-  &__permission-name {
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-  }
-  &__treeview-title {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 30px;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 8px;
-  }
-  .v-treeview-node__checkbox {
-    position: absolute;
-    right: 40px !important;
-  }
-  .v-treeview-node__content {
-    margin-left: 0;
-    max-width: 70%;
-  }
-  .v-treeview-node__root {
-    border-bottom: 1px solid #f2f2f2;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-  .v-treeview-node--leaf {
-    .v-treeview-node__content {
-      font-size: 9px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: #474747;
-      position: relative;
-      &:after {
-        content: '';
-        background-color: #e0e0e0;
-        height: 8px;
-        width: 8px;
-        position: absolute;
-        left: -16px;
-        border-radius: 36px;
-        top: 45%;
-      }
-    }
-  }
-
-  .mdi-checkbox-marked::before {
-    color: #2196f3 !important;
-  }
-  .mdi-minus-box::before {
-    color: #757575 !important;
-  }
-  .v-treeview-node__checkbox {
-    &.v-icon--disabled {
-      &.mdi-checkbox-blank-outline {
-        color: #d6d5d5 !important;
-      }
-      &.mdi-checkbox-marked::before {
-        color: #d6d5d5 !important;
-      }
-    }
-  }
-}
-</style>

@@ -75,6 +75,7 @@
                   :outline="false"
                 />
                 <Badge
+                  v-if="currentFormData.landingPageParams.method"
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
@@ -162,7 +163,10 @@
       </CampaignManagerSummaryCard>
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerReportSummaryLandingPage :formData="currentFormData.landingPageParams" />
+      <CampaignManagerReportSummaryLandingPage
+        v-if="!isAttachmentBasedScenario"
+        :formData="currentFormData.landingPageParams"
+      />
     </div>
   </div>
 </template>
@@ -238,6 +242,9 @@ export default {
     },
     getAttachments() {
       return this?.currentFormData?.emailTemplateParams?.attachments || []
+    },
+    isAttachmentBasedScenario() {
+      return this.formData?.selectedPhishingScenario?.method === 'Attachment' || false
     },
     getScenarioInfoItems() {
       const { selectedPhishingScenario = {} } = this.formData
@@ -319,161 +326,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-last-step {
-  padding-right: 71px;
-  &__header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    .campaign-manager-summary-card {
-      min-width: 400px;
-      margin-top: 24px;
-      &:not(:last-child) {
-        margin-right: 20px;
-      }
-    }
-  }
-  &__target-users {
-    &-body {
-      padding-left: 24px;
-      padding-top: 16px;
-      background-color: #fafafa;
-      border-radius: 12px;
-      span {
-        display: inline-block;
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 21px;
-        border-radius: 4px;
-        margin-right: 4px;
-        padding: 1px 8px;
-        &:first-child {
-          color: #ffffff;
-          background: #383b41;
-        }
-        &:last-child {
-          color: #383b41;
-          background-color: #e0e0e0;
-        }
-      }
-    }
-  }
-  &__email-template {
-    &-body {
-      padding: 16px 24px 24px 24px;
-      background-color: #fafafa;
-      border-radius: 12px;
-      &-attachments {
-        display: flex;
-        margin-top: 24px;
-      }
-      &-header {
-        display: flex;
-        justify-content: space-between;
-        .k-badge {
-          height: 24px !important;
-          border-radius: 18px;
-          min-width: 64px !important;
-        }
-        &-left {
-          font-weight: 600;
-          font-size: 20px;
-          color: #383b41;
-        }
-        &-right {
-          display: flex;
-          align-items: center;
-          .badge-middle {
-            margin-left: 8px;
-            padding: 8px;
-            max-width: 300px;
-            .v-btn__content {
-              color: #383b41;
-            }
-          }
-          div:last-child {
-            margin-left: 8px !important;
-            .k-badge {
-              margin-left: 8px;
-              max-width: none;
-              padding: 0;
-              i:before {
-                font-size: 18px;
-              }
-            }
-          }
-        }
-        &-sub {
-        }
-      }
-      &-preview {
-        background: #f2f2f2;
-        margin: 24px 0;
-        padding: 16px;
-        &-container {
-          border-top: 1px solid #b3d4fc;
-          margin: 24px 24px 0 24px;
-        }
-      }
-    }
-  }
-  &__landing-page-template {
-    &-body {
-      padding: 16px 24px 24px 24px;
-      background-color: #fafafa;
-      border-radius: 12px;
-      &-header {
-        display: flex;
-        justify-content: space-between;
-        .k-badge {
-          height: 24px !important;
-          border-radius: 18px;
-          min-width: 64px !important;
-        }
-        &-left {
-          color: #383b41;
-          &-url {
-            font-weight: 600;
-            font-size: 14px;
-          }
-        }
-        &-right {
-          display: flex;
-          align-items: center;
-          .badge-middle {
-            margin-left: 8px;
-            padding: 8px;
-            max-width: 300px;
-            .v-btn__content {
-              color: #383b41;
-            }
-          }
-          div:last-child {
-            margin-left: 8px;
-            .k-badge {
-              margin-left: 8px;
-              max-width: none;
-              padding: 0;
-              i:before {
-                font-size: 18px;
-              }
-            }
-          }
-        }
-        &-sub {
-        }
-      }
-      &-preview {
-        background: #f2f2f2;
-        margin: 24px 0;
-        padding: 16px;
-        &-container {
-          border-top: 1px solid #b3d4fc;
-          margin: 24px 24px 0 24px;
-        }
-      }
-    }
-  }
-}
-</style>

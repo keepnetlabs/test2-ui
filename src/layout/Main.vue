@@ -256,7 +256,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/phishing-scenarios"
+                  to="/phishing-simulator/phishing-scenarios"
                   id="btn--link-navigator-menu-phishing-scenario"
                   route-name="Phishing Scenarios"
                   :router-name="routerName"
@@ -269,7 +269,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/campaign-manager"
+                  to="/phishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
                   :active-class-comparator="() => routerName === 'Campaign Manager'"
@@ -282,7 +282,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/settings"
+                  to="/phishing-simulator/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
@@ -325,7 +325,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/investigations"
+                  to="/incident-responder/investigations"
                   id="btn--link-navigator-menu-investigations"
                   route-name="Investigations"
                   :active-class-comparator="
@@ -340,7 +340,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/integrations"
+                  to="/incident-responder/integrations"
                   id="btn--link-navigator-menu-integrations"
                   route-name="Integrations"
                   :router-name="routerName"
@@ -353,7 +353,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/playbook"
+                  to="/incident-responder/playbook"
                   id="btn--link-navigator-menu-playbook"
                   route-name="Playbook"
                   :router-name="routerName"
@@ -366,7 +366,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/mailConfiguration"
+                  to="/incident-responder/mailConfiguration"
                   id="btn--link-navigator-menu-mail-configuration"
                   route-name="Mail Configurations"
                   :router-name="routerName"
@@ -379,7 +379,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/sandbox"
+                  to="/incident-responder/cross-company-integration"
                   id="btn--link-navigator-menu-sandbox"
                   route-name="Cross Company Integration"
                   :router-name="routerName"
@@ -412,7 +412,7 @@
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/campaign-reports"
+                  to="/reports/campaign-reports"
                   id="btn--link-navigator-menu-reports"
                   route-name="Campaign Reports"
                   :active-class-comparator="
@@ -425,7 +425,7 @@
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/simple-reports"
+                  to="/reports/simple-reports"
                   id="btn--link-navigator-menu-simple-reports"
                   route-name="Simple Reports"
                   :active-class-comparator="
@@ -455,7 +455,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/target-users"
+                  to="/company/target-users"
                   id="btn--link-navigator-menu-target-users"
                   route-name="Target Users"
                   :active-class-comparator="
@@ -470,7 +470,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/companies"
+                  to="/company/companies"
                   id="btn--link-navigator-menu-companies"
                   route-name="Companies"
                   :active-class-comparator="
@@ -485,7 +485,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/company-settings"
+                  to="/company/company-settings"
                   id="btn--link-navigator-menu-company-settings"
                   route-name="Company Settings"
                   :router-name="routerName"
@@ -498,7 +498,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/system-users"
+                  to="/company/system-users"
                   id="btn--link-navigator-menu-system-users"
                   route-name="System Users"
                   :router-name="routerName"
@@ -511,7 +511,7 @@
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <app-router-link
-                  to="/audit"
+                  to="/company/audit"
                   id="btn--link-navigator-menu-audit-log"
                   route-name="Audit Log"
                   :active-class-comparator="() => routerName === 'Audit'"
@@ -524,7 +524,7 @@
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <app-router-link
-                  to="/job-log"
+                  to="/company/job-log"
                   id="btn--link-navigator-menu-job-log"
                   route-name="Job Log"
                   :router-name="routerName"
@@ -665,7 +665,7 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
-import SettingsModal from '@/components/Settings/SettingsModal'
+import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
@@ -1268,874 +1268,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.mdi-hook {
-  transform: scaleX(-1);
-}
-.hook-menu {
-  .v-list-group__header__prepend-icon {
-    transform: rotate(-25deg);
-  }
-}
-.layout-container {
-  .user-name-dropdown__content {
-    .v-list-item__title {
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      display: flex;
-      i {
-        margin-right: 16px;
-        font-size: 20px;
-      }
-    }
-  }
-
-  &__background {
-    height: 285px;
-    width: 100%;
-    background-image: url('../assets/img/light.svg');
-    background-position: left top; // Center the image
-    background-repeat: no-repeat; // Do not repeat the image
-    background-size: cover;
-    flex-flow: column !important;
-    position: absolute;
-  }
-  .page-header {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding-right: 16px;
-    margin: 16px 0 !important;
-    .v-toolbar__content {
-      justify-content: space-between;
-      padding-left: 8px;
-      padding-right: 0;
-    }
-    &__details {
-      max-width: 85%;
-    }
-    &__search {
-      width: 180px;
-      .v-text-field {
-        line-height: 28px;
-        color: #fff;
-        .v-input__control {
-          font-size: 16px;
-          .v-input__slot {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 0 14px;
-            input {
-            }
-          }
-        }
-      }
-    }
-
-    &__divider {
-      margin-left: 24px;
-      margin-right: 16px;
-      min-height: initial;
-      max-height: initial;
-      height: 24px;
-      align-self: center;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    &__content {
-      display: flex;
-      //flex-direction: column;
-      flex-flow: column;
-      width: 100%;
-      padding-left: 16px;
-      margin-bottom: 1px;
-    }
-    &__title {
-      h1 {
-        color: white;
-        font-size: 34px;
-        @media (max-width: 1024px) {
-          font-size: 22px;
-        }
-        font-weight: bold;
-        margin: 0;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      &-link {
-        color: white;
-        font-size: 34px;
-        font-weight: bold;
-        margin: 0;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-    }
-    &__breadcrumb {
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      font-size: 12px;
-      font-weight: bold;
-      a {
-        color: inherit;
-        text-decoration: inherit;
-        &:last-of-type {
-          opacity: 0.7;
-          cursor: default;
-        }
-      }
-    }
-  }
-  .page-nav {
-    overflow: visible;
-    background: white !important;
-    padding-top: 210px;
-    z-index: 7 !important;
-    &__simulated-company {
-      width: 100%;
-      height: 24px;
-      background-color: #e6a23c;
-      font-size: 12px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.33;
-      letter-spacing: normal;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      &--mini {
-        top: 92px;
-        height: 13px;
-        background-color: #e6a23c;
-        font-size: 9px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.33;
-        letter-spacing: normal;
-        color: #ffffff;
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        width: 64px;
-      }
-    }
-    &__left-menu-mini {
-      width: 56px;
-      height: 200px;
-      position: fixed;
-      z-index: 13;
-      #mini-menu {
-        margin-left: 3px;
-      }
-      .v-responsive {
-        top: 110px;
-      }
-    }
-    &__content {
-      padding-top: 2px;
-      flex-basis: 90%;
-    }
-    &__fixed-content {
-      position: fixed;
-      background: white;
-      width: 285px;
-      z-index: 8;
-    }
-    ::-webkit-scrollbar {
-      width: 16px; /* width of the entire scrollbar */
-      border: 1px solid rgba(0, 0, 0, 0.02);
-      box-shadow: inset -1.5px 0 0 0 rgba(0, 0, 0, 0.07), inset -2px 0 0 0 rgba(0, 0, 0, 0.02),
-        inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.51);
-      border: 5px solid transparent;
-      border-radius: 22px;
-      background-clip: content-box;
-    }
-
-    &__menu-toggle {
-      left: 224px;
-      top: 25px !important;
-      position: fixed;
-      z-index: 9;
-      transition: all 0.2s ease-in-out;
-      background-color: #edf7fd;
-      margin-left: -15px;
-      .v-icon__svg {
-        width: 100%;
-        height: 100%;
-      }
-    }
-    &__logo-wrapper {
-      max-width: 150px;
-      max-height: 48px;
-      margin: 24px 24px 16px;
-      min-height: 48px;
-      &__logo {
-        max-height: 48px;
-        max-width: 100%;
-      }
-    }
-    &.v-navigation-drawer--mini-variant {
-      min-width: 64px;
-      .page-nav__menu-toggle {
-        transition: all 0.2s ease-in-out;
-        margin-left: 0;
-        .v-icon__svg {
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .page-nav__logo-wrapper {
-        margin-left: 8px;
-        margin-top: 110px;
-      }
-    }
-
-    .tour-five {
-      left: 210px;
-      top: 77px;
-    }
-
-    .tour-six {
-      left: 210px;
-      top: 244px;
-    }
-
-    .tour-btn-container {
-      cursor: pointer;
-      position: absolute;
-      width: 48px;
-      height: 48px;
-      display: flex;
-
-      .tour-btn-wrapper {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        border: solid 1px #e5f1ff;
-        margin-top: 10px;
-
-        .tour-btn-circle {
-          border-radius: 50%;
-          width: 32px;
-          height: 32px;
-          background-color: #e5f1ff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          .tour-btn-circle-inner {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: #b3d4fc;
-          }
-        }
-      }
-    }
-    .v-list-group .v-list-group__header .v-list-item__icon.v-list-group__header__append-icon {
-      margin-left: 6px !important;
-      min-width: 24px !important;
-      margin-right: -4px !important;
-    }
-    .v-list-group__header__append-icon {
-      min-width: 24px !important;
-      margin: 0px -4px 0 6px !important;
-    }
-
-    .v-list-item__title {
-      align-items: center;
-      display: flex;
-      font-family: 'Open Sans', sans-serif !important;
-
-      i {
-        padding-right: 16px;
-      }
-    }
-
-    .menu-list-item > .v-list-item__title {
-      font-size: 16px !important;
-      line-height: 22px !important;
-    }
-
-    .v-navigation-drawer__border {
-      display: none !important;
-    }
-
-    .v-list-group__header__prepend-icon {
-      margin-right: 16px !important;
-      margin-bottom: 0 !important;
-      margin-top: 12px !important;
-    }
-  }
-}
-
-.layout-container {
-  .page-nav {
-    .v-list-item--active > .v-list-item__icon,
-    .menu-list-item > .v-list-item__icon {
-      margin-right: 16px !important;
-      margin-bottom: 0 !important;
-      margin-top: 13px !important;
-      &.v-list-group__header__append-icon {
-        margin-top: 0 !important;
-      }
-      i {
-        font-size: 24px !important;
-      }
-    }
-  }
-
-  .menu-list-item {
-    .v-list-item__title {
-      line-height: 1.2rem !important;
-    }
-  }
-
-  .v-menu__content {
-    border-radius: 20px;
-  }
-
-  .user-name-dropdown {
-    display: flex;
-    position: relative;
-    padding: 16px 8px;
-    border-radius: 8px;
-    background-color: #fafafa;
-    &__content--divider {
-      border-bottom: 1px solid #e0e0e0;
-    }
-    width: 100%;
-    &__menu {
-      width: 100%;
-      &-item {
-        width: 100%;
-      }
-    }
-    &__logo {
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 60px;
-
-      img {
-        max-width: 100%;
-        max-height: 60px;
-      }
-    }
-    &__details {
-      flex-flow: column;
-      display: flex;
-      height: 60px;
-      text-transform: capitalize !important;
-      word-wrap: break-word;
-      max-width: 150px;
-      min-width: 150px;
-      margin-left: 8px;
-      cursor: pointer;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      &-item {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      span {
-        max-width: 150px;
-        text-align: left;
-        font-size: 14px;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
-        color: #383b41;
-        &:first-child {
-          font-weight: 600;
-        }
-        &:last-child {
-          font-size: 12px;
-          font-weight: 600;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: 1;
-          height: 16px;
-          color: #757575;
-        }
-      }
-    }
-    &__icon {
-      padding-left: 10px;
-      i {
-        cursor: pointer;
-        &:before {
-          opacity: 0.8;
-          color: #383b41;
-        }
-      }
-    }
-  }
-
-  .user-name-dropdown-font {
-    align-items: flex-start;
-    height: 60px !important;
-    padding: 0 !important;
-    justify-content: flex-start;
-    &:hover:before {
-      opacity: 0 !important;
-    }
-    &__icon {
-      margin-top: 2px;
-      &::before {
-        color: black;
-        font-weight: 900;
-      }
-    }
-    &__tooltip-wrapper {
-      display: flex;
-      width: 100%;
-      align-items: center;
-      height: 60px;
-      cursor: pointer;
-    }
-  }
-
-  .user-wrapper {
-    background: white;
-    padding: 8px;
-    &__scroll-on {
-      box-shadow: 0 2px 3px 0 rgb(142 142 142 / 20%);
-    }
-  }
-
-  .logo-wrapper {
-    margin: 56px auto 16px;
-    width: 180px;
-    height: 60px;
-  }
-
-  .v-navigation-drawer {
-    min-width: 64px;
-  }
-
-  .v-navigation-drawer__content {
-    display: flex;
-    flex-direction: column;
-    .v-list-item {
-      border-left: 5px solid transparent;
-    }
-    .v-list--dense .v-list-item .v-list-item__content {
-      padding: 0 !important;
-    }
-    .menu-list-item,
-    .v-list-group__header {
-      max-height: 48px;
-      min-height: 48px;
-    }
-  }
-
-  .v-list-item--active {
-    border-left: solid 5px !important;
-    border-color: #2196f3 !important;
-    color: #2196f3 !important;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 16px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-  }
-
-  .active-link {
-    .menu-item-wrapper {
-      background-color: #e3f2fd !important;
-      border-left: unset !important;
-      border-color: unset !important;
-      width: 91%;
-    }
-  }
-
-  .active-link > div {
-    border-left: solid 5px !important;
-    border-color: #2196f3 !important;
-    height: 48px;
-    font-size: 16px;
-
-    > div,
-    .v-icon {
-      color: #2196f3 !important;
-      font-family: 'Open Sans', sans-serif !important;
-    }
-  }
-
-  .search-wrapper {
-    padding-top: 0;
-    margin-right: 24px;
-
-    .v-input__slot {
-      background-color: rgba(255, 255, 255, 0.3) !important;
-      min-height: 27px !important;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-    }
-
-    .v-icon {
-      font-size: 20px !important;
-    }
-  }
-
-  .v-toolbar__title {
-    margin-left: 8px;
-    font-size: 34px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: white;
-    font-family: 'Open Sans', sans-serif !important;
-  }
-
-  .background {
-    height: 285px;
-    width: 100%;
-    background-image: url('../assets/img/light.svg') !important;
-    background-position: left top; // Center the image
-    background-repeat: no-repeat; // Do not repeat the image
-    background-size: cover;
-    flex-flow: column !important;
-    position: absolute;
-  }
-
-  .menu-icon-wrapper {
-    left: 244px;
-    top: 16px;
-    position: fixed;
-    z-index: 20;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .v-navigation-drawer {
-    overflow: visible !important;
-    z-index: 8;
-
-    @media only screen and (max-width: 1025px) {
-      position: fixed !important;
-    }
-  }
-
-  .v-content {
-    height: 100%;
-    margin-top: 16px;
-    @media only screen and (max-width: 769px) {
-      padding: 160px 0 0 60px !important;
-    }
-  }
-
-  .v-navigation-drawer--mini-variant {
-    transition: all 0.2s ease-in-out;
-
-    .logo-wrapper {
-      margin-left: 8px;
-    }
-
-    .user-name-dropdown {
-      visibility: hidden;
-    }
-
-    .menu-icon-wrapper {
-      transition: all 0.2s ease-in-out;
-      left: 45px !important;
-    }
-
-    .menu-mini-img {
-      margin-left: 0 !important;
-    }
-
-    .v-app-bar__nav-icon {
-      margin-left: 3px !important;
-    }
-
-    .v-list-group__header,
-    .v-list-item--active {
-      padding-left: 12px !important;
-    }
-
-    .v-list-item .v-list-item__icon,
-    .v-list-group__header > .v-list-item__icon {
-      margin-right: 0 !important;
-    }
-  }
-
-  .v-navigation-drawer--mini-variant {
-    .user-wrapper {
-      height: 0 !important;
-    }
-
-    .v-sheet--tile > div {
-      margin-top: 5px !important;
-      margin-left: 0 !important;
-    }
-  }
-
-  @media only screen and (max-width: 1025px) {
-    .v-navigation-drawer {
-      background-color: rgba(255, 255, 255, 1) !important;
-      border-color: rgba(255, 255, 255, 1) !important;
-    }
-  }
-
-  @media only screen and (max-width: 500px) {
-    .v-card,
-    .v-card__text {
-      // padding: 8px !important;
-    }
-    .v-cart-icon-wrapper {
-      width: 40px;
-      height: 40px;
-      margin-right: 10px !important;
-
-      .v-icon {
-        font-size: 19px !important;
-      }
-
-      .v-card-headline {
-        font-size: 19px !important;
-      }
-    }
-  }
-
-  .menu-mini-img {
-    max-width: 48px;
-    max-height: 48px;
-    margin-left: 8px;
-  }
-
-  .menu-link-default {
-    text-decoration: none;
-  }
-
-  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-    .v-cart-dropdown-list {
-      width: 160px !important;
-
-      .v-list-item__title {
-        margin-top: 10px !important;
-      }
-    }
-  }
-  .menu-item-wrapper {
-    line-height: 1.2 !important;
-    padding-left: 72px;
-    height: 36px !important;
-    margin-right: 30px;
-    border-radius: 0 23px 23px 0;
-    cursor: pointer;
-
-    .menu-item-span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.54;
-      letter-spacing: normal;
-      color: #383b41 !important;
-    }
-  }
-
-  .v-list-group__items {
-    .v-list-item {
-      align-items: center;
-      display: flex;
-      max-height: 36px !important;
-      min-height: 36px !important;
-      margin: 2px 0 !important;
-
-      .v-list-item__icon:first-child {
-        margin-top: 12px;
-        margin-left: 0;
-
-        i {
-          font-size: 22px !important;
-        }
-      }
-    }
-  }
-
-  .active-menu-parent {
-    .v-list-group__header {
-      border-left: solid 5px !important;
-      border-color: #2196f3 !important;
-
-      .v-list-item__title {
-        color: #2196f3 !important;
-      }
-
-      .v-list-item__icon .v-icon__svg {
-        color: #2196f3 !important;
-      }
-    }
-  }
-  .switch-dialog {
-    width: 600px !important;
-    border-radius: 20px !important;
-    overflow: visible !important;
-  }
-
-  .v-application--wrap {
-    background-color: #fafafa !important;
-  }
-}
-.un-selected-list-item {
-  color: rgba(0, 0, 0, 0.54);
-  border-left: none !important;
-  .v-list-item {
-    border-left: 5px solid transparent !important;
-    .v-list-group__header__prepend-icon {
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-    .v-list-group__header__append-icon {
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-  }
-  .v-list-item__title {
-    color: #383b41 !important;
-  }
-}
-.layout-container .active-link .menu-item-wrapper .menu-item-span {
-  color: #1565c0 !important;
-  font-weight: 600;
-}
-.main-v-tour {
-  .v-step {
-    min-width: 300px;
-    max-width: 300px;
-    padding: 0 !important;
-    background: #fff !important;
-    box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
-      0 9px 46px 8px rgba(80, 80, 80, 0.12) !important;
-    border: solid 1px #2196f3;
-    border-radius: 12px !important;
-    &__content {
-      padding: 24px !important;
-      margin-bottom: 0 !important;
-      border-bottom: 1px solid #e0e0e0;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: normal !important;
-      letter-spacing: normal !important;
-      color: #383b41 !important;
-      text-align: left;
-    }
-    &__arrow {
-      border-color: #ffffff !important;
-      border-left-color: transparent !important;
-      border-right-color: transparent !important;
-    }
-    &__buttons {
-      padding: 14px 32px !important;
-      display: flex;
-      justify-content: space-between;
-    }
-    &__button-skip {
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: 1.71 !important;
-      letter-spacing: normal !important;
-      text-align: center !important;
-      color: #f56c6c !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      height: 24px !important;
-    }
-    &__button-next {
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: 1.71 !important;
-      letter-spacing: normal !important;
-      color: #2196f3 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      height: 24px !important;
-    }
-    &__button-previous {
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: 1.71 !important;
-      letter-spacing: normal !important;
-      color: #2196f3 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      height: 24px !important;
-      margin-left: 35px !important;
-    }
-    &__button-stop {
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: 1.71 !important;
-      letter-spacing: normal !important;
-      text-align: center !important;
-      color: #f56c6c !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      height: 24px !important;
-    }
-  }
-  .v-step[x-placement^='bottom'] .v-step__arrow {
-    border-width: 0 0.9rem 0.9rem 0.9rem !important;
-    top: -0.9rem !important;
-  }
-  .v-step[x-placement^='top'] .v-step__arrow {
-    border-width: 0.9rem 0.9rem 0 0.9rem !important;
-    bottom: -0.9rem !important;
-  }
-  .v-step[x-placement^='bottom'] {
-    margin-top: 1.2rem !important;
-  }
-  .v-step[x-placement^='top'] {
-    margin-bottom: 1.2rem !important;
-  }
-}
-#btn--link-navigator-menu-phishing-simulator-list-group {
-  .v-list-group__header__prepend-icon {
-    .v-icon {
-      transform: rotateY(180deg);
-    }
-  }
-}
-</style>

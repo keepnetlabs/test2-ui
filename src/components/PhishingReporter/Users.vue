@@ -2,8 +2,8 @@
   <div id="users" class="users">
     <app-dialog
       icon="mdi-alert"
-      title="Delete User"
-      subtitle="Do you want to delete this user?"
+      title="Delete Phishing User(s)?"
+      :subtitle="getSubTitle"
       title-id="text--phishing-reporter-users-delete-popup-title"
       subtitle-id="text--phishing-reporter-users-delete-popup-subtitle"
       :status="isWantToDelete"
@@ -15,6 +15,7 @@
           type="delete"
           cancel-button-id="btn-cancel--phishing-reporter-users-popup"
           confirm-button-id="btn-delete--phishing-reporter-users-popup"
+          :disabled="deleteButtonDisabled"
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteUser"
         />
@@ -25,12 +26,13 @@
       id="phishing-reporter-data-table"
       ref="refUsersList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
       :table="tableOptions.table"
       :loading="isLoading"
-      :select-event="tableOptions.selectEvent"
+      :select-event="selectEvent"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
@@ -49,6 +51,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
+      @handleMultipleDelete="handleMultipleDeleteOfPhishingUsers"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -99,10 +102,11 @@ import {
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
-  deletePhishingReporterUser
+  deletePhishingReporterUser,
+  bulkDeletePhishingUsers
 } from '@/api/phishingReporter'
 import labels from '@/model/constants/labels'
-import AppDialog from '../AppDialog'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
   getDataTableFieldLabel,
@@ -123,6 +127,10 @@ export default {
   data() {
     return {
       PROPERTY_STORE,
+      isMultipleDelete: false,
+      multipleDeletedUserCount: 0,
+      multipleSystemUserPayload: {},
+      deleteButtonDisabled: false,
       isLoading: true,
       isInit: true,
       tableOptions: {
@@ -198,6 +206,7 @@ export default {
             filterableItems: [
               'Online',
               'Offline',
+              'Inactive',
               'Disabled',
               { text: 'Not Installed', value: 'NotInstalled' }
             ]
@@ -286,7 +295,7 @@ export default {
       selectEvent: {
         clipboard: true,
         edit: false,
-        delete: false,
+        delete: true,
         download: false
       },
       requestBody: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
@@ -296,9 +305,22 @@ export default {
   },
   computed: {
     getUserName() {
-      return this.selectedRow && (this.selectedRow.firstName || this.selectedRow.lastName)
-        ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
-        : 'This user'
+      if (this.selectedRow) {
+        return this.selectedRow.firstName || this.selectedRow.lastName
+          ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
+          : `This user`
+      }
+
+      if (this.isMultipleDelete) {
+        return `${this.multipleDeletedUserCount} users`
+      }
+
+      return `This user`
+    },
+    getSubTitle() {
+      return `${
+        this.isMultiple ? `${this.userCount} user(s)` : 'The phishing user'
+      } will be deleted permanently`
     }
   },
   created() {
@@ -337,6 +359,14 @@ export default {
           text = 'Add-in is installed and active\n'
           text += textHKLM
           text += textBootTime
+          text += textOutlookVersion
+          text += textOutlookArchitecture
+          text += textOS
+          break
+        case 'Inactive':
+          text = 'Addin is inactivated by user\n'
+          text += 'User is offline\n'
+          text += textHKLM
           text += textOutlookVersion
           text += textOutlookArchitecture
           text += textOS
@@ -458,6 +488,10 @@ export default {
         .catch(() => {})
     },
     deleteUser() {
+      if (this.isMultipleDelete) {
+        this.callForMultipleDelete()
+        return
+      }
       this.callForDeletePhishingReporterUser()
       this.isWantToDelete = false
     },
@@ -486,6 +520,31 @@ export default {
       this.resetPageNumber()
       this.callForPhishingReporterUser()
     },
+    handleMultipleDeleteOfPhishingUsers(items, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : items.length
+      this.multipleSystemUserPayload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.requestBody.filter
+      }
+      this.isWantToDelete = true
+    },
+    callForMultipleDelete() {
+      this.deleteButtonDisabled = true
+      bulkDeletePhishingUsers(this.multipleSystemUserPayload)
+        .then(() => {
+          this.$refs.refUsersList.resetSelectableParams()
+          this.callForPhishingReporterUser()
+          this.isWantToDelete = true
+        })
+        .finally(() => {
+          this.deleteButtonDisabled = false
+        })
+    },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
@@ -506,21 +565,14 @@ export default {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     }
+  },
+  watch: {
+    isWantToDelete(val) {
+      if (!val) {
+        this.selectedRow = null
+        this.isMultipleDelete = false
+      }
+    }
   }
 }
 </script>
-
-<style lang="scss">
-.users {
-  padding-top: 24px;
-  &__button {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-  }
-  &__tooltip {
-    white-space: pre-wrap;
-  }
-}
-</style>

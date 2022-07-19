@@ -70,7 +70,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         columns: [
@@ -122,16 +122,16 @@ export default {
             filterableType: 'date'
           },
           {
-            property: PROPERTY_STORE.PERIODTIME,
-            align: 'right',
-            label: labels.PeriodTime,
+            property: 'nextRunTime',
+            align: 'left',
+            label: labels.NextRunTime,
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 160,
+            width: 165,
             isEditable: true,
-            filterableType: 'text'
+            filterableType: 'date'
           }
         ],
         iEmpty: {
@@ -148,13 +148,15 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
-            id: 'btn-edit--smtp-settings-row-actions'
+            id: 'btn-edit--smtp-settings-row-actions',
+            disabled: !this.$store.getters['permissions/getLDAPScheduleUpdatePermission']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
-            id: 'btn-delete--smtp-settings-row-actions'
+            id: 'btn-delete--smtp-settings-row-actions',
+            disabled: !this.$store.getters['permissions/getLDAPScheduleDeletePermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

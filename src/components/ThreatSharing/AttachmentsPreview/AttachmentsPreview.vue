@@ -16,7 +16,7 @@
         v-on="on"
         v-if="!att.isHidden && !isEmailTemplate"
         id="text--attachment-preview-name"
-        class="file-name safari-hide-tooltip max-char px-2"
+        class="file-name safari-hide-tooltip max-char mx-2"
       >
         {{ getFileName }}
       </div>
@@ -32,7 +32,7 @@
         v-on="on"
         v-if="isEmailTemplate"
         id="text--attachment-email-template-preview-name"
-        class="file-name safari-hide-tooltip max-char px-2"
+        class="file-name safari-hide-tooltip max-char mx-2"
       >
         {{ getFileName }}
       </div>
@@ -67,5 +67,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" src="./AttachmentsPreview.scss"></style>

@@ -148,8 +148,8 @@ export default {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
             icon: '$custom-resend',
-            action: 'on-resend',
-            disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+            action: 'on-resend'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,
@@ -222,7 +222,10 @@ export default {
       return events
         ? events.map((event) => ({
             status:
-              event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
+              event?.eventName === 'bounce'
+                ? event?.bounceType?.substring(0, 1)?.toUpperCase() +
+                  event?.bounceType?.substring(1)
+                : event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
             date: event.processedDate,
             reason: this.getEventReason(event),
             mxServer: event.mxServer

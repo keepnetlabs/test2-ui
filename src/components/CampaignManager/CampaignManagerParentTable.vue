@@ -157,15 +157,15 @@ export default {
             name: labels.Preview,
             id: 'btn-preview--row-actions-campaign-manager',
             icon: 'mdi-eye',
-            action: 'on-preview',
-            disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
+            action: 'on-preview'
+            // disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-campaign-manager',
             icon: 'mdi-content-copy',
-            action: 'on-duplicate',
-            disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+            action: 'on-duplicate'
+            // disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
           },
           {
             name: labels.Delete,
@@ -250,7 +250,6 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.axiosPayload.pageNumber = pageNumber
-      this.resetPageNumber()
       this.callForData()
     },
     serverSideSizeChanged(pageSize = 5) {

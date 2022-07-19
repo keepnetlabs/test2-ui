@@ -24,10 +24,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.custom-fields-loader {
-  .v-skeleton-loader__list-item {
-    padding: 0;
-  }
-}
-</style>

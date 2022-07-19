@@ -45,7 +45,7 @@
                   id="btn-move-to-trash--investigation-details-delete-emails-popup"
                   class="k-dialog__button"
                   text
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isMoveToTrashDisabled"
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
@@ -55,7 +55,7 @@
                   class="k-dialog__button"
                   text
                   color="#2196f3"
-                  :disabled="warnAndDeleteButtonDisabled"
+                  :disabled="isPermanentlyDeleteDisabled"
                   @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
@@ -934,6 +934,22 @@
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
               >
+                <template #datatable-row-actions="{scope}">
+                  <DefaultButtonRowAction
+                    :icon="rowActions[0].icon"
+                    :text="rowActions[0].name"
+                    :scope="scope"
+                    :disabled="rowActions[0].disabled"
+                    @on-click="deleteInvestigationDetails(scope.row)"
+                  />
+                  <DefaultButtonRowAction
+                    :icon="rowActions[1].icon"
+                    :text="rowActions[1].name"
+                    :scope="scope"
+                    :disabled="rowActions[1].disabled || getWarningEmailDisableStatus(scope.row)"
+                    @on-click="sendInvestigationDetailsWarningMessage(scope.row)"
+                  />
+                </template>
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
                     <span class="d-flex align-center">
@@ -1175,6 +1191,8 @@ import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   components: {
     DatatableLoading,
@@ -1185,9 +1203,11 @@ export default {
     ShowMore,
     InvestigationDetailsLeftBarLoading,
     InvestigationDetailsTopBarLoading,
-    ThreeRowLoading
+    ThreeRowLoading,
+    DefaultButtonRowAction
   },
   data: () => ({
+    deleteValue: null,
     isInvestigationWarningSelectAll: false,
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
@@ -1320,8 +1340,8 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        maxItemsPerCell: 1,
         minWidth: 260,
+        width: 260,
         cellPadding: 8
       },
       {
@@ -1912,7 +1932,7 @@ export default {
         this.totalMinutes = Math.floor(remainingTime / 60)
         const totalSeconds = parseInt((expireDate - createDate) / 1000, 10)
         this.progressValue =
-          this.statsAndMenuData.status === 'Finished'
+          this?.statsAndMenuData?.status === 'Finished'
             ? 100
             : (parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
       }
@@ -2244,7 +2264,9 @@ export default {
     },
     onAddClose(resp) {
       if (resp?.data?.data?.resourceId) {
-        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
       }
       if (this.timeoutId) {
         clearTimeout(this.timeoutId)
@@ -2312,6 +2334,34 @@ export default {
         : 1
       this.isWantToDelete = true
       this.deleteValue = value
+    },
+    // getDeleteEmailDisableStatus(row) {
+    //   if (!row.emailLastAction) {
+    //     return false
+    //   }
+
+    //   if (
+    //     row.emailLastAction.actionType === 'Delete' &&
+    //     row.emailLastAction.status !== 'CompletedWithError'
+    //   ) {
+    //     return true
+    //   }
+
+    //   return false
+    // },
+    getWarningEmailDisableStatus(row) {
+      if (!row.emailLastAction) {
+        return false
+      }
+
+      if (
+        row.emailLastAction.actionType === 'Warning' &&
+        row.emailLastAction.status !== 'CompletedWithError'
+      ) {
+        return true
+      }
+
+      return false
     },
     isWantToDeleteConfirm(val, message, hasForm = true) {
       if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
@@ -2423,6 +2473,36 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    isMoveToTrashDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === false
+      ) {
+        return true
+      }
+
+      return false
+    },
+    isPermanentlyDeleteDisabled() {
+      if (!this.deleteValue?.emailLastAction) {
+        return false
+      }
+
+      if (
+        this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
+        this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
+        this.deleteValue?.emailLastAction?.isPermanentDelete === true
+      ) {
+        return true
+      }
+
+      return false
+    },
     itemStats() {
       return {
         targetUsers: {
@@ -2686,7 +2766,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData?.headers || []))
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName
@@ -2743,604 +2823,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.investigation-details-wrapper {
-  .investigation-details__container__content--right-menu__summary__item--action-button-container {
-    .v-btn--icon {
-      border: 1px solid #2196f3 !important;
-      margin: 8px;
-    }
-  }
-  .table-wrapper {
-    .table-search {
-      @media (max-width: 1150px) {
-        min-width: 250px !important;
-      }
-      @media (min-width: 1151px) and (max-width: 1250px) {
-        min-width: 400px !important;
-      }
-    }
-  }
-
-  .el-pagination {
-    @media (max-width: 896px) {
-      padding: 2px 0 !important;
-    }
-    &__sizes {
-      @media (max-width: 896px) {
-        margin-right: 4px !important;
-      }
-    }
-    &__text {
-      @media (max-width: 896px) {
-        margin-right: 4px !important;
-      }
-    }
-  }
-  min-height: 90vh;
-  .v-navigation-drawer__border {
-    display: none;
-  }
-  .v-navigation-drawer {
-    z-index: 3;
-  }
-  .investigation-details__alerts {
-    &-sub-title {
-      font-size: 16px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-family: 'Open Sans', sans-serif;
-    }
-
-    &-content {
-      p {
-        font-size: 13px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.72);
-        font-family: 'Open Sans', sans-serif;
-      }
-
-      margin-top: 24px;
-    }
-
-    &-title {
-      font-size: 20px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.15;
-      letter-spacing: normal;
-      color: #2196f3;
-      font-family: 'Open Sans', sans-serif;
-    }
-
-    &-icon-wrapper {
-      box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-      border: solid 1px rgba(100, 181, 246, 0.5);
-      background-color: #e3f2fd;
-      height: 48px;
-      width: 48px;
-      margin-right: 24px;
-      font-family: 'Open Sans', sans-serif;
-    }
-  }
-
-  .investigation-details {
-    padding: 16px;
-    padding-top: 10px;
-
-    .v-list-item--disabled {
-      opacity: 0.5 !important;
-    }
-
-    .clean-link {
-      padding: 0 2px !important;
-      border-radius: 1px !important;
-      border-bottom: 1px solid #2196f3 !important;
-      color: #2196f3 !important;
-    }
-
-    .selected-link {
-      background-color: #d1e9fc !important;
-    }
-
-    .phishing-link {
-      background-color: #f3e1e5 !important;
-      border-bottom: 1px solid #bb2a45 !important;
-      color: #bb2a45 !important;
-      width: max-content;
-    }
-
-    &__container {
-      &__stats {
-        @media (max-width: 768px) {
-          justify-content: space-around;
-        }
-        @media (max-width: 992px) {
-          align-items: stretch;
-        }
-        align-items: center;
-        &-left-col {
-          display: flex;
-          align-items: center;
-          @media (max-width: 992px) {
-            flex-direction: column;
-          }
-          @media (max-width: 1600px) {
-            flex-basis: 50%;
-          }
-          flex-basis: 50%;
-          justify-content: space-between;
-        }
-        &-right-col {
-          display: flex;
-          flex-basis: 50%;
-          align-items: center;
-          @media (max-width: 992px) {
-            margin-top: 6px;
-          }
-          justify-content: space-evenly;
-          @media (max-width: 992px) {
-            flex-direction: column;
-          }
-          @media (max-width: 1400px) {
-            flex-basis: 50%;
-          }
-        }
-        border-radius: 20px;
-        box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-        background-color: #ffffff;
-        padding: 24px;
-        margin-bottom: 24px;
-        display: flex;
-
-        &__cards {
-          display: flex;
-          justify-content: space-between;
-
-          @media (max-width: 768px) {
-            margin-left: 0 !important;
-            &:first-child {
-              margin-bottom: 10px !important;
-            }
-          }
-          &__card {
-            display: flex;
-            flex-flow: row;
-            align-items: center;
-            justify-content: center;
-
-            &-left {
-              &__icon {
-                width: 50px;
-                height: 50px;
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                box-shadow: 0 2px 5px 0 rgba(112, 177, 115, 0.5);
-                border-radius: 30px;
-                margin-right: 8px;
-
-                &.bg-green {
-                  background: #43a047;
-                }
-
-                &.bg-turquoise {
-                  background-color: #00bcd4;
-                }
-
-                &.bg-blue {
-                  background-color: #2196f3;
-                }
-
-                &.bg-salmon {
-                  background-color: #e6a23c;
-                }
-
-                &.bg-macaroni {
-                  background-color: #e6a23c;
-                }
-                &.bg-red {
-                  background-color: #f56c6c;
-                }
-
-                i {
-                  margin-right: 0 !important;
-                }
-              }
-            }
-
-            &-right {
-              &__title {
-                font-size: 20px;
-                font-weight: 600;
-                line-height: 1.15;
-                letter-spacing: normal;
-                color: #2196f3;
-                margin-bottom: 5px;
-              }
-
-              &__stats {
-                margin-bottom: 0 !important;
-                font-size: 16px;
-
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
-                max-width: 250px;
-              }
-            }
-          }
-        }
-      }
-
-      &__content {
-        display: flex;
-        flex-flow: row;
-        padding: 24px;
-        .k-table__wrapper {
-          padding-bottom: 0;
-          .pagination {
-          }
-        }
-
-        &--left-menu {
-          display: flex;
-          flex-flow: column;
-          min-width: 220px;
-          margin-right: 16px;
-
-          &--time {
-            display: flex;
-            flex-flow: column;
-
-            &--labels {
-              font-size: 12px;
-              font-weight: 600;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-              margin-bottom: 4px;
-            }
-
-            &--progress {
-              font-size: 10px;
-              line-height: 1.9;
-              letter-spacing: normal;
-              text-align: center;
-              color: rgba(0, 0, 0, 0.87);
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 2px;
-
-              &--bar {
-                margin-bottom: 2px;
-
-                .v-progress-linear {
-                  border-radius: 20px;
-                }
-              }
-            }
-
-            &--left-date {
-              opacity: 0.64;
-              font-size: 10px;
-              line-height: 1.9;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-            }
-          }
-
-          &--mail-menu {
-            .v-card {
-              box-shadow: none !important;
-              margin-top: 14px;
-
-              .v-navigation-drawer {
-                width: 100% !important;
-                align-items: center;
-
-                @media (max-width: 1025px) {
-                  position: relative !important;
-                }
-
-                &__content {
-                  width: 100% !important;
-
-                  .v-list {
-                    padding: 0 !important;
-                  }
-                }
-
-                .v-list {
-                  .v-divider {
-                    padding: 0;
-                  }
-
-                  &-item {
-                    &:first-child {
-                      margin-top: 10px;
-                      margin-bottom: 24px !important;
-                    }
-
-                    &__archived {
-                      display: flex;
-                      width: 100%;
-
-                      &--main {
-                        flex-flow: column;
-                        max-height: 40px;
-                        .v-list-item-title__value {
-                          top: 8px;
-                          right: 18px;
-                        }
-                      }
-
-                      &--title {
-                        margin-bottom: 0;
-                        background: #fafafa;
-                        padding-left: 16px;
-                        padding-bottom: 5px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        font-stretch: normal;
-                        font-style: normal;
-                        line-height: normal;
-                        letter-spacing: normal;
-                        color: #383b41 !important;
-                      }
-
-                      &--link {
-                        position: absolute;
-                        display: -webkit-box;
-                        display: -ms-flexbox;
-                        display: flex;
-                        width: 100%;
-                        left: 10px;
-                      }
-                    }
-
-                    position: relative;
-
-                    font-size: 14px;
-                    letter-spacing: normal;
-                    color: #212121;
-                    background: #fafafa;
-                    margin-bottom: 0 !important;
-
-                    &--active {
-                      i {
-                        color: #2196f3 !important;
-                      }
-                    }
-
-                    &__title {
-                      line-height: 18px;
-                    }
-
-                    &-title {
-                      &__value {
-                        position: absolute;
-                        right: 8px;
-                        top: 8px;
-                        border-radius: 4px;
-                        color: #ffffff;
-                        min-width: 24px;
-                        min-height: 23px;
-                        justify-content: center;
-                        align-items: center;
-                        display: flex;
-                        padding: 2px;
-
-                        &--blue {
-                          background-color: #2196f3;
-                        }
-
-                        &--gray {
-                          background-color: #e0e0e0;
-                          color: #383b41;
-                        }
-
-                        &--orange {
-                          background-color: #b6791d;
-                          color: #ffffff;
-                        }
-                      }
-                    }
-
-                    &__icon {
-                      margin-right: 18px;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        &--right-menu {
-          width: calc(100% - 236px);
-          transition: none !important;
-          -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
-          &__summary {
-            display: flex;
-            justify-content: space-between;
-            &__item {
-              display: flex;
-              flex-flow: row;
-
-              &--text-header {
-                font-size: 14px;
-                font-weight: 600;
-                line-height: 1.5;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87) !important;
-                text-transform: uppercase;
-              }
-
-              &--text-content {
-                font-size: 14px;
-                font-style: normal;
-                line-height: 1.5;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
-                font-weight: normal;
-                text-transform: capitalize;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              }
-
-              &--action-button {
-                button {
-                  border-radius: 18px;
-                  font-size: 14px;
-                  font-weight: 600;
-                  line-height: 1.71;
-                  letter-spacing: normal;
-                  color: #2196f3;
-                }
-                &--rounded {
-                  button {
-                    display: flex;
-                    border-radius: 50% !important;
-                    padding: 0 !important;
-                    height: 36px !important;
-                    width: 36px !important;
-                    min-width: 36px !important;
-                    justify-content: center;
-                    align-items: center;
-                  }
-                }
-
-                &-container {
-                  display: flex;
-                  @media (max-width: 1024px) {
-                    flex-direction: column;
-                  }
-                }
-              }
-            }
-          }
-
-          &__target-users {
-            &--header {
-              margin-top: 20px;
-              margin-bottom: 0;
-              font-size: 12px;
-              font-weight: 600;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-            }
-
-            &--list {
-              .v-chip {
-                font-size: 14px;
-                line-height: 1.71;
-                letter-spacing: normal;
-                text-align: center;
-                color: #000000;
-                line-break: anywhere;
-                height: auto !important;
-                margin-top: 8px;
-                margin-right: 4px;
-                &:first-child {
-                  //margin-left: 0 !important;
-                }
-              }
-            }
-          }
-
-          &__filters {
-            margin-bottom: 24px;
-
-            &--header {
-              margin-top: 25px;
-              margin-bottom: 0;
-              font-size: 12px;
-              font-weight: 600;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-            }
-
-            &--list {
-              .v-chip {
-                font-size: 14px;
-                line-height: 1.71;
-                letter-spacing: normal;
-                text-align: center;
-                color: #000000;
-                height: auto !important;
-                margin-top: 8px;
-                margin-right: 4px;
-                &:first-child {
-                  margin-left: 0 !important;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-.investigation__attachments .v-chip:last-child {
-  margin-left: 0 !important;
-}
-
-.investigation-details__container__content--right-menu {
-  .v-chip__content {
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    display: block !important;
-    line-break: anywhere;
-    white-space: pre-wrap;
-    text-align: left;
-  }
-
-  .v-chip {
-    padding: 4px 12px !important;
-  }
-}
-.investigation-details__tooltip {
-  white-space: pre-wrap;
-}
-.investigation-details__warning-modal {
-  .k-dialog__body {
-    padding: 24px 24px 2px 24px;
-  }
-}
-.investigation-details__modal-footer {
-  .k-dialog__footer {
-    padding: 8px 16px;
-  }
-}
-
-.investigationDetails__target-users-table-container {
-  .k-table__wrapper {
-    .card .table-wrapper .el-table td > .cell {
-      padding-left: 10.5px !important;
-    }
-    .card .table-wrapper .el-table th > .cell.actions-label {
-      margin-left: 0 !important;
-    }
-    .card .table-wrapper .el-table th > .cell {
-    }
-  }
-}
-
-.menu-item__content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.investigation-details-emails__row-actions__overflow-menu__icon {
-  margin-right: 16px;
-}
-</style>

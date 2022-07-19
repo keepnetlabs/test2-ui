@@ -71,7 +71,7 @@
         ></s-i-e-m-integrations>
       </el-tab-pane>
       <el-tab-pane
-        v-if="getSIEMIntegrationSearchPermissions"
+        v-if="getLDAPDetailPermission"
         name="ldap-settings"
         :label="labels.LDAP"
         :id="`${labels.LDAP.toLowerCase()}-content`"
@@ -128,7 +128,8 @@ export default {
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
-      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions'
+      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
     })
   },
   methods: {
@@ -153,7 +154,14 @@ export default {
       { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
       { permission: this.getSAMLIntegrationSearchPermissions, name: 'saml-settings' },
       { permission: this.getSCIMSettingsSearchPermissions, name: 'scim-settings' },
-      { permission: this.getSIEMIntegrationSearchPermissions, name: 'siem-integrations' }
+      {
+        permission: this.getSIEMIntegrationSearchPermissions,
+        name: 'siem-integrations'
+      },
+      {
+        permission: this.getLDAPDetailPermission,
+        name: 'ldap-settings'
+      }
     ].find((item) => item.permission)?.name
     this.changeTabByRoute()
   },
@@ -197,67 +205,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.company-settings {
-  &__header {
-    .v-list-item {
-      padding: 0;
-
-      .v-list-item__content {
-        padding: 0;
-      }
-
-      .v-list-item__content > *:not(:last-child) {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  &__title {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.29 !important;
-    letter-spacing: normal;
-    color: #383b41 !important;
-  }
-
-  &__subtitle {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.5 !important;
-    letter-spacing: normal;
-    margin-bottom: 24px;
-    color: #383b41 !important;
-  }
-  &__container {
-    padding: 0 16px 24px 16px !important;
-    width: 100%;
-    .v-window__container {
-      margin-top: 24px;
-    }
-    &-card {
-      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-      padding: 10px 24px 0 24px !important;
-      border-radius: 20px !important;
-      width: 100%;
-    }
-  }
-  .v-slide-group__prev.v-slide-group__prev--disabled,
-  .v-slide-group__prev {
-    margin-left: -32px;
-    margin-top: 1px;
-
-    i {
-      margin-right: -8px;
-    }
-  }
-  .v-slide-group__next {
-    margin-right: -24px;
-    margin-top: 1px;
-    i {
-      margin-left: -8px;
-    }
-  }
-}
-</style>

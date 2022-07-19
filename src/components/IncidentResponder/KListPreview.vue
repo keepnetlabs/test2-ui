@@ -124,36 +124,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.k-list-preview {
-  &-card {
-    background: #ffffff;
-    box-shadow: 0 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
-      0px 1px 5px rgba(80, 80, 80, 0.2);
-    border-radius: 20px;
-    &__header {
-      padding: 24px 0 16px 16px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-    &__content {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 1fr;
-      &-left {
-        grid-column: 1 span;
-        overflow-y: auto;
-        border-right: 4px solid #e0e0e0;
-        padding-bottom: 8px;
-      }
-      &-right {
-        grid-column: 2 span;
-        padding-bottom: 8px;
-      }
-    }
-  }
-  &-search {
-    max-width: 328px;
-  }
-}
-</style>

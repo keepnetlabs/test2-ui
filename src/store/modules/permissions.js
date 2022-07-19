@@ -21,6 +21,7 @@ const {
   CAMPAIGN_REPORTS_PERMISSIONS,
   DOMAIN_PERMISSIONS,
   DNS_PERMISSIONS,
+  EXCLUDE_IP_ADDRESS_PERMISSIONS,
   INCIDENT_RESPONDER_OTHER_PERMISSIONS,
   INVESTIGATION_PERMISSIONS,
   INTEGRATION_PERMISSIONS,
@@ -86,7 +87,8 @@ const defaultState = {
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
-  ldapPermissions: LDAP_PERMISSIONS
+  ldapPermissions: LDAP_PERMISSIONS,
+  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -291,6 +293,12 @@ const store = {
     },
     getDnsExportPermissions(state) {
       return state?.dnsPermissions?.EXPORT?.hasPermission
+    },
+    getExcludedIpAddressGetPermissions(state) {
+      return state?.excludeIpAddressPermissions?.GET?.hasPermission
+    },
+    getExcludedIpAddressPostPermissions(state) {
+      return state?.excludeIpAddressPermissions?.POST?.hasPermission
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -513,6 +521,9 @@ const store = {
     getNotificationTemplatesExportPermissions(state) {
       return state?.notificationTemplatesPermissions?.EXPORT?.hasPermission
     },
+    getNotificationTemplatesMakeDefaultPermissions(state) {
+      return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
+    },
     getRestApiSearchPermissions(state) {
       return state?.restApiPermissions?.SEARCH?.hasPermission
     },
@@ -718,6 +729,31 @@ const store = {
     getMailConfigurationPermissions(state) {
       return state?.mailConfigurationPermissions
     },
+    getLDAPDetailPermission(state) {
+      return state?.ldapPermissions?.DETAIL?.hasPermission
+    },
+    getLDAPSettingCreatePermission(state) {
+      return state?.ldapPermissions?.SETTING_CREATE?.hasPermission
+    },
+    getLDAPSettingUpdatePermission(state) {
+      return state?.ldapPermissions?.SETTING_UPDATE?.hasPermission
+    },
+    getLDAPSettingSchedulePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission
+    },
+    getLDAPFieldMappingPermissions(state) {
+      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions
+      return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission
+    },
+    getLDAPCreateConfigPermission(state) {
+      return state?.ldapPermissions?.CREATE_CONFIG?.hasPermission
+    },
+    getLDAPScheduleUpdatePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_UPDATE?.hasPermission
+    },
+    getLDAPScheduleDeletePermission(state) {
+      return state?.ldapPermissions?.SCHEDULE_DELETE?.hasPermission
+    },
     getWidgetsPermissions(state, getters) {
       return {
         runningInvestigation: getters?.getIncidentResponderRunningInvestigationsPermission,
@@ -730,7 +766,9 @@ const store = {
         notifiedEmail: getters?.getIncidentResponderNotifiedEmailPermission,
         widgets: getters?.getDashboardWidgetsPermission,
         phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
-        roiSettingCard: getters?.getIncidentResponderROISettingGetPermission
+        roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
+        recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
+        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
       }
     }
   },
@@ -780,7 +818,8 @@ const store = {
         'siemIntegrationPermissions',
         'systemUsersPermissions',
         'systemRolesPermissions',
-        'ldapPermissions'
+        'ldapPermissions',
+        'excludeIpAddressPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

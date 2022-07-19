@@ -113,14 +113,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.smtp-settings-test-email {
-  .v-text-field.v-text-field--enclosed .v-text-field__details {
-    margin-bottom: 0;
-  }
-  .k-dialog__body {
-    overflow-y: initial;
-  }
-}
-</style>

@@ -531,6 +531,7 @@ export default {
     },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length) return
+      if (!this.formData.distributionSmtpDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
@@ -545,14 +546,16 @@ export default {
           sendRandomlyUsersCount: this.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.formData.sendRandomlyUsersCalculateTypeId
         }
-        calculateSendingInfo(payload).then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalSendSecond, batchEverySendSecond } = data
-          this.totalSendSecond = totalSendSecond
-          this.batchEverySendSecond = batchEverySendSecond
-        })
+        if (payload.distributionSmtpDelayEvery) {
+          calculateSendingInfo(payload).then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalSendSecond, batchEverySendSecond } = data
+            this.totalSendSecond = totalSendSecond
+            this.batchEverySendSecond = batchEverySendSecond
+          })
+        }
       }, 500)
     },
     handleTestConnectionChange() {
@@ -663,81 +666,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-smtp-settings {
-  max-width: 820px;
-  .k-form-group__content {
-    display: flex;
-  }
-  .v-btn {
-    padding: 0 8px !important;
-  }
-  .v-btn__content {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 24px;
-  }
-}
-.campaign-manager-advanced-settings__distribution {
-  &.v-input--radio-group.v-input {
-    margin-top: 0;
-  }
-  &-item {
-    display: flex;
-    align-items: center;
-    label {
-      font-weight: normal !important;
-      font-size: 14px !important;
-      color: #383b41 !important;
-    }
-    .v-radio {
-      margin-bottom: 0;
-    }
-  }
-  &-text {
-    background-color: #f1f8fe;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 21px;
-    color: #383b41;
-    max-width: 554px;
-    padding: 8px;
-  }
-}
-.campaign-manager-advanced-settings__other-settings-last {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  line-height: 21px;
-  color: #383b41;
-  .v-input--checkbox {
-    padding-top: 2px !important;
-  }
-}
-.absolute-text-input-error {
-  .v-text-field__details {
-    position: absolute;
-    bottom: -24px;
-    overflow: visible;
-    padding-left: 0 !important;
-  }
-  .v-messages {
-    min-width: 280px;
-    &__wrapper {
-      width: 280px;
-    }
-  }
-}
-.campaign-manager-advanced-settings__smtp-select-item {
-  font-size: 14px;
-  line-height: 21px;
-  color: #383b41;
-}
-.v-subheader {
-  padding-left: 16px !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  color: #2196f3 !important;
-}
-</style>
