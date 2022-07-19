@@ -539,7 +539,7 @@ export default {
         .then(() => {
           this.$refs.refUsersList.resetSelectableParams()
           this.callForPhishingReporterUser()
-          this.isWantToDelete = true
+          this.isWantToDelete = false
         })
         .finally(() => {
           this.deleteButtonDisabled = false
