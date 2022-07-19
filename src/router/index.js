@@ -36,6 +36,7 @@ import AwarenessEducator from '@/views/AwarenessEducator'
 import TrainingList from '@/views/TrainingList'
 import Enrollments from '@/views/Enrollments'
 import Certificates from '@/views/Certificates'
+import Scorm from '@/views/Scorm'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -55,6 +56,14 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/training/scorm',
+      name: 'scorm',
+      component: Scorm,
       meta: {
         isAuthenticated: false
       }
