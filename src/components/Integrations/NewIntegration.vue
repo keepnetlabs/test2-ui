@@ -825,25 +825,29 @@
               </v-checkbox>
               <span>Enable caching and enter duration(hours)</span>
               <v-text-field
-                v-model.number="formValues.cacheDuration"
+                :value="formValues.cacheDuration"
                 v-mask="'###'"
+                ref="refInputCacheDuration"
                 id="input--integrations-cache-duration"
                 outlined
                 class="mx-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
                 :rules="numberValidation"
+                @input="handleCacheDurationChange"
               ></v-text-field>
               <span>and query count</span>
               <v-text-field
-                v-model.number="formValues.cacheQueryCount"
+                :value="formValues.cacheQueryCount"
                 v-mask="'#######'"
+                ref="refInputCacheQueryCount"
                 id="input--integrations-cache-query-count"
                 outlined
                 class="ml-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
                 :rules="numberValidationQuery"
+                @input="handleCacheQueryCountChange"
               ></v-text-field>
             </div>
           </form-group>
@@ -1217,6 +1221,22 @@ export default {
     this.getFormOptions()
   },
   methods: {
+    handleCacheDurationChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.cacheDuration = Number(val)
+      } else {
+        this.$refs.refInputCacheDuration.initialValue = Number(this.formValues.cacheDuration)
+        this.$refs.refInputCacheDuration.lazyValue = Number(this.formValues.cacheDuration)
+      }
+    },
+    handleCacheQueryCountChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.cacheQueryCount = Number(val)
+      } else {
+        this.$refs.refInputCacheQueryCount.initialValue = Number(this.formValues.cacheQueryCount)
+        this.$refs.refInputCacheQueryCount.lazyValue = Number(this.formValues.cacheQueryCount)
+      }
+    },
     handleApiKeyDelete(index) {
       this.formValues.apiKeys.splice(index, 1)
       if (this.showPasswords.length && this.isIbmXForce) {
