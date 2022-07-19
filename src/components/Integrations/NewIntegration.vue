@@ -826,10 +826,10 @@
               <span>Enable caching and enter duration(hours)</span>
               <v-text-field
                 v-model.number="formValues.cacheDuration"
-                v-mask="'#######'"
+                v-mask="'###'"
                 id="input--integrations-cache-duration"
                 outlined
-                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                class="mx-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
                 :rules="numberValidation"
@@ -840,10 +840,10 @@
                 v-mask="'#######'"
                 id="input--integrations-cache-query-count"
                 outlined
-                class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+                class="ml-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
-                :rules="numberValidation"
+                :rules="numberValidationQuery"
               ></v-text-field>
             </div>
           </form-group>
@@ -1078,6 +1078,11 @@ export default {
       isTestConnectionDisabled: true,
       showConfirmModal: false,
       numberValidation: [
+        (v) => Validations.required(v, 'Enter a number higher than 0'),
+        (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+        (v) => v < 1000 || `${v} cannot exceed ${1000}`
+      ],
+      numberValidationQuery: [
         (v) => Validations.required(v, 'Enter a number higher than 0'),
         (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
         (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
