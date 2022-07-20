@@ -21,7 +21,7 @@
     <CertificateListTable
       ref="refTable"
       @on-add="toggleShowNewCertificateModal"
-      @on-preview="toggleShowPreviewDialog"
+      @on-preview="handlePreviewRowClick"
       @on-edit="handleEditRowClick"
       @on-action-delete="handleDeleteRowClick"
     />
@@ -59,11 +59,12 @@ export default {
       this.isShowNewCertificateModal = !this.isShowNewCertificateModal
     },
     toggleShowPreviewModal() {
+      if (this.isShowPreviewCertificateDialog) this.selectedRow = null
       this.isShowPreviewCertificateDialog = !this.isShowPreviewCertificateDialog
     },
     toggleShowDeleteCertificatesDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
-      if (this.isShowPreviewCertificateDialog) this.selectedRow = null
+      if (this.isShowDeleteCertificateDialog) this.selectedRow = null
       this.isShowDeleteCertificateDialog = !this.isShowDeleteCertificateDialog
     },
     handleEditRowClick(row) {
@@ -74,6 +75,10 @@ export default {
     handleDeleteRowClick(row) {
       this.selectedRow = row
       this.toggleShowDeleteCertificatesDialog()
+    },
+    handlePreviewRowClick() {
+      this.selectedRow = row
+      this.toggleShowPreviewDialog()
     },
     toggleShowPreviewDialog() {
       this.isShowPreviewDialog = !this.isShowPreviewDialog

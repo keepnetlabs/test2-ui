@@ -183,7 +183,9 @@ export default {
         .finally(this.setLoading)
     },
     handleMakeDefault(row) {
-      AwarenessEducatorService.makeDefaultCertificate(row.id)
+      AwarenessEducatorService.makeDefaultCertificate(row.id).then(() => {
+        this.callForData()
+      })
     },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
