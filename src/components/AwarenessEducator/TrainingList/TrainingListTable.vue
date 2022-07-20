@@ -107,6 +107,10 @@ export default {
     targetAudiences: {
       type: Array,
       default: () => []
+    },
+    scormTypes: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -193,6 +197,14 @@ export default {
     targetAudiences(val) {
       this.$set(
         this.tableOptions.columns.find((col) => col.property === 'targetAudience'),
+        'filterableItems',
+        val
+      )
+      this?.$refs?.refTable?.reRenderFilters()
+    },
+    scormTypes(val) {
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'type'),
         'filterableItems',
         val
       )

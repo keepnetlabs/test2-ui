@@ -30,6 +30,7 @@
       :categories="categories"
       :languages="tableLanguageFilter"
       :target-audiences="targetAudiences"
+      :scorm-types="scormTypes"
       @on-action-delete="handleDeleteRowClick"
       @on-preview="toggleShowPreviewDialog"
       @on-add="toggleShowNewTrainingModal"
