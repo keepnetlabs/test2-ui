@@ -76,7 +76,7 @@ export default {
       this.selectedRow = row
       this.toggleShowDeleteCertificatesDialog()
     },
-    handlePreviewRowClick() {
+    handlePreviewRowClick(row) {
       this.selectedRow = row
       this.toggleShowPreviewDialog()
     },
