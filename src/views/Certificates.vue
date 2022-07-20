@@ -3,6 +3,7 @@
     <NewCertificatesModal
       v-if="isShowNewCertificateModal"
       :status="isShowNewCertificateModal"
+      :selected-item="selectedRow"
       @on-close="toggleShowNewCertificateModal"
     />
     <DeleteCertificateDialog

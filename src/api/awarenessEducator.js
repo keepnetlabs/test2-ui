@@ -88,6 +88,12 @@ const getLanguages = () => {
   return testRequest.get('/trainings/languages')
 }
 
+const exportCertificates = (payload) => {
+  return testRequest.post('/certificates/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 const getScormTypes = () => {
   return testRequest.get('/trainings/types')
 }
@@ -129,5 +135,6 @@ export default {
   lmsSetValue,
   lmsGetValue,
   lmsFinish,
-  getScormTypes
+  getScormTypes,
+  exportCertificates
 }

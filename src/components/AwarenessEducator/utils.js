@@ -116,10 +116,10 @@ export const COLUMNS = {
     filterableItems: ['SCORM12']
   },
   CREATED_BY: {
-    property: PROPERTY_STORE.CREATEDBY,
+    property: PROPERTY_STORE.CREATETIME,
     align: 'left',
     editable: false,
-    label: labels.CreatedBy,
+    label: labels.DateCreated,
     fixed: false,
     sortable: true,
     show: true,
