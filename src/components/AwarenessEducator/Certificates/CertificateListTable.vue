@@ -7,6 +7,7 @@
     options
     is-server-side
     is-server-side-selection
+    row-key="id"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -169,7 +170,7 @@ export default {
         .finally(this.setLoading)
     },
     handleMakeDefault(row) {
-      AwarenessEducatorService.makeDefaultCertificate(row.resourceId)
+      AwarenessEducatorService.makeDefaultCertificate(row.id)
     },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
