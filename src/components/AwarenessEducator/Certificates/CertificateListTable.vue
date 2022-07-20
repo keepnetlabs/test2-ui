@@ -33,6 +33,17 @@
     @downloadEvent="exportCertificateList"
     @add-certificate="handleAdd"
   >
+    <template v-slot:datatable-custom-column="{ scope }">
+      <div class="notification-templates__name-column">
+        <span>{{ scope.row.name }}</span>
+        <v-tooltip v-if="scope.row.isDefault" bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on" size="20" color="#1173C1" class="pl-2">mdi-star-circle</v-icon>
+          </template>
+          <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
+        </v-tooltip>
+      </div>
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :icon="tableOptions.rowActions[0].icon"

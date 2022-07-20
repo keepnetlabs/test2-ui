@@ -15,6 +15,7 @@
     <CertificatePreviewDialog
       v-if="isShowPreviewCertificateDialog"
       :status="isShowPreviewCertificateDialog"
+      :selected-row="selectedRow"
       @on-close="toggleShowPreviewModal"
     />
     <CertificateListTable

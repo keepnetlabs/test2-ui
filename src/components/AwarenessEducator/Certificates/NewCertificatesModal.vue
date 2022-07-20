@@ -114,7 +114,7 @@ export default {
   methods: {
     getDefaultCertificateTemplate() {
       AwarenessEducatorService.getDefaultCertificateTemplate().then((response) => {
-        if (!this.formData.template) {
+        if (!this.selectedItem) {
           this.formData.template = response?.data?.data?.template
         }
       })

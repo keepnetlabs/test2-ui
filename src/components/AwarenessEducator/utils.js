@@ -53,7 +53,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     filterableType: 'text',
-    type: 'text',
+    type: 'slot',
     width: 160
   },
   DESCRIPTION: {

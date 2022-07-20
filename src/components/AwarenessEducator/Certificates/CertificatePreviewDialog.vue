@@ -12,6 +12,7 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
+      <KEmailPreview v-else ref="refPreview" :html="template" />
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -27,9 +28,11 @@
 import AppDialog from '@/components/AppDialog'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { EMITS } from '@/components/AwarenessEducator/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'CertificatePreviewDialog',
-  components: { DatatableLoading, AppDialog },
+  components: { KEmailPreview, DatatableLoading, AppDialog },
   props: {
     status: {
       type: Boolean
@@ -41,14 +44,23 @@ export default {
   data() {
     return {
       isPreviewLoading: false,
-      templates: []
+      template: []
     }
   },
   created() {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.isPreviewLoading = true
+      AwarenessEducatorService.getCertificate(this.selectedRow.id)
+        .then((response) => {
+          this.template = response?.data?.data?.template
+        })
+        .finally(() => {
+          this.isPreviewLoading = false
+        })
+    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     }
