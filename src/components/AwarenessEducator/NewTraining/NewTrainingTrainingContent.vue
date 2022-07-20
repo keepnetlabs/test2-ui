@@ -10,7 +10,7 @@
         hint="*Required"
         placeholder="Select content type"
         :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="contentTypeItems"
+        :items="scormTypes"
       ></KSelect>
     </FormGroup>
     <FormGroup>
@@ -32,7 +32,7 @@
           :language-items="languages"
           :training-resource-id="resourceId"
           :is-removable="formData.contentByLanguage.length > 1"
-          :file-previews="formData.contentByLanguage[index-1].filePreviews"
+          :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           @on-file-start="$emit('update:isActionButtonDisabled', true)"
           @on-file-end="$emit('update:isActionButtonDisabled', false)"
           @on-remove="handleRemove(index - 1)"
@@ -68,13 +68,15 @@ export default {
   inject: {
     getLanguages: {
       type: Function
+    },
+    getScormTypes: {
+      type: Function
     }
   },
   data() {
     return {
       labels,
       Validations,
-      contentTypeItems: ['SCORM12'],
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
@@ -85,6 +87,9 @@ export default {
   computed: {
     languages() {
       return this.getLanguages()
+    },
+    scormTypes() {
+      return this.getScormTypes()
     }
   },
   methods: {
@@ -100,8 +105,12 @@ export default {
         ...formData
       }
     },
-    setTrainingContents(trainingContents=[]){
-      this.formData.contentByLanguage=trainingContents.map(content=>({languageId:content.languageId,file:null,filePreviews:[{name:content.name,size:content.size}]}))
+    setTrainingContents(trainingContents = []) {
+      this.formData.contentByLanguage = trainingContents.map((content) => ({
+        languageId: content.languageId,
+        file: null,
+        filePreviews: [{ name: content.name, size: content.size }]
+      }))
     },
     handleRemove(index) {
       this.formData.contentByLanguage.splice(index, 1)

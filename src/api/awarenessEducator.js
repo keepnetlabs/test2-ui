@@ -88,6 +88,10 @@ const getLanguages = () => {
   return testRequest.get('/trainings/languages')
 }
 
+const getScormTypes = () => {
+  return testRequest.get('/trainings/types')
+}
+
 const lmsInitialize = (payload) => {
   return testRequest.post('/scorm/LMSInitialize', payload)
 }
@@ -124,5 +128,6 @@ export default {
   lmsInitialize,
   lmsSetValue,
   lmsGetValue,
-  lmsFinish
+  lmsFinish,
+  getScormTypes
 }

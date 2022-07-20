@@ -61,6 +61,7 @@ export default {
   provide() {
     return {
       getCategories: () => this.categories,
+      getScormTypes: () => this.scormTypes,
       getTargetAudiences: () => this.targetAudiences,
       getLanguages: () => this.languages,
       getDistributionSmtpDelayTimeTypes: () => this.distributionSmtpDelayTimeTypes,
@@ -74,6 +75,7 @@ export default {
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
       selectedRow: null,
+      scormTypes: [],
       isEdit: false,
       categories: [],
       languages: [],
@@ -87,12 +89,20 @@ export default {
     this.callForCategories()
     this.callForLanguages()
     this.callForTargetAudiences()
+    this.callForScormTypes()
     this.callForFormDetails()
   },
   methods: {
     callForCategories() {
       AwarenessEducatorService.getCategories().then((response) => {
         this.categories =
+          response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
+          []
+      })
+    },
+    callForScormTypes() {
+      AwarenessEducatorService.getScormTypes().then((response) => {
+        this.scormTypes =
           response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
           []
       })
