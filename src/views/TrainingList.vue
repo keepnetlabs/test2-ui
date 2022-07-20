@@ -104,7 +104,7 @@ export default {
     callForScormTypes() {
       AwarenessEducatorService.getScormTypes().then((response) => {
         this.scormTypes =
-          response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
+          response?.data?.data?.map((category) => ({ text: category.name, value: category.name })) ||
           []
       })
     },
