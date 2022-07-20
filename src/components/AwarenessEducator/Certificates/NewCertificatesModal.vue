@@ -34,7 +34,7 @@
           />
         </FormGroup>
         <MakeAvailableFor
-          v-model="formData.makeAvailableFor"
+          v-model="formData.availableForRequests"
           ref="refMakeAvailableFor"
           sub-title="Companies that will see this setting in their libraries"
         />
@@ -62,6 +62,8 @@ import { EMITS } from '@/components/AwarenessEducator/utils'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'NewCertificatesModal',
   components: {
@@ -89,7 +91,8 @@ export default {
       formData: {
         name: '',
         description: '',
-        template: ''
+        template: '',
+        availableForRequests: ''
       }
     }
   },
@@ -104,11 +107,37 @@ export default {
       return this.selectedItem ? labels.EditCertificateSub : labels.CreateNewCertificateSub
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
+    callForData() {
+      if (this.selectedItem) {
+        AwarenessEducatorService.getCertificate(this.selectedItem.id).then((response) => {
+          debugger
+        })
+      }
+    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },
-    submit() {}
+    submit() {
+      if (this.$refs.refForm.validate()) {
+        this.saveDisable = true
+        AwarenessEducatorService.createCertificate(this.formData)
+          .then(() => {
+            this.$emit(EMITS.ON_CLOSE, true)
+          })
+          .finally(() => {
+            this.saveDisable = false
+          })
+      } else {
+        this.$nextTick(() => {
+          const el = this.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
+      }
+    }
   }
 }
 </script>

@@ -174,8 +174,7 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests,
-            companyName: 'Root Company'
+            availableForRequests
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
@@ -212,6 +211,7 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
+      payload.append('trainingDetail.type', type)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })

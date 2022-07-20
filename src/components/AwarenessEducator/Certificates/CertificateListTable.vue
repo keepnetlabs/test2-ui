@@ -30,6 +30,7 @@
     @refreshAction="callForData"
     @onEmptyBtnClicked="handleAdd"
     @add-training="handleAdd"
+    @downloadEvent="exportCertificateList"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -183,6 +184,28 @@ export default {
     },
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
+    },
+    exportCertificateList(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportCertificates(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Certificates-List.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     }
   }
 }
