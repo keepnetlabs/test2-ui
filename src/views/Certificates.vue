@@ -78,10 +78,7 @@ export default {
     },
     handlePreviewRowClick(row) {
       this.selectedRow = row
-      this.toggleShowPreviewDialog()
-    },
-    toggleShowPreviewDialog() {
-      this.isShowPreviewDialog = !this.isShowPreviewDialog
+      this.toggleShowPreviewModal()
     }
   }
 }
