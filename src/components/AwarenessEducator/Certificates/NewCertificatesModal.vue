@@ -136,13 +136,22 @@ export default {
     submit() {
       if (this.$refs.refForm.validate()) {
         this.saveDisable = true
-        AwarenessEducatorService.createCertificate(this.formData)
-          .then(() => {
-            this.$emit(EMITS.ON_CLOSE, true)
-          })
-          .finally(() => {
-            this.saveDisable = false
-          })
+        if (this.selectedItem) {
+          AwarenessEducatorService.updateCertificate(this.formData, this.selectedItem.id).then(
+            () => {
+              this.saveDisable = false
+              this.$emit(EMITS.ON_CLOSE, true)
+            }
+          )
+        } else {
+          AwarenessEducatorService.createCertificate(this.formData)
+            .then(() => {
+              this.$emit(EMITS.ON_CLOSE, true)
+            })
+            .finally(() => {
+              this.saveDisable = false
+            })
+        }
       } else {
         this.$nextTick(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')

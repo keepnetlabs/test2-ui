@@ -54,6 +54,7 @@ export default {
   methods: {
     toggleShowNewCertificateModal(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
+      if (this.isShowNewCertificateModal) this.selectedRow = null
       this.isShowNewCertificateModal = !this.isShowNewCertificateModal
     },
     toggleShowPreviewModal() {

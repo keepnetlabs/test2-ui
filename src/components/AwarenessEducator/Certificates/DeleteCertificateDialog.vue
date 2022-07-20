@@ -52,7 +52,16 @@ export default {
     handleClose(forceUpdate = false) {
       this.$emit(EMITS.ON_CLOSE, forceUpdate)
     },
-    handleDelete() {}
+    handleDelete() {
+      this.isActionButtonDisabled = false
+      AwarenessEducatorService.deleteCertificate(this.selectedRow.id)
+        .then(() => {
+          this.$emit(EMITS.ON_CLOSE)
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
+    }
   }
 }
 </script>
