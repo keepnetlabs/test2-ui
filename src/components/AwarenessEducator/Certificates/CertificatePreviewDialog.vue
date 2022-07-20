@@ -8,6 +8,7 @@
     icon="mdi-eye"
     size="ultraMaximum"
     :title="getTitle"
+    :subtitle="getSubtitle"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
@@ -47,8 +48,15 @@ export default {
       template: []
     }
   },
+  computed: {
+    getTitle() {
+      return 'Certificate Template Preview'
+    },
+    getSubtitle() {
+      return this?.selectedRow?.name
+    }
+  },
   created() {
-    console.log('iam created')
     this.callForData()
   },
   methods: {
