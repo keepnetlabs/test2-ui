@@ -53,7 +53,7 @@ export default {
       this.$emit(EMITS.ON_CLOSE, forceUpdate)
     },
     handleDelete() {
-      this.isActionButtonDisabled = false
+      this.isActionButtonDisabled = true
       AwarenessEducatorService.deleteCertificate(this.selectedRow.id)
         .then(() => {
           this.$emit(EMITS.ON_CLOSE)

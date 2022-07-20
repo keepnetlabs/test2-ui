@@ -165,12 +165,13 @@ export default {
       if (this.$refs.refForm.validate()) {
         this.saveDisable = true
         if (this.selectedItem) {
-          AwarenessEducatorService.updateCertificate(this.formData, this.selectedItem.id).then(
-            () => {
-              this.saveDisable = false
+          AwarenessEducatorService.updateCertificate(this.formData, this.selectedItem.id)
+            .then(() => {
               this.$emit(EMITS.ON_CLOSE, true)
-            }
-          )
+            })
+            .finally(() => {
+              this.saveDisable = false
+            })
         } else {
           AwarenessEducatorService.createCertificate(this.formData)
             .then(() => {
