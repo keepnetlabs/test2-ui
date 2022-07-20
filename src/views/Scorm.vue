@@ -1,5 +1,5 @@
 <template>
-  <iframe frameborder="0" :src="src" style="width: 100vw; height: 100vh;"></iframe>
+  <iframe v-if="src" frameborder="0" :src="src" style="width: 100vw; height: 100vh;"></iframe>
 </template>
 <script>
 import AwarenessEducatorService from '@/api/awarenessEducator'
@@ -7,10 +7,34 @@ export default {
   name: 'Scorm',
   data() {
     return {
-      src: 'https://d8rg7jrq84z6k.cloudfront.net/deneme(2)/index_lms.html'
+      src: '',
+      scormSessionId:'',
+      enrollmentSessionId:''
     }
   },
-  created() {
+  created(){
+    this.callForData()
+  },
+ 
+  methods: {
+    callForData() {
+      const query = this?.$route?.query
+      const enrollmentContentResourceId = query?.EnrollmentContentId
+      const targetUserResourceId = query?.TargetUserResourceId
+      if (enrollmentContentResourceId && targetUserResourceId) {
+        AwarenessEducatorService.lmsInitialize({
+          enrollmentContentResourceId,
+          targetUserResourceId
+          }
+        ).then(response=>{
+            this.enrollmentSessionId = response?.data?.data?.enrollmentSessionId
+            this.scormSessionId = response?.data?.data?.scormSessionId
+            this.initialized=true
+        }).finally(()=>this.setupIframe(this.scormSessionId,this.enrollmentSessionId))
+      }
+       
+    },
+     setupIframe(scormSessionId,enrollmentSessionId) {
     const query = this?.$route?.query
     const enrollmentContentResourceId = query?.EnrollmentContentId
     const targetUserResourceId = query?.TargetUserResourceId
@@ -61,8 +85,8 @@ export default {
 
       this.enrollmentContentResourceId = enrollmentContentResourceId // for testing purposes
       this.targetUserResourceId = targetUserResourceId // for testing purposes
-      this.enrollmentSessionId = ''
-      this.scormSessionId = ''
+      this.enrollmentSessionId = enrollmentSessionId
+      this.scormSessionId = scormSessionId
       let _api_prototype_called
       if (typeof _api_prototype_called == 'undefined') {
         _api_prototype_called = true
@@ -85,24 +109,13 @@ export default {
         apiclass.prototype.GetDiagnostic = _LMSGetDiagnostic
       }
       function _LMSInitialize(val) {
-        console.log('_LMSInitialize')
-        console.log('URL: ' + window.document.location.href)
-
+        debugger
         if (val != '') {
           this.LastErrorString = 'Value passed to LMSInitialize, should be blank'
           this.LastError = '201'
           this.LastErrorDiagnostic = 'Error from API'
           return 'false'
         }
-
-        if (this.initialized) {
-          this.LastErrorString = 'LMS is already initialized, call to LMSInitialize ignored.'
-          this.LastError = '101'
-          this.LastErrorDiagnostic = 'Error from API'
-          return 'false'
-        }
-        // the calling application leaves a session id and other variables
-
         this._sessionid = ''
         this._userid = targetUserResourceId
         this._coreid = ''
@@ -121,183 +134,60 @@ export default {
         var lmsInfoInitialize = JSON.stringify(
           createLMSInfoInitialize(this.enrollmentContentResourceId, this.targetUserResourceId)
         )
-        fetch(`${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSInitialize`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(lmsInfoInitialize)
-        })
-          .then((response) => {
-            return response.json()
-          })
-          .then((response) => {
-            this.enrollmentSessionId = response.data.enrollmentSessionId
-            this.scormSessionId = response.data.scormSessionId
-            if (response.status === 'SUCCESS') this.initialized = true
-            else this.initialized = false
-          })
-          .catch((error) => {
-            this.LastError = '101' //general exception
-            this.LastErrorString = error.Message
-            this.LastErrorDiagnostic = 'AJAX error'
-            return 'false'
-          })
-        return this.initialized ? 'true' : 'false'
+        return enrollmentSessionId && scormSessionId ? ' true' : 'false'
       }
-      function _LMSFinish(val) {
-        if (val != '') {
+      async function _LMSFinish(val) { 
+        debugger
+        if (val !== '') {
           this.LastErrorString = 'Value passed to LMSFinish, should be blank'
           this.LastError = '201'
           this.LastErrorDiagnostic = 'Error from API'
           return 'false'
         }
-        if (!this.initialized) {
-          this.LastErrorString = 'LMS is not initialized, call to LMSFinish ignored.'
-          this.LastError = '301'
-          this.LastErrorDiagnostic = 'Error from API'
+        try {
+          await AwarenessEducatorService.lmsFinish({
+          enrollmentSessionId:this.enrollmentSessionId,
+          scormSessionId:this.scormSessionId,
+          targetUserResourceId:this.targetUserResourceId
+        })
+        return 'true'
+        }
+        catch(e){
           return 'false'
         }
-        // LMSInfo object carries arguments to the server and back
-        var lmsInfo = JSON.stringify(
-          createLMSInfo(
-            this._sessionid,
-            this._userid,
-            this._coreid,
-            this._scorm_course_id,
-            this._sco_identifier
-          )
-        )
-        var lmsFinishInfo = JSON.stringify(
-          createLMSInfoFinish(this.enrollmentSessionId, this.scormSessionId)
-        )
-        fetch(`${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSFinish`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(lmsFinishInfo)
-        })
-          .then((response) => {
-            return response.json()
-          })
-          .then((response) => {
-            if (response.status === 'SUCCESS') this.initialized = false
-            else this.initialized = true
-          })
-          .catch((error) => {
-            // Ajax call failed
-            this.LastError = '101' //general exception
-            this.LastErrorString = error
-            this.LastErrorDiagnostic = 'AJAX error'
-            return 'false'
-          })
-        var that = this // get reference to current instance
-
-        // AJAX callback for the LMSFinish call
-        function LMSFinish_callback(response) {
-          lmsInfo = response.d == null ? response : response.d // asp.net 3.5 adds the 'd' attribute to the response object
-          that.LastError = lmsInfo.errorCode
-          that.LastErrorString = lmsInfo.errorString
-          that.LastError = '101'
-          that.LastErrorString = ''
-          that.initialized = false
-        }
-        return this.initialized ? 'true' : 'false'
       }
-      function _LMSGetValue(name) {
-        if (!this.initialized) {
-          this.LastErrorString = 'LMS is not initialized, call to LMSGetValue ignored.'
-          this.LastError = '301'
-          this.LastErrorDiagnostic = 'Error from API'
-          return ''
-        }
+      
+     function _LMSGetValue(name) {
+        var returnValue
 
-        var lmsInfo = JSON.stringify(
-          createLMSInfo(
-            this._sessionid,
-            this._userid,
-            this._coreid,
-            this._scorm_course_id,
-            this._sco_identifier,
-            name
-          )
-        )
-        var lmsGetValueInfo = JSON.stringify(
-          createLMSInfoGetValue(this.enrollmentSessionId, this.scormSessionId, name)
-        )
-        var that = this // get reference to current API instance
+        async function callData(enrollmentSessionId,scormSessionId){
 
-        fetch(`${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSGetValue`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(lmsGetValueInfo)
+        const response= await  AwarenessEducatorService.lmsGetValue({
+          enrollmentSessionId,
+          scormSessionId,
+          name
         })
-          .then((response) => {
-            return response.json()
-          })
-          .catch((error) => {
-            this.LastError = '101' //general exception
-            this.LastErrorString = error
-            this.LastErrorDiagnostic = 'AJAX error'
-            return 'false'
-          })
-        return returnValue || ''
-      }
-      function _LMSSetValue(name, value) {
-        if (name == 'cmi.core.lesson_status' || name == 'cmi.core.exit') {
-          this._exit_status = value // set this so LMSFinish knows what to do
+        returnValue=response.data.data
         }
-        if (!this.initialized) {
-          this.LastErrorString = 'LMS is not initialized, call to LMSSetValue ignored.'
-          this.LastError = '301'
-          this.LastErrorDiagnostic = 'Error from API'
-          return 'false'
-        }
-        var lmsInfo = JSON.stringify(
-          createLMSInfo(
-            this._sessionid,
-            this._userid,
-            this._coreid,
-            this._scorm_course_id,
-            this._sco_identifier,
-            name,
-            value
-          )
-        )
-
-        var lmsInfoSetValue = JSON.stringify(
-          createLMSInfoSetValue(this.enrollmentSessionId, this.scormSessionId, name, value)
-        )
-        var returnValue = ''
-        var that = this // get reference to current API instance
-        fetch(`${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSSetValue`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(lmsInfoSetValue)
-        })
-          .then((response) => {
-            return response.json()
-          })
-          .then((response) => {
-            if (response.status === 'SUCCESS') returnValue = 'true'
-            else returnValue = 'false'
-          })
-          .catch((error) => {
-            that.LastError = '101' //general exception
-            that.LastErrorString = error
-            that.LastErrorDiagnostic = 'AJAX error'
-            return 'false'
-          })
+        (async (enrollmentSessionId,scormSessionId)=>{
+         await callData(enrollmentSessionId,scormSessionId)
+        })(this.enrollmentSessionId,this.scormSessionId)
         return returnValue
+      }
+     async function _LMSSetValue(name, value) {
+       debugger
+        try {
+          await AwarenessEducatorService.lmsSetValue({
+          enrollmentSessionId:this.enrollmentSessionId,
+          scormSessionId:this.scormSessionId,
+          name,
+          value
+        })
+        return 'true'
+        }
+        catch(e){
+          return 'false'
+        }
       }
       function _LMSCommit(val) {
         // LMSCommit is a no-op since we commit every time.
@@ -350,11 +240,6 @@ export default {
       o.errorString = ErrorString
       o.errorDiagnostic = ErrorDiagnostic
       o.returnValue = ReturnValue
-      for (prop in o) {
-        if (o[prop] == null) {
-          o[prop] = 'null'
-        }
-      }
       return o
     }
 
@@ -377,11 +262,6 @@ export default {
       o.errorString = ErrorString
       o.errorDiagnostic = ErrorDiagnostic
       o.returnValue = ReturnValue
-      for (prop in o) {
-        if (o[prop] == null) {
-          o[prop] = 'null'
-        }
-      }
       return o
     }
 
@@ -409,22 +289,9 @@ export default {
       o.name = DataItem
       return o
     }
-    console.log('API', API)
+    window.API = API
+    this.src='/scorm-test/index_lms.html'
   },
-  methods: {
-    callForData() {
-      const query = this?.$route?.query
-      const enrollmentContentResourceId = query?.EnrollmentContentId
-      const targetUserResourceId = query?.TargetUserResourceId
-      if (enrollmentContentResourceId && targetUserResourceId) {
-        AwarenessEducatorService.lmsInitialize({
-          enrollmentContentResourceId,
-          targetUserResourceId
-        }).catch(() => {
-          this.routeToLogin()
-        })
-      } else this.routeToLogin()
-    },
     routeToLogin() {
       this.$router.push({ name: 'login' })
     }
