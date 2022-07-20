@@ -32,6 +32,7 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -375,6 +376,18 @@ const router = new Router({
             parentName: 'Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
+        },
+        {
+          path: '/email-threat-simulator',
+          name: 'Email Threat Simulator',
+          component: EmailThreatSimulator,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getThreatSharingLeftMenuPermissions'
+          },
+          params: true,
+          props: true
         }
         // {
         //   path: '/reports',
