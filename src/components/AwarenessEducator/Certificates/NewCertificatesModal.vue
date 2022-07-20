@@ -126,8 +126,36 @@ export default {
           this.formData.name = name
           this.formData.description = description
           this.formData.template = template
-          this.formData.availableForRequests = availableForList
+          this.setMakeAvailableForData(availableForList)
         })
+      }
+    },
+    setMakeAvailableForData(availableForList = []) {
+      if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
+        const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          availableForList
+        )
+        if (!availableForListFromBackend.length) {
+          this.formData.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
+        } else {
+          this.formData.availableForRequests = availableForListFromBackend
+        }
+      } else {
+        this.formData.availableForRequests = [
+          {
+            id: 'MyCompanyOnly',
+            label: 'My company only',
+            type: 'MyCompanyOnly',
+            resourceId: null
+          }
+        ]
       }
     },
     handleClose() {

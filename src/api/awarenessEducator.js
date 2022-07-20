@@ -43,11 +43,15 @@ const deleteCertificate = (resourceId) => {
   })
 }
 const createCertificate = (payload) => {
-  return testRequest.post('/certificates', payload)
+  return testRequest.post('/certificates', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const updateCertificate = (payload, resourceId) => {
-  return testRequest.put(`/certificates/${resourceId}`, payload)
+  return testRequest.put(`/certificates/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const getCertificate = (resourceId) => {
