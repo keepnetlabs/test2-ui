@@ -114,13 +114,19 @@ export default {
   methods: {
     getDefaultCertificateTemplate() {
       AwarenessEducatorService.getDefaultCertificateTemplate().then((response) => {
-        debugger
+        if (!this.formData.template) {
+          this.formData.template = response?.data?.data?.template
+        }
       })
     },
     callForData() {
       if (this.selectedItem) {
         AwarenessEducatorService.getCertificate(this.selectedItem.id).then((response) => {
-          debugger
+          const { name, description, template, availableForList } = response?.data?.data
+          this.formData.name = name
+          this.formData.description = description
+          this.formData.template = template
+          this.formData.availableForRequests = availableForList
         })
       }
     },
