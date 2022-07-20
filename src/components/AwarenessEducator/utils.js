@@ -48,12 +48,12 @@ export const COLUMNS = {
   CERTIFICATE_NAME: {
     property: PROPERTY_STORE.NAME,
     align: 'left',
-    label: labels.TrainingName,
+    label: labels.CertificateTemplate,
     fixed: 'left',
     sortable: true,
     show: true,
     filterableType: 'text',
-    type: 'slot',
+    type: 'text',
     width: 160
   },
   DESCRIPTION: {

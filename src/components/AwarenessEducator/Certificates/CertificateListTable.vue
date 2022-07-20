@@ -156,7 +156,15 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.searchCertificate(this.axiosPayload)
         .then((response) => {
-          console.log('response', response)
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },
