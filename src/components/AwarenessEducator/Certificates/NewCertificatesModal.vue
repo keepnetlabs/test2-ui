@@ -92,7 +92,7 @@ export default {
         name: '',
         description: '',
         template: '',
-        availableForRequests: ''
+        availableForRequests: []
       }
     }
   },
@@ -109,8 +109,14 @@ export default {
   },
   created() {
     this.callForData()
+    this.getDefaultCertificateTemplate()
   },
   methods: {
+    getDefaultCertificateTemplate() {
+      AwarenessEducatorService.getDefaultCertificateTemplate().then((response) => {
+        debugger
+      })
+    },
     callForData() {
       if (this.selectedItem) {
         AwarenessEducatorService.getCertificate(this.selectedItem.id).then((response) => {

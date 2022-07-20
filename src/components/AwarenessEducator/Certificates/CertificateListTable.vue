@@ -31,6 +31,7 @@
     @onEmptyBtnClicked="handleAdd"
     @add-training="handleAdd"
     @downloadEvent="exportCertificateList"
+    @add-certificate="handleAdd"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction

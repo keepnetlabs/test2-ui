@@ -78,6 +78,10 @@ const getEnrollmentsContentLanguages = (resourceId) => {
   return testRequest.post(`/enrollments/${resourceId}/languages`)
 }
 
+const getDefaultCertificateTemplate = () => {
+  return testRequest.get('/certificates/default-template')
+}
+
 const getCategories = () => {
   return testRequest.get('/trainings/categories')
 }
@@ -136,5 +140,6 @@ export default {
   lmsGetValue,
   lmsFinish,
   getScormTypes,
-  exportCertificates
+  exportCertificates,
+  getDefaultCertificateTemplate
 }
