@@ -48,6 +48,7 @@ export default {
     }
   },
   created() {
+    console.log('iam created')
     this.callForData()
   },
   methods: {
