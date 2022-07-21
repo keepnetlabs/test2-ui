@@ -109,7 +109,6 @@ export default {
           apiclass.prototype.GetDiagnostic = _LMSGetDiagnostic
         }
         function _LMSInitialize(val) {
-          
           if (val != '') {
             this.LastErrorString = 'Value passed to LMSInitialize, should be blank'
             this.LastError = '201'
@@ -143,45 +142,51 @@ export default {
             this.LastErrorDiagnostic = 'Error from API'
             return 'false'
           }
-          const request = new XMLHttpRequest();
-              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSFinish`, false); 
-              request.setRequestHeader("Content-type", "application/json");
-              request.send(JSON.stringify({
-              enrollmentSessionId:this.enrollmentSessionId,
-              scormSessionId:this.scormSessionId,
-              targetUserResourceId:this.targetUserResourceId
-            }))
-            const response=JSON.parse(request.response)
-             console.log("lmsFinish",response.data)
-           return response.data
+          const request = new XMLHttpRequest()
+          request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSFinish`, false)
+          request.setRequestHeader('Content-type', 'application/json')
+          request.send(
+            JSON.stringify({
+              enrollmentSessionId: this.enrollmentSessionId,
+              scormSessionId: this.scormSessionId,
+              targetUserResourceId: this.targetUserResourceId
+            })
+          )
+          const response = JSON.parse(request.response)
+          console.log('lmsFinish', response.data)
+          return response.data
         }
 
         function _LMSGetValue(name) {
-              const request = new XMLHttpRequest();
-              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSGetValue`, false); 
-              request.setRequestHeader("Content-type", "application/json");
-              request.send(JSON.stringify({
-              enrollmentSessionId:this.enrollmentSessionId,
-              scormSessionId:this.scormSessionId,
+          const request = new XMLHttpRequest()
+          request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSGetValue`, false)
+          request.setRequestHeader('Content-type', 'application/json')
+          request.send(
+            JSON.stringify({
+              enrollmentSessionId: this.enrollmentSessionId,
+              scormSessionId: this.scormSessionId,
               name
-            }))
-            const response=JSON.parse(request.response)
-            console.log("lmsGetValue",response.data)
-           return response.data
+            })
+          )
+          const response = JSON.parse(request.response)
+          console.log('lmsGetValue', response.data)
+          return response.data
         }
         function _LMSSetValue(name, value) {
-            const request = new XMLHttpRequest();
-              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSSetValue`, false); 
-              request.setRequestHeader("Content-type", "application/json");
-              request.send(JSON.stringify({
-              enrollmentSessionId:this.enrollmentSessionId,
-              scormSessionId:this.scormSessionId,
+          const request = new XMLHttpRequest()
+          request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSSetValue`, false)
+          request.setRequestHeader('Content-type', 'application/json')
+          request.send(
+            JSON.stringify({
+              enrollmentSessionId: this.enrollmentSessionId,
+              scormSessionId: this.scormSessionId,
               name,
               value
-            }))
-            const response=JSON.parse(request.response)
-             console.log("lmsSetValue",response.data)
-           return response.data
+            })
+          )
+          const response = JSON.parse(request.response)
+          console.log('lmsSetValue', response.data)
+          return response.data
         }
         function _LMSCommit(val) {
           // LMSCommit is a no-op since we commit every time.

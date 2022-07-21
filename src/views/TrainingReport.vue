@@ -1,0 +1,137 @@
+<template>
+  <KContainer id="training-report">
+    <el-tabs v-model="tab">
+      <el-tab-pane
+        v-for="item in tabItems"
+        v-if="item.isVisible"
+        :key="item.name"
+        :id="item.id"
+        :name="item.name"
+        :label="item.label"
+        :disabled="isLoading"
+      >
+        <span slot="label">
+          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+          <template v-else> {{ item.label }} </template>
+        </span>
+        <component
+          v-if="item.name === tab"
+          :is="item.component"
+          :id="id"
+          :phishing-scenario-name="getPhishingScenarioName"
+          :form-details="formDetails"
+        />
+      </el-tab-pane>
+    </el-tabs>
+  </KContainer>
+</template>
+
+<script>
+import labels from '@/model/constants/labels'
+import TrainingReportClickedTrainingLink from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLink'
+import TrainingReportExamResults from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResults'
+import TrainingReportNoResponse from '@/components/AwarenessEducator/TrainingReport/NoResponse/TrainingReportNoResponse'
+import TrainingReportOpenedTrainingEmail from '@/components/AwarenessEducator/TrainingReport/OpenedTrainingEmail/TrainingReportOpenedTrainingEmail'
+import TrainingReportProgress from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgress'
+import TrainingReportSummary from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummary'
+import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
+import TrainingReportSendingReport from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReport'
+import KContainer from '@/components/KContainer/KContainer'
+
+export default {
+  name: 'TrainingReport',
+  components: { KContainer },
+  data() {
+    return {
+      isLoading: false,
+      tab: labels.Summary,
+      tabItems: [
+        {
+          name: labels.Summary,
+          id: 'training-report-summary-content',
+          label: labels.Summary,
+          component: TrainingReportSummary,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
+          isVisible: true
+        },
+        {
+          name: labels.Users,
+          id: 'training-report-users-content',
+          label: labels.Users,
+          component: TrainingReportUsers,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
+          isVisible: true
+        },
+        {
+          name: labels.OpenedTrainingEmail,
+          id: 'training-report-opened-content',
+          label: labels.OpenedTrainingEmail,
+          component: TrainingReportOpenedTrainingEmail,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
+          isVisible: true
+        },
+        {
+          name: labels.ClickedTrainingEmail,
+          id: 'training-report-clicked-content',
+          label: labels.ClickedTrainingEmail,
+          component: TrainingReportClickedTrainingLink,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+          isVisible: true
+        },
+        {
+          name: labels.Progress,
+          id: 'training-report-progress-content',
+          label: labels.Progress,
+          component: TrainingReportProgress,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsNoResponsePermissions']
+          isVisible: true
+        },
+        {
+          name: labels.ExamResults,
+          id: 'training-report-exam-results-content',
+          label: labels.ExamResults,
+          component: TrainingReportExamResults,
+          isVisible: this.$store.getters[
+            'permissions/getCampaignReportsPhishingReporterPermissions'
+          ]
+        },
+        {
+          name: labels.NoResponse,
+          id: 'training-report-no-response-content',
+          label: labels.NoResponse,
+          component: TrainingReportNoResponse,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: true
+        },
+        {
+          name: labels.SendingReport,
+          id: 'training-report-sending-report-content',
+          label: labels.SendingReport,
+          component: TrainingReportSendingReport,
+          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: true
+        }
+      ],
+      formDetails: null
+    }
+  },
+  computed: {
+    id() {
+      return this.$route?.params?.id
+    },
+    getPhishingScenarioName() {
+      return this.$store?.state?.common?.activePageRouterName || ''
+    }
+  },
+  created() {
+    this.callForFormDetails()
+  },
+  methods: {
+    callForFormDetails() {
+      //   getCampaignManagerJobFormDetails().then((response) => {
+      //     this.formDetails = response.data.data
+      //   })
+    }
+  }
+}
+</script>

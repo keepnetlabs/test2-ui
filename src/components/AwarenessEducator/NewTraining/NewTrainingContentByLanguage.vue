@@ -13,7 +13,6 @@
         :items="languageItems"
         :menu-props="{ offsetY: true }"
         :disabled="isDisabled"
-    
       />
       <v-btn
         v-if="isRemovable"
@@ -72,8 +71,8 @@ export default {
     isRemovable: {
       type: Boolean
     },
-    filePreviews:{
-      type:Array
+    filePreviews: {
+      type: Array
     }
   },
   data() {
@@ -111,11 +110,11 @@ export default {
     handleRemove() {
       this.$emit('on-remove')
     },
-    handleClearFile(){
-      if(this.filePreviews.length){
-        this.$emit('input',{...this.value,filePreviews:null})
+    handleClearFile() {
+      if (this.filePreviews.length) {
+        this.$emit('input', { ...this.value, filePreviews: null })
       }
-      this.isDisabled=false
+      this.isDisabled = false
     }
   }
 }

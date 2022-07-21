@@ -107,9 +107,9 @@ export default {
       type: Boolean,
       default: true
     },
-    filePreviews:{
-      type:Array,
-      default:()=>[]
+    filePreviews: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -120,8 +120,8 @@ export default {
     }
   },
   computed: {
-    getFiles(){
-      if(this.files.length){
+    getFiles() {
+      if (this.files.length) {
         return this.files
       }
       return this.filePreviews
