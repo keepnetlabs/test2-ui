@@ -109,7 +109,7 @@ export default {
           apiclass.prototype.GetDiagnostic = _LMSGetDiagnostic
         }
         function _LMSInitialize(val) {
-          debugger
+          
           if (val != '') {
             this.LastErrorString = 'Value passed to LMSInitialize, should be blank'
             this.LastError = '201'
@@ -137,76 +137,51 @@ export default {
           return enrollmentSessionId && scormSessionId ? ' true' : 'false'
         }
         function _LMSFinish(val) {
-          debugger
-          var returnValue
           if (val !== '') {
             this.LastErrorString = 'Value passed to LMSFinish, should be blank'
             this.LastError = '201'
             this.LastErrorDiagnostic = 'Error from API'
             return 'false'
           }
-
-          async function callData(enrollmentSessionId, scormSessionId, targetUserResourceId) {
-            const response = await AwarenessEducatorService.lmsFinish({
-              enrollmentSessionId,
-              scormSessionId,
-              targetUserResourceId
-            })
-            returnValue = response.data.data
-          }
-
-          try {
-            ;(async (enrollmentSessionId, scormSessionId, targetUserResourceId) => {
-              await callData(enrollmentSessionId, scormSessionId, targetUserResourceId)
-            })(this.enrollmentSessionId, this.scormSessionId, this.targetUserResourceId)
-            return returnValue
-          } catch (e) {
-            return 'false'
-          }
+          const request = new XMLHttpRequest();
+              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSFinish`, false); 
+              request.setRequestHeader("Content-type", "application/json");
+              request.send(JSON.stringify({
+              enrollmentSessionId:this.enrollmentSessionId,
+              scormSessionId:this.scormSessionId,
+              targetUserResourceId:this.targetUserResourceId
+            }))
+            const response=JSON.parse(request.response)
+             console.log("lmsFinish",response.data)
+           return response.data
         }
 
         function _LMSGetValue(name) {
-          debugger
-          var returnValue
-
-          async function callData(enrollmentSessionId, scormSessionId) {
-            const response = await AwarenessEducatorService.lmsGetValue({
-              enrollmentSessionId,
-              scormSessionId,
+              const request = new XMLHttpRequest();
+              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSGetValue`, false); 
+              request.setRequestHeader("Content-type", "application/json");
+              request.send(JSON.stringify({
+              enrollmentSessionId:this.enrollmentSessionId,
+              scormSessionId:this.scormSessionId,
               name
-            })
-            returnValue = response.data.data
-          }
-
-          try {
-            ;(async (enrollmentSessionId, scormSessionId) => {
-              await callData(enrollmentSessionId, scormSessionId)
-            })(this.enrollmentSessionId, this.scormSessionId)
-            return returnValue
-          } catch (e) {
-            return 'false'
-          }
+            }))
+            const response=JSON.parse(request.response)
+            console.log("lmsGetValue",response.data)
+           return response.data
         }
         function _LMSSetValue(name, value) {
-          debugger
-          var returnValue
-          async function callData(enrollmentSessionId, scormSessionId) {
-            const response = await AwarenessEducatorService.lmsSetValue({
-              enrollmentSessionId,
-              scormSessionId,
+            const request = new XMLHttpRequest();
+              request.open('POST', `${APP_CONFIG.VUE_APP_APP_API_TEST}/scorm/LMSSetValue`, false); 
+              request.setRequestHeader("Content-type", "application/json");
+              request.send(JSON.stringify({
+              enrollmentSessionId:this.enrollmentSessionId,
+              scormSessionId:this.scormSessionId,
               name,
               value
-            })
-            returnValue = response.data.data
-          }
-          try {
-            ;(async (enrollmentSessionId, scormSessionId) => {
-              await callData(enrollmentSessionId, scormSessionId)
-            })(this.enrollmentSessionId, this.scormSessionId)
-            return returnValue
-          } catch (e) {
-            return 'false'
-          }
+            }))
+            const response=JSON.parse(request.response)
+             console.log("lmsSetValue",response.data)
+           return response.data
         }
         function _LMSCommit(val) {
           // LMSCommit is a no-op since we commit every time.
