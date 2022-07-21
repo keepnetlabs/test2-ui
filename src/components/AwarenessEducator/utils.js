@@ -128,6 +128,19 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'text'
   },
+  CREATED_BY:{
+    property: PROPERTY_STORE.CREATEDBY,
+    align: 'left',
+    editable: false,
+    label: labels.CreatedBy,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  },
   ENROLLED_BY: {
     property: PROPERTY_STORE.ENROLLED_BY,
     align: 'left',
