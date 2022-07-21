@@ -210,7 +210,7 @@ export default {
             fixed: 'left',
             width: 240,
             filterableType: 'text'
-          },
+          }
         ],
         rowActions: [
           {
@@ -230,7 +230,7 @@ export default {
             icon: 'mdi-content-copy',
             action: 'handleEdit'
             // disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
-          },
+          }
         ],
         downloadButton: {
           show: true,
