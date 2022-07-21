@@ -128,7 +128,7 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'text'
   },
-  CREATED_BY:{
+  CREATED_BY: {
     property: PROPERTY_STORE.CREATEDBY,
     align: 'left',
     editable: false,
@@ -139,7 +139,6 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
-  },
   },
   ENROLLED_BY: {
     property: PROPERTY_STORE.ENROLLED_BY,
