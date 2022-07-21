@@ -49,14 +49,14 @@
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || scope.row.isDefault"
+        :disabled="tableOptions.rowActions[0].disabled"
         @on-click="handleEdit(scope.row)"
       />
       <RowActionsMenu>
         <DefaultMenuRowAction
           :scope="scope"
           :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[1].disabled"
+          :disabled="tableOptions.rowActions[1].disabled || scope.row.isDefault"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           @on-click="handleMakeDefault(scope.row)"
