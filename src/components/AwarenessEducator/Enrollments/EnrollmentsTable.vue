@@ -118,17 +118,20 @@ export default {
   },
   methods: {
     callForData() {
-      AwarenessEducatorService.searchEnrollments(this.axiosPayload).then((response) => {
-        const {
-          data: {
-            data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-          }
-        } = response
-        this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-        this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-        this.serverSideProps.pageNumber = pageNumber
-        this.tableData = results || []
-      })
+      this.setLoading(true)
+      AwarenessEducatorService.searchEnrollments(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     exportEnrollments(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

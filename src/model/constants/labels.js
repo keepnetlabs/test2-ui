@@ -31,7 +31,8 @@ export const labels = {
   ExcludeUserAgentBatchImportSubtitle: 'Import multiple user agents separated by line-break',
   Create: 'Create',
   CreateNewCertificate: 'Create New Certificate',
-  CreateNewCertificateSub: 'Training Certificate Information',
+  CreateNewCertificateSub:
+    'Enter certificate information, create the template and select email templates.',
   TrainingCertificateInformation: 'Training Certificate Information',
   EditCertificateSub: 'Enter certificate information, edit the template and select email templates',
   ByUserGroups: 'By User Groups',

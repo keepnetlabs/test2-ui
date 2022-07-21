@@ -78,6 +78,14 @@ const exportEnrollments = (payload) => {
   })
 }
 
+const sendEnrollment = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/send`)
+}
+
+const stopEnrollment = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/stop`)
+}
+
 const getEnrollmentsContentLanguages = (resourceId) => {
   return testRequest.post(`/enrollments/${resourceId}/languages`)
 }
@@ -145,5 +153,7 @@ export default {
   lmsFinish,
   getScormTypes,
   exportCertificates,
-  getDefaultCertificateTemplate
+  getDefaultCertificateTemplate,
+  sendEnrollment,
+  stopEnrollment
 }

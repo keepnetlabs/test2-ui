@@ -278,7 +278,6 @@ export default {
         distributionSmtpDelayTimeTypeId: '1',
         scheduleTypeId: '1',
         distributionTypeId: '1',
-        scheduledDateTimeZoneId: '',
         distributionSmtpDelayEvery: 20,
         sendingLimit: 50,
         trainingDistributionOver: 8,
