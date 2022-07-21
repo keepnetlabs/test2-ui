@@ -136,21 +136,30 @@ export default {
         )
         return enrollmentSessionId && scormSessionId ? ' true' : 'false'
       }
-      async function _LMSFinish(val) { 
+      function _LMSFinish(val) { 
         debugger
+        var returnValue
         if (val !== '') {
           this.LastErrorString = 'Value passed to LMSFinish, should be blank'
           this.LastError = '201'
           this.LastErrorDiagnostic = 'Error from API'
           return 'false'
         }
-        try {
-          await AwarenessEducatorService.lmsFinish({
-          enrollmentSessionId:this.enrollmentSessionId,
-          scormSessionId:this.scormSessionId,
-          targetUserResourceId:this.targetUserResourceId
+
+      async function callData(enrollmentSessionId,scormSessionId,targetUserResourceId){
+        const response= await  AwarenessEducatorService.lmsFinish({
+          enrollmentSessionId,
+          scormSessionId,
+          targetUserResourceId
         })
-        return 'true'
+        returnValue=response.data.data
+        }
+
+        try {
+        (async (enrollmentSessionId,scormSessionId,targetUserResourceId)=>{
+         await callData(enrollmentSessionId,scormSessionId,targetUserResourceId)
+        })(this.enrollmentSessionId,this.scormSessionId,this.targetUserResourceId)
+        return returnValue
         }
         catch(e){
           return 'false'
@@ -158,10 +167,10 @@ export default {
       }
       
      function _LMSGetValue(name) {
+       debugger
         var returnValue
-
+        
         async function callData(enrollmentSessionId,scormSessionId){
-
         const response= await  AwarenessEducatorService.lmsGetValue({
           enrollmentSessionId,
           scormSessionId,
@@ -169,25 +178,41 @@ export default {
         })
         returnValue=response.data.data
         }
+
+        try {
         (async (enrollmentSessionId,scormSessionId)=>{
          await callData(enrollmentSessionId,scormSessionId)
         })(this.enrollmentSessionId,this.scormSessionId)
         return returnValue
+        }
+        catch(){
+          return 'false'
+        }
+
       }
-     async function _LMSSetValue(name, value) {
+      function _LMSSetValue(name, value) {
        debugger
-        try {
-          await AwarenessEducatorService.lmsSetValue({
-          enrollmentSessionId:this.enrollmentSessionId,
-          scormSessionId:this.scormSessionId,
+       var returnValue
+       async function callData(enrollmentSessionId,scormSessionId){
+       const response = await AwarenessEducatorService.lmsSetValue({
+          enrollmentSessionId,
+          scormSessionId,
           name,
           value
         })
-        return 'true'
-        }
-        catch(e){
-          return 'false'
-        }
+        returnValue=response.data.data
+       }
+       try {
+        (async (enrollmentSessionId,scormSessionId)=>{
+         await callData(enrollmentSessionId,scormSessionId)
+        })(this.enrollmentSessionId,this.scormSessionId)
+        return returnValue
+       }
+       catch(){
+         return 'false'
+       }
+
+        
       }
       function _LMSCommit(val) {
         // LMSCommit is a no-op since we commit every time.
