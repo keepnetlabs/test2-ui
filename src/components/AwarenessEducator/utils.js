@@ -30,8 +30,8 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    filterableType: 'text',
-    type: 'select',
+    filterableType: 'select',
+    type: 'text',
     filterableItems: ['Yes', 'No'],
     width: 160
   },
