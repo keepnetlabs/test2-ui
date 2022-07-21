@@ -30,8 +30,9 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    filterableType: 'text',
+    filterableType: 'select',
     type: 'text',
+    filterableItems: ['Yes', 'No'],
     width: 160
   },
   OWNER: {
@@ -115,11 +116,23 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ['SCORM12']
   },
-  CREATED_BY: {
+  CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
     align: 'left',
     editable: false,
     label: labels.DateCreated,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'date',
+    width: 160,
+    filterableType: 'text'
+  },
+  CREATED_BY: {
+    property: PROPERTY_STORE.CREATEDBY,
+    align: 'left',
+    editable: false,
+    label: labels.CreatedBy,
     fixed: false,
     sortable: true,
     show: true,

@@ -40,7 +40,7 @@
           <template v-slot:activator="{ on }">
             <v-icon v-on="on" size="20" color="#1173C1" class="pl-2">mdi-star-circle</v-icon>
           </template>
-          <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
+          <span>Default Certificate Option</span>
         </v-tooltip>
       </div>
     </template>
@@ -56,7 +56,7 @@
         <DefaultMenuRowAction
           :scope="scope"
           :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[1].disabled"
+          :disabled="tableOptions.rowActions[1].disabled || scope.row.isDefault"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           @on-click="handleMakeDefault(scope.row)"
@@ -124,7 +124,12 @@ export default {
           delete: true,
           download: false
         },
-        columns: [COLUMNS.CERTIFICATE_NAME, COLUMNS.OWNER, COLUMNS.DISTRIBUTED, COLUMNS.CREATED_BY],
+        columns: [
+          COLUMNS.CERTIFICATE_NAME,
+          COLUMNS.OWNER,
+          COLUMNS.DISTRIBUTED,
+          COLUMNS.CREATE_TIME
+        ],
         iEmpty: {
           btn: labels.CreateNewCertificate,
           message: labels.EmptyCertificate,
