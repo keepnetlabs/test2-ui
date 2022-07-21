@@ -116,7 +116,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Send Training - ${this.selectedRow.name}`
+      return `Send Training - ${this?.selectedRow?.name}`
     }
   },
   created() {
