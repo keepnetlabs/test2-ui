@@ -393,6 +393,7 @@ export default {
       }
     },
     setSelectedTemplate(val) {
+      debugger
       this.$emit(EMITS.ON_ITEM_CHANGE, val)
       getCampaignJobSummary(val).then((response) => {
         debugger
