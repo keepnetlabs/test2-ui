@@ -89,6 +89,7 @@
               dense
               hide-details
               placeholder="Select a item"
+              style="max-width: 100px;"
               :items="periodTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
@@ -101,7 +102,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 282px; min-width: 180px;"
+              style="max-width: 282px; min-width: 282px;"
               :items="endTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
@@ -116,6 +117,7 @@
               style="max-width: 64px;"
               :disabled="!formData.sendReminderEvery"
             ></v-text-field>
+            <span v-if="formData.endType === 3">times</span>
             <InputDate
               v-if="formData.endType === 4"
               v-model="formData.stopTime"
@@ -123,6 +125,7 @@
               type="date"
               ref="refPicker"
               placeholder="Select Date"
+              format="dd/MM/yyyy"
               style="width: 100%; max-width: 222px;"
               :disabled="!formData.sendReminderEvery"
             />
