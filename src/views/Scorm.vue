@@ -153,8 +153,9 @@ export default {
             })
           )
           const response = JSON.parse(request.response)
+          console.log('lmsFinishResponseStatus', response.status)
           console.log('lmsFinish', response.data)
-          return response.data
+          return response.status === 'SUCCESS' ? response.data : 'false'
         }
 
         function _LMSGetValue(name) {
@@ -169,8 +170,9 @@ export default {
             })
           )
           const response = JSON.parse(request.response)
+          console.log('lmsGetValueResponseStatus', response.status)
           console.log('lmsGetValue', response.data)
-          return response.data
+          return response.status === 'SUCCESS' ? response.data : 'false'
         }
         function _LMSSetValue(name, value) {
           const request = new XMLHttpRequest()
@@ -185,8 +187,9 @@ export default {
             })
           )
           const response = JSON.parse(request.response)
+          console.log('lmsSetValue', response.status)
           console.log('lmsSetValue', response.data)
-          return response.data
+          return response.status === 'SUCCESS' ? response.data : 'false'
         }
         function _LMSCommit(val) {
           // LMSCommit is a no-op since we commit every time.
