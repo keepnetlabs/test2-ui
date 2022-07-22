@@ -206,6 +206,7 @@ import labels from '@/model/constants/labels'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { EMITS } from '@/components/AwarenessEducator/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'EditEnrollmentsModal',
   components: { KSelect, InputTimezone, InputDate, FormGroup, AppModalBodyHeader, AppModal },
@@ -289,7 +290,17 @@ export default {
       return this.getDistributionEmailOverTimeTypes()
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
+    callForData() {
+      if (this.selectedRow) {
+        AwarenessEducatorService.getEnrollment(this.selectedRow.id).then((res) => {
+          debugger
+        })
+      }
+    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },

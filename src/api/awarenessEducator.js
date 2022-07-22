@@ -116,6 +116,10 @@ const exportCertificates = (payload) => {
   })
 }
 
+const getEnrollment = (resourceId) => {
+  return testRequest.get(`/enrollments/${resourceId}`)
+}
+
 const getScormTypes = () => {
   return testRequest.get('/trainings/types')
 }
@@ -161,5 +165,6 @@ export default {
   exportCertificates,
   getDefaultCertificateTemplate,
   sendEnrollment,
-  stopEnrollment
+  stopEnrollment,
+  getEnrollment
 }
