@@ -19,9 +19,11 @@ import KContainer from '@/components/KContainer/KContainer'
 import EnrollmentsTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTable'
 import DeleteEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/DeleteEnrollmentDialog'
 import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/StopEnrollmentDialog'
+import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 export default {
   name: 'Enrollments',
   components: { StopEnrollmentDialog, DeleteEnrollmentDialog, EnrollmentsTable, KContainer },
+  mixins: [useAwarenessHelperCalls],
   data() {
     return {
       isShowEnrollmentsDialog: false,

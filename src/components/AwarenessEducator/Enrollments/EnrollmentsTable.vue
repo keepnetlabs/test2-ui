@@ -6,7 +6,6 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -49,13 +48,14 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 export default {
   name: 'EnrollmentsTable',
   components: {
     EnrollmentsTableRowActions,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
