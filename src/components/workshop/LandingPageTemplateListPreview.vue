@@ -405,6 +405,9 @@ export default {
                 if (index > -1) {
                   this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
+                } else {
+                  this.setSelectedTemplate(this.listData[0], 0, true)
+                  this.listData[0].selected = true
                 }
               } else {
                 if (!landingPageTemplateResourceId)
