@@ -548,6 +548,7 @@ export const labels = {
   Disable: 'Disable',
   LicenceType: 'License Type',
   StartDate: 'License Start Date',
+  JustStartDate: 'Start Date',
   ExpiryPeriod: 'License Expiry Date',
   NumberOfUsers: 'Number of users',
   ImportSelected: 'IMPORT SELECTED',

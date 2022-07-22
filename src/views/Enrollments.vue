@@ -10,7 +10,14 @@
       :status="isShowStopEnrollmentDialog"
       @on-close="toggleShowStopEnrollmentDialog"
     />
-    <EnrollmentsTable ref="refTable" @on-action-delete="handleDeleteRowClick" />
+    <EnrollmentsTable
+      ref="refTable"
+      :categories="categories"
+      :languages="tableLanguageFilter"
+      :target-audiences="targetAudiences"
+      :scorm-types="scormTypes"
+      @on-action-delete="handleDeleteRowClick"
+    />
   </KContainer>
 </template>
 

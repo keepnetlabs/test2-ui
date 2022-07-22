@@ -168,7 +168,7 @@ export const COLUMNS = {
     property: PROPERTY_STORE.START_DATE,
     align: 'left',
     editable: false,
-    label: labels.StartDate,
+    label: labels.JustStartDate,
     fixed: false,
     sortable: true,
     show: true,
