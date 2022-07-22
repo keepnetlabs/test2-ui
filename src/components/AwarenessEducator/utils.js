@@ -124,9 +124,9 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 160,
-    filterableType: 'text'
+    filterableType: 'date'
   },
   CREATED_BY: {
     property: PROPERTY_STORE.CREATEDBY,
