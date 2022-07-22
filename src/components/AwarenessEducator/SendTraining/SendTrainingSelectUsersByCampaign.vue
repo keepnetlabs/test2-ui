@@ -240,7 +240,11 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
-import { getCampaignJobSummary, searchCampaignManager } from '@/api/phishingsimulator'
+import {
+  getCampaignJobSummary,
+  getCampaignManagerPreview,
+  searchCampaignManager
+} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
@@ -395,9 +399,29 @@ export default {
     setSelectedTemplate(row) {
       debugger
       this.$emit(EMITS.ON_ITEM_CHANGE, row.resourceId)
-      getCampaignJobSummary(row.resourceId).then((response) => {
-        debugger
-      })
+      getCampaignManagerPreview(this.selectedRow.resourceId)
+        .then((response) => {
+          const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
+          const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
+          this.isAttachmentBasedScenario = methodTypeId === 3
+          this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+          this.emailTemplateParams = {
+            name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
+          }
+          this.landingPageTemplates = landingPage?.landingPages || []
+          this.landingPageParams = {
+            name: landingPage?.name || '',
+            description: landingPage?.description || '',
+            urlTemplate: landingPage?.urlTemplate || ''
+          }
+        })
+        .finally(() => {
+          this.timeoutId = setTimeout(() => {
+            this.setLoading()
+          }, 500)
+        })
     },
     debounce(fn, delay) {
       if (this.timeout) {
