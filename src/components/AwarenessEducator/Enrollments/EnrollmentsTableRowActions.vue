@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     getFirstActionParams() {
-      const status = scope.row.status
+      const status = this.scope.row.status
       const obj = {
         icon: '',
         text: ''
