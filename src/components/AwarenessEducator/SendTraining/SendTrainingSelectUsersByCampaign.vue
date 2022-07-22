@@ -73,31 +73,31 @@
                         class="template-list--item template-list--item__sub-header"
                         style="overflow: hidden; text-overflow: ellipsis;"
                       >
-                        {{ item.method }}
+                        {{ item.method || 'Clicked-only' }}
                         &#8226;
                         <span class="template-list--item__sub-header--span">by</span>
                         {{ item['createdBy'] }}
                       </div>
                     </div>
                   </div>
-
-                  <div class="template-list--item">
-                    {{ item.description || '\xa0' }}
+                  <div class="d-flex justify-space-between mb-2">
+                    <div
+                      class="template-list--item template-list--item__sub-header"
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                    >
+                      started on {{ item.createTime }} &#8226; ended on {{ item.lastLaunch }}
+                    </div>
                   </div>
+
                   <div class="template-list--item mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="isItemHaveTags(item)">{{ '\xa0' }}</div>
                   </div>
                 </div>
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
                 <el-tabs v-model="tab">
-                  <el-tab-pane
-                    id="campaign-manager-info--email-content"
-                    name="email"
-                    :label="labels.JustEmail"
-                  >
+                  <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
                     <div class="template-preview pt-3">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
@@ -125,7 +125,7 @@
                     v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
-                    id="campaign-manager-info--landing-content"
+                    id="send-training-landing-page"
                   >
                     <el-tabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
                       <el-tab-pane
@@ -176,6 +176,37 @@
                       />
                     </div>
                   </el-tab-pane>
+                  <el-tab-pane
+                    :label="labels.CampaignResults"
+                    name="campaign-results"
+                    id="send-training-campaign-results"
+                  >
+                    <div class="send-training-campaign-results-container">
+                      <FormGroupHorizontalContent
+                        :label="labels.SelectInstance"
+                        style="max-width: 700px;"
+                      >
+                        <KSelect
+                          v-model.trim="phishingCampaignResourceId"
+                          id="input--campaign-manager-advanced-settings-other-settings-percent"
+                          class="ml-2"
+                          style="min-width: 548px;"
+                          outlined
+                          dense
+                          hide-details
+                          placeholder="All instances"
+                        />
+                      </FormGroupHorizontalContent>
+                    </div>
+                    <div style="margin-top: 40px;">
+                      <div class="campaign-manager-target-user-groups-header">
+                        <v-icon color="#000000">mdi-account-multiple</v-icon>
+                        <span class="campaign-manager-target-user-groups-header__text"
+                          >Total 157 users from 19 groups</span
+                        >
+                      </div>
+                    </div>
+                  </el-tab-pane>
                 </el-tabs>
               </div>
             </template>
@@ -212,9 +243,17 @@ import { EMITS } from '../utils'
 import { searchCampaignManager } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
+import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
-  components: { KEmailPreview, ShowMoreTags, KSelect, Multipane, MultipaneResizer },
+  components: {
+    FormGroupHorizontalContent,
+    KEmailPreview,
+    ShowMoreTags,
+    KSelect,
+    Multipane,
+    MultipaneResizer
+  },
   props: {
     value: {
       type: String
@@ -237,6 +276,7 @@ export default {
       emailTemplateParams: null,
       landingPageTemplates: null,
       landingPageParams: null,
+      phishingCampaignResourceId: '',
       selectedLandingPageTab: 1,
       timeout: null
     }
