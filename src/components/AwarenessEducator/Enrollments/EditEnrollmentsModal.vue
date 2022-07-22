@@ -163,12 +163,12 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 118px;"
+              style="max-width: 150px;"
               :items="enrollmentAutoEnrollDayOfWeekItems"
               :disabled="!formData.isAutoEnroll"
             />
             <v-text-field
-              v-if="formData.endType === 4"
+              v-if="formData.enrollmentAutoEnroll.endType === 4"
               v-model="formData.enrollmentAutoEnroll.periodCount"
               v-mask="'#######'"
               id="input--enrollment-auto-enroll-period-count"
@@ -186,7 +186,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 150px;"
+              style="max-width: 118px;"
               :items="periodTypeItems"
               :disabled="!formData.isAutoEnroll"
             />
