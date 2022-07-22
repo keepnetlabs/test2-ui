@@ -251,33 +251,33 @@ export default {
         }
       },
       periodTypeItems: [
-        { text: 'days', value: 1 },
-        { text: 'weeks', value: 2 },
-        { text: 'months', value: 3 }
+        { text: 'days', value: 'Day' },
+        { text: 'weeks', value: 'Week' },
+        { text: 'months', value: 'Month' }
       ],
       endTypeItems: [
         {
           text: 'when user completes the training',
-          value: 1
+          value: 'TrainingCompleted'
         },
         {
           text: 'when user completes the quiz',
-          value: 2
+          value: 'QuizCompleted'
         },
         {
           text: 'after occurences',
-          value: 3
+          value: 'AfterOccurences'
         },
         {
           text: 'on date',
-          value: 4
+          value: 'OnDate'
         }
       ],
       enrollmentAutoEnrollTypeItems: [
-        { text: 'the same day', value: 1 },
-        { text: 'the next day', value: 2 },
-        { text: 'next...', value: 3 },
-        { text: 'in...', value: 4 }
+        { text: 'the same day', value: 'SameDay' },
+        { text: 'the next day', value: 'NextDay' },
+        { text: 'next...', value: 'Next' },
+        { text: 'in...', value: 'In' }
       ],
       enrollmentAutoEnrollDayOfWeekItems: [
         { text: 'Monday', value: 0 },
