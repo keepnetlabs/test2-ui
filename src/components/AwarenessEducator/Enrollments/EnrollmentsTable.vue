@@ -61,7 +61,7 @@ export default {
       CONSTANTS: {
         id: 'awareness-educator-enrollments-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload({  orderBy: "TrainingName"}),
+      axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
