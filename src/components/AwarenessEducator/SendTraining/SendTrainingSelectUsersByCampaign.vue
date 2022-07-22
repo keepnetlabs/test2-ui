@@ -21,7 +21,7 @@
                     "
                   ></v-text-field>
                 </div>
-                <div>
+                <div v-if="false">
                   <KSelect
                     v-model="scenarioType"
                     placeholder="Scenario Type"
@@ -31,7 +31,7 @@
                     :items="scenarioTypeItems"
                   />
                 </div>
-                <div>
+                <div v-if="false">
                   <KSelect
                     v-model="language"
                     placeholder="Language"
@@ -146,7 +146,7 @@
                         :label="`Page ${index + 1}`"
                         :name="`${index + 1}`"
                       >
-                        <div class="template-preview pt-3">
+                        <div class="template-preview mt-n1 pt-0">
                           <div v-if="!!template.content" class="template-preview__text pl-2">
                             <div>
                               <span class="template-preview__text--title">Name: </span>
@@ -166,7 +166,7 @@
                         </div>
                       </el-tab-pane>
                     </el-tabs>
-                    <div v-else class="template-preview pt-3">
+                    <div v-else class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
                           <span class="template-preview__text--title">Name: </span>
@@ -175,9 +175,9 @@
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Description: </span>
+                          <span class="template-preview__text--title">Phishing URL: </span>
                           <span class="template-preview__text--body">{{
-                            landingPageParams.description
+                            landingPageParams.urlTemplate
                           }}</span>
                         </div>
                       </div>
