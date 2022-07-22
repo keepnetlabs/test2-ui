@@ -120,6 +120,12 @@ const getEnrollment = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}`)
 }
 
+const updateEnrollment = (payload, resourceId) => {
+  return testRequest.put(`/enrollments/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 const getScormTypes = () => {
   return testRequest.get('/trainings/types')
 }
@@ -166,5 +172,6 @@ export default {
   getDefaultCertificateTemplate,
   sendEnrollment,
   stopEnrollment,
-  getEnrollment
+  getEnrollment,
+  updateEnrollment
 }

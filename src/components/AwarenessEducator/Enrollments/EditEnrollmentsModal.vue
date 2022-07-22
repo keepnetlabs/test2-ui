@@ -34,7 +34,7 @@
                 style="margin-bottom: 0;"
                 label="Schedule to"
                 color="#2196f3"
-                value="3"
+                value="2"
               />
               <div :class="[!isDateValid && 'date-picker-error mb-n3']">
                 <InputDate
@@ -68,7 +68,7 @@
         <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
-              v-model="formData.sendReminderEvery"
+              v-model="sendReminderEvery"
               id="input--campaign-manager-advanced-settings-randomly-selected"
               color="#2196f3"
               hide-details
@@ -83,7 +83,7 @@
               outlined
               class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
               style="max-width: 64px;"
-              :disabled="!formData.sendReminderEvery"
+              :disabled="!sendReminderEvery"
             ></v-text-field>
             <KSelect
               v-model.trim="formData.enrollmentReminder.periodType"
@@ -95,7 +95,7 @@
               placeholder="Select a item"
               style="max-width: 100px;"
               :items="periodTypeItems"
-              :disabled="!formData.sendReminderEvery"
+              :disabled="!sendReminderEvery"
             />
             <span class="ml-2">ends</span>
             <KSelect
@@ -108,7 +108,7 @@
               placeholder="Select a item"
               style="max-width: 282px; min-width: 282px;"
               :items="endTypeItems"
-              :disabled="!formData.sendReminderEvery"
+              :disabled="!sendReminderEvery"
             />
             <v-text-field
               v-if="formData.enrollmentReminder.endType === 3"
@@ -119,7 +119,7 @@
               outlined
               class="ml-2 absolute-text-input-error"
               style="max-width: 64px;"
-              :disabled="!formData.sendReminderEvery"
+              :disabled="!sendReminderEvery"
             ></v-text-field>
             <span v-if="formData.endType === 3" class="ml-2">times</span>
             <InputDate
@@ -131,14 +131,14 @@
               placeholder="Select Date"
               format="dd/MM/yyyy"
               style="width: 100%; max-width: 180px;"
-              :disabled="!formData.sendReminderEvery"
+              :disabled="!sendReminderEvery"
             />
           </div>
         </FormGroup>
         <FormGroup class="mt-6" style="max-width: 950px;" :title="labels.AutoEnroll">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
-              v-model="formData.isAutoEnroll"
+              v-model="isAutoEnroll"
               id="input--campaign-manager-advanced-settings-randomly-selected"
               color="#2196f3"
               hide-details
@@ -155,7 +155,7 @@
               placeholder="Select a item"
               style="max-width: 150px;"
               :items="enrollmentAutoEnrollTypeItems"
-              :disabled="!formData.isAutoEnroll"
+              :disabled="!isAutoEnroll"
               @change="handleEnrollmentTypeChange"
             />
             <KSelect
@@ -169,7 +169,7 @@
               placeholder="Select a item"
               style="max-width: 150px;"
               :items="enrollmentAutoEnrollDayOfWeekItems"
-              :disabled="!formData.isAutoEnroll"
+              :disabled="!isAutoEnroll"
             />
             <v-text-field
               v-if="formData.enrollmentAutoEnroll.type === 4"
@@ -180,7 +180,7 @@
               outlined
               class="ml-2 absolute-text-input-error"
               style="max-width: 64px;"
-              :disabled="!formData.isAutoEnroll"
+              :disabled="!isAutoEnroll"
             ></v-text-field>
             <KSelect
               v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
@@ -192,7 +192,7 @@
               placeholder="Select a item"
               style="max-width: 118px;"
               :items="periodTypeItems"
-              :disabled="!formData.isAutoEnroll"
+              :disabled="!isAutoEnroll"
             />
           </div>
         </FormGroup>
@@ -229,8 +229,9 @@ export default {
       labels,
       radioItems: [{ text: 'Send now', value: '1' }],
       isDateValid: true,
+      sendReminderEvery: false,
+      isAutoEnroll: false,
       formData: {
-        sendReminderEvery: false,
         scheduleTypeId: '1',
         enrollmentScheduler: {
           scheduledDate: '',
@@ -291,7 +292,7 @@ export default {
   },
   computed: {
     isScheduledTimeDisabled() {
-      return this.formData.scheduleTypeId !== '3'
+      return this.formData.scheduleTypeId !== '2'
     },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
@@ -313,9 +314,9 @@ export default {
             enrollmentScheduler
           } = response?.data?.data
           if (enrollmentReminder) this.sendReminderEvery = true
-          if (enrollmentAutoEnroll) this.formData.isAutoEnroll = true
+          if (enrollmentAutoEnroll) this.isAutoEnroll = true
           if (enrollmentScheduler) {
-            this.formData.scheduleTypeId = '3'
+            this.formData.scheduleTypeId = '2'
           }
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
@@ -348,7 +349,13 @@ export default {
         this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
       }
     },
-    handleSubmit() {}
+    handleSubmit() {
+      AwarenessEducatorService.updateEnrollment(this.formData, this.selectedRow.enrollmentId).then(
+        () => {
+          this.$emit(EMITS.ON_CLOSE, true)
+        }
+      )
+    }
   }
 }
 </script>
