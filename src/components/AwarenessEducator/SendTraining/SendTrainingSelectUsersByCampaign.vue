@@ -240,7 +240,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
-import { searchCampaignManager } from '@/api/phishingsimulator'
+import { getCampaignJobSummary, searchCampaignManager } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
@@ -394,6 +394,9 @@ export default {
     },
     setSelectedTemplate(val) {
       this.$emit(EMITS.ON_ITEM_CHANGE, val)
+      getCampaignJobSummary(val).then((response) => {
+        debugger
+      })
     },
     debounce(fn, delay) {
       if (this.timeout) {

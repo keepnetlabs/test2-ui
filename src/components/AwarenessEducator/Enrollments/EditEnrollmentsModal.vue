@@ -168,7 +168,7 @@
               :disabled="!formData.isAutoEnroll"
             />
             <v-text-field
-              v-if="formData.enrollmentAutoEnroll.type === 3"
+              v-if="formData.enrollmentAutoEnroll.type === 4"
               v-model="formData.enrollmentAutoEnroll.periodCount"
               v-mask="'#######'"
               id="input--enrollment-auto-enroll-period-count"
