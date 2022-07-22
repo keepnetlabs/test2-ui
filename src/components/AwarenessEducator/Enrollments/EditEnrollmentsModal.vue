@@ -149,7 +149,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 118px;"
+              style="max-width: 150px;"
               :items="enrollmentAutoEnrollTypeItems"
               :disabled="!formData.isAutoEnroll"
               @change="handleEnrollmentTypeChange"
@@ -168,7 +168,7 @@
               :disabled="!formData.isAutoEnroll"
             />
             <v-text-field
-              v-if="formData.enrollmentAutoEnroll.endType === 4"
+              v-if="formData.enrollmentAutoEnroll.type === 3"
               v-model="formData.enrollmentAutoEnroll.periodCount"
               v-mask="'#######'"
               id="input--enrollment-auto-enroll-period-count"
