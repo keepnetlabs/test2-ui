@@ -3,6 +3,7 @@
     <EditEnrollmentsModal
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
+      :selected-row="selectedRow"
       @on-close="toggleShowEditEnrollmentModal"
     />
     <DeleteEnrollmentDialog
