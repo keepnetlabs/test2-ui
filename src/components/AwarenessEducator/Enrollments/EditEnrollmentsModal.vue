@@ -61,7 +61,7 @@
             </div>
           </v-radio-group>
         </FormGroup>
-        <FormGroup class="mt-6" :title="labels.Reminder">
+        <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 800px;">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
               v-model="formData.sendReminderEvery"
@@ -89,7 +89,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 118px;"
+              style="max-width: 282px; min-width: 180px;"
               :items="periodTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
