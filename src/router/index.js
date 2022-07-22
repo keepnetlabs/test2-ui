@@ -157,16 +157,6 @@ const router = new Router({
               component: Enrollments
             },
             {
-              path: 'enrollments/training-report/:id',
-              name: 'Training Report',
-              meta: {
-                isAuthenticated: true,
-                parentName: 'Awareness Educator',
-                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
-              },
-              component: TrainingReport
-            },
-            {
               path: 'certificates',
               name: 'Certificates',
               meta: {
@@ -175,6 +165,16 @@ const router = new Router({
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
               component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              component: TrainingReport
             }
           ]
         },

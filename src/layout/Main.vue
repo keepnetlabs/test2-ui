@@ -322,6 +322,9 @@
                   id="btn--link-navigator-menu-enrollments"
                   route-name="Enrollments"
                   :router-name="routerName"
+                  :active-class-comparator="
+                    () => routerName === 'Enrollments' || routerName === 'Training Report'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -1021,11 +1024,13 @@ export default {
         'primary--text active-menu-parent':
           routerName === 'Training List' ||
           routerName === 'Enrollments' ||
-          routerName === 'Certificates',
+          routerName === 'Certificates' ||
+          routerName === 'Training Report',
         'un-selected-list-item':
           routerName !== 'Training List' ||
           routerName !== 'Enrollments' ||
-          routerName !== 'Certificates'
+          routerName !== 'Certificates' ||
+          routerName !== 'Training Report'
       }
     },
     getCommunityName() {

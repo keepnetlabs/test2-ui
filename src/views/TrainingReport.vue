@@ -18,7 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
-          :phishing-scenario-name="getPhishingScenarioName"
+          :training-name="getTrainingName"
           :form-details="formDetails"
         />
       </el-tab-pane>
@@ -119,8 +119,8 @@ export default {
     id() {
       return this.$route?.params?.id
     },
-    getPhishingScenarioName() {
-      return this.$store?.state?.common?.activePageRouterName || ''
+    getTrainingName() {
+      return this.$store?.state?.common?.activePageRouterName || 'Training Name'
     }
   },
   created() {

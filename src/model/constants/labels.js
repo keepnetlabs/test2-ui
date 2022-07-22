@@ -5,6 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  TrainingSummary: 'Training Summary',
   ExamResults: 'Exam Results',
   OpenedTrainingEmail: 'Opened Training Email',
   ClickedTrainingEmail: 'Clicked Training Email',
@@ -205,6 +206,7 @@ export const labels = {
   Stats: 'Stats',
   DownloadReport: 'Download Report',
   ResendCampaign: 'Resend Campaign',
+  ResendTraining: 'Resend Training',
   ResetPassword: 'Reset Password',
   Clicked: 'Clicked',
   SubmittedData: 'Submitted Data',
