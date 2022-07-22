@@ -89,7 +89,6 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 282px; min-width: 180px;"
               :items="periodTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
@@ -102,7 +101,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 118px;"
+              style="max-width: 282px; min-width: 180px;"
               :items="endTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
