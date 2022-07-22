@@ -98,7 +98,7 @@
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
                 <el-tabs v-model="tab">
                   <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
-                    <div class="template-preview pt-3">
+                    <div class="template-preview mt-n1">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
                           <span class="template-preview__text--title">Name: </span>
@@ -409,30 +409,25 @@ export default {
     },
     setSelectedTemplate(row) {
       this.$emit(EMITS.ON_ITEM_CHANGE, row)
-      getCampaignManagerPreview(row.resourceId)
-        .then((response) => {
-          const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-          const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
-          this.isAttachmentBasedScenario = methodTypeId === 3
-          this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
-          this.emailTemplateParams = {
-            name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
-            subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
-            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
-            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
-          }
-          this.landingPageTemplates = landingPage?.landingPages || []
-          this.landingPageParams = {
-            name: landingPage?.name || '',
-            description: landingPage?.description || '',
-            urlTemplate: landingPage?.urlTemplate || ''
-          }
-        })
-        .finally(() => {
-          this.timeoutId = setTimeout(() => {
-            this.setLoading()
-          }, 500)
-        })
+      this.tab = 'email'
+      getCampaignManagerPreview(row.resourceId).then((response) => {
+        const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
+        const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
+        this.isAttachmentBasedScenario = methodTypeId === 3
+        this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+        this.emailTemplateParams = {
+          name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+          subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
+          fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+          fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
+        }
+        this.landingPageTemplates = landingPage?.landingPages || []
+        this.landingPageParams = {
+          name: landingPage?.name || '',
+          description: landingPage?.description || '',
+          urlTemplate: landingPage?.urlTemplate || ''
+        }
+      })
     },
     debounce(fn, delay) {
       if (this.timeout) {
