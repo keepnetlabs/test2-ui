@@ -80,6 +80,9 @@ export default {
           COLUMNS.LANGUAGES,
           COLUMNS.TYPE,
           COLUMNS.ENROLLED_BY,
+          COLUMNS.START_DATE,
+          COLUMNS.STATUS,
+          COLUMNS.DELIVERY,
           COLUMNS.TAGS
         ],
         iEmpty: {
@@ -103,6 +106,10 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye'
+          },
+          {
+            name: labels.Delete,
+            icon: 'mdi-delete'
           },
           {
             name: labels.Delete,

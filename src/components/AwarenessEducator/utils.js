@@ -152,6 +152,41 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'text'
   },
+  DELIVERY: {
+    property: PROPERTY_STORE.DELIVERY,
+    align: 'left',
+    editable: false,
+    label: labels.Delivery,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  START_DATE: {
+    property: PROPERTY_STORE.START_DATE,
+    align: 'left',
+    editable: false,
+    label: labels.StartDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  STATUS: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 150,
+    filterableType: 'select'
+  },
   TAGS: {
     property: PROPERTY_STORE.TAGS,
     align: 'left',
@@ -165,4 +200,15 @@ export const COLUMNS = {
     hasTooltip: true,
     filterableType: 'text'
   }
+}
+
+export const ENROLLMENT_STATUSES = {
+  AUTO_ENROLL: 'AutoEnroll',
+  SENDING: 'Sending',
+  FINISHED: 'Finished',
+  SCHEDULED: 'Scheduled',
+  PAUSED: 'Paused',
+  ARCHIVED: 'Archived',
+  ERROR: 'Error',
+  DELETED: 'Deleted'
 }

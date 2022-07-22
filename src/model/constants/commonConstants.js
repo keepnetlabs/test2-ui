@@ -166,6 +166,7 @@ export const PROPERTY_STORE = {
   LANGUAGE: 'languageTypeName',
   AUDIENCE: 'audience',
   TRAINING_NAME: 'trainingName',
+  START_DATE: 'startDate',
   TARGET_AUDIENCE: 'targetAudience',
   TAGS: 'tags',
   COUNT: 'count',
