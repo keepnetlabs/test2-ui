@@ -17,6 +17,8 @@
       :target-audiences="targetAudiences"
       :scorm-types="scormTypes"
       @on-action-delete="handleDeleteRowClick"
+      @on-stop="handleStop"
+      @on-send="handleSend"
     />
   </KContainer>
 </template>
@@ -27,6 +29,8 @@ import EnrollmentsTable from '@/components/AwarenessEducator/Enrollments/Enrollm
 import DeleteEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/DeleteEnrollmentDialog'
 import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/StopEnrollmentDialog'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'Enrollments',
   components: { StopEnrollmentDialog, DeleteEnrollmentDialog, EnrollmentsTable, KContainer },
@@ -52,6 +56,15 @@ export default {
     handleDeleteRowClick(row) {
       this.selectedRow = row
       this.toggleShowEnrollmentsDialog()
+    },
+    handleStop(row) {
+      this.selectedRow = row
+      this.toggleShowStopEnrollmentDialog()
+    },
+    handleSend(row) {
+      AwarenessEducatorService.sendEnrollment(row.id).then(() => {
+        this.$refs.refTable.callForData()
+      })
     }
   }
 }

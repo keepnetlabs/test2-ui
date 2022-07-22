@@ -11,6 +11,27 @@ export const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
 }
 
+export const ENROLLMENT_STATUSES = {
+  AUTO_ENROLL: 'AutoEnroll',
+  SENDING: 'Sending',
+  FINISHED: 'Finished',
+  SCHEDULED: 'Scheduled',
+  PAUSED: 'Paused',
+  ARCHIVED: 'Archived',
+  ERROR: 'Error',
+  DELETED: 'Deleted'
+}
+
+export const ENROLLMENT_STATUSES_FILTER = [
+  ENROLLMENT_STATUSES.AUTO_ENROLL,
+  ENROLLMENT_STATUSES.SENDING,
+  ENROLLMENT_STATUSES.FINISHED,
+  ENROLLMENT_STATUSES.SCHEDULED,
+  ENROLLMENT_STATUSES.PAUSED,
+  ENROLLMENT_STATUSES.ERROR,
+  ENROLLMENT_STATUSES.DELETED
+]
+
 export const COLUMNS = {
   NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
@@ -154,7 +175,7 @@ export const COLUMNS = {
   },
   DELIVERY: {
     property: PROPERTY_STORE.DELIVERY,
-    align: 'left',
+    align: 'center',
     editable: false,
     label: labels.Delivery,
     fixed: false,
@@ -185,7 +206,8 @@ export const COLUMNS = {
     show: true,
     type: 'badge',
     width: 150,
-    filterableType: 'select'
+    filterableType: 'select',
+    filterableItems: ENROLLMENT_STATUSES_FILTER
   },
   TAGS: {
     property: PROPERTY_STORE.TAGS,
@@ -200,15 +222,4 @@ export const COLUMNS = {
     hasTooltip: true,
     filterableType: 'text'
   }
-}
-
-export const ENROLLMENT_STATUSES = {
-  AUTO_ENROLL: 'AutoEnroll',
-  SENDING: 'Sending',
-  FINISHED: 'Finished',
-  SCHEDULED: 'Scheduled',
-  PAUSED: 'Paused',
-  ARCHIVED: 'Archived',
-  ERROR: 'Error',
-  DELETED: 'Deleted'
 }

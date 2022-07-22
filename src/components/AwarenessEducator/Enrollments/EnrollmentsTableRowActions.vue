@@ -1,8 +1,7 @@
 <template>
   <div>
     <DefaultButtonRowAction
-      :icon="getFirstActionIcon"
-      :text="rowActions[0].name"
+      v-bind="getFirstActionParams"
       :scope="scope"
       :disabled="rowActions[0].disabled"
       :checkIsOwnerProperty="false"
@@ -40,6 +39,7 @@
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import { ENROLLMENT_STATUSES } from '@/components/AwarenessEducator/utils'
 export default {
   name: 'EnrollmentsTableRowActions',
   components: {
@@ -56,12 +56,55 @@ export default {
     }
   },
   computed: {
-    getFirstActionIcon() {
-      return ''
+    getFirstActionParams() {
+      const status = scope.row.status
+      const obj = {
+        icon: '',
+        text: ''
+      }
+      if (
+        [
+          ENROLLMENT_STATUSES.AUTO_ENROLL,
+          ENROLLMENT_STATUSES.FINISHED,
+          ENROLLMENT_STATUSES.ERROR
+        ].includes(status)
+      ) {
+        obj.icon = 'mdi-text-box'
+        obj.text = 'View Report'
+      } else if (ENROLLMENT_STATUSES.SENDING) {
+        obj.icon = 'mdi-pause'
+        obj.text = 'Pause'
+      } else if (ENROLLMENT_STATUSES.SCHEDULED) {
+        obj.icon = 'mdi-send'
+        obj.text = 'Send'
+      }
+
+      return obj
     }
   },
   methods: {
-    handleAction() {}
+    handleAction(row) {
+      const { status } = row
+      if (
+        [
+          ENROLLMENT_STATUSES.AUTO_ENROLL,
+          ENROLLMENT_STATUSES.FINISHED,
+          ENROLLMENT_STATUSES.ERROR
+        ].includes(status)
+      ) {
+        //TODO route to training report
+        this.$router.push({
+          name: 'trainingName',
+          params: {
+            id: row.id
+          }
+        })
+      } else if (ENROLLMENT_STATUSES.SENDING) {
+        this.$emit('on-stop', row)
+      } else if (ENROLLMENT_STATUSES.SCHEDULED) {
+        this.$emit('on-send', row)
+      }
+    }
   }
 }
 </script>

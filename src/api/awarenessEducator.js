@@ -79,7 +79,13 @@ const exportEnrollments = (payload) => {
 }
 
 const sendEnrollment = (resourceId) => {
-  return testRequest.post(`/enrollments/${resourceId}/send`)
+  return testRequest.post(
+    `/enrollments/${resourceId}/send`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const stopEnrollment = (resourceId) => {

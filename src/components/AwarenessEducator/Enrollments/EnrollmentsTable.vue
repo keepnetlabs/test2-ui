@@ -29,7 +29,12 @@
     @downloadEvent="exportEnrollments"
   >
     <template #datatable-row-actions="{ scope }">
-      <EnrollmentsTableRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
+      <EnrollmentsTableRowActions
+        :scope="scope"
+        :row-actions="tableOptions.rowActions"
+        @on-stop="$emit('on-stop', $event)"
+        @on-send="$emit('on-send', $event)"
+      />
     </template>
   </DataTable>
 </template>
