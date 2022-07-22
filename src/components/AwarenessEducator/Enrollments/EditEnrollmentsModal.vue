@@ -5,6 +5,7 @@
     title="Edit Enrollment"
     title-id="text--edit-enrollments-modal-title"
     @closeOverlay="handleClose"
+    @submit="handleSubmit"
   >
     <template #overlay-body>
       <AppModalBodyHeader
@@ -311,10 +312,24 @@ export default {
             enrollmentAutoEnroll,
             enrollmentScheduler
           } = response?.data?.data
+          if (enrollmentReminder) this.sendReminderEvery = true
+          if (enrollmentAutoEnroll) this.formData.isAutoEnroll = true
+          if (enrollmentScheduler) {
+            this.formData.scheduleTypeId = '3'
+          }
           this.formData.enrollmentReminder = enrollmentReminder
+            ? enrollmentReminder
+            : this.formData.enrollmentReminder
+          delete response?.data?.data?.enrollmentReminder
           this.formData.enrollmentAutoEnroll = enrollmentAutoEnroll
+            ? enrollmentAutoEnroll
+            : this.formData.enrollmentAutoEnroll
+          delete response?.data?.data?.enrollmentAutoEnroll
           this.formData.enrollmentScheduler = enrollmentScheduler
-          console.log('response.data.data', response.data.data)
+            ? enrollmentScheduler
+            : this.formData.enrollmentScheduler
+          delete response?.data?.data?.enrollmentScheduler
+          this.formData = { ...this.formData, ...response?.data?.data }
         })
       }
     },
@@ -332,7 +347,8 @@ export default {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
       }
-    }
+    },
+    handleSubmit() {}
   }
 }
 </script>
