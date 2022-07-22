@@ -101,6 +101,18 @@
                     <div class="template-preview pt-3">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
+                          <span class="template-preview__text--title">Name: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.name
+                          }}</span>
+                        </div>
+                        <div>
+                          <span class="template-preview__text--title">Subject: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.subject
+                          }}</span>
+                        </div>
+                        <div>
                           <span class="template-preview__text--title">From Name: </span>
                           <span class="template-preview__text--body">{{
                             emailTemplateParams.fromName
@@ -396,8 +408,7 @@ export default {
       }
     },
     setSelectedTemplate(row) {
-      debugger
-      this.$emit(EMITS.ON_ITEM_CHANGE, row.resourceId)
+      this.$emit(EMITS.ON_ITEM_CHANGE, row)
       getCampaignManagerPreview(row.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
@@ -406,6 +417,7 @@ export default {
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
             name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+            subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
             fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
             fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
           }
