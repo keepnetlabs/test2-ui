@@ -392,10 +392,10 @@ export default {
         }, 500)
       }
     },
-    setSelectedTemplate(val) {
+    setSelectedTemplate(row) {
       debugger
-      this.$emit(EMITS.ON_ITEM_CHANGE, val)
-      getCampaignJobSummary(val).then((response) => {
+      this.$emit(EMITS.ON_ITEM_CHANGE, row.resourceId)
+      getCampaignJobSummary(row.resourceId).then((response) => {
         debugger
       })
     },
