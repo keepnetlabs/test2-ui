@@ -34,6 +34,7 @@
         :row-actions="tableOptions.rowActions"
         @on-stop="$emit('on-stop', $event)"
         @on-send="$emit('on-send', $event)"
+        @on-edit="$emit('on-edit', $event)"
       />
     </template>
   </DataTable>

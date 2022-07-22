@@ -1,5 +1,10 @@
 <template>
   <KContainer tabless id="enrollments">
+    <EditEnrollmentsModal
+      v-if="isShowEditEnrollmentModal"
+      :status="isShowEditEnrollmentModal"
+      @on-close="toggleShowEditEnrollmentModal"
+    />
     <DeleteEnrollmentDialog
       v-if="isShowEnrollmentsDialog"
       :status="isShowEnrollmentsDialog"
@@ -19,6 +24,7 @@
       @on-action-delete="handleDeleteRowClick"
       @on-stop="handleStop"
       @on-send="handleSend"
+      @on-edit="handleEditRowClick"
     />
   </KContainer>
 </template>
@@ -30,16 +36,24 @@ import DeleteEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/D
 import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/StopEnrollmentDialog'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/EditEnrollmentsModal'
 
 export default {
   name: 'Enrollments',
-  components: { StopEnrollmentDialog, DeleteEnrollmentDialog, EnrollmentsTable, KContainer },
+  components: {
+    EditEnrollmentsModal,
+    StopEnrollmentDialog,
+    DeleteEnrollmentDialog,
+    EnrollmentsTable,
+    KContainer
+  },
   mixins: [useAwarenessHelperCalls],
   data() {
     return {
       isShowEnrollmentsDialog: false,
       selectedRow: null,
-      isShowStopEnrollmentDialog: false
+      isShowStopEnrollmentDialog: false,
+      isShowEditEnrollmentModal: false
     }
   },
   methods: {
@@ -65,6 +79,15 @@ export default {
       AwarenessEducatorService.sendEnrollment(row.id).then(() => {
         this.$refs.refTable.callForData()
       })
+    },
+    toggleShowEditEnrollmentModal() {
+      if (forceUpdate) this.$refs.refTable.callForData()
+      if (this.isShowEditEnrollmentModal) this.selectedRow = null
+      this.isShowEditEnrollmentModal = !this.isShowEditEnrollmentModal
+    },
+    handleEditRowClick(row) {
+      this.selectedRow = row
+      this.toggleShowEditEnrollmentModal()
     }
   }
 }

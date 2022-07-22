@@ -13,7 +13,7 @@
         :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
         :text="rowActions[1].name"
-        @on-click="handleAction(scope.row)"
+        @on-click="$emit('on-edit', scope.row)"
       />
       <DefaultMenuRowAction
         :scope="scope"
@@ -76,7 +76,7 @@ export default {
         obj.text = 'Pause'
       } else if (ENROLLMENT_STATUSES.SCHEDULED) {
         obj.icon = 'mdi-send'
-        obj.text = 'Send'
+        obj.text = 'Send Now'
       }
 
       return obj
