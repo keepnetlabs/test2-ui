@@ -6,23 +6,22 @@
       :id="id"
     />
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
-    <!--
     <div class="campaign-manager-report-summary__general-info mt-6">
-      <CampaignManagerReportSummaryCampaignInfo
+      <TrainingReportSummaryCampaignInfo
         :items="getCampaignSummaryItems"
         :helper-data="getCampaignSummaryHelperData"
-        :is-test-campaign="isTestCampaign"
+        :is-test-training="isTestTraining"
         :isLoading="isLoading"
       />
-      <CampaignManagerReportEmailDelivery
+      <TrainingReportTrainingDelivery
         class="ml-4"
         :items="getEmailDeliveryData"
         :helper-data="getEmailDeliveryHelperData"
         :isLoading="isLoading"
       />
     </div>
-    <div class="campaign-manager-report-summary__general-info mt-4"></div>
-    <CampaignManagerReportSummaryEmail
+    <div class="training-report-summary__general-info mt-4"></div>
+    <!-- <CampaignManagerReportSummaryEmail
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading"
     />
@@ -37,20 +36,20 @@
 <script>
 import TrainingReportSummaryHeader from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryHeader'
 import TrainingReportSummaryCards from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryCards'
-// import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
+import TrainingReportSummaryCampaignInfo from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryCampaignInfo'
 // import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 // import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
-// import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
+import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'TrainingReportSummary',
   components: {
-    // CampaignManagerReportEmailDelivery,
+    TrainingReportTrainingDelivery,
     // CampaignManagerReportSummaryLandingPage,
     // CampaignManagerReportSummaryEmail,
-    // CampaignManagerReportSummaryCampaignInfo,
+    TrainingReportSummaryCampaignInfo,
     TrainingReportSummaryCards,
     TrainingReportSummaryHeader
   },
@@ -66,7 +65,7 @@ export default {
   data() {
     return {
       targetGroups: [],
-      campaignSummary: {},
+      trainingSummary: {},
       interval: null,
       chartLabels: [
         'Opened email',
@@ -79,22 +78,20 @@ export default {
   },
   computed: {
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
-        endDate: '0',
-        totalTargetUserCount: 0
-      }
-      const { languageShortCode = 'EN' } = this.campaignSummary?.scenarioInfo || {
+      const { totalTargetUserCount = 0, autoEnroll = 'No', languageShortCode = 'EN' } = this
+        .trainingSummary || {
+        totalTargetUserCount: 0,
+        autoEnroll: 'Enroll new users the same day',
         languageShortCode: 'EN'
       }
-      const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Users': totalTargetUserCount,
-        'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
+        'Auto-enroll': autoEnroll,
         Languages: languageShortCode
       }
     },
     getCampaignSummaryHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary || {}
+      const { targetUsers = {}, campaignInfo = {} } = this.trainingSummary || {}
       const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
@@ -105,13 +102,13 @@ export default {
         totalTargetUserCount
       }
     },
-    isTestCampaign() {
-      const { settings = {} } = this.campaignSummary
+    isTestTraining() {
+      const { settings = {} } = this.trainingSummary
       const { excludeFromReports = false } = settings
       return excludeFromReports
     },
     getSettingsItems() {
-      const { settings = {} } = this.campaignSummary
+      const { settings = {} } = this.trainingSummary
       const { duration, excludeFromReports, languages, smtpName = 0 } = settings
       return {
         Languages: languages || 'English',
@@ -121,11 +118,11 @@ export default {
       }
     },
     getRandomlySelectedUsersCount() {
-      const { targetUsers = {} } = this.campaignSummary
+      const { targetUsers = {} } = this.trainingSummary
       return targetUsers['randomlyUsersCount'] || 0
     },
     getEmailDeliveryData() {
-      const { campaignInfo = {} } = this.campaignSummary
+      const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
@@ -138,7 +135,7 @@ export default {
       }
     },
     getEmailDeliveryHelperData() {
-      const { campaignInfo = {} } = this.campaignSummary
+      const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveredUserCount,
         emailNotDeliveredUserCount,
@@ -186,8 +183,8 @@ export default {
           completedTraining: 0
         }
       }
-      const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
-        ? this.campaignSummary
+      const { scenarioStats = {} } = this.trainingSummary?.scenarioStats
+        ? this.trainingSummary
         : defaultScenarioStatsObject
       const {
         openedEmail = 0,
@@ -241,11 +238,11 @@ export default {
       }
     },
     getTotalUsers() {
-      const { campaignInfo = {} } = this.campaignSummary
+      const { campaignInfo = {} } = this.trainingSummary
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.campaignSummary
+      const { emailTemplateInfo = {} } = this.trainingSummary
       const {
         name,
         difficultyResourceId,
@@ -276,7 +273,7 @@ export default {
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.campaignSummary
+      const { landingPageTemplateInfo = {} } = this.trainingSummary
       const {
         name,
         urlTemplate,
@@ -305,33 +302,7 @@ export default {
     clearInterval(this.interval)
   },
   methods: {
-    callForData() {
-      this.callApis(true)
-      this.interval = setInterval(() => {
-        this.callApis()
-      }, 15000)
-    },
-    callApis(isUseLoading = false) {
-      if (isUseLoading) {
-        this.setLoading(true)
-      }
-      getCampaignJobSummary(this.id)
-        .then((response) => {
-          this.campaignSummary = response?.data?.data
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.campaignSummary?.phishingCampaignName || ''
-          )
-        })
-        .finally(() => {
-          if (isUseLoading) {
-            this.setLoading(false)
-          }
-        })
-      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
-        this.targetGroups = response?.data?.data?.groups || []
-      })
-    }
+    callForData() {}
   }
 }
 </script>

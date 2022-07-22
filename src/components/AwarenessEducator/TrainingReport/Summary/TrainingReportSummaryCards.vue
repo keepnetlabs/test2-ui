@@ -1,55 +1,45 @@
 <template>
   <div id="training-report-summary-cards" class="training-report-summary-cards">
     <div class="training-report-summary-cards__left">
-      <CampaignManagerReportSummaryInfoCard
-        v-bind="getNoResponseData"
-        :title="labels.NoResponse"
-        :is-loading="isLoading"
-        :icon-src="noResponseIcon"
-      />
-      <CampaignManagerReportSummaryInfoCard
+      <TrainingReportSummaryInfoCard
         v-bind="getOpenedData"
         background-color="#E6A23C"
         :title="labels.OpenedEmail"
         :is-loading="isLoading"
-        :icon-src="openedEmailIcon"
+        :icon-src="clickedLinkIcon"
+      />
+      <TrainingReportSummaryInfoCard
+        v-bind="getInProgressData"
+        background-color="#1173C1"
+        :title="labels.InProgress"
+        :is-loading="isLoading"
+        :icon-src="inProgressIcon"
       />
     </div>
     <div class="training-report-summary-cards__right">
-      <CampaignManagerReportSummaryInfoCard
-        v-bind="isAttachment ? getPhishingReporterData : getClickedData"
-        background-color="#F56C6C"
-        :title="isAttachment ? labels.Reporters : labels.ClickedLink"
+      <TrainingReportSummaryInfoCard
+        v-bind="getCompletedTrainingData"
+        :title="labels.CompletedTraining"
         :is-loading="isLoading"
-        :icon-src="clickedLinkIcon"
+        :icon-src="noResponseIcon"
       />
-      <CampaignManagerReportSummaryInfoCard
-        v-bind="isAttachment ? getOpenedAttachmentData : getSubmittedData"
-        :class="
-          isAttachment
-            ? 'training-report-summary-info-card--opened-attachment-data'
-            : 'training-report-summary-info-card--submitted-data'
-        "
+      <TrainingReportSummaryInfoCard
+        v-bind="getNoResponseData"
         background-color="#B83A3A"
-        :title="isAttachment ? labels.OpenedAttachment : labels.SubmittedData"
+        :title="labels.NoResponse"
         :is-loading="isLoading"
-      >
-        <template #icon>
-          <div class="training-report-summary-info-card--submitted-data-icon">
-            <img src="../../../../assets/img/enhanced_encryption.png" alt="icon" />
-          </div>
-        </template>
-      </CampaignManagerReportSummaryInfoCard>
+        :icon-src="helpIcon"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import CampaignManagerReportSummaryInfoCard from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryInfoCard'
+import TrainingReportSummaryInfoCard from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryInfoCard'
 import labels from '@/model/constants/labels'
 export default {
   name: 'TrainingReportSummaryCards',
-  components: { CampaignManagerReportSummaryInfoCard },
+  components: { TrainingReportSummaryInfoCard },
   props: {
     isLoading: {
       type: Boolean,
@@ -65,36 +55,28 @@ export default {
   data() {
     return {
       labels,
-      openedEmailIcon: require('../../../../assets/img/ic-opened-email.svg'),
       noResponseIcon: require('../../../../assets/img/ic-check-box.svg'),
       clickedLinkIcon: require('../../../../assets/img/ic-exclude.svg'),
-      submittedDataIcon: require('../../../../assets/img/enhanced_encryption.png')
+      inProgressIcon: require('../../../../assets/img/hourglass.svg'),
+      helpIcon: require('../../../../assets/img/help.svg')
     }
   },
   computed: {
-    getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
-    },
     getOpenedData() {
       const { openedEmail } = this.items
       return openedEmail ? openedEmail : {}
     },
-    getOpenedAttachmentData() {
-      const { attachmentOpenedEmail } = this.items
-      return attachmentOpenedEmail ? attachmentOpenedEmail : {}
+    getInProgressData() {
+      const { inProgress } = this.items
+      return inProgress ? inProgress : {}
     },
-    getSubmittedData() {
-      const { submittedEmail } = this.items
-      return submittedEmail ? submittedEmail : {}
+    getCompletedTrainingData() {
+      const { completedTraining } = this.items
+      return completedTraining ? completedTraining : {}
     },
-    getClickedData() {
-      const { clickedEmail } = this.items
-      return clickedEmail ? clickedEmail : {}
-    },
-    getPhishingReporterData() {
-      const { phishingReporter } = this.items
-      return phishingReporter ? phishingReporter : {}
+    getNoResponseData() {
+      const { noResponse } = this.items
+      return noResponse ? noResponse : {}
     }
   }
 }
