@@ -111,7 +111,7 @@
               :disabled="!sendReminderEvery"
             />
             <v-text-field
-              v-if="formData.enrollmentReminder.endType === 3"
+              v-if="formData.enrollmentReminder.endType === 'AfterOccurences'"
               v-model="formData.enrollmentReminder.occurrenceCount"
               v-mask="'#######'"
               id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
@@ -123,7 +123,7 @@
             ></v-text-field>
             <span v-if="formData.endType === 3" class="ml-2">times</span>
             <InputDate
-              v-if="formData.enrollmentReminder.endType === 4"
+              v-if="formData.enrollmentReminder.endType === 'OnDate'"
               v-model="formData.enrollmentReminder.stopTime"
               class="date-picker-height-40 ml-2"
               type="date"
@@ -159,7 +159,7 @@
               @change="handleEnrollmentTypeChange"
             />
             <KSelect
-              v-if="formData.enrollmentAutoEnroll.type === 3"
+              v-if="formData.enrollmentAutoEnroll.type === 'Next'"
               v-model.trim="formData.enrollmentAutoEnroll.dayOfWeek"
               id="input--enrollment-auto-enroll-day-of-week"
               class="ml-2"
@@ -172,7 +172,7 @@
               :disabled="!isAutoEnroll"
             />
             <v-text-field
-              v-if="formData.enrollmentAutoEnroll.type === 4"
+              v-if="formData.enrollmentAutoEnroll.type === 'In'"
               v-model="formData.enrollmentAutoEnroll.periodCount"
               v-mask="'#######'"
               id="input--enrollment-auto-enroll-period-count"
@@ -239,7 +239,7 @@ export default {
           useOwnTimeZone: true
         },
         enrollmentAutoEnroll: {
-          type: 1,
+          type: 'SameDay',
           dayOfWeek: 0,
           emailPeriodTypeEnum: 1,
           periodCount: 0
