@@ -240,11 +240,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
-import {
-  getCampaignJobSummary,
-  getCampaignManagerPreview,
-  searchCampaignManager
-} from '@/api/phishingsimulator'
+import { getCampaignManagerPreview, searchCampaignManager } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
@@ -381,6 +377,9 @@ export default {
             newItem.total = Number(item['instanceCount'])
             return newItem
           })
+          if (this.campaignItems.length) {
+            this.setSelectedTemplate(this.campaignItems[0])
+          }
         })
         .finally(this.setLoading)
     },
@@ -399,7 +398,7 @@ export default {
     setSelectedTemplate(row) {
       debugger
       this.$emit(EMITS.ON_ITEM_CHANGE, row.resourceId)
-      getCampaignManagerPreview(this.selectedRow.resourceId)
+      getCampaignManagerPreview(row.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
           const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
