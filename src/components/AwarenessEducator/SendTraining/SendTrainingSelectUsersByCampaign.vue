@@ -98,7 +98,7 @@
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
                 <el-tabs v-model="tab">
                   <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
-                    <div class="template-preview mt-n1">
+                    <div class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
                           <span class="template-preview__text--title">Name: </span>
@@ -155,9 +155,9 @@
                               }}</span>
                             </div>
                             <div>
-                              <span class="template-preview__text--title">Description: </span>
+                              <span class="template-preview__text--title">Phishing URL: </span>
                               <span class="template-preview__text--body">{{
-                                landingPageParams.description
+                                landingPageParams.urlTemplate
                               }}</span>
                             </div>
                           </div>
@@ -424,7 +424,6 @@ export default {
         this.landingPageTemplates = landingPage?.landingPages || []
         this.landingPageParams = {
           name: landingPage?.name || '',
-          description: landingPage?.description || '',
           urlTemplate: landingPage?.urlTemplate || ''
         }
       })
