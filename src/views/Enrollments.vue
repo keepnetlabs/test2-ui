@@ -80,7 +80,7 @@ export default {
         this.$refs.refTable.callForData()
       })
     },
-    toggleShowEditEnrollmentModal() {
+    toggleShowEditEnrollmentModal(forceUpdate) {
       if (forceUpdate) this.$refs.refTable.callForData()
       if (this.isShowEditEnrollmentModal) this.selectedRow = null
       this.isShowEditEnrollmentModal = !this.isShowEditEnrollmentModal

@@ -116,10 +116,6 @@ export default {
           {
             name: labels.Delete,
             icon: 'mdi-delete'
-          },
-          {
-            name: labels.Delete,
-            icon: 'mdi-delete'
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

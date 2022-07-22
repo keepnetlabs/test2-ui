@@ -25,10 +25,18 @@
         @on-click="handleAction(scope.row)"
       />
       <DefaultMenuRowAction
+        v-if="!isShowReport"
         :scope="scope"
-        :disabled="rowActions[4].disabled"
-        :icon="rowActions[4].icon"
-        :text="rowActions[4].name"
+        :disabled="false"
+        icon="mdi-text-box"
+        text="View Report"
+        @on-click="handleAction(scope.row)"
+      />
+      <DefaultMenuRowAction
+        :scope="scope"
+        :disabled="rowActions[3].disabled"
+        :icon="rowActions[3].icon"
+        :text="rowActions[3].name"
         @on-click="handleAction(scope.row)"
       />
     </RowActionsMenu>
@@ -56,19 +64,20 @@ export default {
     }
   },
   computed: {
+    isShowReport() {
+      return [
+        ENROLLMENT_STATUSES.AUTO_ENROLL,
+        ENROLLMENT_STATUSES.FINISHED,
+        ENROLLMENT_STATUSES.ERROR
+      ].includes(this.scope.row.status)
+    },
     getFirstActionParams() {
       const status = this.scope.row.status
       const obj = {
         icon: '',
         text: ''
       }
-      if (
-        [
-          ENROLLMENT_STATUSES.AUTO_ENROLL,
-          ENROLLMENT_STATUSES.FINISHED,
-          ENROLLMENT_STATUSES.ERROR
-        ].includes(status)
-      ) {
+      if (this.isShowReport) {
         obj.icon = 'mdi-text-box'
         obj.text = 'View Report'
       } else if (ENROLLMENT_STATUSES.SENDING) {
