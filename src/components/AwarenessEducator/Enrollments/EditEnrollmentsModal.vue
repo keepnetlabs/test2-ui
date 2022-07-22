@@ -12,7 +12,7 @@
         sub-title="Select target groups and schedule options for this phishing campaign instance"
       />
       <v-form ref="refForm">
-        <FormGroup has-hint style="max-width: 600px;" :title="labels.Schedule">
+        <FormGroup style="max-width: 600px;" :title="labels.Schedule">
           <v-radio-group
             v-model="formData.scheduleTypeId"
             class="mt-0 campaign-manager-target-groups-radio"
@@ -72,7 +72,7 @@
             </v-checkbox>
             <span>Set reminder every</span>
             <v-text-field
-              v-model="formData.reminder"
+              v-model="formData.periodCount"
               v-mask="'#######'"
               id="input--campaign-manager-advanced-settings-other-settings-number"
               placeholder="Enter number"
@@ -82,7 +82,7 @@
               :disabled="!formData.sendReminderEvery"
             ></v-text-field>
             <KSelect
-              v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
+              v-model.trim="formData.periodType"
               id="input--campaign-manager-advanced-settings-other-settings-percent"
               class="ml-2"
               outlined
@@ -90,11 +90,12 @@
               hide-details
               placeholder="Select a item"
               style="max-width: 118px;"
+              :items="periodTypeItems"
               :disabled="!formData.sendReminderEvery"
             />
             <span class="ml-2">ends</span>
             <KSelect
-              v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
+              v-model.trim="formData.endType"
               id="input--campaign-manager-advanced-settings-other-settings-percent"
               class="ml-2"
               outlined
@@ -102,6 +103,28 @@
               hide-details
               placeholder="Select a item"
               style="max-width: 118px;"
+              :items="endTypeItems"
+              :disabled="!formData.sendReminderEvery"
+            />
+            <v-text-field
+              v-if="formData.endType === 3"
+              v-model="formData.occurrenceCount"
+              v-mask="'#######'"
+              id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
+              placeholder="Enter number"
+              outlined
+              class="ml-2 absolute-text-input-error"
+              style="max-width: 64px;"
+              :disabled="!formData.sendReminderEvery"
+            ></v-text-field>
+            <InputDate
+              v-if="formData.endType === 4"
+              v-model="formData.stopTime"
+              class="date-picker-height-40 ml-2"
+              type="date"
+              ref="refPicker"
+              placeholder="Select Date"
+              style="width: 100%; max-width: 222px;"
               :disabled="!formData.sendReminderEvery"
             />
           </div>
@@ -117,14 +140,52 @@
             </v-checkbox>
             <span>Automatically enroll new users in target groups</span>
             <KSelect
-              v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-              id="input--campaign-manager-advanced-settings-other-settings-percent"
+              v-model.trim="formData.enrollmentAutoEnroll.type"
+              id="input--enrollment-auto-enroll-type"
               class="ml-2"
               outlined
               dense
               hide-details
               placeholder="Select a item"
               style="max-width: 118px;"
+              :items="enrollmentAutoEnrollTypeItems"
+              :disabled="!formData.isAutoEnroll"
+              @change="handleEnrollmentTypeChange"
+            />
+            <KSelect
+              v-if="formData.enrollmentAutoEnroll.type === 3"
+              v-model.trim="formData.enrollmentAutoEnroll.dayOfWeek"
+              id="input--enrollment-auto-enroll-day-of-week"
+              class="ml-2"
+              outlined
+              dense
+              hide-details
+              placeholder="Select a item"
+              style="max-width: 118px;"
+              :items="enrollmentAutoEnrollDayOfWeekItems"
+              :disabled="!formData.isAutoEnroll"
+            />
+            <v-text-field
+              v-if="formData.endType === 4"
+              v-model="formData.enrollmentAutoEnroll.periodCount"
+              v-mask="'#######'"
+              id="input--enrollment-auto-enroll-period-count"
+              placeholder="Enter number"
+              outlined
+              class="ml-2 absolute-text-input-error"
+              style="max-width: 64px;"
+              :disabled="!formData.isAutoEnroll"
+            ></v-text-field>
+            <KSelect
+              v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
+              id="input--enrollment-auto-enroll-period-type"
+              class="ml-2"
+              outlined
+              dense
+              hide-details
+              placeholder="Select a item"
+              style="max-width: 118px;"
+              :items="periodTypeItems"
               :disabled="!formData.isAutoEnroll"
             />
           </div>
@@ -162,12 +223,57 @@ export default {
       radioItems: [{ text: 'Send now', value: '1' }],
       isDateValid: true,
       formData: {
-        reminder: 2,
-        isAutoEnroll: false,
+        periodCount: 2,
+        periodType: 1,
+        endType: 1,
         sendReminderEvery: false,
         scheduleTypeId: '1',
-        sendRandomlyUsersCalculateTypeId: '1'
-      }
+        sendRandomlyUsersCalculateTypeId: '1',
+        occurrenceCount: 0,
+        stopTime: '',
+        enrollmentAutoEnroll: {
+          type: 1,
+          dayOfWeek: 0,
+          emailPeriodTypeEnum: 1,
+          periodCount: 0
+        }
+      },
+      periodTypeItems: [
+        { text: 'days', value: 1 },
+        { text: 'weeks', value: 2 },
+        { text: 'months', value: 3 }
+      ],
+      endTypeItems: [
+        {
+          text: 'when user completes the training',
+          value: 1
+        },
+        {
+          text: 'when user completes the quiz',
+          value: 2
+        },
+        {
+          text: 'after occurences',
+          value: 3
+        },
+        {
+          text: 'on date',
+          value: 4
+        }
+      ],
+      enrollmentAutoEnrollTypeItems: [
+        { text: 'the same day', value: 1 },
+        { text: 'the next day', value: 2 },
+        { text: 'next...', value: 3 },
+        { text: 'in...', value: 4 }
+      ],
+      enrollmentAutoEnrollDayOfWeekItems: [
+        { text: 'Monday', value: 1 },
+        { text: 'Tuesday', value: 2 },
+        { text: 'Wednesday', value: 3 },
+        { text: 'Thursday', value: 4 },
+        { text: 'Friday', value: 5 }
+      ]
     }
   },
   computed: {
@@ -184,6 +290,18 @@ export default {
   methods: {
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
+    },
+    handleEnrollmentTypeChange(val) {
+      if (val === 3) {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+      } else if (val === 4) {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
+      } else {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+      }
     }
   }
 }
