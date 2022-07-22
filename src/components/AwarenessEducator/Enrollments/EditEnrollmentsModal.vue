@@ -296,7 +296,7 @@ export default {
   methods: {
     callForData() {
       if (this.selectedRow) {
-        AwarenessEducatorService.getEnrollment(this.selectedRow.id).then((res) => {
+        AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((res) => {
           debugger
         })
       }
