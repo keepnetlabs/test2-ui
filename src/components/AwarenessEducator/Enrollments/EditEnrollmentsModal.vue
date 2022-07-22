@@ -37,7 +37,7 @@
               />
               <div :class="[!isDateValid && 'date-picker-error mb-n3']">
                 <InputDate
-                  v-model="formData.scheduledDate"
+                  v-model="formData.enrollmentScheduler.scheduledDate"
                   class="date-picker-height-40 ml-2"
                   type="datetime"
                   ref="refPicker"
@@ -57,7 +57,10 @@
                   </transition>
                 </div>
               </div>
-              <InputTimezone :disabled="isScheduledTimeDisabled" />
+              <InputTimezone
+                v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+                :disabled="isScheduledTimeDisabled"
+              />
             </div>
           </v-radio-group>
         </FormGroup>
@@ -72,9 +75,9 @@
             </v-checkbox>
             <span>Set reminder every</span>
             <v-text-field
-              v-model="formData.periodCount"
+              v-model="formData.enrollmentReminder.periodCount"
               v-mask="'#######'"
-              id="input--campaign-manager-advanced-settings-other-settings-number"
+              id="input--edit-enrollment-reminder-period-count"
               placeholder="Enter number"
               outlined
               class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
@@ -82,8 +85,8 @@
               :disabled="!formData.sendReminderEvery"
             ></v-text-field>
             <KSelect
-              v-model.trim="formData.periodType"
-              id="input--campaign-manager-advanced-settings-other-settings-percent"
+              v-model.trim="formData.enrollmentReminder.periodType"
+              id="input--edit-enrollment-reminder-period-type"
               class="ml-2"
               outlined
               dense
@@ -95,8 +98,8 @@
             />
             <span class="ml-2">ends</span>
             <KSelect
-              v-model.trim="formData.endType"
-              id="input--campaign-manager-advanced-settings-other-settings-percent"
+              v-model.trim="formData.enrollmentReminder.endType"
+              id="input--edit-enrollment-reminder-end-type"
               class="ml-2"
               outlined
               dense
@@ -107,8 +110,8 @@
               :disabled="!formData.sendReminderEvery"
             />
             <v-text-field
-              v-if="formData.endType === 3"
-              v-model="formData.occurrenceCount"
+              v-if="formData.enrollmentReminder.endType === 3"
+              v-model="formData.enrollmentReminder.occurrenceCount"
               v-mask="'#######'"
               id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
               placeholder="Enter number"
@@ -119,8 +122,8 @@
             ></v-text-field>
             <span v-if="formData.endType === 3" class="ml-2">times</span>
             <InputDate
-              v-if="formData.endType === 4"
-              v-model="formData.stopTime"
+              v-if="formData.enrollmentReminder.endType === 4"
+              v-model="formData.enrollmentReminder.stopTime"
               class="date-picker-height-40 ml-2"
               type="date"
               ref="refPicker"
@@ -226,19 +229,25 @@ export default {
       radioItems: [{ text: 'Send now', value: '1' }],
       isDateValid: true,
       formData: {
-        periodCount: 2,
-        periodType: 1,
-        endType: 1,
         sendReminderEvery: false,
         scheduleTypeId: '1',
-        sendRandomlyUsersCalculateTypeId: '1',
-        occurrenceCount: 0,
-        stopTime: '',
+        enrollmentScheduler: {
+          scheduledDate: '',
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: true
+        },
         enrollmentAutoEnroll: {
           type: 1,
           dayOfWeek: 0,
           emailPeriodTypeEnum: 1,
           periodCount: 0
+        },
+        enrollmentReminder: {
+          periodCount: 0,
+          periodType: 1,
+          endType: 1,
+          occurrenceCount: 0,
+          stopTime: ''
         }
       },
       periodTypeItems: [
@@ -295,9 +304,17 @@ export default {
   },
   methods: {
     callForData() {
-      if (this.selectedRow) {
-        AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((res) => {
-          debugger
+      if (this?.selectedRow?.enrollmentId) {
+        AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
+          const {
+            enrollmentReminder,
+            enrollmentAutoEnroll,
+            enrollmentScheduler
+          } = response?.data?.data
+          this.formData.enrollmentReminder = enrollmentReminder
+          this.formData.enrollmentAutoEnroll = enrollmentAutoEnroll
+          this.formData.enrollmentScheduler = enrollmentScheduler
+          console.log('response.data.data', response.data.data)
         })
       }
     },
