@@ -910,6 +910,7 @@ export default {
         this.formValues.emailTemplateId = null
         this.formValues.landingPageTemplateId = null
         this.landingPageTemplateId = null
+        this.landingPageTemplateResourceId = null
         this.emailTemplateResourceId = null
       }
     }
