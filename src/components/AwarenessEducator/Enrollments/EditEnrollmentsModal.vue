@@ -61,7 +61,7 @@
             </div>
           </v-radio-group>
         </FormGroup>
-        <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 800px;">
+        <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
               v-model="formData.sendReminderEvery"
@@ -117,7 +117,7 @@
               style="max-width: 64px;"
               :disabled="!formData.sendReminderEvery"
             ></v-text-field>
-            <span v-if="formData.endType === 3">times</span>
+            <span v-if="formData.endType === 3" class="ml-2">times</span>
             <InputDate
               v-if="formData.endType === 4"
               v-model="formData.stopTime"
@@ -126,12 +126,12 @@
               ref="refPicker"
               placeholder="Select Date"
               format="dd/MM/yyyy"
-              style="width: 100%; max-width: 222px;"
+              style="width: 100%; max-width: 180px;"
               :disabled="!formData.sendReminderEvery"
             />
           </div>
         </FormGroup>
-        <FormGroup class="mt-6" :title="labels.AutoEnroll">
+        <FormGroup class="mt-6" style="max-width: 950px;" :title="labels.AutoEnroll">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
               v-model="formData.isAutoEnroll"
@@ -186,7 +186,7 @@
               dense
               hide-details
               placeholder="Select a item"
-              style="max-width: 118px;"
+              style="max-width: 150px;"
               :items="periodTypeItems"
               :disabled="!formData.isAutoEnroll"
             />
@@ -270,11 +270,11 @@ export default {
         { text: 'in...', value: 4 }
       ],
       enrollmentAutoEnrollDayOfWeekItems: [
-        { text: 'Monday', value: 1 },
-        { text: 'Tuesday', value: 2 },
-        { text: 'Wednesday', value: 3 },
-        { text: 'Thursday', value: 4 },
-        { text: 'Friday', value: 5 }
+        { text: 'Monday', value: 0 },
+        { text: 'Tuesday', value: 1 },
+        { text: 'Wednesday', value: 2 },
+        { text: 'Thursday', value: 3 },
+        { text: 'Friday', value: 4 }
       ]
     }
   },
