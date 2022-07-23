@@ -18,7 +18,7 @@
         :error-message="getTargetGroupErrorMessage"
       />
     </div>
-    <div v-show="selectedRadioGroupIndex === 1">
+    <div v-if="selectedRadioGroupIndex === 1">
       <FormGroup :title="labels.PhishingCampaigns" :sub-title="labels.PhishingCampaignsSub">
       </FormGroup>
       <SendTrainingSelectUsersByCampaign
@@ -40,6 +40,7 @@
             <template #label>{{ labels.UserWhoOpenedEmail }}</template>
           </v-checkbox>
           <v-checkbox
+            v-if="methodTypeId !== 3"
             v-model="formData.userWhoClickedEmail"
             id="input--send-training-user-who-clicked-email"
             color="#2196f3"
@@ -47,11 +48,20 @@
             <template #label>{{ labels.UserWhoClickedEmail }}</template>
           </v-checkbox>
           <v-checkbox
+            v-if="methodTypeId === 2"
             v-model="formData.userWhoSubmittedData"
             id="input--send-training-user-who-submitted-data"
             color="#2196f3"
           >
             <template #label>{{ labels.UserWhoSubmittedData }}</template>
+          </v-checkbox>
+          <v-checkbox
+            v-if="methodTypeId === 3"
+            v-model="formData.userWhoDownloadedAttachment"
+            id="input--send-training-user-who-downloaded-attachment"
+            color="#2196f3"
+          >
+            <template #label>{{ labels.UserWhoDownloadedAttachment }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="formData.userWhoReportedAsSuspicious"
@@ -92,12 +102,14 @@ export default {
       isShowTargetGroupUsersError: false,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: null,
+      methodTypeId: '',
       formData: {
         targetGroupResourceIds: [],
         campaignResourceId: '',
         userWhoOpenedEmail: false,
         userWhoClickedEmail: false,
         userWhoSubmittedData: false,
+        userWhoDownloadedAttachment: false,
         userWhoReportedAsSuspicious: false
       },
       radioGroupItems: [
@@ -133,6 +145,7 @@ export default {
       })
     },
     handleCampaignChange(item) {
+      this.methodTypeId = item.methodTypeId
       this.formData.campaignResourceId = item.resourceId
     }
   }

@@ -1,6 +1,7 @@
 <template>
   <div class="emailTemplatePreview">
-    <div class="emailTemplatePreview__container">
+    <DatatableLoading v-if="isLoading" :loading="isLoading" />
+    <div v-else class="emailTemplatePreview__container" style="padding-top: 13px !important;">
       <div class="emailTemplatePreview__container-main">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
@@ -247,6 +248,7 @@
 
 <script>
 import KSelect from '@/components/Common/Inputs/KSelect'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
@@ -264,7 +266,8 @@ export default {
     ShowMoreTags,
     KSelect,
     Multipane,
-    MultipaneResizer
+    MultipaneResizer,
+    DatatableLoading
   },
   props: {
     value: {
@@ -280,7 +283,7 @@ export default {
       scenarioType: '',
       language: '',
       scenarioTypeItems: [],
-      tab: 'email',
+      tab: '',
       languageItems: [],
       campaignItems: [],
       isAttachmentBasedScenario: false,
@@ -290,7 +293,8 @@ export default {
       landingPageParams: null,
       phishingCampaignResourceId: '',
       selectedLandingPageTab: 1,
-      timeout: null
+      timeout: null,
+      initial: true
     }
   },
   computed: {
@@ -375,7 +379,7 @@ export default {
       return !item?.tags?.length
     },
     callForData() {
-      this.setLoading(true)
+      if (this.initial) this.setLoading(true)
       searchCampaignManager(this.axiosPayload)
         .then((response) => {
           const {
@@ -393,7 +397,10 @@ export default {
             this.setSelectedTemplate(this.campaignItems[0])
           }
         })
-        .finally(this.setLoading)
+        .finally(() => {
+          if (this.initial) this.setLoading()
+          if (this.initial) this.initial = false
+        })
     },
     handleScroll(e) {
       const { scrollTop, scrollHeight, offsetHeight } = e.target
@@ -408,9 +415,9 @@ export default {
       }
     },
     setSelectedTemplate(row) {
-      this.$emit(EMITS.ON_ITEM_CHANGE, row)
       this.tab = 'email'
       getCampaignManagerPreview(row.resourceId).then((response) => {
+        debugger
         const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
         const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
         this.isAttachmentBasedScenario = methodTypeId === 3
@@ -426,6 +433,10 @@ export default {
           name: landingPage?.name || '',
           urlTemplate: landingPage?.urlTemplate || ''
         }
+        this.$emit(EMITS.ON_ITEM_CHANGE, {
+          ...row,
+          methodTypeId: response?.data?.data?.methodTypeId
+        })
       })
     },
     debounce(fn, delay) {

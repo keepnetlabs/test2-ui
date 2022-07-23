@@ -350,6 +350,9 @@ export default {
       }
     },
     handleSubmit() {
+      if (!this.sendReminderEvery) this.formData.enrollmentReminder = null
+      if (!this.isAutoEnroll) this.formData.enrollmentAutoEnroll = null
+      if (this.formData.scheduleTypeId === '1') this.formData.enrollmentScheduler = null
       AwarenessEducatorService.updateEnrollment(this.formData, this.selectedRow.enrollmentId).then(
         () => {
           this.$emit(EMITS.ON_CLOSE, true)

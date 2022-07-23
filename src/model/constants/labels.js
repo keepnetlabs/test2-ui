@@ -20,6 +20,7 @@ export const labels = {
   Reminder: 'Reminder',
   TrainingInfo: 'Training Info',
   Test: 'Test',
+  UserWhoDownloadedAttachment: 'Users who downloaded attachment',
   Delivery: 'Delivery',
   TrainingDistributionSub:
     'Send trainings with selected intervals or over a specified time period. Limit number of trainings to be sent in each batch.',
