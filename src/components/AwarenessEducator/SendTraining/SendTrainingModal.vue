@@ -40,7 +40,7 @@
               :title="labels.SelectRecipients"
               :subtitle="labels.SelectRecipientsSub"
             />
-            <SendTrainingSelectUsers />
+            <SendTrainingSelectUsers ref="refSendTrainingSelectUsers" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -90,6 +90,10 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import SendTrainingSelectUsers from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsers'
 import SendTrainingSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSettings'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { searchTargetGroups } from '@/api/targetUsers'
+import { scrollToComponent } from '@/utils/functions'
+
 export default {
   name: 'SendTrainingModal',
   components: {
@@ -125,17 +129,77 @@ export default {
     }
   },
   methods: {
+    callForSelectedTargetGroups(ids) {
+      return searchTargetGroups({
+        pageNumber: 1,
+        pageSize: 2000000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [{ FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }],
+              FilterGroups: []
+            }
+          ]
+        }
+      })
+    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
-        this.step += flag
+        const { refSendTrainingSelectUsers } = this.$refs
+        if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {
+          const ids = refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
+            (item) => item.value
+          )
+          this.isActionButtonDisabled = true
+          this.callForSelectedTargetGroups(ids)
+            .then((response) => {
+              const { results } = response?.data?.data || []
+              //User must have user count greater than 0
+              const totalUserCount = results.reduce((acc, item) => {
+                acc += item.userCount
+                return acc
+              }, 0)
+
+              if (totalUserCount) {
+                refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
+                refSendTrainingSelectUsers.isTargetGroupsValid = true
+                this.step += flag
+              } else {
+                refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+                refSendTrainingSelectUsers.isTargetGroupsValid = false
+                this.$nextTick(() => {
+                  const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector(
+                    '.error--text'
+                  )
+                  scrollToComponent(el)
+                })
+              }
+              refSendTrainingSelectUsers.formData.selectedTargetGroups = results
+            })
+            .finally(() => (this.isActionButtonDisabled = false))
+        }
       } else {
         this.step += flag
       }
     },
-    handleSubmit() {}
+    handleSubmit() {
+      const payload = {
+        trainingId: this.selectedRow.trainingId
+      }
+      AwarenessEducatorService.createEnrollment().then(() => {})
+    }
   }
 }
 </script>

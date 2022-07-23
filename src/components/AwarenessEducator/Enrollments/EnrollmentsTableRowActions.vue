@@ -9,6 +9,7 @@
     />
     <RowActionsMenu>
       <DefaultMenuRowAction
+        v-if="isRenderEditButton"
         :scope="scope"
         :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
@@ -64,6 +65,11 @@ export default {
     }
   },
   computed: {
+    isRenderEditButton() {
+      return [ENROLLMENT_STATUSES.AUTO_ENROLL, ENROLLMENT_STATUSES.SCHEDULED].includes(
+        this.scope.row.status
+      )
+    },
     isShowReport() {
       return [
         ENROLLMENT_STATUSES.AUTO_ENROLL,

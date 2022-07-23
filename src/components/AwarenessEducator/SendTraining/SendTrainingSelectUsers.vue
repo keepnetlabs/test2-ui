@@ -10,6 +10,7 @@
         :response-of-target-groups-items="responseOfTargetGroupsItems"
         :selected-target-groups="formData.targetGroupResourceIds"
         :is-valid="isTargetGroupsValid"
+        @handle-selection-change="handleTableSelectionChange"
       />
       <CustomError
         class="mb-6 ml-2"
@@ -136,6 +137,15 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    handleTableSelectionChange(items) {
+      this.formData.targetGroupResourceIds = items
+        .filter((item) => item)
+        .map((item) => ({
+          text: item.text || item.name,
+          value: item.value || item.resourceId,
+          extraDatas: null
+        }))
+    },
     callForTargetGroups() {
       searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
