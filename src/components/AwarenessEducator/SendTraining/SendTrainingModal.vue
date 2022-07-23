@@ -7,6 +7,12 @@
     @closeOverlay="handleClose"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -48,7 +54,7 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings />
+            <SendTrainingSettings ref="refSendTrainingSettings" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -56,6 +62,7 @@
               :title="labels.Summary"
               :subtitle="labels.SendTrainingSummarySub"
             />
+            <SendTrainingSummary ref="refSendTrainingSummary" />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -93,10 +100,15 @@ import SendTrainingSettings from '@/components/AwarenessEducator/SendTraining/Se
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { scrollToComponent } from '@/utils/functions'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
 
 export default {
   name: 'SendTrainingModal',
   components: {
+    SendTrainingSummary,
+    DefaultErrorDialog,
     SendTrainingSettings,
     SendTrainingSelectUsers,
     ConfigureCompanyStepHeader,
@@ -115,6 +127,7 @@ export default {
     return {
       labels,
       isActionButtonDisabled: false,
+      createErrorMessage: '',
       step: 1
     }
   },
@@ -190,15 +203,74 @@ export default {
             })
             .finally(() => (this.isActionButtonDisabled = false))
         }
+      } else if (this.step === 2 && flag === 1) {
+        const { refSendTrainingSettings } = this.$refs
+        if (refSendTrainingSettings.validateForm()) {
+          this.step += flag
+        } else {
+          this.$nextTick(() => {
+            const el = refSendTrainingSettings.$refs.refForm.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        }
       } else {
         this.step += flag
       }
     },
     handleSubmit() {
-      const payload = {
-        trainingId: this.selectedRow.trainingId
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
+      const {
+        userWhoOpenedEmail,
+        userWhoClickedEmail,
+        userWhoSubmittedData,
+        userWhoDownloadedAttachment,
+        userWhoReportedAsSuspicious
+      } = refSendTrainingSelectUsers.formData
+      const {
+        enrollmentScheduler,
+        enrollmentAutoEnroll,
+        enrollmentReminder,
+        sendReminderEvery,
+        isAutoEnroll,
+        scheduleTypeId,
+        markedAsTest,
+        awardCertificate
+      } = refSendTrainingSettings.formData
+      const phishingCampaignConditionTypes = []
+      if (selectedIndex === 1) {
+        if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
+        if (userWhoClickedEmail) phishingCampaignConditionTypes.push('PhishingLinkClicked')
+        if (userWhoSubmittedData) phishingCampaignConditionTypes.push('DataSubmitted')
+        if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
+        if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
       }
-      AwarenessEducatorService.createEnrollment().then(() => {})
+
+      const payload = {
+        trainingId: this.selectedRow.trainingId,
+        targetGroupResourceIds:
+          selectedIndex === 0 ? refSendTrainingSelectUsers.formData.targetGroupResourceIds : [],
+        phishingCampaignResourceId:
+          selectedIndex === 1 ? refSendTrainingSelectUsers.formData.campaignResourceId : '',
+        phishingCampaignConditionTypes,
+        enrollmentScheduler: scheduleTypeId === '1' ? null : enrollmentScheduler,
+        enrollmentAutoEnroll: isAutoEnroll ? enrollmentAutoEnroll : null,
+        enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
+        markedAsTest,
+        awardCertificate
+      }
+      AwarenessEducatorService.createEnrollment(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit(EMITS.ON_CLOSE, true)
+        })
+        .catch((error) => {
+          this.createErrorMessage = error?.response?.data?.message
+        })
     }
   }
 }

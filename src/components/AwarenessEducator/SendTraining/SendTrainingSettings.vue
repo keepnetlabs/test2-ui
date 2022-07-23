@@ -137,7 +137,7 @@
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Certificate">
       <v-checkbox
-        v-model="formData.certificate"
+        v-model="formData.awardCertificate"
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
@@ -147,7 +147,7 @@
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Test">
       <v-checkbox
-        v-model="formData.test"
+        v-model="formData.markedAsTest"
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
@@ -252,8 +252,8 @@ export default {
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
-        test: false,
-        certificate: false,
+        markedAsTest: false,
+        awardCertificate: false,
         scheduleTypeId: '1',
         enrollmentScheduler: {
           scheduledDate: '',
@@ -346,6 +346,9 @@ export default {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
       }
+    },
+    validateForm() {
+      return this.$refs.refForm.validate()
     }
   }
 }

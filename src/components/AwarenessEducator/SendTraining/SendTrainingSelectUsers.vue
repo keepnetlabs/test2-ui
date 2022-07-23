@@ -23,6 +23,7 @@
       <FormGroup :title="labels.PhishingCampaigns" :sub-title="labels.PhishingCampaignsSub">
       </FormGroup>
       <SendTrainingSelectUsersByCampaign
+        ref="refSendTrainingSelectUsersByCampaign"
         :value="formData.campaignResourceId"
         @on-item-change="handleCampaignChange"
       />
@@ -156,6 +157,15 @@ export default {
     },
     handleCampaignChange(item) {
       this.methodTypeId = item.methodTypeId
+      if (this.methodTypeId === 3) {
+        this.formData.userWhoClickedEmail = false
+      }
+      if (this.methodTypeId !== 2) {
+        this.formData.userWhoSubmittedData = false
+      }
+      if (this.methodTypeId !== 3) {
+        this.formData.userWhoDownloadedAttachment = false
+      }
       this.formData.campaignResourceId = item.resourceId
     }
   }

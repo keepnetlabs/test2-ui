@@ -117,9 +117,7 @@ const exportCertificates = (payload) => {
 }
 
 const createEnrollment = (payload) => {
-  return testRequest.post('/enrollments', payload, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post('/enrollments', payload)
 }
 
 const getEnrollment = (resourceId) => {

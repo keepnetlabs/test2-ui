@@ -87,8 +87,8 @@ export default {
         obj.icon = 'mdi-text-box'
         obj.text = 'View Report'
       } else if (ENROLLMENT_STATUSES.SENDING) {
-        obj.icon = 'mdi-pause'
-        obj.text = 'Pause'
+        obj.icon = 'mdi-stop'
+        obj.text = 'Stop'
       } else if (ENROLLMENT_STATUSES.SCHEDULED) {
         obj.icon = 'mdi-send'
         obj.text = 'Send Now'
