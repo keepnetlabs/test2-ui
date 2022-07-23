@@ -176,12 +176,12 @@ export default {
           const ids = refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
             (item) => item.value
           )
-          this.isActionButtonDisabled = true
           if (!ids.length) {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
             refSendTrainingSelectUsers.isTargetGroupsValid = false
             return
           }
+          this.isActionButtonDisabled = true
           this.callForSelectedTargetGroups(ids)
             .then((response) => {
               const { results } = response?.data?.data || []
