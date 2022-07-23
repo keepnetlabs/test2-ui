@@ -177,6 +177,11 @@ export default {
             (item) => item.value
           )
           this.isActionButtonDisabled = true
+          if (!ids.length) {
+            refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+            refSendTrainingSelectUsers.isTargetGroupsValid = false
+            return
+          }
           this.callForSelectedTargetGroups(ids)
             .then((response) => {
               const { results } = response?.data?.data || []
