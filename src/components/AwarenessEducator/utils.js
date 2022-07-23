@@ -11,6 +11,27 @@ export const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
 }
 
+export const ENROLLMENT_STATUSES = {
+  AUTO_ENROLL: 'AutoEnroll',
+  SENDING: 'Sending',
+  FINISHED: 'Finished',
+  SCHEDULED: 'Scheduled',
+  PAUSED: 'Paused',
+  ARCHIVED: 'Archived',
+  ERROR: 'Error',
+  DELETED: 'Deleted'
+}
+
+export const ENROLLMENT_STATUSES_FILTER = [
+  ENROLLMENT_STATUSES.AUTO_ENROLL,
+  ENROLLMENT_STATUSES.SENDING,
+  ENROLLMENT_STATUSES.FINISHED,
+  ENROLLMENT_STATUSES.SCHEDULED,
+  ENROLLMENT_STATUSES.PAUSED,
+  ENROLLMENT_STATUSES.ERROR,
+  ENROLLMENT_STATUSES.DELETED
+]
+
 export const COLUMNS = {
   NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
@@ -76,7 +97,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 200,
     filterableType: 'select',
     filterableItems: []
   },
@@ -151,6 +172,42 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+  },
+  DELIVERY: {
+    property: PROPERTY_STORE.DELIVERY,
+    align: 'center',
+    editable: false,
+    label: labels.Delivery,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  START_DATE: {
+    property: PROPERTY_STORE.START_DATE,
+    align: 'left',
+    editable: false,
+    label: labels.JustStartDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  STATUS: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 150,
+    filterableType: 'select',
+    filterableItems: ENROLLMENT_STATUSES_FILTER
   },
   TAGS: {
     property: PROPERTY_STORE.TAGS,

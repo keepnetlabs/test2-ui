@@ -79,7 +79,13 @@ const exportEnrollments = (payload) => {
 }
 
 const sendEnrollment = (resourceId) => {
-  return testRequest.post(`/enrollments/${resourceId}/send`)
+  return testRequest.post(
+    `/enrollments/${resourceId}/send`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const stopEnrollment = (resourceId) => {
@@ -107,6 +113,16 @@ const getLanguages = () => {
 const exportCertificates = (payload) => {
   return testRequest.post('/certificates/search/export', payload, {
     responseType: 'blob'
+  })
+}
+
+const getEnrollment = (resourceId) => {
+  return testRequest.get(`/enrollments/${resourceId}`)
+}
+
+const updateEnrollment = (payload, resourceId) => {
+  return testRequest.put(`/enrollments/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
   })
 }
 
@@ -155,5 +171,7 @@ export default {
   exportCertificates,
   getDefaultCertificateTemplate,
   sendEnrollment,
-  stopEnrollment
+  stopEnrollment,
+  getEnrollment,
+  updateEnrollment
 }

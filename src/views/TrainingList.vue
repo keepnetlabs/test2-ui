@@ -47,8 +47,8 @@ import DeleteTrainingDialog from '@/components/AwarenessEducator/TrainingList/De
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrainingModal'
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getCampaignManagerFormDetails } from '@/api/phishingsimulator'
+import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 export default {
   name: 'TrainingList',
   components: {
@@ -59,6 +59,7 @@ export default {
     KContainer,
     TrainingPreviewDialog
   },
+  mixins: [useAwarenessHelperCalls],
   provide() {
     return {
       getCategories: () => this.categories,
@@ -76,64 +77,12 @@ export default {
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
       selectedRow: null,
-      scormTypes: [],
       isEdit: false,
-      categories: [],
-      languages: [],
-      tableLanguageFilter: [],
-      targetAudiences: [],
       distributionEmailOverTimeTypes: [],
       distributionSmtpDelayTimeTypes: []
     }
   },
-  created() {
-    this.callForCategories()
-    this.callForLanguages()
-    this.callForTargetAudiences()
-    this.callForScormTypes()
-    this.callForFormDetails()
-  },
   methods: {
-    callForCategories() {
-      AwarenessEducatorService.getCategories().then((response) => {
-        this.categories =
-          response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
-          []
-      })
-    },
-    callForScormTypes() {
-      AwarenessEducatorService.getScormTypes().then((response) => {
-        this.scormTypes =
-          response?.data?.data?.map((category) => ({
-            text: category.name,
-            value: category.name
-          })) || []
-      })
-    },
-    callForLanguages() {
-      AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages =
-          response?.data?.data?.map((language) => ({
-            text: language.name,
-            value: language.id
-          })) || []
-
-        this.tableLanguageFilter =
-          response?.data?.data?.map((language) => ({
-            text: language.name,
-            value: language.code
-          })) || []
-      })
-    },
-    callForTargetAudiences() {
-      AwarenessEducatorService.getTargetAudiences().then((response) => {
-        this.targetAudiences =
-          response?.data?.data?.map((targetAudience) => ({
-            text: targetAudience.name,
-            value: targetAudience.id
-          })) || []
-      })
-    },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
         const {

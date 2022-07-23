@@ -6,7 +6,6 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -30,7 +29,13 @@
     @downloadEvent="exportEnrollments"
   >
     <template #datatable-row-actions="{ scope }">
-      <EnrollmentsTableRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
+      <EnrollmentsTableRowActions
+        :scope="scope"
+        :row-actions="tableOptions.rowActions"
+        @on-stop="$emit('on-stop', $event)"
+        @on-send="$emit('on-send', $event)"
+        @on-edit="$emit('on-edit', $event)"
+      />
     </template>
   </DataTable>
 </template>
@@ -49,19 +54,20 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 export default {
   name: 'EnrollmentsTable',
   components: {
     EnrollmentsTableRowActions,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
         id: 'awareness-educator-enrollments-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload({  orderBy: "TrainingName"}),
+      axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -80,6 +86,9 @@ export default {
           COLUMNS.LANGUAGES,
           COLUMNS.TYPE,
           COLUMNS.ENROLLED_BY,
+          COLUMNS.START_DATE,
+          COLUMNS.STATUS,
+          COLUMNS.DELIVERY,
           COLUMNS.TAGS
         ],
         iEmpty: {

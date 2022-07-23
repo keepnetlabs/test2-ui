@@ -6,7 +6,6 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
     row-key="id"
     :loading="isLoading"
     :table="tableData"

@@ -86,6 +86,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { exportCampaignManager } from '@/api/phishingsimulator'
+import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 export default {
   name: 'TrainingListTable',
   components: {
@@ -94,25 +95,7 @@ export default {
     DefaultButtonRowAction,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions],
-  props: {
-    languages: {
-      type: Array,
-      default: () => []
-    },
-    categories: {
-      type: Array,
-      default: () => []
-    },
-    targetAudiences: {
-      type: Array,
-      default: () => []
-    },
-    scormTypes: {
-      type: Array,
-      default: () => []
-    }
-  },
+  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
@@ -175,40 +158,6 @@ export default {
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
-    }
-  },
-  watch: {
-    languages(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'languages'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    categories(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'category'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    targetAudiences(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'targetAudience'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    scormTypes(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'type'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
     }
   },
   created() {

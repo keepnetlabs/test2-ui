@@ -21,7 +21,7 @@
                     "
                   ></v-text-field>
                 </div>
-                <div>
+                <div v-if="false">
                   <KSelect
                     v-model="scenarioType"
                     placeholder="Scenario Type"
@@ -31,7 +31,7 @@
                     :items="scenarioTypeItems"
                   />
                 </div>
-                <div>
+                <div v-if="false">
                   <KSelect
                     v-model="language"
                     placeholder="Language"
@@ -73,33 +73,45 @@
                         class="template-list--item template-list--item__sub-header"
                         style="overflow: hidden; text-overflow: ellipsis;"
                       >
-                        {{ item.method }}
+                        {{ item.method || 'Clicked-only' }}
                         &#8226;
                         <span class="template-list--item__sub-header--span">by</span>
                         {{ item['createdBy'] }}
                       </div>
                     </div>
                   </div>
-
-                  <div class="template-list--item">
-                    {{ item.description || '\xa0' }}
+                  <div class="d-flex justify-space-between mb-2">
+                    <div
+                      class="template-list--item template-list--item__sub-header"
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                    >
+                      started on {{ item.createTime }} &#8226; ended on {{ item.lastLaunch }}
+                    </div>
                   </div>
+
                   <div class="template-list--item mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="isItemHaveTags(item)">{{ '\xa0' }}</div>
                   </div>
                 </div>
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
                 <el-tabs v-model="tab">
-                  <el-tab-pane
-                    id="campaign-manager-info--email-content"
-                    name="email"
-                    :label="labels.JustEmail"
-                  >
-                    <div class="template-preview pt-3">
+                  <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
+                    <div class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
+                        <div>
+                          <span class="template-preview__text--title">Name: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.name
+                          }}</span>
+                        </div>
+                        <div>
+                          <span class="template-preview__text--title">Subject: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.subject
+                          }}</span>
+                        </div>
                         <div>
                           <span class="template-preview__text--title">From Name: </span>
                           <span class="template-preview__text--body">{{
@@ -125,7 +137,7 @@
                     v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
-                    id="campaign-manager-info--landing-content"
+                    id="send-training-landing-page"
                   >
                     <el-tabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
                       <el-tab-pane
@@ -134,7 +146,7 @@
                         :label="`Page ${index + 1}`"
                         :name="`${index + 1}`"
                       >
-                        <div class="template-preview pt-3">
+                        <div class="template-preview mt-n1 pt-0">
                           <div v-if="!!template.content" class="template-preview__text pl-2">
                             <div>
                               <span class="template-preview__text--title">Name: </span>
@@ -143,9 +155,9 @@
                               }}</span>
                             </div>
                             <div>
-                              <span class="template-preview__text--title">Description: </span>
+                              <span class="template-preview__text--title">Phishing URL: </span>
                               <span class="template-preview__text--body">{{
-                                landingPageParams.description
+                                landingPageParams.urlTemplate
                               }}</span>
                             </div>
                           </div>
@@ -154,7 +166,7 @@
                         </div>
                       </el-tab-pane>
                     </el-tabs>
-                    <div v-else class="template-preview pt-3">
+                    <div v-else class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
                           <span class="template-preview__text--title">Name: </span>
@@ -163,9 +175,9 @@
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Description: </span>
+                          <span class="template-preview__text--title">Phishing URL: </span>
                           <span class="template-preview__text--body">{{
-                            landingPageParams.description
+                            landingPageParams.urlTemplate
                           }}</span>
                         </div>
                       </div>
@@ -174,6 +186,37 @@
                         v-if="!!getSingleTemplateDetails"
                         :html="getSingleTemplateDetails"
                       />
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane
+                    :label="labels.CampaignResults"
+                    name="campaign-results"
+                    id="send-training-campaign-results"
+                  >
+                    <div class="send-training-campaign-results-container">
+                      <FormGroupHorizontalContent
+                        :label="labels.SelectInstance"
+                        style="max-width: 700px;"
+                      >
+                        <KSelect
+                          v-model.trim="phishingCampaignResourceId"
+                          id="input--campaign-manager-advanced-settings-other-settings-percent"
+                          class="ml-2"
+                          style="min-width: 548px;"
+                          outlined
+                          dense
+                          hide-details
+                          placeholder="All instances"
+                        />
+                      </FormGroupHorizontalContent>
+                    </div>
+                    <div style="margin-top: 40px;">
+                      <div class="campaign-manager-target-user-groups-header">
+                        <v-icon color="#000000">mdi-account-multiple</v-icon>
+                        <span class="campaign-manager-target-user-groups-header__text"
+                          >Total 157 users from 19 groups</span
+                        >
+                      </div>
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -209,12 +252,20 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
-import { searchCampaignManager } from '@/api/phishingsimulator'
+import { getCampaignManagerPreview, searchCampaignManager } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
+import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
-  components: { KEmailPreview, ShowMoreTags, KSelect, Multipane, MultipaneResizer },
+  components: {
+    FormGroupHorizontalContent,
+    KEmailPreview,
+    ShowMoreTags,
+    KSelect,
+    Multipane,
+    MultipaneResizer
+  },
   props: {
     value: {
       type: String
@@ -237,6 +288,7 @@ export default {
       emailTemplateParams: null,
       landingPageTemplates: null,
       landingPageParams: null,
+      phishingCampaignResourceId: '',
       selectedLandingPageTab: 1,
       timeout: null
     }
@@ -337,6 +389,9 @@ export default {
             newItem.total = Number(item['instanceCount'])
             return newItem
           })
+          if (this.campaignItems.length) {
+            this.setSelectedTemplate(this.campaignItems[0])
+          }
         })
         .finally(this.setLoading)
     },
@@ -352,8 +407,26 @@ export default {
         }, 500)
       }
     },
-    setSelectedTemplate(val) {
-      this.$emit(EMITS.ON_ITEM_CHANGE, val)
+    setSelectedTemplate(row) {
+      this.$emit(EMITS.ON_ITEM_CHANGE, row)
+      this.tab = 'email'
+      getCampaignManagerPreview(row.resourceId).then((response) => {
+        const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
+        const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
+        this.isAttachmentBasedScenario = methodTypeId === 3
+        this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+        this.emailTemplateParams = {
+          name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+          subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
+          fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+          fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
+        }
+        this.landingPageTemplates = landingPage?.landingPages || []
+        this.landingPageParams = {
+          name: landingPage?.name || '',
+          urlTemplate: landingPage?.urlTemplate || ''
+        }
+      })
     },
     debounce(fn, delay) {
       if (this.timeout) {
