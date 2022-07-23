@@ -417,7 +417,6 @@ export default {
     setSelectedTemplate(row) {
       this.tab = 'email'
       getCampaignManagerPreview(row.resourceId).then((response) => {
-        debugger
         const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
         const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
         this.isAttachmentBasedScenario = methodTypeId === 3

@@ -75,7 +75,7 @@ export default {
       isShowPreviewDialog: false,
       isShowDeleteTrainingDialog: false,
       isShowNewTrainingModal: false,
-      isShowSendTrainingModal: true,
+      isShowSendTrainingModal: false,
       selectedRow: null,
       isEdit: false,
       distributionEmailOverTimeTypes: [],
