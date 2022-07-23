@@ -3,14 +3,15 @@
     :isLoading="isLoading"
     icon="mdi-alert-circle"
     :title="labels.TrainingInfo"
-    :items="items"
+    :items="getItems"
   >
     <template #TargetUsers="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
       <div class="campaign-manager-summary-card__body-item-value">
-        <span>{{ getBodyValue }}</span>
+        <span>{{ getBodyValue }} from </span>
+        <span class="datatable-link" @click="handleAudinceClick"> {{ getAudienceText }} </span>
         <v-tooltip v-if="isTooltip" bottom>
           <template #activator="{on}">
             <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>
@@ -33,7 +34,7 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
 export default {
-  name: 'TrainingReportSummaryCampaignInfo',
+  name: 'TrainingReportSummaryTrainingInfo',
   components: { Badge, CampaignManagerSummaryCard },
   props: {
     items: {
@@ -48,6 +49,9 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String
     }
   },
   data() {
@@ -56,6 +60,21 @@ export default {
     }
   },
   computed: {
+    getItems() {
+      const newItems = { ...this.items }
+
+      Object.keys(this.items).map((key) => {
+        if (!newItems[key].show) delete newItems[key]
+        else newItems[key] = newItems[key].value
+      })
+      return newItems
+    },
+    isFromUserGroups() {
+      return this.type === 'userGroups'
+    },
+    isFromPhishingCampaign() {
+      return this.type === 'phishingCampaign'
+    },
     getTooltipText() {
       const { randomlyUsersCount = 0, totalTargetUserCount } = this.helperData
       return (
@@ -68,9 +87,21 @@ export default {
       return sendOnlyActiveUsers && sendRandomlyUsers
     },
     getBodyValue() {
-      return `${this.items['Target Users']} users ${
+      return `${this.items['Target Users'].value} users ${
         this.isTooltip ? `of ${this.helperData?.totalTargetUserCount}` : ''
       }`
+    },
+    getAudienceText() {
+      if (this.isFromUserGroups) return `${this.items.targetGroupCount.value} user groups`
+
+      if (this.isFromPhishingCampaign) return `a phishing campaign results`
+
+      return ''
+    }
+  },
+  methods: {
+    handleAudinceClick() {
+      this.$emit('audienceClick')
     }
   }
 }

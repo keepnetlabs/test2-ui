@@ -3,7 +3,7 @@
     :isLoading="isLoading"
     icon="mdi-send"
     :title="labels.TrainingDelivery"
-    :items="items"
+    :items="getItems"
   >
     <template #DeliveryStatus="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
@@ -26,6 +26,26 @@
             </span>
           </span>
         </template>
+      </div>
+    </template>
+    <template #ReminderOptions="{ props:{ key } }">
+      <div class="campaign-manager-summary-card__body-item-key">
+        {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+      </div>
+      <div
+        class="campaign-manager-summary-card__body-item-value"
+        style="display: flex; align-items: center;"
+      >
+        <span
+          :class="{
+            'mr-4': items.isEnded.value
+          }"
+          :style="isNotDelivered && { borderRight: '1px solid #e0e0e0' }"
+          >{{ items['Reminder Options'].value }}
+        </span>
+        <div v-if="items.isEnded.value" class="training-report-training-delivery-ended-badge">
+          Ended
+        </div>
       </div>
     </template>
   </CampaignManagerSummaryCard>
@@ -55,6 +75,15 @@ export default {
     }
   },
   computed: {
+    getItems() {
+      const newItems = { ...this.items }
+
+      Object.keys(this.items).map((key) => {
+        if (!newItems[key].show) delete newItems[key]
+        else newItems[key] = newItems[key].value
+      })
+      return newItems
+    },
     isNotDelivered() {
       return !!(this.helperData?.emailNotDeliveredUserCount || 0)
     },

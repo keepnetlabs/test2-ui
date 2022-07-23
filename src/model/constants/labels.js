@@ -5,6 +5,9 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  TrainingMaterial: 'Training Material',
+  EnrollmentEmailTemplate: 'Enrollment Email Template',
+  CertificateTemplate: 'Certificate Template',
   CompletedTraining: 'Completed Training',
   TrainingSummary: 'Training Summary',
   ExamResults: 'Exam Results',
@@ -200,7 +203,8 @@ export const labels = {
   EmptyCampaignManagerReportOpened: 'You do not have any user who opened the email',
   EmptyCampaignManagerReportPhishingReporter: 'You do not have any user who reported the email',
   EmptyCampaignManagerReportClicked: 'You do not have any user who clicked the email',
-  EmptyCampaignManagerReportOpenedDetail: 'You do not have any details',
+  EmptyCampaignManagerReportOpenedDetail: 'No user exists in these groups',
+  EmptyTrainingReportSummaryAudienceDetails: 'You do not have any users',
   EmptyCampaignManagerReportSubmittedData: 'You do not have any user who submitted data',
   EmptyCampaignManagerReportSendingReport: 'You do not have any user who sending report',
   LastOpened: 'Last Opened',

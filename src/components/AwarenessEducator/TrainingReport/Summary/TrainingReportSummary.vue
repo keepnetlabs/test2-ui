@@ -1,5 +1,13 @@
 <template>
   <div id="training-report-summary" class="training-report-summary">
+    <TrainingReportSummaryAudienceDetails
+      v-if="isAudienceModalVisible"
+      :status="isAudienceModalVisible"
+      :type="getAudienceDetailsType"
+      :userGroups="getUserGroups"
+      :phishingCampaign="getPhishingCampaign"
+      @close="hideAudienceDetailsModal"
+    />
     <TrainingReportSummaryHeader
       :trainingName="trainingName"
       :resend-dialog-items="getResendDialogItems"
@@ -7,11 +15,13 @@
     />
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
-      <TrainingReportSummaryCampaignInfo
+      <TrainingReportSummaryTrainingInfo
         :items="getCampaignSummaryItems"
         :helper-data="getCampaignSummaryHelperData"
         :is-test-training="isTestTraining"
+        :type="getAudienceDetailsType"
         :isLoading="isLoading"
+        @audienceClick="showAudienceDetailsModal"
       />
       <TrainingReportTrainingDelivery
         class="ml-4"
@@ -21,25 +31,28 @@
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
-    <!-- <CampaignManagerReportSummaryEmail
-      :form-data="getEmailTemplateData"
+    <TrainingReportEnrollmentEmail
+      :form-data="getEnrollmentTemplateData"
       :isFetchingSummary="isLoading"
     />
-    <CampaignManagerReportSummaryLandingPage
-      v-if="!isAttachment"
-      :form-data="getLandingPageTemplateData"
+
+    <TrainingReportTrainingMaterial
+      :form-data="getTrainingMaterialData"
       :isFetchingSummary="isLoading"
-    /> -->
+    />
+    <TrainingReportCertificate :form-data="getCertificateData" :isFetchingSummary="isLoading" />
   </div>
 </template>
 
 <script>
 import TrainingReportSummaryHeader from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryHeader'
 import TrainingReportSummaryCards from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryCards'
-import TrainingReportSummaryCampaignInfo from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryCampaignInfo'
-// import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
-// import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
+import TrainingReportSummaryTrainingInfo from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryTrainingInfo'
+import TrainingReportEnrollmentEmail from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportEnrollmentEmail'
+import TrainingReportCertificate from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportCertificate'
+import TrainingReportTrainingMaterial from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingMaterial'
 import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
+import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
@@ -47,11 +60,13 @@ export default {
   name: 'TrainingReportSummary',
   components: {
     TrainingReportTrainingDelivery,
-    // CampaignManagerReportSummaryLandingPage,
-    // CampaignManagerReportSummaryEmail,
-    TrainingReportSummaryCampaignInfo,
+    TrainingReportTrainingMaterial,
+    TrainingReportEnrollmentEmail,
+    TrainingReportSummaryTrainingInfo,
     TrainingReportSummaryCards,
-    TrainingReportSummaryHeader
+    TrainingReportSummaryHeader,
+    TrainingReportSummaryAudienceDetails,
+    TrainingReportCertificate
   },
   mixins: [useLoading],
   props: {
@@ -64,30 +79,60 @@ export default {
   },
   data() {
     return {
+      isAudienceModalVisible: false,
       targetGroups: [],
       trainingSummary: {},
-      interval: null,
-      chartLabels: [
-        'Opened email',
-        'Clicked link',
-        'Submitted data',
-        'No response',
-        'Not delivered'
-      ]
+      interval: null
     }
   },
   computed: {
+    getAudienceDetailsType() {
+      return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
+    },
+    isFromPhishingCampaign() {
+      return this.trainingSummary?.isFromPhishingCampaign || false
+    },
+    isFromUserGroups() {
+      return this.trainingSummary?.isFromUserGroups || false
+    },
+    getPhishingCampaign() {
+      return this.trainingSummary?.phishingCampaign || {}
+    },
+    getUserGroups() {
+      return this.trainingSummary?.userGroups || {}
+    },
     getCampaignSummaryItems() {
-      const { totalTargetUserCount = 0, autoEnroll = 'No', languageShortCode = 'EN' } = this
-        .trainingSummary || {
+      const {
+        phishingCampaign = {},
+        totalTargetUserCount = 0,
+        targetGroupCount = 0,
+        autoEnroll = 'No',
+        languageShortCode = 'EN'
+      } = this.trainingSummary || {
         totalTargetUserCount: 0,
         autoEnroll: 'Enroll new users the same day',
-        languageShortCode: 'EN'
+        languageShortCode: 'EN',
+        targetGroupCount: null,
+        phishingCampaign: null
       }
       return {
-        'Target Users': totalTargetUserCount,
-        'Auto-enroll': autoEnroll,
-        Languages: languageShortCode
+        'Target Users': {
+          show: true,
+          value: totalTargetUserCount
+        },
+        targetGroupCount: {
+          show: false,
+          value: targetGroupCount
+        },
+        phishingCampaign: {
+          show: false,
+          value: phishingCampaign
+        },
+        'Auto-enroll': {
+          show: true,
+          value: autoEnroll
+        },
+        Languages: { show: true, value: languageShortCode }
       }
     },
     getCampaignSummaryHelperData() {
@@ -107,31 +152,32 @@ export default {
       const { excludeFromReports = false } = settings
       return excludeFromReports
     },
-    getSettingsItems() {
-      const { settings = {} } = this.trainingSummary
-      const { duration, excludeFromReports, languages, smtpName = 0 } = settings
-      return {
-        Languages: languages || 'English',
-        'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
-        Duration: `${duration || 0} Day(s)`,
-        SMTP: smtpName
-      }
-    },
-    getRandomlySelectedUsersCount() {
-      const { targetUsers = {} } = this.trainingSummary
-      return targetUsers['randomlyUsersCount'] || 0
-    },
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
-        emailDeliveryDuration = 0
+        emailDeliveryDuration = 0,
+        reminderOptions = 'Every 2 months, ends when user completes the training',
+        isEnded = false
       } = campaignInfo
       return {
-        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
-        Duration: `${emailDeliveryDuration}`,
-        'Delivery Status': ''
+        'Delivery Start - End': {
+          show: true,
+          value: `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`
+        },
+        'Reminder Options': {
+          show: true,
+          value: reminderOptions
+        },
+        isEnded: {
+          show: false,
+          value: isEnded
+        },
+        'Delivery Status': {
+          show: true,
+          value: ''
+        }
       }
     },
     getEmailDeliveryHelperData() {
@@ -241,58 +287,36 @@ export default {
       const { campaignInfo = {} } = this.trainingSummary
       return campaignInfo['totalTargetUserCount'] || 0
     },
-    getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.trainingSummary
-      const {
-        name,
-        difficultyResourceId,
-        categoryResourceId,
-        fromName,
-        fromAddress,
-        resourceId,
-        languageShortCode,
-        phishingFileName
-      } = emailTemplateInfo
+    getEnrollmentTemplateData() {
+      const { enrollmentTemplateInfo = {} } = this.trainingSummary
+      const { name, createdBy, description } = enrollmentTemplateInfo
 
-      return Object.keys(emailTemplateInfo).length
-        ? {
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            method: methods.find((item) => item.value === categoryResourceId)?.text,
-            fromName,
-            fromAddress,
-            name,
-            resourceId,
-            languageShortCode,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null,
-            jobResourceId: this.id
-          }
-        : {}
+      return {
+        name: 'Training Enrollment Email',
+        createdBy: 'Company Name',
+        description: 'Default training enrollment email bla bla enrollment email description'
+      }
     },
-    getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.trainingSummary
-      const {
-        name,
-        urlTemplate,
-        difficultyTypeId = 1,
-        methodTypeId = 1,
-        resourceId,
-        languageShortCode
-      } = landingPageTemplateInfo
-      return Object.keys(landingPageTemplateInfo).length
-        ? {
-            languageShortCode,
-            name,
-            urlTemplate,
-            method: methods[methodTypeId - 1].text,
-            difficulty: difficulties[difficultyTypeId - 1].text,
-            resourceId,
-            jobResourceId: this.id
-          }
-        : {}
+    getCertificateData() {
+      const { certificateInfo = {} } = this.trainingSummary
+      const { name, createdBy, description } = certificateInfo
+
+      return {
+        name: 'Certificate Name',
+        createdBy: 'Company Name',
+        description: 'Certificate description'
+      }
+    },
+    getTrainingMaterialData() {
+      const { trainingMaterial = {} } = this.trainingSummary
+      const { name, createdBy, category, description, languageShortCode } = trainingMaterial
+      return {
+        name: 'Training Name',
+        createdBy: 'Company Name',
+        category: 'Information security (category)',
+        description: 'Training content’s description',
+        languageShortCode: 'EN'
+      }
     }
   },
   created() {
@@ -302,7 +326,13 @@ export default {
     clearInterval(this.interval)
   },
   methods: {
-    callForData() {}
+    callForData() {},
+    showAudienceDetailsModal() {
+      this.isAudienceModalVisible = true
+    },
+    hideAudienceDetailsModal() {
+      this.isAudienceModalVisible = false
+    }
   }
 }
 </script>
