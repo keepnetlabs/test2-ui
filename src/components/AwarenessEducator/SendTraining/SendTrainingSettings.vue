@@ -13,7 +13,7 @@
         :items="contentLanguageItems"
       ></KSelect>
     </FormGroup>
-    <FormGroup has-hint style="max-width: 600px;" :title="labels.Schedule">
+    <FormGroup style="max-width: 600px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -34,11 +34,11 @@
             style="margin-bottom: 0;"
             label="Schedule to"
             color="#2196f3"
-            value="3"
+            value="2"
           />
           <div :class="[!isDateValid && 'date-picker-error mb-n3']">
             <InputDate
-              v-model="formData.scheduledDate"
+              v-model="formData.enrollmentScheduler.scheduledDate"
               class="date-picker-height-40 ml-2"
               type="datetime"
               ref="refPicker"
@@ -58,101 +58,17 @@
               </transition>
             </div>
           </div>
-          <InputTimezone :disabled="isScheduledTimeDisabled" />
+          <InputTimezone
+            v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            :disabled="isScheduledTimeDisabled"
+          />
         </div>
       </v-radio-group>
     </FormGroup>
-    <FormGroup :title="labels.Distribution" :sub-title="labels.TrainingDistributionSub">
-    </FormGroup>
-    <FormGroupHorizontalContent :label="labels.SendingLimit" class="mt-2" style="max-width: 323px;">
-      <v-text-field
-        v-model="formData.sendingLimit"
-        v-mask="'###########'"
-        id="input--campaign-manager-advanced-settings-sending-limit"
-        outlined
-        persistent-hint
-        placeholder="Enter number"
-        hint="*Required"
-        :rules="rules.number"
-      ></v-text-field>
-    </FormGroupHorizontalContent>
-    <v-radio-group
-      v-model="formData.distributionTypeId"
-      class="mt-0 campaign-manager-target-groups-radio"
-      hide-details
-    >
-      <div class="campaign-manager-advanced-settings__distribution-item">
-        <v-radio
-          :id="`input--send-training-radio-smtp-delay-send`"
-          style="margin-bottom: 0;"
-          label="Send emails with SMTP Delay every"
-          color="#2196f3"
-          value="1"
-        >
-        </v-radio>
-        <v-text-field
-          v-model="formData.distributionSmtpDelayEvery"
-          v-mask="'###'"
-          id="input--send-trainings-time"
-          placeholder="Enter number"
-          outlined
-          class="ml-2"
-          hide-details
-          style="max-width: 48px;"
-          :rules="rules.number"
-          :disabled="isDistributionSmtpDelayDisabled"
-        ></v-text-field>
-        <KSelect
-          v-model.trim="formData.distributionSmtpDelayTimeTypeId"
-          id="input--send-trainings-time-type"
-          class="ml-2"
-          outlined
-          dense
-          hide-details
-          placeholder="Select a item"
-          style="max-width: 118px;"
-          :items="distributionSmtpDelayTimeTypes"
-          :disabled="isDistributionSmtpDelayDisabled"
-        />
-      </div>
-      <div class="campaign-manager-advanced-settings__distribution-item mt-2">
-        <v-radio
-          :id="`input--send-trainings-distribute-trainings-over`"
-          style="margin-bottom: 0;"
-          label="Distribute trainings over"
-          color="#2196f3"
-          value="2"
-        />
-        <v-text-field
-          v-model="formData.trainingDistributionOver"
-          v-mask="'###'"
-          id="input--send-trainings-distribution-over"
-          placeholder="Enter number"
-          outlined
-          class="ml-2"
-          hide-details
-          style="max-width: 48px;"
-          :rules="rules.number"
-          :disabled="!isDistributionSmtpDelayDisabled"
-        ></v-text-field>
-        <KSelect
-          v-model.trim="formData.trainingDistributionOverType"
-          id="input--send-trainings-distribution-over-type"
-          class="ml-2"
-          outlined
-          dense
-          hide-details
-          placeholder="Select a item"
-          style="max-width: 118px;"
-          :items="trainingTimeItems"
-          :disabled="!isDistributionSmtpDelayDisabled"
-        />
-      </div>
-    </v-radio-group>
-    <FormGroup class="mt-6" :title="labels.Reminder">
+    <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
-          v-model="formData.sendReminderEvery"
+          v-model="sendReminderEvery"
           id="input--campaign-manager-advanced-settings-randomly-selected"
           color="#2196f3"
           hide-details
@@ -160,43 +76,68 @@
         </v-checkbox>
         <span>Set reminder every</span>
         <v-text-field
-          v-model="formData.reminder"
+          v-model="formData.enrollmentReminder.periodCount"
           v-mask="'#######'"
-          id="input--campaign-manager-advanced-settings-other-settings-number"
+          id="input--edit-enrollment-reminder-period-count"
           placeholder="Enter number"
           outlined
           class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
           style="max-width: 64px;"
-          :disabled="!formData.sendReminderEvery"
+          :disabled="!sendReminderEvery"
         ></v-text-field>
         <KSelect
-          v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-          id="input--campaign-manager-advanced-settings-other-settings-percent"
+          v-model.trim="formData.enrollmentReminder.periodType"
+          id="input--edit-enrollment-reminder-period-type"
           class="ml-2"
           outlined
           dense
           hide-details
           placeholder="Select a item"
-          style="max-width: 118px;"
-          :disabled="!formData.sendReminderEvery"
+          style="max-width: 100px;"
+          :items="periodTypeItems"
+          :disabled="!sendReminderEvery"
         />
         <span class="ml-2">ends</span>
         <KSelect
-          v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-          id="input--campaign-manager-advanced-settings-other-settings-percent"
+          v-model.trim="formData.enrollmentReminder.endType"
+          id="input--edit-enrollment-reminder-end-type"
           class="ml-2"
           outlined
           dense
           hide-details
           placeholder="Select a item"
-          style="max-width: 118px;"
-          :disabled="!formData.sendReminderEvery"
+          style="max-width: 282px; min-width: 282px;"
+          :items="endTypeItems"
+          :disabled="!sendReminderEvery"
+        />
+        <v-text-field
+          v-if="formData.enrollmentReminder.endType === 'AfterOccurences'"
+          v-model="formData.enrollmentReminder.occurrenceCount"
+          v-mask="'#######'"
+          id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
+          placeholder="Enter number"
+          outlined
+          class="ml-2 absolute-text-input-error"
+          style="max-width: 64px;"
+          :disabled="!sendReminderEvery"
+        ></v-text-field>
+        <span v-if="formData.endType === 3" class="ml-2">times</span>
+        <InputDate
+          v-if="formData.enrollmentReminder.endType === 'OnDate'"
+          v-model="formData.enrollmentReminder.stopTime"
+          class="date-picker-height-40 ml-2"
+          type="date"
+          ref="refPicker"
+          placeholder="Select Date"
+          format="dd/MM/yyyy"
+          style="width: 100%; max-width: 180px;"
+          :disabled="!sendReminderEvery"
         />
       </div>
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Certificate">
       <v-checkbox
-        v-model="formData.certificate"
+        v-model="formData.awardCertificate"
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
@@ -206,7 +147,7 @@
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Test">
       <v-checkbox
-        v-model="formData.test"
+        v-model="formData.markedAsTest"
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
@@ -214,10 +155,10 @@
       >
       </v-checkbox>
     </FormGroup>
-    <FormGroup class="mt-6" :title="labels.AutoEnroll">
+    <FormGroup class="mt-6" style="max-width: 950px;" :title="labels.AutoEnroll">
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
-          v-model="formData.isAutoEnroll"
+          v-model="isAutoEnroll"
           id="input--campaign-manager-advanced-settings-randomly-selected"
           color="#2196f3"
           hide-details
@@ -225,15 +166,54 @@
         </v-checkbox>
         <span>Automatically enroll new users in target groups</span>
         <KSelect
-          v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-          id="input--campaign-manager-advanced-settings-other-settings-percent"
+          v-model.trim="formData.enrollmentAutoEnroll.type"
+          id="input--enrollment-auto-enroll-type"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          style="max-width: 150px;"
+          :items="enrollmentAutoEnrollTypeItems"
+          :disabled="!isAutoEnroll"
+          @change="handleEnrollmentTypeChange"
+        />
+        <KSelect
+          v-if="formData.enrollmentAutoEnroll.type === 'Next'"
+          v-model.trim="formData.enrollmentAutoEnroll.dayOfWeek"
+          id="input--enrollment-auto-enroll-day-of-week"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          style="max-width: 150px;"
+          :items="enrollmentAutoEnrollDayOfWeekItems"
+          :disabled="!isAutoEnroll"
+        />
+        <v-text-field
+          v-if="formData.enrollmentAutoEnroll.type === 'In'"
+          v-model="formData.enrollmentAutoEnroll.periodCount"
+          v-mask="'#######'"
+          id="input--enrollment-auto-enroll-period-count"
+          placeholder="Enter number"
+          outlined
+          class="ml-2 absolute-text-input-error"
+          style="max-width: 64px;"
+          :disabled="!isAutoEnroll"
+        ></v-text-field>
+        <KSelect
+          v-if="formData.enrollmentAutoEnroll.type === 'In'"
+          v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
+          id="input--enrollment-auto-enroll-period-type"
           class="ml-2"
           outlined
           dense
           hide-details
           placeholder="Select a item"
           style="max-width: 118px;"
-          :disabled="!formData.isAutoEnroll"
+          :items="periodTypeItems"
+          :disabled="!isAutoEnroll"
         />
       </div>
     </FormGroup>
@@ -251,7 +231,7 @@ import * as validations from '@/utils/validations'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 export default {
   name: 'SendTrainingSettings',
-  components: { FormGroupHorizontalContent, InputTimezone, InputDate, KSelect, FormGroup },
+  components: { InputTimezone, InputDate, KSelect, FormGroup },
   inject: {
     getDistributionEmailOverTimeTypes: {
       type: Array,
@@ -269,19 +249,30 @@ export default {
       contentLanguage: '',
       contentLanguageItems: [],
       isDateValid: true,
+      sendReminderEvery: false,
+      isAutoEnroll: false,
       formData: {
-        reminder: 2,
-        test: false,
-        isAutoEnroll: false,
-        sendReminderEvery: false,
-        certificate: false,
-        distributionSmtpDelayTimeTypeId: '1',
+        markedAsTest: false,
+        awardCertificate: false,
         scheduleTypeId: '1',
-        distributionTypeId: '1',
-        distributionSmtpDelayEvery: 20,
-        sendingLimit: 50,
-        trainingDistributionOver: 8,
-        trainingDistributionOverType: '1'
+        enrollmentScheduler: {
+          scheduledDate: '',
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: true
+        },
+        enrollmentAutoEnroll: {
+          type: 'SameDay',
+          dayOfWeek: 0,
+          emailPeriodTypeEnum: 'Day',
+          periodCount: 0
+        },
+        enrollmentReminder: {
+          periodCount: 0,
+          periodType: 'Day',
+          endType: 'TrainingCompleted',
+          occurrenceCount: 0,
+          stopTime: ''
+        }
       },
       radioItems: [{ text: 'Send now', value: '1' }],
       rules: {
@@ -290,12 +281,48 @@ export default {
           (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
-      }
+      },
+      periodTypeItems: [
+        { text: 'days', value: 'Day' },
+        { text: 'weeks', value: 'Week' },
+        { text: 'months', value: 'Month' }
+      ],
+      endTypeItems: [
+        {
+          text: 'when user completes the training',
+          value: 'TrainingCompleted'
+        },
+        {
+          text: 'when user completes the quiz',
+          value: 'QuizCompleted'
+        },
+        {
+          text: 'after occurences',
+          value: 'AfterOccurences'
+        },
+        {
+          text: 'on date',
+          value: 'OnDate'
+        }
+      ],
+      enrollmentAutoEnrollTypeItems: [
+        { text: 'the same day', value: 'SameDay' },
+        { text: 'the next day', value: 'NextDay' },
+        { text: 'next...', value: 'Next' },
+        { text: 'in...', value: 'In' }
+      ],
+      enrollmentAutoEnrollDayOfWeekItems: [
+        { text: 'Monday', value: 0 },
+        { text: 'Tuesday', value: 1 },
+        { text: 'Wednesday', value: 2 },
+        { text: 'Thursday', value: 3 },
+        { text: 'Friday', value: 4 }
+      ]
     }
   },
   computed: {
     isScheduledTimeDisabled() {
-      return this.formData.scheduleTypeId !== '3'
+      return this.formData.scheduleTypeId !== '2'
     },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
@@ -307,6 +334,26 @@ export default {
       return this.formData.distributionTypeId !== '1'
     }
   },
-  methods: {}
+  created() {
+    this.callForContentLanguageItems()
+  },
+  methods: {
+    callForContentLanguageItems() {},
+    handleEnrollmentTypeChange(val) {
+      if (val === 3) {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+      } else if (val === 4) {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
+      } else {
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+      }
+    },
+    validateForm() {
+      return this.$refs.refForm.validate()
+    }
+  }
 }
 </script>

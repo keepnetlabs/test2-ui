@@ -7,6 +7,12 @@
     @closeOverlay="handleClose"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -40,7 +46,7 @@
               :title="labels.SelectRecipients"
               :subtitle="labels.SelectRecipientsSub"
             />
-            <SendTrainingSelectUsers />
+            <SendTrainingSelectUsers ref="refSendTrainingSelectUsers" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -48,7 +54,7 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings />
+            <SendTrainingSettings ref="refSendTrainingSettings" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -56,6 +62,7 @@
               :title="labels.Summary"
               :subtitle="labels.SendTrainingSummarySub"
             />
+            <SendTrainingSummary ref="refSendTrainingSummary" />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -90,9 +97,18 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import SendTrainingSelectUsers from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsers'
 import SendTrainingSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSettings'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { searchTargetGroups } from '@/api/targetUsers'
+import { scrollToComponent } from '@/utils/functions'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
+
 export default {
   name: 'SendTrainingModal',
   components: {
+    SendTrainingSummary,
+    DefaultErrorDialog,
     SendTrainingSettings,
     SendTrainingSelectUsers,
     ConfigureCompanyStepHeader,
@@ -111,6 +127,7 @@ export default {
     return {
       labels,
       isActionButtonDisabled: false,
+      createErrorMessage: '',
       step: 1
     }
   },
@@ -125,17 +142,141 @@ export default {
     }
   },
   methods: {
+    callForSelectedTargetGroups(ids) {
+      return searchTargetGroups({
+        pageNumber: 1,
+        pageSize: 2000000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [{ FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }],
+              FilterGroups: []
+            }
+          ]
+        }
+      })
+    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
-        this.step += flag
+        const { refSendTrainingSelectUsers } = this.$refs
+        if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {
+          const ids = refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
+            (item) => item.value
+          )
+          if (!ids.length) {
+            refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+            refSendTrainingSelectUsers.isTargetGroupsValid = false
+            return
+          }
+          this.isActionButtonDisabled = true
+          this.callForSelectedTargetGroups(ids)
+            .then((response) => {
+              const { results } = response?.data?.data || []
+              //User must have user count greater than 0
+              const totalUserCount = results.reduce((acc, item) => {
+                acc += item.userCount
+                return acc
+              }, 0)
+
+              if (totalUserCount) {
+                refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
+                refSendTrainingSelectUsers.isTargetGroupsValid = true
+                this.step += flag
+              } else {
+                refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+                refSendTrainingSelectUsers.isTargetGroupsValid = false
+                this.$nextTick(() => {
+                  const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector(
+                    '.error--text'
+                  )
+                  scrollToComponent(el)
+                })
+              }
+              refSendTrainingSelectUsers.formData.selectedTargetGroups = results
+            })
+            .finally(() => (this.isActionButtonDisabled = false))
+        }
+      } else if (this.step === 2 && flag === 1) {
+        const { refSendTrainingSettings } = this.$refs
+        if (refSendTrainingSettings.validateForm()) {
+          this.step += flag
+        } else {
+          this.$nextTick(() => {
+            const el = refSendTrainingSettings.$refs.refForm.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        }
       } else {
         this.step += flag
       }
     },
-    handleSubmit() {}
+    handleSubmit() {
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
+      const {
+        userWhoOpenedEmail,
+        userWhoClickedEmail,
+        userWhoSubmittedData,
+        userWhoDownloadedAttachment,
+        userWhoReportedAsSuspicious
+      } = refSendTrainingSelectUsers.formData
+      const {
+        enrollmentScheduler,
+        enrollmentAutoEnroll,
+        enrollmentReminder,
+        sendReminderEvery,
+        isAutoEnroll,
+        scheduleTypeId,
+        markedAsTest,
+        awardCertificate
+      } = refSendTrainingSettings.formData
+      const phishingCampaignConditionTypes = []
+      if (selectedIndex === 1) {
+        if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
+        if (userWhoClickedEmail) phishingCampaignConditionTypes.push('PhishingLinkClicked')
+        if (userWhoSubmittedData) phishingCampaignConditionTypes.push('DataSubmitted')
+        if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
+        if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
+      }
+
+      const payload = {
+        trainingId: this.selectedRow.trainingId,
+        targetGroupResourceIds:
+          selectedIndex === 0 ? refSendTrainingSelectUsers.formData.targetGroupResourceIds : [],
+        phishingCampaignResourceId:
+          selectedIndex === 1 ? refSendTrainingSelectUsers.formData.campaignResourceId : '',
+        phishingCampaignConditionTypes,
+        enrollmentScheduler: scheduleTypeId === '1' ? null : enrollmentScheduler,
+        enrollmentAutoEnroll: isAutoEnroll ? enrollmentAutoEnroll : null,
+        enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
+        markedAsTest,
+        awardCertificate
+      }
+      AwarenessEducatorService.createEnrollment(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit(EMITS.ON_CLOSE, true)
+        })
+        .catch((error) => {
+          this.createErrorMessage = error?.response?.data?.message
+        })
+    }
   }
 }
 </script>

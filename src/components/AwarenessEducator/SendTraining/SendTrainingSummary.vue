@@ -5,7 +5,7 @@
       :title="labels.TrainingInfo"
       :items="getTrainingItems"
     />
-    <CampaignManagerSummaryCard icon="mdi-cog" :title="labels.Settings" :items="getSettingsItems" />
+    <CampaignManagerSummaryCard icon="mdi-cog" :title="labels.Settings" :items="getTrainingItems" />
   </div>
 </template>
 
@@ -16,7 +16,9 @@ export default {
   name: 'SendTrainingSummary',
   components: { CampaignManagerSummaryCard },
   data() {
-    labels
+    return {
+      labels
+    }
   },
   computed: {
     getTrainingItems() {

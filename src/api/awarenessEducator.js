@@ -116,6 +116,10 @@ const exportCertificates = (payload) => {
   })
 }
 
+const createEnrollment = (payload) => {
+  return testRequest.post('/enrollments', payload)
+}
+
 const getEnrollment = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}`)
 }
@@ -173,5 +177,6 @@ export default {
   sendEnrollment,
   stopEnrollment,
   getEnrollment,
-  updateEnrollment
+  updateEnrollment,
+  createEnrollment
 }
