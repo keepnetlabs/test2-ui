@@ -169,7 +169,6 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
-      debugger
       if (this.step === 1 && flag === 1) {
         const { refSendTrainingSelectUsers } = this.$refs
         if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {

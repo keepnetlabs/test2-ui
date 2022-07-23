@@ -334,7 +334,11 @@ export default {
       return this.formData.distributionTypeId !== '1'
     }
   },
+  created() {
+    this.callForContentLanguageItems()
+  },
   methods: {
+    callForContentLanguageItems() {},
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
