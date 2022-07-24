@@ -101,6 +101,7 @@ export default {
       labels,
       initial: true,
       selectedRadioGroupIndex: 0,
+      totalTargetUserCount: 0,
       isShowTargetGroupUsersError: false,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: null,

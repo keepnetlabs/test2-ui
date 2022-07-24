@@ -6,6 +6,10 @@
         persistent-hint
         dense
         outlined
+        chips
+        deletable-chips
+        multiple
+        small-chips
         autocomplete="off"
         hint="*Required"
         placeholder="All Languages"
@@ -251,12 +255,12 @@ export default {
     return {
       labels,
       Validations,
-      contentLanguage: '',
       contentLanguageItems: [],
       isDateValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
+        contentLanguage: [],
         markedAsTest: false,
         awardCertificate: false,
         scheduleTypeId: '1',
@@ -346,8 +350,10 @@ export default {
     callForContentLanguageItems() {
       AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
         (response) => {
-          debugger
-          this.contentLanguageItems = response?.data?.data
+          this.contentLanguageItems = response?.data?.data?.map((lang) => ({
+            text: lang.name,
+            value: lang.id
+          }))
         }
       )
     },
