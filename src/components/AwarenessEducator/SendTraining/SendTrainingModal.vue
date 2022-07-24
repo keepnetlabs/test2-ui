@@ -145,7 +145,7 @@ export default {
         formData.trainingInfo = {
           'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
           'Content Type': this?.selectedRow?.type,
-          Languages: refSendTrainingSettings.languages.join(', ')
+          Languages: refSendTrainingSettings.formData.contentLanguage.join(', ')
         }
         formData.settings = {
           'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll,
