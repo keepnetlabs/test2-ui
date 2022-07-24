@@ -148,8 +148,10 @@ export default {
           Languages: refSendTrainingSettings.formData.contentLanguage.join(', ')
         }
         formData.settings = {
-          'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll,
-          'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest,
+          'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest
+            ? 'Yes'
+            : 'No',
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Starting now'

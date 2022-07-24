@@ -1,5 +1,10 @@
 <template>
-  <div class="campaign-manager-last-step__header" style="grid-template-columns: '1fr 1fr';">
+  <div
+    class="campaign-manager-last-step__header"
+    :style="{
+      gridTemplateColumns: '1fr 1fr'
+    }"
+  >
     <CampaignManagerSummaryCard
       icon="mdi-info"
       :title="labels.TrainingInfo"
