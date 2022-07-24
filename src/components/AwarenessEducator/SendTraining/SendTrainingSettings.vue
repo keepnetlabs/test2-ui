@@ -232,6 +232,11 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'SendTrainingSettings',
   components: { InputTimezone, InputDate, KSelect, FormGroup },
+  props: {
+    selectedRow: {
+      type: Object
+    }
+  },
   inject: {
     getDistributionEmailOverTimeTypes: {
       type: Array,
@@ -339,10 +344,12 @@ export default {
   },
   methods: {
     callForContentLanguageItems() {
-      AwarenessEducatorService.getContentLanguageItems().then((response) => {
-        debugger
-        this.contentLanguageItems = response?.data?.data
-      })
+      AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
+        (response) => {
+          debugger
+          this.contentLanguageItems = response?.data?.data
+        }
+      )
     },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {

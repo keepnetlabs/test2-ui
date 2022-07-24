@@ -54,7 +54,7 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings ref="refSendTrainingSettings" />
+            <SendTrainingSettings :selected-row="selectedRow" ref="refSendTrainingSettings" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
