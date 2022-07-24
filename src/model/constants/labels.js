@@ -5,6 +5,10 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  ExcludeFromThisReport: 'Exclude from this report',
+  IncludeToThisReport: 'Include back to this report',
+  EmptyTrainingReportUsers: 'You do not have any target user in this report',
+  Interactions: 'Interactions',
   TrainingMaterial: 'Training Material',
   EnrollmentEmailTemplate: 'Enrollment Email Template',
   CertificateTemplate: 'Certificate Template',
@@ -190,6 +194,7 @@ export const labels = {
   LastSubmission: 'Last Submission',
   TimesSubmission: 'Times Submission',
   Resend: 'Resend',
+  ReSend: 'Re-send',
   PasswordComplexity: 'Password Complexity',
   OpenedEmail: 'Opened Email',
   Geolocation: 'Geolocation',
