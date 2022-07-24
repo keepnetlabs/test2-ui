@@ -236,7 +236,7 @@ export default {
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
-        if (refSendTrainingSettings.validateForm() || true) {
+        if (refSendTrainingSettings.validateForm()) {
           this.step += flag
         } else {
           this.$nextTick(() => {
