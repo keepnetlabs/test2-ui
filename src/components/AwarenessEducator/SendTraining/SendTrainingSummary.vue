@@ -1,11 +1,16 @@
 <template>
-  <div class="campaign-manager-last-step__header" style="grid-template-columns: '1fr 1fr';">
+  <div
+    class="campaign-manager-last-step__header"
+    :style="{
+      gridTemplateColumns: '1fr 1fr'
+    }"
+  >
     <CampaignManagerSummaryCard
       icon="mdi-info"
       :title="labels.TrainingInfo"
-      :items="getTrainingItems"
+      :items="getTrainingInfoItems"
     />
-    <CampaignManagerSummaryCard icon="mdi-cog" :title="labels.Settings" :items="getTrainingItems" />
+    <CampaignManagerSummaryCard icon="mdi-cog" :title="labels.Settings" :items="getSettingItems" />
   </div>
 </template>
 
@@ -15,14 +20,22 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'SendTrainingSummary',
   components: { CampaignManagerSummaryCard },
+  props: {
+    formData: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels
     }
   },
   computed: {
-    getTrainingItems() {
-      return {}
+    getSettingItems() {
+      return this?.formData?.settings
+    },
+    getTrainingInfoItems() {
+      return this?.formData?.trainingInfo
     }
   }
 }

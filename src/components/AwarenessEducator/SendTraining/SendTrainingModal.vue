@@ -54,7 +54,7 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings ref="refSendTrainingSettings" />
+            <SendTrainingSettings :selected-row="selectedRow" ref="refSendTrainingSettings" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -62,7 +62,10 @@
               :title="labels.Summary"
               :subtitle="labels.SendTrainingSummarySub"
             />
-            <SendTrainingSummary ref="refSendTrainingSummary" />
+            <SendTrainingSummary
+              ref="refSendTrainingSummary"
+              :form-data="getTrainingSummaryFormData"
+            />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -134,6 +137,28 @@ export default {
   computed: {
     getTitle() {
       return `Send Training - ${this?.selectedRow?.trainingName}`
+    },
+    getTrainingSummaryFormData() {
+      let formData = {}
+      if (this.step === 3) {
+        const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+        formData.trainingInfo = {
+          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
+          'Content Type': this?.selectedRow?.type,
+          Languages: refSendTrainingSettings.formData.contentLanguage.join(', ')
+        }
+        formData.settings = {
+          'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest
+            ? 'Yes'
+            : 'No',
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Starting now'
+              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+        }
+      }
+      return formData
     }
   },
   created() {
@@ -204,13 +229,14 @@ export default {
                   scrollToComponent(el)
                 })
               }
+              refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
               refSendTrainingSelectUsers.formData.selectedTargetGroups = results
             })
             .finally(() => (this.isActionButtonDisabled = false))
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
-        if (refSendTrainingSettings.validateForm()) {
+        if (refSendTrainingSettings.validateForm() || true) {
           this.step += flag
         } else {
           this.$nextTick(() => {

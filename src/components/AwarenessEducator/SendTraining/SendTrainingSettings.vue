@@ -6,6 +6,10 @@
         persistent-hint
         dense
         outlined
+        chips
+        deletable-chips
+        multiple
+        small-chips
         autocomplete="off"
         hint="*Required"
         placeholder="All Languages"
@@ -227,11 +231,16 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
-import * as validations from '@/utils/validations'
-import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'SendTrainingSettings',
   components: { InputTimezone, InputDate, KSelect, FormGroup },
+  props: {
+    selectedRow: {
+      type: Object
+    }
+  },
   inject: {
     getDistributionEmailOverTimeTypes: {
       type: Array,
@@ -246,12 +255,12 @@ export default {
     return {
       labels,
       Validations,
-      contentLanguage: '',
       contentLanguageItems: [],
       isDateValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
+        contentLanguage: [],
         markedAsTest: false,
         awardCertificate: false,
         scheduleTypeId: '1',
@@ -338,7 +347,16 @@ export default {
     this.callForContentLanguageItems()
   },
   methods: {
-    callForContentLanguageItems() {},
+    callForContentLanguageItems() {
+      AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
+        (response) => {
+          this.contentLanguageItems = response?.data?.data?.map((lang) => ({
+            text: lang.name,
+            value: lang.name
+          }))
+        }
+      )
+    },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
