@@ -269,7 +269,8 @@ export default {
         isAutoEnroll,
         scheduleTypeId,
         markedAsTest,
-        awardCertificate
+        awardCertificate,
+        trainingContentIds
       } = refSendTrainingSettings.formData
       const phishingCampaignConditionTypes = []
       if (selectedIndex === 1) {
@@ -291,7 +292,8 @@ export default {
         enrollmentAutoEnroll: isAutoEnroll ? enrollmentAutoEnroll : null,
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
-        awardCertificate
+        awardCertificate,
+        trainingContentIds
       }
       AwarenessEducatorService.createEnrollment(payload)
         .then((response) => {
