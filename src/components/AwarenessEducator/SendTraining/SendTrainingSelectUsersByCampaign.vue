@@ -97,7 +97,7 @@
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
-                <el-tabs v-model="tab">
+                <el-tabs v-model="tab" @tab-click="handleTabChange">
                   <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
                     <div class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
@@ -207,7 +207,7 @@
                           outlined
                           dense
                           hide-details
-                          placeholder="All instances"
+                          :items="phishingCampaignReportItems"
                         />
                       </FormGroupHorizontalContent>
                     </div>
@@ -219,6 +219,7 @@
                         >
                       </div>
                     </div>
+                    <div></div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -254,7 +255,13 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
-import { getCampaignManagerPreview, searchCampaignManager } from '@/api/phishingsimulator'
+import {
+  getCampaignJobSummary,
+  getCampaignJobSummaryTargetGroups,
+  getCampaignManagerPreview,
+  searchCampaignManager,
+  searchCampaignPhishingJob
+} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
@@ -291,10 +298,16 @@ export default {
       emailTemplateParams: null,
       landingPageTemplates: null,
       landingPageParams: null,
+      selectedCampaign: null,
       phishingCampaignResourceId: '',
       selectedLandingPageTab: 1,
+      phishingCampaignReportItems: [],
       timeout: null,
-      initial: true
+      initial: true,
+      searchCampaignReportAxiosPayload: getDefaultAxiosPayload({
+        orderBy: 'CreatedDate',
+        pageSize: 100
+      })
     }
   },
   computed: {
@@ -416,6 +429,7 @@ export default {
     },
     setSelectedTemplate(row) {
       this.tab = 'email'
+      this.selectedCampaign = row
       getCampaignManagerPreview(row.resourceId).then((response) => {
         const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
         const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
@@ -445,6 +459,36 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
+    },
+    handleTabChange({ label }) {
+      if (label === 'Campaign Results') {
+        searchCampaignPhishingJob(
+          this.searchCampaignReportAxiosPayload,
+          this.selectedCampaign.resourceId
+        ).then((response) => {
+          const {
+            data: { data = [] }
+          } = response
+          const { results = [] } = data
+          this.phishingCampaignReportItems = results.map((result) => ({
+            text: `${result.startDate}(${result.status})`,
+            value: result.resourceId
+          }))
+          if (this.phishingCampaignReportItems.length) {
+            this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
+            this.callForCampaignSummary()
+          }
+        })
+      }
+    },
+    callForCampaignSummary() {
+      getCampaignJobSummary(this.phishingCampaignResourceId).then((response) => {
+        const { data: { data = {} } = {} } = response
+        debugger
+      })
+      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
+        debugger
+      })
     }
   }
 }

@@ -233,10 +233,12 @@ export default {
               refSendTrainingSelectUsers.formData.selectedTargetGroups = results
             })
             .finally(() => (this.isActionButtonDisabled = false))
+        } else if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 1) {
+          this.step += flag
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
-        if (refSendTrainingSettings.validateForm() || true) {
+        if (refSendTrainingSettings.validateForm()) {
           this.step += flag
         } else {
           this.$nextTick(() => {
