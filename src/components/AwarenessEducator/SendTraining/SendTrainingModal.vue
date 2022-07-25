@@ -298,6 +298,7 @@ export default {
         awardCertificate,
         trainingContentIds
       }
+      this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -310,6 +311,7 @@ export default {
         .catch((error) => {
           this.createErrorMessage = error?.response?.data?.message
         })
+        .finally(() => (this.isActionButtonDisabled = false))
     }
   }
 }
