@@ -283,7 +283,11 @@ export default {
       const payload = {
         trainingId: this.selectedRow.trainingId,
         targetGroupResourceIds:
-          selectedIndex === 0 ? refSendTrainingSelectUsers.formData.targetGroupResourceIds : [],
+          selectedIndex === 0
+            ? refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
+                (tResourceId) => tResourceId.value
+              )
+            : [],
         phishingCampaignResourceId:
           selectedIndex === 1 ? refSendTrainingSelectUsers.formData.campaignResourceId : '',
         phishingCampaignConditionTypes,
