@@ -13,7 +13,7 @@
         autocomplete="off"
         hint="*Required"
         placeholder="All Languages"
-        :rules="[(v) => Validations.required(v, labels.Required)]"
+        :rules="[(v) => v.length > 0 || 'Required']"
         :items="contentLanguageItems"
       ></KSelect>
     </FormGroup>
