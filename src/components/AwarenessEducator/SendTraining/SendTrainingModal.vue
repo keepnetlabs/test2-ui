@@ -261,12 +261,11 @@ export default {
         userWhoDownloadedAttachment,
         userWhoReportedAsSuspicious
       } = refSendTrainingSelectUsers.formData
+      const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
       const {
         enrollmentScheduler,
         enrollmentAutoEnroll,
         enrollmentReminder,
-        sendReminderEvery,
-        isAutoEnroll,
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
