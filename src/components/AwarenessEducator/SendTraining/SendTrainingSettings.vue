@@ -88,6 +88,7 @@
           class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!sendReminderEvery"
+          :rules="rules.number"
         ></v-text-field>
         <KSelect
           v-model.trim="formData.enrollmentReminder.periodType"
@@ -124,6 +125,7 @@
           class="ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!sendReminderEvery"
+          :rules="rules.number"
         ></v-text-field>
         <span v-if="formData.endType === 3" class="ml-2">times</span>
         <InputDate
@@ -205,6 +207,7 @@
           class="ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!isAutoEnroll"
+          :rules="rules.number"
         ></v-text-field>
         <KSelect
           v-if="formData.enrollmentAutoEnroll.type === 'In'"
@@ -273,21 +276,21 @@ export default {
           type: 'SameDay',
           dayOfWeek: 0,
           emailPeriodTypeEnum: 'Day',
-          periodCount: 0
+          periodCount: 1
         },
         enrollmentReminder: {
-          periodCount: 0,
+          periodCount: 1,
           periodType: 'Day',
           endType: 'TrainingCompleted',
-          occurrenceCount: 0,
+          occurrenceCount: 1,
           stopTime: ''
         }
       },
       radioItems: [{ text: 'Send now', value: '1' }],
       rules: {
         number: [
-          (v) => Validations.required(v, 'Enter a number higher than 0'),
-          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+          (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => v > 0 || 'Enter number greater than 0',
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       },

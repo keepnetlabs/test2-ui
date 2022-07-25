@@ -1,5 +1,5 @@
 <template>
-  <div class="emailTemplatePreview">
+  <div class="emailTemplatePreview" style="min-height: auto !important;">
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div v-else class="emailTemplatePreview__container" style="padding-top: 13px !important;">
       <div class="emailTemplatePreview__container-main">
@@ -228,32 +228,13 @@
                     <div
                       v-if="!isCampaignLoading"
                       style="
-                        display: flex;
-                        align-items: center;
-                        margin-top: 32px;
+                        margin-top: -64px;
                         margin-left: 20px;
-                        max-height: 300px;
-                        max-width: 300px;
+                        max-height: 525px;
+                        max-width: 525px;
                       "
                     >
                       <Pie :data="pieData" :chart-options="chartOptions" />
-                      <div style="position: absolute; left: 500px; top: 269px;">
-                        <div>No response{{ `(${pieData[0]})` }}</div>
-                        <div>
-                          Opened Email{{ `(${pieData[isAttachmentBasedScenario ? 1 : 2]})` }}
-                        </div>
-                        <div>
-                          Reported as suspicious{{
-                            `(${pieData[isAttachmentBasedScenario ? 4 : 5]})`
-                          }}
-                        </div>
-                        <div v-if="!isAttachmentBasedScenario">
-                          Clicked the phishing link{{ `(${pieData[1]})` }}
-                        </div>
-                        <div v-if="!isAttachmentBasedScenario">
-                          Submitted data{{ `(${pieData[3]})` }}
-                        </div>
-                      </div>
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -340,7 +321,7 @@ export default {
       landingPageParams: null,
       selectedCampaign: null,
       phishingCampaignResourceId: '',
-      selectedLandingPageTab: 1,
+      selectedLandingPageTab: '1',
       phishingCampaignReportItems: [],
       timeout: null,
       initial: true,
@@ -503,43 +484,64 @@ export default {
       }, delay)
     },
     handleTabChange({ label }) {
+      this.selectedLandingPageTab = '1'
       if (label === 'Campaign Results') {
+        this.isCampaignLoading = true
         searchCampaignPhishingJob(
           this.searchCampaignReportAxiosPayload,
           this.selectedCampaign.resourceId
-        ).then((response) => {
-          const {
-            data: { data = [] }
-          } = response
-          const { results = [] } = data
-          this.phishingCampaignReportItems = results.map((result) => ({
-            text: `${result.startDate}(${result.status})`,
-            value: result.resourceId
-          }))
-          if (this.phishingCampaignReportItems.length) {
-            this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
-            this.callForCampaignSummary()
-          }
-        })
+        )
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [] } = data
+            this.phishingCampaignReportItems = results.map((result) => ({
+              text: `${result.startDate}(${result.status})`,
+              value: result.resourceId
+            }))
+            if (this.phishingCampaignReportItems.length) {
+              this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
+              this.callForCampaignSummary()
+            }
+          })
+          .catch(() => {
+            this.isCampaignLoading = false
+          })
       }
     },
     callForCampaignSummary() {
-      this.isCampaignLoading = true
       getCampaignJobSummary(this.phishingCampaignResourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
+          this.totalCampaignUsers = data?.campaignInfo?.totalTargetUserCount || 0
+          const chartOptions = {
+            showLabels: true,
+            legend: {
+              display: true,
+              position: 'right',
+              labels: {
+                usePointStyle: true,
+                fontColor: '#757575',
+                fontFamily: 'Open-sans,sans-serif',
+                padding: 24,
+                fontSize: 12,
+                generateLabels: (chart = {}) => {
+                  const { data } = chart
+                  return data.datasets[0].data.map((data, index) => {
+                    return {
+                      text: `${this.chartOptions.labels[index]} (${data} users)`,
+                      fillStyle: this.chartOptions.backgroundColor[index],
+                      lineWidth: 0
+                    }
+                  })
+                }
+              }
+            }
+          }
           if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
-              legend: {
-                display: true,
-                labels: {
-                  usePointStyle: true,
-                  fontColor: '#757575',
-                  fontFamily: 'Open-sans,sans-serif',
-                  padding: 16,
-                  fontSize: 12
-                }
-              },
+              ...chartOptions,
               backgroundColor: ['#67C23A', '#FBF280', '#F56C6C', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
@@ -552,16 +554,7 @@ export default {
             }
           } else {
             this.chartOptions = {
-              legend: {
-                display: true,
-                labels: {
-                  usePointStyle: true,
-                  fontColor: '#757575',
-                  fontFamily: 'Open-sans,sans-serif',
-                  padding: 16,
-                  fontSize: 12
-                }
-              },
+              ...chartOptions,
               backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
@@ -598,10 +591,6 @@ export default {
         })
       getCampaignJobSummaryTargetGroups(this.phishingCampaignResourceId).then((response) => {
         this.totalCampaignGroups = response?.data?.data?.groups?.length || 0
-        this.totalCampaignUsers = response?.data?.data?.groups?.reduce((acc, item) => {
-          acc += item.usersCount
-          return acc
-        }, 0)
       })
     }
   }
