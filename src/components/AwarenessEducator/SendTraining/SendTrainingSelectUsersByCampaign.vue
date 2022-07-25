@@ -211,15 +211,50 @@
                         />
                       </FormGroupHorizontalContent>
                     </div>
-                    <div style="margin-top: 40px;">
+                    <DatatableLoading
+                      v-if="isCampaignLoading"
+                      :loading="isCampaignLoading"
+                      class="mt-2"
+                    />
+                    <div v-show="!isCampaignLoading" style="margin-top: 40px;">
                       <div class="campaign-manager-target-user-groups-header">
                         <v-icon color="#000000">mdi-account-multiple</v-icon>
                         <span class="campaign-manager-target-user-groups-header__text"
-                          >Total 157 users from 19 groups</span
+                          >Total {{ totalCampaignUsers }} users from
+                          {{ totalCampaignGroups }} groups</span
                         >
                       </div>
                     </div>
-                    <div></div>
+                    <div
+                      v-if="!isCampaignLoading"
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-top: 32px;
+                        margin-left: 20px;
+                        max-height: 300px;
+                        max-width: 300px;
+                      "
+                    >
+                      <Pie :data="pieData" :chart-options="chartOptions" />
+                      <div style="position: absolute; left: 500px; top: 269px;">
+                        <div>No response{{ `(${pieData[0]})` }}</div>
+                        <div>
+                          Opened Email{{ `(${pieData[isAttachmentBasedScenario ? 1 : 2]})` }}
+                        </div>
+                        <div>
+                          Reported as suspicious{{
+                            `(${pieData[isAttachmentBasedScenario ? 4 : 5]})`
+                          }}
+                        </div>
+                        <div v-if="!isAttachmentBasedScenario">
+                          Clicked the phishing link{{ `(${pieData[1]})` }}
+                        </div>
+                        <div v-if="!isAttachmentBasedScenario">
+                          Submitted data{{ `(${pieData[3]})` }}
+                        </div>
+                      </div>
+                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -265,9 +300,11 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
   components: {
+    Pie,
     FormGroupHorizontalContent,
     KEmailPreview,
     ShowMoreTags,
@@ -293,6 +330,9 @@ export default {
       tab: '',
       languageItems: [],
       campaignItems: [],
+      totalCampaignUsers: 0,
+      isCampaignLoading: false,
+      totalCampaignGroups: 0,
       isAttachmentBasedScenario: false,
       emailTemplate: null,
       emailTemplateParams: null,
@@ -304,6 +344,8 @@ export default {
       phishingCampaignReportItems: [],
       timeout: null,
       initial: true,
+      pieData: [],
+      chartOptions: {},
       searchCampaignReportAxiosPayload: getDefaultAxiosPayload({
         orderBy: 'CreatedDate',
         pageSize: 100
@@ -482,12 +524,84 @@ export default {
       }
     },
     callForCampaignSummary() {
-      getCampaignJobSummary(this.phishingCampaignResourceId).then((response) => {
-        const { data: { data = {} } = {} } = response
-        debugger
-      })
-      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
-        debugger
+      this.isCampaignLoading = true
+      getCampaignJobSummary(this.phishingCampaignResourceId)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response
+          if (this.isAttachmentBasedScenario) {
+            this.chartOptions = {
+              legend: {
+                display: true,
+                labels: {
+                  usePointStyle: true,
+                  fontColor: '#757575',
+                  fontFamily: 'Open-sans,sans-serif',
+                  padding: 16,
+                  fontSize: 12
+                }
+              },
+              backgroundColor: ['#67C23A', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              labels: [
+                labels.NoResponse,
+                labels.Opened,
+                labels.OpenedAttachment,
+                labels.NotDelivered,
+                labels.ReportedAsSuspicious
+              ],
+              showTooltipLine: true
+            }
+          } else {
+            this.chartOptions = {
+              legend: {
+                display: true,
+                labels: {
+                  usePointStyle: true,
+                  fontColor: '#757575',
+                  fontFamily: 'Open-sans,sans-serif',
+                  padding: 16,
+                  fontSize: 12
+                }
+              },
+              backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              labels: [
+                labels.NoResponse,
+                labels.Clicked,
+                labels.Opened,
+                labels.Submitted,
+                labels.NotDelivered,
+                labels.ReportedAsSuspicious
+              ],
+              showTooltipLine: true
+            }
+          }
+          const {
+            attachmentOpenedEmail,
+            clickedEmail,
+            noResponseEmail,
+            notDelivered,
+            openedEmail,
+            reportedEmail,
+            submittedEmail
+          } = data?.scenarioStats
+          const pieData = []
+          pieData.push(noResponseEmail)
+          if (!this.isAttachmentBasedScenario) pieData.push(clickedEmail)
+          pieData.push(openedEmail)
+          if (!this.isAttachmentBasedScenario) pieData.push(submittedEmail)
+          else pieData.push(attachmentOpenedEmail)
+          pieData.push(notDelivered)
+          pieData.push(reportedEmail)
+          this.pieData = JSON.parse(JSON.stringify(pieData))
+        })
+        .finally(() => {
+          this.isCampaignLoading = false
+        })
+      getCampaignJobSummaryTargetGroups(this.phishingCampaignResourceId).then((response) => {
+        this.totalCampaignGroups = response?.data?.data?.groups?.length || 0
+        this.totalCampaignUsers = response?.data?.data?.groups?.reduce((acc, item) => {
+          acc += item.usersCount
+          return acc
+        }, 0)
       })
     }
   }

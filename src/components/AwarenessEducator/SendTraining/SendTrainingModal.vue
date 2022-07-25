@@ -279,7 +279,7 @@ export default {
         if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
         if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
       }
-
+      if (enrollmentScheduler.scheduledTimeZoneId) enrollmentScheduler.useOwnTimeZone = false
       const payload = {
         trainingId: this.selectedRow.trainingId,
         targetGroupResourceIds:
