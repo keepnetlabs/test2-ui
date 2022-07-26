@@ -1,6 +1,7 @@
 <template>
   <iframe
     :key="iframeKey"
+    :src="remoteSrc"
     ref="iframe"
     class="k-email-preview"
     :srcdoc="html"
@@ -22,6 +23,9 @@ export default {
     isExtraHeight: {
       type: Boolean,
       default: false
+    },
+    remoteSrc: {
+      type: String
     }
   },
   data() {
