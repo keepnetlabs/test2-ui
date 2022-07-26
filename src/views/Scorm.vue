@@ -22,10 +22,10 @@ export default {
       const enrollmentContentResourceId = query?.EnrollmentContentId
       const targetUserResourceId = query?.TargetUserResourceId
       if (enrollmentContentResourceId && targetUserResourceId) {
-        AwarenessEducatorService.getTrainingUrl({
-          enrollmentContentResourceId,
-          targetUserResourceId
-        }).then((response) => {
+        AwarenessEducatorService.getTrainingUrl(
+          targetUserResourceId,
+          enrollmentContentResourceId
+        ).then((response) => {
           debugger
         })
       }
