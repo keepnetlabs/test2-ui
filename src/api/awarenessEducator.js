@@ -130,6 +130,15 @@ const updateEnrollment = (payload, resourceId) => {
   })
 }
 
+const getTrainingUrl = (targetResourceId, enrollmentContentId) => {
+  return testRequest.get('/trainings/scorm', {
+    params: {
+      targetResourceId,
+      enrollmentContentId
+    }
+  })
+}
+
 const getContentLanguageItems = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}/languages`)
 }
@@ -183,5 +192,6 @@ export default {
   getEnrollment,
   updateEnrollment,
   createEnrollment,
-  getContentLanguageItems
+  getContentLanguageItems,
+  getTrainingUrl
 }
