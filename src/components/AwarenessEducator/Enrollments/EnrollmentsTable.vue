@@ -167,7 +167,7 @@ export default {
       })
     },
     handlePreviewRowClick(row) {
-      AwarenessEducatorService.getTrainingUrl('', row.enrollmentId).then((response) => {
+      AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
         debugger
       })
     }
