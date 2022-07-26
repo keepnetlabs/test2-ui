@@ -144,7 +144,6 @@ export default {
             align: 'left',
             editable: false,
             label: 'Department',
-            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',

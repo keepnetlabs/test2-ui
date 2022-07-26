@@ -1,9 +1,556 @@
 <template>
-  <div></div>
+  <div id="training-report-users" class="training-report-users">
+    <TrainingReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="confirmResend"
+    />
+    <CampaignManagerReportHeader
+      class="mb-6"
+      title="Sending Report"
+      subtitle="Training email delivery details"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      selectable
+      filterable
+      options
+      is-server-side-selection
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportTrainingReportSendingReportTable"
+      @refreshAction="callForData"
+    >
+      <template #datatable-custom-column="{ scope, col }">
+        <v-btn style="display: none;" />
+        <v-tooltip
+          v-if="col.property === 'lastSendingStatus'"
+          bottom
+          nudgeLeft="40"
+          :disabled="!scope.row.hasTooltip"
+        >
+          <template #activator="{ on }">
+            <Badge
+              v-if="scope.row && scope.row[col.property]"
+              :listeners="on"
+              :color="getBtnStatusColor(scope.row[col.property])"
+              :text="scope.row[col.property]"
+            />
+          </template>
+          <span>{{ scope.row.tooltipText }}</span>
+        </v-tooltip>
+      </template>
+      <template #extended-view-slot>
+        <div
+          style="
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 21px;
+            color: #383b41;
+            margin-bottom: 8px;
+          "
+        >
+          Event history
+        </div>
+        <div v-for="(event, index) in getEvents" :key="index">
+          <CampaignManagerReportSendingReportEvent
+            :item="{
+              title: `Received By ${
+                event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
+              }`,
+              ...event
+            }"
+          />
+        </div>
+        <div
+          v-if="!getEvents.length"
+          style="
+            background-color: #f5f7fa;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 18px;
+            color: #383b41;
+          "
+        >
+          {{ getNoEventMessage }}
+        </div>
+      </template>
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
+          @on-click="handleResend(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          :checkIsOwnerProperty="false"
+          @on-click="handleDetails(scope.row)"
+        />
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
+import DataTable from '@/components/DataTable'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
+import Badge from '@/components/Badge'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
+
 export default {
-  name: 'TrainingReportSendingReport'
+  name: 'TrainingReportSendingReport',
+  components: {
+    TrainingReportResendDialog,
+    DataTable,
+    DefaultButtonRowAction,
+    Badge,
+    CampaignManagerReportHeader,
+    CampaignManagerReportSendingReportEvent
+  },
+  mixins: [useLoading],
+  props: {
+    id: {
+      type: String
+    }
+  },
+  data() {
+    return {
+      selectedRow: null,
+      isShowResendDialog: false,
+      isShowInteractionsModal: false,
+      isResendActionButtonDisabled: false,
+      CONSTANTS: {
+        id: 'training-report-users-data-table',
+        ascending: 'ascending'
+      },
+      axiosPayload: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps(),
+      tableOptions: {
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+        serverSideEvents: { pagination: true, search: true, sort: true },
+        selectEvent: {
+          resend: true
+        },
+        columns: [
+          {
+            property: 'firstName',
+            align: 'left',
+            editable: false,
+            label: 'First Name',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: 'lastName',
+            align: 'left',
+            editable: false,
+            label: 'Last Name',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: 'email',
+            align: 'left',
+            editable: false,
+            label: 'Email',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: 'department',
+            align: 'left',
+            editable: false,
+            label: 'Department',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: 'dateFirstSent',
+            align: 'left',
+            editable: false,
+            label: 'Date First Sent',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'date',
+            width: 160
+          },
+          {
+            property: 'dateLastSent',
+            align: 'left',
+            editable: false,
+            label: 'Date Last Sent',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'date',
+            width: 160
+          },
+          {
+            property: 'lastSendingStatus',
+            align: 'left',
+            editable: false,
+            label: 'Last Sending Status',
+            sortable: true,
+            show: true,
+            type: 'slot',
+            width: 200,
+            filterableType: 'select',
+            filterableItems: [
+              'Not Delivered',
+              'In Queue',
+              'Error',
+              'Cancelled',
+              'Successful',
+              'Processing'
+            ]
+          },
+          {
+            property: 'smtp',
+            align: 'left',
+            editable: false,
+            label: 'SMTP',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: 'emailType',
+            align: 'left',
+            editable: false,
+            label: 'Email Type',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          }
+        ],
+        addButton: {
+          show: false
+        },
+        iEmpty: {
+          message: labels.EmptyTrainingReportUsers
+        },
+        rowActions: [
+          {
+            name: labels.Resend,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-resend',
+            action: 'on-resend'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+          },
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
+        ]
+      },
+      isShowExtendedView: false,
+      extendedViewOptions: {
+        title: labels.EmailInformation,
+        col: [
+          {
+            property: PROPERTY_STORE.SUBJECT,
+            label: labels.Subject,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.TOEMAIL,
+            label: labels.To,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.FROMEMAIL,
+            label: labels.From,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'messageId',
+            label: labels.MessageID,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'originatingIP',
+            label: labels.SenderIP,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'serviceProvider',
+            label: labels.ServiceProvider,
+            isEditable: false,
+            type: 'text',
+            show: true
+          }
+        ],
+        isEditable: false,
+        showFooter: false
+      },
+      extendedViewValue: [],
+      extendedViewLoading: false,
+      tableData: [
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'Not Delivered',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll'
+        },
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'In Queue',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll'
+        },
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'Error',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll',
+          hasTooltip: true,
+          tooltipText: 'Error description'
+        },
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'Cancelled',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll'
+        },
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'Successful',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll'
+        },
+        {
+          firstName: 'Bruce',
+          lastName: 'Wayne',
+          email: 'bruce@wayne.com',
+          department: 'Executives',
+          dateFirstSent: '31.05.2021 16:31:33',
+          dateLastSent: '31.05.2021 16:31:33',
+          lastSendingStatus: 'Processing',
+          smtp: 'Default SMTP',
+          emailType: 'Auto-enroll',
+          hasTooltip: true,
+          tooltipText: "No processing is used for posts that don't use sendgrid."
+        }
+      ]
+    }
+  },
+  created() {
+    this.callForData()
+  },
+  methods: {
+    getBtnStatusColor(type) {
+      return getBtnStatusColor(type)
+    },
+    callForData() {
+      // this.setLoading(true)
+      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
+      //   .then((response) => {
+      //     const {
+      //       data: {
+      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+      //       }
+      //     } = response
+      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+      //     this.serverSideProps.pageNumber = pageNumber
+      //     this.tableData = results
+      //   })
+      //   .finally(this.setLoading)
+    },
+    columnFilterChanged(filter) {
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      )
+      this.callForData()
+    },
+    columnFilterCleared(fieldName) {
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      )
+      this.callForData()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForData()
+    },
+    serverSideSizeChanged(pageSize = 5) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.orderBy = prop
+      this.callForData()
+    },
+    resetPageNumber() {
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}) {
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.callForData()
+    },
+    exportTrainingReportSendingReportTable(downloadTypes) {
+      // downloadTypes.exportTypes.forEach((item) => {
+      //   let payload = {
+      //     pageNumber: downloadTypes.pageNumber,
+      //     pageSize: downloadTypes.pageSize,
+      //     orderBy: this.axiosPayload.orderBy,
+      //     ascending: this.axiosPayload.ascending,
+      //     reportAllPages: downloadTypes.reportAllPages,
+      //     exportType: item === 'XLS' ? 'Excel' : item,
+      //     filter: this.axiosPayload.filter
+      //   }
+      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+      //     const { data } = response
+      //     const link = document.createElement('a')
+      //     link.href = window.URL.createObjectURL(data)
+      //     link.download = `Campaign-Report-Opened.${
+      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+      //     }`
+      //     link.click()
+      //   })
+      // })
+    },
+    handleResend(row) {
+      this.selectedRow = row
+      this.toggleIsShowResendDialog()
+    },
+    handleDetails(row) {
+      // this.extendedViewLoading = true
+      // this.isShowExtendedView = true
+      // getCampaignJobEmailActivity(row.resourceId)
+      //   .then((response) => {
+      //     const { data: { data = [] } = {} } = response || { data: { data: [] } }
+      //     this.extendedViewValue = [data]
+      //   })
+      //   .catch(() => {
+      //     this.isShowExtendedView = false
+      //   })
+      //   .finally(() => {
+      //     this.extendedViewLoading = false
+      //   })
+    },
+    confirmResend() {},
+    toggleIsShowResendDialog() {
+      if (this.isShowResendDialog) {
+        this.selectedRow = null
+      }
+      this.isShowResendDialog = !this.isShowResendDialog
+    }
+  }
 }
 </script>
