@@ -118,9 +118,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!formData.certificateData.template"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="formData.certificateData.template"
                 is-extra-height
               />
             </div>

@@ -148,7 +148,8 @@ export default {
       labels,
       isActionButtonDisabled: false,
       createErrorMessage: '',
-      step: 1
+      step: 1,
+      certificateData: null
     }
   },
   computed: {
@@ -174,6 +175,7 @@ export default {
               ? 'Starting now'
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
+        formData.certificateData = this.certificateData
       }
       return formData
     }
@@ -189,7 +191,16 @@ export default {
       })
       //get certificate email
       getEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then((response) => {
-        debugger
+        const {
+          response: {
+            data: { data }
+          }
+        } = response
+        this.certificateData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
       })
       //get training email
       getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
