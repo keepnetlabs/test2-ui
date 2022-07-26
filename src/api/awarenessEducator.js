@@ -131,12 +131,9 @@ const updateEnrollment = (payload, resourceId) => {
 }
 
 const getTrainingUrl = (targetResourceId, enrollmentContentId) => {
-  return testRequest.get('/trainings/scorm', {
-    params: {
-      targetResourceId,
-      enrollmentContentId
-    }
-  })
+  return testRequest.get(
+    `/trainings/scorm?enrollmentContentId=${enrollmentContentId}&targetUserResourceId=${targetResourceId}`
+  )
 }
 
 const getContentLanguageItems = (resourceId) => {
