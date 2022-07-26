@@ -54,7 +54,11 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings :selected-row="selectedRow" ref="refSendTrainingSettings" />
+            <SendTrainingSettings
+              ref="refSendTrainingSettings"
+              :selected-row="selectedRow"
+              :enum-types="enumTypes"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -134,6 +138,9 @@ export default {
     },
     trainingEmailNotificationTemplateTypeResourceId: {
       type: String
+    },
+    enumTypes: {
+      type: Object
     }
   },
   data() {
@@ -176,8 +183,16 @@ export default {
   },
   methods: {
     callForFormDetails() {
-      debugger
+      //get reminder email
       getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
+        debugger
+      })
+      //get certificate email
+      getEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then((response) => {
+        debugger
+      })
+      //get training email
+      getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
         debugger
       })
     },

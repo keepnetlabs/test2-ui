@@ -20,6 +20,7 @@
       :training-email-notification-template-type-resource-id="
         trainingEmailNotificationTemplateTypeResourceId
       "
+      :enum-types="enumTypes"
       @on-close="toggleShowSendTrainingModal"
     />
     <DeleteTrainingDialog
@@ -87,6 +88,7 @@ export default {
       isShowSendTrainingModal: false,
       selectedRow: null,
       isEdit: false,
+      enumTypes: {},
       distributionEmailOverTimeTypes: [],
       distributionSmtpDelayTimeTypes: [],
       certificateEmailNotificationTemplateTypeResourceId: '',
@@ -106,7 +108,7 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data
-        debugger
+        this.enumTypes = enumNameValuePairs
         this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId
         this.trainingEmailNotificationTemplateTypeResourceId = trainingEmailNotificationTemplateTypeResourceId

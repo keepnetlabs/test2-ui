@@ -99,7 +99,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 100px;"
-          :items="periodTypeItems"
+          :items="getPeriodTypeItems"
           :disabled="!sendReminderEvery"
         />
         <span class="ml-2">ends</span>
@@ -112,7 +112,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
-          :items="endTypeItems"
+          :items="getEndTypeItems"
           :disabled="!sendReminderEvery"
         />
         <v-text-field
@@ -242,6 +242,9 @@ export default {
   props: {
     selectedRow: {
       type: Object
+    },
+    enumTypes: {
+      type: Object
     }
   },
   inject: {
@@ -333,6 +336,22 @@ export default {
     }
   },
   computed: {
+    getPeriodTypeItems() {
+      return (
+        this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
+          text: this.periodTypeItems[index].text,
+          value: type.name
+        })) || this.periodTypeItems
+      )
+    },
+    getEndTypeItems() {
+      return (
+        this?.enumTypes?.ReminderEndTypeEnum.map((type, index) => ({
+          text: this.endTypeItems[index].text,
+          value: type.name
+        })) || this.endTypeItems
+      )
+    },
     isScheduledTimeDisabled() {
       return this.formData.scheduleTypeId !== '2'
     },
