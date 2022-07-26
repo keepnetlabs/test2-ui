@@ -136,6 +136,10 @@ const getTrainingUrl = (targetResourceId, enrollmentContentId) => {
   )
 }
 
+const getEnrollmentFormDetails = () => {
+  return testRequest.get('/enrollments/form-details')
+}
+
 const getContentLanguageItems = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}/languages`)
 }
@@ -190,5 +194,6 @@ export default {
   updateEnrollment,
   createEnrollment,
   getContentLanguageItems,
-  getTrainingUrl
+  getTrainingUrl,
+  getEnrollmentFormDetails
 }

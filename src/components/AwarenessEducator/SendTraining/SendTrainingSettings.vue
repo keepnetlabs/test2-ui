@@ -2,7 +2,7 @@
   <v-form ref="refForm">
     <FormGroup has-hint :title="labels.ContentLanguage">
       <KSelect
-        v-model.trim="formData.trainingContentIds"
+        v-model.trim="formData.languageIds"
         persistent-hint
         dense
         outlined
@@ -263,7 +263,7 @@ export default {
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
-        trainingContentIds: [],
+        languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
         scheduleTypeId: '1',

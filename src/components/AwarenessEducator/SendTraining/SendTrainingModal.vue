@@ -145,7 +145,7 @@ export default {
         formData.trainingInfo = {
           'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
           'Content Type': this?.selectedRow?.type,
-          Languages: refSendTrainingSettings.formData.trainingContentIds.join(', ')
+          Languages: refSendTrainingSettings.formData.languageIds.join(', ')
         }
         formData.settings = {
           'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
@@ -268,7 +268,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
-        trainingContentIds
+        languageIds
       } = refSendTrainingSettings.formData
       const phishingCampaignConditionTypes = []
       if (selectedIndex === 1) {
@@ -295,7 +295,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
-        trainingContentIds
+        languageIds
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
