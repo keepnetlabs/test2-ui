@@ -1,6 +1,5 @@
 <template>
   <iframe
-    v-bind="commonProps"
     :key="iframeKey"
     ref="iframe"
     class="k-email-preview"
@@ -8,6 +7,7 @@
     :style="{ height }"
     width="100%"
     :height="height"
+    sandbox="allow-same-origin"
     @load="resizeIframe"
   />
 </template>
@@ -22,18 +22,10 @@ export default {
     isExtraHeight: {
       type: Boolean,
       default: false
-    },
-    remoteSrc: {
-      type: String
-    },
-    sandboxed: {
-      type: Boolean,
-      default: true
     }
   },
   data() {
     return {
-      commonProps: {},
       height: 300,
       defaultHeight: 300,
       iframeKey: `key-${Math.random().toString().substring(8)}`,
@@ -49,10 +41,6 @@ export default {
       this.iframeKey = `key-${Math.random().toString().substring(8)}`
       this.resizeIframe()
     }
-  },
-  created() {
-    if (this.remoteSrc) this.commonProps.src = this.remoteSrc
-    if (this.sandboxed) this.commonProps.sandbox = 'allow-same-origin'
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)

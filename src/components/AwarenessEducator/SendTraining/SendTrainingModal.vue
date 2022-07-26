@@ -158,9 +158,10 @@ export default {
       reminderData: null,
       enrollmentData: null,
       trainingPreviewData: {
-        name: this.selectedRow.name,
+        name: this.selectedRow.trainingName,
         category: this.selectedRow.category,
         createdBy: this.selectedRow.createdBy,
+        description: this.selectedRow.description,
         template: null
       }
     }

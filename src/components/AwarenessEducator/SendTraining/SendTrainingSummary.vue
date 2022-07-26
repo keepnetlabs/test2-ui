@@ -77,15 +77,7 @@
             v-if="isShowTrainingEmail"
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!formData.trainingData.template"
-                ref="refPreview"
-                :remote-src="formData.trainingData.template"
-                :sandboxed="false"
-                is-extra-height
-              />
-            </div>
+            {{ formData.trainingData.description }}
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -210,6 +202,14 @@ export default {
     },
     isReminderEmailData() {
       return this?.formData?.reminderData
+    }
+  },
+  watch: {
+    isShowTrainingEmail(val) {
+      if (val) {
+        window.open(this.formData.trainingData.template, '_blank')
+        this.isShowTrainingEmail = false
+      }
     }
   }
 }
