@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Information security (category) &#8226;
+              {{ formData.trainingData.category }} &#8226;
               <span class="template-list--item__sub-header--span">by</span>
               {{ formData.trainingData.createdBy }}
             </div>
@@ -79,9 +79,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!formData.trainingData.template"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="formData.trainingData.template"
                 is-extra-height
               />
             </div>

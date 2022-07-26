@@ -143,6 +143,11 @@ export default {
       type: Object
     }
   },
+  inject: {
+    getLanguages: {
+      type: Function
+    }
+  },
   data() {
     return {
       labels,
@@ -180,6 +185,12 @@ export default {
         formData.certificateData = this.certificateData
         formData.reminderData = this.reminderData
         formData.enrollmentData = this.enrollmentData
+        debugger
+        formData.trainingData = {
+          name: this.selectedRow.name,
+          category: this.selectedRow.category,
+          createdBy: this.selectedRow.createdBy
+        }
       }
       return formData
     }
@@ -221,6 +232,14 @@ export default {
           template: data.template,
           name: data.name
         }
+      })
+      //get template
+      const languages = this.getLanguages() || []
+      AwarenessEducatorService.getTrainingUrlForPreview(
+        this.selectedRow.trainingId,
+        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
+      ).then((response) => {
+        debugger
       })
     },
     callForSelectedTargetGroups(ids) {

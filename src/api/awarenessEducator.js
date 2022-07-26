@@ -135,6 +135,9 @@ const getTrainingUrl = (targetResourceId, enrollmentContentId) => {
     `/trainings/scorm?enrollmentContentId=${enrollmentContentId}&targetUserResourceId=${targetResourceId}`
   )
 }
+const getTrainingUrlForPreview = (trainingId, languageId) => {
+  return testRequest.post('/trainings/scorm/preview', { trainingId, languageId })
+}
 
 const getEnrollmentFormDetails = () => {
   return testRequest.get('/enrollments/form-details')
@@ -195,5 +198,6 @@ export default {
   createEnrollment,
   getContentLanguageItems,
   getTrainingUrl,
-  getEnrollmentFormDetails
+  getEnrollmentFormDetails,
+  getTrainingUrlForPreview
 }
