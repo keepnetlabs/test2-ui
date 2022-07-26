@@ -106,6 +106,7 @@ import { scrollToComponent } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
+import { getEmailTemplate } from '@/api/company'
 
 export default {
   name: 'SendTrainingModal',
@@ -124,6 +125,15 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    certificateEmailNotificationTemplateTypeResourceId: {
+      type: String
+    },
+    reminderEmailNotificationTemplateTypeResourceId: {
+      type: String
+    },
+    trainingEmailNotificationTemplateTypeResourceId: {
+      type: String
     }
   },
   data() {
@@ -162,11 +172,14 @@ export default {
     }
   },
   created() {
-    if (this.isEdit) {
-      //todo call for data
-    }
+    this.callForFormDetails()
   },
   methods: {
+    callForFormDetails() {
+      getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
+        debugger
+      })
+    },
     callForSelectedTargetGroups(ids) {
       return searchTargetGroups({
         pageNumber: 1,

@@ -57,15 +57,7 @@ export default {
       isShowEditEnrollmentModal: false
     }
   },
-  created() {
-    this.callForData()
-  },
   methods: {
-    callForData() {
-      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
-        debugger
-      })
-    },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
