@@ -149,7 +149,9 @@ export default {
       isActionButtonDisabled: false,
       createErrorMessage: '',
       step: 1,
-      certificateData: null
+      certificateData: null,
+      reminderData: null,
+      enrollmentData: null
     }
   },
   computed: {
@@ -176,6 +178,8 @@ export default {
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
         formData.certificateData = this.certificateData
+        formData.reminderData = this.reminderData
+        formData.enrollmentData = this.enrollmentData
       }
       return formData
     }
@@ -187,14 +191,19 @@ export default {
     callForFormDetails() {
       //get reminder email
       getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
-        debugger
+        const {
+          data: { data }
+        } = response
+        this.reminderData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
       })
       //get certificate email
       getEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then((response) => {
         const {
-          response: {
-            data: { data }
-          }
+          data: { data }
         } = response
         this.certificateData = {
           createdBy: this?.$store?.state?.auth?.selectedCompanyName,
@@ -204,7 +213,14 @@ export default {
       })
       //get training email
       getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
-        debugger
+        const {
+          data: { data }
+        } = response
+        this.enrollmentData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
       })
     },
     callForSelectedTargetGroups(ids) {
