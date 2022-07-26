@@ -310,6 +310,13 @@ export const PROPERTY_STORE = {
 }
 
 export const TABLE_SETTINGS_KEYS = {
+  TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
+  TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTableSettings',
+  TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTableSettings',
+  TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTableSettings',
+  TRAINING_REPORT_NO_RESPONSE_TABLE: 'TrainingReportNoResponseTableSettings',
+  TRAINING_REPORT_SENDING_REPORT_TABLE: 'TrainingReportSendingReportTableSettings',
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
@@ -460,6 +467,13 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
+  TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
+  TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTable',
+  TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTable',
+  TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTable',
+  TRAINING_REPORT_NO_RESPONSE_TABLE: 'TrainingReportNoResponseTable',
+  TRAINING_REPORT_SENDING_REPORT_TABLE: 'TrainingReportSendingReportTable',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',

@@ -31,6 +31,7 @@ import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
+import TrainingReport from '@/views/TrainingReport'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import AwarenessEducator from '@/views/AwarenessEducator'
 import TrainingList from '@/views/TrainingList'
@@ -164,6 +165,16 @@ const router = new Router({
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
               component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              component: TrainingReport
             }
           ]
         },
