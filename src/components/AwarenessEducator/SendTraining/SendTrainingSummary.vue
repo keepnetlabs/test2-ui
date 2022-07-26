@@ -57,7 +57,7 @@
       <CampaignManagerSummaryCard
         detailable
         title="Training that users will be directed to"
-        icon="mdi-email"
+        icon="mdi-application"
         :show-body-detail.sync="isShowTrainingEmail"
       >
         <template #body>
@@ -93,7 +93,7 @@
       <CampaignManagerSummaryCard
         detailable
         title="Certificate that users will be received"
-        icon="mdi-email"
+        icon="mdi-certificate"
         :show-body-detail.sync="isShowCertificate"
       >
         <template #body>
