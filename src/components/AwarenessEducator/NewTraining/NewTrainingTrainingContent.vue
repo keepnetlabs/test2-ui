@@ -86,7 +86,12 @@ export default {
   },
   computed: {
     languages() {
-      return this.getLanguages()
+      return (
+        this?.getLanguages()?.map((language) => ({
+          text: language.name,
+          value: language.id
+        })) || []
+      )
     },
     scormTypes() {
       return this.getScormTypes()

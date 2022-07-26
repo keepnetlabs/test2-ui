@@ -35,11 +35,7 @@ export default {
     },
     callForLanguages() {
       AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages =
-          response?.data?.data?.map((language) => ({
-            text: language.name,
-            value: language.id
-          })) || []
+        this.languages = response?.data?.data
 
         this.tableLanguageFilter =
           response?.data?.data?.map((language) => ({
