@@ -156,7 +156,13 @@ export default {
       step: 1,
       certificateData: null,
       reminderData: null,
-      enrollmentData: null
+      enrollmentData: null,
+      trainingPreviewData: {
+        name: this.selectedRow.name,
+        category: this.selectedRow.category,
+        createdBy: this.selectedRow.createdBy,
+        template: null
+      }
     }
   },
   computed: {
@@ -186,11 +192,7 @@ export default {
         formData.reminderData = this.reminderData
         formData.enrollmentData = this.enrollmentData
         debugger
-        formData.trainingData = {
-          name: this.selectedRow.name,
-          category: this.selectedRow.category,
-          createdBy: this.selectedRow.createdBy
-        }
+        formData.trainingData = this.trainingPreviewData
       }
       return formData
     }
@@ -240,7 +242,10 @@ export default {
         this.selectedRow.trainingId,
         languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
       ).then((response) => {
-        debugger
+        const {
+          data: { data }
+        } = response
+        this.trainingPreviewData.template = data?.trainingUrl
       })
     },
     callForSelectedTargetGroups(ids) {
