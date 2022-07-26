@@ -35,3 +35,15 @@
   margin-top:-4px;
 }
 }
+.stop-enrollment-modal{
+  .v-btn.v-cart-icon-wrapper{
+    background: #FEF7F7 !important;
+    border-color: #B83A3A !important;
+  }
+  #text--enrollment-dialog-stop-popup-title{
+    color:#B83A3A !important;
+  }
+  .mdi-stop {
+    color: #B83A3A !important;
+  }
+}

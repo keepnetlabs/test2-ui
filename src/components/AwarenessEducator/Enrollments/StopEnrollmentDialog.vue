@@ -2,6 +2,7 @@
   <AppDialog
     title-id="text--enrollment-dialog-stop-popup-title"
     subtitle-id="text--enrollment-dialog-stop-popup-subtitle"
+    class-name="stop-enrollment-modal"
     :icon="CONSTANTS.icon"
     :title="CONSTANTS.title"
     :status="status"

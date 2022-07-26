@@ -251,7 +251,6 @@ export default {
       }
     },
     handleSubmit() {
-      debugger
       const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
       const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
       const {
