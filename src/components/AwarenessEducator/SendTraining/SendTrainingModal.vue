@@ -234,6 +234,7 @@ export default {
         }
       })
       //get template
+      debugger
       const languages = this.getLanguages() || []
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
