@@ -185,7 +185,7 @@ export default {
             data: { data }
           } = response
           window.open(
-            `${window.location.href}/training/scorm?isPreview=true&template=${data?.trainingUrl}`
+            `${window.location.origin}/training/scorm?isPreview=true&template=${data?.trainingUrl}`
           )
         })
       })
