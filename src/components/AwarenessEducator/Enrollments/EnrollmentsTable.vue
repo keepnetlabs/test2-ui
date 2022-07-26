@@ -179,7 +179,7 @@ export default {
         } = response
         AwarenessEducatorService.getTrainingUrlForPreview(
           data?.trainingId,
-          this.mainLanguages.find((lang) => lang.code === data?.languages[0]).id
+          this.mainLanguages.find((lang) => lang.code === row.languages[0]).id
         ).then((response) => {
           const {
             data: { data }
