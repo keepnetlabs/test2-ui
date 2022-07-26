@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     isLanguageDisabled() {
-      return this?.filePreviews?.length || this.isDisable
+      return !!this?.filePreviews?.length || this.isDisabled
     }
   },
   methods: {
