@@ -12,8 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isDisabled"
-    
+        :disabled="isLanguageDisabled"
       />
       <v-btn
         v-if="isRemovable"
@@ -72,8 +71,8 @@ export default {
     isRemovable: {
       type: Boolean
     },
-    filePreviews:{
-      type:Array
+    filePreviews: {
+      type: Array
     }
   },
   data() {
@@ -88,6 +87,11 @@ export default {
           (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       }
+    }
+  },
+  computed: {
+    isLanguageDisabled() {
+      return this?.filePreviews?.length || this.isDisable
     }
   },
   methods: {
@@ -111,11 +115,11 @@ export default {
     handleRemove() {
       this.$emit('on-remove')
     },
-    handleClearFile(){
-      if(this.filePreviews.length){
-        this.$emit('input',{...this.value,filePreviews:null})
+    handleClearFile() {
+      if (this.filePreviews.length) {
+        this.$emit('input', { ...this.value, filePreviews: null })
       }
-      this.isDisabled=false
+      this.isDisabled = false
     }
   }
 }

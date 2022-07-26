@@ -107,6 +107,7 @@ function apiclass() {
         targetUserResourceId
       })
     )
+    const response = JSON.parse(request.response)
     console.log('lmsInitializeData', response.data)
     this.enrollmentSessionId = response?.data?.enrollmentSessionId
     this.scormSessionId = response?.data?.scormSessionId
