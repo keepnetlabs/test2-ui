@@ -42,7 +42,7 @@
       :target-audiences="targetAudiences"
       :scorm-types="scormTypes"
       @on-action-delete="handleDeleteRowClick"
-      @on-preview="toggleShowPreviewDialog"
+      @on-preview="handlePreviewRowClick"
       @on-add="toggleShowNewTrainingModal"
       @on-edit="handleEditRowClick"
       @on-training="handleSendTrainingRowClick"
@@ -152,6 +152,20 @@ export default {
     handleSendTrainingRowClick(row) {
       this.selectedRow = row
       this.toggleShowSendTrainingModal()
+    },
+    handlePreviewRowClick(row) {
+      this.selectedRow = row
+      const languages = this.languages
+      AwarenessEducatorService.getTrainingUrlForPreview(
+        this.selectedRow.trainingId,
+        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
+      ).then((response) => {
+        const {
+          data: { data }
+        } = response
+        const url = `${data.trainingUrl}?isPreview=true`
+        window.open(`${window.location.origin}/training/scorm?isPreview=true&template=${url}`)
+      })
     }
   }
 }

@@ -244,7 +244,7 @@ export default {
         const {
           data: { data }
         } = response
-        this.trainingPreviewData.template = data?.trainingUrl
+        this.trainingPreviewData.template = `${data.trainingUrl}?isPreview=true`
       })
     },
     callForSelectedTargetGroups(ids) {
