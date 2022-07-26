@@ -82,6 +82,7 @@
                 v-if="!!formData.trainingData.template"
                 ref="refPreview"
                 :remote-src="formData.trainingData.template"
+                :sandboxed="false"
                 is-extra-height
               />
             </div>
