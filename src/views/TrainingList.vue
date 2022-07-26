@@ -103,6 +103,7 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data
+        debugger
         this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId
         this.trainingEmailNotificationTemplateTypeResourceId = trainingEmailNotificationTemplateTypeResourceId

@@ -176,6 +176,7 @@ export default {
   },
   methods: {
     callForFormDetails() {
+      debugger
       getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
         debugger
       })
