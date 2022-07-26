@@ -94,6 +94,9 @@ export default {
       trainingEmailNotificationTemplateTypeResourceId: ''
     }
   },
+  created() {
+    this.callForFormDetails()
+  },
   methods: {
     callForFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
