@@ -245,10 +245,6 @@ export default {
           data: { data }
         } = response
         this.trainingPreviewData.template = data?.trainingUrl
-        this.$router.push({
-          name: 'scorm',
-          params: { template: data?.trainingUrl, isPreview: true }
-        })
       })
     },
     callForSelectedTargetGroups(ids) {

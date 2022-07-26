@@ -18,9 +18,9 @@ export default {
 
   methods: {
     callForData() {
-      const params = this?.$route?.params
-      if (params?.isPreview) {
-        this.src = params?.template
+      const query = this?.$route?.query
+      if (query?.isPreview) {
+        this.src = query?.template
       } else {
         const query = this?.$route?.query
         const enrollmentContentResourceId = query?.EnrollmentContentId
