@@ -7,9 +7,9 @@
       @on-close="toggleShowEditEnrollmentModal"
     />
     <DeleteEnrollmentDialog
-      v-if="isShowEnrollmentsDialog"
-      :status="isShowEnrollmentsDialog"
-      @on-close="toggleShowEnrollmentsDialog"
+      v-if="isShowDeleteEnrollmentsDialog"
+      :status="isShowDeleteEnrollmentsDialog"
+      @on-close="toggleShowDeleteEnrollmentsDialog"
     />
     <StopEnrollmentDialog
       v-if="isShowStopEnrollmentDialog"
@@ -22,7 +22,7 @@
       :languages="tableLanguageFilter"
       :target-audiences="targetAudiences"
       :scorm-types="scormTypes"
-      @on-action-delete="handleDeleteRowClick"
+      @on-delete="handleDeleteRowClick"
       @on-stop="handleStop"
       @on-send="handleSend"
       @on-edit="handleEditRowClick"
@@ -51,17 +51,17 @@ export default {
   mixins: [useAwarenessHelperCalls],
   data() {
     return {
-      isShowEnrollmentsDialog: false,
+      isShowDeleteEnrollmentsDialog: false,
       selectedRow: null,
       isShowStopEnrollmentDialog: false,
       isShowEditEnrollmentModal: false
     }
   },
   methods: {
-    toggleShowEnrollmentsDialog(forceUpdate = false) {
+    toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
-      if (this.isShowEnrollmentsDialog) this.selectedRow = null
-      this.isShowEnrollmentsDialog = !this.isShowEnrollmentsDialog
+      if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
+      this.isShowDeleteEnrollmentsDialog = !this.isShowDeleteEnrollmentsDialog
     },
     toggleShowStopEnrollmentDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
@@ -70,7 +70,7 @@ export default {
     },
     handleDeleteRowClick(row) {
       this.selectedRow = row
-      this.toggleShowEnrollmentsDialog()
+      this.toggleShowDeleteEnrollmentsDialog()
     },
     handleStop(row) {
       this.selectedRow = row

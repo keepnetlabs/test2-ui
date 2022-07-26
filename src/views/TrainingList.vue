@@ -11,6 +11,16 @@
       v-if="isShowSendTrainingModal"
       :status="isShowSendTrainingModal"
       :selected-row="selectedRow"
+      :certificate-email-notification-template-type-resource-id="
+        certificateEmailNotificationTemplateTypeResourceId
+      "
+      :reminder-email-notification-template-type-resource-id="
+        reminderEmailNotificationTemplateTypeResourceId
+      "
+      :training-email-notification-template-type-resource-id="
+        trainingEmailNotificationTemplateTypeResourceId
+      "
+      :enum-types="enumTypes"
       @on-close="toggleShowSendTrainingModal"
     />
     <DeleteTrainingDialog
@@ -47,8 +57,8 @@ import DeleteTrainingDialog from '@/components/AwarenessEducator/TrainingList/De
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrainingModal'
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
-import { getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingList',
   components: {
@@ -78,18 +88,30 @@ export default {
       isShowSendTrainingModal: false,
       selectedRow: null,
       isEdit: false,
+      enumTypes: {},
       distributionEmailOverTimeTypes: [],
-      distributionSmtpDelayTimeTypes: []
+      distributionSmtpDelayTimeTypes: [],
+      certificateEmailNotificationTemplateTypeResourceId: '',
+      reminderEmailNotificationTemplateTypeResourceId: '',
+      trainingEmailNotificationTemplateTypeResourceId: ''
     }
+  },
+  created() {
+    this.callForFormDetails()
   },
   methods: {
     callForFormDetails() {
-      getCampaignManagerFormDetails().then((response) => {
+      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
         const {
-          data: { data }
-        } = response
-        this.distributionEmailOverTimeTypes = data?.distributionEmailOverTimeTypes || []
-        this.distributionSmtpDelayTimeTypes = data?.distributionSmtpDelayTimeTypes || []
+          certificateEmailNotificationTemplateTypeResourceId = '',
+          reminderEmailNotificationTemplateTypeResourceId = '',
+          trainingEmailNotificationTemplateTypeResourceId = '',
+          enumNameValuePairs = {}
+        } = response?.data?.data
+        this.enumTypes = enumNameValuePairs
+        this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
+        this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId
+        this.trainingEmailNotificationTemplateTypeResourceId = trainingEmailNotificationTemplateTypeResourceId
       })
     },
     toggleShowDeleteTrainingDialog(forceUpdate = false) {

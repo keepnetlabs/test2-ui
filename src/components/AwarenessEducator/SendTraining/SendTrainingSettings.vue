@@ -2,7 +2,7 @@
   <v-form ref="refForm">
     <FormGroup has-hint :title="labels.ContentLanguage">
       <KSelect
-        v-model.trim="formData.contentLanguage"
+        v-model.trim="formData.languageIds"
         persistent-hint
         dense
         outlined
@@ -13,7 +13,7 @@
         autocomplete="off"
         hint="*Required"
         placeholder="All Languages"
-        :rules="[(v) => Validations.required(v, labels.Required)]"
+        :rules="[(v) => v.length > 0 || 'Required']"
         :items="contentLanguageItems"
       ></KSelect>
     </FormGroup>
@@ -88,6 +88,7 @@
           class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!sendReminderEvery"
+          :rules="rules.number"
         ></v-text-field>
         <KSelect
           v-model.trim="formData.enrollmentReminder.periodType"
@@ -98,7 +99,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 100px;"
-          :items="periodTypeItems"
+          :items="getPeriodTypeItems"
           :disabled="!sendReminderEvery"
         />
         <span class="ml-2">ends</span>
@@ -111,7 +112,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
-          :items="endTypeItems"
+          :items="getEndTypeItems"
           :disabled="!sendReminderEvery"
         />
         <v-text-field
@@ -124,6 +125,7 @@
           class="ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!sendReminderEvery"
+          :rules="rules.number"
         ></v-text-field>
         <span v-if="formData.endType === 3" class="ml-2">times</span>
         <InputDate
@@ -205,6 +207,7 @@
           class="ml-2 absolute-text-input-error"
           style="max-width: 64px;"
           :disabled="!isAutoEnroll"
+          :rules="rules.number"
         ></v-text-field>
         <KSelect
           v-if="formData.enrollmentAutoEnroll.type === 'In'"
@@ -239,6 +242,9 @@ export default {
   props: {
     selectedRow: {
       type: Object
+    },
+    enumTypes: {
+      type: Object
     }
   },
   inject: {
@@ -260,7 +266,7 @@ export default {
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
-        contentLanguage: [],
+        languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
         scheduleTypeId: '1',
@@ -273,21 +279,21 @@ export default {
           type: 'SameDay',
           dayOfWeek: 0,
           emailPeriodTypeEnum: 'Day',
-          periodCount: 0
+          periodCount: 1
         },
         enrollmentReminder: {
-          periodCount: 0,
+          periodCount: 1,
           periodType: 'Day',
           endType: 'TrainingCompleted',
-          occurrenceCount: 0,
+          occurrenceCount: 1,
           stopTime: ''
         }
       },
       radioItems: [{ text: 'Send now', value: '1' }],
       rules: {
         number: [
-          (v) => Validations.required(v, 'Enter a number higher than 0'),
-          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+          (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => v > 0 || 'Enter number greater than 0',
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       },
@@ -330,6 +336,22 @@ export default {
     }
   },
   computed: {
+    getPeriodTypeItems() {
+      return (
+        this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
+          text: this.periodTypeItems[index].text,
+          value: type.name
+        })) || this.periodTypeItems
+      )
+    },
+    getEndTypeItems() {
+      return (
+        this?.enumTypes?.ReminderEndTypeEnum.map((type, index) => ({
+          text: this.endTypeItems[index].text,
+          value: type.name
+        })) || this.endTypeItems
+      )
+    },
     isScheduledTimeDisabled() {
       return this.formData.scheduleTypeId !== '2'
     },
@@ -352,7 +374,7 @@ export default {
         (response) => {
           this.contentLanguageItems = response?.data?.data?.map((lang) => ({
             text: lang.name,
-            value: lang.name
+            value: lang.id
           }))
         }
       )

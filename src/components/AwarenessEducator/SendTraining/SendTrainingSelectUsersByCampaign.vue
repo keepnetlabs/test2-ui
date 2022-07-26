@@ -1,5 +1,5 @@
 <template>
-  <div class="emailTemplatePreview">
+  <div class="emailTemplatePreview" style="min-height: auto !important;">
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div v-else class="emailTemplatePreview__container" style="padding-top: 13px !important;">
       <div class="emailTemplatePreview__container-main">
@@ -211,15 +211,31 @@
                         />
                       </FormGroupHorizontalContent>
                     </div>
-                    <div style="margin-top: 40px;">
+                    <DatatableLoading
+                      v-if="isCampaignLoading"
+                      :loading="isCampaignLoading"
+                      class="mt-2"
+                    />
+                    <div v-show="!isCampaignLoading" style="margin-top: 40px;">
                       <div class="campaign-manager-target-user-groups-header">
                         <v-icon color="#000000">mdi-account-multiple</v-icon>
                         <span class="campaign-manager-target-user-groups-header__text"
-                          >Total 157 users from 19 groups</span
+                          >Total {{ totalCampaignUsers }} users from
+                          {{ totalCampaignGroups }} groups</span
                         >
                       </div>
                     </div>
-                    <div></div>
+                    <div
+                      v-if="!isCampaignLoading"
+                      style="
+                        margin-top: -64px;
+                        margin-left: 20px;
+                        max-height: 525px;
+                        max-width: 525px;
+                      "
+                    >
+                      <Pie :data="pieData" :chart-options="chartOptions" />
+                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -265,9 +281,11 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
   components: {
+    Pie,
     FormGroupHorizontalContent,
     KEmailPreview,
     ShowMoreTags,
@@ -293,6 +311,9 @@ export default {
       tab: '',
       languageItems: [],
       campaignItems: [],
+      totalCampaignUsers: 0,
+      isCampaignLoading: false,
+      totalCampaignGroups: 0,
       isAttachmentBasedScenario: false,
       emailTemplate: null,
       emailTemplateParams: null,
@@ -300,10 +321,12 @@ export default {
       landingPageParams: null,
       selectedCampaign: null,
       phishingCampaignResourceId: '',
-      selectedLandingPageTab: 1,
+      selectedLandingPageTab: '1',
       phishingCampaignReportItems: [],
       timeout: null,
       initial: true,
+      pieData: [],
+      chartOptions: {},
       searchCampaignReportAxiosPayload: getDefaultAxiosPayload({
         orderBy: 'CreatedDate',
         pageSize: 100
@@ -461,33 +484,113 @@ export default {
       }, delay)
     },
     handleTabChange({ label }) {
+      this.selectedLandingPageTab = '1'
       if (label === 'Campaign Results') {
+        this.isCampaignLoading = true
         searchCampaignPhishingJob(
           this.searchCampaignReportAxiosPayload,
           this.selectedCampaign.resourceId
-        ).then((response) => {
-          const {
-            data: { data = [] }
-          } = response
-          const { results = [] } = data
-          this.phishingCampaignReportItems = results.map((result) => ({
-            text: `${result.startDate}(${result.status})`,
-            value: result.resourceId
-          }))
-          if (this.phishingCampaignReportItems.length) {
-            this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
-            this.callForCampaignSummary()
-          }
-        })
+        )
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [] } = data
+            this.phishingCampaignReportItems = results.map((result) => ({
+              text: `${result.startDate}(${result.status})`,
+              value: result.resourceId
+            }))
+            if (this.phishingCampaignReportItems.length) {
+              this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
+              this.callForCampaignSummary()
+            }
+          })
+          .catch(() => {
+            this.isCampaignLoading = false
+          })
       }
     },
     callForCampaignSummary() {
-      getCampaignJobSummary(this.phishingCampaignResourceId).then((response) => {
-        const { data: { data = {} } = {} } = response
-        debugger
-      })
-      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
-        debugger
+      getCampaignJobSummary(this.phishingCampaignResourceId)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response
+          this.totalCampaignUsers = data?.campaignInfo?.totalTargetUserCount || 0
+          const chartOptions = {
+            showLabels: true,
+            legend: {
+              display: true,
+              position: 'right',
+              labels: {
+                usePointStyle: true,
+                fontColor: '#757575',
+                fontFamily: 'Open-sans,sans-serif',
+                padding: 24,
+                fontSize: 12,
+                generateLabels: (chart = {}) => {
+                  const { data } = chart
+                  return data.datasets[0].data.map((data, index) => {
+                    return {
+                      text: `${this.chartOptions.labels[index]} (${data} users)`,
+                      fillStyle: this.chartOptions.backgroundColor[index],
+                      lineWidth: 0
+                    }
+                  })
+                }
+              }
+            }
+          }
+          if (this.isAttachmentBasedScenario) {
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#67C23A', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              labels: [
+                labels.NoResponse,
+                labels.Opened,
+                labels.OpenedAttachment,
+                labels.NotDelivered,
+                labels.ReportedAsSuspicious
+              ],
+              showTooltipLine: true
+            }
+          } else {
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              labels: [
+                labels.NoResponse,
+                labels.Clicked,
+                labels.Opened,
+                labels.Submitted,
+                labels.NotDelivered,
+                labels.ReportedAsSuspicious
+              ],
+              showTooltipLine: true
+            }
+          }
+          const {
+            attachmentOpenedEmail,
+            clickedEmail,
+            noResponseEmail,
+            notDelivered,
+            openedEmail,
+            reportedEmail,
+            submittedEmail
+          } = data?.scenarioStats
+          const pieData = []
+          pieData.push(noResponseEmail)
+          if (!this.isAttachmentBasedScenario) pieData.push(clickedEmail)
+          pieData.push(openedEmail)
+          if (!this.isAttachmentBasedScenario) pieData.push(submittedEmail)
+          else pieData.push(attachmentOpenedEmail)
+          pieData.push(notDelivered)
+          pieData.push(reportedEmail)
+          this.pieData = JSON.parse(JSON.stringify(pieData))
+        })
+        .finally(() => {
+          this.isCampaignLoading = false
+        })
+      getCampaignJobSummaryTargetGroups(this.phishingCampaignResourceId).then((response) => {
+        this.totalCampaignGroups = response?.data?.data?.groups?.length || 0
       })
     }
   }

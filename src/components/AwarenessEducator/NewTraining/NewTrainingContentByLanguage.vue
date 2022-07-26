@@ -12,7 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isDisabled"
+        :disabled="isLanguageDisabled"
       />
       <v-btn
         v-if="isRemovable"
@@ -87,6 +87,11 @@ export default {
           (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       }
+    }
+  },
+  computed: {
+    isLanguageDisabled() {
+      return !!this?.filePreviews?.length || this.isDisabled
     }
   },
   methods: {

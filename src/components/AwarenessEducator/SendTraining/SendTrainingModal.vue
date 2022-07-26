@@ -54,7 +54,11 @@
               :title="labels.Settings"
               :subtitle="labels.SendTrainingSettingsSub"
             />
-            <SendTrainingSettings :selected-row="selectedRow" ref="refSendTrainingSettings" />
+            <SendTrainingSettings
+              ref="refSendTrainingSettings"
+              :selected-row="selectedRow"
+              :enum-types="enumTypes"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -106,6 +110,7 @@ import { scrollToComponent } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
+import { getEmailTemplate } from '@/api/company'
 
 export default {
   name: 'SendTrainingModal',
@@ -124,6 +129,18 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    certificateEmailNotificationTemplateTypeResourceId: {
+      type: String
+    },
+    reminderEmailNotificationTemplateTypeResourceId: {
+      type: String
+    },
+    trainingEmailNotificationTemplateTypeResourceId: {
+      type: String
+    },
+    enumTypes: {
+      type: Object
     }
   },
   data() {
@@ -131,7 +148,10 @@ export default {
       labels,
       isActionButtonDisabled: false,
       createErrorMessage: '',
-      step: 1
+      step: 1,
+      certificateData: null,
+      reminderData: null,
+      enrollmentData: null
     }
   },
   computed: {
@@ -145,7 +165,7 @@ export default {
         formData.trainingInfo = {
           'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
           'Content Type': this?.selectedRow?.type,
-          Languages: refSendTrainingSettings.formData.contentLanguage.join(', ')
+          Languages: refSendTrainingSettings.formData.languageIds.join(', ')
         }
         formData.settings = {
           'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
@@ -157,16 +177,52 @@ export default {
               ? 'Starting now'
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
+        formData.certificateData = this.certificateData
+        formData.reminderData = this.reminderData
+        formData.enrollmentData = this.enrollmentData
       }
       return formData
     }
   },
   created() {
-    if (this.isEdit) {
-      //todo call for data
-    }
+    this.callForFormDetails()
   },
   methods: {
+    callForFormDetails() {
+      //get reminder email
+      getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.reminderData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
+      })
+      //get certificate email
+      getEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.certificateData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
+      })
+      //get training email
+      getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.enrollmentData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
+      })
+    },
     callForSelectedTargetGroups(ids) {
       return searchTargetGroups({
         pageNumber: 1,
@@ -260,15 +316,15 @@ export default {
         userWhoDownloadedAttachment,
         userWhoReportedAsSuspicious
       } = refSendTrainingSelectUsers.formData
+      const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
       const {
         enrollmentScheduler,
         enrollmentAutoEnroll,
         enrollmentReminder,
-        sendReminderEvery,
-        isAutoEnroll,
         scheduleTypeId,
         markedAsTest,
-        awardCertificate
+        awardCertificate,
+        languageIds
       } = refSendTrainingSettings.formData
       const phishingCampaignConditionTypes = []
       if (selectedIndex === 1) {
@@ -278,11 +334,15 @@ export default {
         if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
         if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
       }
-
+      if (enrollmentScheduler.scheduledTimeZoneId) enrollmentScheduler.useOwnTimeZone = false
       const payload = {
         trainingId: this.selectedRow.trainingId,
         targetGroupResourceIds:
-          selectedIndex === 0 ? refSendTrainingSelectUsers.formData.targetGroupResourceIds : [],
+          selectedIndex === 0
+            ? refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
+                (tResourceId) => tResourceId.value
+              )
+            : [],
         phishingCampaignResourceId:
           selectedIndex === 1 ? refSendTrainingSelectUsers.formData.campaignResourceId : '',
         phishingCampaignConditionTypes,
@@ -290,8 +350,10 @@ export default {
         enrollmentAutoEnroll: isAutoEnroll ? enrollmentAutoEnroll : null,
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
-        awardCertificate
+        awardCertificate,
+        languageIds
       }
+      this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -304,6 +366,7 @@ export default {
         .catch((error) => {
           this.createErrorMessage = error?.response?.data?.message
         })
+        .finally(() => (this.isActionButtonDisabled = false))
     }
   }
 }

@@ -43,9 +43,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!formData.enrollmentData.template"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="formData.enrollmentData.template"
                 is-extra-height
               />
             </div>
@@ -118,9 +118,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!formData.certificateData.template"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="formData.certificateData.template"
                 is-extra-height
               />
             </div>
@@ -142,13 +142,13 @@
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.reminderEmailData.name }}
+                {{ formData.reminderData.name }}
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
               Training reminder email template &#8226;
               <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.reminderEmailData.createdBy }}
+              {{ formData.reminderData.createdBy }}
             </div>
           </div>
           <div
@@ -157,9 +157,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!formData.reminderData.template"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="formData.reminderData.template"
                 is-extra-height
               />
             </div>
