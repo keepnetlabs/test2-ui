@@ -63,6 +63,12 @@ export default {
     EnrollmentsTableRowActions,
     DataTable
   },
+  props: {
+    mainLanguages: {
+      type: Array,
+      required: true
+    }
+  },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
@@ -168,7 +174,18 @@ export default {
     },
     handlePreviewRowClick(row) {
       AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
-        debugger
+        const {
+          data: { data }
+        } = response
+        AwarenessEducatorService.getTrainingUrlForPreview(
+          data?.trainingId,
+          this.mainLanguages.find((lang) => lang.code === data?.languages[0]).id
+        ).then((response) => {
+          const {
+            data: { data }
+          } = response
+          window.open(data?.trainingUrl, '_blank')
+        })
       })
     }
   }

@@ -22,6 +22,7 @@
       :languages="tableLanguageFilter"
       :target-audiences="targetAudiences"
       :scorm-types="scormTypes"
+      :main-languages="languages"
       @on-delete="handleDeleteRowClick"
       @on-stop="handleStop"
       @on-send="handleSend"
