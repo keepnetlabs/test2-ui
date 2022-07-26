@@ -35,6 +35,7 @@
         @on-stop="$emit('on-stop', $event)"
         @on-send="$emit('on-send', $event)"
         @on-edit="$emit('on-edit', $event)"
+        @on-delete="$emit('on-delete', $event)"
       />
     </template>
   </DataTable>

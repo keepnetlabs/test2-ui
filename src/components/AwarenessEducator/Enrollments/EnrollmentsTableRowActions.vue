@@ -38,7 +38,7 @@
         :disabled="rowActions[3].disabled"
         :icon="rowActions[3].icon"
         :text="rowActions[3].name"
-        @on-click="handleAction(scope.row)"
+        @on-click="$emit('on-delete', scope.row)"
       />
     </RowActionsMenu>
   </div>

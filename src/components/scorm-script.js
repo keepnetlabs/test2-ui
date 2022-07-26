@@ -2,6 +2,7 @@ const query = new URLSearchParams(window.location.search)
 const enrollmentContentResourceId = query.get('EnrollmentContentId') || ''
 const targetUserResourceId = query.get('TargetUserResourceId') || ''
 const domainUrl = query.get('DomainUrl') || 'https://test-api.devkeepnet.com'
+const isPreview = query.get('isPreview') || false
 var blnDebug = false
 var aryDebug = new Array()
 var strDebug = ''
@@ -73,6 +74,7 @@ function apiclass() {
     apiclass.prototype.GetDiagnostic = _LMSGetDiagnostic
   }
   function _LMSInitialize(val) {
+    if (isPreview) return 'true'
     if (val != '') {
       this.LastErrorString = 'Value passed to LMSInitialize, should be blank'
       this.LastError = '201'
@@ -114,6 +116,7 @@ function apiclass() {
     return response.status === 'SUCCESS' ? 'true' : 'false'
   }
   function _LMSFinish(val) {
+    if (isPreview) return 'true'
     if (val !== '') {
       this.LastErrorString = 'Value passed to LMSFinish, should be blank'
       this.LastError = '201'
@@ -135,8 +138,8 @@ function apiclass() {
     console.log('lmsFinish', response.data)
     return response.status === 'SUCCESS' ? response.data : 'false'
   }
-
   function _LMSGetValue(name) {
+    if (isPreview) return 'true'
     const request = new XMLHttpRequest()
     request.open('POST', `${domainUrl}/scorm/LMSGetValue`, false)
     request.setRequestHeader('Content-type', 'application/json')
@@ -154,6 +157,7 @@ function apiclass() {
     return response.status === 'SUCCESS' ? response.data : 'false'
   }
   function _LMSSetValue(name, value) {
+    if (isPreview) return 'true'
     const request = new XMLHttpRequest()
     request.open('POST', `${domainUrl}/scorm/LMSSetValue`, false)
     request.setRequestHeader('Content-type', 'application/json')
@@ -171,6 +175,7 @@ function apiclass() {
     return response.status === 'SUCCESS' ? response.data : 'false'
   }
   function _LMSCommit(val) {
+    if (isPreview) return 'true'
     // LMSCommit is a no-op since we commit every time.
     if (val != '') {
       this.LastErrorString = 'Value passed to LMSCommit, should be blank'

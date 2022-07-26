@@ -14,6 +14,7 @@
     <template #app-dialog-footer>
       <AppDialogFooter
         type="delete"
+        action-button-text="STOP"
         cancel-button-id="btn-cancel--stop-enrollment-dialog-popup"
         confirm-button-id="btn-delete-stop-enrollment-dialog-popup"
         :confirm-button-disabled="isActionButtonDisabled"
