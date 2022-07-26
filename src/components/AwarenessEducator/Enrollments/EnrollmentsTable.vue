@@ -36,6 +36,7 @@
         @on-send="$emit('on-send', $event)"
         @on-edit="$emit('on-edit', $event)"
         @on-delete="$emit('on-delete', $event)"
+        @on-preview="handlePreviewRowClick"
       />
     </template>
   </DataTable>
@@ -163,6 +164,11 @@ export default {
           }`
           link.click()
         })
+      })
+    },
+    handlePreviewRowClick(row) {
+      AwarenessEducatorService.getTrainingUrl('', row.enrollmentId).then((response) => {
+        debugger
       })
     }
   }

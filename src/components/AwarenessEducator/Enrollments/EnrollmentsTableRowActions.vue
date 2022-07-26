@@ -23,7 +23,7 @@
         :icon="rowActions[2].icon"
         :text="rowActions[2].name"
         :checkIsOwnerProperty="false"
-        @on-click="handleAction(scope.row)"
+        @on-click="$emit('on-preview', scope.row)"
       />
       <DefaultMenuRowAction
         v-if="!isShowReport"

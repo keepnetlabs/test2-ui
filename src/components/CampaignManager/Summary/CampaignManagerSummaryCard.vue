@@ -19,7 +19,9 @@
             outlined
             color="#2196f3"
             @click="$emit('update:showBodyDetail', !showBodyDetail)"
-            >Preview
+          >
+            <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+            Preview
             <v-icon :color="'#2196f3'" class="ml-2" left medium>
               {{ showBodyDetail ? 'mdi-menu-up' : 'mdi-menu-down' }}
             </v-icon></v-btn

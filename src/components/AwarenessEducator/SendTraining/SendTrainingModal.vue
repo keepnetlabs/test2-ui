@@ -158,10 +158,10 @@ export default {
       reminderData: null,
       enrollmentData: null,
       trainingPreviewData: {
-        name: this.selectedRow.trainingName,
-        category: this.selectedRow.category,
-        createdBy: this.selectedRow.createdBy,
-        description: this.selectedRow.description,
+        name: this?.selectedRow?.trainingName,
+        category: this?.selectedRow?.category,
+        createdBy: this?.selectedRow?.createdBy,
+        description: this?.selectedRow?.description,
         template: null
       }
     }
@@ -192,7 +192,6 @@ export default {
         formData.certificateData = this.certificateData
         formData.reminderData = this.reminderData
         formData.enrollmentData = this.enrollmentData
-        debugger
         formData.trainingData = this.trainingPreviewData
       }
       return formData
@@ -237,7 +236,6 @@ export default {
         }
       })
       //get template
-      debugger
       const languages = this.getLanguages() || []
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
@@ -276,6 +274,8 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
+      this.step++
+      return
       if (this.step === 1 && flag === 1) {
         const { refSendTrainingSelectUsers } = this.$refs
         if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {
