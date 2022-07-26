@@ -78,11 +78,10 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
+              <iframe
                 v-if="!!formData.trainingData.template"
                 ref="refPreview"
-                :html="formData.trainingData.template"
-                is-extra-height
+                :src="formData.trainingData.template"
               />
             </div>
           </div>
