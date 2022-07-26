@@ -184,9 +184,8 @@ export default {
           const {
             data: { data }
           } = response
-          window.open(
-            `${window.location.origin}/training/scorm?isPreview=true&template=${data?.trainingUrl}`
-          )
+          const url = `${data.trainingUrl}?isPreview=true`
+          window.open(`${window.location.origin}/training/scorm?isPreview=true&template=${url}`)
         })
       })
     }
