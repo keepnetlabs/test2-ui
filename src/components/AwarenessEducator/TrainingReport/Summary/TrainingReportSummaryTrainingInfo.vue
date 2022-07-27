@@ -20,7 +20,7 @@
         </v-tooltip>
       </div>
     </template>
-    <template v-if="isTestCampaign" #header-right>
+    <template v-if="isTestTraining" #header-right>
       <div class="campaign-manager-report-summary-campaign-info__right-side">
         <v-btn style="display: none;" />
         <Badge color="#B6791D" text="Marked as Test" :outline="false" />
@@ -43,7 +43,7 @@ export default {
     helperData: {
       type: Object
     },
-    isTestCampaign: {
+    isTestTraining: {
       type: Boolean
     },
     isLoading: {

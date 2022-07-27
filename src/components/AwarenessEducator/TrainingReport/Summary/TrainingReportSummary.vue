@@ -147,9 +147,8 @@ export default {
       }
     },
     isTestTraining() {
-      const { settings = {} } = this.trainingSummary
-      const { excludeFromReports = false } = settings
-      return excludeFromReports
+      const { isTest = false } = this.trainingSummary
+      return isTest
     },
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.trainingSummary
@@ -261,16 +260,18 @@ export default {
         totalUserClickedCount,
         totalUserOpenedCount,
         noResponseCount,
-        completedCount
+        completedCount,
+        inProgressCount
       } = this.trainingSummary
+      const inProgress = inProgressCount ? inProgressCount : completedCount - totalUserClickedCount
       return {
         openedEmail: {
           userCount: totalUserOpenedCount,
           userPercent: ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
-          userCount: 0,
-          userPercent: ((0 / totalTargetUserCount) * 100).toFixed()
+          userCount: inProgress,
+          userPercent: ((inProgress / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
           userCount: completedCount,
@@ -278,7 +279,7 @@ export default {
         },
         noResponse: {
           userCount: noResponseCount,
-          userPercent: ((noResponseCount / this.getTotalUsers) * 100).toFixed()
+          userPercent: ((noResponseCount / totalTargetUserCount) * 100).toFixed()
         }
       }
     },
