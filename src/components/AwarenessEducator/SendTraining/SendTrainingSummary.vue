@@ -86,7 +86,7 @@
       <CampaignManagerSummaryCard
         detailable
         title="Certificate that users will be received"
-        icon="mdi-certificate"
+        icon="mdi-book-open"
         :show-body-detail.sync="isShowCertificate"
       >
         <template #body>

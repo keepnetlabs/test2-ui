@@ -26,15 +26,16 @@ export default {
         const enrollmentContentResourceId = query?.EnrollmentContentId
         const targetUserResourceId = query?.TargetUserResourceId
         if (enrollmentContentResourceId && targetUserResourceId) {
-          AwarenessEducatorService.getTrainingUrl(
-            targetUserResourceId,
-            enrollmentContentResourceId
-          ).then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_APP_API_TEST}&scoAddress=${data.trainingUrl}`
-          })
+          AwarenessEducatorService.getTrainingUrl(targetUserResourceId, enrollmentContentResourceId)
+            .then((response) => {
+              const {
+                data: { data }
+              } = response
+              this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_APP_API_TEST}&scoAddress=${data.trainingUrl}`
+            })
+            .catch((error) => {
+              window.alert(error?.response?.data?.message)
+            })
         }
       }
     }
