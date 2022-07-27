@@ -31,7 +31,7 @@
         :disabled="false"
         icon="mdi-text-box"
         text="View Report"
-        @on-click="handleAction(scope.row)"
+        @on-click="routeToTrainingReport(scope.row)"
       />
       <DefaultMenuRowAction
         :scope="scope"
@@ -107,17 +107,20 @@ export default {
           ENROLLMENT_STATUSES.ERROR
         ].includes(status)
       ) {
-        this.$router.push({
-          name: 'Training Report',
-          params: {
-            id: row.id
-          }
-        })
+        this.routeToTrainingReport(row)
       } else if (ENROLLMENT_STATUSES.SENDING) {
         this.$emit('on-stop', row)
       } else if (ENROLLMENT_STATUSES.SCHEDULED) {
         this.$emit('on-send', row)
       }
+    },
+    routeToTrainingReport(row) {
+      this.$router.push({
+        name: 'Training Report',
+        params: {
+          id: row.id
+        }
+      })
     }
   }
 }
