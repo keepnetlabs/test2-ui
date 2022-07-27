@@ -183,7 +183,11 @@ export default {
         ).then((response) => {
           const {
             data: { data }
-          } = response`${window.location.origin}/training/scorm?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`
+          } = response
+          window.open(
+            `${window.location.origin}/training/scorm?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`,
+            '_blank'
+          )
         })
       })
     }
