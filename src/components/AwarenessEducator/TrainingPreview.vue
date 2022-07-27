@@ -21,9 +21,9 @@
       }}</span>
     </div>
     <iframe
-      v-if="srcs[activePage]"
+      v-if="activeTemplate"
       frameborder="0"
-      :src="srcs[activePage]"
+      :src="activeTemplate"
       style="min-width: 1100px; min-height: 900px;"
     ></iframe>
   </div>
@@ -47,9 +47,8 @@ export default {
   data() {
     return {
       activePage: 0,
-      srcs: [
-        'https://dxadb5mrjazug.cloudfront.net/SCORMPlayer/index.html?isPreview=true&scoAddress=https://dxadb5mrjazug.cloudfront.net/1/Training/26323711-8d61-48a5-9a20-c52e28bf48c6/Contents/0022a3d7-9e90-44e6-af4b-240b1f9fc2fa/index_lms.html'
-      ]
+      activeTemplate: null,
+      srcs: []
     }
   },
   computed: {
@@ -84,6 +83,7 @@ export default {
         this.srcs[
           this.activePage
         ] = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
+        this.activeTemplate = this.srcs[this.activePage]
       })
     }
   }
