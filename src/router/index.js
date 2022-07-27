@@ -167,13 +167,14 @@ const router = new Router({
               component: Certificates
             },
             {
-              path: 'enrollments/training-report/:id',
+              path: 'training-report/:id',
               name: 'Training Report',
               meta: {
                 isAuthenticated: true,
                 parentName: 'Enrollments',
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
+              props: true,
               params: true,
               component: TrainingReport
             }
