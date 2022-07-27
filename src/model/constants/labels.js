@@ -11,7 +11,6 @@ export const labels = {
   Interactions: 'Interactions',
   TrainingMaterial: 'Training Material',
   EnrollmentEmailTemplate: 'Enrollment Email Template',
-  CertificateTemplate: 'Certificate Template',
   CompletedTraining: 'Completed Training',
   TrainingSummary: 'Training Summary',
   ExamResults: 'Exam Results',

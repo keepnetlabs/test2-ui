@@ -89,7 +89,10 @@ export default {
       return (
         this?.getLanguages()?.map((language) => ({
           text: language.name,
-          value: language.id
+          value: language.id,
+          disabled: this.formData.contentByLanguage.some(
+            (content) => content.languageId === language.id
+          )
         })) || []
       )
     },
