@@ -83,7 +83,7 @@ export default {
   },
   data() {
     return {
-      isShowPreviewDialog: true,
+      isShowPreviewDialog: false,
       isShowDeleteTrainingDialog: false,
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
