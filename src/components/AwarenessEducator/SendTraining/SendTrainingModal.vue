@@ -244,7 +244,7 @@ export default {
         const {
           data: { data }
         } = response
-        this.trainingPreviewData.template = `${data.scormUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
+        this.trainingPreviewData.template = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
       })
     },
     callForSelectedTargetGroups(ids) {
