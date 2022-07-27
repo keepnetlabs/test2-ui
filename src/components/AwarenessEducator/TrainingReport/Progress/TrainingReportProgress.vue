@@ -63,6 +63,7 @@
           @on-click="handleResend(scope.row)"
         />
         <DefaultButtonRowAction
+          v-if="false"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled"
           :icon="tableOptions.rowActions[1].icon"
@@ -91,6 +92,8 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import Badge from '@/components/Badge'
 import TrainingReportProgressDetails from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgressDetails'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
@@ -101,7 +104,7 @@ export default {
     Badge,
     TrainingReportProgressDetails
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -117,7 +120,7 @@ export default {
         id: 'training-report-progress-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'EnrollmentDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
@@ -242,6 +245,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -249,6 +253,8 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
+
+           */
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -258,30 +264,7 @@ export default {
           }
         ]
       },
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          progress: 'In Progress',
-          enrollmentDate: '31.05.2021 16:31:33',
-          sessionStarted: '31.05.2021 16:31:33',
-          sessionEnded: '31.05.2021 16:31:33',
-          sessions: 1
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          progress: 'Completed',
-          enrollmentDate: '31.05.2021 16:31:33',
-          sessionStarted: '31.05.2021 16:31:33',
-          sessionEnded: '31.05.2021 16:31:33',
-          sessions: 1
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -302,64 +285,21 @@ export default {
         }
     },
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
+      this.setLoading(true)
+      AwarenessEducatorService.progressTrainingReportEmails(this.axiosPayload, this.id)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     exportTrainingReportOpenedTrainingEmailTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {

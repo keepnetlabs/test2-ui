@@ -111,7 +111,7 @@ export default {
         id: 'training-report-opened-training-email-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastClicked' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_CLICKED_TABLE,
