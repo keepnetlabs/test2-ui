@@ -7,6 +7,13 @@
       :selected-row="selectedRow"
       @on-close="toggleShowNewTrainingModal"
     />
+    <TrainingPreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedRow"
+      :languages="languages"
+      @on-close="toggleShowPreviewDialog"
+    />
     <SendTrainingModal
       v-if="isShowSendTrainingModal"
       :status="isShowSendTrainingModal"
@@ -22,18 +29,13 @@
       "
       :enum-types="enumTypes"
       @on-close="toggleShowSendTrainingModal"
+      @on-show-training-summary="handlePreviewRowClick(selectedRow)"
     />
     <DeleteTrainingDialog
       v-if="isShowDeleteTrainingDialog"
       :status="isShowDeleteTrainingDialog"
       :selected-row="selectedRow"
       @on-close="toggleShowDeleteTrainingDialog"
-    />
-    <TrainingPreviewDialog
-      v-if="isShowPreviewDialog"
-      :status="isShowPreviewDialog"
-      :selected-row="selectedRow"
-      @on-close="toggleShowPreviewDialog"
     />
     <TrainingListTable
       ref="refTable"
@@ -45,7 +47,6 @@
       @on-preview="handlePreviewRowClick"
       @on-add="toggleShowNewTrainingModal"
       @on-edit="handleEditRowClick"
-      @on-training="handleSendTrainingRowClick"
     />
   </KContainer>
 </template>
@@ -82,7 +83,7 @@ export default {
   },
   data() {
     return {
-      isShowPreviewDialog: false,
+      isShowPreviewDialog: true,
       isShowDeleteTrainingDialog: false,
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
@@ -155,20 +156,7 @@ export default {
     },
     handlePreviewRowClick(row) {
       this.selectedRow = row
-      const languages = this.languages
-      AwarenessEducatorService.getTrainingUrlForPreview(
-        this.selectedRow.trainingId,
-        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
-      ).then((response) => {
-        const {
-          data: { data }
-        } = response
-
-        window.open(
-          `${window.location.origin}/training/scorm/watch?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`,
-          '_blank'
-        )
-      })
+      this.toggleShowPreviewDialog()
     }
   }
 }

@@ -36,7 +36,7 @@
         @on-send="$emit('on-send', $event)"
         @on-edit="$emit('on-edit', $event)"
         @on-delete="$emit('on-delete', $event)"
-        @on-preview="handlePreviewRowClick"
+        @on-preview="$emit('on-preview', $event)"
       />
     </template>
   </DataTable>
@@ -169,25 +169,6 @@ export default {
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
-        })
-      })
-    },
-    handlePreviewRowClick(row) {
-      AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        AwarenessEducatorService.getTrainingUrlForPreview(
-          data?.trainingId,
-          this.mainLanguages.find((lang) => lang.code === row.languages[0]).id
-        ).then((response) => {
-          const {
-            data: { data }
-          } = response
-          window.open(
-            `${window.location.origin}/training/scorm/watch?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`,
-            '_blank'
-          )
         })
       })
     }

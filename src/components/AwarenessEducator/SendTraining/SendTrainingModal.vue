@@ -69,6 +69,7 @@
             <SendTrainingSummary
               ref="refSendTrainingSummary"
               :form-data="getTrainingSummaryFormData"
+              @on-show-training-summary="$emit('on-show-training-summary')"
             />
           </v-stepper-content>
         </v-stepper-items>

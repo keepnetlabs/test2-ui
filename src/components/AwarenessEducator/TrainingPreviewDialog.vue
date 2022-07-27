@@ -1,18 +1,18 @@
 <template>
   <AppDialog
     v-if="status"
-    custom-size="1600"
+    custom-size="1175"
     max-height
-    max-height-size="900"
+    max-height-size="1200"
     :status="status"
     icon="mdi-eye"
     size="ultraMaximum"
-    :title="getTitle"
+    title="Training Preview"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-      <TrainingPreview v-else :name="selectedRow.name" :templates="templates" />
+      <TrainingPreview v-else :name="selectedRow.trainingName" :languages="selectedLanguages" />
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -29,6 +29,7 @@ import { EMITS } from './utils'
 import TrainingPreview from '@/components/AwarenessEducator/TrainingPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import AppDialog from '@/components/AppDialog'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingPreviewDialog',
   components: { AppDialog, DatatableLoading, TrainingPreview },
@@ -38,19 +39,26 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    languages: {
+      type: Array
     }
   },
   data() {
     return {
       isPreviewLoading: false,
-      templates: []
+      templates: [],
+      selectedLanguages: []
     }
   },
   created() {
-    this.callForData()
+    this.selectedLanguages = this.selectedRow.languages.reduce((acc, lang) => {
+      const selectedLanguage = this.languages.find((language) => language.code === lang)
+      if (selectedLanguage) acc.push(selectedLanguage)
+      return acc
+    }, [])
   },
   methods: {
-    callForData() {},
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     }

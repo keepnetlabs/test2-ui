@@ -16,6 +16,13 @@
       :status="isShowStopEnrollmentDialog"
       @on-close="toggleShowStopEnrollmentDialog"
     />
+    <TrainingPreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedRow"
+      :languages="languages"
+      @on-close="toggleShowPreviewDialog"
+    />
     <EnrollmentsTable
       ref="refTable"
       :categories="categories"
@@ -27,6 +34,7 @@
       @on-stop="handleStop"
       @on-send="handleSend"
       @on-edit="handleEditRowClick"
+      @on-preview="handlePreviewRowClick"
     />
   </KContainer>
 </template>
@@ -39,6 +47,7 @@ import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/Sto
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/EditEnrollmentsModal'
+import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 
 export default {
   name: 'Enrollments',
@@ -47,7 +56,8 @@ export default {
     StopEnrollmentDialog,
     DeleteEnrollmentDialog,
     EnrollmentsTable,
-    KContainer
+    KContainer,
+    TrainingPreviewDialog
   },
   mixins: [useAwarenessHelperCalls],
   data() {
@@ -55,7 +65,8 @@ export default {
       isShowDeleteEnrollmentsDialog: false,
       selectedRow: null,
       isShowStopEnrollmentDialog: false,
-      isShowEditEnrollmentModal: false
+      isShowEditEnrollmentModal: false,
+      isShowPreviewDialog: false
     }
   },
   methods: {
@@ -72,6 +83,9 @@ export default {
     handleDeleteRowClick(row) {
       this.selectedRow = row
       this.toggleShowDeleteEnrollmentsDialog()
+    },
+    toggleShowPreviewDialog() {
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleStop(row) {
       this.selectedRow = row
@@ -90,6 +104,10 @@ export default {
     handleEditRowClick(row) {
       this.selectedRow = row
       this.toggleShowEditEnrollmentModal()
+    },
+    handlePreviewRowClick(row) {
+      this.selectedRow = row
+      this.toggleShowPreviewDialog()
     }
   }
 }

@@ -207,10 +207,7 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        window.open(
-          `${window.location.origin}/training/scorm/watch?isPreview=true&template=${this.formData.trainingData.scormPlayerUrl}&scoAddress=${this.formData.trainingData.trainingUrl}`,
-          '_blank'
-        )
+        this.$emit('on-show-training-email')
         this.isShowTrainingEmail = false
       }
     }
