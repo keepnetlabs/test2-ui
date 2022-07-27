@@ -21,7 +21,7 @@ export default {
       debugger
       const query = this?.$route?.query
       if (query?.isPreview) {
-        this.src = `${query.template}?isPreview=true&scoAddress=${query.trainingUrl}`
+        this.src = `${query.template}?isPreview=true&scoAddress=${query.scoAddress}`
       } else {
         const query = this?.$route?.query
         const enrollmentContentResourceId = query?.EnrollmentContentId
