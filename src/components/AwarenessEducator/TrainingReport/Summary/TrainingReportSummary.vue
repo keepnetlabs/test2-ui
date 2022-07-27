@@ -175,7 +175,6 @@ export default {
       }
     },
     getEmailDeliveryHelperData() {
-      debugger
       const { emailDeliveredUserCount, totalTargetUserCount } = this.trainingSummary
       return {
         emailDeliveredUserCount,

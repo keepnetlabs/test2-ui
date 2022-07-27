@@ -110,7 +110,7 @@ import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -268,82 +268,7 @@ export default {
           }
         ]
       },
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Not Responded',
-          lastInteraction: '31.05.2021 16:31:33',
-          isExcluded: false
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Opened Email',
-          lastInteraction: '31.05.2021 16:31:33',
-          isExcluded: true
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Clicked Link',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Completed',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'In Progress',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'In Queue',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Sending Error',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Cancelled',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Excluded',
-          lastInteraction: '31.05.2021 16:31:33'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -354,20 +279,21 @@ export default {
       return getStatusBadgeProps(status)
     },
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
+      this.setLoading(true)
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     columnFilterChanged(filter) {
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(

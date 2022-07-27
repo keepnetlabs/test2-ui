@@ -39,6 +39,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
+import { getEmailTemplate } from '@/api/company'
 
 export default {
   name: 'TrainingReportEnrollmentEmail',
@@ -76,7 +77,18 @@ export default {
     }
   },
   methods: {
-    callForTemplate() {}
+    callForTemplate() {
+      getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.formData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template,
+          name: data.name
+        }
+      })
+    }
   }
 }
 </script>
