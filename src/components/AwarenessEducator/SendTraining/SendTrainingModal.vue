@@ -217,7 +217,7 @@ export default {
           } = response
           this.reminderData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template,
+            template: data.template.template,
             name: data.name
           }
         }
@@ -230,7 +230,7 @@ export default {
           } = response
           this.certificateData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template,
+            template: data.template.template,
             name: data.name
           }
         }
@@ -243,7 +243,7 @@ export default {
           } = response
           this.enrollmentData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template,
+            template: data.template.template,
             name: data.name
           }
         }
