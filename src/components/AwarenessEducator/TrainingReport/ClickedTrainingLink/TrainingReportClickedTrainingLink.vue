@@ -57,6 +57,7 @@
           @on-click="handleResend(scope.row)"
         />
         <DefaultButtonRowAction
+          v-if="false"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled"
           :icon="tableOptions.rowActions[1].icon"
@@ -73,7 +74,6 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -84,6 +84,8 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import TrainingReportClickedTrainingLinkDetails from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLinkDetails'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
@@ -93,7 +95,7 @@ export default {
     CampaignManagerReportHeader,
     TrainingReportClickedTrainingLinkDetails
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -196,6 +198,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -203,6 +206,7 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
+           */
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -212,48 +216,7 @@ export default {
           }
         ]
       },
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          lastClicked: '31.05.2021 16:31:33',
-          timesClicked: 1
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          lastClicked: '31.05.2021 16:31:33',
-          timesClicked: 1
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          lastClicked: '31.05.2021 16:31:33',
-          timesClicked: 1
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          lastClicked: '31.05.2021 16:31:33',
-          timesClicked: 1
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          lastClicked: '31.05.2021 16:31:33',
-          timesClicked: 1
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -261,64 +224,21 @@ export default {
   },
   methods: {
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
+      this.setLoading(true)
+      AwarenessEducatorService.clickedTrainingReportEmails(this.axiosPayload, this.id)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     exportTrainingReportOpenedTrainingEmailTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {

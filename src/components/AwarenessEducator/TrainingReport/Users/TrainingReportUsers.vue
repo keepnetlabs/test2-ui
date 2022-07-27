@@ -13,7 +13,11 @@
       :item="selectedRow"
       @on-close="toggleIsShowInteractionsModal"
     />
-    <CampaignManagerReportHeader class="mb-6" title="Target Users" subtitle="Reset Password" />
+    <CampaignManagerReportHeader
+      class="mb-6"
+      title="Target Users"
+      subtitle="All users enrolled to this training"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
