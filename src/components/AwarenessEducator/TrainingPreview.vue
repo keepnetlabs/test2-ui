@@ -22,6 +22,7 @@
     </div>
     <iframe
       v-if="activeTemplate"
+      :key="iframeKey"
       frameborder="0"
       :src="activeTemplate"
       style="min-width: 1100px; min-height: 900px;"
@@ -48,7 +49,8 @@ export default {
     return {
       activePage: 0,
       activeTemplate: null,
-      srcs: []
+      srcs: [],
+      iframeKey: `key-${Math.random().toString()}`
     }
   },
   computed: {
@@ -84,6 +86,7 @@ export default {
           this.activePage
         ] = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
         this.activeTemplate = this.srcs[this.activePage]
+        this.iframeKey = `key-${Math.random().toString()}`
       })
     }
   }
