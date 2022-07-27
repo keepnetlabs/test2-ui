@@ -400,6 +400,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
+          this.$router.push({ name: 'Enrollments' })
           this.$emit(EMITS.ON_CLOSE, true)
         })
         .catch((error) => {

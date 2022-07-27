@@ -47,6 +47,7 @@
       @on-preview="handlePreviewRowClick"
       @on-add="toggleShowNewTrainingModal"
       @on-edit="handleEditRowClick"
+      @on-training="handleSendTrainingRowClick"
     />
   </KContainer>
 </template>
