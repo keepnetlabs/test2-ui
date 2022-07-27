@@ -10,7 +10,7 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ getSystemUserName }} will be deleted and removed from system users.
+      {{ getSystemUserEmail }} will be deleted and removed from system users.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
@@ -57,10 +57,8 @@ export default {
     }
   },
   computed: {
-    getSystemUserName() {
-      return this.selectedRow
-        ? `${this.selectedRow['firstName'] || ''} ${this.selectedRow['lastName'] || ''}`
-        : `${this.userCount} users`
+    getSystemUserEmail() {
+      return this.selectedRow ? `${this.selectedRow['email'] || ''}` : `${this.userCount} users`
     },
     getSubTitle() {
       return `${

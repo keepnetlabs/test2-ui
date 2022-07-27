@@ -78,7 +78,7 @@
             v-model.trim="shareEmail"
             :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
             class="pop-up-card__invite-member"
-            hint="Press enter to separate email adresses"
+            hint="Press enter to separate email addresses"
           ></k-select>
         </v-form>
       </template>

@@ -3,7 +3,7 @@
     <v-text-field
       v-model.trim="value"
       id="test--input-ip-address"
-      placeholder="Enter an ip adress"
+      placeholder="Enter an ip address"
       outlined
       persistent-hint
       hint="*Required"
