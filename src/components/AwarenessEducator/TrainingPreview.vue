@@ -74,7 +74,10 @@ export default {
       this.callForData()
     },
     callForData() {
-      if (this.srcs[this.activePage]) return
+      if (this.srcs[this.activePage]) {
+        this.activeTemplate = this.srcs[this.activePage]
+        return
+      }
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.trainingId,
         this.languages[this.activePage].id
