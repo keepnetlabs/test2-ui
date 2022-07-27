@@ -156,6 +156,7 @@ export default {
       this.toggleShowSendTrainingModal()
     },
     handlePreviewRowClick(row) {
+      debugger
       this.selectedRow = row
       this.toggleShowPreviewDialog()
     }

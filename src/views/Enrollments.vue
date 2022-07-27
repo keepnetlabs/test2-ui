@@ -106,8 +106,10 @@ export default {
       this.toggleShowEditEnrollmentModal()
     },
     handlePreviewRowClick(row) {
-      this.selectedRow = row
-      this.toggleShowPreviewDialog()
+      AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
+        this.selectedRow = { ...row, trainingId: response?.data?.data?.resourceId }
+        this.toggleShowPreviewDialog()
+      })
     }
   }
 }

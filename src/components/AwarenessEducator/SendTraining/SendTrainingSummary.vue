@@ -207,7 +207,7 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        this.$emit('on-show-training-email')
+        this.$emit('on-show-training-summary')
         this.isShowTrainingEmail = false
       }
     }
