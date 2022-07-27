@@ -119,6 +119,8 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import Badge from '@/components/Badge'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingReportSendingReport',
@@ -129,7 +131,7 @@ export default {
     CampaignManagerReportHeader,
     CampaignManagerReportSendingReportEvent
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -277,6 +279,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -284,6 +287,7 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
+           */
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -345,78 +349,7 @@ export default {
       },
       extendedViewValue: [],
       extendedViewLoading: false,
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'Not Delivered',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'In Queue',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'Error',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll',
-          hasTooltip: true,
-          tooltipText: 'Error description'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'Cancelled',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'Successful',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          dateFirstSent: '31.05.2021 16:31:33',
-          dateLastSent: '31.05.2021 16:31:33',
-          lastSendingStatus: 'Processing',
-          smtp: 'Default SMTP',
-          emailType: 'Auto-enroll',
-          hasTooltip: true,
-          tooltipText: "No processing is used for posts that don't use sendgrid."
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -427,64 +360,21 @@ export default {
       return getBtnStatusColor(type)
     },
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
+      this.setLoading(true)
+      AwarenessEducatorService.sendingReportTrainingReport(this.axiosPayload, this.id)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     exportTrainingReportSendingReportTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {

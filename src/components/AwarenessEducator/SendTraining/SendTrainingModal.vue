@@ -110,7 +110,7 @@ import { scrollToComponent } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
-import { getEmailTemplate } from '@/api/company'
+import { getDefaultEmailTemplate } from '@/api/company'
 
 export default {
   name: 'SendTrainingModal',
@@ -210,38 +210,44 @@ export default {
   methods: {
     callForFormDetails() {
       //get reminder email
-      getEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.reminderData = {
-          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-          template: data.template,
-          name: data.name
+      getDefaultEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then(
+        (response) => {
+          const {
+            data: { data }
+          } = response
+          this.reminderData = {
+            createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+            template: data.template,
+            name: data.name
+          }
         }
-      })
+      )
       //get certificate email
-      getEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.certificateData = {
-          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-          template: data.template,
-          name: data.name
+      getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then(
+        (response) => {
+          const {
+            data: { data }
+          } = response
+          this.certificateData = {
+            createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+            template: data.template,
+            name: data.name
+          }
         }
-      })
+      )
       //get training email
-      getEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.enrollmentData = {
-          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-          template: data.template,
-          name: data.name
+      getDefaultEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then(
+        (response) => {
+          const {
+            data: { data }
+          } = response
+          this.enrollmentData = {
+            createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+            template: data.template,
+            name: data.name
+          }
         }
-      })
+      )
       //get template
       const languages = this.getLanguages() || []
       AwarenessEducatorService.getTrainingUrlForPreview(
