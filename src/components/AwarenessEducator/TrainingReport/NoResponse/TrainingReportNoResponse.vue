@@ -178,7 +178,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
+      AwarenessEducatorService.noResponseTrainingReportEmails(this.axiosPayload, this.id)
         .then((response) => {
           debugger
           const {
