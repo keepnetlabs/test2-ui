@@ -115,6 +115,7 @@ export default {
       }
     },
     routeToTrainingReport(row) {
+      debugger
       this.$router.push({
         name: 'Training Report',
         params: {

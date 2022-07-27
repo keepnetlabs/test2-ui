@@ -237,6 +237,5 @@ export default {
   clickedTrainingReportEmails,
   progressTrainingReportEmails,
   examTrainingReportResults,
-  noResponseTrainingReportEmails,
-  sendingReportTrainingReport
+  noResponseTrainingReportEmails
 }
