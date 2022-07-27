@@ -58,6 +58,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingReportExamResults',
   components: {
@@ -65,7 +67,7 @@ export default {
     DataTable,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -167,22 +169,7 @@ export default {
           }
         ]
       },
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          emailSendDate: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          emailSendDate: '31.05.2021 16:31:33'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -190,64 +177,21 @@ export default {
   },
   methods: {
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
+      this.setLoading(true)
+      AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
     exportTrainingReportNoResponseTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {
