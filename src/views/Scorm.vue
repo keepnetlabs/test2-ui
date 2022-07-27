@@ -18,6 +18,7 @@ export default {
 
   methods: {
     callForData() {
+      debugger
       const query = this?.$route?.query
       if (query?.isPreview) {
         this.src = `${query.template}?isPreview=true&scoAddress=${query.trainingUrl}`
