@@ -107,9 +107,8 @@ export default {
           ENROLLMENT_STATUSES.ERROR
         ].includes(status)
       ) {
-        //TODO route to training report
         this.$router.push({
-          name: 'trainingName',
+          name: 'Training Report',
           params: {
             id: row.id
           }
