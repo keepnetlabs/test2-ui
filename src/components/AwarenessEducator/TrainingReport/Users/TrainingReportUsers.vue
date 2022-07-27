@@ -244,7 +244,8 @@ export default {
             icon: '$custom-details',
             action: 'on-interactions'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          },
+          }
+          /*
           {
             name: labels.ReSend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -266,6 +267,7 @@ export default {
             action: 'on-include'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
+           */
         ]
       },
       tableData: []
