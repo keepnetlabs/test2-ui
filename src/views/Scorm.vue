@@ -20,7 +20,7 @@ export default {
     callForData() {
       const query = this?.$route?.query
       if (query?.isPreview) {
-        this.src = `${query.scormPlayerUrl}?isPreview=true&scoAddress=${query.trainingUrl}`
+        this.src = `${query.template}?isPreview=true&scoAddress=${query.trainingUrl}`
       } else {
         const query = this?.$route?.query
         const enrollmentContentResourceId = query?.EnrollmentContentId
