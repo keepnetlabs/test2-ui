@@ -147,7 +147,7 @@ export default {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
