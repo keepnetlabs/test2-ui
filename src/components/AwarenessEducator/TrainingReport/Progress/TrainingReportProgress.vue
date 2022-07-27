@@ -80,7 +80,6 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
