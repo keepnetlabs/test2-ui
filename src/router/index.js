@@ -62,7 +62,7 @@ const router = new Router({
       }
     },
     {
-      path: '/training/scorm',
+      path: '/training/scorm/watch',
       name: 'scorm',
       component: Scorm,
       meta: {

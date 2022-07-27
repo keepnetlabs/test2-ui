@@ -165,7 +165,7 @@ export default {
         } = response
 
         window.open(
-          `${window.location.origin}/training/scorm?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`,
+          `${window.location.origin}/training/scorm/watch?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`,
           '_blank'
         )
       })

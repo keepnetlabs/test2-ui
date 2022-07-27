@@ -31,7 +31,10 @@ export default {
             targetUserResourceId,
             enrollmentContentResourceId
           ).then((response) => {
-            debugger
+            const {
+              data: { data }
+            } = response
+            this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_APP_API_TEST}&scoAddress=${data.trainingUrl}`
           })
         }
       }
