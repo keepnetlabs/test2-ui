@@ -94,7 +94,6 @@ export default {
             (content) => content.languageId === language.id
           )
         })) || []
-      console.log('languages', languages)
       return languages
     },
     scormTypes() {
@@ -105,7 +104,7 @@ export default {
     handleAddLanguage() {
       this.formData.contentByLanguage.push({
         file: null,
-        languageId: this?.languages?.find((language) => !language.disabled)?.value || ''
+        languageId: this?.languages?.find((language) => !language.isDisabled)?.value || ''
       })
     },
     setFormData(formData = {}) {
