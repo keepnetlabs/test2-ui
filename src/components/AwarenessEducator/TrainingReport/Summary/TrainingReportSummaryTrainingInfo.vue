@@ -22,7 +22,7 @@
         </v-tooltip>
       </div>
     </template>
-     <template #Auto-enroll="{ props:{ key } }">
+    <template #Auto-enroll="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
