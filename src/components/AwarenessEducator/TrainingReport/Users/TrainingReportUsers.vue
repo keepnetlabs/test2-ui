@@ -280,7 +280,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload)
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
         .then((response) => {
           debugger
           const {
