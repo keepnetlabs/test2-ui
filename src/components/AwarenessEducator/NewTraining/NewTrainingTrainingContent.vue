@@ -105,7 +105,7 @@ export default {
     handleAddLanguage() {
       this.formData.contentByLanguage.push({
         file: null,
-        languageId: this.languages[0].value || ''
+        languageId: this?.languages?.find((language) => !language.disabled)?.value || ''
       })
     },
     setFormData(formData = {}) {
