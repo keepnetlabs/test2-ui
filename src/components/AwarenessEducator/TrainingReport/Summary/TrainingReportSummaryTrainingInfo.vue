@@ -27,6 +27,7 @@
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
       <div
+        v-if="false"
         class="campaign-manager-summary-card__body-item-value"
         style="display: flex; align-items: center;"
       >
@@ -116,7 +117,6 @@ export default {
     },
     getAudienceText() {
       if (this.isFromUserGroups) return `${this.items.targetGroupCount.value} user groups`
-
       if (this.isFromPhishingCampaign) return `a phishing campaign results`
 
       return ''
