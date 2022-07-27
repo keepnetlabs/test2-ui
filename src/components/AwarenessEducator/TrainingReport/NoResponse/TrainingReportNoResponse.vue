@@ -40,18 +40,8 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportNoResponseTable"
       @refreshAction="callForData"
-    >
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
-        />
-      </template>
-    </DataTable>
+      @on-resend="handleOnResend"
+    />
   </div>
 </template>
 
@@ -66,7 +56,6 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 export default {
@@ -74,7 +63,6 @@ export default {
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
     CampaignManagerReportHeader
   },
   mixins: [useLoading],
@@ -93,6 +81,7 @@ export default {
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'EmailSendDate' }),
+      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -175,13 +164,6 @@ export default {
             icon: '$custom-resend',
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
-          },
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
         ]
       },
@@ -289,8 +271,15 @@ export default {
       //   })
       // })
     },
-    handleResend(row) {
-      this.selectedRow = row
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.resendPayload = payload
       this.toggleIsShowResendDialog()
     },
     confirmResend() {},

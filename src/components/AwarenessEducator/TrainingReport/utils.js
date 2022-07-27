@@ -62,7 +62,7 @@ export function getStatusBadgeProps(status) {
       color: '#E0E0E0',
       text: 'Excluded',
       outline: false,
-      style: 'color: black'
+      textBlack: true
     }
   }
 }

@@ -40,6 +40,8 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportSendingReportTable"
       @refreshAction="callForData"
+      @on-resend="handleOnResend"
+      @on-details="handleOnDetail"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -97,24 +99,6 @@
           {{ getNoEventMessage }}
         </div>
       </template>
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
-        />
-        <DefaultButtonRowAction
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
-        />
-      </template>
     </DataTable>
   </div>
 </template>
@@ -131,7 +115,6 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import Badge from '@/components/Badge'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
@@ -142,7 +125,6 @@ export default {
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
     Badge,
     CampaignManagerReportHeader,
     CampaignManagerReportSendingReportEvent
@@ -164,6 +146,7 @@ export default {
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload(),
+      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -525,11 +508,7 @@ export default {
       //   })
       // })
     },
-    handleResend(row) {
-      this.selectedRow = row
-      this.toggleIsShowResendDialog()
-    },
-    handleDetails(row) {
+    handleOnDetail(row) {
       // this.extendedViewLoading = true
       // this.isShowExtendedView = true
       // getCampaignJobEmailActivity(row.resourceId)
@@ -543,6 +522,17 @@ export default {
       //   .finally(() => {
       //     this.extendedViewLoading = false
       //   })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {

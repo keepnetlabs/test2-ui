@@ -46,26 +46,9 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportOpenedTrainingEmailTable"
       @refreshAction="callForData"
-    >
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
-        />
-        <DefaultButtonRowAction
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
-        />
-      </template>
-    </DataTable>
+      @on-resend="handleOnResend"
+      @on-details="handleOnDetail"
+    />
   </div>
 </template>
 
@@ -80,7 +63,6 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import TrainingReportClickedTrainingLinkDetails from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLinkDetails'
@@ -89,7 +71,6 @@ export default {
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
     CampaignManagerReportHeader,
     TrainingReportClickedTrainingLinkDetails
   },
@@ -110,6 +91,7 @@ export default {
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastClicked' }),
+      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_CLICKED_TABLE,
@@ -342,19 +324,27 @@ export default {
       //   })
       // })
     },
-    handleResend(row) {
-      this.selectedRow = row
-      this.toggleIsShowResendDialog()
-    },
-    handleDetails(row) {
+    // handleResend(row) {
+    //   this.selectedRow = row
+    //   this.toggleIsShowResendDialog()
+    // },
+    handleOnDetail(row) {
       this.selectedRow = row
       this.toggleIsShowDetailsModal()
     },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
+    },
     confirmResend() {},
     toggleIsShowResendDialog() {
-      if (this.isShowResendDialog) {
-        this.selectedRow = null
-      }
       this.isShowResendDialog = !this.isShowResendDialog
     },
     toggleIsShowDetailsModal() {

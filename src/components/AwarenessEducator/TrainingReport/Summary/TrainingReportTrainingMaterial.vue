@@ -4,8 +4,9 @@
     detailable
     icon="mdi-email"
     :isLoading="isFetchingSummary"
-    :show-body-detail.sync="isShowEmailTemplate"
+    :show-body-detail="false"
     :title="labels.TrainingMaterial"
+    @previewClicked="handlePreviewClick"
   >
     <template #body>
       <div v-if="isFormData" class="training-report-training-material__body pb-4">
@@ -31,7 +32,7 @@
           {{ formData.description }}
         </div>
       </div>
-      <div
+      <!-- <div
         v-if="isShowEmailTemplate"
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
@@ -39,7 +40,7 @@
           <DatatableLoading v-if="isLoading" :loading="isLoading" />
           <KEmailPreview v-else :html="emailTemplate" is-extra-height />
         </div>
-      </div>
+      </div> -->
     </template>
   </CampaignManagerSummaryCard>
 </template>
@@ -48,16 +49,15 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
-import KEmailPreview from '@/components/KEmailPreview'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+// import KEmailPreview from '@/components/KEmailPreview'
+// import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
-    DatatableLoading,
-    KEmailPreview,
+    // DatatableLoading,
+    // KEmailPreview,
     Badge,
     CampaignManagerSummaryCard
   },
@@ -91,6 +91,9 @@ export default {
   },
   methods: {
     callForTemplate() {},
+    handlePreviewClick() {
+      window.open(this.formData.trainingMaterialUrl, '_blank')
+    },
     getBadgeColor(text = '') {
       switch (text.toLowerCase()) {
         case 'easy':

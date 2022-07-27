@@ -20,6 +20,28 @@
         </v-tooltip>
       </div>
     </template>
+    <template #Auto-enroll="{ props:{ key } }">
+      <div class="campaign-manager-summary-card__body-item-key">
+        {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+      </div>
+      <div
+        class="campaign-manager-summary-card__body-item-value"
+        style="display: flex; align-items: center;"
+      >
+        <span
+          :class="{
+            'mr-4': items.isAutoEnrollDisabled.value
+          }"
+          >{{ items['Auto-enroll'].value }}
+        </span>
+        <div
+          v-if="items.isAutoEnrollDisabled.value"
+          class="training-report-training-delivery-ended-badge"
+        >
+          Disabled
+        </div>
+      </div>
+    </template>
     <template v-if="isTestCampaign" #header-right>
       <div class="campaign-manager-report-summary-campaign-info__right-side">
         <v-btn style="display: none;" />

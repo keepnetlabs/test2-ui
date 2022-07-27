@@ -16,8 +16,8 @@
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <TrainingReportSummaryTrainingInfo
-        :items="getCampaignSummaryItems"
-        :helper-data="getCampaignSummaryHelperData"
+        :items="getTrainingInfoData"
+        :helper-data="getTrainingInfoHelperData"
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
         :isLoading="isLoading"
@@ -25,8 +25,8 @@
       />
       <TrainingReportTrainingDelivery
         class="ml-4"
-        :items="getEmailDeliveryData"
-        :helper-data="getEmailDeliveryHelperData"
+        :items="getTrainingDeliveryData"
+        :helper-data="getTrainingDeliveryyHelperData"
         :isLoading="isLoading"
       />
     </div>
@@ -90,7 +90,7 @@ export default {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
     },
     isFromPhishingCampaign() {
-      return this.trainingSummary?.isFromPhishingCampaign || false
+      return this.trainingSummary?.isFromPhishingCampaign || true
     },
     isFromUserGroups() {
       return this.trainingSummary?.isFromUserGroups || false
@@ -101,20 +101,14 @@ export default {
     getUserGroups() {
       return this.trainingSummary?.userGroups || {}
     },
-    getCampaignSummaryItems() {
+    getTrainingInfoData() {
       const {
-        phishingCampaign = {},
         totalTargetUserCount = 0,
-        targetGroupCount = 0,
-        autoEnroll = 'No',
-        languageShortCode = 'EN'
-      } = this.trainingSummary || {
-        totalTargetUserCount: 0,
-        autoEnroll: 'Enroll new users the same day',
-        languageShortCode: 'EN',
-        targetGroupCount: null,
-        phishingCampaign: null
-      }
+        autoEnroll = 'Enroll new users the same day',
+        languages = ['EN', 'TR', 'DE', 'FR'],
+        targetGroupCount = null,
+        phishingCampaign = null
+      } = this.trainingSummary
       return {
         'Target Users': {
           show: true,
@@ -132,10 +126,14 @@ export default {
           show: true,
           value: autoEnroll
         },
-        Languages: { show: true, value: languageShortCode }
+        isAutoEnrollDisabled: {
+          show: false,
+          value: false
+        },
+        Languages: { show: true, value: languages.join(', ') }
       }
     },
-    getCampaignSummaryHelperData() {
+    getTrainingInfoHelperData() {
       const { targetUsers = {}, campaignInfo = {} } = this.trainingSummary || {}
       const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
         targetUsers || {}
@@ -152,7 +150,7 @@ export default {
       const { excludeFromReports = false } = settings
       return excludeFromReports
     },
-    getEmailDeliveryData() {
+    getTrainingDeliveryData() {
       const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveryStartDate = '01/01/1970',
@@ -180,7 +178,7 @@ export default {
         }
       }
     },
-    getEmailDeliveryHelperData() {
+    getTrainingDeliveryyHelperData() {
       const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveredUserCount,
@@ -309,13 +307,14 @@ export default {
     },
     getTrainingMaterialData() {
       const { trainingMaterial = {} } = this.trainingSummary
-      const { name, createdBy, category, description, languageShortCode } = trainingMaterial
+      const { name, createdBy, category, description, languageShortCode, url } = trainingMaterial
       return {
         name: 'Training Name',
         createdBy: 'Company Name',
         category: 'Information security (category)',
         description: 'Training content’s description',
-        languageShortCode: 'EN'
+        languageShortCode: 'EN',
+        trainingMaterialUrl: 'https://www.google.com'
       }
     }
   },
