@@ -26,7 +26,7 @@
       <TrainingReportTrainingDelivery
         class="ml-4"
         :items="getTrainingDeliveryData"
-        :helper-data="getTrainingDeliveryyHelperData"
+        :helper-data="getTrainingDeliveryHelperData"
         :isLoading="isLoading"
       />
     </div>
@@ -103,11 +103,15 @@ export default {
     getTrainingInfoData() {
       const {
         totalTargetUserCount = 0,
-        autoEnroll = 'Enroll new users the same day',
-        languages = ['EN', 'TR', 'DE', 'FR'],
-        targetGroupCount = null,
-        phishingCampaign = null
-      } = this.trainingSummary
+        targetGroupCount = 0,
+        autoEnroll = 'No',
+        languages = 'EN'
+      } = this.trainingSummary || {
+        totalTargetUserCount: 0,
+        autoEnroll: 'Enroll new users the same day',
+        languages: ['EN'],
+        targetGroupCount: null
+      }
       return {
         'Target Users': {
           show: true,
@@ -117,19 +121,14 @@ export default {
           show: false,
           value: targetGroupCount
         },
-        phishingCampaign: {
-          show: false,
-          value: phishingCampaign
-        },
         'Auto-enroll': {
           show: true,
           value: autoEnroll
         },
-        isAutoEnrollDisabled: {
-          show: false,
-          value: false
-        },
-        Languages: { show: true, value: languages.join(', ') }
+        Languages: {
+          show: true,
+          value: typeof languages === 'string' ? languages : languages.join(',')
+        }
       }
     },
     getTrainingInfoHelperData() {
@@ -145,9 +144,16 @@ export default {
       }
     },
     isTestTraining() {
-      const { settings = {} } = this.trainingSummary
-      const { excludeFromReports = false } = settings
-      return excludeFromReports
+      const { isTest = false } = this.trainingSummary
+      return isTest
+    },
+    getTrainingDeliveryHelperData() {
+      const { emailDeliveredUserCount, totalTargetUserCount } = this.trainingSummary
+      return {
+        emailDeliveredUserCount,
+        emailNotDeliveredUserCount: totalTargetUserCount - emailDeliveredUserCount,
+        totalTargetUserCount
+      }
     },
     getTrainingDeliveryData() {
       const { campaignInfo = {} } = this.trainingSummary
@@ -175,19 +181,6 @@ export default {
           show: true,
           value: ''
         }
-      }
-    },
-    getTrainingDeliveryyHelperData() {
-      const { campaignInfo = {} } = this.trainingSummary
-      const {
-        emailDeliveredUserCount,
-        emailNotDeliveredUserCount,
-        totalTargetUserCount
-      } = campaignInfo
-      return {
-        emailDeliveredUserCount,
-        emailNotDeliveredUserCount,
-        totalTargetUserCount
       }
     },
     getResendDialogItems() {
@@ -254,29 +247,31 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      if (!this.getChartData.length) return {}
-      const [
-        openedEmail = 0,
-        noResponseEmail = 0,
-        inProgress = 0,
-        completedTraining = 0
-      ] = this.getChartData
+      const {
+        totalTargetUserCount,
+        totalUserClickedCount,
+        totalUserOpenedCount,
+        noResponseCount,
+        completedCount,
+        inProgressCount
+      } = this.trainingSummary
+      const inProgress = inProgressCount ? inProgressCount : completedCount - totalUserClickedCount
       return {
         openedEmail: {
-          userCount: openedEmail,
-          userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
+          userCount: totalUserOpenedCount,
+          userPercent: ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
           userCount: inProgress,
-          userPercent: ((inProgress / this.getTotalUsers) * 100).toFixed()
+          userPercent: ((inProgress / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
-          userCount: completedTraining,
-          userPercent: ((completedTraining / this.getTotalUsers) * 100).toFixed()
+          userCount: completedCount,
+          userPercent: ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         noResponse: {
-          userCount: noResponseEmail,
-          userPercent: ((noResponseEmail / this.getTotalUsers) * 100).toFixed()
+          userCount: noResponseCount,
+          userPercent: ((noResponseCount / totalTargetUserCount) * 100).toFixed()
         }
       }
     },
