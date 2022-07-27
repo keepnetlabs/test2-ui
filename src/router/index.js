@@ -174,6 +174,7 @@ const router = new Router({
                 parentName: 'Enrollments',
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
+              params: true,
               component: TrainingReport
             }
           ]

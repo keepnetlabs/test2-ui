@@ -164,6 +164,37 @@ const lmsFinish = (payload) => {
   return testRequest.post('/scorm/LMSFinish', payload)
 }
 
+const getTrainingReportSummary = (resourceId) => {
+  return testRequest.get(`/training-reports/${resourceId}/summary`)
+}
+
+const searchTrainingReportUsers = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
+}
+
+const openedTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload)
+}
+
+const clickedTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/clicked-emails/search`, payload)
+}
+
+const progressTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/progress/search`, payload)
+}
+
+const examTrainingReportResults = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/exam-results/search`, payload)
+}
+const noResponseTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/no-response/search`, payload)
+}
+
+const sendingReportTrainingReport = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -199,5 +230,13 @@ export default {
   getContentLanguageItems,
   getTrainingUrl,
   getEnrollmentFormDetails,
-  getTrainingUrlForPreview
+  getTrainingUrlForPreview,
+  getTrainingReportSummary,
+  searchTrainingReportUsers,
+  openedTrainingReportEmails,
+  clickedTrainingReportEmails,
+  progressTrainingReportEmails,
+  examTrainingReportResults,
+  noResponseTrainingReportEmails,
+  sendingReportTrainingReport
 }

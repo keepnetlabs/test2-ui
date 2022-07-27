@@ -127,11 +127,7 @@ export default {
     this.callForFormDetails()
   },
   methods: {
-    callForFormDetails() {
-      //   getCampaignManagerJobFormDetails().then((response) => {
-      //     this.formDetails = response.data.data
-      //   })
-    }
+    callForFormDetails() {}
   }
 }
 </script>
