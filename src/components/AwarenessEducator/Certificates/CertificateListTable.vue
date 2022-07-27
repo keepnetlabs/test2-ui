@@ -133,21 +133,25 @@ export default {
           btn: labels.CreateNewCertificate,
           message: labels.EmptyCertificate,
           icon: 'mdi-plus',
-          id: 'btn-empty--certificate-list'
+          id: 'btn-empty--certificate-list',
+          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
         },
         addButton: {
           show: true,
           action: 'add-certificate',
           tooltip: labels.AddCertificate,
-          id: 'btn-add--certificate'
+          id: 'btn-add--certificate',
+          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
         },
         downloadButton: {
-          show: true
+          show: true,
+          disabled: !this.$store.getters['permissions/getExportCertificatePermission']
         },
         rowActions: [
           {
             name: labels.Edit,
-            icon: 'mdi-pencil'
+            icon: 'mdi-pencil',
+            disabled: !this.$store.getters['permissions/getEditCertificatePermission']
           },
           {
             name: labels.MakeDefault,
@@ -155,7 +159,8 @@ export default {
           },
           {
             name: labels.Delete,
-            icon: 'mdi-delete'
+            icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDeleteCertificatePermission']
           },
           {
             name: labels.Preview,

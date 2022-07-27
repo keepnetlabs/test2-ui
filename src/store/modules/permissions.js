@@ -42,7 +42,9 @@ const {
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
   ROLES_PERMISSIONS,
-  LDAP_PERMISSIONS
+  LDAP_PERMISSIONS,
+  AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  AWARENESS_EDUCATOR_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -88,7 +90,9 @@ const defaultState = {
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
   ldapPermissions: LDAP_PERMISSIONS,
-  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS
+  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
+  awarenessEducatorListGroupPermissions: AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -770,6 +774,54 @@ const store = {
         recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
         mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
       }
+    },
+    getAwarenessEducatorListGroupPermissions(state) {
+      return state?.awarenessEducatorListGroupPermissions?.isOneOfThemPermitted
+    },
+    getTrainingSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.TRAININGS?.hasPermission
+    },
+    getEnrollmentsSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.ENROLLMENTS?.hasPermission
+    },
+    getCertificatesSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.CERTIFICATES?.hasPermission
+    },
+    getSendTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.SEND_TRAINING?.hasPermission
+    },
+    getCreateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_TRAINING?.hasPermission
+    },
+    getUpdateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_TRAINING?.hasPermission
+    },
+    getExportTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_TRAINING?.hasPermission
+    },
+    getDeleteTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_TRAINING?.hasPermission
+    },
+    getEnrollmentEditPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_ENROLLMENT?.hasPermission
+    },
+    getDeleteEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_ENROLLMENT?.hasPermission
+    },
+    getExportEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_ENROLLMENT?.hasPermission
+    },
+    getDeleteCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_CERTIFICATE?.hasPermission
+    },
+    getEditCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_CERTIFICATE?.hasPermission
+    },
+    getCreateCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_CERTIFICATE?.hasPermission
+    },
+    getExportCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_CERTIFICATE?.hasPermission
     }
   },
   mutations: {
@@ -819,7 +871,9 @@ const store = {
         'systemUsersPermissions',
         'systemRolesPermissions',
         'ldapPermissions',
-        'excludeIpAddressPermissions'
+        'excludeIpAddressPermissions',
+        'awarenessEducatorListGroupPermissions',
+        'awarenessEducatorPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

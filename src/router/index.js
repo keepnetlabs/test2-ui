@@ -133,7 +133,7 @@ const router = new Router({
           meta: {
             parentName: 'Dashboard',
             isAuthenticated: true,
-            permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+            permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
           },
           children: [
             {
@@ -142,7 +142,7 @@ const router = new Router({
               meta: {
                 isAuthenticated: true,
                 parentName: 'Awareness Educator',
-                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+                permissionStoreKey: 'permissions/getTrainingSearchPermission'
               },
               component: TrainingList
             },
@@ -152,7 +152,7 @@ const router = new Router({
               meta: {
                 isAuthenticated: true,
                 parentName: 'Awareness Educator',
-                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+                permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
               },
               component: Enrollments
             },
@@ -162,7 +162,7 @@ const router = new Router({
               meta: {
                 isAuthenticated: true,
                 parentName: 'Awareness Educator',
-                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+                permissionStoreKey: 'permissions/getCertificatesSearchPermission'
               },
               component: Certificates
             },

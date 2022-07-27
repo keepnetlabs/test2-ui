@@ -106,7 +106,8 @@ export default {
           show: false
         },
         downloadButton: {
-          show: true
+          show: true,
+          disabled: !this.$store.getters['permissions/getExportEnrollmentPermission']
         },
         rowActions: [
           {
@@ -115,7 +116,8 @@ export default {
           },
           {
             name: labels.Edit,
-            icon: 'mdi-pencil'
+            icon: 'mdi-pencil',
+            disabled: !this.$store.getters['permissions/getEnrollmentEditPermission']
           },
           {
             name: labels.Preview,
@@ -123,7 +125,8 @@ export default {
           },
           {
             name: labels.Delete,
-            icon: 'mdi-delete'
+            icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

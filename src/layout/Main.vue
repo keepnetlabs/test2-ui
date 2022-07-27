@@ -291,6 +291,7 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
+            v-if="getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[
               'menu-with-item menu-link-default un-selected-list-item',
@@ -305,7 +306,10 @@
                 <v-list-item-title>Awareness Educator</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getTrainingSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/awareness-educator/training-list"
@@ -315,7 +319,10 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getEnrollmentsSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/awareness-educator/enrollments"
@@ -328,7 +335,10 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getCertificatesSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/awareness-educator/certificates"
@@ -938,7 +948,12 @@ export default {
       getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
       getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
       getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission',
-      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission'
+      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission',
+      getAwarenessEducatorListGroupPermissions:
+        'permissions/getAwarenessEducatorListGroupPermissions',
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getEnrollmentsSearchPermission: 'permissions/getEnrollmentsSearchPermission',
+      getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'

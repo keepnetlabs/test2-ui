@@ -127,25 +127,30 @@ export default {
           btn: labels.CreateNewTraining,
           message: labels.EmptyTraining,
           icon: 'mdi-plus',
-          id: 'btn-empty--training-list'
+          id: 'btn-empty--training-list',
+          disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: true,
           action: 'add-training',
           tooltip: labels.AddTraining,
-          id: 'btn-add--training'
+          id: 'btn-add--training',
+          disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         downloadButton: {
-          show: true
+          show: true,
+          disabled: !this.$store.getters['permissions/getExportTrainingPermission']
         },
         rowActions: [
           {
             name: labels.SendTraining,
-            icon: 'mdi-send'
+            icon: 'mdi-send',
+            disabled: !this.$store.getters['permissions/getSendTrainingPermission']
           },
           {
             name: labels.Edit,
-            icon: 'mdi-pencil'
+            icon: 'mdi-pencil',
+            disabled: !this.$store.getters['permissions/getUpdateTrainingPermission']
           },
           {
             name: labels.Preview,
@@ -153,7 +158,8 @@ export default {
           },
           {
             name: labels.Delete,
-            icon: 'mdi-delete'
+            icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

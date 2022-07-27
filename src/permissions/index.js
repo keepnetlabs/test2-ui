@@ -347,36 +347,74 @@ export default {
       method: ENUMS.METHODS.POST
     },
     ENROLLMENTS: {
-      url: `trainings/search`,
+      url: `enrollments/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CERTIFICATES: {
+      url: `certificates/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
-  TRAINING_PERMISSIONS: {
-    SEARCH: {
-      url: `trainings/search`,
+  AWARENESS_EDUCATOR_PERMISSIONS: {
+    SEND_TRAINING: {
+      url: `enrollments`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
-    GET: {
-      url: 'trainings/{resourceId}',
+    CREATE_TRAINING: {
+      url: `trainings/draft`,
       hasPermission: false,
-      method: ENUMS.METHODS.GET
+      method: ENUMS.METHODS.POST
     },
-    EDIT: {
-      url: `target-groups/{resourceId}`,
+    EDIT_TRAINING: {
+      url: `trainings/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
-    DELETE: {
-      url: `target-groups/{resourceId}`,
+    DELETE_TRAINING: {
+      url: `trainings/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
-    }
-  },
-  ENROLLMENTS_PERMISSIONS: {
-    SEARCH: {
-      url: `notified-emails/search`,
+    },
+    EXPORT_TRAINING: {
+      url: `trainings/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_ENROLLMENT: {
+      url: `enrollments/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_ENROLLMENT: {
+      url: `enrollments/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT_ENROLLMENT: {
+      url: `enrollments/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_CERTIFICATE: {
+      url: `certificates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_CERTIFICATE: {
+      url: `certificates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    CREATE_CERTIFICATE: {
+      url: `certificates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT_CERTIFICATE: {
+      url: `certificates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
