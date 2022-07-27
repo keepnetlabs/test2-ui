@@ -226,7 +226,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
+      AwarenessEducatorService.openedTrainingReportEmails(this.axiosPayload, this.id)
         .then((response) => {
           debugger
           const {
