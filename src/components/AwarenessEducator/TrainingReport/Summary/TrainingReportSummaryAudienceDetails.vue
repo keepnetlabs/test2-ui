@@ -336,7 +336,10 @@ export default {
       this.$emit('close')
     },
     handleViewReportClick() {
-      // Open phishing campaign report in a new tab
+      let routeData = this.$router.resolve(
+        `/reports/campaign-reports/campaign-report/${this.phishingCampaign.resourceId}`
+      )
+      window.open(routeData.href, '_blank')
     },
     handleGroupNameClick() {
       // Open target user group page in a new tab

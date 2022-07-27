@@ -46,27 +46,9 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportOpenedTrainingEmailTable"
       @refreshAction="callForData"
-    >
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
-        />
-        <DefaultButtonRowAction
-          v-if="false"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
-        />
-      </template>
-    </DataTable>
+      @on-resend="handleOnResend"
+      @on-details="handleOnDetail"
+    />
   </div>
 </template>
 
@@ -74,24 +56,24 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import TrainingReportOpenedTrainingEmailDetails from '@/components/AwarenessEducator/TrainingReport/OpenedTrainingEmail/TrainingReportOpenedTrainingEmailDetails'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'TrainingReportOpenedTrainingEmail',
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
     CampaignManagerReportHeader,
     TrainingReportOpenedTrainingEmailDetails
   },
@@ -111,7 +93,8 @@ export default {
         id: 'training-report-opened-training-email-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastOpened' }),
+      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_OPENED_TABLE,
@@ -198,7 +181,6 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -206,8 +188,6 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -263,13 +243,20 @@ export default {
       //   })
       // })
     },
-    handleResend(row) {
-      this.selectedRow = row
-      this.toggleIsShowResendDialog()
-    },
-    handleDetails(row) {
+    handleOnDetail(row) {
       this.selectedRow = row
       this.toggleIsShowDetailsModal()
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {

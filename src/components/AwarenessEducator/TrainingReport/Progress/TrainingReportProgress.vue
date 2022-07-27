@@ -36,8 +36,12 @@
       :add-button="tableOptions.addButton"
       :select-event="tableOptions.selectEvent"
       :axios-payload.sync="axiosPayload"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -49,8 +53,11 @@
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <div class="training-report-progress__progress-column">
-          <v-btn style="display: none;" />
-          <Badge v-bind="getStatusBadgeProps(scope.row.progress)" size="medium" />
+          <v-btn style="display: none" />
+          <Badge
+            v-bind="getStatusBadgeProps(scope.row.progress)"
+            size="medium"
+          />
         </div>
       </template>
       <template #datatable-row-actions="{ scope }">
@@ -77,37 +84,37 @@
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
+import DataTable from "@/components/DataTable";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import labels from "@/model/constants/labels";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import Badge from '@/components/Badge'
-import TrainingReportProgressDetails from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgressDetails'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import AwarenessEducatorService from '@/api/awarenessEducator'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import { useLoading } from "@/hooks/useLoading";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import TrainingReportResendDialog from "@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog";
+import CampaignManagerReportHeader from "@/components/CampaignManagerReport/CampaignManagerReportHeader";
+import Badge from "@/components/Badge";
+import TrainingReportProgressDetails from "@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgressDetails";
+import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import AwarenessEducatorService from "@/api/awarenessEducator";
 export default {
-  name: 'TrainingReportClickedTrainingLink',
+  name: "TrainingReportClickedTrainingLink",
   components: {
     TrainingReportResendDialog,
     DataTable,
     DefaultButtonRowAction,
     CampaignManagerReportHeader,
     Badge,
-    TrainingReportProgressDetails
+    TrainingReportProgressDetails,
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
@@ -116,132 +123,134 @@ export default {
       isShowDetailsModal: false,
       isResendActionButtonDisabled: false,
       CONSTANTS: {
-        id: 'training-report-progress-data-table',
-        ascending: 'ascending'
+        id: "training-report-progress-data-table",
+        ascending: "ascending",
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: "email" }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true
+          resend: true,
         },
         columns: [
           {
-            property: 'firstName',
-            align: 'left',
+            property: "firstName",
+            align: "left",
             editable: false,
-            label: 'First Name',
-            fixed: 'left',
+            label: "First Name",
+            fixed: "left",
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 100
+            type: "text",
+            filterableType: "text",
+            width: 100,
           },
           {
-            property: 'lastName',
-            align: 'left',
+            property: "lastName",
+            align: "left",
             editable: false,
-            label: 'Last Name',
-            fixed: 'left',
+            label: "Last Name",
+            fixed: "left",
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 100
+            type: "text",
+            filterableType: "text",
+            width: 100,
           },
           {
-            property: 'email',
-            align: 'left',
+            property: "email",
+            align: "left",
             editable: false,
-            label: 'Email',
-            fixed: 'left',
+            label: "Email",
+            fixed: "left",
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'department',
-            align: 'left',
-            editable: false,
-            label: 'Department',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'progress',
-            align: 'left',
-            editable: false,
-            label: 'Progress',
-            sortable: true,
-            show: true,
-            type: 'slot',
+            type: "text",
+            filterableType: "text",
             width: 150,
-            filterableType: 'select',
-            filterableItems: ['In Progress', 'Completed']
           },
           {
-            property: 'enrollmentDate',
-            align: 'left',
+            property: "department",
+            align: "left",
             editable: false,
-            label: 'Enrollment Date',
+            label: "Department",
+            sortable: true,
+            show: true,
+            type: "text",
+            filterableType: "text",
+            width: 150,
+          },
+          {
+            property: "progress",
+            align: "left",
+            editable: false,
+            label: "Progress",
+            sortable: true,
+            show: true,
+            type: "slot",
+            width: 150,
+            filterableType: "select",
+            filterableItems: ["In Progress", "Completed"],
+          },
+          {
+            property: "enrollmentDate",
+            align: "left",
+            editable: false,
+            label: "Enrollment Date",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 200,
-            filterableType: 'date'
+            filterableType: "date",
           },
           {
-            property: 'sessionStarted',
-            align: 'left',
+            property: "sessionStarted",
+            align: "left",
             editable: false,
-            label: 'Session Started',
+            label: "Session Started",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 200,
-            filterableType: 'date'
+            filterableType: "date",
           },
           {
-            property: 'sessionEnded',
-            align: 'left',
+            property: "sessionEnded",
+            align: "left",
             editable: false,
-            label: 'Session Ended',
+            label: "Session Ended",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 200,
-            filterableType: 'date'
+            filterableType: "date",
           },
           {
-            property: 'sessions',
-            align: 'left',
+            property: "sessions",
+            align: "left",
             editable: false,
-            label: 'Sessions',
+            label: "Sessions",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 130,
-            filterableType: 'number'
-          }
+            filterableType: "number",
+          },
         ],
         addButton: {
-          show: false
+          show: false,
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyTrainingReportUsers,
         },
         rowActions: [
           /*
@@ -256,49 +265,57 @@ export default {
            */
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
+            id: "btn-interactions--row-actions-training-report-users",
+            icon: "$custom-details",
+            action: "on-details",
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-        ]
+          },
+        ],
       },
-      tableData: []
-    }
+      tableData: [],
+    };
   },
   created() {
-    this.callForData()
+    this.callForData();
   },
   methods: {
     getStatusBadgeProps(progress) {
-      if (progress === 'In Progress')
+      if (progress === "In Progress")
         return {
-          color: '#B6791D',
-          text: 'In Progress'
-        }
+          color: "#B6791D",
+          text: "In Progress",
+        };
 
-      if (progress === 'Completed')
+      if (progress === "Completed")
         return {
-          color: '#217124',
-          text: 'Completed'
-        }
+          color: "#217124",
+          text: "Completed",
+        };
     },
     callForData() {
-      this.setLoading(true)
-      AwarenessEducatorService.progressTrainingReportEmails(this.axiosPayload, this.id)
+      this.setLoading(true);
+      AwarenessEducatorService.progressTrainingReportEmails(
+        this.axiosPayload,
+        this.id
+      )
         .then((response) => {
-          debugger
+          debugger;
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+              data: {
+                results,
+                totalNumberOfRecords,
+                totalNumberOfPages,
+                pageNumber,
+              },
+            },
+          } = response;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
+          this.tableData = results || [];
         })
-        .finally(this.setLoading)
+        .finally(this.setLoading);
     },
     exportTrainingReportOpenedTrainingEmailTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {
@@ -323,26 +340,26 @@ export default {
       // })
     },
     handleResend(row) {
-      this.selectedRow = row
-      this.toggleIsShowResendDialog()
+      this.selectedRow = row;
+      this.toggleIsShowResendDialog();
     },
     handleDetails(row) {
-      this.selectedRow = row
-      this.toggleIsShowDetailsModal()
+      this.selectedRow = row;
+      this.toggleIsShowDetailsModal();
     },
     confirmResend() {},
     toggleIsShowResendDialog() {
       if (this.isShowResendDialog) {
-        this.selectedRow = null
+        this.selectedRow = null;
       }
-      this.isShowResendDialog = !this.isShowResendDialog
+      this.isShowResendDialog = !this.isShowResendDialog;
     },
     toggleIsShowDetailsModal() {
       if (this.isShowDetailsModal) {
-        this.selectedRow = null
+        this.selectedRow = null;
       }
-      this.isShowDetailsModal = !this.isShowDetailsModal
-    }
-  }
-}
+      this.isShowDetailsModal = !this.isShowDetailsModal;
+    },
+  },
+};
 </script>

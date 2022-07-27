@@ -16,8 +16,8 @@
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <TrainingReportSummaryTrainingInfo
-        :items="getTrainingSummaryItems"
-        :helper-data="getCampaignSummaryHelperData"
+        :items="getTrainingInfoData"
+        :helper-data="getTrainingInfoHelperData"
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
         :isLoading="isLoading"
@@ -25,8 +25,8 @@
       />
       <TrainingReportTrainingDelivery
         class="ml-4"
-        :items="getEmailDeliveryData"
-        :helper-data="getEmailDeliveryHelperData"
+        :items="getTrainingDeliveryData"
+        :helper-data="getTrainingDeliveryyHelperData"
         :isLoading="isLoading"
       />
     </div>
@@ -89,7 +89,7 @@ export default {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
     },
     isFromPhishingCampaign() {
-      return this.trainingSummary?.isFromPhishingCampaign || false
+      return this.trainingSummary?.isFromPhishingCampaign || true
     },
     isFromUserGroups() {
       return this.trainingSummary?.isFromUserGroups || false
@@ -100,18 +100,14 @@ export default {
     getUserGroups() {
       return this.trainingSummary?.userGroups || {}
     },
-    getTrainingSummaryItems() {
+    getTrainingInfoData() {
       const {
         totalTargetUserCount = 0,
-        targetGroupCount = 0,
-        autoEnroll = 'No',
-        languages = 'EN'
-      } = this.trainingSummary || {
-        totalTargetUserCount: 0,
-        autoEnroll: 'Enroll new users the same day',
-        languages: ['EN'],
-        targetGroupCount: null
-      }
+        autoEnroll = 'Enroll new users the same day',
+        languages = ['EN', 'TR', 'DE', 'FR'],
+        targetGroupCount = null,
+        phishingCampaign = null
+      } = this.trainingSummary
       return {
         'Target Users': {
           show: true,
@@ -121,17 +117,22 @@ export default {
           show: false,
           value: targetGroupCount
         },
+        phishingCampaign: {
+          show: false,
+          value: phishingCampaign
+        },
         'Auto-enroll': {
           show: true,
           value: autoEnroll
         },
-        Languages: {
-          show: true,
-          value: typeof languages === 'string' ? languages : languages.join(',')
-        }
+        isAutoEnrollDisabled: {
+          show: false,
+          value: false
+        },
+        Languages: { show: true, value: languages.join(', ') }
       }
     },
-    getCampaignSummaryHelperData() {
+    getTrainingInfoHelperData() {
       const { targetUsers = {}, campaignInfo = {} } = this.trainingSummary || {}
       const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
         targetUsers || {}
@@ -144,14 +145,16 @@ export default {
       }
     },
     isTestTraining() {
-      const { isTest = false } = this.trainingSummary
-      return isTest
+      const { settings = {} } = this.trainingSummary
+      const { excludeFromReports = false } = settings
+      return excludeFromReports
     },
-    getEmailDeliveryData() {
+    getTrainingDeliveryData() {
       const { campaignInfo = {} } = this.trainingSummary
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
+        emailDeliveryDuration = 0,
         reminderOptions = 'Every 2 months, ends when user completes the training',
         isEnded = false
       } = campaignInfo
@@ -174,11 +177,16 @@ export default {
         }
       }
     },
-    getEmailDeliveryHelperData() {
-      const { emailDeliveredUserCount, totalTargetUserCount } = this.trainingSummary
+    getTrainingDeliveryyHelperData() {
+      const { campaignInfo = {} } = this.trainingSummary
+      const {
+        emailDeliveredUserCount,
+        emailNotDeliveredUserCount,
+        totalTargetUserCount
+      } = campaignInfo
       return {
         emailDeliveredUserCount,
-        emailNotDeliveredUserCount: totalTargetUserCount - emailDeliveredUserCount,
+        emailNotDeliveredUserCount,
         totalTargetUserCount
       }
     },
@@ -246,31 +254,29 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      const {
-        totalTargetUserCount,
-        totalUserClickedCount,
-        totalUserOpenedCount,
-        noResponseCount,
-        completedCount,
-        inProgressCount
-      } = this.trainingSummary
-      const inProgress = inProgressCount ? inProgressCount : completedCount - totalUserClickedCount
+      if (!this.getChartData.length) return {}
+      const [
+        openedEmail = 0,
+        noResponseEmail = 0,
+        inProgress = 0,
+        completedTraining = 0
+      ] = this.getChartData
       return {
         openedEmail: {
-          userCount: totalUserOpenedCount,
-          userPercent: ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
+          userCount: openedEmail,
+          userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
         },
         inProgress: {
           userCount: inProgress,
-          userPercent: ((inProgress / totalTargetUserCount) * 100).toFixed()
+          userPercent: ((inProgress / this.getTotalUsers) * 100).toFixed()
         },
         completedTraining: {
-          userCount: completedCount,
-          userPercent: ((completedCount / totalTargetUserCount) * 100).toFixed()
+          userCount: completedTraining,
+          userPercent: ((completedTraining / this.getTotalUsers) * 100).toFixed()
         },
         noResponse: {
-          userCount: noResponseCount,
-          userPercent: ((noResponseCount / totalTargetUserCount) * 100).toFixed()
+          userCount: noResponseEmail,
+          userPercent: ((noResponseEmail / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
@@ -300,13 +306,14 @@ export default {
     },
     getTrainingMaterialData() {
       const { trainingMaterial = {} } = this.trainingSummary
-      const { name, createdBy, category, description, languageShortCode } = trainingMaterial
+      const { name, createdBy, category, description, languageShortCode, url } = trainingMaterial
       return {
         name: 'Training Name',
         createdBy: 'Company Name',
         category: 'Information security (category)',
         description: 'Training content’s description',
-        languageShortCode: 'EN'
+        languageShortCode: 'EN',
+        trainingMaterialUrl: 'https://www.google.com'
       }
     }
   },
