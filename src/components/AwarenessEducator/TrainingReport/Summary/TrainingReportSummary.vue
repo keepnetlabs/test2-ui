@@ -16,7 +16,7 @@
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <TrainingReportSummaryTrainingInfo
-        :items="getCampaignSummaryItems"
+        :items="getTrainingSummaryItems"
         :helper-data="getCampaignSummaryHelperData"
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
@@ -100,7 +100,7 @@ export default {
     getUserGroups() {
       return this.trainingSummary?.userGroups || {}
     },
-    getCampaignSummaryItems() {
+    getTrainingSummaryItems() {
       const {
         phishingCampaign = {},
         totalTargetUserCount = 0,
@@ -256,29 +256,29 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      if (!this.getChartData.length) return {}
-      const [
-        openedEmail = 0,
-        noResponseEmail = 0,
-        inProgress = 0,
-        completedTraining = 0
-      ] = this.getChartData
+      const {
+        totalTargetUserCount,
+        totalUserClickedCount,
+        totalUserOpenedCount,
+        noResponseCount,
+        completedCount
+      } = this.trainingSummary
       return {
         openedEmail: {
-          userCount: openedEmail,
-          userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
+          userCount: totalUserOpenedCount,
+          userPercent: ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
-          userCount: inProgress,
-          userPercent: ((inProgress / this.getTotalUsers) * 100).toFixed()
+          userCount: 0,
+          userPercent: ((0 / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
-          userCount: completedTraining,
-          userPercent: ((completedTraining / this.getTotalUsers) * 100).toFixed()
+          userCount: completedCount,
+          userPercent: ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         noResponse: {
-          userCount: noResponseEmail,
-          userPercent: ((noResponseEmail / this.getTotalUsers) * 100).toFixed()
+          userCount: noResponseCount,
+          userPercent: ((noResponseCount / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
@@ -338,10 +338,10 @@ export default {
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
           debugger
-          this.campaignSummary = response?.data?.data
+          this.trainingSummary = response?.data?.data
           this.$store.dispatch(
             'common/setActivePageRouterName',
-            this.campaignSummary?.phishingCampaignName || ''
+            this.trainingSummary?.trainingName || ''
           )
         })
         .finally(() => {

@@ -117,7 +117,6 @@ export default {
   },
   computed: {
     id() {
-      debugger
       return this.$route?.params?.id
     },
     getTrainingName() {

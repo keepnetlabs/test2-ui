@@ -11,7 +11,7 @@
       </div>
       <div class="campaign-manager-summary-card__body-item-value">
         <span>{{ getBodyValue }} from </span>
-        <span class="datatable-link" @click="handleAudinceClick"> {{ getAudienceText }} </span>
+        <span class="datatable-link" @click="handleAudienceClick"> {{ getAudienceText }} </span>
         <v-tooltip v-if="isTooltip" bottom>
           <template #activator="{on}">
             <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>
@@ -62,7 +62,6 @@ export default {
   computed: {
     getItems() {
       const newItems = { ...this.items }
-
       Object.keys(this.items).map((key) => {
         if (!newItems[key].show) delete newItems[key]
         else newItems[key] = newItems[key].value
@@ -100,7 +99,7 @@ export default {
     }
   },
   methods: {
-    handleAudinceClick() {
+    handleAudienceClick() {
       this.$emit('audienceClick')
     }
   }
