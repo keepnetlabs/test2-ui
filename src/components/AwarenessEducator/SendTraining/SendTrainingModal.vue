@@ -62,7 +62,7 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
-              class="mb-8"
+              class="mb-2"
               :title="labels.Summary"
               :subtitle="labels.SendTrainingSummarySub"
             />
@@ -197,8 +197,10 @@ export default {
               ? 'Starting now'
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
-        formData.certificateData = this.certificateData
-        formData.reminderData = this.reminderData
+        formData.certificateData = refSendTrainingSettings.formData.awardCertificate
+          ? this.certificateData
+          : null
+        formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
         formData.enrollmentData = this.enrollmentData
         formData.trainingData = this.trainingPreviewData
       }

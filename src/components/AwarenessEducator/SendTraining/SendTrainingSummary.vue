@@ -82,7 +82,7 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="campaign-manager-last-step__email-template mt-4">
+    <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
         title="Certificate that users will be received"
@@ -121,7 +121,7 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="campaign-manager-last-step__email-template mt-4">
+    <div v-if="isReminderEmailData" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
         title="Reminder email that will be sent to users"
