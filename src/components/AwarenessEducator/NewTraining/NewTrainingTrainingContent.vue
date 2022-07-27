@@ -86,7 +86,7 @@ export default {
   },
   computed: {
     languages() {
-      const languages =
+      return (
         this?.getLanguages()?.map((language) => ({
           text: language.name,
           value: language.id,
@@ -94,7 +94,7 @@ export default {
             (content) => content.languageId === language.id
           )
         })) || []
-      return languages
+      )
     },
     scormTypes() {
       return this.getScormTypes()
