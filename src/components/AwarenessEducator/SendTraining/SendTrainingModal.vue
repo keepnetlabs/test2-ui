@@ -162,7 +162,8 @@ export default {
         category: this?.selectedRow?.category,
         createdBy: this?.selectedRow?.createdBy,
         description: this?.selectedRow?.description,
-        template: null
+        scormPlayerUrl: null,
+        trainingUrl: null
       }
     }
   },
@@ -244,7 +245,8 @@ export default {
         const {
           data: { data }
         } = response
-        this.trainingPreviewData.template = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
+        this.trainingPreviewData.scormPlayerUrl = data.scormPlayerUrl
+        this.trainingPreviewData.trainingUrl = data.trainingUrl
       })
     },
     callForSelectedTargetGroups(ids) {

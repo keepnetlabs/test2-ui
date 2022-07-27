@@ -163,8 +163,10 @@ export default {
         const {
           data: { data }
         } = response
-        const url = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
-        window.open(`${window.location.origin}/training/scorm?isPreview=true&template=${url}`)
+
+        window.open(
+          `${window.location.origin}/training/scorm?isPreview=true&template=${data.scormPlayerUrl}&scoAddress=${data.trainingUrl}`
+        )
       })
     }
   }

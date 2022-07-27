@@ -208,7 +208,7 @@ export default {
     isShowTrainingEmail(val) {
       if (val) {
         window.open(
-          `${window.location.origin}/training/scorm?isPreview=true&template=${this.formData.trainingData.template}`
+          `${window.location.origin}/training/scorm?isPreview=true&template=${this.formData.trainingData.scormPlayerUrl}&scoAddress=${this.formData.trainingData.trainingUrl}`
         )
         this.isShowTrainingEmail = false
       }
