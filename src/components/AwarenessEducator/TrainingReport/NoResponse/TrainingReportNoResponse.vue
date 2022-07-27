@@ -82,7 +82,7 @@ export default {
         id: 'training-report-no-response-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'EmailSendDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
