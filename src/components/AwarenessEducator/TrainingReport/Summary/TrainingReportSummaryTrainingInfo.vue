@@ -10,8 +10,10 @@
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
       <div class="campaign-manager-summary-card__body-item-value">
-        <span>{{ getBodyValue }} from </span>
-        <span class="datatable-link" @click="handleAudienceClick"> {{ getAudienceText }} </span>
+        <span>{{ getBodyValue }}</span>
+        <span v-if="false" class="datatable-link" @click="handleAudienceClick">
+          {{ getAudienceText }}
+        </span>
         <v-tooltip v-if="isTooltip" bottom>
           <template #activator="{on}">
             <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>

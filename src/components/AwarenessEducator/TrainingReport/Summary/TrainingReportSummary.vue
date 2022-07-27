@@ -102,17 +102,15 @@ export default {
     },
     getTrainingSummaryItems() {
       const {
-        phishingCampaign = {},
         totalTargetUserCount = 0,
         targetGroupCount = 0,
         autoEnroll = 'No',
-        languageShortCode = 'EN'
+        languages = 'EN'
       } = this.trainingSummary || {
         totalTargetUserCount: 0,
         autoEnroll: 'Enroll new users the same day',
-        languageShortCode: 'EN',
-        targetGroupCount: null,
-        phishingCampaign: null
+        languages: ['EN'],
+        targetGroupCount: null
       }
       return {
         'Target Users': {
@@ -123,15 +121,14 @@ export default {
           show: false,
           value: targetGroupCount
         },
-        phishingCampaign: {
-          show: false,
-          value: phishingCampaign
-        },
         'Auto-enroll': {
           show: true,
           value: autoEnroll
         },
-        Languages: { show: true, value: languageShortCode }
+        Languages: {
+          show: true,
+          value: typeof languages === 'string' ? languages : languages.join(',')
+        }
       }
     },
     getCampaignSummaryHelperData() {
@@ -155,7 +152,6 @@ export default {
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
-        emailDeliveryDuration = 0,
         reminderOptions = 'Every 2 months, ends when user completes the training',
         isEnded = false
       } = campaignInfo
@@ -187,7 +183,7 @@ export default {
       } = campaignInfo
       return {
         emailDeliveredUserCount,
-        emailNotDeliveredUserCount,
+        emailNotDeliveredUserCount: totalTargetUserCount - emailDeliveredUserCount,
         totalTargetUserCount
       }
     },
