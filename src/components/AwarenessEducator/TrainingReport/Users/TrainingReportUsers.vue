@@ -58,7 +58,7 @@
           :checkIsOwnerProperty="false"
           @on-click="handleInteractions(scope.row)"
         />
-        <RowActionsMenu>
+        <RowActionsMenu v-if="false">
           <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
