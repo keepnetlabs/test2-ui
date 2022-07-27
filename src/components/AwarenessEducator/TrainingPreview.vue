@@ -39,6 +39,9 @@ export default {
     },
     languages: {
       type: Array
+    },
+    trainingId: {
+      type: String
     }
   },
   data() {
@@ -72,7 +75,7 @@ export default {
     callForData() {
       if (this.srcs[this.activePage]) return
       AwarenessEducatorService.getTrainingUrlForPreview(
-        this.selectedRow.trainingId,
+        this.trainingId,
         this.languages[this.activePage].id
       ).then((response) => {
         const {

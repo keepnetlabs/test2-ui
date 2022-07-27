@@ -12,7 +12,12 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-      <TrainingPreview v-else :name="selectedRow.trainingName" :languages="selectedLanguages" />
+      <TrainingPreview
+        v-else
+        :name="selectedRow.trainingName"
+        :training-id="selectedRow.trainingId"
+        :languages="selectedLanguages"
+      />
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
