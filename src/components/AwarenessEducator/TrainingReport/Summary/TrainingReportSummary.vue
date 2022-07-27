@@ -176,8 +176,7 @@ export default {
     },
     getEmailDeliveryHelperData() {
       debugger
-      const { campaignInfo = {} } = this.trainingSummary
-      const { emailDeliveredUserCount, totalTargetUserCount } = campaignInfo
+      const { emailDeliveredUserCount, totalTargetUserCount } = this.trainingSummary
       return {
         emailDeliveredUserCount,
         emailNotDeliveredUserCount: totalTargetUserCount - emailDeliveredUserCount,
