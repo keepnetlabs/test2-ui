@@ -10,8 +10,10 @@
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
       <div class="campaign-manager-summary-card__body-item-value">
-        <span>{{ getBodyValue }} from </span>
-        <span class="datatable-link" @click="handleAudinceClick"> {{ getAudienceText }} </span>
+        <span>{{ getBodyValue }}</span>
+        <span v-if="false" class="datatable-link" @click="handleAudienceClick">
+          {{ getAudienceText }}
+        </span>
         <v-tooltip v-if="isTooltip" bottom>
           <template #activator="{on}">
             <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>
@@ -20,7 +22,7 @@
         </v-tooltip>
       </div>
     </template>
-    <template #Auto-enroll="{ props:{ key } }">
+     <template #Auto-enroll="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
@@ -42,7 +44,7 @@
         </div>
       </div>
     </template>
-    <template v-if="isTestCampaign" #header-right>
+    <template v-if="isTestTraining" #header-right>
       <div class="campaign-manager-report-summary-campaign-info__right-side">
         <v-btn style="display: none;" />
         <Badge color="#B6791D" text="Marked as Test" :outline="false" />
@@ -65,7 +67,7 @@ export default {
     helperData: {
       type: Object
     },
-    isTestCampaign: {
+    isTestTraining: {
       type: Boolean
     },
     isLoading: {
@@ -84,7 +86,6 @@ export default {
   computed: {
     getItems() {
       const newItems = { ...this.items }
-
       Object.keys(this.items).map((key) => {
         if (!newItems[key].show) delete newItems[key]
         else newItems[key] = newItems[key].value
@@ -122,7 +123,7 @@ export default {
     }
   },
   methods: {
-    handleAudinceClick() {
+    handleAudienceClick() {
       this.$emit('audienceClick')
     }
   }

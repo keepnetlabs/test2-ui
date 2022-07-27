@@ -617,6 +617,10 @@
             <h1 v-else-if="routerName === 'Campaign Report'">
               {{ getCampaignReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Campaign Report'">
+              {{ getTrainingReportName }}
+            </h1>
+
             <h1 v-else>{{ routerName }}</h1>
           </div>
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
@@ -964,6 +968,12 @@ export default {
         return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Campaign Report'
+    },
+    getTrainingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Training Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Training Report'
     },
     getRouterKey() {
       const { name } = this.$route

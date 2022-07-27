@@ -53,8 +53,7 @@ import TrainingReportCertificate from '@/components/AwarenessEducator/TrainingRe
 import TrainingReportTrainingMaterial from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingMaterial'
 import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
 import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
-import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'TrainingReportSummary',
@@ -325,7 +324,30 @@ export default {
     clearInterval(this.interval)
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.callApis(true)
+      this.interval = setInterval(() => {
+        this.callApis()
+      }, 15000)
+    },
+    callApis(isUseLoading = false) {
+      if (isUseLoading) {
+        this.setLoading(true)
+      }
+      AwarenessEducatorService.getTrainingReportSummary(this.id)
+        .then((response) => {
+          this.trainingSummary = response?.data?.data
+          this.$store.dispatch(
+            'common/setActivePageRouterName',
+            this.trainingSummary?.trainingName || ''
+          )
+        })
+        .finally(() => {
+          if (isUseLoading) {
+            this.setLoading(false)
+          }
+        })
+    },
     showAudienceDetailsModal() {
       this.isAudienceModalVisible = true
     },

@@ -62,7 +62,7 @@ const router = new Router({
       }
     },
     {
-      path: '/training/scorm',
+      path: '/training/scorm/watch',
       name: 'scorm',
       component: Scorm,
       meta: {
@@ -174,6 +174,8 @@ const router = new Router({
                 parentName: 'Enrollments',
                 permissionStoreKey: 'permissions/getAuditLogSearchPermission'
               },
+              props: true,
+              params: true,
               component: TrainingReport
             }
           ]

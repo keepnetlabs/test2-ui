@@ -18,10 +18,9 @@ export default {
 
   methods: {
     callForData() {
-      debugger
       const query = this?.$route?.query
       if (query?.isPreview) {
-        this.src = query?.template
+        this.src = `${query.template}?isPreview=true&scoAddress=${query.scoAddress}`
       } else {
         const query = this?.$route?.query
         const enrollmentContentResourceId = query?.EnrollmentContentId
@@ -31,7 +30,10 @@ export default {
             targetUserResourceId,
             enrollmentContentResourceId
           ).then((response) => {
-            debugger
+            const {
+              data: { data }
+            } = response
+            this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_APP_API_TEST}&scoAddress=${data.trainingUrl}`
           })
         }
       }

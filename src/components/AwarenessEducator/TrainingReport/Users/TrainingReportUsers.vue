@@ -13,7 +13,11 @@
       :item="selectedRow"
       @on-close="toggleIsShowInteractionsModal"
     />
-    <CampaignManagerReportHeader class="mb-6" title="Target Users" subtitle="Reset Password" />
+    <CampaignManagerReportHeader
+      class="mb-6"
+      title="Target Users"
+      subtitle="All users enrolled to this training"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -58,7 +62,7 @@
           :checkIsOwnerProperty="false"
           @on-click="handleInteractions(scope.row)"
         />
-        <RowActionsMenu>
+        <RowActionsMenu v-if="false">
           <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
@@ -95,7 +99,6 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -110,7 +113,8 @@ import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -123,7 +127,7 @@ export default {
     TrainingReportUserInteractionsModal,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -139,7 +143,7 @@ export default {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastInteraction' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_USERS_TABLE,
@@ -244,7 +248,8 @@ export default {
             icon: '$custom-details',
             action: 'on-interactions'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          },
+          }
+          /*
           {
             name: labels.ReSend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -266,84 +271,10 @@ export default {
             action: 'on-include'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
+           */
         ]
       },
-      tableData: [
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Not Responded',
-          lastInteraction: '31.05.2021 16:31:33',
-          isExcluded: false
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Opened Email',
-          lastInteraction: '31.05.2021 16:31:33',
-          isExcluded: true
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Clicked Link',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Completed',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'In Progress',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'In Queue',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Sending Error',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Cancelled',
-          lastInteraction: '31.05.2021 16:31:33'
-        },
-        {
-          firstName: 'Bruce',
-          lastName: 'Wayne',
-          email: 'bruce@wayne.com',
-          department: 'Executives',
-          status: 'Excluded',
-          lastInteraction: '31.05.2021 16:31:33'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -354,65 +285,23 @@ export default {
       return getStatusBadgeProps(status)
     },
     callForData() {
-      // this.setLoading(true)
-      // searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
-      //   .then((response) => {
-      //     const {
-      //       data: {
-      //         data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //       }
-      //     } = response
-      //     this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //     this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //     this.serverSideProps.pageNumber = pageNumber
-      //     this.tableData = results
-      //   })
-      //   .finally(this.setLoading)
+      this.setLoading(true)
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
+        .then((response) => {
+          debugger
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
     },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
-    },
+
     exportTrainingReportUsersTable(downloadTypes) {
       // downloadTypes.exportTypes.forEach((item) => {
       //   let payload = {
