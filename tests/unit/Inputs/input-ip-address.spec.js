@@ -20,7 +20,7 @@ describe('Input ip address component', () => {
     //checking placeholder
 
     const inputAttr = wrapper.find('input').attributes()
-    expect(inputAttr.placeholder).toEqual('Enter an ip adress')
+    expect(inputAttr.placeholder).toEqual('Enter an ip address')
     //checking is autocomplete off
     expect(inputAttr.autocomplete).toEqual('off')
     //checking is required true

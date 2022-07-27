@@ -50,7 +50,7 @@
             :items="providerTypes"
           ></KSelect>
         </FormGroup>
-        <FormGroup has-hint :title="ENUMS.URL">
+        <FormGroup has-hint :title="labels.SIEMAddress" :subTitle="labels.URLOrIPAddress">
           <InputUrl
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
