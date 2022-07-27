@@ -119,7 +119,7 @@ export default {
       this.$router.push({
         name: 'Training Report',
         params: {
-          id: row.id
+          id: row.enrollmentId
         }
       })
     }
