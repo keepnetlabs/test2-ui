@@ -139,7 +139,7 @@ export default {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastInteraction' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreateTime' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_USERS_TABLE,

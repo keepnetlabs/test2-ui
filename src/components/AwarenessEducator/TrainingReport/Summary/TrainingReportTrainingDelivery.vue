@@ -84,11 +84,9 @@ export default {
       return newItems
     },
     isNotDelivered() {
-      debugger
       return !!(this.helperData?.emailNotDeliveredUserCount || 0)
     },
     getDeliveryValue() {
-      debugger
       const { emailDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
       return `${emailDeliveredUserCount} / ${totalTargetUserCount} sent`
     },

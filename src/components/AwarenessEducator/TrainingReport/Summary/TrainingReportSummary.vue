@@ -329,7 +329,6 @@ export default {
       }
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
-          debugger
           this.trainingSummary = response?.data?.data
           this.$store.dispatch(
             'common/setActivePageRouterName',
