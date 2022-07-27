@@ -374,7 +374,7 @@ export default {
         (response) => {
           this.contentLanguageItems = response?.data?.data?.map((lang) => ({
             text: lang.name,
-            value: lang.id
+            value: lang.name
           }))
         }
       )

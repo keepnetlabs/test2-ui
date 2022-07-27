@@ -198,13 +198,17 @@ export default {
           category,
           targetAudience,
           tags,
-          availableForRequests
+          availableForRequests,
+          coverImageUrl
         }
       } = refTrainingCourseInformation
       const {
         formData: { hasQuiz, type }
       } = refTrainingContent
       const payload = new FormData()
+      if (coverImageUrl) {
+        payload.append('trainingDetail.coverImageUrl', coverImageUrl)
+      }
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail.name', name)
       payload.append('trainingDetail.description', description)
