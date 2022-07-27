@@ -218,7 +218,7 @@ export default {
           this.reminderData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.name
+            name: data.template.name || 'Default Reminder Email'
           }
         }
       )
@@ -231,7 +231,7 @@ export default {
           this.certificateData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.name
+            name: data.template.name || 'Default Certificate Email'
           }
         }
       )
@@ -244,7 +244,7 @@ export default {
           this.enrollmentData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.name
+            name: data.template.name || 'Default Training Email'
           }
         }
       )
