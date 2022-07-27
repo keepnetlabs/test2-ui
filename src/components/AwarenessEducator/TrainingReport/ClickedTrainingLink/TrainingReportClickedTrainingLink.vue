@@ -92,7 +92,7 @@ export default {
         id: 'training-report-opened-training-email-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastClicked' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
