@@ -238,7 +238,7 @@ export default {
             sortable: true,
             show: true,
             type: 'badge',
-            width: 200,
+            width: 220,
             filterableType: 'select',
             filterableItems: [
               'Not Delivered',
@@ -248,7 +248,8 @@ export default {
               'Successful',
               'Processing'
             ]
-          },
+          }
+          /*
           {
             property: 'smtp',
             align: 'left',
@@ -259,8 +260,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             width: 150
-          }
-          /*
+          },
           {
             property: 'emailType',
             align: 'left',
@@ -273,7 +273,7 @@ export default {
             filterableType: 'text',
             width: 150
           }
-          
+
            */
         ],
         addButton: {
