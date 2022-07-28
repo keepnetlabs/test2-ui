@@ -126,6 +126,9 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
+   testApi,
+} from '@/api/emailThreatSimlator'
+import {
   // deleteScenarios,
   exportScenarios,
   getScenarioDataDetails,
@@ -466,6 +469,9 @@ export default {
       .finally(() => {
         this.getDatatableList()
       })
+    testApi([]).then((data) => {
+      console.log("aa", data);
+    })
   }
 }
 </script>
