@@ -178,10 +178,10 @@ export default {
             sortable: true,
             fixed: 'right',
             show: true,
-            type: 'text',
+            type: 'badge',
             width: 150,
             filterableType: 'select',
-            filterableItems: ['Failed', 'Success']
+            filterableItems: ['Failed', 'Passed']
           },
           {
             property: 'examScore',
