@@ -178,13 +178,13 @@ export default {
           },
           {
             property: 'progress',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Progress',
             sortable: true,
             show: true,
             type: 'badge',
-            width: 150,
+            width: 200,
             filterableType: 'select',
             filterableItems: ['In Progress', 'Completed']
           },

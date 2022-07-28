@@ -172,14 +172,14 @@ export default {
           },
           {
             property: 'examStatus',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
             fixed: false,
             show: true,
             type: 'badge',
-            width: 180,
+            width: 200,
             filterableType: 'select',
             filterableItems: ['Failed', 'Passed']
           },

@@ -203,13 +203,13 @@ export default {
           },
           {
             property: 'status',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
             show: true,
             type: 'badge',
-            width: 180,
+            width: 200,
             filterableType: 'select',
             filterableItems: [
               'Not Responded',
@@ -224,11 +224,11 @@ export default {
             ]
           },
           {
-            property: 'lastInteraction',
+            property: 'lastInteractionDate',
             align: 'left',
             editable: false,
             label: 'Last Interaction',
-            fixed: false,
+            fixed: 'right',
             sortable: true,
             show: true,
             type: 'text',

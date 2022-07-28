@@ -159,6 +159,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            width: 200,
             filterableType: 'date'
           },
           {

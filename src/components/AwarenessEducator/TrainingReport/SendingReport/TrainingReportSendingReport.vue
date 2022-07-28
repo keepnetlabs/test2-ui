@@ -238,7 +238,7 @@ export default {
             sortable: true,
             show: true,
             type: 'badge',
-            width: 220,
+            width: 240,
             filterableType: 'select',
             filterableItems: [
               'Not Delivered',
