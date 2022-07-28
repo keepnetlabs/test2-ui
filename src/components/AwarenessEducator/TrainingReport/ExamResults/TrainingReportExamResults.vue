@@ -129,7 +129,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -141,7 +141,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Email',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -176,6 +176,7 @@ export default {
             editable: false,
             label: 'Status',
             sortable: true,
+            fixed: 'right',
             show: true,
             type: 'text',
             width: 150,
@@ -184,7 +185,7 @@ export default {
           },
           {
             property: 'examScore',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Score',
             fixed: false,
@@ -210,7 +211,7 @@ export default {
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
 
-           */
+
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -218,6 +219,7 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
+          */
         ]
       },
       tableData: [

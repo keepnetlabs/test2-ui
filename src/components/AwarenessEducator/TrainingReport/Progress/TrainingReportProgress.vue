@@ -229,7 +229,7 @@ export default {
             align: 'right',
             editable: false,
             label: 'Sessions',
-            fixed: false,
+            fixed: 'right',
             sortable: true,
             show: true,
             type: 'text',
@@ -253,7 +253,7 @@ export default {
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
 
-           */
+
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -261,6 +261,8 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
+
+           */
         ]
       },
       tableData: [

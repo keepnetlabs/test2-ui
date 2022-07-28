@@ -111,7 +111,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -123,7 +123,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Email',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -146,7 +146,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Email Send Date',
-            fixed: false,
+            fixed: 'right',
             sortable: true,
             show: true,
             type: 'text',
@@ -160,6 +160,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-no-response--row-actions-training-report-users',
@@ -167,6 +168,8 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
+          
+           */
         ]
       },
       tableData: [

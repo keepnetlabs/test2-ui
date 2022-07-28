@@ -158,7 +158,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'First Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -170,7 +170,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -182,7 +182,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Email',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -192,6 +192,7 @@ export default {
           {
             property: 'department',
             align: 'left',
+            fixed: false,
             editable: false,
             label: 'Department',
             sortable: true,
@@ -207,7 +208,7 @@ export default {
             label: 'Status',
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'badge',
             width: 180,
             filterableType: 'select',
             filterableItems: [
@@ -242,6 +243,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Interactions,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -249,7 +251,7 @@ export default {
             action: 'on-interactions'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
-          /*
+
           {
             name: labels.ReSend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -340,7 +342,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          //this.tableData = results || []
         })
         .finally(this.setLoading)
     },
