@@ -1,0 +1,11 @@
+.siem-integration-modal {
+    &__server-address {
+        display: flex;
+        align-items: center;
+        gap: 8px
+    }
+
+    &__server-address-port {
+        width: 150px;
+    }
+}
