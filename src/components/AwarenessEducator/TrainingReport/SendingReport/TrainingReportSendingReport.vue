@@ -207,7 +207,7 @@ export default {
             width: 150
           },
           {
-            property: 'dateFirstSent',
+            property: 'firstSendDate',
             align: 'left',
             editable: false,
             label: 'Date First Sent',
@@ -219,7 +219,7 @@ export default {
             width: 160
           },
           {
-            property: 'dateLastSent',
+            property: 'lastSendDate',
             align: 'left',
             editable: false,
             label: 'Date Last Sent',
@@ -237,7 +237,7 @@ export default {
             label: 'Last Sending Status',
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'badge',
             width: 200,
             filterableType: 'select',
             filterableItems: [
@@ -349,7 +349,32 @@ export default {
       },
       extendedViewValue: [],
       extendedViewLoading: false,
-      tableData: []
+      tableData: [
+        {
+          firstSendDate: '28/07/2022 11:08',
+          lastSendDate: '28/07/2022 11:08',
+          lastSendingStatus: 'IN_QUEUE',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'dddddddddddd',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak3014test1918@keepnetlabs.com',
+          department: 'UK'
+        },
+        {
+          firstSendDate: '22/07/2022 16:07',
+          lastSendDate: '22/07/2022 16:07',
+          lastSendingStatus: 'SENDING',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'aaaaaaaaaaaa',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak667test8144@keepnetlabs.com',
+          department: 'US'
+        }
+      ]
     }
   },
   created() {

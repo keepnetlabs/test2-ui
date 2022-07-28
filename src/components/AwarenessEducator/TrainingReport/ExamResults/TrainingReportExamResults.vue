@@ -160,7 +160,7 @@ export default {
             width: 150
           },
           {
-            property: 'date',
+            property: 'examResultDate',
             align: 'left',
             editable: false,
             label: 'Date',
@@ -171,19 +171,19 @@ export default {
             filterableType: 'date'
           },
           {
-            property: 'status',
+            property: 'examStatus',
             align: 'left',
             editable: false,
             label: 'Status',
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'text',
             width: 150,
             filterableType: 'select',
             filterableItems: ['Failed', 'Success']
           },
           {
-            property: 'score',
+            property: 'examScore',
             align: 'left',
             editable: false,
             label: 'Score',
@@ -220,7 +220,20 @@ export default {
           }
         ]
       },
-      tableData: []
+      tableData: [
+        {
+          examResultDate: '22/07/2022 12:22',
+          examStatus: 'Passed',
+          examScore: 75,
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'aaaaaaaaaaaa',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak9514test5187@keepnetlabs.com',
+          department: 'US'
+        }
+      ]
     }
   },
   created() {

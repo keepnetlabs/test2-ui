@@ -142,7 +142,7 @@ export default {
             width: 150
           },
           {
-            property: 'emailSendDate',
+            property: 'lastSendDate',
             align: 'left',
             editable: false,
             label: 'Email Send Date',
@@ -169,7 +169,18 @@ export default {
           }
         ]
       },
-      tableData: []
+      tableData: [
+        {
+          lastSendDate: '28/07/2022 11:08',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'dddddddddddd',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak3014test1918@keepnetlabs.com',
+          department: 'UK'
+        }
+      ]
     }
   },
   created() {

@@ -152,7 +152,7 @@ export default {
             width: 150
           },
           {
-            property: 'lastOpened',
+            property: 'lastOpenedDate',
             align: 'left',
             editable: false,
             label: 'Last Opened',
@@ -163,7 +163,7 @@ export default {
             filterableType: 'date'
           },
           {
-            property: 'timesOpened',
+            property: 'openedCount',
             align: 'left',
             editable: false,
             label: 'Times Opened',
@@ -197,7 +197,30 @@ export default {
           }
         ]
       },
-      tableData: []
+      tableData: [
+        {
+          lastOpenedDate: '28/07/2022 11:06',
+          openedCount: 1,
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'aaaaaaaaaaaa',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak667test8144@keepnetlabs.com',
+          department: 'US'
+        },
+        {
+          lastOpenedDate: '28/07/2022 11:06',
+          openedCount: 1,
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'cccccccccccc',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak7228test4768@keepnetlabs.com',
+          department: 'US'
+        }
+      ]
     }
   },
   created() {

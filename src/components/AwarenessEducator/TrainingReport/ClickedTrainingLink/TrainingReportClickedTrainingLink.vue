@@ -151,7 +151,7 @@ export default {
             width: 150
           },
           {
-            property: 'lastClicked',
+            property: 'lastClickedDate',
             align: 'left',
             editable: false,
             label: 'Last Clicked',
@@ -162,11 +162,11 @@ export default {
             filterableType: 'date'
           },
           {
-            property: 'timesClicked',
+            property: 'clickedCount',
             align: 'left',
             editable: false,
             label: 'Times Clicked',
-            fixed: false,
+            fixed: 'right',
             sortable: true,
             show: true,
             type: 'text',
@@ -180,6 +180,7 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -194,9 +195,22 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
+           */
         ]
       },
-      tableData: []
+      tableData: [
+        {
+          lastClickedDate: '28/07/2022 11:06',
+          clickedCount: 1,
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'cccccccccccc',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak7228test4768@keepnetlabs.com',
+          department: 'US'
+        }
+      ]
     }
   },
   created() {

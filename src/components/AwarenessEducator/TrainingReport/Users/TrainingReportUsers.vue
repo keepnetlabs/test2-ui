@@ -187,7 +187,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
             property: 'department',
@@ -198,7 +198,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
             property: 'status',
@@ -208,7 +208,7 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 150,
+            width: 180,
             filterableType: 'select',
             filterableItems: [
               'Not Responded',
@@ -274,7 +274,50 @@ export default {
            */
         ]
       },
-      tableData: []
+      tableData: [
+        {
+          status: 'NotResponded',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'dddddddddddd',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak3014test1918@keepnetlabs.com',
+          department: 'UK'
+        },
+        {
+          status: 'InQueue',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'bbbbbbbbbbbb',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak442test6225@keepnetlabs.com',
+          department: 'TR'
+        },
+        {
+          status: 'InQueue',
+          lastInteractionDate: '28/07/2022 11:06',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'aaaaaaaaaaaa',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak667test8144@keepnetlabs.com',
+          department: 'US'
+        },
+        {
+          status: 'InQueue',
+          lastInteractionDate: '28/07/2022 11:06',
+          enrollmentId: '1',
+          userEmailId: '2',
+          resourceId: 'cccccccccccc',
+          firstName: 'Burak',
+          lastName: 'Ozen',
+          email: 'burak7228test4768@keepnetlabs.com',
+          department: 'US'
+        }
+      ]
     }
   },
   created() {
