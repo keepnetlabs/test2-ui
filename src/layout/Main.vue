@@ -627,7 +627,7 @@
             <h1 v-else-if="routerName === 'Campaign Report'">
               {{ getCampaignReportName }}
             </h1>
-            <h1 v-else-if="routerName === 'Campaign Report'">
+            <h1 v-else-if="routerName === 'Training Report'">
               {{ getTrainingReportName }}
             </h1>
 

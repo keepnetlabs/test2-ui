@@ -276,50 +276,7 @@ export default {
            */
         ]
       },
-      tableData: [
-        {
-          status: 'NotResponded',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'dddddddddddd',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak3014test1918@keepnetlabs.com',
-          department: 'UK'
-        },
-        {
-          status: 'InQueue',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'bbbbbbbbbbbb',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak442test6225@keepnetlabs.com',
-          department: 'TR'
-        },
-        {
-          status: 'InQueue',
-          lastInteractionDate: '28/07/2022 11:06',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'aaaaaaaaaaaa',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak667test8144@keepnetlabs.com',
-          department: 'US'
-        },
-        {
-          status: 'InQueue',
-          lastInteractionDate: '28/07/2022 11:06',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'cccccccccccc',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak7228test4768@keepnetlabs.com',
-          department: 'US'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -333,7 +290,6 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -342,7 +298,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          //this.tableData = results || []
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },

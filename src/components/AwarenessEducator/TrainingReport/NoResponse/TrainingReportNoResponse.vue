@@ -168,22 +168,11 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
-          
+
            */
         ]
       },
-      tableData: [
-        {
-          lastSendDate: '28/07/2022 11:08',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'dddddddddddd',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak3014test1918@keepnetlabs.com',
-          department: 'UK'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -194,7 +183,6 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.noResponseTrainingReportEmails(this.axiosPayload, this.id)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -203,7 +191,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          //this.tableData = results || []
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },

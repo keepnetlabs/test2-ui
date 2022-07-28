@@ -265,22 +265,7 @@ export default {
            */
         ]
       },
-      tableData: [
-        {
-          progress: 'InProgress',
-          enrollmentDate: '21/07/2022 16:40',
-          sessionStartDate: '21/07/2022 16:40',
-          sessionEndDate: '22/07/2022 12:22',
-          sessionCount: 1,
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'aaaaaaaaaaaa',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak9514test5187@keepnetlabs.com',
-          department: 'US'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -304,7 +289,6 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.progressTrainingReportEmails(this.axiosPayload, this.id)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -313,7 +297,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          //this.tableData = results || []
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },

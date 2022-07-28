@@ -222,20 +222,7 @@ export default {
           */
         ]
       },
-      tableData: [
-        {
-          examResultDate: '22/07/2022 12:22',
-          examStatus: 'Passed',
-          examScore: 75,
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'aaaaaaaaaaaa',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak9514test5187@keepnetlabs.com',
-          department: 'US'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -259,7 +246,6 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -268,7 +254,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          //this.tableData = results || []
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },

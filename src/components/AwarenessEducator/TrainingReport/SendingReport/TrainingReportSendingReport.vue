@@ -355,32 +355,7 @@ export default {
       },
       extendedViewValue: [],
       extendedViewLoading: false,
-      tableData: [
-        {
-          firstSendDate: '28/07/2022 11:08',
-          lastSendDate: '28/07/2022 11:08',
-          lastSendingStatus: 'IN_QUEUE',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'dddddddddddd',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak3014test1918@keepnetlabs.com',
-          department: 'UK'
-        },
-        {
-          firstSendDate: '22/07/2022 16:07',
-          lastSendDate: '22/07/2022 16:07',
-          lastSendingStatus: 'SENDING',
-          enrollmentId: '1',
-          userEmailId: '2',
-          resourceId: 'aaaaaaaaaaaa',
-          firstName: 'Burak',
-          lastName: 'Ozen',
-          email: 'burak667test8144@keepnetlabs.com',
-          department: 'US'
-        }
-      ]
+      tableData: []
     }
   },
   created() {
@@ -394,7 +369,6 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.sendingReportTrainingReport(this.axiosPayload, this.id)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -403,7 +377,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          // this.tableData = results || []
+          this.tableData = results || []
         })
         .finally(this.setLoading)
     },
