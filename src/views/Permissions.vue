@@ -316,10 +316,10 @@ export default {
               sortedPermissions[1] = item
               break
             case 'Awareness Educator':
-              sortedPermissions[3] = item
+              sortedPermissions[2] = item
               break
             case 'Incident Responder':
-              sortedPermissions[2] = item
+              sortedPermissions[3] = item
               break
             case 'Phishing Reporter Add-In':
               sortedPermissions[4] = item
