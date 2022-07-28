@@ -318,11 +318,14 @@ export default {
             case 'Incident Responder':
               sortedPermissions[2] = item
               break
-            case 'Phishing Reporter Add-In':
+            case 'Awareness Educator':
               sortedPermissions[3] = item
               break
-            case 'Company':
+            case 'Phishing Reporter Add-In':
               sortedPermissions[4] = item
+              break
+            case 'Company':
+              sortedPermissions[5] = item
               break
             default:
               break
