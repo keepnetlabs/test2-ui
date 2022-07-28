@@ -234,11 +234,11 @@ export default {
             property: 'lastSendingStatus',
             align: 'center',
             editable: false,
+            fixed: 'right',
             label: 'Last Sending Status',
             sortable: true,
             show: true,
             type: 'badge',
-            width: 240,
             filterableType: 'select',
             filterableItems: [
               'Not Delivered',

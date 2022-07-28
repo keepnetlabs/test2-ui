@@ -158,6 +158,7 @@ export default {
             label: 'Last Opened',
             fixed: false,
             sortable: true,
+            width: 200,
             show: true,
             type: 'text',
             filterableType: 'date'
