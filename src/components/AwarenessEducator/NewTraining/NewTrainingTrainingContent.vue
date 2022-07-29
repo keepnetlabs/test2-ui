@@ -101,6 +101,18 @@ export default {
       return this.getScormTypes()
     }
   },
+  watch: {
+    'formData.contentByLanguage': {
+      immediate: true,
+      handler(val) {
+        if (val.filter((content) => content.file && content.languageId)?.length) {
+          this.$emit('update:isActionButtonDisabled', false)
+        } else {
+          this.$emit('update:isActionButtonDisabled', true)
+        }
+      }
+    }
+  },
   methods: {
     handleAddLanguage() {
       this.formData.contentByLanguage.push({
