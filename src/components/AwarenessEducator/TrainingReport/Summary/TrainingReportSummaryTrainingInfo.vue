@@ -14,15 +14,9 @@
         <span v-if="false" class="datatable-link" @click="handleAudienceClick">
           {{ getAudienceText }}
         </span>
-        <v-tooltip v-if="isTooltip" bottom>
-          <template #activator="{on}">
-            <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>
-          </template>
-          <span>{{ getTooltipText }}</span>
-        </v-tooltip>
       </div>
     </template>
-    <template #Auto-enroll="{ props:{ key } }">
+    <template v-if="false" #Auto-enroll="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
@@ -98,22 +92,6 @@ export default {
     },
     isFromPhishingCampaign() {
       return this.type === 'phishingCampaign'
-    },
-    getTooltipText() {
-      const { randomlyUsersCount = 0, totalTargetUserCount } = this.helperData
-      return (
-        this.isTooltip &&
-        `(Only active and random ${randomlyUsersCount} of ${totalTargetUserCount} total users)`
-      )
-    },
-    isTooltip() {
-      const { sendOnlyActiveUsers = false, sendRandomlyUsers = false } = this.helperData
-      return sendOnlyActiveUsers && sendRandomlyUsers
-    },
-    getBodyValue() {
-      return `${this.items['Target Users'].value} users ${
-        this.isTooltip ? `of ${this.helperData?.totalTargetUserCount}` : ''
-      }`
     },
     getAudienceText() {
       if (this.isFromUserGroups) return `${this.items.targetGroupCount.value} user groups`

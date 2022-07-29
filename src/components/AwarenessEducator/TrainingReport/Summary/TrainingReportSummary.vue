@@ -105,8 +105,7 @@ export default {
       const { targetGroupCount = 0, autoEnrollDescription = '', languages = 'EN' } = this
         .trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
-        languages: ['EN'],
-        targetGroupCount: null
+        languages: ['EN']
       }
       return {
         'Target Users': {
@@ -128,15 +127,9 @@ export default {
       }
     },
     getTrainingInfoHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.trainingSummary || {}
-      const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
-        targetUsers || {}
-      const { totalTargetUserCount = 0 } = campaignInfo
+      const { groupCount } = this?.trainingSummary || {}
       return {
-        randomlyUsersCount,
-        sendOnlyActiveUsers,
-        sendRandomlyUsers,
-        totalTargetUserCount
+        groupCount
       }
     },
     isTestTraining() {
@@ -243,7 +236,6 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      debugger
       const { reportDetail = {} } = this.trainingSummary || {}
       const {
         emailDeliveredUserCount,
