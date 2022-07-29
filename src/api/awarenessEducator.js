@@ -258,9 +258,13 @@ const getProgressDetailsTable = (enrollmentId, resourceId) => {
 }
 
 const duplicateTraining = (resourceId) => {
-  return testRequest.post(`/trainings/${resourceId}/duplicate`, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post(
+    `/trainings/${resourceId}/duplicate`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const deleteTrainingFile = (resourceId, languageId) => {
