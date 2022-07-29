@@ -92,7 +92,7 @@ export default {
   computed: {
     getTrainingMaterialRow() {
       const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
-      return { languages, trainingId: trainingDetails?.id }
+      return { languages, trainingId: trainingDetails?.id, trainingName: trainingDetails?.name }
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
@@ -287,13 +287,12 @@ export default {
       }
     },
     getCertificateData() {
-      const { certificateInfo = {} } = this.trainingSummary
-      const { name, createdBy, description } = certificateInfo
+      const { trainingDetails = {} } = this.trainingSummary || {}
+      const { companyName = '' } = trainingDetails
 
       return {
-        name: 'Certificate Name',
-        createdBy: 'Company Name',
-        description: 'Certificate description'
+        name: 'Default Certificate',
+        createdBy: companyName
       }
     },
     getTrainingMaterialData() {
@@ -331,7 +330,7 @@ export default {
           this.trainingSummary = response?.data?.data
           this.$store.dispatch(
             'common/setActivePageRouterName',
-            this.trainingSummary?.trainingName || ''
+            this.trainingSummary?.trainingDetails?.name || ''
           )
         })
         .finally(() => {

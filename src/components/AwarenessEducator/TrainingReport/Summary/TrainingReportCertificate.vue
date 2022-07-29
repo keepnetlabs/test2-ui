@@ -39,6 +39,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
+import { getDefaultEmailTemplate } from '@/api/company'
 
 export default {
   name: 'TrainingReportCertificate',
@@ -54,6 +55,9 @@ export default {
     },
     isFetchingSummary: {
       type: Boolean
+    },
+    certificateEmailNotificationTemplateTypeResourceId: {
+      type: String
     }
   },
   data() {
@@ -76,7 +80,18 @@ export default {
     }
   },
   methods: {
-    callForTemplate() {}
+    callForTemplate() {
+      if (this.certificateEmailNotificationTemplateTypeResourceId) {
+        getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then(
+          (response) => {
+            const {
+              data: { data }
+            } = response
+            this.emailTemplate = data?.template?.template
+          }
+        )
+      }
+    }
   }
 }
 </script>
