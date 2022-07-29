@@ -180,6 +180,7 @@ export default {
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
+              debugger
               //checking disability of save button
               if (refTrainingContent) {
                 this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.filter(
