@@ -79,6 +79,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
