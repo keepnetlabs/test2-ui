@@ -108,9 +108,12 @@ export default {
     'formData.contentByLanguage': {
       immediate: true,
       handler(val) {
-        debugger
         if (this.step === 2) {
-          if (val.some((content) => content.file && content.languageId)) {
+          if (
+            val.some(
+              (content) => (content.file || content?.filePreviews?.length) && content.languageId
+            )
+          ) {
             this.$emit('update:isActionButtonDisabled', false)
           } else {
             this.$emit('update:isActionButtonDisabled', true)
