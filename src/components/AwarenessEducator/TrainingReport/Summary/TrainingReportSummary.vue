@@ -254,19 +254,29 @@ export default {
       return {
         openedEmail: {
           userCount: totalUserOpenedCount,
-          userPercent: ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
+          userPercent:
+            totalTargetUserCount === 0
+              ? 0
+              : ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
           userCount: inProgress,
-          userPercent: ((inProgress / totalTargetUserCount) * 100).toFixed()
+          userPercent:
+            totalTargetUserCount === 0 ? 0 : ((inProgress / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
           userCount: completedCount,
-          userPercent: ((completedCount / totalTargetUserCount) * 100).toFixed()
+          userPercent:
+            totalTargetUserCount === 0
+              ? 0
+              : ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         noResponse: {
           userCount: noResponseCount,
-          userPercent: ((noResponseCount / totalTargetUserCount) * 100).toFixed()
+          userPercent:
+            totalTargetUserCount === 0
+              ? 0
+              : ((noResponseCount / totalTargetUserCount) * 100).toFixed()
         }
       }
     },
