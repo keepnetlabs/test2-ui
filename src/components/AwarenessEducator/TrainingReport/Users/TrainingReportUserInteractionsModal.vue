@@ -20,6 +20,7 @@
         no-padding-bottom
         :show-filter-options="false"
         :is-settings-popup="false"
+        :count-row="5"
         :loading="isLoading"
         :table="tableData"
         :columns="tableOptions.columns"
