@@ -96,8 +96,10 @@ export default {
     getAudienceText() {
       if (this.isFromUserGroups) return `${this.items.targetGroupCount.value} user groups`
       if (this.isFromPhishingCampaign) return `a phishing campaign results`
-
       return ''
+    },
+    getBodyValue() {
+      return `${this.items['Target Users']} users`
     }
   },
   methods: {

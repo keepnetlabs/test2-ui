@@ -102,7 +102,7 @@ export default {
     },
     getTrainingInfoData() {
       const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
-      const { targetGroupCount = 0, autoEnrollDescription = '', languages = 'EN' } = this
+      const { targetGroupCount = 0, autoEnrollDescription = '', languages = ['EN'] } = this
         .trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
@@ -122,7 +122,7 @@ export default {
         },
         Languages: {
           show: true,
-          value: languages.join(',')
+          value: languages?.join(',')
         }
       }
     },
