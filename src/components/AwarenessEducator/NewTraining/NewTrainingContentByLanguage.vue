@@ -117,8 +117,10 @@ export default {
     },
     handleClearFile() {
       if (this?.filePreviews?.length) {
+        AwarenessEducatorService.deleteTrainingFile(this.trainingResourceId, this.value.languageId)
         this.$emit('input', { ...this.value, filePreviews: null })
       } else {
+        AwarenessEducatorService.deleteTrainingFile(this.trainingResourceId, this.value.languageId)
         this.$emit('input', { ...this.value, file: null })
       }
       this.isDisabled = false
