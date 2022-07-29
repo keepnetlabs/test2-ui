@@ -14,6 +14,7 @@
     <StopEnrollmentDialog
       v-if="isShowStopEnrollmentDialog"
       :status="isShowStopEnrollmentDialog"
+      :selected-row="selectedRow"
       @on-close="toggleShowStopEnrollmentDialog"
     />
     <TrainingPreviewDialog
