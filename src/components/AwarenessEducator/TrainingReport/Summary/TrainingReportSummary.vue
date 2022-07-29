@@ -298,11 +298,11 @@ export default {
     },
     getTrainingMaterialData() {
       const { trainingDetails = {}, languages = [] } = this.trainingSummary || {}
-      const { name = '', createdBy = '', trainingCategory = '', description = '' } = trainingDetails
+      const { name = '', companyName = '', category = '', description = '' } = trainingDetails
       return {
         name,
-        createdBy,
-        category: trainingCategory,
+        createdBy: companyName,
+        category,
         description,
         languages
       }
