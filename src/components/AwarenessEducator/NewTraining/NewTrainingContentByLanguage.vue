@@ -39,8 +39,8 @@
         :extensions="['.zip']"
         :file-previews="filePreviews"
         :disabled="isDisabled"
+        :deletable="false"
         @inputFile="handleFileChange"
-        @on-clear="handleClearFile"
       />
     </FormGroupHorizontalContent>
   </div>
@@ -114,16 +114,6 @@ export default {
     },
     handleRemove() {
       this.$emit('on-remove')
-    },
-    handleClearFile() {
-      if (this?.filePreviews?.length) {
-        AwarenessEducatorService.deleteTrainingFile(this.trainingResourceId, this.value.languageId)
-        this.$emit('input', { ...this.value, filePreviews: null })
-      } else {
-        AwarenessEducatorService.deleteTrainingFile(this.trainingResourceId, this.value.languageId)
-        this.$emit('input', { ...this.value, file: null })
-      }
-      this.isDisabled = false
     }
   }
 }

@@ -43,7 +43,7 @@
               >
             </div>
           </div>
-          <div class="k-file-uploads__item-actions">
+          <div v-if="deletable" class="k-file-uploads__item-actions">
             <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
           </div>
         </div>
@@ -65,6 +65,10 @@ export default {
     size: {
       type: Number,
       default: 200
+    },
+    deletable: {
+      type: Boolean,
+      default: true
     },
     isLoading: {
       type: Boolean,
