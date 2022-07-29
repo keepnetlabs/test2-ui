@@ -470,7 +470,7 @@ export default {
         }
         this.$emit(EMITS.ON_ITEM_CHANGE, {
           ...row,
-          methodTypeId: response?.data?.data?.methodTypeId
+          methodTypeId: response?.data?.data?.phishingScenarioPreviewDto?.methodTypeId
         })
       })
     },
