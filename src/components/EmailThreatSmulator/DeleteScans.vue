@@ -9,7 +9,7 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedScans && selectedScans.name }} will be deleted.
+      {{ selectedScans && selectedScans.email }} will be deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
@@ -26,7 +26,7 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { deleteScenario } from '@/api/scenarios'
+import { deleteQuickScanItem } from '@/api/emailThreatSimlator'
 export default {
   name: 'DeleteScans',
   components: {
@@ -46,7 +46,7 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteScenario(this.selectedScenario.resourceId).then(() => {
+      deleteQuickScanItem(this.selectedScans.quickScanResourceId).then(() => {
         this.$emit('handleSuccessDeleteAction')
       })
       this.closeModal()

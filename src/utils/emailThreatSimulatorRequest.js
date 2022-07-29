@@ -8,7 +8,7 @@ const service = axios.create({
   baseURL: APP_CONFIG.VUE_APP_EMAIL_THREAT_SIMULATOR_API,
   timeout: 100000,
   rejectUnauthorized: false
-})
+});
 
 service.interceptors.request.use(
   (config) => {

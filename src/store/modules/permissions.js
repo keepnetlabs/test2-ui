@@ -42,7 +42,8 @@ const {
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
   ROLES_PERMISSIONS,
-  LDAP_PERMISSIONS
+  LDAP_PERMISSIONS,
+  ETS_QUICK_SCAN_PERMISSIONS,
 } = PERMISSIONS
 
 const defaultState = {
@@ -88,7 +89,8 @@ const defaultState = {
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
   ldapPermissions: LDAP_PERMISSIONS,
-  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS
+  excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
+  etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -770,7 +772,19 @@ const store = {
         recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
         mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
       }
-    }
+    },
+    getEtsQuickScanPermissionSearch(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionCreate(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionUpdate(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionDelete(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
   },
   mutations: {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
@@ -819,7 +833,8 @@ const store = {
         'systemUsersPermissions',
         'systemRolesPermissions',
         'ldapPermissions',
-        'excludeIpAddressPermissions'
+        'excludeIpAddressPermissions',
+        'etsQuickScanPermissions',
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

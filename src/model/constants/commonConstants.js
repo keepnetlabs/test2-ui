@@ -346,7 +346,8 @@ export const TABLE_SETTINGS_KEYS = {
   DOMAINS: 'DomainsListTableSettingsKey',
   LANDINGPAGES: 'LandingPagesTableSettingsKey',
   SCENARIOS: 'Scenarios',
-  LASTLAUNCH: 'lastLaunch'
+  LASTLAUNCH: 'lastLaunch',
+  ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
 }
 
 export function getStoreValue(key, type) {
@@ -494,7 +495,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
   DOMAINS: 'DomainsSearchContainerKeys',
   LANDINGPAGES: 'LandingPagesSearchContainerKeys',
-  SCENARIOS: 'ScenariosSearchKeys'
+  SCENARIOS: 'ScenariosSearchKeys',
+  ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
 }
 
 export const INTEGRATION_TYPES = {

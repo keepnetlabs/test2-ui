@@ -17,7 +17,7 @@ const APP_CONFIG = (() => {
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
     VUE_APP_MIX_PANEL_TOKEN: '4b3fbde44fceac0674902099f5075dad',
     VUE_APP_ROOT_API: 'https://dev-api.devkeepnet.com/api',
-    VUE_APP_EMAIL_THREAT_SIMULATOR_API: 'https://my-json-server.typicode.com/typicode',
+    VUE_APP_EMAIL_THREAT_SIMULATOR_API: 'http://192.168.2.100/api',
     VUE_APP_WEB_API: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_WEB_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',

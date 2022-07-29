@@ -1,9 +1,13 @@
 import emailThreatSimlatorRequest from '@/utils/emailThreatSimulatorRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function testApi(payload) {
-  return emailThreatSimlatorRequest.post(`/demo/posts`, payload)
+export function getQuickScanList(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan/search`, payload)
 }
+export function deleteQuickScanItem(id) {
+  return emailThreatSimlatorRequest.delete(`/quick-scan/${id}`)
+}
+
 
 
 // export function exportPlaybookRules(payload) {
