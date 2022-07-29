@@ -24,8 +24,6 @@
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
-        :server-side-props="serverSideProps"
-        :server-side-events="tableOptions.serverSideEvents"
         :row-actions="tableOptions.rowActions"
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
@@ -89,81 +87,58 @@ export default {
         columns: [
           {
             property: 'interaction',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Interaction',
-            sortable: true,
+            sortable: false,
             show: true,
-            type: 'slot',
-            width: 150,
-            filterableType: 'select',
-            filterableItems: [
-              'Not Responded',
-              'Opened Email',
-              'Clicked Link',
-              'In Progress',
-              'Completed',
-              'In Queue',
-              'Sending Error',
-              'Cancelled',
-              'Excluded'
-            ]
+            type: 'badge',
+            width: 180,
+            hideSort: false
           },
           {
-            property: 'date',
+            property: 'eventTime',
             align: 'left',
             editable: false,
             label: 'Date',
-            sortable: true,
+            sortable: false,
             show: true,
             type: 'text',
-            width: 150,
-            filterableType: 'date',
-            filterableCustomFieldName: 'date'
+            width: 180,
+            hideSort: false
           },
           {
             property: 'userAgent',
             align: 'left',
             editable: false,
             label: 'User Agent',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 213
+            width: 220
           },
           {
-            property: 'browser',
-            align: 'left',
-            editable: false,
-            label: 'Browser',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 120
-          },
-          {
-            property: 'geolocation',
+            property: 'userGeolocation',
             align: 'left',
             editable: false,
             label: 'Geolocation',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
-            property: 'ip',
+            property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'IP',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 120
+            width: 180
           }
         ],
         addButton: {
@@ -199,7 +174,7 @@ export default {
         this.item.userEmailId
       )
         .then((response) => {
-          debugger
+          this.tableData = response?.data?.data
         })
         .finally(this.setLoading)
     },

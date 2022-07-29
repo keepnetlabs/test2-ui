@@ -177,13 +177,13 @@ const searchTrainingReportUsers = (payload, resourceId) => {
 }
 
 const exportTrainingReportUsers = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/users/search/export`, payload)
+  return testRequest.post(`/training-reports/${resourceId}/users/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
 
 const openedTrainingReportEmails = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload, {
-    responseType: 'blob'
-  })
+  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload)
 }
 
 const exportOpenedTrainingReportEmails = (payload, resourceId) => {
