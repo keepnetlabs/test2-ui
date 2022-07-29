@@ -46,6 +46,7 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportUsersTable"
       @refreshAction="callForData"
+      @on-interactions="handleInteractions"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <div class="training-report-users__status-column">
@@ -243,7 +244,6 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
           {
             name: labels.Interactions,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -251,7 +251,7 @@ export default {
             action: 'on-interactions'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
-
+          /*
           {
             name: labels.ReSend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -302,28 +302,27 @@ export default {
         })
         .finally(this.setLoading)
     },
-
     exportTrainingReportUsersTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Certificates-List.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     handleResend(row) {
       this.selectedRow = row

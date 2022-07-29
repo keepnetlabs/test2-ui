@@ -17,7 +17,6 @@
         selectable
         filterable
         options
-        is-server-side
         no-padding-bottom
         :show-filter-options="false"
         :is-settings-popup="false"
@@ -31,12 +30,6 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-        @server-side-page-number-changed="serverSidePageNumberChanged"
-        @server-side-size-changed="serverSideSizeChanged"
-        @sortChangedEvent="sortChanged"
-        @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
         <template v-slot:datatable-custom-column="{ scope }">
@@ -67,6 +60,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import Badge from '@/components/Badge'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingReportUserInteractionsModal',
@@ -226,64 +221,12 @@ export default {
       return getStatusBadgeProps(status)
     },
     callForData() {
-      //   this.setLoading(true)
-      //   searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
-      //     .then((response) => {
-      //       const {
-      //         data: {
-      //           data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //         }
-      //       } = response
-      //       this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //       this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //       this.serverSideProps.pageNumber = pageNumber
-      //       this.tableData = results
-      //     })
-      //     .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
+      AwarenessEducatorService.getTrainingReportInteractions(
+        this.selectedRow.enrollmentId,
+        this.selectedRow.userEmailId
+      ).then((response) => {
+        debugger
       })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     handleClose() {
       this.$emit('on-close')

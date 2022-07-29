@@ -82,14 +82,15 @@ export default {
   methods: {
     callForTemplate() {
       if (this.certificateEmailNotificationTemplateTypeResourceId) {
-        getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then(
-          (response) => {
+        this.setLoading(true)
+        getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId)
+          .then((response) => {
             const {
               data: { data }
             } = response
             this.emailTemplate = data?.template?.template
-          }
-        )
+          })
+          .finally(this.setLoading)
       }
     }
   }

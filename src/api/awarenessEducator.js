@@ -176,8 +176,16 @@ const searchTrainingReportUsers = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
 }
 
+const exportTrainingReportUsers = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/users/search/export`, payload)
+}
+
 const openedTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload)
+}
+
+const exportOpenedTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search/export`, payload)
 }
 
 const clickedTrainingReportEmails = (payload, resourceId) => {
@@ -197,6 +205,10 @@ const noResponseTrainingReportEmails = (payload, resourceId) => {
 
 const sendingReportTrainingReport = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
+}
+
+const getTrainingReportInteractions = (enrollmentId, resourceId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/interactions/${resourceId}`)
 }
 
 export default {
@@ -243,5 +255,8 @@ export default {
   examTrainingReportResults,
   noResponseTrainingReportEmails,
   sendingReportTrainingReport,
-  getTrainingReportFormDetails
+  exportTrainingReportUsers,
+  getTrainingReportFormDetails,
+  exportOpenedTrainingReportEmails,
+  getTrainingReportInteractions
 }
