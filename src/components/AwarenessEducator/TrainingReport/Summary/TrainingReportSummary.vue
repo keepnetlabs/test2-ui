@@ -276,13 +276,13 @@ export default {
       const { trainingDetails = {} } = this.trainingSummary || {}
       const {
         name = 'Training Enrollment Email',
-        createdBy = '',
+        companyName = '',
         description = 'Default training enrollment email'
       } = trainingDetails
 
       return {
         name,
-        createdBy,
+        createdBy: companyName,
         description
       }
     },
