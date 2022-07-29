@@ -72,9 +72,70 @@ export default {
     },
     item: {
       type: Object
+    },
+    interactionType: {
+      type: String
     }
   },
   data() {
+    const columns = [
+      {
+        property: 'eventTime',
+        align: 'left',
+        editable: false,
+        label: 'Date',
+        sortable: false,
+        show: true,
+        type: 'text',
+        width: 180,
+        hideSort: true
+      },
+      {
+        property: 'userAgent',
+        align: 'left',
+        editable: false,
+        label: 'User Agent',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 220
+      },
+      {
+        property: 'userGeolocation',
+        align: 'left',
+        editable: false,
+        label: 'Geolocation',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 180
+      },
+      {
+        property: 'userIpAddresslist',
+        align: 'left',
+        editable: false,
+        label: 'IP',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 180
+      }
+    ]
+    if (!this.interactionType)
+      columns.unshift({
+        property: 'interaction',
+        align: 'center',
+        editable: false,
+        label: 'Interaction',
+        sortable: false,
+        show: true,
+        type: 'badge',
+        width: 180,
+        hideSort: true
+      })
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -85,63 +146,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'Date' }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          {
-            property: 'interaction',
-            align: 'center',
-            editable: false,
-            label: 'Interaction',
-            sortable: false,
-            show: true,
-            type: 'badge',
-            width: 180,
-            hideSort: true
-          },
-          {
-            property: 'eventTime',
-            align: 'left',
-            editable: false,
-            label: 'Date',
-            sortable: false,
-            show: true,
-            type: 'text',
-            width: 180,
-            hideSort: true
-          },
-          {
-            property: 'userAgent',
-            align: 'left',
-            editable: false,
-            label: 'User Agent',
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'text',
-            width: 220
-          },
-          {
-            property: 'userGeolocation',
-            align: 'left',
-            editable: false,
-            label: 'Geolocation',
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'text',
-            width: 180
-          },
-          {
-            property: 'userIpAddresslist',
-            align: 'left',
-            editable: false,
-            label: 'IP',
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'text',
-            width: 180
-          }
-        ],
+        columns,
         addButton: {
           show: false
         },
@@ -172,25 +177,11 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.getTrainingReportInteractions(
         this.item.enrollmentId,
-        this.item.userEmailId || this.item.resourceId
+        this.item.userEmailId || this.item.resourceId,
+        this.interactionType
       )
         .then((response) => {
-          this.tableData = [
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data,
-            ...response?.data?.data
-          ]
+          this.tableData = response?.data?.data
         })
         .finally(this.setLoading)
     },

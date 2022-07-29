@@ -7,10 +7,11 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="confirmResend"
     />
-    <TrainingReportClickedTrainingLinkDetails
+    <TrainingReportUserInteractionsModal
       v-if="isShowDetailsModal"
       :status="isShowDetailsModal"
       :item="selectedRow"
+      interaction-type="ClickedLink"
       @on-close="toggleIsShowDetailsModal"
     />
     <CampaignManagerReportHeader
@@ -64,17 +65,17 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import TrainingReportClickedTrainingLinkDetails from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLinkDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
 
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
+    TrainingReportUserInteractionsModal,
     TrainingReportResendDialog,
     DataTable,
-    CampaignManagerReportHeader,
-    TrainingReportClickedTrainingLinkDetails
+    CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -181,6 +182,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
           /*
           {
             name: labels.Resend,
@@ -189,13 +197,7 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
+
            */
         ]
       },

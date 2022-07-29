@@ -223,8 +223,10 @@ const sendingReportTrainingReport = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
 }
 
-const getTrainingReportInteractions = (enrollmentId, resourceId) => {
-  return testRequest.get(`/training-reports/${enrollmentId}/interactions/${resourceId}`)
+const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
+  let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
+  if (interactionType) url += `?interactionType=${interactionType}`
+  return testRequest.get(url)
 }
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {

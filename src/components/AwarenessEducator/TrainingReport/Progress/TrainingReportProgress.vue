@@ -192,7 +192,7 @@ export default {
             filterableItems:
               this?.formDetails?.examStatusEnum?.map((item) => ({
                 text: item.name,
-                value: item.value
+                value: item.name
               })) || []
           },
           {
