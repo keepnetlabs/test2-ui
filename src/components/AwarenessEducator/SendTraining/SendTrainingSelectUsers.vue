@@ -157,7 +157,6 @@ export default {
       })
     },
     handleCampaignChange(item) {
-      debugger
       this.methodTypeId = item.methodTypeId
       if (this.methodTypeId === 3) {
         this.formData.userWhoClickedEmail = false
