@@ -109,7 +109,7 @@ export default {
       immediate: true,
       handler(val) {
         if (this.step === 2) {
-          if (val.filter((content) => content.file && content.languageId)?.length) {
+          if (val.some((content) => content.file && content.languageId)) {
             this.$emit('update:isActionButtonDisabled', false)
           } else {
             this.$emit('update:isActionButtonDisabled', true)
