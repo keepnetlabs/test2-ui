@@ -248,13 +248,28 @@ export default {
       return labels.SIEMSettingSubtitle
     },
     getTestConnectionDisableStatus() {
-      return (
-        !this.formData.apiUrl ||
-        !this.formData.token ||
-        !this.formData.typeId ||
-        this.isTesting ||
-        Validations.urlOrIpAddress(this.formData.apiUrl) === 'Invalid URL'
-      )
+      if (this.isSplunkIntegration) {
+        return (
+          !this.formData.apiUrl ||
+          !this.formData.token ||
+          !this.formData.typeId ||
+          this.isTesting ||
+          Validations.urlOrIpAddress(this.formData.apiUrl) === 'Invalid URL'
+        )
+      }
+
+      if (this.isSyslogIntegration) {
+        return (
+          !this.formData.serverAddress ||
+          !this.formData.port ||
+          !this.formData.connectionType ||
+          !this.formData.typeId ||
+          this.isTesting ||
+          Validations.urlOrIpAddress(this.formData.serverAddress) === 'Invalid URL'
+        )
+      }
+
+      return true
     },
     getTestConnectionStyle() {
       const style = {
