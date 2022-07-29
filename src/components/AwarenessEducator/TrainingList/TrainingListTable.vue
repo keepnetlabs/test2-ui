@@ -64,6 +64,14 @@
           :text="tableOptions.rowActions[3].name"
           @on-click="handleActionDelete(scope.row)"
         />
+        <DefaultMenuRowAction
+          :scope="scope"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[4].disabled"
+          :icon="tableOptions.rowActions[4].icon"
+          :text="tableOptions.rowActions[4].name"
+          @on-click="handleDuplicate(scope.row)"
+        />
       </RowActionsMenu>
     </template>
   </DataTable>
@@ -85,7 +93,6 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { exportCampaignManager } from '@/api/phishingsimulator'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 export default {
   name: 'TrainingListTable',
@@ -160,6 +167,13 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
+          },
+          {
+            name: labels.Duplicate,
+            id: 'btn-duplicate--row-actions-training-list',
+            icon: 'mdi-content-copy',
+            action: 'on-duplicate'
+            // disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -221,6 +235,11 @@ export default {
           }`
           link.click()
         })
+      })
+    },
+    handleDuplicate(row) {
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
       })
     }
   }

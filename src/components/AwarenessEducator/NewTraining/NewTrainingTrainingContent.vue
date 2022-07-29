@@ -54,6 +54,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import NewTrainingContentByLanguage from '@/components/AwarenessEducator/NewTraining/NewTrainingContentByLanguage'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'NewTrainingTrainingContent',
   components: { NewTrainingContentByLanguage, KSelect, FormGroup },
@@ -121,7 +122,12 @@ export default {
       }))
     },
     handleRemove(index) {
-      this.formData.contentByLanguage.splice(index, 1)
+      AwarenessEducatorService.deleteTrainingFile(
+        this.resourceId,
+        this.formData.contentByLanguage[index].languageId
+      ).then(() => {
+        this.formData.contentByLanguage.splice(index, 1)
+      })
     }
   }
 }

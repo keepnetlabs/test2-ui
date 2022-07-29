@@ -215,6 +215,16 @@ const getTrainingReportInteractions = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/interactions/${resourceId}`)
 }
 
+const duplicateTraining = (resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/duplicate`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const deleteTrainingFile = (resourceId, languageId) => {
+  return testRequest.delete(`/trainings/${resourceId}/content/${languageId}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -262,5 +272,7 @@ export default {
   exportTrainingReportUsers,
   getTrainingReportFormDetails,
   exportOpenedTrainingReportEmails,
-  getTrainingReportInteractions
+  getTrainingReportInteractions,
+  duplicateTraining,
+  deleteTrainingFile
 }

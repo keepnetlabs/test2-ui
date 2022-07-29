@@ -94,7 +94,7 @@ export default {
             show: true,
             type: 'badge',
             width: 180,
-            hideSort: false
+            hideSort: true
           },
           {
             property: 'eventTime',
@@ -105,7 +105,7 @@ export default {
             show: true,
             type: 'text',
             width: 180,
-            hideSort: false
+            hideSort: true
           },
           {
             property: 'userAgent',

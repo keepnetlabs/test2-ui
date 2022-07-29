@@ -212,17 +212,11 @@ export default {
             type: 'badge',
             width: 200,
             filterableType: 'select',
-            filterableItems: [
-              'Not Responded',
-              'Opened Email',
-              'Clicked Link',
-              'In Progress',
-              'Completed',
-              'In Queue',
-              'Sending Error',
-              'Cancelled',
-              'Excluded'
-            ]
+            filterableItems:
+              this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
+                text: item.name,
+                value: item.value
+              })) || []
           },
           {
             property: 'lastInteractionDate',
