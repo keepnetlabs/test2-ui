@@ -180,15 +180,16 @@ export default {
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
+            })
+            .finally(() => {
               //checking disability of save button
               if (refTrainingContent) {
                 this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                   (content) => content.file && content.languageId
                 )
+              } else {
+                this.isActionButtonDisabled = false
               }
-            })
-            .finally(() => {
-              this.isActionButtonDisabled = false
             })
         }
       } else {
