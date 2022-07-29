@@ -182,7 +182,7 @@ export default {
               this.step++
               //checking disability of save button
               if (refTrainingContent) {
-                this.isActionButtonDisabled = !!refTrainingContent?.formData?.contentByLanguage?.filter(
+                this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.filter(
                   (content) => content.file && content.languageId
                 )?.length
               }
