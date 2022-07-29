@@ -174,6 +174,7 @@ import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import email from '@/components/GrapesJs/Newsletter/mergedTexts/email'
 import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
+import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -545,7 +546,8 @@ export default {
           return trainingEnrollDate
         case '{TRAININGREMINDERCOUNT}':
           return trainingReminderCount
-
+        case '{TRAININGCOMPLETEDATE}':
+          return trainingCompleteDate
         default:
           break
       }
