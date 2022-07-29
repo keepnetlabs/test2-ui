@@ -162,6 +162,18 @@ import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLog
 import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import trainingName from '@/components/GrapesJs/Newsletter/mergedTexts/trainingName'
+import trainingDescription from '@/components/GrapesJs/Newsletter/mergedTexts/trainingDescription'
+import trainingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingUrl'
+import trainingLanguageSelection from '@/components/GrapesJs/Newsletter/mergedTexts/trainingLanguageSelection'
+import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
+import trainingEnrollDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingEnrollDate'
+import trainingReminderCount from '@/components/GrapesJs/Newsletter/mergedTexts/trainingReminderCount'
+import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
+import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
+import email from '@/components/GrapesJs/Newsletter/mergedTexts/email'
+import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
+import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -403,12 +415,18 @@ export default {
       switch (item) {
         case '{FULLNAME}':
           return fullName
+        case '{FIRSTNAME}':
+          return firstName
+        case '{LASTNAME}':
+          return lastName
         case '{USERNAME}':
           return userName
         case '{PASSWORDURL}':
           return passwordURL
         case '{POSTDATE}':
           return postDate
+        case '{EMAIL}':
+          return email
         case '{SHAREUSERNAME}':
           return shareUserName
         case '{COMPANYNAME}':
@@ -469,6 +487,10 @@ export default {
           return communityUrl
         case '{MEMBERCOUNT}':
           return memberCount
+        case '{FROMEMAIL}':
+          return fromEmail
+        case '{FROMNAME}':
+          return fromName
         case '{COMMUNITYINDUSTRY}':
           return communityIndustry
         case '{ANALYSISEMAIL}':
@@ -509,6 +531,20 @@ export default {
           return investigationUrl
         case '{COMPANYLOGO}':
           return companyLogo
+        case '{TRAININGNAME}':
+          return trainingName
+        case '{TRAININGDESCRIPTION}':
+          return trainingDescription
+        case '{TRAININGURL}':
+          return trainingUrl
+        case '{TRAININGLANGUAGESELECTION}':
+          return trainingLanguageSelection
+        case '{DATEEMAILSENT}':
+          return dateEmailSent
+        case '{TRAININGENROLLDATE}':
+          return trainingEnrollDate
+        case '{TRAININGREMINDERCOUNT}':
+          return trainingReminderCount
 
         default:
           break
