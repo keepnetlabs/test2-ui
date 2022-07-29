@@ -44,7 +44,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @downloadEvent="exportTrainingReportOpenedTrainingEmailTable"
+      @downloadEvent="exportTrainingReportClickedTrainingEmailTable"
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
@@ -222,27 +222,29 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportTrainingReportOpenedTrainingEmailTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+    exportTrainingReportClickedTrainingEmailTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportClickedTrainingReportEmails(payload, this.id).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Training-Clicked-Emails.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
+      })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {

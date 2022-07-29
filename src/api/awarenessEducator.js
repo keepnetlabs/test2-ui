@@ -196,8 +196,20 @@ const clickedTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/clicked-emails/search`, payload)
 }
 
+const exportClickedTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/clicked-emails/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 const progressTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/progress/search`, payload)
+}
+
+const exportProgressTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/progress/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
 
 const examTrainingReportResults = (payload, resourceId) => {
@@ -215,6 +227,10 @@ const getTrainingReportInteractions = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/interactions/${resourceId}`)
 }
 
+const getProgressDetailsTable = (enrollmentId, resourceId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
+}
+
 const duplicateTraining = (resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/duplicate`, {
     snackbar: COMMON_SNACKBAR
@@ -222,7 +238,9 @@ const duplicateTraining = (resourceId) => {
 }
 
 const deleteTrainingFile = (resourceId, languageId) => {
-  return testRequest.delete(`/trainings/${resourceId}/content/${languageId}`)
+  return testRequest.delete(`/trainings/${resourceId}/content/${languageId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export default {
@@ -272,7 +290,10 @@ export default {
   exportTrainingReportUsers,
   getTrainingReportFormDetails,
   exportOpenedTrainingReportEmails,
+  exportClickedTrainingReportEmails,
+  exportProgressTrainingReportEmails,
   getTrainingReportInteractions,
+  getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile
 }

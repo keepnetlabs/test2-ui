@@ -46,7 +46,6 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingReportUsersTable"
       @refreshAction="callForData"
-      @on-interactions="handleInteractions"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <div class="training-report-users__status-column">
@@ -132,6 +131,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {

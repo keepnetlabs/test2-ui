@@ -17,7 +17,6 @@
         selectable
         filterable
         options
-        is-server-side
         no-padding-bottom
         :show-filter-options="false"
         :is-settings-popup="false"
@@ -25,18 +24,10 @@
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
-        :server-side-props="serverSideProps"
-        :server-side-events="tableOptions.serverSideEvents"
         :row-actions="tableOptions.rowActions"
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-        @server-side-page-number-changed="serverSidePageNumberChanged"
-        @server-side-size-changed="serverSideSizeChanged"
-        @sortChangedEvent="sortChanged"
-        @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
         <template v-slot:datatable-custom-column="{ scope }">
@@ -62,7 +53,7 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import Badge from '@/components/Badge'
@@ -92,96 +83,83 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
-            property: 'sessions',
-            align: 'left',
-            editable: false,
-            label: 'Sessions',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 130,
-            filterableType: 'number'
-          },
-          {
             property: 'progress',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Progress',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
-            type: 'slot',
-            width: 150,
-            filterableType: 'select',
-            filterableItems: ['In Progress', 'Completed']
+            type: 'text',
+            width: 180
           },
           {
-            property: 'sessionStarted',
+            property: 'sessionStartDate',
             align: 'left',
             editable: false,
             label: 'Session Started',
             fixed: false,
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'date'
+            width: 180
           },
           {
-            property: 'sessionEnded',
+            property: 'sessionEndDate',
             align: 'left',
             editable: false,
             label: 'Session Ended',
             fixed: false,
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'date'
+            width: 180
           },
           {
             property: 'userAgent',
             align: 'left',
             editable: false,
             label: 'User Agent',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 363
+            width: 220
           },
           {
             property: 'browser',
             align: 'left',
             editable: false,
             label: 'Browser',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 120
+            width: 200
           },
           {
-            property: 'geolocation',
+            property: 'userGeolocation',
             align: 'left',
             editable: false,
             label: 'Geolocation',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 150
+            width: 200
           },
           {
-            property: 'ip',
+            property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'IP',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 120
+            width: 200
           }
         ],
         addButton: {
@@ -195,41 +173,7 @@ export default {
           show: false
         }
       },
-      tableData: [
-        {
-          sessions: 1,
-          progress: 'In Progress',
-          sessionStarted: '31.05.2021 16:31:33',
-          sessionEnded: '31.05.2021 16:31:33',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        },
-        {
-          sessions: 1,
-          progress: 'Completed',
-          sessionStarted: '31.05.2021 16:31:33',
-          sessionEnded: '31.05.2021 16:31:33',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        },
-        {
-          sessions: 1,
-          progress: 'Completed',
-          sessionStarted: '31.05.2021 16:31:33',
-          sessionEnded: '31.05.2021 16:31:33',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        }
-      ]
+      tableData: []
     }
   },
   computed: {
@@ -241,6 +185,17 @@ export default {
     this.callForData()
   },
   methods: {
+    callForData() {
+      this.setLoading(true)
+      AwarenessEducatorService.getProgressDetailsTable(
+        this.item.enrollmentId,
+        this.item.userEmailId
+      )
+        .then((response) => {
+          this.tableData = response?.data?.data
+        })
+        .finally(this.setLoading)
+    },
     getStatusBadgeProps(progress) {
       if (progress === 'In Progress')
         return {
@@ -253,66 +208,6 @@ export default {
           color: '#217124',
           text: 'Completed'
         }
-    },
-    callForData() {
-      //   this.setLoading(true)
-      //   searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
-      //     .then((response) => {
-      //       const {
-      //         data: {
-      //           data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //         }
-      //       } = response
-      //       this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //       this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //       this.serverSideProps.pageNumber = pageNumber
-      //       this.tableData = results
-      //     })
-      //     .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     handleClose() {
       this.$emit('on-close')

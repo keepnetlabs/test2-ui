@@ -44,7 +44,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @downloadEvent="exportTrainingReportOpenedTrainingEmailTable"
+      @downloadEvent="exportTrainingProgressEmailTable"
       @refreshAction="callForData"
     >
       <template v-slot:datatable-custom-column="{ scope }">
@@ -60,7 +60,7 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
+          @on-click="handleDetails(scope.row)"
         />
         <DefaultButtonRowAction
           v-if="false"
@@ -69,7 +69,7 @@
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
+          @on-click="handleResend(scope.row)"
         />
       </template>
     </DataTable>
@@ -107,6 +107,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
@@ -186,7 +189,11 @@ export default {
             type: 'badge',
             width: 200,
             filterableType: 'select',
-            filterableItems: ['In Progress', 'Completed']
+            filterableItems:
+              this?.formDetails?.examStatusEnum?.map((item) => ({
+                text: item.name,
+                value: item.value
+              })) || []
           },
           {
             property: 'enrollmentDate',
@@ -244,6 +251,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
           /*
           {
             name: labels.Resend,
@@ -252,16 +266,6 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-
            */
         ]
       },
@@ -301,27 +305,29 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportTrainingReportOpenedTrainingEmailTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+    exportTrainingProgressEmailTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportProgressTrainingReportEmails(payload, this.id).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Training-Progress.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
+      })
     },
     handleResend(row) {
       this.selectedRow = row

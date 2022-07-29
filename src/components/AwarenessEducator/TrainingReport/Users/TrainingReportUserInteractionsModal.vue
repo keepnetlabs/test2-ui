@@ -171,10 +171,25 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.getTrainingReportInteractions(
         this.item.enrollmentId,
-        this.item.userEmailId
+        this.item.userEmailId || this.item.resourceId
       )
         .then((response) => {
-          this.tableData = response?.data?.data
+          this.tableData = [
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data,
+            ...response?.data?.data
+          ]
         })
         .finally(this.setLoading)
     },
