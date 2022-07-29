@@ -118,6 +118,8 @@ export default {
     handleClearFile() {
       if (this.filePreviews.length) {
         this.$emit('input', { ...this.value, filePreviews: null })
+      } else {
+        this.$emit('input', { ...this.value, file: null })
       }
       this.isDisabled = false
     }
