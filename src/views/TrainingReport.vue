@@ -37,6 +37,7 @@ import TrainingReportSummary from '@/components/AwarenessEducator/TrainingReport
 import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
 import TrainingReportSendingReport from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReport'
 import KContainer from '@/components/KContainer/KContainer'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingReport',
@@ -127,7 +128,11 @@ export default {
     this.callForFormDetails()
   },
   methods: {
-    callForFormDetails() {}
+    callForFormDetails() {
+      AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
+        this.formDetails = response?.data?.data
+      })
+    }
   }
 }
 </script>

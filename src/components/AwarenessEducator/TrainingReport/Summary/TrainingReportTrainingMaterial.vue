@@ -10,6 +10,13 @@
   >
     <template #body>
       <div v-if="isFormData" class="training-report-training-material__body pb-4">
+        <TrainingPreviewDialog
+          v-if="isShowPreviewDialog"
+          :status="isShowPreviewDialog"
+          :selected-row="selectedRow"
+          :languages="languages"
+          @on-close="toggleShowPreviewDialog"
+        />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}
@@ -19,7 +26,10 @@
             <Badge size="mini" color="#2196F3" text="Scorm" :outline="false" />
             <Badge size="mini" color="#757575" :outline="false">
               <template #content>
-                <v-icon size="small">mdi-web</v-icon>{{ formData.languageShortCode }}
+                <v-icon size="small">mdi-web</v-icon>
+                <span v-for="(language, index) in formData.languages" :key="language"
+                  >{{ language }} {{ formData.languages.length - 1 > index ? '|' : '' }}
+                </span>
               </template>
             </Badge>
           </div>
@@ -32,15 +42,6 @@
           {{ formData.description }}
         </div>
       </div>
-      <!-- <div
-        v-if="isShowEmailTemplate"
-        class="campaign-manager-last-step__email-template-body-preview-container"
-      >
-        <div class="campaign-manager-last-step__email-template-body-preview">
-          <DatatableLoading v-if="isLoading" :loading="isLoading" />
-          <KEmailPreview v-else :html="emailTemplate" is-extra-height />
-        </div>
-      </div> -->
     </template>
   </CampaignManagerSummaryCard>
 </template>
@@ -52,10 +53,12 @@ import Badge from '@/components/Badge'
 // import KEmailPreview from '@/components/KEmailPreview'
 // import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
+import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
+    TrainingPreviewDialog,
     // DatatableLoading,
     // KEmailPreview,
     Badge,
@@ -68,13 +71,19 @@ export default {
     },
     isFetchingSummary: {
       type: Boolean
+    },
+    selectedRow: {
+      type: Object
+    },
+    languages: {
+      type: Array
     }
   },
   data() {
     return {
-      isShowEmailTemplate: false,
       labels,
-      emailTemplate: null
+      emailTemplate: null,
+      isShowPreviewDialog: false
     }
   },
   computed: {
@@ -82,17 +91,9 @@ export default {
       return Object.keys(this.formData).length
     }
   },
-  watch: {
-    isShowEmailTemplate(val = false) {
-      if (val && !this.emailTemplate) {
-        this.callForTemplate()
-      }
-    }
-  },
   methods: {
-    callForTemplate() {},
     handlePreviewClick() {
-      window.open(this.formData.trainingMaterialUrl, '_blank')
+      this.toggleShowPreviewDialog()
     },
     getBadgeColor(text = '') {
       switch (text.toLowerCase()) {
@@ -108,6 +109,9 @@ export default {
     },
     getBadgeText(text = '') {
       return text
+    },
+    toggleShowPreviewDialog() {
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     }
   }
 }

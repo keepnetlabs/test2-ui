@@ -38,10 +38,11 @@
         getTrainingEmailNotificationTemplateTypeResourceId
       "
     />
-
     <TrainingReportTrainingMaterial
       :form-data="getTrainingMaterialData"
       :isFetchingSummary="isLoading"
+      :selected-row="getTrainingMaterialRow"
+      :languages="languages"
     />
     <TrainingReportCertificate :form-data="getCertificateData" :isFetchingSummary="isLoading" />
   </div>
@@ -84,10 +85,15 @@ export default {
       isAudienceModalVisible: false,
       targetGroups: [],
       trainingSummary: {},
-      interval: null
+      interval: null,
+      languages: []
     }
   },
   computed: {
+    getTrainingMaterialRow() {
+      const { languages = [] } = this.trainingSummary || {}
+      return { languages }
+    },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
     },
@@ -291,22 +297,19 @@ export default {
       }
     },
     getTrainingMaterialData() {
-      const { trainingMaterial = {} } = this.trainingSummary
-      const { name, createdBy, category, description, languageShortCode, url } = trainingMaterial
+      const { trainingDetails = {}, languages = [] } = this.trainingSummary || {}
+      const { name = '', createdBy = '', trainingCategory = '', description = '' } = trainingDetails
       return {
-        name: 'Training Name',
-        createdBy: 'Company Name',
-        category: 'Information security (category)',
-        description: 'Training content’s description',
-        languageShortCode: 'EN',
-        trainingMaterialUrl: 'https://www.google.com'
+        name,
+        createdBy,
+        category: trainingCategory,
+        description,
+        languages
       }
     }
   },
   created() {
-    AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
-      debugger
-    })
+    this.callForLanguages()
     this.callForData()
   },
   beforeDestroy() {
@@ -336,6 +339,11 @@ export default {
             this.setLoading(false)
           }
         })
+    },
+    callForLanguages() {
+      AwarenessEducatorService.getLanguages().then((response) => {
+        this.languages = response?.data?.data
+      })
     },
     showAudienceDetailsModal() {
       this.isAudienceModalVisible = true

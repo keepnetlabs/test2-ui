@@ -5,7 +5,7 @@ export default {
     return {
       scormTypes: [],
       categories: [],
-      languages: [{ code: 'AF', id: '1d39036b-00f6-4197-9efa-f49b0e0ef9bb', name: 'Afrikaans' }],
+      languages: [],
       tableLanguageFilter: [],
       targetAudiences: []
     }
