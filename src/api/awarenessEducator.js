@@ -89,7 +89,9 @@ const sendEnrollment = (resourceId) => {
 }
 
 const stopEnrollment = (resourceId) => {
-  return testRequest.post(`/enrollments/${resourceId}/stop`)
+  return testRequest.post(`/enrollments/${resourceId}/stop`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const getEnrollmentsContentLanguages = (resourceId) => {
