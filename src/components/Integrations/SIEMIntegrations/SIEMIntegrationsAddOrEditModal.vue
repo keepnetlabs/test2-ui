@@ -342,11 +342,23 @@ export default {
     },
     handleTestConnection(isSubmitForm = false) {
       this.isTesting = true
-      const payload = {
-        resourceId: '',
-        apiUrl: this.formData.apiUrl,
-        token: this.formData.token,
-        typeId: this.formData.typeId
+      let payload
+      if (this.isSyslogIntegration) {
+        payload = {
+          resourceId: '',
+          serverAddress: this.formData.serverAddress,
+          port: this.formData.port,
+          connectionType: this.formData.connectionType,
+          typeId: this.formData.typeId
+        }
+      }
+      if (this.isSplunkIntegration) {
+        payload = {
+          resourceId: '',
+          apiUrl: this.formData.apiUrl,
+          token: this.formData.token,
+          typeId: this.formData.typeId
+        }
       }
 
       if (this.selectedItem) {
