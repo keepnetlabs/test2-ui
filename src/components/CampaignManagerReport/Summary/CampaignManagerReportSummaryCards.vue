@@ -17,21 +17,17 @@
     </div>
     <div class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
-        v-bind="isAttachment ? getPhishingReporterData : getClickedData"
+        v-bind="getThirdCardProps"
         background-color="#F56C6C"
-        :title="isAttachment ? labels.Reporters : labels.ClickedLink"
+        :title="getThirdCardLabel"
         :is-loading="isLoading"
         :icon-src="clickedLinkIcon"
       />
       <CampaignManagerReportSummaryInfoCard
-        v-bind="isAttachment ? getOpenedAttachmentData : getSubmittedData"
-        :class="
-          isAttachment
-            ? 'campaign-manager-report-summary-info-card--opened-attachment-data'
-            : 'campaign-manager-report-summary-info-card--submitted-data'
-        "
+        v-bind="getFourthCardProps"
+        :class="getFourthCardClass"
         background-color="#B83A3A"
-        :title="isAttachment ? labels.OpenedAttachment : labels.SubmittedData"
+        :title="getFourthCardLabel"
         :is-loading="isLoading"
       >
         <template #icon>
@@ -58,8 +54,8 @@ export default {
     items: {
       type: Object
     },
-    isAttachment: {
-      type: Boolean
+    method: {
+      type: Number
     }
   },
   data() {
@@ -72,6 +68,64 @@ export default {
     }
   },
   computed: {
+    getThirdCardProps() {
+      if (this.method === 3 || this.method === 1) {
+        return this.getPhishingReporterData
+      }
+
+      return this.getClickedData
+    },
+    getThirdCardLabel() {
+      if (this.method === 3 || this.method === 1) {
+        return labels.Reporters
+      }
+
+      return labels.ClickedLink
+    },
+    getFourthCardProps() {
+      if (this.method === 1) {
+        return this.getClickedData
+      }
+
+      if (this.method === 2) {
+        return this.getSubmittedData
+      }
+
+      if (this.method === 3) {
+        return this.getOpenedAttachmentData
+      }
+
+      return this.getSubmittedData
+    },
+    getFourthCardLabel() {
+      if (this.method === 1) {
+        return labels.ClickedLink
+      }
+
+      if (this.method === 2) {
+        return labels.SubmittedData
+      }
+      if (this.method === 3) {
+        return labels.OpenedAttachment
+      }
+
+      return labels.SubmittedData
+    },
+    getFourthCardClass() {
+      if (this.method === 1) {
+        return 'campaign-manager-report-summary-info-card--clicked-link'
+      }
+
+      if (this.method === 2) {
+        return 'campaign-manager-report-summary-info-card--submitted-data'
+      }
+
+      if (this.method === 3) {
+        return 'campaign-manager-report-summary-info-card--opened-attachment-data'
+      }
+
+      return 'campaign-manager-report-summary-info-card--submitted-data'
+    },
     getNoResponseData() {
       const { noResponse } = this.items
       return noResponse ? noResponse : {}

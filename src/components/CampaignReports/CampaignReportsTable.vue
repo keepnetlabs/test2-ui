@@ -152,13 +152,22 @@ export default {
   },
   methods: {
     getChartOptionsForRow(row) {
+      if (row.method === 'Click-Only') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened],
+          showTooltipLine: true
+        }
+      }
       if (row.method === 'Attachment') {
         return {
           backgroundColor: ['#67C23A', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Opened, labels.OpenedAttachment],
           showTooltipLine: true
         }
-      } else {
+      }
+
+      if (row.method === 'Data Submission') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
@@ -180,10 +189,15 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => {
             const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+            if (row.method === 'Click-Only') {
+              campaignStatus.push(row['totalClickedCount'])
+            }
             if (row.method === 'Attachment') {
               campaignStatus.push(row['totalAttachmentOpenedCount'])
-            } else {
-              campaignStatus.splice(1, 0, row['totalClickedCount'])
+            }
+
+            if (row.method === 'Data Submission') {
+              campaignStatus.push(row['totalClickedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
             }
             return {

@@ -9,8 +9,8 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ getSystemUserName }} will be deleted and removed from all groups. User stats will remain in
-      reports.
+      {{ getTargetUserEmail }} will be deleted and removed from all groups. User stats will remain
+      in reports.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
@@ -51,10 +51,8 @@ export default {
     AppDialog
   },
   computed: {
-    getSystemUserName() {
-      return this.selectedRow
-        ? `${this.selectedRow['firstName'] || ''} ${this.selectedRow['lastName'] || ''}`
-        : `${this.userCount} users`
+    getTargetUserEmail() {
+      return this.selectedRow ? `${this.selectedRow['email'] || ''}` : `${this.userCount} users`
     }
   },
   methods: {

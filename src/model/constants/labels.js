@@ -25,6 +25,8 @@ export const labels = {
   Phished: 'Phished',
   EmailDelivery: 'Email Delivery',
   SIEMProvider: 'SIEM Provider',
+  SIEMAddress: 'SIEM Address',
+  URLOrIPAddress: 'URL or IP Address',
   LDAP: 'LDAP',
   FieldMapping: 'Field Mapping',
   NextRunTime: 'Next Run Time',
@@ -257,7 +259,7 @@ export const labels = {
   NewClient: 'New Client',
   URLS: 'URLs',
   URLSSubtitle: 'Exclude URLs that are found inside email’s body from analysis',
-  IPAddressesSubtitle: 'Exclude IP adresses that are found inside email’s body from analysis',
+  IPAddressesSubtitle: 'Exclude IP addresses that are found inside email’s body from analysis',
   WhiteLabelingSubTitle:
     'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
   WhiteListingSubTitle:
