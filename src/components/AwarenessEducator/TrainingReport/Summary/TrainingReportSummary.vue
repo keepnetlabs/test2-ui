@@ -101,14 +101,10 @@ export default {
       return this.trainingSummary?.userGroups || {}
     },
     getTrainingInfoData() {
-      const {
-        totalTargetUserCount = 0,
-        targetGroupCount = 0,
-        autoEnroll = 'No',
-        languages = 'EN'
-      } = this.trainingSummary || {
-        totalTargetUserCount: 0,
-        autoEnroll: 'Enroll new users the same day',
+      const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
+      const { targetGroupCount = 0, autoEnrollDescription = '', languages = 'EN' } = this
+        .trainingSummary || {
+        autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN'],
         targetGroupCount: null
       }
@@ -123,11 +119,11 @@ export default {
         },
         'Auto-enroll': {
           show: true,
-          value: autoEnroll
+          value: autoEnrollDescription
         },
         Languages: {
           show: true,
-          value: typeof languages === 'string' ? languages : languages.join(',')
+          value: languages.join(',')
         }
       }
     },
@@ -247,14 +243,17 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
+      debugger
+      const { reportDetail = {} } = this.trainingSummary || {}
       const {
-        totalTargetUserCount,
-        totalUserClickedCount,
-        totalUserOpenedCount,
-        noResponseCount,
-        completedCount,
-        inProgressCount
-      } = this.trainingSummary
+        emailDeliveredUserCount,
+        totalTargetUserCount = 0,
+        totalUserClickedCount = 0,
+        totalUserOpenedCount = 0,
+        noResponseCount = 0,
+        completedCount = 0,
+        inProgressCount = 0
+      } = reportDetail
       const inProgress = inProgressCount ? inProgressCount : completedCount - totalUserClickedCount
       return {
         openedEmail: {
