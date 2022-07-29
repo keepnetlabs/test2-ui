@@ -13,8 +13,9 @@
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
-        type="delete"
         action-button-text="STOP"
+        action-button-color="#f56c6c"
+        cancel-button-color="#383b41"
         cancel-button-id="btn-cancel--stop-enrollment-dialog-popup"
         confirm-button-id="btn-delete-stop-enrollment-dialog-popup"
         :confirm-button-disabled="isActionButtonDisabled"
@@ -56,7 +57,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      AwarenessEducatorService.stopEnrollment(this.selectedRow.resourceId)
+      AwarenessEducatorService.stopEnrollment(this.selectedRow.id)
         .then(() => {
           this.handleClose(true)
         })
