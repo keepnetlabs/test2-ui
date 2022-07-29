@@ -144,15 +144,16 @@ export default {
     },
     handleRemove(index) {
       if (
-        this?.formData?.contentByLanguage[index]?.file ||
+        this?.formData.contentByLanguage[index]?.file ||
         this?.formData?.contentByLanguage[index]?.filePreviews?.length
       ) {
         AwarenessEducatorService.deleteTrainingFile(
           this.resourceId,
           this.formData.contentByLanguage[index].languageId
-        )
+        ).then(() => {
+          this.formData.contentByLanguage.splice(index, 1)
+        })
       }
-      this.formData.contentByLanguage.splice(index, 1)
     }
   }
 }
