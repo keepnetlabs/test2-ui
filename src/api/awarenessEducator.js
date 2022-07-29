@@ -181,11 +181,15 @@ const exportTrainingReportUsers = (payload, resourceId) => {
 }
 
 const openedTrainingReportEmails = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload)
+  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search`, payload, {
+    responseType: 'blob'
+  })
 }
 
 const exportOpenedTrainingReportEmails = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search/export`, payload)
+  return testRequest.post(`/training-reports/${resourceId}/opened-emails/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
 
 const clickedTrainingReportEmails = (payload, resourceId) => {
