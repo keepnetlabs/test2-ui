@@ -91,8 +91,8 @@ export default {
   },
   computed: {
     getTrainingMaterialRow() {
-      const { languages = [] } = this.trainingSummary || {}
-      return { languages }
+      const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
+      return { languages, trainingId: trainingDetails?.id }
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
