@@ -116,7 +116,7 @@ export default {
       this.$emit('on-remove')
     },
     handleClearFile() {
-      if (this.filePreviews.length) {
+      if (this?.filePreviews?.length) {
         this.$emit('input', { ...this.value, filePreviews: null })
       } else {
         this.$emit('input', { ...this.value, file: null })
