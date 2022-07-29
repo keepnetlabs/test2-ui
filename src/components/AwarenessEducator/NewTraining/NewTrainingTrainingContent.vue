@@ -64,6 +64,9 @@ export default {
     },
     resourceId: {
       type: String
+    },
+    step: {
+      type: Number
     }
   },
   inject: {
@@ -105,10 +108,12 @@ export default {
     'formData.contentByLanguage': {
       immediate: true,
       handler(val) {
-        if (val.filter((content) => content.file && content.languageId)?.length) {
-          this.$emit('update:isActionButtonDisabled', false)
-        } else {
-          this.$emit('update:isActionButtonDisabled', true)
+        if (this.step === 2) {
+          if (val.filter((content) => content.file && content.languageId)?.length) {
+            this.$emit('update:isActionButtonDisabled', false)
+          } else {
+            this.$emit('update:isActionButtonDisabled', true)
+          }
         }
       }
     }
