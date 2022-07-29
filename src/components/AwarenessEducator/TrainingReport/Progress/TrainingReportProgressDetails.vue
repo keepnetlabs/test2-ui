@@ -91,7 +91,7 @@ export default {
             sortable: false,
             hideSort: true,
             show: true,
-            type: 'text',
+            type: 'badge',
             width: 180
           },
           {
@@ -130,7 +130,7 @@ export default {
             width: 220
           },
           {
-            property: 'browser',
+            property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'Browser',
@@ -138,7 +138,7 @@ export default {
             hideSort: true,
             show: true,
             type: 'text',
-            width: 200
+            width: 160
           },
           {
             property: 'userGeolocation',

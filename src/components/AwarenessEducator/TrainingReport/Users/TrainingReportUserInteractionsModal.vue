@@ -54,12 +54,10 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import Badge from '@/components/Badge'
-import AwarenessEducator from '@/views/AwarenessEducator'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {

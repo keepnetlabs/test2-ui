@@ -236,6 +236,10 @@ const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType
   return testRequest.get(url)
 }
 
+const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/exam-result-details/${resourceId}`)
+}
+
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
 }
@@ -298,6 +302,7 @@ export default {
   sendingReportTrainingReport,
   exportTrainingReportUsers,
   getTrainingReportFormDetails,
+  getTrainingReportExamResultsDetails,
   exportOpenedTrainingReportEmails,
   exportClickedTrainingReportEmails,
   exportProgressTrainingReportEmails,
