@@ -13,7 +13,8 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <TrainingPreview
-        v-else
+        v-show="!isPreviewLoading"
+        :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
         :training-id="selectedRow.trainingId"
         :languages="selectedLanguages"

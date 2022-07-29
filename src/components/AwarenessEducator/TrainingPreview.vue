@@ -43,6 +43,9 @@ export default {
     },
     trainingId: {
       type: String
+    },
+    isLoading: {
+      type: Boolean
     }
   },
   data() {
@@ -78,19 +81,24 @@ export default {
         this.activeTemplate = this.srcs[this.activePage]
         return
       }
+      this.$emit('update:isLoading', true)
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.trainingId,
         this.languages[this.activePage].id
-      ).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.srcs[
-          this.activePage
-        ] = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
-        this.activeTemplate = this.srcs[this.activePage]
-        this.iframeKey = `key-${Math.random().toString()}`
-      })
+      )
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.srcs[
+            this.activePage
+          ] = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
+          this.activeTemplate = this.srcs[this.activePage]
+          this.iframeKey = `key-${Math.random().toString()}`
+        })
+        .finally(() => {
+          this.$emit('update:isLoading', false)
+        })
     }
   }
 }
