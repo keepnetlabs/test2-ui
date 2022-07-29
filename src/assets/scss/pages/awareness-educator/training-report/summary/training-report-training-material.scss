@@ -1,0 +1,42 @@
+.training-report-training-material {
+    &__body {
+        padding: 16px 24px 24px 24px;
+        background-color: #fafafa;
+        border-radius: 12px;
+    }
+
+    &__body-header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .k-badge {
+            height: 24px !important;
+            border-radius: 18px;
+            min-width: 64px !important;
+        }
+
+        &-right {
+            display: flex;
+            align-items: center;
+            gap:8px
+        }
+    }
+
+    &__template-name {
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    &__created-by {
+        color: #757575;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+
+    &__description {
+        font-weight: 400;
+        font-size: 14px;
+    }
+}

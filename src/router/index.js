@@ -31,7 +31,13 @@ import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
+import TrainingReport from '@/views/TrainingReport'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import TrainingList from '@/views/TrainingList'
+import Enrollments from '@/views/Enrollments'
+import Certificates from '@/views/Certificates'
+import Scorm from '@/views/Scorm'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -51,6 +57,14 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/training/scorm/watch',
+      name: 'scorm',
+      component: Scorm,
       meta: {
         isAuthenticated: false
       }
@@ -111,6 +125,60 @@ const router = new Router({
           props: true,
           params: true,
           force: true
+        },
+        {
+          path: '/awareness-educator',
+          name: 'Awareness Educator',
+          component: AwarenessEducator,
+          meta: {
+            parentName: 'Dashboard',
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
+          },
+          children: [
+            {
+              path: 'training-list',
+              name: 'Training List',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getTrainingSearchPermission'
+              },
+              component: TrainingList
+            },
+            {
+              path: 'enrollments',
+              name: 'Enrollments',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
+              },
+              component: Enrollments
+            },
+            {
+              path: 'certificates',
+              name: 'Certificates',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getCertificatesSearchPermission'
+              },
+              component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              props: true,
+              params: true,
+              component: TrainingReport
+            }
+          ]
         },
         {
           path: '/company/job-log',
@@ -376,48 +444,6 @@ const router = new Router({
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         }
-        // {
-        //   path: '/reports',
-        //   name: 'Reports',
-        //   component: Reports,
-        //   meta: {
-        //     isAuthenticated: true,
-        //     permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //   },
-        //   children: [
-        //     {
-        //       path: '/campaign-reports',
-        //       name: 'Campaign Reports',
-        //       component: CampaignReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports',
-        //         permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //       }
-        //     }
-        //     /*
-        //     {
-        //       path: '/simple-reports',
-        //       name: 'Simple Reports',
-        //       component: SimpleReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     },
-        //     {
-        //       path: `/simple-reports/:id`,
-        //       name: 'Simple Report Details',
-        //       component: SimpleReportDetails,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     }
-
-        //      */
-        //   ]
-        // }
       ]
     },
     {
