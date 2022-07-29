@@ -372,12 +372,11 @@ export default {
     search(val) {
       this.debounce(() => {
         this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-          { FieldName: 'Name', Operator: 'Contains', Value: val },
-          { FieldName: 'Method', Operator: 'Contains', Value: val },
-          { FieldName: 'Tags', Operator: 'Contains', Value: val },
-          { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
-          { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
-          { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
+          { FieldName: 'name', Operator: 'Contains', Value: val },
+          { FieldName: 'status', Operator: 'Contains', Value: val },
+          { FieldName: 'createdBy', Operator: 'Contains', Value: val },
+          { FieldName: 'createTime', Operator: 'Contains', Value: val },
+          { FieldName: 'lastLaunch', Operator: 'Contains', Value: val }
         ]
         this.callForData()
       }, 500)
