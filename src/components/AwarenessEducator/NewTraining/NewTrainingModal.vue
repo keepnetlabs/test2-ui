@@ -155,7 +155,7 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     changeStep(flag = 1) {
-      const { refTrainingCourseInformation } = this.$refs
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
       if (this.step === 1 && flag === 1) {
         if (refTrainingCourseInformation.validateForm()) {
           if (this.isEdit) return this.step++
@@ -180,6 +180,12 @@ export default {
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
+              //checking disability of save button
+              if (refTrainingContent) {
+                this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.filter(
+                  (content) => content.file && content.languageId
+                )?.length
+              }
             })
             .finally(() => {
               this.isActionButtonDisabled = false
