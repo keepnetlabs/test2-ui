@@ -84,7 +84,7 @@ export default {
       return newItems
     },
     isNotDelivered() {
-      return !!(this.helperData?.emailNotDeliveredUserCount || 0)
+      return !!(this.helperData?.emailErrorUserCount || 0)
     },
     getDeliveryValue() {
       const { emailDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData

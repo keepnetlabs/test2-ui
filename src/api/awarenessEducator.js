@@ -168,6 +168,10 @@ const getTrainingReportSummary = (resourceId) => {
   return testRequest.get(`/training-reports/${resourceId}/summary`)
 }
 
+const getTrainingReportFormDetails = () => {
+  return testRequest.get('/training-reports/form-details')
+}
+
 const searchTrainingReportUsers = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
 }
@@ -238,5 +242,6 @@ export default {
   progressTrainingReportEmails,
   examTrainingReportResults,
   noResponseTrainingReportEmails,
-  sendingReportTrainingReport
+  sendingReportTrainingReport,
+  getTrainingReportFormDetails
 }

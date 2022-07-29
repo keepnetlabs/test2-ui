@@ -99,7 +99,7 @@ export default {
       return ''
     },
     getBodyValue() {
-      return `${this.items['Target Users']} users`
+      return `${this.items['Target Users']?.value} users`
     }
   },
   methods: {

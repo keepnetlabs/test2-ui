@@ -34,6 +34,9 @@
     <TrainingReportEnrollmentEmail
       :form-data="getEnrollmentTemplateData"
       :isFetchingSummary="isLoading"
+      :training-email-notification-template-type-resource-id="
+        getTrainingEmailNotificationTemplateTypeResourceId
+      "
     />
 
     <TrainingReportTrainingMaterial
@@ -137,34 +140,24 @@ export default {
       return isTest
     },
     getTrainingDeliveryHelperData() {
-      const { emailDeliveredUserCount, totalTargetUserCount } = this.trainingSummary
+      const { reportDetail = {} } = this.trainingSummary || {}
+      const {
+        emailDeliveredUserCount = 0,
+        emailErrorUserCount = 0,
+        totalTargetUserCount = 0
+      } = reportDetail
       return {
         emailDeliveredUserCount,
-        emailNotDeliveredUserCount: totalTargetUserCount - emailDeliveredUserCount,
+        emailErrorUserCount,
         totalTargetUserCount
       }
     },
     getTrainingDeliveryData() {
-      const { campaignInfo = {} } = this.trainingSummary
-      const {
-        emailDeliveryStartDate = '01/01/1970',
-        emailDeliveryEndDate = '01/01/1970',
-        emailDeliveryDuration = 0,
-        reminderOptions = 'Every 2 months, ends when user completes the training',
-        isEnded = false
-      } = campaignInfo
+      const { reminderDescription = '' } = this.trainingSummary
       return {
-        'Delivery Start - End': {
-          show: true,
-          value: `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`
-        },
         'Reminder Options': {
           show: true,
-          value: reminderOptions
-        },
-        isEnded: {
-          show: false,
-          value: isEnded
+          value: reminderDescription
         },
         'Delivery Status': {
           show: true,
@@ -238,7 +231,6 @@ export default {
     getCardsData() {
       const { reportDetail = {} } = this.trainingSummary || {}
       const {
-        emailDeliveredUserCount,
         totalTargetUserCount = 0,
         totalUserClickedCount = 0,
         totalUserOpenedCount = 0,
@@ -266,18 +258,26 @@ export default {
         }
       }
     },
+    getTrainingEmailNotificationTemplateTypeResourceId() {
+      const { trainingEmailNotificationTemplateTypeResourceId = '' } = this.trainingSummary || {}
+      return trainingEmailNotificationTemplateTypeResourceId
+    },
     getTotalUsers() {
       const { campaignInfo = {} } = this.trainingSummary
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEnrollmentTemplateData() {
-      const { enrollmentTemplateInfo = {} } = this.trainingSummary
-      const { name, createdBy, description } = enrollmentTemplateInfo
+      const { trainingDetails = {} } = this.trainingSummary || {}
+      const {
+        name = 'Training Enrollment Email',
+        createdBy = '',
+        description = 'Default training enrollment email'
+      } = trainingDetails
 
       return {
-        name: 'Training Enrollment Email',
-        createdBy: 'Company Name',
-        description: 'Default training enrollment email bla bla enrollment email description'
+        name,
+        createdBy,
+        description
       }
     },
     getCertificateData() {
@@ -304,6 +304,9 @@ export default {
     }
   },
   created() {
+    AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
+      debugger
+    })
     this.callForData()
   },
   beforeDestroy() {
