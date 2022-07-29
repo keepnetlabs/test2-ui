@@ -218,7 +218,7 @@ export default {
             filterableItems:
               this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
                 text: item.name,
-                value: item.value
+                value: item.name
               })) || []
           },
           {
