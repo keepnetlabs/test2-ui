@@ -88,9 +88,7 @@ export default {
             const {
               data: { data }
             } = response
-            this.formData = {
-              template: data.template.template
-            }
+            this.emailTemplate = data?.template?.template || ''
           })
           .finally(this.setLoading)
       }
