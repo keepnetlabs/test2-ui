@@ -135,6 +135,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
@@ -240,14 +243,10 @@ export default {
             show: true,
             type: 'badge',
             filterableType: 'select',
-            filterableItems: [
-              'Not Delivered',
-              'In Queue',
-              'Error',
-              'Cancelled',
-              'Successful',
-              'Processing'
-            ]
+            filterableItems: this?.formDetails?.targetUserEnrollmentStatusEnum.map((status) => ({
+              name: status.name,
+              value: status.name
+            }))
           }
           /*
           {
@@ -382,26 +381,26 @@ export default {
         .finally(this.setLoading)
     },
     exportTrainingReportSendingReportTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportSendingReport(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Training-Sending-Report.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     handleOnDetail(row) {
       // this.extendedViewLoading = true

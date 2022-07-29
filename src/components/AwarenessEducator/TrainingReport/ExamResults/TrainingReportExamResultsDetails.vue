@@ -109,7 +109,7 @@ export default {
             width: 180
           },
           {
-            property: 'browser',
+            property: 'browserName',
             align: 'left',
             editable: false,
             label: 'Browser',

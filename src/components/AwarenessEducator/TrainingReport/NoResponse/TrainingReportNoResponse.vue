@@ -196,26 +196,28 @@ export default {
         .finally(this.setLoading)
     },
     exportTrainingReportNoResponseTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportNoResponseReportResults(payload, this.id).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Training-No-Response.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
+      })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
