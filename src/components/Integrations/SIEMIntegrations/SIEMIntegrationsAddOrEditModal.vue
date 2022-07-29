@@ -50,7 +50,12 @@
             :items="providerTypes"
           ></KSelect>
         </FormGroup>
-        <FormGroup has-hint :title="labels.SIEMAddress" :subTitle="labels.URLOrIPAddress">
+        <FormGroup
+          v-if="isSplunkIntegration"
+          has-hint
+          :title="labels.SIEMAddress"
+          :subTitle="labels.URLOrIPAddress"
+        >
           <InputUrl
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
@@ -58,7 +63,7 @@
             :rules="apiUrlRules"
           />
         </FormGroup>
-        <FormGroup :title="labels.SecretToken" has-hint>
+        <FormGroup v-if="isSplunkIntegration" :title="labels.SecretToken" has-hint>
           <v-text-field
             v-model.trim="formData.token"
             id="input--siem-integrations-secret-token"
@@ -69,6 +74,37 @@
             hint="*Required"
             :rules="secretTokenRules"
           ></v-text-field>
+        </FormGroup>
+        <FormGroup v-if="isSyslogIntegration" has-hint :title="labels.ServerAddress">
+          <div class="siem-integration-modal__server-address">
+            <InputUrl
+              v-model.trim="formData.serverAddress"
+              id="input--siem-integrations-url"
+              placeholder="Enter server address"
+              :rules="serverAddressRules"
+            />
+            <div class="siem-integration-modal__server-address-port">
+              <InputEntityName
+                v-model.trim="formData.port"
+                id="input--siem-integrations-port"
+                initialPlaceholder="Enter port"
+                entityName="port"
+                :initialRules="portRules"
+              />
+            </div>
+          </div>
+        </FormGroup>
+        <FormGroup v-if="isSyslogIntegration" has-hint :title="labels.ConnectionType">
+          <v-radio-group
+            v-model="formData.connectionType"
+            id="input--siem-integrations-connection-type"
+            class="mt-1 mb-6"
+            hide-details
+            row
+          >
+            <v-radio value="UDP" label="UDP" color="#2196f3"></v-radio>
+            <v-radio value="TCP" label="TCP" color="#2196f3"></v-radio>
+          </v-radio-group>
         </FormGroup>
         <FormGroup :title="labels.TestConnection">
           <v-btn
@@ -127,9 +163,17 @@ import {
   testSIEMIntegration,
   updateSIEMIntegration
 } from '@/api/siemIntegrations'
+
 export default {
   name: 'SIEMIntegrationsAddOrEditModal',
-  components: { KSelect, InputEntityName, InputUrl, FormGroup, AppModalBodyHeader, AppModal },
+  components: {
+    KSelect,
+    InputEntityName,
+    InputUrl,
+    FormGroup,
+    AppModalBodyHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean,
@@ -143,11 +187,20 @@ export default {
     return {
       isTesting: false,
       isTested: false,
-      providerTypes: [{ text: 'Splunk', value: 1 }],
+      providerTypes: [
+        { text: 'Splunk', value: 1 },
+        {
+          text: 'Syslog',
+          value: 2
+        }
+      ],
       formData: {
         name: '',
         apiUrl: '',
         token: '',
+        serverAddress: '',
+        port: '',
+        connectionType: '',
         typeId: '',
         isForwardHistoricalAuditLog: false,
         statusId: 1
@@ -165,12 +218,29 @@ export default {
         (v) => Validations.urlOrIpAddress(v),
         (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
       ],
+      serverAddressRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.urlOrIpAddress(v),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+      ],
+      portRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.port(v)
+      ],
       isActionButtonDisabled: false,
       labels,
       Validations
     }
   },
   computed: {
+    isSplunkIntegration() {
+      return this.formData.typeId === 1
+    },
+    isSyslogIntegration() {
+      return this.formData.typeId === 2
+    },
     getModalTitle() {
       return this.selectedItem ? labels.EditSIEMIntegration : labels.NewSIEMIntegration
     },
@@ -178,13 +248,28 @@ export default {
       return labels.SIEMSettingSubtitle
     },
     getTestConnectionDisableStatus() {
-      return (
-        !this.formData.apiUrl ||
-        !this.formData.token ||
-        !this.formData.typeId ||
-        this.isTesting ||
-        Validations.urlOrIpAddress(this.formData.apiUrl) === 'Invalid URL'
-      )
+      if (this.isSplunkIntegration) {
+        return (
+          !this.formData.apiUrl ||
+          !this.formData.token ||
+          !this.formData.typeId ||
+          this.isTesting ||
+          Validations.urlOrIpAddress(this.formData.apiUrl) === 'Invalid URL'
+        )
+      }
+
+      if (this.isSyslogIntegration) {
+        return (
+          !this.formData.serverAddress ||
+          !this.formData.port ||
+          !this.formData.connectionType ||
+          !this.formData.typeId ||
+          this.isTesting ||
+          Validations.urlOrIpAddress(this.formData.serverAddress) === 'Invalid URL'
+        )
+      }
+
+      return true
     },
     getTestConnectionStyle() {
       const style = {
@@ -243,7 +328,15 @@ export default {
     },
     submitForm() {
       this.isActionButtonDisabled = true
-      const payload = { ...this.formData, statusId: Number(this.formData.statusId) }
+      const payload = {
+        ...this.formData,
+        statusId: Number(this.formData.statusId),
+        apiUrl: this.isSplunkIntegration ? this.formData.apiUrl : null,
+        token: this.isSplunkIntegration ? this.formData.token : null,
+        serverAddress: this.isSyslogIntegration ? this.formData.serverAddress : null,
+        port: this.isSyslogIntegration ? this.formData.port : null,
+        connectionType: this.isSyslogIntegration ? this.formData.connectionType : null
+      }
       if (!this.selectedItem) {
         createSIEMIntegration(payload)
           .then(() => {
@@ -264,11 +357,23 @@ export default {
     },
     handleTestConnection(isSubmitForm = false) {
       this.isTesting = true
-      const payload = {
-        resourceId: '',
-        apiUrl: this.formData.apiUrl,
-        token: this.formData.token,
-        typeId: this.formData.typeId
+      let payload
+      if (this.isSyslogIntegration) {
+        payload = {
+          resourceId: '',
+          serverAddress: this.formData.serverAddress,
+          port: this.formData.port,
+          connectionType: this.formData.connectionType,
+          typeId: this.formData.typeId
+        }
+      }
+      if (this.isSplunkIntegration) {
+        payload = {
+          resourceId: '',
+          apiUrl: this.formData.apiUrl,
+          token: this.formData.token,
+          typeId: this.formData.typeId
+        }
       }
 
       if (this.selectedItem) {
