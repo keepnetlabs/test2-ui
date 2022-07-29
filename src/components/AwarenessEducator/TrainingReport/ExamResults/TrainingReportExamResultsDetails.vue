@@ -49,11 +49,10 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import Badge from '@/components/Badge'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingReportExamResultsDetails',
-  components: { DataTable, AppDialog, Badge },
+  components: { DataTable, AppDialog },
   mixins: [useLoading],
   props: {
     status: {
