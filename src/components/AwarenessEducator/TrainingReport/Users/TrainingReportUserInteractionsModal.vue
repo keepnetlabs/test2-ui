@@ -136,6 +136,9 @@ export default {
         width: 180,
         hideSort: true
       })
+    else {
+      columns[columns.length - 1].width = 230
+    }
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
