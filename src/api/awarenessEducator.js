@@ -215,6 +215,13 @@ const exportProgressTrainingReportEmails = (payload, resourceId) => {
 const examTrainingReportResults = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/exam-results/search`, payload)
 }
+
+const exportExamTrainingReportResults = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/exam-results/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 const noResponseTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/no-response/search`, payload)
 }
@@ -234,7 +241,7 @@ const getProgressDetailsTable = (enrollmentId, resourceId) => {
 }
 
 const duplicateTraining = (resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/duplicate`, {
+  return testRequest.post(`/trainings/${resourceId}/duplicate`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -294,6 +301,7 @@ export default {
   exportOpenedTrainingReportEmails,
   exportClickedTrainingReportEmails,
   exportProgressTrainingReportEmails,
+  exportExamTrainingReportResults,
   getTrainingReportInteractions,
   getProgressDetailsTable,
   duplicateTraining,

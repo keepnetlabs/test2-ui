@@ -137,7 +137,7 @@ export default {
         hideSort: true
       })
     else {
-      columns[columns.length - 1].width = 230
+      columns[columns.length - 1].width = 325
     }
     return {
       CONSTANTS: {

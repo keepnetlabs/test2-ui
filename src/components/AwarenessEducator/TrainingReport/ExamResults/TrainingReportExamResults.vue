@@ -48,14 +48,7 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
-    >
-      <template v-slot:datatable-custom-column="{ scope }">
-        <div class="training-report-exam-results__status-column">
-          <v-btn style="display: none;" />
-          <Badge v-bind="getStatusBadgeProps(scope.row.status)" size="medium" />
-        </div>
-      </template>
-    </DataTable>
+    />
   </div>
 </template>
 
@@ -71,7 +64,6 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import Badge from '@/components/Badge'
 import TrainingReportExamResultsDetails from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResultsDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
@@ -81,7 +73,6 @@ export default {
     TrainingReportResendDialog,
     DataTable,
     CampaignManagerReportHeader,
-    Badge,
     TrainingReportExamResultsDetails
   },
   mixins: [useLoading, useDefaultTableFunctions],
@@ -181,7 +172,11 @@ export default {
             type: 'badge',
             width: 200,
             filterableType: 'select',
-            filterableItems: ['Failed', 'Passed']
+            filterableItems:
+              this?.formDetails?.examStatusEnum?.map((item) => ({
+                text: item.name,
+                value: item.name
+              })) || []
           },
           {
             property: 'examScore',
@@ -202,6 +197,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
           /*
           {
             name: labels.Resend,
@@ -210,15 +212,6 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
           */
         ]
       },
@@ -259,26 +252,28 @@ export default {
         .finally(this.setLoading)
     },
     exportTrainingReportExamResultsTable(downloadTypes) {
-      // downloadTypes.exportTypes.forEach((item) => {
-      //   let payload = {
-      //     pageNumber: downloadTypes.pageNumber,
-      //     pageSize: downloadTypes.pageSize,
-      //     orderBy: this.axiosPayload.orderBy,
-      //     ascending: this.axiosPayload.ascending,
-      //     reportAllPages: downloadTypes.reportAllPages,
-      //     exportType: item === 'XLS' ? 'Excel' : item,
-      //     filter: this.axiosPayload.filter
-      //   }
-      //   exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
-      //     const { data } = response
-      //     const link = document.createElement('a')
-      //     link.href = window.URL.createObjectURL(data)
-      //     link.download = `Campaign-Report-Opened.${
-      //       item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //     }`
-      //     link.click()
-      //   })
-      // })
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportExamTrainingReportResults(payload, this.id).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Training-Exam-Results.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
+      })
     },
     handleOnDetail(row) {
       this.selectedRow = row

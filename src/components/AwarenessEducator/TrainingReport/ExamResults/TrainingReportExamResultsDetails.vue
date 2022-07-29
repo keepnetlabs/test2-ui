@@ -92,96 +92,71 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
-            property: 'sessions',
-            align: 'left',
-            editable: false,
-            label: 'Sessions',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 130,
-            filterableType: 'number'
-          },
-          {
-            property: 'status',
-            align: 'left',
+            property: 'examStatus',
+            align: 'center',
             editable: false,
             label: 'Status',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
-            type: 'slot',
-            width: 150,
-            filterableType: 'select',
-            filterableItems: ['Failed', 'Completed']
+            type: 'badge',
+            width: 180
           },
           {
-            property: 'date',
+            property: 'sessionEndDate',
             align: 'left',
             editable: false,
-            label: 'Date',
+            label: 'Session End Date',
             fixed: false,
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'date'
-          },
-          {
-            property: 'score',
-            align: 'left',
-            editable: false,
-            label: 'Score',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 120,
-            filterableType: 'text'
+            width: 200
           },
           {
             property: 'userAgent',
             align: 'left',
             editable: false,
             label: 'User Agent',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 363
+            width: 180
           },
           {
             property: 'browser',
             align: 'left',
             editable: false,
             label: 'Browser',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 120
+            width: 180
           },
           {
-            property: 'geolocation',
+            property: 'userGeolocation',
             align: 'left',
             editable: false,
             label: 'Geolocation',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
-            property: 'ip',
+            property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'IP',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 120
+            width: 180
           }
         ],
         addButton: {

@@ -46,6 +46,7 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportTrainingProgressEmailTable"
       @refreshAction="callForData"
+      @on-details="handleDetails"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <div class="training-report-progress__progress-column">
@@ -190,7 +191,7 @@ export default {
             width: 200,
             filterableType: 'select',
             filterableItems:
-              this?.formDetails?.examStatusEnum?.map((item) => ({
+              this?.formDetails?.progressType?.map((item) => ({
                 text: item.name,
                 value: item.name
               })) || []
@@ -236,7 +237,7 @@ export default {
             align: 'right',
             editable: false,
             label: 'Sessions',
-            fixed: 'right',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
