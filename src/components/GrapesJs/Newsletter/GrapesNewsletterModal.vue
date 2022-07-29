@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
+  <div style="margin-bottom: 110px !important;" id="threat-sharing-post-incident-grapesjs-modal">
     <DefaultErrorDialog
       v-if="showInvalidUrlMessage"
       :status="showInvalidUrlMessage"
