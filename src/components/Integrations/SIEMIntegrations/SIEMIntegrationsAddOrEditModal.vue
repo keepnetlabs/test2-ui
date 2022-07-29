@@ -50,7 +50,7 @@
             :items="providerTypes"
           ></KSelect>
         </FormGroup>
-        <FormGroup has-hint :title="ENUMS.URL">
+        <FormGroup has-hint :title="labels.SIEMAddress" :subTitle="labels.URLOrIPAddress">
           <InputUrl
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
@@ -229,8 +229,12 @@ export default {
     },
     handleSubmit() {
       if (this.$refs.refForm.validate()) {
-        if (this.isTested) this.submitForm()
-        else this.handleTestConnection(true)
+        if (this.formData.statusId) {
+          if (this.isTested) this.submitForm()
+          else this.handleTestConnection(true)
+        } else {
+          this.submitForm()
+        }
       } else {
         this.$nextTick(() => {
           scrollToComponent(this.$refs.refForm.$el.querySelector('.error--text'))

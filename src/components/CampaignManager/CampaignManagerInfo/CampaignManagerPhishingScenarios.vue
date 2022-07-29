@@ -490,7 +490,7 @@ export default {
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
           (response) => {
             const { data: { data = {} } = {} } = response
-            const { emailTemplate, landingPageTemplate } = data
+            const { emailTemplate, landingPageTemplate, methodTypeId } = data
             const {
               template,
               fromName,
@@ -519,7 +519,6 @@ export default {
               landingPages,
               urlTemplate,
               difficultyTypeId,
-              methodTypeId,
               languageTypeResourceId
             } = landingPageTemplate || {}
             this.landingPageParams = {

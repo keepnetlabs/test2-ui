@@ -204,7 +204,7 @@
               v-model.trim="emailarray"
               :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
               class="pop-up-card__invite-member"
-              hint="Press enter to separate email adresses"
+              hint="Press enter to separate email addresses"
               @change="comboboxChange"
             ></k-select>
           </v-form>

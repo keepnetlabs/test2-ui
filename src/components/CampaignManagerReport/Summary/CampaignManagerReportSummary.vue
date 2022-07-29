@@ -6,7 +6,7 @@
       :id="id"
     />
     <CampaignManagerReportSummaryCards
-      :isAttachment="isAttachment"
+      :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
     />
@@ -81,6 +81,9 @@ export default {
     }
   },
   computed: {
+    getScenarioMethod() {
+      return this.campaignSummary?.scenarioInfo?.methodTypeId
+    },
     isAttachment() {
       return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
     },

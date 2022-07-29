@@ -227,7 +227,8 @@ export default {
   props: {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false },
-    categoryResourceId: { type: String, default: '' }
+    categoryResourceId: { type: String, default: '' },
+    method: { type: String, default: '' }
   },
   components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   directives: {
@@ -264,9 +265,9 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 {
-                  value: methods[Number(this.categoryResourceId) - 1].value,
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include'
+                  value: this.method,
+                  FieldName: 'Method',
+                  Operator: '='
                 },
                 { Value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
@@ -404,6 +405,9 @@ export default {
                 if (index > -1) {
                   this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
+                } else {
+                  this.setSelectedTemplate(this.listData[0], 0, true)
+                  this.listData[0].selected = true
                 }
               } else {
                 if (!landingPageTemplateResourceId)
