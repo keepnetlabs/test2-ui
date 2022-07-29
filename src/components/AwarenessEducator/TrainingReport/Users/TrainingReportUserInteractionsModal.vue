@@ -177,35 +177,7 @@ export default {
           show: false
         }
       },
-      tableData: [
-        {
-          interaction: 'Completed',
-          date: '31.05.2021 16:43:12',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        },
-        {
-          interaction: 'Clicked Link',
-          date: '31.05.2021 16:43:12',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        },
-        {
-          interaction: 'Opened Email',
-          date: '31.05.2021 16:43:12',
-          userAgent:
-            'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-          browser: 'Chrome',
-          geolocation: 'NY, USA',
-          ip: '128.125.67.89'
-        }
-      ]
+      tableData: []
     }
   },
   computed: {
@@ -221,12 +193,15 @@ export default {
       return getStatusBadgeProps(status)
     },
     callForData() {
+      this.setLoading(true)
       AwarenessEducatorService.getTrainingReportInteractions(
-        this.selectedRow.enrollmentId,
-        this.selectedRow.userEmailId
-      ).then((response) => {
-        debugger
-      })
+        this.item.enrollmentId,
+        this.item.userEmailId
+      )
+        .then((response) => {
+          debugger
+        })
+        .finally(this.setLoading)
     },
     handleClose() {
       this.$emit('on-close')
