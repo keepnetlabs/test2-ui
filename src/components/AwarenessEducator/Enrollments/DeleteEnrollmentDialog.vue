@@ -55,7 +55,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      AwarenessEducatorService.deleteTraining(this.selectedRow.enrollmentId)
+      AwarenessEducatorService.deleteEnrollment(this.selectedRow.enrollmentId)
         .then(() => {
           this.handleClose(true)
         })

@@ -269,6 +269,12 @@ const deleteTrainingFile = (resourceId, languageId) => {
   })
 }
 
+const deleteEnrollment = (resourceId) => {
+  return testRequest.delete(`/enrollments/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -295,6 +301,7 @@ export default {
   lmsFinish,
   getScormTypes,
   exportCertificates,
+  deleteEnrollment,
   getDefaultCertificateTemplate,
   sendEnrollment,
   stopEnrollment,
