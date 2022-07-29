@@ -44,7 +44,13 @@
       :selected-row="getTrainingMaterialRow"
       :languages="languages"
     />
-    <TrainingReportCertificate :form-data="getCertificateData" :isFetchingSummary="isLoading" />
+    <TrainingReportCertificate
+      :form-data="getCertificateData"
+      :isFetchingSummary="isLoading"
+      :certificate-email-notification-template-type-resource-id="
+        getCertificateEmailNotificationTemplateTypeResourceId
+      "
+    />
   </div>
 </template>
 
@@ -305,6 +311,10 @@ export default {
         description,
         languages
       }
+    },
+    getCertificateEmailNotificationTemplateTypeResourceId() {
+      const { certificateEmailNotificationTemplateTypeResourceId = '' } = this.trainingSummary || {}
+      return certificateEmailNotificationTemplateTypeResourceId
     }
   },
   created() {
