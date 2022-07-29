@@ -539,7 +539,6 @@ import {
   setMFA
 } from '@/api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'

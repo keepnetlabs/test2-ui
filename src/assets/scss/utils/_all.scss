@@ -16,3 +16,10 @@
 .bg-investigation-green{
   background-color: #43a047;
 }
+
+
+.hide-caret {
+  .v-input__append-inner {
+    display: none !important;
+  }
+}

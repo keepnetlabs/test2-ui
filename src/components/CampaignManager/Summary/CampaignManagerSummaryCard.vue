@@ -18,8 +18,10 @@
             rounded
             outlined
             color="#2196f3"
-            @click="$emit('update:showBodyDetail', !showBodyDetail)"
-            >Preview
+            @click="handlePreviewClick"
+          >
+            <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+            Preview
             <v-icon :color="'#2196f3'" class="ml-2" left medium>
               {{ showBodyDetail ? 'mdi-menu-up' : 'mdi-menu-down' }}
             </v-icon></v-btn
@@ -80,6 +82,12 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    handlePreviewClick() {
+      this.$emit('previewClicked')
+      this.$emit('update:showBodyDetail', !this.showBodyDetail)
     }
   }
 }

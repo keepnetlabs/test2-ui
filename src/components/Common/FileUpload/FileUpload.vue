@@ -18,7 +18,7 @@
         <v-icon>mdi-folder-open</v-icon>
       </file-upload>
       <template v-if="isPreviewVisible">
-        <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+        <div v-for="file in getFiles" :key="file.id" class="k-file-uploads__item">
           <div class="k-file-uploads__item-details">
             <div class="k-file-uploads__item-details--filename">
               {{ displayFileName(file.name) }}
@@ -43,7 +43,7 @@
               >
             </div>
           </div>
-          <div class="k-file-uploads__item-actions">
+          <div v-if="deletable" class="k-file-uploads__item-actions">
             <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
           </div>
         </div>
@@ -65,6 +65,10 @@ export default {
     size: {
       type: Number,
       default: 200
+    },
+    deletable: {
+      type: Boolean,
+      default: true
     },
     isLoading: {
       type: Boolean,
@@ -106,6 +110,10 @@ export default {
     isPreviewVisible: {
       type: Boolean,
       default: true
+    },
+    filePreviews: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -116,6 +124,12 @@ export default {
     }
   },
   computed: {
+    getFiles() {
+      if (this.files.length) {
+        return this.files
+      }
+      return this.filePreviews
+    },
     _extensions() {
       const arr = [...this.extensions]
       return arr.toString()
@@ -167,14 +181,12 @@ export default {
       }
     },
     clear() {
-      //this.$emit('clear')
-      //this.$refs.upload.update(file, { active: false })
+      this.$emit('on-clear')
       this.files = []
       this.uploadProgress = 0
     }
   },
   watch: {
-    // files(val) {},
     onUploadProgress() {
       return (this.uploadProgress = Math.round(
         (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total

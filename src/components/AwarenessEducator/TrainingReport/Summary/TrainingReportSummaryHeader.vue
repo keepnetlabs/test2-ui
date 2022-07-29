@@ -1,0 +1,91 @@
+<template>
+  <div class="training-report-summary-header">
+    <TrainingReportSummaryResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :items="resendDialogItems"
+      :trainingName="trainingName"
+      :is-action-button-disabled="isActionButtonDisabled"
+      @on-close="toggleShowResendDialog"
+      @on-confirm="handleOnConfirmResend"
+    />
+    <div class="training-report-summary-header__left">
+      <div class="training-report-summary-header__title">
+        {{ labels.TrainingSummary }}
+      </div>
+      <div class="training-report-summary-header__subtitle">
+        Summary of this training
+      </div>
+    </div>
+    <div class="training-report-summary-header__right">
+      <v-btn
+        class="training-report-summary-header__btn-download-report"
+        rounded
+        outlined
+        color="#2196f3"
+        :disabled="isDownloadReportDisabled"
+        @click="handleDownloadReport"
+        >{{ labels.DownloadReport }}</v-btn
+      >
+      <v-btn
+        class="training-report-summary-header__btn-resend-campaign ml-2"
+        rounded
+        color="#2196f3"
+        @click="toggleShowResendDialog"
+        >{{ labels.ResendTraining }}</v-btn
+      >
+    </div>
+  </div>
+</template>
+
+<script>
+import labels from '@/model/constants/labels'
+import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryResendDialog'
+export default {
+  name: 'TrainingReportSummaryHeader',
+  components: { TrainingReportSummaryResendDialog },
+  props: {
+    trainingName: {
+      type: String
+    },
+    resendDialogItems: {
+      type: Object
+    },
+    id: {
+      type: String
+    }
+  },
+  data() {
+    return {
+      labels,
+      isActionButtonDisabled: false,
+      isShowResendDialog: false,
+      isDownloadReportDisabled: false
+    }
+  },
+  methods: {
+    toggleShowResendDialog() {
+      this.isShowResendDialog = !this.isShowResendDialog
+    },
+    handleOnConfirmResend(types) {
+      //   this.isActionButtonDisabled = true
+      //   resendPhishingCampaignToUsers({ Types: types }, this.id).finally(() => {
+      //     this.isActionButtonDisabled = false
+      //     this.toggleShowResendDialog()
+      //   })
+    },
+    handleDownloadReport() {
+      //   this.isDownloadReportDisabled = true
+      //   exportPhishingCampaignJob(this.id)
+      //     .then((response) => {
+      //       const { data } = response
+      //       const link = document.createElement('a')
+      //       link.href = window.URL.createObjectURL(data)
+      //       link.download = `Training-Report.xlsx`
+      //       link.click()
+      //     })
+      //     .finally(() => (this.isDownloadReportDisabled = false))
+    }
+  }
+}
+</script>

@@ -13,7 +13,8 @@
             props.fullWidth ? 'full-width' : '',
             $options.getBadgeSize(props.size, props),
             props.className,
-            { 'k-badge--default': !props.outline }
+            { 'k-badge--default': !props.outline },
+            { 'k-badge--text-black': props.textBlack }
           ]"
         >
           {{ props.text }}
@@ -33,7 +34,8 @@
         props.fullWidth ? 'full-width' : '',
         $options.getBadgeSize(props.size, props),
         props.className,
-        { 'k-badge--default': !props.outline }
+        { 'k-badge--default': !props.outline },
+        { 'k-badge--text-black': props.textBlack }
       ]"
     >
       <slot name="content">
@@ -61,6 +63,9 @@ export default {
     },
     text: {
       type: String || Number
+    },
+    textBlack: {
+      type: Boolean
     },
     listeners: {},
     fullWidth: {
