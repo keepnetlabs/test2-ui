@@ -28,26 +28,6 @@
         </template>
       </div>
     </template>
-    <template v-if="false" #ReminderOptions="{ props:{ key } }">
-      <div class="campaign-manager-summary-card__body-item-key">
-        {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
-      </div>
-      <div
-        class="campaign-manager-summary-card__body-item-value"
-        style="display: flex; align-items: center;"
-      >
-        <span
-          :class="{
-            'mr-4': items.isEnded.value
-          }"
-          :style="isNotDelivered && { borderRight: '1px solid #e0e0e0' }"
-          >{{ items['Reminder Options'].value }}
-        </span>
-        <div v-if="items.isEnded.value" class="training-report-training-delivery-ended-badge">
-          Ended
-        </div>
-      </div>
-    </template>
   </CampaignManagerSummaryCard>
 </template>
 
