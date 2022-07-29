@@ -44,6 +44,7 @@
               ref="refTrainingContent"
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :resource-id="trainingId"
+              :step="step"
             />
           </v-stepper-content>
         </v-stepper-items>
