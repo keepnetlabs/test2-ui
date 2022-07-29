@@ -17,7 +17,7 @@
         Summary of this training
       </div>
     </div>
-    <div class="training-report-summary-header__right">
+    <div v-if="false" class="training-report-summary-header__right">
       <v-btn
         class="training-report-summary-header__btn-download-report"
         rounded

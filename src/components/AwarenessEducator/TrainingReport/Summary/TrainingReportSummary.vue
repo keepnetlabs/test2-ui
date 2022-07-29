@@ -256,26 +256,26 @@ export default {
           userCount: totalUserOpenedCount,
           userPercent:
             totalTargetUserCount === 0
-              ? 0
+              ? '0'
               : ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
           userCount: inProgress,
           userPercent:
-            totalTargetUserCount === 0 ? 0 : ((inProgress / totalTargetUserCount) * 100).toFixed()
+            totalTargetUserCount === 0 ? '0' : ((inProgress / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
           userCount: completedCount,
           userPercent:
             totalTargetUserCount === 0
-              ? 0
+              ? '0'
               : ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         noResponse: {
           userCount: noResponseCount,
           userPercent:
             totalTargetUserCount === 0
-              ? 0
+              ? '0'
               : ((noResponseCount / totalTargetUserCount) * 100).toFixed()
         }
       }
