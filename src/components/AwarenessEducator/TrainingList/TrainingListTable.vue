@@ -43,7 +43,7 @@
       <RowActionsMenu>
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
+          :disabled="tableOptions.rowActions[1].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           @on-click="handleEdit(scope.row)"
@@ -59,7 +59,7 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[3].disabled"
+          :disabled="tableOptions.rowActions[3].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[3].icon"
           :text="tableOptions.rowActions[3].name"
           @on-click="handleActionDelete(scope.row)"
