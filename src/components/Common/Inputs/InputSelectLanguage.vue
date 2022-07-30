@@ -1,6 +1,7 @@
 <template>
   <KSelect
     outlined
+    type="autocomplete"
     :required="required"
     :persistent-hint="persistentHint"
     :items="items"
