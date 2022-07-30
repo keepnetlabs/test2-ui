@@ -157,7 +157,7 @@
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
-        label="Exclude from reports (Mark as test)"
+        label="Exclude this enrollment's statistics from all generic reports"
       >
       </v-checkbox>
     </FormGroup>
