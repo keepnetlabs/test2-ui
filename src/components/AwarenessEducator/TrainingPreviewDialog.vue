@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     v-if="status"
-    custom-size="1175"
+    custom-size="1230"
     max-height
     max-height-size="1200"
     :status="status"

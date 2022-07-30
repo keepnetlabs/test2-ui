@@ -8,63 +8,8 @@
     @submit="handleSubmit"
   >
     <template #overlay-body>
-      <AppModalBodyHeader
-        title="Enrollment Settings"
-        sub-title="Select target groups and schedule options for this phishing campaign instance"
-      />
+      <AppModalBodyHeader title="Enrollment Settings" />
       <v-form ref="refForm">
-        <FormGroup style="max-width: 600px;" :title="labels.Schedule">
-          <v-radio-group
-            v-model="formData.scheduleTypeId"
-            class="mt-0 campaign-manager-target-groups-radio"
-            hide-details
-          >
-            <v-radio
-              v-for="item in radioItems"
-              :key="item.text"
-              :id="`input--campaign-manager-radio-${item.text}`"
-              style="margin-bottom: 16px;"
-              color="#2196f3"
-              :value="item.value"
-              :label="item.text"
-            ></v-radio>
-            <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
-              <v-radio
-                :id="`input--campaign-manager-radio-schedule-to`"
-                style="margin-bottom: 0;"
-                label="Schedule to"
-                color="#2196f3"
-                value="2"
-              />
-              <div :class="[!isDateValid && 'date-picker-error mb-n3']">
-                <InputDate
-                  v-model="formData.enrollmentScheduler.scheduledDate"
-                  class="date-picker-height-40 ml-2"
-                  type="datetime"
-                  ref="refPicker"
-                  placeholder="Select Date Select Time"
-                  style="width: 100%; max-width: 222px;"
-                  :disabled="isScheduledTimeDisabled"
-                />
-                <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                  <transition appear name="bounce">
-                    <div class="v-messages theme--light error--text" role="alert">
-                      <div class="v-messages__wrapper">
-                        <div class="v-messages__message" style="padding-left: 10px;">
-                          Date is required
-                        </div>
-                      </div>
-                    </div>
-                  </transition>
-                </div>
-              </div>
-              <InputTimezone
-                v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
-                :disabled="isScheduledTimeDisabled"
-              />
-            </div>
-          </v-radio-group>
-        </FormGroup>
         <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
           <div class="campaign-manager-advanced-settings__other-settings-last">
             <v-checkbox
@@ -196,6 +141,16 @@
             />
           </div>
         </FormGroup>
+        <FormGroup class="mt-6" title="Mark as Test">
+          <v-checkbox
+            v-model="formData.markedAsTest"
+            id="input--campaign-manager-advanced-settings-randomly-selected"
+            hide-details
+            color="#2196f3"
+            label="Exclude this enrollment's statistics from all generic reports"
+          >
+          </v-checkbox>
+        </FormGroup>
       </v-form>
     </template>
   </AppModal>
@@ -207,13 +162,18 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import labels from '@/model/constants/labels'
-import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { EMITS } from '@/components/AwarenessEducator/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'EditEnrollmentsModal',
-  components: { KSelect, InputTimezone, InputDate, FormGroup, AppModalBodyHeader, AppModal },
+  components: {
+    KSelect,
+    InputDate,
+    FormGroup,
+    AppModalBodyHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean,
@@ -232,12 +192,7 @@ export default {
       sendReminderEvery: false,
       isAutoEnroll: false,
       formData: {
-        scheduleTypeId: '1',
-        enrollmentScheduler: {
-          scheduledDate: '',
-          scheduledTimeZoneId: '',
-          useOwnTimeZone: true
-        },
+        markedAsTest: false,
         enrollmentAutoEnroll: {
           type: 'SameDay',
           dayOfWeek: 0,
@@ -291,9 +246,6 @@ export default {
     }
   },
   computed: {
-    isScheduledTimeDisabled() {
-      return this.formData.scheduleTypeId !== '2'
-    },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
     },
@@ -308,16 +260,9 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const {
-            enrollmentReminder,
-            enrollmentAutoEnroll,
-            enrollmentScheduler
-          } = response?.data?.data
+          const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data
           if (enrollmentReminder) this.sendReminderEvery = true
           if (enrollmentAutoEnroll) this.isAutoEnroll = true
-          if (enrollmentScheduler) {
-            this.formData.scheduleTypeId = '2'
-          }
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
             : this.formData.enrollmentReminder
@@ -326,10 +271,6 @@ export default {
             ? enrollmentAutoEnroll
             : this.formData.enrollmentAutoEnroll
           delete response?.data?.data?.enrollmentAutoEnroll
-          this.formData.enrollmentScheduler = enrollmentScheduler
-            ? enrollmentScheduler
-            : this.formData.enrollmentScheduler
-          delete response?.data?.data?.enrollmentScheduler
           this.formData = { ...this.formData, ...response?.data?.data }
         })
       }
@@ -353,7 +294,6 @@ export default {
       const payload = JSON.parse(JSON.stringify(this.formData))
       if (!this.sendReminderEvery) payload.enrollmentReminder = null
       if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
-      if (this.formData.scheduleTypeId === '1') payload.enrollmentScheduler = null
       AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId).then(() => {
         this.$emit(EMITS.ON_CLOSE, true)
       })

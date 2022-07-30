@@ -25,7 +25,7 @@
       :key="iframeKey"
       frameborder="0"
       :src="activeTemplate"
-      style="min-width: 1100px; min-height: 900px;"
+      style="min-width: 1200px; min-height: 900px;"
     ></iframe>
   </div>
 </template>
