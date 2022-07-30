@@ -48,7 +48,7 @@
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
+        :disabled="tableOptions.rowActions[0].disabled || !scope.row.isEditable"
         @on-click="handleEdit(scope.row)"
       />
       <RowActionsMenu>
@@ -62,7 +62,7 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[2].disabled"
+          :disabled="tableOptions.rowActions[2].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[2].icon"
           :text="tableOptions.rowActions[2].name"
           @on-click="handleActionDelete(scope.row)"
