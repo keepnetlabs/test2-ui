@@ -5,6 +5,7 @@
     max-height
     max-height-size="1200"
     :status="status"
+    className="training-preview-dialog"
     icon="mdi-eye"
     size="ultraMaximum"
     title="Training Preview"
