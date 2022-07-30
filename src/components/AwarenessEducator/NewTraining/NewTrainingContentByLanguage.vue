@@ -8,7 +8,7 @@
       <InputSelectLanguage
         v-bind="commonRules"
         v-model="value.languageId"
-        style="max-width: 205px !important;"
+        style="min-width: 205px !important; max-width: 205px !important;"
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
@@ -21,9 +21,7 @@
         :ripple="false"
         @click="handleRemove"
       >
-        <v-icon left>
-          mdi-delete
-        </v-icon>
+        <v-icon left> mdi-delete </v-icon>
         Remove
       </v-btn>
     </FormGroupHorizontalContent>
@@ -59,7 +57,10 @@ export default {
   props: {
     value: {
       type: Object,
-      default: () => ({ languageId: 'f9288272-d0a1-4edc-93d3-534e56983e4f', file: '' })
+      default: () => ({
+        languageId: 'f9288272-d0a1-4edc-93d3-534e56983e4f',
+        file: ''
+      })
     },
     languageItems: {
       type: Array,

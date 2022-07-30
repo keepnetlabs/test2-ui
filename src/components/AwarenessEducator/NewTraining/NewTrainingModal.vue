@@ -193,6 +193,9 @@ export default {
             })
         }
       } else {
+        if (this.step === 2 && flag === -1) {
+          this.isActionButtonDisabled = false
+        }
         this.step += flag
       }
     },
