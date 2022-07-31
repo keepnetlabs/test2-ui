@@ -283,6 +283,29 @@
               :required="true"
             />
           </div>
+          <div class="add-in-settings__body-item mb-4">
+            <v-checkbox
+              color="#2196f3"
+              label="Simulation Mail Message"
+              class="k-checkbox add-in-settings__list-item-checkbox"
+              id="input--phishing-reporter-is-send-simulatiion-mails"
+              v-model="formValues.isSendSimulationMails"
+              :readonly="!showForm"
+            ></v-checkbox>
+            <InputDescription
+              v-model.trim="formValues.simulationMailMessage"
+              initialPlaceholder="Enter a simulation mail message"
+              entityName="simulation mail message"
+              id="input--phishing-reporter-simulation-mail-message"
+              rows="2"
+              height="80"
+              :disabled="!formValues.isSendSimulationMails"
+              :initialRules="getAnalysisConfirmationMessageRules"
+              :readonly="!showForm"
+              :maxLength="256"
+              :required="true"
+            />
+          </div>
         </v-list-item-content>
       </v-list-item>
 
@@ -394,7 +417,8 @@ export default {
         msgBoxBtnNoText: '',
         msgBoxBtnOkText: '',
         emailSelectionErrorMessage: '',
-        badFormatEmailMessage: ''
+        badFormatEmailMessage: '',
+        simulationMailMessage: ''
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -547,6 +571,7 @@ export default {
       this.formValues.emailSelectionErrorMessage =
         'To report an email you must first select the email and then click the report button.'
       this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
+      this.formValues.simulationMailMessage = 'It was a phishing simulation. Thanks for reporting.'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
