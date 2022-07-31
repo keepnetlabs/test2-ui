@@ -237,8 +237,9 @@
           >
             <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />
           </router-link>
+
           <router-link
-            v-if="getThreatSharingLeftMenuPermissions"
+            v-if="getEtsQuickScanPermissionCreate"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
             :class="['menu-link-default', routerName === 'Community' && 'active-link']"
@@ -871,6 +872,7 @@ export default {
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
       companyLicense: 'whitelabel/getCompanyLicense',
       getDashboardPermissions: 'permissions/getDashboardPermissions',
+      getEtsQuickScanPermissionCreate: 'permissions/getEtsQuickScanPermissionCreate',
       getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',

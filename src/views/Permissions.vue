@@ -324,6 +324,9 @@ export default {
             case 'Company':
               sortedPermissions[4] = item
               break
+            case 'Email Threat Simulator':
+              sortedPermissions[5] = item
+              break
             default:
               break
           }

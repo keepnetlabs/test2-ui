@@ -1314,5 +1314,32 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
-  }
+  },
+  ETS_QUICK_SCAN_PERMISSIONS: {
+    SEARCH: {
+      url: `quick-scan/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `quick-scan`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `quick-scan/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `quick-scan/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+    // EXPORT: {
+    //   url: `quick-scan/search/export`,
+    //   hasPermission: false,
+    //   method: ENUMS.METHODS.POST
+    // }
+  },
 }
