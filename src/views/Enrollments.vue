@@ -9,6 +9,7 @@
     <DeleteEnrollmentDialog
       v-if="isShowDeleteEnrollmentsDialog"
       :status="isShowDeleteEnrollmentsDialog"
+      :selected-row="selectedRow"
       @on-close="toggleShowDeleteEnrollmentsDialog"
     />
     <StopEnrollmentDialog

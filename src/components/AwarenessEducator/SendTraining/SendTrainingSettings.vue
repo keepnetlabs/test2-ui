@@ -151,13 +151,13 @@
       >
       </v-checkbox>
     </FormGroup>
-    <FormGroup class="mt-6" :title="labels.Test">
+    <FormGroup class="mt-6" title="Mark as Test">
       <v-checkbox
         v-model="formData.markedAsTest"
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
-        label="Exclude from reports (Mark as test)"
+        label="Exclude this enrollment's statistics from all generic reports"
       >
       </v-checkbox>
     </FormGroup>

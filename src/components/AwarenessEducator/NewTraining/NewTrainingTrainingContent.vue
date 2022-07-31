@@ -1,23 +1,10 @@
 <template>
   <div>
-    <FormGroup :title="labels.ContentType">
-      <KSelect
-        v-model.trim="formData.type"
-        persistent-hint
-        dense
-        outlined
-        autocomplete="off"
-        hint="*Required"
-        placeholder="Select content type"
-        :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="scormTypes"
-      ></KSelect>
-    </FormGroup>
-    <FormGroup>
+    <FormGroup :title="labels.Settings">
       <v-checkbox
         v-model="formData.hasQuiz"
         id="input--new-training-modal-quiz"
-        class="mb-8"
+        style="margin-bottom: 30px;"
         label="Quiz"
         color="#2196f3"
         hide-details
@@ -50,14 +37,13 @@
 
 <script>
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import NewTrainingContentByLanguage from '@/components/AwarenessEducator/NewTraining/NewTrainingContentByLanguage'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'NewTrainingTrainingContent',
-  components: { NewTrainingContentByLanguage, KSelect, FormGroup },
+  components: { NewTrainingContentByLanguage, FormGroup },
   props: {
     isActionButtonDisabled: {
       type: Boolean
@@ -153,6 +139,8 @@ export default {
         ).then(() => {
           this.formData.contentByLanguage.splice(index, 1)
         })
+      } else {
+        this.formData.contentByLanguage.splice(index, 1)
       }
     }
   }

@@ -134,7 +134,7 @@ export default {
         ],
         iEmpty: {
           message: labels.EmptyTargetGroup,
-          subMes: 'Go to Company>Target Users to add Target Groups',
+          subMes: 'Go to Company > Target Users to add Target Groups',
           id: 'btn-empty--campaign-manager-empty-target-group'
         },
         serverSideEvents: { pagination: true, search: true, sort: true }

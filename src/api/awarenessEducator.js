@@ -258,13 +258,23 @@ const getProgressDetailsTable = (enrollmentId, resourceId) => {
 }
 
 const duplicateTraining = (resourceId) => {
-  return testRequest.post(`/trainings/${resourceId}/duplicate`, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post(
+    `/trainings/${resourceId}/duplicate`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const deleteTrainingFile = (resourceId, languageId) => {
   return testRequest.delete(`/trainings/${resourceId}/content/${languageId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const deleteEnrollment = (resourceId) => {
+  return testRequest.delete(`/enrollments/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -295,6 +305,7 @@ export default {
   lmsFinish,
   getScormTypes,
   exportCertificates,
+  deleteEnrollment,
   getDefaultCertificateTemplate,
   sendEnrollment,
   stopEnrollment,

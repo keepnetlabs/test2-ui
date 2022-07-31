@@ -1,10 +1,11 @@
 <template>
   <AppDialog
     v-if="status"
-    custom-size="1175"
+    custom-size="1230"
     max-height
     max-height-size="1200"
     :status="status"
+    className="training-preview-dialog"
     icon="mdi-eye"
     size="ultraMaximum"
     title="Training Preview"
@@ -13,7 +14,8 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <TrainingPreview
-        v-else
+        v-show="!isPreviewLoading"
+        :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
         :training-id="selectedRow.trainingId"
         :languages="selectedLanguages"
