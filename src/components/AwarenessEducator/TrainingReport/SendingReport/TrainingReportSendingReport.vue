@@ -242,10 +242,11 @@ export default {
             sortable: true,
             show: true,
             type: 'badge',
+            width: 220,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.targetUserEnrollmentStatusEnum.map((status) => ({
-                text: status.name,
+                text: status.displayName || status.name,
                 value: status.name
               })) || []
           }

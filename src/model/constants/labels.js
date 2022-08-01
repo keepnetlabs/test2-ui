@@ -15,7 +15,7 @@ export const labels = {
   TrainingSummary: 'Training Summary',
   ExamResults: 'Exam Results',
   OpenedTrainingEmail: 'Opened Training Email',
-  ClickedTrainingEmail: 'Clicked Training Email',
+  ClickedTrainingLink: 'Clicked Training Link',
   ExcludeIPAddress: 'Exclude IP Address',
   TargetUserGroups: 'Target User Groups',
   UserWhoOpenedEmail: 'Users who opened the e-mail',
