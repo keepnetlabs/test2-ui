@@ -59,7 +59,7 @@
           <InputUrl
             v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
-            placeholder="Enter SIEM URL"
+            placeholder="Enter SIEM URL/IP address"
             :rules="apiUrlRules"
           />
         </FormGroup>
