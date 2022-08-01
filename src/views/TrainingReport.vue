@@ -72,9 +72,9 @@ export default {
           isVisible: true
         },
         {
-          name: labels.ClickedTrainingEmail,
+          name: labels.ClickedTrainingLink,
           id: 'training-report-clicked-content',
-          label: labels.ClickedTrainingEmail,
+          label: labels.ClickedTrainingLink,
           component: TrainingReportClickedTrainingLink,
           // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
           isVisible: true

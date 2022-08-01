@@ -230,6 +230,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            width: 180,
             filterableType: 'date',
             filterableCustomFieldName: 'lastInteraction'
           }
