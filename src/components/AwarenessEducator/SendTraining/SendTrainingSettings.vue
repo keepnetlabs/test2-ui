@@ -327,11 +327,13 @@ export default {
         { text: 'in...', value: 'In' }
       ],
       enrollmentAutoEnrollDayOfWeekItems: [
-        { text: 'Monday', value: 0 },
-        { text: 'Tuesday', value: 1 },
-        { text: 'Wednesday', value: 2 },
-        { text: 'Thursday', value: 3 },
-        { text: 'Friday', value: 4 }
+        { text: 'Sunday', value: 0 },
+        { text: 'Monday', value: 1 },
+        { text: 'Tuesday', value: 2 },
+        { text: 'Wednesday', value: 3 },
+        { text: 'Thursday', value: 4 },
+        { text: 'Friday', value: 5 },
+        { text: 'Saturday', value: 6 }
       ]
     }
   },
