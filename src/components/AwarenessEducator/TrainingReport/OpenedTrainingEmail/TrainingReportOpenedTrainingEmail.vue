@@ -11,7 +11,7 @@
       v-if="isShowDetailsModal"
       :status="isShowDetailsModal"
       :item="selectedRow"
-      interaction-type="OpenedEmail"
+      interaction-type="opened"
       @on-close="toggleIsShowDetailsModal"
     />
     <CampaignManagerReportHeader

@@ -11,7 +11,7 @@
       v-if="isShowDetailsModal"
       :status="isShowDetailsModal"
       :item="selectedRow"
-      interaction-type="ClickedLink"
+      interaction-type="clicked"
       @on-close="toggleIsShowDetailsModal"
     />
     <CampaignManagerReportHeader
