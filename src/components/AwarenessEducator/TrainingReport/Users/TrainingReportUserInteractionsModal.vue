@@ -178,7 +178,7 @@ export default {
       this.setLoading(true)
       AwarenessEducatorService.getTrainingReportInteractions(
         this.item.enrollmentId,
-        this.item.userEmailId || this.item.resourceId,
+        this.item.targetUserResourceId,
         this.interactionType
       )
         .then((response) => {

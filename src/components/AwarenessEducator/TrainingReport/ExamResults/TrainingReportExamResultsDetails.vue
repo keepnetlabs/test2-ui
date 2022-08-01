@@ -168,7 +168,7 @@ export default {
     callForData() {
       AwarenessEducatorService.getTrainingReportExamResultsDetails(
         this.item.enrollmentId,
-        this.item.userEmailId
+        this.item.targetUserResourceId
       ).then((response) => {
         this.tableData = response?.data?.data
       })

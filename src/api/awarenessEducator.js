@@ -245,7 +245,7 @@ const sendingReportTrainingReport = (payload, resourceId) => {
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
-  if (interactionType) url += `?interactionType=${interactionType}`
+  if (interactionType) url += `?emailEventType=${interactionType}`
   return testRequest.get(url)
 }
 
