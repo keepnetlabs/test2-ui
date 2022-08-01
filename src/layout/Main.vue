@@ -229,7 +229,7 @@
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
-            v-if="getThreatSharingLeftMenuPermissions"
+            v-if="getEtsQuickScanPermissionSearch"
             to="/email-threat-simulator"
             id="btn--link-navigator-menu-email-threat-simulator"
             :class="['menu-link-default', routerName === 'Community' && 'active-link']"
@@ -239,7 +239,7 @@
           </router-link>
 
           <router-link
-            v-if="getEtsQuickScanPermissionCreate"
+            v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
             :class="['menu-link-default', routerName === 'Community' && 'active-link']"
@@ -872,7 +872,7 @@ export default {
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
       companyLicense: 'whitelabel/getCompanyLicense',
       getDashboardPermissions: 'permissions/getDashboardPermissions',
-      getEtsQuickScanPermissionCreate: 'permissions/getEtsQuickScanPermissionCreate',
+      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch',
       getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',

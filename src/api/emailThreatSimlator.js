@@ -7,7 +7,15 @@ export function getQuickScanList(payload) {
 export function deleteQuickScanItem(id) {
   return emailThreatSimlatorRequest.delete(`/quick-scan/${id}`)
 }
-
+export function getValidateContinuousScan(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan/validate-continuous-scan`, payload)
+}
+export function getQuickScanCreate(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan/`, payload)
+}
+export function getQuickScanById(id) {
+  return emailThreatSimlatorRequest.get(`/quick-scan/${id}`)
+}
 
 
 // export function exportPlaybookRules(payload) {

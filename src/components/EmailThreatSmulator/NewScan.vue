@@ -14,7 +14,6 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div class="d-flex flex-row flex-end">
             <v-btn
-              id="threat-sharing-right-column-permission-modal-button"
               class="pa-0 k-dialog__button"
               text
               color="#2196f3"
@@ -25,8 +24,7 @@
         </div>
       </template>
     </app-dialog>
-
-    <app-modal :status="status" icon-name="mdi-shield-half-full" title="Create New Scan">
+    <app-modal :status="status" icon-name="mdi-shield-half-full" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-stepper light v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
@@ -44,7 +42,7 @@
           </v-stepper-header>
           <v-stepper-items class="k-stepper__items">
             <v-stepper-content class="k-stepper__content" :step="1">
-              <div class="phishing-scenario-info">
+              <div class="ets-info">
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title class="new-phishing-scenario__title">
@@ -55,11 +53,17 @@
                     >
                   </v-list-item-content>
                 </v-list-item>
-                <v-alert v-if="emailLoginStatus" dense color="rgba(245, 108, 108, 0.2)" class="my-8 py-5 " max-width="600">
+                <v-alert
+                  v-if="emailLoginStatus"
+                  dense
+                  color="rgba(245, 108, 108, 0.2)"
+                  class="mt-8 py-5"
+                  max-width="600"
+                >
                   <v-icon class="mr-4" marig color="#f56c6c"> mdi-close-circle </v-icon>
                   <strong>Username or password is incorrect. Please try again.</strong>
                 </v-alert>
-                <v-form ref="refFormStep1" lazy-validation>
+                <v-form ref="refFormStep1" lazy-validation class="mt-8">
                   <form-group
                     title="Scenario Name"
                     sub-title="Enter emails address that you created for test purposes"
@@ -70,7 +74,6 @@
                       id="input--new-scan-email"
                       entityName="email address"
                       initialPlaceholder="Email address"
-                      :disabled="editItemsDisabled"
                       hint
                     />
                   </form-group>
@@ -147,7 +150,7 @@
               </div>
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
-              <div class="phishing-scenario-info">
+              <div class="ets-info">
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title class="new-phishing-scenario__title">
@@ -155,9 +158,17 @@
                     >
                   </v-list-item-content>
                 </v-list-item>
+                <v-alert
+                  v-if="continuosScanErrortext !== ''"
+                  type="error"
+                  class="mt-8"
+                  max-width="600"
+                >
+                  {{ continuosScanErrortext }}
+                </v-alert>
 
-                <v-form ref="refFormStep2" lazy-validation>
-                  <form-group title="Continuos Scan" hint class-name="my-8">
+                <v-form ref="refFormStep2" lazy-validation class="mt-8">
+                  <form-group title="Continuos Scan" hint>
                     <v-checkbox
                       v-model="scanAndDeliveryValues.continuousScan"
                       color="#2196f3"
@@ -167,6 +178,7 @@
                   <form-group
                     title="Distribution"
                     sub-title="Send emails with selected intervals or over a specified time period. Limit number of emails to be sent in each batch."
+                    class="mt-8"
                   >
                     <div class="label-left-form">
                       <label class="little">Sending Limit</label>
@@ -177,6 +189,9 @@
                         outlined
                         hint=""
                         placeholder="Sending Limit"
+                        :disabled="
+                          scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP' ? false : true
+                        "
                       />
                     </div>
                     <v-radio-group
@@ -277,7 +292,7 @@
               </div>
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="3">
-              <div class="phishing-scenario-info">
+              <div class="ets-info">
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title class="new-phishing-scenario__title">
@@ -362,146 +377,213 @@
 </template>
 
 <script>
-import AppModal from '../AppModal'
-import AppDialog from '@/components/AppDialog'
-import labels from '@/model/constants/labels'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import * as Validations from '@/utils/validations'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
-import InputEmail from '@/components/Common/Inputs/InputEmail'
-import StepperFooter from '@/components/Stepper/StepperFooter'
+import AppModal from "../AppModal";
+import AppDialog from "@/components/AppDialog";
+import labels from "@/model/constants/labels";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import * as Validations from "@/utils/validations";
+import { scrollToComponent, isDifferent } from "@/utils/functions";
+import InputEmail from "@/components/Common/Inputs/InputEmail";
+import StepperFooter from "@/components/Stepper/StepperFooter";
+import { getValidateContinuousScan, getQuickScanCreate } from "@/api/emailThreatSimlator";
 
 export default {
-  name: 'NewScan',
+  name: "NewScan",
   components: {
     StepperFooter,
     AppModal,
     AppDialog,
     FormGroup,
-    InputEmail
+    InputEmail,
   },
   data() {
     return {
-      selectedTab: '1',
+      selectedTab: "1",
       emailLoginStatus: false,
-      selectedScanOptions: 'Automate',
-      smtpTimeTypes: ['seconds', 'minutes', 'hours'],
-      timeTypes: ['hours', 'minutes'],
+      smtpTimeTypes: ["seconds", "minutes", "hours"],
+      timeTypes: ["hours", "minutes"],
       scanOptions: [
         {
-          value: 'Automate',
-          label: 'Automate with password'
+          value: "Automate",
+          label: "Automate with password",
         },
         {
-          value: 'Manual',
-          label: 'Manual (no password required)'
-        }
+          value: "Manual",
+          label: "Manual (no password required)",
+        },
       ],
       labels,
       step: 1,
       Validations: Validations,
       emailSettingsValues: {
-        email: '',
-        scanType: 'Automate',
-        password: '',
+        email: "",
+        scanType: "Automate",
+        password: "",
         owa: false,
-        owaUrl: '',
-        username: '',
-        methodTypeId: '1'
+        owaUrl: "",
+        username: "",
+        methodTypeId: "1",
       },
       scanAndDeliveryValues: {
         continuousScan: false,
         sendingLimit: 50,
         sendingLoopType: {
-          loopType: 'SMTP',
+          loopType: "SMTP",
           smtpTimeMinute: 20,
-          smtpTimeType: 'seconds',
+          smtpTimeType: "seconds",
           distributeTimeMinute: 20,
-          distributeTimeType: 'hours'
-        }
+          distributeTimeType: "hours",
+        },
       },
       acceptRule: false,
       baseRules: {
-        hint: '*Required',
+        hint: "*Required",
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName)),
+        ],
       },
-      permissionModalStatus: true
-    }
+      permissionModalStatus: true,
+      isSubmitDisabled: false,
+      continuosScanErrortext: "",
+      pageTitle: "Create New Scan",
+    };
   },
   props: {
     status: {
       type: Boolean,
-      default: false
-    },
-    editableFormValues: {
-      required: false
-    },
-    isEdit: {
-      type: Boolean
+      default: false,
     },
     isDuplicate: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    isAttachmentBased: {
-      type: Boolean,
-      default: false
+    scanDetails: {
+      required: true,
+      type: Object,
     },
-    scenarioId: {
-      type: String
-    },
-    scenarioDetailsLookup: {
-      required: true
-    }
   },
   methods: {
     commonRules(isNeed) {
       if (isNeed) {
-        return this.baseRules
+        return this.baseRules;
       }
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step))
-      console.log(this.$refs.refFormStep1.validate())
+      const currentStep = JSON.parse(JSON.stringify(this.step));
+      console.log(this.$refs.refFormStep1.validate());
       if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate()) {
-          this.step += 1
+          this.step += 1;
         } else {
-          const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
-          scrollToComponent(el)
+          const el = this.$refs.refFormStep1.$el.querySelector(".v-messages__message");
+          scrollToComponent(el);
         }
       }
       if (currentStep === 2) {
-        this.step += 1
+        this.continuosScanErrortext = "";
+        if (this.scanAndDeliveryValues.continuousScan) {
+          getValidateContinuousScan({
+            email: this.emailSettingsValues.email,
+          })
+            .then((response) => {
+              if (response.data.data.isValidateContinuousScan) {
+                this.step += 1;
+              }
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error.response.data.message);
+              this.continuosScanErrortext = error.response.data.message;
+            });
+        } else {
+          this.step += 1;
+        }
       }
       // if (currentStep === 2) {
       //   this.step += 1
       // }
     },
     backStep() {
-      this.step -= 1
-      this.isSubmitDisabled = false
+      this.step -= 1;
+      this.isSubmitDisabled = false;
     },
     closeNewScanPopup() {
-      return this.$emit('changeNewScenarioModalStatus', false)
+      return this.$emit("changeNewScanModalStatus", false);
       // const isChanged = isDifferent(this.formValues, this.initialFormValues)
       // if (!isChanged) {
-      //   return this.$emit('changeNewScenarioModalStatus', false)
+      //   return this.$emit('changeNewScanModalStatus', false)
       // }
       // this.$store.dispatch('common/setIsShowLeavingDialog', {
       //   show: true,
       //   callback: () => {
-      //     this.$emit('changeNewScenarioModalStatus', false)
+      //     this.$emit('changeNewScanModalStatus', false)
       //   }
       // })
     },
+    calculateTimeType(time, type, isDelayEvery) {
+      const t = parseInt(time);
+      if (isDelayEvery) {
+        if (type === "minutes") {
+          return t * 60;
+        } else if (type === "hours") {
+          return t * 60 * 60;
+        }
+        return t;
+      } else {
+        if (type === "hours") {
+          return t * 60;
+        }
+        return t;
+      }
+    },
     submit() {
       if (this.$refs.refFormStep3.validate()) {
-        alert(1)
+        const requestBody = {
+          email: "",
+          password: "",
+          mailProvider: "2",
+          owaUrl: "",
+          owaUsername: "",
+          isContinuousScan: false,
+          delaySeconds: 0,
+          sendingLimit: 0,
+          distributeEmailOverMinutes: 0,
+        };
+        requestBody.email = this.emailSettingsValues.email;
+        requestBody.password = this.emailSettingsValues.password;
+        if (this.emailSettingsValues.scanType === "Manual") {
+          requestBody.mailProvider = "0";
+        } else {
+          requestBody.mailProvider = this.emailSettingsValues.owa ? "1" : "2";
+        }
+        requestBody.owaUrl = this.emailSettingsValues.owaUrl;
+        requestBody.owaUsername = this.emailSettingsValues.username;
+        requestBody.isContinuousScan = this.scanAndDeliveryValues.continuousScan;
+        requestBody.sendingLimit = this.scanAndDeliveryValues.sendingLimit;
+
+        if (this.scanAndDeliveryValues.sendingLoopType.loopType === "SMTP") {
+          requestBody.distributeEmailOverMinutes = 0;
+          requestBody.delaySeconds = this.calculateTimeType(
+            this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute,
+            this.scanAndDeliveryValues.sendingLoopType.smtpTimeType,
+            true
+          );
+        } else {
+          requestBody.sendingLimit = 0;
+          requestBody.delaySeconds = 0;
+          requestBody.distributeEmailOverMinutes = this.calculateTimeType(
+            this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute,
+            this.scanAndDeliveryValues.sendingLoopType.distributeTimeType,
+            false
+          );
+        }
+        console.log(requestBody);
+        getQuickScanCreate(requestBody).then((response) => {
+          console.log(response);
+          this.$emit("changeNewScanModalStatus", false, true);
+        });
       }
 
       //   this.isSubmitDisabled = true
@@ -512,9 +594,9 @@ export default {
       //     isValid = refMakeAvailableFor.isAvailableForValid
       //   }
       //   if (this.isEdit && !this.isDuplicate) {
-      //     updateScenario(this.formValues, this.scenarioId)
+      //     updateScenario(this.formValues, this.scanId)
       //       .then(() => {
-      //         this.$emit('changeNewScenarioModalStatus', false, true)
+      //         this.$emit('changeNewScanModalStatus', false, true)
       //       })
       //       .finally(() => {
       //         this.isSubmitDisabled = false
@@ -522,17 +604,17 @@ export default {
       //   } else {
       //     createScenario(this.formValues)
       //       .then(() => {
-      //         this.$emit('changeNewScenarioModalStatus', false, true)
+      //         this.$emit('changeNewScanModalStatus', false, true)
       //       })
       //       .finally(() => {
       //         this.isSubmitDisabled = false
       //       })
       //   }
-    }
+    },
   },
   watch: {
     landingPageTemplateResourceId() {
-      this.selectedTab = '1'
+      this.selectedTab = "1";
     },
     // 'emailSettingsValues.methodTypeId'(val, oldVal) {
     //   console.log('iam deleted')
@@ -545,32 +627,48 @@ export default {
     // },
     emailSettingsValues: {
       handler: function (value) {
-        if (value.scanType === 'Manual') {
-          this.emailSettingsValues.password = ''
-          this.emailSettingsValues.owa = false
-          this.emailSettingsValues.owaUrl = ''
-          this.emailSettingsValues.username = ''
+        if (value.scanType === "Manual") {
+          this.emailSettingsValues.password = "";
+          this.emailSettingsValues.owa = false;
+          this.emailSettingsValues.owaUrl = "";
+          this.emailSettingsValues.username = "";
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   computed: {
     validateCheckbox() {
-      return [this.acceptRule === true || labels.Required]
-    }
+      return [this.acceptRule === true || labels.Required];
+    },
   },
   created() {
-    // this.callForLanguages()
-    // if (!this.isEdit) {
-    //   this.initialFormValues = JSON.parse(JSON.stringify(this.emailSettingsValues))
-    // }
-    // let _this = this
-    // if (this.isEdit) {
-    //   this.isSubmitDisabled = true
-    // }
-  }
-}
+    if (this.isDuplicate) {
+      this.pageTitle = "Duplicate Scan";
+      this.emailSettingsValues.email = this.scanDetails.email;
+      this.emailSettingsValues.password = this.scanDetails.password;
+      if (this.scanDetails.owaUrl !== "") {
+        this.emailSettingsValues.scanType = "Automate";
+        this.emailSettingsValues.owa = true;
+        this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl;
+        this.emailSettingsValues.username = this.scanDetails.owaUsername;
+      } else {
+        this.emailSettingsValues.scanType = "Manual";
+      }
+      this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan;
+      this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit;
+      if (this.scanDetails.distributeEmailOverMinutes > 0) {
+        this.scanAndDeliveryValues.sendingLoopType.loopType = "DistributeEmails";
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeTimeMinute;
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = "minutes";
+      } else {
+        this.scanAndDeliveryValues.sendingLoopType.loopType = "SMTP";
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute = this.scanDetails.delaySeconds;
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeType = "seconds";
+      }
+    }
+  },
+};
 </script>
 <style lang="scss">
 .radio-btn-list {
@@ -585,6 +683,13 @@ export default {
   }
   .k-dialog__title {
     color: #f56c6c !important;
+  }
+  .k-dialog__button {
+    background-color: white !important;
+    width: 120px;
+  }
+  .k-dialog__button:hover {
+    background-color: white !important;
   }
 }
 </style>

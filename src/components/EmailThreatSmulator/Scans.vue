@@ -11,12 +11,9 @@
       <NewScan
         ref="newScenarioModal"
         :status="modalStatus"
-        :scenarioId="scenarioId"
-        :isEdit="isEdit"
         :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
+        :scanDetails="scanDetails"
+        @changeNewScanModalStatus="changeNewScanModalStatus"
       />
     </v-overlay>
     <DeleteScans
@@ -24,7 +21,7 @@
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      :selectedScans="selectedScans"
+      :selectedScan="selectedScan"
     />
     <data-table
       v-if="getPhishingScenariosSearchPermissions"
@@ -49,9 +46,8 @@
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
-      @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
-      @addAction="changeNewScenarioModalStatus(true)"
+      @addAction="changeNewScanModalStatus(true)"
       @downloadEvent="exportScenario"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
@@ -86,7 +82,7 @@
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
             :checkIsOwnerProperty="false"
-            @on-click="handlePreview(scope.row)"
+            @on-click="handleDuplicateScan(scope.row)"
           />
         </RowActionsMenu>
       </template>
@@ -108,7 +104,7 @@ import {
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import labels from "@/model/constants/labels";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
-import { getQuickScanList } from "@/api/emailThreatSimlator";
+import { getQuickScanList, getQuickScanById } from "@/api/emailThreatSimlator";
 import {
   // deleteScenarios,
   exportScenarios,
@@ -134,7 +130,7 @@ export default {
   data() {
     return {
       languageFilterOptions: [],
-      scenarioDetailsLookup: null,
+      scanDetails: {},
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       selectedRow: null,
@@ -144,12 +140,11 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
-      scenarioId: null,
       labels,
       selectedScenarioURL: "",
       tableData: [],
       showDeleteModal: false,
-      selectedScans: {},
+      selectedScan: {},
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_QUICK_SCAN_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_QUICK_SCAN_TABLE,
@@ -257,7 +252,7 @@ export default {
   methods: {
     toggleShowPreviewDialog() {
       console.log("a", this.isShowPreviewDialog);
-      if (this.isShowPreviewDialog) this.selectedScans = {};
+      if (this.isShowPreviewDialog) this.selectedScan = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     resetPageNumber() {
@@ -318,21 +313,19 @@ export default {
         this.getDatatableList()
       })*/
     },
-    handlePreview(row) {
-      console.log(row)
-      this.selectedScans = row;
-      this.toggleShowPreviewDialog();
-    },
-    handleEdit(row, isDuplicate) {
-      this.editableFormValues = row;
-      this.modalStatus = true;
-      this.isEdit = true;
-      this.isDuplicate = isDuplicate;
-      this.scenarioId = row.resourceId;
+    handleDuplicateScan(row) {
+      getQuickScanById(row.quickScanResourceId).then((response) => {
+        console.log(response);
+        this.isDuplicate = true;
+        this.scanDetails = response.data.data;
+        this.modalStatus = true;
+      })
+      this.selectedScan = row;
+      //quickScanResourceId
     },
     checkIfCanCLoseNewScenarioModal() {
       if (this.$refs.newScenarioModal) {
-        this.$refs.newScenarioModal.changeNewScenarioModalStatus();
+        this.$refs.newScenarioModal.changeNewScanModalStatus();
       }
     },
     checkIfCanCloseFastLaunchModal() {
@@ -340,16 +333,12 @@ export default {
         this.$refs.fastLaunch.closeOverlay();
       }
     },
-    changeNewScenarioModalStatus(status, restart) {
+    changeNewScanModalStatus(status, restart) {
       this.modalStatus = status;
-      this.scenarioId = null;
-      this.isEdit = false;
-      this.isDuplicate = false;
-      if (restart) {
-        this.editableFormValues = {};
-        this.scenarioId = null;
-        this.isEdit = false;
         this.isDuplicate = false;
+        this.scanDetails = {};
+      if (restart) {
+        this.selectedScan = {};
         this.getDatatableList();
       }
     },
@@ -399,7 +388,7 @@ export default {
       }
     },
     handleActionDelete(row) {
-      this.selectedScans = row;
+      this.selectedScan = row;
       this.showDeleteModal = true;
     },
     columnFilterChanged(filter) {
@@ -418,14 +407,14 @@ export default {
     this.callForLanguages("refQuickScanList");
     // getScenarioDataDetails()
     //   .then((response) => {
-    //     this.scenarioDetailsLookup = response?.data?.data || {
+    //     this.scanDetails = response?.data?.data || {
     //       methodTypes: [],
     //       difficultyTypes: []
     //     }
     //     this.$set(
     //       this.tableOptions.columns[1],
     //       'filterableItems',
-    //       this.scenarioDetailsLookup.methodTypes.map((item) => {
+    //       this.scanDetails.methodTypes.map((item) => {
     //         console.log("ddd", item);
     //         return { text: item.text, value: item.text }
     //       })
@@ -433,7 +422,7 @@ export default {
     //     this.$set(
     //       this.tableOptions.columns[3],
     //       'filterableItems',
-    //       this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+    //       this.scanDetails.difficultyTypes.map((item) => {
     //         return { text: item.text, value: item.text }
     //       })
     //     )
