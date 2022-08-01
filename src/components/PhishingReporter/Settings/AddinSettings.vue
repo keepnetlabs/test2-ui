@@ -418,6 +418,7 @@ export default {
         msgBoxBtnOkText: '',
         emailSelectionErrorMessage: '',
         badFormatEmailMessage: '',
+        isSendSimulationMails: false,
         simulationMailMessage: ''
       },
       reporterVersionModalStatus: false,
@@ -522,7 +523,9 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage
+        badFormatEmailMessage,
+        isSendSimulationMails,
+        simulationMailMessage
       } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -541,6 +544,8 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
+      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         //this.$refs.refFileUpload.$refs.upload.add(response.data)
         this.formValues.file = response.data
@@ -571,6 +576,7 @@ export default {
       this.formValues.emailSelectionErrorMessage =
         'To report an email you must first select the email and then click the report button.'
       this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
+      this.formValues.isSendSimulationMails = true
       this.formValues.simulationMailMessage =
         'This is a phishing simulation. Congratulations on recognizing it!'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
@@ -598,7 +604,9 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage
+        badFormatEmailMessage,
+        isSendSimulationMails,
+        simulationMailMessage
       } = val
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -617,6 +625,8 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
+      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
