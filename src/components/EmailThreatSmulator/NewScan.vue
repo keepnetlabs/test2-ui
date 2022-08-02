@@ -57,11 +57,23 @@
                   v-if="emailLoginStatus"
                   dense
                   color="rgba(245, 108, 108, 0.2)"
-                  class="mt-8 py-5"
+                  class="mt-8"
                   max-width="600"
                 >
-                  <v-icon class="mr-4" marig color="#f56c6c"> mdi-close-circle </v-icon>
-                  <strong>Username or password is incorrect. Please try again.</strong>
+                  <v-container fill-height fluid size="14">
+                    <v-icon class="pa-2" size="24" marig color="#f56c6c"> mdi-close-circle </v-icon>
+                    <strong
+                      class="pa-2"
+                      v-if="submitError.isArray"
+                      v-for="(error, index) in submitError.message"
+                      :key="index"
+                    >
+                      {{ error }}
+                    </strong>
+                    <strong class="pa-2" v-if="!submitError.isArray">{{
+                      submitError.message
+                    }}</strong>
+                  </v-container>
                 </v-alert>
                 <v-form ref="refFormStep1" lazy-validation class="mt-8">
                   <form-group
@@ -448,6 +460,11 @@ export default {
       isSubmitDisabled: false,
       continuosScanErrortext: "",
       pageTitle: "Create New Scan",
+      submitError: {
+        isArray: false,
+        message: "",
+      },
+      isFormValuesChanged: false,
     };
   },
   props: {
@@ -472,7 +489,6 @@ export default {
     },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step));
-      console.log(this.$refs.refFormStep1.validate());
       if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate()) {
           this.step += 1;
@@ -491,10 +507,8 @@ export default {
               if (response.data.data.isValidateContinuousScan) {
                 this.step += 1;
               }
-              console.log(response);
             })
             .catch((error) => {
-              console.log(error.response.data.message);
               this.continuosScanErrortext = error.response.data.message;
             });
         } else {
@@ -510,17 +524,15 @@ export default {
       this.isSubmitDisabled = false;
     },
     closeNewScanPopup() {
-      return this.$emit("changeNewScanModalStatus", false);
-      // const isChanged = isDifferent(this.formValues, this.initialFormValues)
-      // if (!isChanged) {
-      //   return this.$emit('changeNewScanModalStatus', false)
-      // }
-      // this.$store.dispatch('common/setIsShowLeavingDialog', {
-      //   show: true,
-      //   callback: () => {
-      //     this.$emit('changeNewScanModalStatus', false)
-      //   }
-      // })
+      if (!this.isFormValuesChanged) {
+        return this.$emit("changeNewScanModalStatus", false);
+      }
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
+        show: true,
+        callback: () => {
+          this.$emit("changeNewScanModalStatus", false);
+        },
+      });
     },
     calculateTimeType(time, type, isDelayEvery) {
       const t = parseInt(time);
@@ -540,6 +552,7 @@ export default {
     },
     submit() {
       if (this.$refs.refFormStep3.validate()) {
+        this.emailLoginStatus = false;
         const requestBody = {
           email: "",
           password: "",
@@ -579,54 +592,28 @@ export default {
             false
           );
         }
-        console.log(requestBody);
-        getQuickScanCreate(requestBody).then((response) => {
-          console.log(response);
-          this.$emit("changeNewScanModalStatus", false, true);
-        });
+        getQuickScanCreate(requestBody)
+          .then((response) => {
+            this.$emit("changeNewScanModalStatus", false, true);
+          })
+          .catch((error) => {
+            this.emailLoginStatus = true;
+            const errorResponse = error.response.data;
+            this.submitError.isArray = false;
+            this.submitError.message = errorResponse.message;
+            if (errorResponse.validationMessages.length > 0) {
+              this.submitError.isArray = true;
+              this.submitError.message = errorResponse.validationMessages;
+            }
+            this.step = 1;
+          });
       }
-
-      //   this.isSubmitDisabled = true
-      //   let isValid = true
-      //   const { refMakeAvailableFor } = this.$refs
-      //   if (refMakeAvailableFor) {
-      //     refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-      //     isValid = refMakeAvailableFor.isAvailableForValid
-      //   }
-      //   if (this.isEdit && !this.isDuplicate) {
-      //     updateScenario(this.formValues, this.scanId)
-      //       .then(() => {
-      //         this.$emit('changeNewScanModalStatus', false, true)
-      //       })
-      //       .finally(() => {
-      //         this.isSubmitDisabled = false
-      //       })
-      //   } else {
-      //     createScenario(this.formValues)
-      //       .then(() => {
-      //         this.$emit('changeNewScanModalStatus', false, true)
-      //       })
-      //       .finally(() => {
-      //         this.isSubmitDisabled = false
-      //       })
-      //   }
     },
   },
   watch: {
-    landingPageTemplateResourceId() {
-      this.selectedTab = "1";
-    },
-    // 'emailSettingsValues.methodTypeId'(val, oldVal) {
-    //   console.log('iam deleted')
-    //   if (val !== oldVal) {
-    //     this.formValues.emailTemplateId = null
-    //     this.formValues.landingPageTemplateId = null
-    //     this.landingPageTemplateId = null
-    //     this.emailTemplateResourceId = null
-    //   }
-    // },
     emailSettingsValues: {
       handler: function (value) {
+        this.isFormValuesChanged = true;
         if (value.scanType === "Manual") {
           this.emailSettingsValues.password = "";
           this.emailSettingsValues.owa = false;
