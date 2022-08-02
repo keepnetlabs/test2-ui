@@ -83,8 +83,7 @@ export const labels = {
   EditTrainingContent: 'Edit Training Content',
   TrainingContent: 'Training Content',
   TrainingCourseInformation: 'Training Course Information',
-  TrainingCourseInformationSub:
-    'Enter course information, select suggested roles and select email templates',
+  TrainingCourseInformationSub: 'Enter course information and select intended target audience',
   TrainingContentSub: 'Select properties and set your training',
   CourseInfo: 'Course Info',
   ZoneID: 'Zone ID',
