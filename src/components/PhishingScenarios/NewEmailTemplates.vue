@@ -579,6 +579,7 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          description: this.formValues.description || '',
           attachmentFiles: [
             ...this.formValues.attachmentFiles,
             ...this.formValues.importedEmailAttachments
@@ -783,6 +784,7 @@ export default {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
+          description: response.data.data.description || '',
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
