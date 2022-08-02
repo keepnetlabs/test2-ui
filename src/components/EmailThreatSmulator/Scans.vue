@@ -169,7 +169,7 @@ export default {
             show: true,
             type: "status",
             filterableType: "select",
-            filterableItems: ["Easy", "Medium", "Hard"],
+            filterableItems: ["Initial", "InProgress", "Completed", "Cancelled"],
             width: 180,
           },
           {
