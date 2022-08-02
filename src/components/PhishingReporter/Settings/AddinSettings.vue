@@ -286,7 +286,7 @@
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
               color="#2196f3"
-              label="Simulation Mail Message"
+              label="Message for Phishing Simulation emails"
               class="k-checkbox add-in-settings__list-item-checkbox"
               id="input--phishing-reporter-is-send-simulatiion-mails"
               v-model="formValues.isSendSimulationMails"
