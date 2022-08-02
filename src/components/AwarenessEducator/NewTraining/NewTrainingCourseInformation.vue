@@ -80,7 +80,7 @@
       v-model="formData.availableForRequests"
       ref="refMakeAvailableFor"
       open-direction="above"
-      sub-title="Companies that will see this setting in their libraries"
+      sub-title="Companies that will see this content in their libraries"
     />
   </v-form>
 </template>
