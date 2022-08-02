@@ -34,6 +34,10 @@
         id="input--new-training-content-by-language-file"
         hint="Scorm 1.2 .zip file. Max. file size 40mb"
         style="width: 205px !important;"
+        :size="40"
+        :isShowFileProgress="true"
+        :is-stand-alone="true"
+        :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
         :disabled="isDisabled"
@@ -80,6 +84,7 @@ export default {
     return {
       labels,
       isDisabled: false,
+      progressEvent: undefined,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -105,8 +110,15 @@ export default {
       payload.append('languageId', this.value.languageId)
       this.isDisabled = true
       this.$emit('on-file-start')
-      AwarenessEducatorService.uploadTrainingContent(payload, this.trainingResourceId)
+      AwarenessEducatorService.uploadTrainingContent(
+        payload,
+        this.trainingResourceId,
+        (progressEvent) => {
+          this.progressEvent = progressEvent
+        }
+      )
         .then(() => {
+          this.progressEvent = undefined
           this.$emit('input', { ...this.value, file })
         })
         .finally(() => {
