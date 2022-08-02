@@ -122,6 +122,7 @@ export const COLUMNS = {
     show: true,
     width: 160,
     type: 'smallBadge',
+    hasTooltip: true,
     filterableType: 'select',
     filterableItems: []
   },

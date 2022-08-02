@@ -1,7 +1,7 @@
 <template>
   <AppModal
     :status="status"
-    icon-name="mdi-send"
+    icon-name="mdi-pencil"
     title="Edit Enrollment"
     title-id="text--edit-enrollments-modal-title"
     @closeOverlay="handleClose"
