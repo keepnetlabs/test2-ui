@@ -1,7 +1,7 @@
 <template>
   <div id="scenarios">
     <v-overlay
-      id="add-new-community-overlay"
+      id="add-new-quick-scan-overlay"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
@@ -21,11 +21,11 @@
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      :selectedScan="selectedScan"
+      :selectedItem="selectedScan"
     />
     <data-table
-      v-if="getPhishingScenariosSearchPermissions"
-      id="scenarios-data-table"
+      v-if="getEtsQuickScanPermissionSearch"
+      id="quick-scan-data-table"
       class="scenarios"
       ref="refQuickScanList"
       is-server-side
@@ -187,7 +187,7 @@ export default {
         ],
         rowActions: [
           {
-            name: labels.FastLaunch,
+            name: "View Report",
             icon: "mdi-receipt",
             action: "View Report",
             disabled: !this.$store.getters["permissions/getPhishingScenariosPreviewPermissions"],
@@ -196,17 +196,13 @@ export default {
             name: labels.Delete,
             icon: "mdi-delete",
             action: "deleteAction",
-            disabled: !this.$store.getters[
-              "permissions/getEtsQuickScanPermissionDelete"
-            ],
+            disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionDelete"],
           },
           {
             name: "Duplicate",
             icon: "mdi-content-copy",
             action: "handleEdit",
-            disabled: !this.$store.getters[
-              "permissions/getEtsQuickScanPermissionUpdate"
-            ],
+            disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionUpdate"],
           },
         ],
         downloadButton: {
@@ -220,22 +216,22 @@ export default {
           download: false,
         },
         empty: {
-          message: LABEL_STORE.NO_SCENARIO,
+          message: LABEL_STORE.NO_SCAN,
           btn: labels.New,
           icon: "mdi-plus",
-          id: "btn-empty--scenarios",
+          id: "btn-empty--scan",
           disabled: !this.$store.getters[
             "permissions/getsQuickScanPermissionCreate"
-          ],
+            ],
         },
         addButton: {
           show: true,
           action: "addAction",
-          tooltip: "Add a Scenario",
-          id: "btn-add--scenarios",
+          tooltip: "Add a Scan",
+          id: "btn-add--scan",
           disabled: !this.$store.getters[
             "permissions/getEtsQuickScanPermissionCreate"
-          ],
+            ],
         },
       },
       modalStatus: false,
@@ -246,7 +242,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getPhishingScenariosSearchPermissions: "permissions/getPhishingScenariosSearchPermissions",
+      getEtsQuickScanPermissionSearch: "permissions/getEtsQuickScanPermissionSearch",
     }),
   },
   methods: {
@@ -309,9 +305,6 @@ export default {
     handleDelete(row) {
       console.log(row);
       this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false);
-      /*deleteScenarios(row.resourceId).then(() => {
-        this.getDatatableList()
-      })*/
     },
     handleDuplicateScan(row) {
       getQuickScanById(row.quickScanResourceId).then((response) => {
@@ -319,7 +312,7 @@ export default {
         this.isDuplicate = true;
         this.scanDetails = response.data.data;
         this.modalStatus = true;
-      })
+      });
       this.selectedScan = row;
       //quickScanResourceId
     },
@@ -335,8 +328,8 @@ export default {
     },
     changeNewScanModalStatus(status, restart) {
       this.modalStatus = status;
-        this.isDuplicate = false;
-        this.scanDetails = {};
+      this.isDuplicate = false;
+      this.scanDetails = {};
       if (restart) {
         this.selectedScan = {};
         this.getDatatableList();
@@ -366,7 +359,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true;
-      if (this.getPhishingScenariosSearchPermissions) {
+      if (this.getEtsQuickScanPermissionSearch) {
         getQuickScanList(this.bodyData)
           .then((response) => {
             const {

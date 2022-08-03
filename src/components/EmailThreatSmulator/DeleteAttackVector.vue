@@ -1,7 +1,7 @@
 <template>
   <app-dialog
     icon="mdi-delete"
-    title="Delete Scans?"
+    title="Delete Attack Vector?"
     subtitle="Scans will deleted permanently"
     title-id="text--scenario-delete-popup-title"
     subtitle-id="text--scenario-delete-popup-subtitle"
@@ -9,7 +9,7 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedItem && selectedItem.email }} will be deleted.
+      {{ selectedItem && selectedItem.pluginName }} will be deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
@@ -26,9 +26,9 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { deleteQuickScanItem } from '@/api/emailThreatSimlator'
+import { deleteAttackVectorItem } from '@/api/emailThreatSimlator'
 export default {
-  name: 'DeleteScans',
+  name: 'DeleteAttackVector',
   components: {
     AppDialog,
     AppDialogFooter
@@ -46,11 +46,11 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteQuickScanItem(this.selectedItem.quickScanResourceId).then(() => {
+      deleteAttackVectorItem(this.selectedItem.pluginResourceId).then(() => {
         this.$emit('handleSuccessDeleteAction')
       })
       this.closeModal()
     }
-  }
+  },
 }
 </script>

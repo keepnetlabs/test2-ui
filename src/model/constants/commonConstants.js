@@ -111,6 +111,8 @@ export const LABEL_STORE = {
   NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification templates',
   NO_AUDIT: 'You do not have any audit logs',
   NO_SCENARIO: 'You do not have any scenarios',
+  NO_SCAN: 'You do not have any scan',
+  NO_ATTACK_VECTOR: 'You do not have any attack vector',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -348,6 +350,7 @@ export const TABLE_SETTINGS_KEYS = {
   SCENARIOS: 'Scenarios',
   LASTLAUNCH: 'lastLaunch',
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
+  ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorSettings',
 }
 
 export function getStoreValue(key, type) {
@@ -497,6 +500,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   LANDINGPAGES: 'LandingPagesSearchContainerKeys',
   SCENARIOS: 'ScenariosSearchKeys',
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
+  ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
 }
 
 export const INTEGRATION_TYPES = {

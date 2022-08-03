@@ -1342,4 +1342,31 @@ export default {
     //   method: ENUMS.METHODS.POST
     // }
   },
+  ETS_ATTACK_VECTOR_PERMISSIONS: {
+    SEARCH: {
+      url: `plugin/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `plugin`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `plugin/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `plugin{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+    // EXPORT: {
+    //   url: `quick-scan/search/export`,
+    //   hasPermission: false,
+    //   method: ENUMS.METHODS.POST
+    // }
+  },
 }
