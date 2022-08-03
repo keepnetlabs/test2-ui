@@ -20,8 +20,6 @@
           :training-resource-id="resourceId"
           :is-removable="formData.contentByLanguage.length > 1"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
-          @on-file-start="$emit('update:isActionButtonDisabled', true)"
-          @on-file-end="$emit('update:isActionButtonDisabled', false)"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
@@ -70,7 +68,7 @@ export default {
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
-        contentByLanguage: [{ file: null, languageId: '' }]
+        contentByLanguage: [{ file: null, languageId: '', isUploading: false }]
       }
     }
   },
@@ -88,6 +86,9 @@ export default {
     },
     scormTypes() {
       return this.getScormTypes()
+    },
+    isUploading() {
+      return this.formData.contentByLanguage.some((content) => content.isUploading)
     }
   },
   watch: {
@@ -96,7 +97,7 @@ export default {
       handler(val) {
         if (this.step === 2) {
           if (
-            val.some(
+            val.every(
               (content) => (content.file || content?.filePreviews?.length) && content.languageId
             )
           ) {

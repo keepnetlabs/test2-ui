@@ -74,7 +74,7 @@
                         class="template-list--item template-list--item__sub-header"
                         style="overflow: hidden; text-overflow: ellipsis;"
                       >
-                        {{ item.method || 'Clicked-only' }}
+                        {{ item.methodType }}
                         &#8226;
                         <span class="template-list--item__sub-header--span">by</span>
                         {{ item['createdBy'] }}
@@ -275,7 +275,7 @@ import {
   getCampaignJobSummary,
   getCampaignJobSummaryTargetGroups,
   getCampaignManagerPreview,
-  searchCampaignManager,
+  searchUnscheduledCampaigns,
   searchCampaignPhishingJob
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
@@ -415,7 +415,7 @@ export default {
     },
     callForData() {
       if (this.initial) this.setLoading(true)
-      searchCampaignManager(this.axiosPayload)
+      searchUnscheduledCampaigns(this.axiosPayload)
         .then((response) => {
           const {
             data: { data = [] }

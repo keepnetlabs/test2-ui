@@ -331,7 +331,26 @@ export default {
             })
             .finally(() => (this.isActionButtonDisabled = false))
         } else if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 1) {
-          this.step += flag
+          const {
+            formData: {
+              userWhoOpenedEmail,
+              userWhoClickedEmail,
+              userWhoSubmittedData,
+              userWhoDownloadedAttachment,
+              userWhoReportedAsSuspicious
+            }
+          } = refSendTrainingSelectUsers
+          const selections = [
+            userWhoOpenedEmail,
+            userWhoClickedEmail,
+            userWhoSubmittedData,
+            userWhoDownloadedAttachment,
+            userWhoReportedAsSuspicious
+          ]
+          if (selections.every((selection) => !selection)) {
+            refSendTrainingSelectUsers.targetUserCheckboxSelectionError = true
+            return
+          } else this.step += flag
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
