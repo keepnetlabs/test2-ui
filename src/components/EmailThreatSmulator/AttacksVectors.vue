@@ -1,306 +1,400 @@
 <template>
-  <data-table
-    id="attacks-vectors-list"
-    ref="refAttacksVectorsList"
-    is-server-side
-    selectable
-    filterable
-    options
-    :loading="loading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :server-side-props="serverSideProps"
-    :server-side-events="{ pagination: true, search: true, sort: true }"
-    :empty="tableOptions.empty"
-    :select-event="tableOptions.selectEvent"
-    :addButton="tableOptions.addButton"
-    :download="downloadOptions"
-    :axios-payload="bodyData"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @refreshAction="getDatatableList"
-    @downloadEvent="exportAuditLog"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @searchChangedEvent="handleSearchChange"
-    @sortChangedEvent="sortChanged"
-  ></data-table>
+  <div id="scenarios">
+    <v-overlay
+      id="add-new-quick-scan-overlay"
+      :value="modalStatus"
+      :opacity="1"
+      :z-index="99"
+      color="white"
+      v-if="modalStatus"
+    >
+      <NewAttackVector
+        ref="newScenarioModal"
+        :status="modalStatus"
+        :isEdit="isEdit"
+        :attackVectorDetails="attackVectorDetails"
+        @changeNewScanModalStatus="changeNewScanModalStatus"
+      />
+    </v-overlay>
+    <DeleteAttackVector
+      :status="showDeleteModal"
+      @handleSuccessDeleteAction="handleSuccessDeleteAction"
+      @handleCloseModal="showDeleteModal = false"
+      @handleDelete="handleDelete($event)"
+      :selectedItem="selectedScan"
+    />
+    <data-table
+      v-if="getEtsAttackVectorPermissionSearch"
+      id="quick-scan-data-table"
+      class="scenarios"
+      ref="refAttacksVectorList"
+      is-server-side
+      selectable
+      filterable
+      options
+      :loading="loading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :row-actions="tableOptions.rowActions"
+      :addButton="tableOptions.addButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @deleteAction="showDeleteModal = true"
+      @onEmptyBtnClicked="modalStatus = true"
+      @addAction="changeNewScanModalStatus(true)"
+      @downloadEvent="exportScenario"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="getDatatableList"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+    >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEditAttackVector(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          @on-click="handleActionDelete(scope.row)"
+        />
+      </template>
+    </data-table>
+  </div>
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
+import DataTable from "../DataTable";
+import NewAttackVector from "./NewAttackVector";
+import DeleteAttackVector from "./DeleteAttackVector";
 import {
-  COMMON_CONSTANTS,
+  getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import labels from '@/model/constants/labels'
-import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import labels from "@/model/constants/labels";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import { getAttackVectorList, getAttackVectorById } from "@/api/emailThreatSimlator";
+import {
+  // deleteScenarios,
+  exportScenarios,
+} from "@/api/scenarios";
+import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
+import { mapGetters } from "vuex";
+import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
 export default {
-  name: 'AttacksVectors',
+  name: "EmailTemplates",
   components: {
-    DataTable
+    DataTable,
+    DeleteAttackVector,
+    NewAttackVector,
+    DefaultButtonRowAction,
   },
+  mixins: [useCallForLanguagesForTableFilter],
   data() {
     return {
+      languageFilterOptions: [],
+      attackVectorDetails: {},
+      isShowFastLaunch: false,
+      isShowPreviewDialog: false,
+      selectedRow: null,
+      methodItems: [],
+      difficultyItems: [],
+      editableFormValues: {},
       loading: true,
+      isEdit: false,
       labels,
+      selectedScenarioURL: "",
       tableData: [],
+      showDeleteModal: false,
+      selectedScan: {},
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.AUDIT,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_ATTACK_VECTOR_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_ATTACK_VECTOR_TABLE,
         columns: [
-          /*{
-            property: PROPERTY_STORE.LOGDATE,
-            align: 'left',
-            editable: false,
-            label: LABEL_STORE.LOGDATE,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 160,
-            filterableType: 'date',
-            showSelect: false,
-            filterableOptions: {
-              exactDate: false,
-              after: false,
-              before: false,
-              between: true,
-              showSelect: false
-            },
-            defaultDate: {
-              hours: 2,
-              time: 'weeks',
-              select: '>='
-            },
-            fixed: 'left'
-          },*/
           {
-            property: PROPERTY_STORE.USERNAME,
-            align: 'left',
+            property: "pluginName",
+            align: "left",
             editable: false,
-            label: 'Attack Vector Name',
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 200,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.USERNAME,
-            align: 'left',
-            editable: false,
-            label: 'Type',
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 140,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.ENTITYID,
-            align: 'left',
-            editable: false,
-            label: 'Hash',
+            label: "Attack Vector Name",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
-            width: 140,
-            filterableType: 'text',
-            filterProps: { items: ['Include'] }
+            type: "text",
+            filterableType: "date",
+            width: 190,
           },
           {
-            property: PROPERTY_STORE.ENTITYNAME,
-            align: 'left',
+            property: "categoryName",
+            align: "left",
             editable: false,
-            label: 'Severity',
-            fixed: false,
+            label: "Type",
             sortable: true,
             show: true,
-            type: 'text',
-            width: 130,
-            filterableType: 'text'
+            type: "text",
+            width: 100,
+            filterableType: "text",
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
-            align: 'left',
+            property: "hash",
+            align: "left",
             editable: false,
-            label: LABEL_STORE.CREATEDATE,
-            fixed: false,
+            label: "Hash",
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'select',
-            filterableItems: COMMON_CONSTANTS.OPERATION_ITEMS
-          }
+            type: "text",
+            width: 105,
+            filterableType: "text",
+          },
+          {
+            property: "riskFactor",
+            align: "left",
+            editable: false,
+            label: "Severity",
+            sortable: true,
+            show: true,
+            type: "text",
+            width: 125,
+            filterableType: "number",
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: "left",
+            editable: false,
+            label: "Date Create",
+            sortable: true,
+            show: true,
+            type: "text",
+            filterableType: "date",
+          },
         ],
-
+        rowActions: [
+          {
+            name: "Edit",
+            icon: "mdi-pencil",
+            action: "handleEdit",
+            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionUpdate"],
+          },
+          {
+            name: labels.Delete,
+            icon: "mdi-delete",
+            action: "deleteAction",
+            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionDelete"],
+          },
+        ],
+        downloadButton: {
+          show: true,
+          disabled: !this.$store.getters["permissions/getPhishingScenariosExportPermissions"],
+        },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         empty: {
-          message: LABEL_STORE.NO_AUDIT
-        }
+          message: LABEL_STORE.NO_ATTACK_VECTOR,
+          btn: labels.New,
+          icon: "mdi-plus",
+          id: "btn-empty--scan",
+          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionCreate"],
+        },
+        addButton: {
+          show: true,
+          action: "addAction",
+          tooltip: "Add a Scenario",
+          id: "btn-add--scan",
+          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionCreate"],
+        },
       },
-      downloadOptions: {
-        xls: true,
-        csv: true,
-        pdf: true
-      },
-      bodyData: getDefaultAxiosPayload({
-        orderBy: 'LogDate',
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '<=' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }),
-      defaultRequestBody: getDefaultAxiosPayload({
-        orderBy: 'LogDate',
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '<=' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }),
-      serverSideProps: new ServerSideProps()
-    }
+      modalStatus: false,
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps(),
+    };
   },
-  created() {
-    this.bodyData.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
-      .subtract(2, 'weeks')
-      .format(getTimeZoneForMoment())
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
-      .subtract(2, 'weeks')
-      .format(getTimeZoneForMoment())
-    this.bodyData.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(Date.now()).format(
-      getTimeZoneForMoment()
-    )
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(
-      Date.now()
-    ).format(getTimeZoneForMoment())
-    this.getDatatableList()
+  computed: {
+    ...mapGetters({
+      getEtsAttackVectorPermissionSearch: "permissions/getEtsAttackVectorPermissionSearch",
+    }),
   },
   methods: {
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
+    toggleShowPreviewDialog() {
+      console.log("a", this.isShowPreviewDialog);
+      if (this.isShowPreviewDialog) this.selectedScan = {};
+      this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.bodyData.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.getDatatableList()
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems,
+      ];
+      this.resetPageNumber();
+      this.getDatatableList();
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.bodyData.pageNumber = pageNumber;
+      this.getDatatableList();
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
+      this.bodyData.ascending = order === "ascending";
+      this.bodyData.orderBy = prop;
+      this.getDatatableList();
     },
-    exportAuditLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    serverSideSizeChanged(pageSize = 10) {
+      this.bodyData.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.getDatatableList();
+    },
+    sortChangedEvent({ prop, order }) {
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === "ascending",
+      };
+      this.getDatatableList();
+    },
+    paginationChangedEvent({ pageSize, pageNumber }) {
+      this.bodyData = {
+        ...this.bodyData,
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
+      };
+      this.getDatatableList();
+    },
+    searchChangedEvent({ filter }) {
+      this.bodyData = { ...this.bodyData, filter };
+      this.getDatatableList();
+    },
+    handleSuccessDeleteAction() {
+      this.showDeleteModal = false;
+      this.getDatatableList();
+    },
+    handleDelete(row) {
+      console.log(row);
+      this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false);
+      /*deleteScenarios(row.resourceId).then(() => {
+        this.getDatatableList()
+      })*/
+    },
+    handleEditAttackVector(row) {
+      getAttackVectorById(row.pluginResourceId).then((response) => {
+        console.log(response);
+        this.isEdit = true;
+        this.attackVectorDetails = response.data.data;
+        this.modalStatus = true;
+      });
+      this.selectedScan = row;
+      //quickScanResourceId
+    },
+    checkIfCanCLoseNewScenarioModal() {
+      if (this.$refs.newScenarioModal) {
+        this.$refs.newScenarioModal.changeNewScanModalStatus();
+      }
+    },
+    checkIfCanCloseFastLaunchModal() {
+      if (this.$refs.fastLaunch) {
+        this.$refs.fastLaunch.closeOverlay();
+      }
+    },
+    changeNewScanModalStatus(status, restart) {
+      this.modalStatus = status;
+      this.isEdit = false;
+      this.attackVectorDetails = {};
+      if (restart) {
+        this.selectedScan = {};
+        this.getDatatableList();
+      }
+    },
+    exportScenario({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize,
-          orderBy: this.bodyData.orderBy,
-          ascending: this.bodyData.ascending,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: "CreateTime",
+          ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
-        }
-        exportAuditLog(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Audit Log.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: this.bodyData.filter,
+        };
+        exportScenarios(payload).then((response) => {
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
+          link.download = `Scenarios.${
+            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
     getDatatableList() {
-      this.loading = true
-      getAuditLogs(this.bodyData)
-        .then((response) => {
-          const {
-            data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      this.loading = true;
+      if (this.getEtsAttackVectorPermissionSearch) {
+        getAttackVectorList(this.bodyData)
+          .then((response) => {
+            const {
+              data: { data },
+            } = response;
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            const { results = [] } = data;
+            this.tableData = results;
+          })
+          .catch(() => {
+            this.tableData = [];
+          })
+          .finally(() => (this.loading = false));
+      } else {
+        this.$router.push("/");
+      }
+    },
+    handleActionDelete(row) {
+      console.log(row);
+      this.selectedScan = row;
+      this.showDeleteModal = true;
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
+      this.getDatatableList();
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      )
-      this.getDatatableList()
-    }
-  }
-}
+      );
+      this.getDatatableList();
+    },
+  },
+  created() {
+    this.callForLanguages("refAttacksVectorList");
+    this.getDatatableList();
+  },
+};
 </script>

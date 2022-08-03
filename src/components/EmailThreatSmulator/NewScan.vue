@@ -83,7 +83,6 @@
                   >
                     <InputEmail
                       v-model.trim="emailSettingsValues.email"
-                      id="input--new-scan-email"
                       entityName="email address"
                       initialPlaceholder="Email address"
                       hint
@@ -97,7 +96,6 @@
                       <v-radio-group
                         class="option-radio"
                         v-model="emailSettingsValues.scanType"
-                        id="input--new-scan-options"
                         :mandatory="false"
                         row
                         hide-details

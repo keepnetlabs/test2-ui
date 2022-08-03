@@ -5,7 +5,7 @@
         <Scans v-if="tab === 'scans'" ref="refScans" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getEmailTemplatesSearchPermissions"
+        v-if="getEtsAttackVectorPermissionSearch"
         label="Attacks Vectors"
         name="attacksVectors"
         id="tab-attacks-vectors"
@@ -37,7 +37,7 @@ export default {
   computed: {
     ...mapGetters({
       getEtsQuickScanPermissionSearch: "permissions/getEtsQuickScanPermissionSearch",
-      getEmailTemplatesSearchPermissions: "permissions/getEmailTemplatesSearchPermissions",
+      getEtsAttackVectorPermissionSearch: "permissions/getEtsAttackVectorPermissionSearch",
     }),
   },
   methods: {
@@ -46,7 +46,7 @@ export default {
     },
   },
   created() {
-    if (!this.getEtsQuickScanPermissionSearch && this.getEmailTemplatesSearchPermissions) {
+    if (!this.getEtsQuickScanPermissionSearch && this.getEtsAttackVectorPermissionSearch) {
       this.tab = "emailTemplates";
     } else if (
       !this.getPhishingScenariosSearchPermissions &&
@@ -81,5 +81,5 @@ export default {
       next();
     }
   },
-};
+}
 </script>

@@ -44,6 +44,7 @@ const {
   ROLES_PERMISSIONS,
   LDAP_PERMISSIONS,
   ETS_QUICK_SCAN_PERMISSIONS,
+  ETS_ATTACK_VECTOR_PERMISSIONS,
 } = PERMISSIONS
 
 const defaultState = {
@@ -91,6 +92,7 @@ const defaultState = {
   ldapPermissions: LDAP_PERMISSIONS,
   excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
+  etsAttackVectorPermissions:ETS_ATTACK_VECTOR_PERMISSIONS,
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -785,6 +787,18 @@ const store = {
     getEtsQuickScanPermissionDelete(state) {
       return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
+    getEtsAttackVectorPermissionSearch(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionCreate(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionUpdate(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionDelete(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
   },
   mutations: {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
@@ -835,6 +849,7 @@ const store = {
         'ldapPermissions',
         'excludeIpAddressPermissions',
         'etsQuickScanPermissions',
+        'etsAttackVectorPermissions',
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }
