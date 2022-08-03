@@ -290,8 +290,8 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <!-- <v-list-group
-            v-if="getAwarenessEducatorListGroupPermissions"
+          <v-list-group
+            v-if="!isProd && getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[
               'menu-with-item menu-link-default un-selected-list-item',
@@ -348,7 +348,7 @@
                 />
               </v-list-item-content>
             </v-list-item>
-          </v-list-group> -->
+          </v-list-group>
 
           <v-list-group
             v-if="getIncidentResponderListGroupPermissions"
@@ -755,6 +755,7 @@ export default {
   },
   data() {
     return {
+      isProd: true,
       showSettingsModalStatus: false,
       labels,
       navigationDrawerClass: '',
@@ -1204,6 +1205,12 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.interval)
+  },
+  created() {
+    const devUrls = ['dev-ui.devkeepnet.com', 'test-ui.devkeepnet.com', 'localhost:8080']
+    if (devUrls.includes(window.location.host)) {
+      this.isProd = false
+    }
   },
   methods: {
     ...mapActions({

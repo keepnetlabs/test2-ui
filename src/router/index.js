@@ -32,11 +32,11 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
-// import TrainingReport from '@/views/TrainingReport'
-// import AwarenessEducator from '@/views/AwarenessEducator'
-// import TrainingList from '@/views/TrainingList'
-// import Enrollments from '@/views/Enrollments'
-// import Certificates from '@/views/Certificates'
+import TrainingReport from '@/views/TrainingReport'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import TrainingList from '@/views/TrainingList'
+import Enrollments from '@/views/Enrollments'
+import Certificates from '@/views/Certificates'
 import Scorm from '@/views/Scorm'
 Vue.use(Router)
 const router = new Router({
@@ -126,60 +126,60 @@ const router = new Router({
           params: true,
           force: true
         },
-        // {
-        //   path: '/awareness-educator',
-        //   name: 'Awareness Educator',
-        //   component: AwarenessEducator,
-        //   meta: {
-        //     parentName: 'Dashboard',
-        //     isAuthenticated: true,
-        //     permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
-        //   },
-        //   children: [
-        //     {
-        //       path: 'training-list',
-        //       name: 'Training List',
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Awareness Educator',
-        //         permissionStoreKey: 'permissions/getTrainingSearchPermission'
-        //       },
-        //       component: TrainingList
-        //     },
-        //     {
-        //       path: 'enrollments',
-        //       name: 'Enrollments',
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Awareness Educator',
-        //         permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
-        //       },
-        //       component: Enrollments
-        //     },
-        //     {
-        //       path: 'certificates',
-        //       name: 'Certificates',
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Awareness Educator',
-        //         permissionStoreKey: 'permissions/getCertificatesSearchPermission'
-        //       },
-        //       component: Certificates
-        //     },
-        //     {
-        //       path: 'enrollments/training-report/:id',
-        //       name: 'Training Report',
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Enrollments',
-        //         permissionStoreKey: 'permissions/getAuditLogSearchPermission'
-        //       },
-        //       props: true,
-        //       params: true,
-        //       component: TrainingReport
-        //     }
-        //   ]
-        // },
+        {
+          path: '/awareness-educator',
+          name: 'Awareness Educator',
+          component: AwarenessEducator,
+          meta: {
+            parentName: 'Dashboard',
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
+          },
+          children: [
+            {
+              path: 'training-list',
+              name: 'Training List',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getTrainingSearchPermission'
+              },
+              component: TrainingList
+            },
+            {
+              path: 'enrollments',
+              name: 'Enrollments',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
+              },
+              component: Enrollments
+            },
+            {
+              path: 'certificates',
+              name: 'Certificates',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getCertificatesSearchPermission'
+              },
+              component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              props: true,
+              params: true,
+              component: TrainingReport
+            }
+          ]
+        },
         {
           path: '/company/job-log',
           name: 'Job Log',
