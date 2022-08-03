@@ -6,7 +6,7 @@
           button-id="btn-link--recently-investigations"
           close-button-id="btn-close--recently-investigations"
           :title="getTitle"
-          :link="{ href: '/incident-responder/investigations', text: 'All' }"
+          :link="{ href: '/incident-responder', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
         />
