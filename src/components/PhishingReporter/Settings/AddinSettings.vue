@@ -294,9 +294,9 @@
             ></v-checkbox>
             <InputDescription
               v-model.trim="formValues.simulationMailMessage"
-              initialPlaceholder="Enter a simulation mail message"
+              initialPlaceholder="Enter a simulation email message"
               entityName="simulation mail message"
-              id="input--phishing-reporter-simulation-mail-message"
+              id="input--phishing-reporter-simulation-email-message"
               rows="2"
               height="80"
               :disabled="!formValues.isSendSimulationMails"
