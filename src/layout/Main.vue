@@ -290,7 +290,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <v-list-group
+          <!-- <v-list-group
             v-if="getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[
@@ -348,7 +348,7 @@
                 />
               </v-list-item-content>
             </v-list-item>
-          </v-list-group>
+          </v-list-group> -->
 
           <v-list-group
             v-if="getIncidentResponderListGroupPermissions"
