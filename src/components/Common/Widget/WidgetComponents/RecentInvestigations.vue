@@ -6,7 +6,7 @@
           button-id="btn-link--recently-investigations"
           close-button-id="btn-close--recently-investigations"
           :title="getTitle"
-          :link="{ href: '/investigations', text: 'All' }"
+          :link="{ href: '/incident-responder/investigations', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
         />
@@ -16,7 +16,7 @@
               <router-link
                 class="k-widget-list__item"
                 :id="`btn-link--recent-investigations-name-${rowIndex}`"
-                :to="`/investigation-details/${row['resourceId']}`"
+                :to="`/incident-responder/investigations/investigation-details/${row['resourceId']}`"
                 >{{ value }}</router-link
               >
               <div
