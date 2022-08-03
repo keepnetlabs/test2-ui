@@ -34,6 +34,10 @@
         id="input--new-training-content-by-language-file"
         hint="Scorm 1.2 .zip file. Max. file size 40mb"
         style="width: 205px !important;"
+        :size="40"
+        :isShowFileProgress="true"
+        :is-stand-alone="true"
+        :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
         :disabled="isDisabled"
@@ -78,8 +82,10 @@ export default {
   },
   data() {
     return {
+      abortController: null,
       labels,
       isDisabled: false,
+      progressEvent: undefined,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -100,20 +106,31 @@ export default {
       if (Array.isArray(file) && file.length === 0) {
         return (this.value.file = null)
       }
+      this.abortController = new AbortController()
       const payload = new FormData()
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
       this.isDisabled = true
-      this.$emit('on-file-start')
-      AwarenessEducatorService.uploadTrainingContent(payload, this.trainingResourceId)
+      AwarenessEducatorService.uploadTrainingContent(
+        payload,
+        this.trainingResourceId,
+        this.abortController.signal,
+        (progressEvent) => {
+          this.progressEvent = progressEvent
+        }
+      )
         .then(() => {
+          this.progressEvent = undefined
+          this.abortController = null
           this.$emit('input', { ...this.value, file })
         })
-        .finally(() => {
-          this.$emit('on-file-end')
-        })
+        .finally(() => {})
     },
     handleRemove() {
+      if (this.abortController) {
+        this.abortController.abort()
+        this.abortController = null
+      }
       this.$emit('on-remove')
     }
   }

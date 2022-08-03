@@ -182,7 +182,11 @@ export default {
         this.interactionType
       )
         .then((response) => {
-          this.tableData = response?.data?.data
+          this.tableData = response?.data?.data.map((item) => ({
+            interaction: item.interaction,
+            eventTime: item.eventTime,
+            ...item.trackingInfo
+          }))
         })
         .finally(this.setLoading)
     },

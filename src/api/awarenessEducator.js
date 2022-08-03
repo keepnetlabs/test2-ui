@@ -20,9 +20,11 @@ const exportTrainingList = (payload) => {
   })
 }
 
-const uploadTrainingContent = (payload, resourceId) => {
+const uploadTrainingContent = (payload, resourceId, abortSignal, onUploadProgressCallback) => {
   return testRequest.post(`/trainings/${resourceId}/upload-content`, payload, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: COMMON_SNACKBAR,
+    onUploadProgress: onUploadProgressCallback,
+    signal: abortSignal
   })
 }
 

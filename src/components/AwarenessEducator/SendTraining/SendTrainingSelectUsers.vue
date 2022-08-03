@@ -38,6 +38,7 @@
             v-model="formData.userWhoOpenedEmail"
             id="input--send-training-user-who-opened-email"
             color="#2196f3"
+            @click="checkboxSelectionChange"
           >
             <template #label>{{ labels.UserWhoOpenedEmail }}</template>
           </v-checkbox>
@@ -46,6 +47,7 @@
             v-model="formData.userWhoClickedEmail"
             id="input--send-training-user-who-clicked-email"
             color="#2196f3"
+            @click="checkboxSelectionChange"
           >
             <template #label>{{ labels.UserWhoClickedEmail }}</template>
           </v-checkbox>
@@ -54,6 +56,7 @@
             v-model="formData.userWhoSubmittedData"
             id="input--send-training-user-who-submitted-data"
             color="#2196f3"
+            @click="checkboxSelectionChange"
           >
             <template #label>{{ labels.UserWhoSubmittedData }}</template>
           </v-checkbox>
@@ -62,6 +65,7 @@
             v-model="formData.userWhoDownloadedAttachment"
             id="input--send-training-user-who-downloaded-attachment"
             color="#2196f3"
+            @click="checkboxSelectionChange"
           >
             <template #label>{{ labels.UserWhoDownloadedAttachment }}</template>
           </v-checkbox>
@@ -69,9 +73,16 @@
             v-model="formData.userWhoReportedAsSuspicious"
             id="input--send-training-user-who-reported-as-suspicious"
             color="#2196f3"
+            @click="checkboxSelectionChange"
           >
             <template #label>{{ labels.UserWhoReportedAsSuspicious }}</template>
           </v-checkbox>
+          <CustomError
+            class="mb-6"
+            style="margin-top: 2px;"
+            :is-valid="!targetUserCheckboxSelectionError"
+            error-message="At least one of the options must be selected"
+          />
         </div>
       </FormGroup>
     </div>
@@ -98,6 +109,7 @@ export default {
   },
   data() {
     return {
+      targetUserCheckboxSelectionError: false,
       labels,
       initial: true,
       selectedRadioGroupIndex: 0,
@@ -168,6 +180,9 @@ export default {
         this.formData.userWhoDownloadedAttachment = false
       }
       this.formData.campaignResourceId = item.resourceId
+    },
+    checkboxSelectionChange() {
+      this.targetUserCheckboxSelectionError = false
     }
   }
 }
