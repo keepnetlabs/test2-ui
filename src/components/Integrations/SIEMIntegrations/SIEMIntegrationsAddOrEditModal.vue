@@ -103,7 +103,7 @@
             row
           >
             <v-radio value="UDP" label="UDP" color="#2196f3"></v-radio>
-            <v-radio value="TCP" label="TCP" color="#2196f3"></v-radio>
+            <!-- <v-radio value="TCP" label="TCP" color="#2196f3"></v-radio> -->
           </v-radio-group>
         </FormGroup>
         <FormGroup :title="labels.TestConnection">
