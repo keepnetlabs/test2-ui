@@ -97,7 +97,7 @@ export default {
           },
           {
             property: 'progress',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Progress',
             sortable: false,

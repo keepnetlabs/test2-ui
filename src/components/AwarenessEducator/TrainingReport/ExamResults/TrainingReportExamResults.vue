@@ -13,11 +13,7 @@
       :item="selectedRow"
       @on-close="toggleIsShowDetailsModal"
     />
-    <CampaignManagerReportHeader
-      class="mb-6"
-      title="Exam Results"
-      subtitle="List of the users’ exam results"
-    />
+    <CampaignManagerReportHeader class="mb-6" title="Exam Results" subtitle="Users’ exam results" />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -167,7 +163,7 @@ export default {
           },
           {
             property: 'examStatus',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Status',
             sortable: true,
@@ -184,10 +180,10 @@ export default {
           },
           {
             property: 'examScore',
-            align: 'right',
+            align: 'left',
             editable: false,
             label: 'Score',
-            fixed: 'right',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -199,17 +195,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyTrainingReportExamResults
         },
         rowActions: [
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -217,7 +205,13 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-          */
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
         ]
       },
       tableData: []

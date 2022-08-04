@@ -5,7 +5,7 @@
     maxHeightSize="665"
     :custom-size="'1000'"
     :icon="CONSTANTS.icon"
-    title="Interactions"
+    title="Details"
     :subtitle="getSubtitle"
     :status="status"
     @changeStatus="handleClose"
@@ -113,6 +113,7 @@ export default {
       {
         property: 'userIpAddresslist',
         align: 'left',
+        fixed: 'right',
         editable: false,
         label: 'IP',
         sortable: false,
@@ -122,10 +123,11 @@ export default {
         width: 180
       }
     ]
-    if (!this.interactionType)
+    if (this.interactionType)
       columns.unshift({
         property: 'interaction',
-        align: 'center',
+        align: 'left',
+        fixed: 'left',
         editable: false,
         label: 'Interaction',
         sortable: false,
