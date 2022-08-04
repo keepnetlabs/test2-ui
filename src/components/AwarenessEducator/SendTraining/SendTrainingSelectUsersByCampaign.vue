@@ -93,6 +93,9 @@
                   <div class="template-list--item mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
                   </div>
+                  <div class="template-list--item mt-2">
+                    <ShowMoreTags :default-badges="item.failedPercentageTag" badgeColor="#757575" />
+                  </div>
                 </div>
               </div>
               <multipane-resizer></multipane-resizer>
@@ -426,6 +429,7 @@ export default {
             delete newItem['instanceCount']
             newItem.targetUsers = Number(newItem.targetUsers)
             newItem.total = Number(item['instanceCount'])
+            newItem['failedPercentageTag'] = [newItem.failPercentageText]
             return newItem
           })
           if (this.campaignItems.length) {

@@ -20,16 +20,18 @@ export default {
     callForCategories() {
       AwarenessEducatorService.getCategories().then((response) => {
         this.categories =
-          response?.data?.data?.map((category) => ({ text: category.name, value: category.id })) ||
-          []
+          response?.data?.data?.map((category) => ({
+            text: category.displayName || category.name,
+            value: category.id
+          })) || []
       })
     },
     callForScormTypes() {
       AwarenessEducatorService.getScormTypes().then((response) => {
         this.scormTypes =
-          response?.data?.data?.map((category) => ({
-            text: category.name,
-            value: category.name
+          response?.data?.data?.map((type) => ({
+            text: type.name,
+            value: type.name
           })) || []
       })
     },
@@ -48,7 +50,7 @@ export default {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
         this.targetAudiences =
           response?.data?.data?.map((targetAudience) => ({
-            text: targetAudience.name,
+            text: targetAudience.displayName,
             value: targetAudience.id
           })) || []
       })

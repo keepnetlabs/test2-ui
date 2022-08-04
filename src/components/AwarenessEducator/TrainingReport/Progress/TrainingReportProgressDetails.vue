@@ -84,8 +84,20 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
+            property: 'sessionRank',
+            align: 'left',
+            editable: false,
+            label: 'Session',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 120,
+            filterableType: 'number'
+          },
+          {
             property: 'progress',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Progress',
             sortable: false,

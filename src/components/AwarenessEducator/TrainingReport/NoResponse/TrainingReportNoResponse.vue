@@ -9,8 +9,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Users who haven’t opened the training email"
-      subtitle="List of users who had no interaction with the training email"
+      title="No Response"
+      subtitle="Users who had no interaction with the training email"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -146,7 +146,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Email Send Date',
-            fixed: 'right',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -161,7 +161,6 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
             id: 'btn-no-response--row-actions-training-report-users',
@@ -169,8 +168,6 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
-
-           */
         ]
       },
       tableData: []

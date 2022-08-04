@@ -16,8 +16,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Users who clicked the training link"
-      subtitle="List of users who clicked the training URL"
+      title="Clicked the training link"
+      subtitle="Users who clicked the link to the course"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -165,10 +165,10 @@ export default {
           },
           {
             property: 'clickedCount',
-            align: 'right',
+            align: 'left',
             editable: false,
             label: 'Times Clicked',
-            fixed: 'right',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -180,17 +180,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyTrainingReportClicked
         },
         rowActions: [
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -198,8 +190,13 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
         ]
       },
       tableData: []

@@ -165,8 +165,12 @@ export default {
       }
     },
     getTrainingDeliveryData() {
-      const { reminderDescription = '' } = this.trainingSummary
+      const { reminderDescription = '', startDate = '' } = this.trainingSummary
       return {
+        'Start Date': {
+          show: true,
+          value: startDate
+        },
         'Reminder Options': {
           show: true,
           value: reminderDescription

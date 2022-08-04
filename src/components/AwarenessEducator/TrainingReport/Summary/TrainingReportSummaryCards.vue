@@ -3,7 +3,7 @@
     <div class="training-report-summary-cards__left">
       <TrainingReportSummaryInfoCard
         v-bind="getOpenedData"
-        background-color="#E6A23C"
+        background-color="#B6791D"
         :title="labels.OpenedEmail"
         :is-loading="isLoading"
         :icon-src="clickedLinkIcon"
@@ -19,6 +19,7 @@
     <div class="training-report-summary-cards__right">
       <TrainingReportSummaryInfoCard
         v-bind="getCompletedTrainingData"
+        background-color="#43A047"
         :title="labels.CompletedTraining"
         :is-loading="isLoading"
         :icon-src="noResponseIcon"

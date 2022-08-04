@@ -5,7 +5,7 @@
     maxHeightSize="665"
     :custom-size="'1000'"
     :icon="CONSTANTS.icon"
-    title="Interactions"
+    title="Details"
     :subtitle="getSubtitle"
     :status="status"
     @changeStatus="handleClose"
