@@ -14,7 +14,7 @@
         {{ labels.TrainingSummary }}
       </div>
       <div class="training-report-summary-header__subtitle">
-        Summary of this training
+        Summary of this training enrollment
       </div>
     </div>
     <div v-if="false" class="training-report-summary-header__right">

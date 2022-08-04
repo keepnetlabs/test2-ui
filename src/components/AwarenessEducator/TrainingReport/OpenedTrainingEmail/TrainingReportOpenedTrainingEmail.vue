@@ -16,8 +16,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Users who opened the training email"
-      subtitle="List of users who opened the training email but didn’t clicked the traning link"
+      title="Opened the training email"
+      subtitle="Users who opened the training email"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -165,7 +165,7 @@ export default {
           },
           {
             property: 'openedCount',
-            align: 'right',
+            align: 'left',
             editable: false,
             label: 'Times Opened',
             fixed: false,
@@ -180,17 +180,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyTrainingReportOpened
         },
         rowActions: [
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -198,8 +190,13 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
         ]
       },
       tableData: []

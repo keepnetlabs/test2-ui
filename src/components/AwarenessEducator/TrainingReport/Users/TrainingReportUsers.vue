@@ -15,8 +15,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Target Users"
-      subtitle="All users enrolled to this training"
+      title="Users"
+      subtitle="All target users enrolled to this training"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -63,7 +63,7 @@
           :checkIsOwnerProperty="false"
           @on-click="handleInteractions(scope.row)"
         />
-        <RowActionsMenu v-if="false">
+        <RowActionsMenu>
           <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
@@ -207,17 +207,17 @@ export default {
           },
           {
             property: 'status',
-            align: 'center',
+            align: 'lefet',
             editable: false,
             label: 'Status',
             sortable: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             width: 200,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-                text: item.name,
+                text: item.displayName || item.name,
                 value: item.name
               })) || []
           },
@@ -243,13 +243,12 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Interactions,
+            name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
             icon: '$custom-details',
             action: 'on-interactions'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-          /*
+          },
           {
             name: labels.ReSend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -271,7 +270,6 @@ export default {
             action: 'on-include'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
-           */
         ]
       },
       tableData: []

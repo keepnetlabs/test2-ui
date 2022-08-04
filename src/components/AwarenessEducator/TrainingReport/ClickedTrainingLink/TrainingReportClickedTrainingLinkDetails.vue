@@ -6,7 +6,7 @@
     :custom-size="'1000'"
     :icon="CONSTANTS.icon"
     title="Interactions"
-    :subtitle="getSubtitle"
+    :subtitle="Details"
     :status="status"
     @changeStatus="handleClose"
   >

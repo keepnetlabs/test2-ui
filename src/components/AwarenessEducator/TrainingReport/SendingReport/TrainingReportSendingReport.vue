@@ -235,13 +235,13 @@ export default {
           },
           {
             property: 'lastSendingStatus',
-            align: 'center',
+            align: 'left',
             editable: false,
-            fixed: 'right',
+            fixed: false,
             label: 'Last Sending Status',
             sortable: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             width: 220,
             filterableType: 'select',
             filterableItems:
@@ -249,8 +249,7 @@ export default {
                 text: status.displayName || status.name,
                 value: status.name
               })) || []
-          }
-          /*
+          },
           {
             property: 'smtp',
             align: 'left',
@@ -269,13 +268,11 @@ export default {
             label: 'Email Type',
             sortable: true,
             show: true,
-            fixed: 'right',
+            fixed: false,
             type: 'text',
             filterableType: 'text',
             width: 150
           }
-
-           */
         ],
         addButton: {
           show: false
@@ -284,7 +281,6 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -292,7 +288,6 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -300,8 +295,6 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
-
-           */
         ]
       },
       isShowExtendedView: false,

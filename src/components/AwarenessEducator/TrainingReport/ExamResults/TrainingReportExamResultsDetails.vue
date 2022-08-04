@@ -76,7 +76,7 @@ export default {
         columns: [
           {
             property: 'examStatus',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Status',
             sortable: false,

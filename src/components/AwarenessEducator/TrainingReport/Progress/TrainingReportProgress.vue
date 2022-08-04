@@ -16,7 +16,7 @@
     <CampaignManagerReportHeader
       class="mb-6"
       title="Progress"
-      subtitle="List of training progress details of users"
+      subtitle="Training progress details of users"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -61,16 +61,15 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
+          @on-click="handleResend(scope.row)"
         />
         <DefaultButtonRowAction
-          v-if="false"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
+          @on-click="handleDetails(scope.row)"
         />
       </template>
     </DataTable>
@@ -182,7 +181,7 @@ export default {
           },
           {
             property: 'progress',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Progress',
             sortable: true,
@@ -234,7 +233,7 @@ export default {
           },
           {
             property: 'sessionCount',
-            align: 'right',
+            align: 'left',
             editable: false,
             label: 'Sessions',
             fixed: false,
@@ -249,17 +248,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyTrainingReportProgress
         },
         rowActions: [
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          }
-          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -267,7 +258,13 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-           */
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
         ]
       },
       tableData: []
