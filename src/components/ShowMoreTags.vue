@@ -12,7 +12,7 @@
       <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
         <template v-slot:activator="{ on }">
           <v-btn style="display: none;"></v-btn>
-          <Badge :listeners="on" size="small" :color="'#1173C1'" :text="`${badges[index - 1]}`" />
+          <Badge :listeners="on" size="small" :color="badgeColor" :text="`${badges[index - 1]}`" />
         </template>
         <span class="tooltip-span">
           <slot name="status-tooltip-text">
@@ -26,7 +26,7 @@
           <Badge
             :listeners="on"
             size="mini"
-            :color="'#1173C1'"
+            :color="badgeColor"
             :text="`+${unRenderedBadgeCount}`"
           />
         </template>
@@ -51,6 +51,9 @@ export default {
     defaultBadges: {
       type: Array,
       default: () => []
+    },
+    badgeColor: {
+      default: '#1173C1'
     }
   },
   data() {
