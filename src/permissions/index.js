@@ -1362,11 +1362,11 @@ export default {
       url: `plugin{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `plugin/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
-    // EXPORT: {
-    //   url: `quick-scan/search/export`,
-    //   hasPermission: false,
-    //   method: ENUMS.METHODS.POST
-    // }
   },
 }

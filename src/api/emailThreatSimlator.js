@@ -1,11 +1,13 @@
 import emailThreatSimlatorRequest from '@/utils/emailThreatSimulatorRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import uploadRequest from "@/utils/uploadRequest";
+import testRequest from "@/utils/testRequest";
 
 export function getQuickScanList(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/search`, payload)
 }
-export function deleteQuickScanItem(id) {
-  return emailThreatSimlatorRequest.delete(`/quick-scan/${id}`)
+export function deleteQuickScanItem(resourceId) {
+  return emailThreatSimlatorRequest.delete(`/quick-scan/${resourceId}`)
 }
 export function getValidateContinuousScan(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/validate-continuous-scan`, payload)
@@ -13,18 +15,34 @@ export function getValidateContinuousScan(payload) {
 export function getQuickScanCreate(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan`, payload)
 }
-export function getQuickScanById(id) {
-  return emailThreatSimlatorRequest.get(`/quick-scan/${id}`)
+export function getQuickScanById(resourceId) {
+  return emailThreatSimlatorRequest.get(`/quick-scan/${resourceId}`)
 }
 export function getAttackVectorList(payload) {
   return emailThreatSimlatorRequest.post(`/plugin/search`, payload)
 }
-export function deleteAttackVectorItem(id) {
-  return emailThreatSimlatorRequest.delete(`/plugin/${id}`)
+export function deleteAttackVectorItem(resourceId) {
+  return emailThreatSimlatorRequest.delete(`/plugin/${resourceId}`)
 }
 export function getAttackVectorCreate(payload) {
-  return emailThreatSimlatorRequest.post(`/plugin`, payload)
+  return emailThreatSimlatorRequest.post(`/plugin`, payload, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+  });
 }
-export function getAttackVectorById(id) {
-  return emailThreatSimlatorRequest.get(`/plugin/${id}`)
+export function getAttackVectorUpdate(payload, resourceId) {
+  return emailThreatSimlatorRequest.put(`/plugin/${resourceId}`, payload, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+  });
+}
+export function getAttackVectorById(resourceId) {
+  return emailThreatSimlatorRequest.get(`/plugin/${resourceId}`)
+}
+export function exportAttacksVector(payload) {
+  return emailThreatSimlatorRequest.post(`/plugin/search/export`, payload, {
+    responseType: 'blob'
+  })
 }

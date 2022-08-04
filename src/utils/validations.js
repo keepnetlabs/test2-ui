@@ -192,3 +192,10 @@ export function isDomainUrl(value, message = 'Invalid URL') {
     ) || message
   )
 }
+export function numberRangeRule(value, min=0, max=999) {
+  if (value == "" && value == null) return false;
+  if (!isNaN(parseFloat(value)) && value >= min && value <= max) return true;
+  return `Value has to be between ${min} and ${max}`;
+}
+
+

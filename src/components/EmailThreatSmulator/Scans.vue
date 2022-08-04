@@ -48,7 +48,7 @@
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScanModalStatus(true)"
-      @downloadEvent="exportScenario"
+      @downloadEvent="exportTableData"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -180,7 +180,6 @@ export default {
             sortable: true,
             show: true,
             type: "text",
-            fixed: "left",
             width: 240,
             filterableType: "text",
           },
@@ -220,18 +219,14 @@ export default {
           btn: labels.New,
           icon: "mdi-plus",
           id: "btn-empty--scan",
-          disabled: !this.$store.getters[
-            "permissions/getsQuickScanPermissionCreate"
-            ],
+          disabled: !this.$store.getters["permissions/getsQuickScanPermissionCreate"],
         },
         addButton: {
           show: true,
           action: "addAction",
           tooltip: "Add a Scan",
           id: "btn-add--scan",
-          disabled: !this.$store.getters[
-            "permissions/getEtsQuickScanPermissionCreate"
-            ],
+          disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionCreate"],
         },
       },
       modalStatus: false,
@@ -335,7 +330,7 @@ export default {
         this.getDatatableList();
       }
     },
-    exportScenario({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,

@@ -1,5 +1,5 @@
 <template>
-  <div id="scenarios">
+  <div id="attack-vectors" class="attack-vectors">
     <v-overlay
       id="add-new-quick-scan-overlay"
       :value="modalStatus"
@@ -26,7 +26,7 @@
     <data-table
       v-if="getEtsAttackVectorPermissionSearch"
       id="quick-scan-data-table"
-      class="scenarios"
+      class="AttacksVector"
       ref="refAttacksVectorList"
       is-server-side
       selectable
@@ -48,7 +48,7 @@
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScanModalStatus(true)"
-      @downloadEvent="exportScenario"
+      @downloadEvent="exportTableData"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -92,11 +92,11 @@ import {
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import labels from "@/model/constants/labels";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
-import { getAttackVectorList, getAttackVectorById } from "@/api/emailThreatSimlator";
 import {
-  // deleteScenarios,
-  exportScenarios,
-} from "@/api/scenarios";
+  getAttackVectorList,
+  getAttackVectorById,
+  exportAttacksVector,
+} from "@/api/emailThreatSimlator";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import { mapGetters } from "vuex";
 import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
@@ -140,7 +140,7 @@ export default {
             sortable: true,
             show: true,
             type: "text",
-            filterableType: "date",
+            filterableType: "text",
             width: 190,
           },
           {
@@ -151,7 +151,7 @@ export default {
             sortable: true,
             show: true,
             type: "text",
-            width: 100,
+            width: 150,
             filterableType: "text",
           },
           {
@@ -172,7 +172,7 @@ export default {
             label: "Severity",
             sortable: true,
             show: true,
-            type: "text",
+            type: "badge",
             width: 125,
             filterableType: "number",
           },
@@ -203,7 +203,7 @@ export default {
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getPhishingScenariosExportPermissions"],
+          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionExport"],
         },
         selectEvent: {
           clipboard: true,
@@ -297,9 +297,6 @@ export default {
     handleDelete(row) {
       console.log(row);
       this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false);
-      /*deleteScenarios(row.resourceId).then(() => {
-        this.getDatatableList()
-      })*/
     },
     handleEditAttackVector(row) {
       getAttackVectorById(row.pluginResourceId).then((response) => {
@@ -330,7 +327,7 @@ export default {
         this.getDatatableList();
       }
     },
-    exportScenario({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -341,11 +338,11 @@ export default {
           exportType: exportType === "XLS" ? "Excel" : exportType,
           filter: this.bodyData.filter,
         };
-        exportScenarios(payload).then((response) => {
+        exportAttacksVector(payload).then((response) => {
           const { data } = response;
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(data);
-          link.download = `Scenarios.${
+          link.download = `AttacksVector.${
             exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
           }`;
           link.click();
@@ -398,3 +395,12 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.attack-vectors {
+  .k-badge__sizes--medium.v-btn {
+    width: 30px !important;
+    display: block;
+    margin: auto !important;
+  }
+}
+</style>
