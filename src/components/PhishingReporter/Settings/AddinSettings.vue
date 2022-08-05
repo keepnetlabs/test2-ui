@@ -286,7 +286,7 @@
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
               color="#2196f3"
-              label="Message for Phishing Simulation emails"
+              label="Turn off email forwarding for reported Phishing Simulation Emails"
               class="k-checkbox add-in-settings__list-item-checkbox"
               id="input--phishing-reporter-is-send-simulatiion-mails"
               v-model="formValues.isSendSimulationMails"
@@ -578,7 +578,7 @@ export default {
       this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
       this.formValues.isSendSimulationMails = true
       this.formValues.simulationMailMessage =
-        'This is a phishing simulation. Congratulations on recognizing it!'
+        'This was a phishing simulation sent to by your cyber-security team. Thank you for your awareness and cautiousness.'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
