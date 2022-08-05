@@ -5,7 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
-
+  PhishingCampaignTrends: 'Phishing Campaign Trends',
   ExcludeFromThisReport: 'Exclude from this report',
   IncludeToThisReport: 'Include back to this report',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
