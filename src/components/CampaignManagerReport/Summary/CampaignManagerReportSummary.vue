@@ -200,7 +200,8 @@ export default {
           notDelivered: 0,
           openedEmail: 0,
           submittedEmail: 0,
-          attachmentOpenedEmail: 0
+          attachmentOpenedEmail: 0,
+          reportedEmail: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -212,7 +213,8 @@ export default {
         notDelivered = 0,
         openedEmail = 0,
         submittedEmail = 0,
-        attachmentOpenedEmail = 0
+        attachmentOpenedEmail = 0,
+        reportedEmail = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
@@ -220,7 +222,8 @@ export default {
         submittedEmail,
         noResponseEmail,
         notDelivered,
-        attachmentOpenedEmail
+        attachmentOpenedEmail,
+        reportedEmail
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
