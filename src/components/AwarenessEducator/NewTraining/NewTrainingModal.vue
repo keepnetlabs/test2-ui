@@ -135,18 +135,20 @@ export default {
           type
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
-        refTrainingCourseInformation.setFormData({
-          coverImageUrl,
-          name,
-          hasQuiz,
-          description,
-          tags: tagNames,
-          targetAudience,
-          category
-        })
-        refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-        refTrainingContent.setFormData({ hasQuiz, type })
-        refTrainingContent.setTrainingContents(trainingContents)
+        if (refTrainingCourseInformation && refTrainingContent) {
+          refTrainingCourseInformation.setFormData({
+            coverImageUrl,
+            name,
+            hasQuiz,
+            description,
+            tags: tagNames,
+            targetAudience,
+            category
+          })
+          refTrainingCourseInformation.setMakeAvailableForData(availableForList)
+          refTrainingContent.setFormData({ hasQuiz, type })
+          refTrainingContent.setTrainingContents(trainingContents)
+        }
       })
     }
   },
