@@ -91,8 +91,8 @@ export default {
       if (data.length) {
         let minDate = Date.now(),
           maxDate = null,
-          minTrendCount = 0
-        maxTrendCount = 0
+          minTrendCount = 0,
+          maxTrendCount = 0
         const newData = data.map((row) => {
           let { attachmentOpenedCount, clickedCount, date, phishedUsersCount, submittedCount } = row
           const trendCount =

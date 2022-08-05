@@ -96,7 +96,6 @@ const widgetsStore = {
       commit('SET_LOADING', true)
       return getSummary(payload)
         .then((response) => {
-          console.log(response)
           const {
             dashboardSummary,
             dashboardTopRules,
