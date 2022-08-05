@@ -91,32 +91,31 @@ export default {
       if (data.length) {
         let minDate = Date.now(),
           maxDate = null,
-          minEmailCount = 0,
-          maxEmailCount = 0
-        let itemTypes = new Set()
+          minTrendCount = 0
+        maxTrendCount = 0
         const newData = data.map((row) => {
-          let { month, result, emailCount } = row
-          const splittedDate = month.split('-')
-          const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
+          let { attachmentOpenedCount, clickedCount, date, phishedUsersCount, submittedCount } = row
+          const trendCount =
+            attachmentOpenedCount + clickedCount + phishedUsersCount + submittedCount
+          const timeStampOfDate = new Date(date).getTime()
           if (timeStampOfDate < minDate) {
             minDate = timeStampOfDate
           }
           if (timeStampOfDate > maxDate) {
             maxDate = timeStampOfDate
           }
-          if (emailCount < minEmailCount) {
-            minEmailCount = emailCount
+          if (trendCount < minTrendCount) {
+            minTrendCount = trendCount
           }
-          if (emailCount > maxEmailCount) {
-            maxEmailCount = emailCount
+          if (trendCount > maxTrendCount) {
+            maxTrendCount = trendCount
           }
-          itemTypes.add(result)
-          return { x: timeStampOfDate, y: emailCount, result }
+          return { x: timeStampOfDate, y: trendCount }
         })
 
-        let maxEmailCountLeft = maxEmailCount % 10
-        let remanining = 10 - maxEmailCountLeft
-        maxEmailCount += remanining
+        let maxTrendCountLeft = maxTrendCount % 10
+        let remanining = 10 - maxTrendCountLeft
+        maxTrendCount += remanining
         this.chartOptions = {
           // Look at this bit
           plugins: {
@@ -171,8 +170,8 @@ export default {
                   borderDash: [3]
                 },
                 ticks: {
-                  min: minEmailCount,
-                  max: maxEmailCount,
+                  min: minTrendCount,
+                  max: maxTrendCount,
                   labelOffset: 0,
                   beginAtZero: true,
                   padding: -2,
@@ -186,17 +185,16 @@ export default {
             display: false
           }
         }
-        itemTypes = [...itemTypes]
         const datasets = []
         datasets.push({
-          label: getDataTableFieldLabel(itemType),
+          label: 'Campaign Trend',
           backgroundColor: 'white',
           borderColor: '#f56c6c',
           fill: false,
           pointRadius: 3,
           borderWidth: 2,
           lineTension: 0,
-          data: newData.filter((item) => item.result === itemType)
+          data: newData
         })
         this.chartData = {
           datasets
