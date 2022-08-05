@@ -22,7 +22,7 @@ export default {
         this.categories =
           response?.data?.data?.map((category) => ({
             text: category.displayName || category.name,
-            value: category.id
+            value: category.name
           })) || []
       })
     },
@@ -51,7 +51,7 @@ export default {
         this.targetAudiences =
           response?.data?.data?.map((targetAudience) => ({
             text: targetAudience.displayName,
-            value: targetAudience.id
+            value: targetAudience.name
           })) || []
       })
     }
