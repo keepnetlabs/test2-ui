@@ -188,9 +188,13 @@ export default {
   },
   watch: {
     onUploadProgress() {
-      return (this.uploadProgress = Math.round(
-        (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
-      ))
+      if (this.onUploadProgress) {
+        return (this.uploadProgress = Math.round(
+          (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
+        ))
+      } else {
+        return (this.uploadProgress = 0)
+      }
     }
   }
 }

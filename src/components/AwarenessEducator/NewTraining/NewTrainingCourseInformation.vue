@@ -26,7 +26,7 @@
         outlined
         autocomplete="off"
         item-text="text"
-        item-value="text"
+        item-value="value"
         hint="*Required"
         placeholder="Select category"
         :rules="[(v) => Validations.required(v, labels.Required)]"
@@ -41,7 +41,7 @@
         outlined
         autocomplete="off"
         item-text="text"
-        item-value="text"
+        item-value="value"
         hint="*Required"
         placeholder="Select target audience"
         :rules="[(v) => Validations.required(v, labels.Required)]"
