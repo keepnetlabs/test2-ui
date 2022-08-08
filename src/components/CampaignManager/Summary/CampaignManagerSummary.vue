@@ -248,7 +248,14 @@ export default {
     },
     getScenarioInfoItems() {
       const { selectedPhishingScenario = {} } = this.formData
-      const { name = '', method = '', difficulty = '' } = selectedPhishingScenario
+      const { name = '', method = '', difficulty = '', extraDatas = {} } = selectedPhishingScenario
+      if (Object.keys(extraDatas).length > 0) {
+        return {
+          name: extraDatas?.name || '',
+          method: extraDatas?.method || '',
+          difficulty: extraDatas?.difficulty || ''
+        }
+      }
       return { name, method, difficulty }
     },
     getTotalRandomlySelectedUserCount() {

@@ -501,7 +501,7 @@ export default {
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,
-          extraDatas: null
+          extraDatas: item
         }))
     },
     handleScroll(
@@ -534,7 +534,7 @@ export default {
           this.targetGroupItems = results.map((item) => ({
             text: item.name,
             value: item.resourceId,
-            extraDatas: null
+            extraDatas: item
           }))
         })
         .finally(() => {
@@ -567,7 +567,7 @@ export default {
               text: item.name,
               value: item.resourceId,
               method: item.method,
-              extraDatas: null
+              extraDatas: item
             }))
 
             if (
@@ -608,7 +608,7 @@ export default {
         text: item.name,
         value: item.resourceId,
         method: item.method,
-        extraDatas: null
+        extraDatas: item
       }
       if (
         !this.phishingScenarioSelectItems.find((selectItem) => selectItem.value === item.resourceId)
