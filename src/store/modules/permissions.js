@@ -776,9 +776,9 @@ const store = {
         roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
         recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
         mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions,
-        phishingCampaignTrendsCard: true,
-        mostEngagedCampaignsCard: true,
-        topPhishingSimulationReportersCard: true
+        phishingCampaignTrendsCard: getters?.getCampaignReportsGetPermissions,
+        mostEngagedCampaignsCard: getters?.getCampaignReportsGetPermissions,
+        topPhishingSimulationReportersCard: getters?.getDashboardReportersPermission
       }
     },
     getAwarenessEducatorListGroupPermissions(state) {

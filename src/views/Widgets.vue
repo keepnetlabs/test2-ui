@@ -303,7 +303,7 @@ export default {
           i: Math.random().toString(),
           key: 'PhishingCampaignTrends',
           title: 'Phishing Campaign Trends',
-          isAllowed: this?.permissions?.phishingCampaignTrends
+          isAllowed: this?.permissions?.phishingCampaignTrendsCard
         },
         RecentCampaigns: {
           x: 0,
@@ -746,7 +746,7 @@ export default {
           i: '0.5602556581402198',
           key: 'PhishingCampaignTrends',
           title: 'Phishing Campaign Trends',
-          isAllowed: this?.permissions?.phishingCampaignTrends
+          isAllowed: this?.permissions?.phishingCampaignTrendsCard
         },
         {
           x: 0,
