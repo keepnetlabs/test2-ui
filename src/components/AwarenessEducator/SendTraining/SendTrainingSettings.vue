@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="refForm">
+  <v-form ref="refForm" class="send-training-settings">
     <FormGroup has-hint :title="labels.ContentLanguage">
       <KSelect
         v-model.trim="formData.languageIds"
@@ -16,6 +16,7 @@
         :slots="{ item: true, selection: true }"
         :rules="[(v) => v.length > 0 || 'Required']"
         :items="contentLanguageItems"
+        :item-disabled="checkIsItemDisabled"
       >
         <template #item="{ item, index }">
           <ContentLanguageSelecItem
@@ -72,7 +73,7 @@
           <div :class="[!isDateValid && 'date-picker-error mb-n3']">
             <InputDate
               v-model="formData.enrollmentScheduler.scheduledDate"
-              class="date-picker-height-40 ml-2"
+              class="date-picker-height-40 ml-2 black-placeholder"
               type="datetime"
               ref="refPicker"
               placeholder="Select Date Select Time"
@@ -91,8 +92,10 @@
               </transition>
             </div>
           </div>
+          <span class="v-label theme--light mx-1" style="font-size: 14px;">in</span>
           <InputTimezone
             v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            class="black-placeholder"
             :disabled="isScheduledTimeDisabled"
           />
         </div>
@@ -405,28 +408,23 @@ export default {
   },
   watch: {
     isAllSelected(newVal) {
-      console.log('isAllSelected', newVal)
       if (newVal === true) {
         const validOptionValues = this.contentLanguageItems.map((item) => item.value)
         this.formData.languageIds = [...validOptionValues]
       } else {
         this.formData.languageIds = []
       }
-    },
-    'formData.languageIds'(val) {
-      console.log('langaugeIds', val)
     }
   },
   methods: {
     checkIsItemDisabled(item) {
-      console.log('item', item)
       if (item.value === 'All') return false
       if (this.isAllSelected) return true
       return false
     },
     getCheckboxCheckedValue(item) {
       if (
-        !!this.formData.languageIds.some((source) => source.value === item.value) ||
+        this.formData.languageIds.some((languageId) => languageId === item.value) ||
         this.isAllSelected
       )
         return true

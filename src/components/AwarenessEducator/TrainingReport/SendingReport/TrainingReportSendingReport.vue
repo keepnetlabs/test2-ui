@@ -251,7 +251,7 @@ export default {
               })) || []
           },
           {
-            property: 'smtp',
+            property: 'smtpName',
             align: 'left',
             editable: false,
             label: 'SMTP',

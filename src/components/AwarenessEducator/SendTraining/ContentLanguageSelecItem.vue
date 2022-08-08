@@ -4,8 +4,8 @@
       :class="[
         'mail-configuration-select-sources__item-container',
         {
-          'mail-configuration-select-sources__item-container--disabled': isDisabled,
-          'mail-configuration-select-sources__item-container--first': isFirst
+          'mail-configuration-select-sources__item-container--first': isFirst,
+          'mail-configuration-select-sources__item-container--disabled': isDisabled
         }
       ]"
     >
