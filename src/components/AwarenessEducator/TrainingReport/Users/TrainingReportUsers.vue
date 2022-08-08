@@ -207,7 +207,7 @@ export default {
           },
           {
             property: 'status',
-            align: 'lefet',
+            align: 'left',
             editable: false,
             label: 'Status',
             sortable: true,
@@ -226,7 +226,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Last Interaction',
-            fixed: 'right',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',

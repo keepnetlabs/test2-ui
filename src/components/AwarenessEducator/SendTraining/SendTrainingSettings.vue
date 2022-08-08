@@ -12,10 +12,39 @@
         small-chips
         autocomplete="off"
         hint="*Required"
-        placeholder="All Languages"
+        placeholder="Select content language"
+        :slots="{ item: true, selection: true }"
         :rules="[(v) => v.length > 0 || 'Required']"
         :items="contentLanguageItems"
-      ></KSelect>
+      >
+        <template #item="{ item, index }">
+          <ContentLanguageSelecItem
+            :item="item"
+            :index="index"
+            :isDisabled="checkIsItemDisabled(item)"
+            :isFirst="item.value === 'All'"
+            :isSelected="getCheckboxCheckedValue(item)"
+          />
+        </template>
+        <template #selection="data">
+          <v-chip
+            v-if="data.item.value !== 'All'"
+            v-show="!isAllSelected"
+            v-bind="data.attrs"
+            close
+            small
+            :key="JSON.stringify(data.item)"
+            :input-value="data.selected"
+            :disabled="data.disabled"
+            @click:close="data.parent.selectItem(data.item)"
+          >
+            {{ data.item.text }}
+          </v-chip>
+          <div v-else>
+            {{ data.item.text }}
+          </div>
+        </template>
+      </KSelect>
     </FormGroup>
     <FormGroup style="max-width: 600px;" :title="labels.Schedule">
       <v-radio-group
@@ -235,10 +264,11 @@ import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
 
 export default {
   name: 'SendTrainingSettings',
-  components: { InputTimezone, InputDate, KSelect, FormGroup },
+  components: { ContentLanguageSelecItem, InputTimezone, InputDate, KSelect, FormGroup },
   props: {
     selectedRow: {
       type: Object
@@ -338,6 +368,9 @@ export default {
     }
   },
   computed: {
+    isAllSelected() {
+      return this.formData.languageIds.some((item) => item === 'All')
+    },
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
@@ -370,7 +403,35 @@ export default {
   created() {
     this.callForContentLanguageItems()
   },
+  watch: {
+    isAllSelected(newVal) {
+      console.log('isAllSelected', newVal)
+      if (newVal === true) {
+        const validOptionValues = this.contentLanguageItems.map((item) => item.value)
+        this.formData.languageIds = [...validOptionValues]
+      } else {
+        this.formData.languageIds = []
+      }
+    },
+    'formData.languageIds'(val) {
+      console.log('langaugeIds', val)
+    }
+  },
   methods: {
+    checkIsItemDisabled(item) {
+      console.log('item', item)
+      if (item.value === 'All') return false
+      if (this.isAllSelected) return true
+      return false
+    },
+    getCheckboxCheckedValue(item) {
+      if (
+        !!this.formData.languageIds.some((source) => source.value === item.value) ||
+        this.isAllSelected
+      )
+        return true
+      return false
+    },
     callForContentLanguageItems() {
       AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
         (response) => {
@@ -378,6 +439,10 @@ export default {
             text: lang.name,
             value: lang.id
           }))
+          this.contentLanguageItems.unshift({
+            text: 'All Languages',
+            value: 'All'
+          })
         }
       )
     },

@@ -86,7 +86,7 @@ export default {
             width: 180
           },
           {
-            property: 'sessionEndDate',
+            property: 'dateCompleted',
             align: 'left',
             editable: false,
             label: 'Session End Date',
@@ -170,7 +170,10 @@ export default {
         this.item.enrollmentId,
         this.item.targetUserResourceId
       ).then((response) => {
-        this.tableData = response?.data?.data
+        this.tableData = response?.data?.data.map((item) => ({
+          ...item,
+          ...item.trackingInfo
+        }))
       })
     },
     handleClose() {
