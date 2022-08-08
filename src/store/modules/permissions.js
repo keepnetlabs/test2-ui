@@ -799,6 +799,9 @@ const store = {
     getEtsAttackVectorPermissionDelete(state) {
       return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
+    getEtsAttackVectorPermissionExport(state) {
+      return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
+    },
   },
   mutations: {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
