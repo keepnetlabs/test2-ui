@@ -278,9 +278,22 @@ export default {
                 ]
               }
             }).then((response) => {
+              const { results } = response?.data?.data || []
+              const totalUserCount = results.reduce((acc, item) => {
+                acc += item.userCount
+                return acc
+              }, 0)
+              if (totalUserCount) {
+                refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+                refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+                this.changeStep()
+              } else {
+                refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+                refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+                this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+              }
               refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
                 response.data.data.results
-              this.changeStep()
             })
           } else {
             if (!formData?.targetGroupResourceIds?.length) {
