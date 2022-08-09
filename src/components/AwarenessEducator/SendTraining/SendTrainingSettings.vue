@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="refForm">
+  <v-form ref="refForm" class="send-training-settings">
     <FormGroup has-hint :title="labels.ContentLanguage">
       <KSelect
         v-model.trim="formData.languageIds"
@@ -12,10 +12,40 @@
         small-chips
         autocomplete="off"
         hint="*Required"
-        placeholder="All Languages"
+        placeholder="Select content language"
+        :slots="{ item: true, selection: true }"
         :rules="[(v) => v.length > 0 || 'Required']"
         :items="contentLanguageItems"
-      ></KSelect>
+        :item-disabled="checkIsItemDisabled"
+      >
+        <template #item="{ item, index }">
+          <ContentLanguageSelecItem
+            :item="item"
+            :index="index"
+            :isDisabled="checkIsItemDisabled(item)"
+            :isFirst="item.value === 'All'"
+            :isSelected="getCheckboxCheckedValue(item)"
+          />
+        </template>
+        <template #selection="data">
+          <v-chip
+            v-if="data.item.value !== 'All'"
+            v-show="!isAllSelected"
+            v-bind="data.attrs"
+            close
+            small
+            :key="JSON.stringify(data.item)"
+            :input-value="data.selected"
+            :disabled="data.disabled"
+            @click:close="data.parent.selectItem(data.item)"
+          >
+            {{ data.item.text }}
+          </v-chip>
+          <div v-else>
+            {{ data.item.text }}
+          </div>
+        </template>
+      </KSelect>
     </FormGroup>
     <FormGroup style="max-width: 600px;" :title="labels.Schedule">
       <v-radio-group
@@ -43,7 +73,7 @@
           <div :class="[!isDateValid && 'date-picker-error mb-n3']">
             <InputDate
               v-model="formData.enrollmentScheduler.scheduledDate"
-              class="date-picker-height-40 ml-2"
+              class="date-picker-height-40 ml-2 black-placeholder"
               type="datetime"
               ref="refPicker"
               placeholder="Select Date Select Time"
@@ -62,8 +92,10 @@
               </transition>
             </div>
           </div>
+          <span class="v-label theme--light mx-1" style="font-size: 14px;">in</span>
           <InputTimezone
             v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            class="black-placeholder"
             :disabled="isScheduledTimeDisabled"
           />
         </div>
@@ -235,10 +267,11 @@ import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
 
 export default {
   name: 'SendTrainingSettings',
-  components: { InputTimezone, InputDate, KSelect, FormGroup },
+  components: { ContentLanguageSelecItem, InputTimezone, InputDate, KSelect, FormGroup },
   props: {
     selectedRow: {
       type: Object
@@ -338,6 +371,9 @@ export default {
     }
   },
   computed: {
+    isAllSelected() {
+      return this.formData.languageIds.some((item) => item === 'All')
+    },
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
@@ -370,7 +406,30 @@ export default {
   created() {
     this.callForContentLanguageItems()
   },
+  watch: {
+    isAllSelected(newVal) {
+      if (newVal === true) {
+        const validOptionValues = this.contentLanguageItems.map((item) => item.value)
+        this.formData.languageIds = [...validOptionValues]
+      } else {
+        this.formData.languageIds = []
+      }
+    }
+  },
   methods: {
+    checkIsItemDisabled(item) {
+      if (item.value === 'All') return false
+      if (this.isAllSelected) return true
+      return false
+    },
+    getCheckboxCheckedValue(item) {
+      if (
+        this.formData.languageIds.some((languageId) => languageId === item.value) ||
+        this.isAllSelected
+      )
+        return true
+      return false
+    },
     callForContentLanguageItems() {
       AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
         (response) => {
@@ -378,6 +437,10 @@ export default {
             text: lang.name,
             value: lang.id
           }))
+          this.contentLanguageItems.unshift({
+            text: 'All Languages',
+            value: 'All'
+          })
         }
       )
     },

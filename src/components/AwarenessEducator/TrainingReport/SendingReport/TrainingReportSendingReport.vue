@@ -245,13 +245,13 @@ export default {
             width: 220,
             filterableType: 'select',
             filterableItems:
-              this?.formDetails?.targetUserEnrollmentStatusEnum.map((status) => ({
+              this?.formDetails?.emailStatusEnum.map((status) => ({
                 text: status.displayName || status.name,
                 value: status.name
               })) || []
           },
           {
-            property: 'smtp',
+            property: 'smtpName',
             align: 'left',
             editable: false,
             label: 'SMTP',

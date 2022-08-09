@@ -79,67 +79,73 @@ export default {
             align: 'left',
             editable: false,
             label: 'Status',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'badge',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           },
           {
-            property: 'sessionEndDate',
+            property: 'dateCompleted',
             align: 'left',
             editable: false,
             label: 'Session End Date',
             fixed: false,
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 200
+            width: 200,
+            filterableType: 'date'
           },
           {
             property: 'userAgent',
             align: 'left',
             editable: false,
             label: 'User Agent',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           },
           {
             property: 'browserName',
             align: 'left',
             editable: false,
             label: 'Browser',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           },
           {
             property: 'userGeolocation',
             align: 'left',
             editable: false,
             label: 'Geolocation',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           },
           {
             property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'IP',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           }
         ],
         addButton: {
@@ -170,7 +176,10 @@ export default {
         this.item.enrollmentId,
         this.item.targetUserResourceId
       ).then((response) => {
-        this.tableData = response?.data?.data
+        this.tableData = response?.data?.data.map((item) => ({
+          ...item,
+          ...item.trackingInfo
+        }))
       })
     },
     handleClose() {

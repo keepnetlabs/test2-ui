@@ -174,7 +174,7 @@ export default {
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.examStatusEnum?.map((item) => ({
-                text: item.name,
+                text: item.displayName || item.name,
                 value: item.name
               })) || []
           },

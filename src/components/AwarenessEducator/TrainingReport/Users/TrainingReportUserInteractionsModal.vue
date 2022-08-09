@@ -29,6 +29,12 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
         <template v-slot:datatable-custom-column="{ scope }">
@@ -59,11 +65,12 @@ import { useLoading } from '@/hooks/useLoading'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import Badge from '@/components/Badge'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'TrainingReportUserInteractionsModal',
   components: { DataTable, AppDialog, Badge },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
       type: Boolean
@@ -82,33 +89,36 @@ export default {
         align: 'left',
         editable: false,
         label: 'Date',
-        sortable: false,
+        sortable: true,
         show: true,
         type: 'text',
         width: 180,
-        hideSort: true
+        hideSort: false,
+        filterableType: 'date'
       },
       {
         property: 'userAgent',
         align: 'left',
         editable: false,
         label: 'User Agent',
-        sortable: false,
-        hideSort: true,
+        sortable: true,
+        hideSort: false,
         show: true,
         type: 'text',
-        width: 220
+        width: 220,
+        filterableType: 'text'
       },
       {
         property: 'userGeolocation',
         align: 'left',
         editable: false,
         label: 'Geolocation',
-        sortable: false,
-        hideSort: true,
+        sortable: true,
+        hideSort: false,
         show: true,
         type: 'text',
-        width: 180
+        width: 180,
+        filterableType: 'text'
       },
       {
         property: 'userIpAddresslist',
@@ -116,25 +126,27 @@ export default {
         fixed: 'right',
         editable: false,
         label: 'IP',
-        sortable: false,
-        hideSort: true,
+        sortable: true,
+        hideSort: false,
         show: true,
         type: 'text',
-        width: 180
+        width: 180,
+        filterableType: 'text'
       }
     ]
-    if (this.interactionType)
+    if (!this.interactionType)
       columns.unshift({
         property: 'interaction',
         align: 'left',
         fixed: 'left',
         editable: false,
         label: 'Interaction',
-        sortable: false,
+        sortable: true,
         show: true,
         type: 'badge',
         width: 180,
-        hideSort: true
+        hideSort: false,
+        filterableType: 'text'
       })
     else {
       columns[columns.length - 1].width = 325
