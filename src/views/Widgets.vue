@@ -356,9 +356,9 @@ export default {
         TopPhishingSimulationReporters: {
           x: 0,
           y: 0,
-          w: 3,
+          w: 6,
           minW: 3,
-          defaultW: 3,
+          defaultW: 6,
           midW: 6,
           h: 6,
           defaultH: 6,
@@ -895,9 +895,9 @@ export default {
         {
           x: 0,
           y: 27,
-          w: 3,
+          w: 6,
           minW: 3,
-          defaultW: 3,
+          defaultW: 6,
           midW: 6,
           h: 6,
           defaultH: 6,
