@@ -77,6 +77,7 @@ export default {
           {
             property: 'examStatus',
             align: 'left',
+            fixed: 'left',
             editable: false,
             label: 'Status',
             sortable: true,
@@ -138,6 +139,7 @@ export default {
           {
             property: 'userIpAddresslist',
             align: 'left',
+            fixed: 'right',
             editable: false,
             label: 'IP',
             sortable: true,
