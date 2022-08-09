@@ -97,11 +97,8 @@ export default {
         const newData = []
         for (let i = 0; i < data.length; i++) {
           let { attachmentOpenedCount, clickedCount, submittedCount, date } = data[i]
-          const dateParts = date.split(' ')[0].split('/')
-          const timeStampOfDate = new Date(
-            parseInt(dateParts[2]),
-            parseInt(dateParts[1]) - 1
-          ).getTime()
+          const splittedDate = date.split('-')
+          const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
           if (timeStampOfDate < minDate) {
             minDate = timeStampOfDate
           }
