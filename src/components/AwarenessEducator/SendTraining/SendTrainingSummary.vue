@@ -189,6 +189,15 @@ export default {
       return this?.formData?.settings
     },
     getTrainingInfoItems() {
+      if (
+        this?.formData?.trainingInfo &&
+        this?.formData?.trainingInfo.Languages.includes('All Languages')
+      ) {
+        return {
+          ...this?.formData?.trainingInfo,
+          Languages: 'All Languages'
+        }
+      }
       return this?.formData?.trainingInfo
     },
     isEnrollmentData() {
