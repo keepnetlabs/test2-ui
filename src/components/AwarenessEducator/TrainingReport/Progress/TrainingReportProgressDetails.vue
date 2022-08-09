@@ -88,8 +88,8 @@ export default {
             align: 'left',
             editable: false,
             label: 'Session',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
             width: 120,
@@ -100,11 +100,12 @@ export default {
             align: 'left',
             editable: false,
             label: 'Progress',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'badge',
-            width: 180
+            width: 180,
+            filterableType: 'text'
           },
           {
             property: 'sessionStartDate',
@@ -112,11 +113,12 @@ export default {
             editable: false,
             label: 'Session Started',
             fixed: false,
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'date'
           },
           {
             property: 'sessionEndDate',
@@ -124,55 +126,60 @@ export default {
             editable: false,
             label: 'Session Ended',
             fixed: false,
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'date'
           },
           {
             property: 'userAgent',
             align: 'left',
             editable: false,
             label: 'User Agent',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 220
+            width: 220,
+            filterableType: 'text'
           },
           {
             property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'Browser',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 160
+            width: 160,
+            filterableType: 'text'
           },
           {
             property: 'userGeolocation',
             align: 'left',
             editable: false,
             label: 'Geolocation',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 200
+            width: 200,
+            filterableType: 'text'
           },
           {
             property: 'userIpAddresslist',
             align: 'left',
             editable: false,
             label: 'IP',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 200
+            width: 200,
+            filterableType: 'text'
           }
         ],
         addButton: {
@@ -205,7 +212,10 @@ export default {
         this.item.targetUserResourceId
       )
         .then((response) => {
-          this.tableData = response?.data?.data
+          this.tableData = response?.data?.data.map((item) => ({
+            ...item,
+            ...item.trackingInfo
+          }))
         })
         .finally(this.setLoading)
     },

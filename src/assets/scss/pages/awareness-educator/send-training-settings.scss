@@ -1,0 +1,9 @@
+.send-training-settings {
+    .el-input.black-placeholder input:disabled::placeholder, .el-input.black-placeholder .el-input__prefix {
+        color: #383B41 !important;
+    }
+
+    #input--timezone:disabled::placeholder {
+        color: #383B41 !important;
+    }
+}

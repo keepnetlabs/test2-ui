@@ -192,8 +192,6 @@ export default {
         return (this.uploadProgress = Math.round(
           (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
         ))
-      } else {
-        return (this.uploadProgress = 0)
       }
     }
   }

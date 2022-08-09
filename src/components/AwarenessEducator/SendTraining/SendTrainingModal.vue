@@ -386,6 +386,7 @@ export default {
         awardCertificate,
         languageIds
       } = refSendTrainingSettings.formData
+      const newLanguageIds = languageIds.filter((languageId) => languageId !== 'All')
       const phishingCampaignConditionTypes = []
       if (selectedIndex === 1) {
         if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
@@ -411,7 +412,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
-        languageIds
+        languageIds: newLanguageIds
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
