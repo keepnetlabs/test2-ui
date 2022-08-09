@@ -162,6 +162,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  RECIPIENT_TYPE: 'recipientType',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   AUDIENCE: 'audience',
