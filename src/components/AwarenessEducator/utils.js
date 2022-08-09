@@ -210,6 +210,18 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ENROLLMENT_STATUSES_FILTER
   },
+  TARGET_USERS: {
+    property: PROPERTY_STORE.RECIPIENT_TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.TargetUsers,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
+    filterableType: 'select',
+    filterableItems: [{ text: 'User Group', value: 'UserGroup' }, 'Campaign']
+  },
   TAGS: {
     property: PROPERTY_STORE.TAGS,
     align: 'left',

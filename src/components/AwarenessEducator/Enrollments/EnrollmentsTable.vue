@@ -97,6 +97,7 @@ export default {
           COLUMNS.START_DATE,
           COLUMNS.STATUS,
           COLUMNS.DELIVERY,
+          COLUMNS.TARGET_USERS,
           COLUMNS.TAGS
         ],
         iEmpty: {
