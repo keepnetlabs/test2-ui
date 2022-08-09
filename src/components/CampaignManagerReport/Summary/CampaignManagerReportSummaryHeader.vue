@@ -42,6 +42,8 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
 import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: { CampaignManagerReportSummaryResendDialog },
@@ -80,10 +82,17 @@ export default {
       exportPhishingCampaignJob(this.id)
         .then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Report.xlsx`
-          link.click()
+          if (data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Manager-Report.xlsx`
+            link.click()
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.message,
+              ...COMMON_SNACKBAR
+            })
+          }
         })
         .finally(() => (this.isDownloadReportDisabled = false))
     }
