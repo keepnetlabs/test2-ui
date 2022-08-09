@@ -191,7 +191,7 @@ export default {
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.progressType?.map((item) => ({
-                text: item.name,
+                text: item.displayName || item.name,
                 value: item.name
               })) || []
           },
