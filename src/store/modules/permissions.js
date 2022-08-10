@@ -787,6 +787,9 @@ const store = {
     getEtsQuickScanPermissionDelete(state) {
       return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
+    getEtsQuickScanPermissionExport(state) {
+      return state?.etsQuickScanPermissions?.EXPORT?.hasPermission
+    },
     getEtsAttackVectorPermissionSearch(state) {
       return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },

@@ -182,8 +182,6 @@ export default {
       });
     },
     submit() {
-      //getAttackVectorCreate
-      console.log(this.$refs.refAttackVectorForm.validate());
       if (this.$refs.refAttackVectorForm.validate()) {
         const {
           name,
@@ -207,6 +205,11 @@ export default {
           : getAttackVectorCreate(payload);
         requestFunc
           .then((response) => {
+            this.$store.dispatch("common/createSnackBar", {
+              message: this.isEdit ? "Attack Vector successfully duplicated." : "Attack Vector successfully added.",
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: "mdi-alert-circle",
+            });
             this.$emit("changeNewScanModalStatus", false, true);
           })
           .catch((error) => {
@@ -236,8 +239,8 @@ export default {
   },
   watch: {
     formValues: {
-      handler: function (value) {
-        //console.log(value);
+      handler: function (value, oldValue) {
+          this.isFormValuesChanged = true;
       },
       deep: true,
     },
@@ -248,17 +251,17 @@ export default {
     },
   },
   created() {
-    getLookupListByTypeId(24).then((response) => {
-      this.categoryResources = response.data.data;
+    getLookupListByTypeId(24).then((categories) => {
+      const categoryList =  categories.data.data;
+      this.categoryResources = categoryList;
       this.formValues.categoryResourceId = this.categoryResources[0];
+      if (this.isEdit) {
+        getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
+          const details =  response.data.data;
+          this.formValues = details;
+        });
+      }
     });
-    if (this.isEdit) {
-      getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
-        this.formValues = response.data.data;
-        this.formValues.content = null;
-        console.log("a", this.formValues);
-      });
-    }
   },
 };
 </script>

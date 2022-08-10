@@ -18,6 +18,11 @@ export function getQuickScanCreate(payload) {
 export function getQuickScanById(resourceId) {
   return emailThreatSimlatorRequest.get(`/quick-scan/${resourceId}`)
 }
+export function exportQuickScan(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
 export function getAttackVectorList(payload) {
   return emailThreatSimlatorRequest.post(`/plugin/search`, payload)
 }
