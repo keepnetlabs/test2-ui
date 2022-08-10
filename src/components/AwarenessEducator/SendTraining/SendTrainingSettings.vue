@@ -76,7 +76,7 @@
               class="date-picker-height-40 ml-2 black-placeholder"
               type="datetime"
               ref="refPicker"
-              placeholder="Select Date Select Time"
+              placeholder="Select Date and Time"
               style="width: 100%; max-width: 222px;"
               :disabled="isScheduledTimeDisabled"
             />
@@ -92,7 +92,7 @@
               </transition>
             </div>
           </div>
-          <span class="v-label theme--light mx-1" style="font-size: 14px;">in</span>
+          <span class="v-label theme--light ml-2" style="font-size: 14px;">in</span>
           <InputTimezone
             v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
             class="black-placeholder"
@@ -130,7 +130,7 @@
           dense
           hide-details
           placeholder="Select a item"
-          style="max-width: 100px;"
+          style="max-width: 120px;"
           :items="getPeriodTypeItems"
           :disabled="!sendReminderEvery"
         />

@@ -32,6 +32,7 @@
       :target-audiences="targetAudiences"
       :scorm-types="scormTypes"
       :main-languages="languages"
+      :enrollmentStatusEnum="enrollmentStatusEnum"
       @on-delete="handleDeleteRowClick"
       @on-stop="handleStop"
       @on-send="handleSend"
@@ -68,10 +69,20 @@ export default {
       selectedRow: null,
       isShowStopEnrollmentDialog: false,
       isShowEditEnrollmentModal: false,
-      isShowPreviewDialog: false
+      isShowPreviewDialog: false,
+      enrollmentStatusEnum: []
     }
   },
+  created() {
+    this.callForFormDetails()
+  },
   methods: {
+    callForFormDetails() {
+      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
+        this.enrollmentStatusEnum =
+          response?.data?.data?.enumNameValuePairs?.EnrollmentStatusEnum || []
+      })
+    },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null

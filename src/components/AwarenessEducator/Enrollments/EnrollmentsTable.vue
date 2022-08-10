@@ -67,6 +67,10 @@ export default {
     mainLanguages: {
       type: Array,
       required: true
+    },
+    enrollmentStatusEnum: {
+      type: Array,
+      required: true
     }
   },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
@@ -136,6 +140,20 @@ export default {
   },
   mounted() {
     this.callForData()
+  },
+  watch: {
+    enrollmentStatusEnum(val) {
+      const filterableItems = val.map((item) => ({
+        text: item.displayName || item.name,
+        value: item.id || item.name
+      }))
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'status'),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refTable?.reRenderFilters()
+    }
   },
   methods: {
     callForData() {

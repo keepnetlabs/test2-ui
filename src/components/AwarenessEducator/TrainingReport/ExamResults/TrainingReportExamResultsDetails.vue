@@ -75,8 +75,20 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
+            property: 'sessionRank',
+            align: 'right',
+            label: 'Session #',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 140,
+            filterableType: 'number'
+          },
+          {
             property: 'examStatus',
             align: 'left',
+            fixed: false,
             editable: false,
             label: 'Status',
             sortable: true,
@@ -138,6 +150,7 @@ export default {
           {
             property: 'userIpAddresslist',
             align: 'left',
+            fixed: 'right',
             editable: false,
             label: 'IP',
             sortable: true,
@@ -172,15 +185,18 @@ export default {
   },
   methods: {
     callForData() {
+      this.setLoading(true)
       AwarenessEducatorService.getTrainingReportExamResultsDetails(
         this.item.enrollmentId,
         this.item.targetUserResourceId
-      ).then((response) => {
-        this.tableData = response?.data?.data.map((item) => ({
-          ...item,
-          ...item.trackingInfo
-        }))
-      })
+      )
+        .then((response) => {
+          this.tableData = response?.data?.data.map((item) => ({
+            ...item,
+            ...item.trackingInfo
+          }))
+        })
+        .finally(this.setLoading)
     },
     handleClose() {
       this.$emit('on-close')
