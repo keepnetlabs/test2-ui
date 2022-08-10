@@ -254,10 +254,10 @@
               rows="2"
               height="80"
               :disabled="!formValues.isConfirmationBeforeAnalysis"
-              :initialRules="getAnalysisConfirmationMessageRules"
+              :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="true"
+              :required="formValues.isConfirmationBeforeAnalysis"
             />
           </div>
           <div class="add-in-settings__body-item mb-4">
@@ -277,10 +277,10 @@
               rows="2"
               height="80"
               :disabled="!formValues.isDeleteEmailBeforeAnalysis"
-              :initialRules="getAnalysisConfirmationMessageRules"
+              :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="true"
+              :required="formValues.isDeleteEmailBeforeAnalysis"
             />
           </div>
           <div class="add-in-settings__body-item mb-4">
@@ -300,10 +300,10 @@
               rows="2"
               height="80"
               :disabled="!formValues.isSendSimulationMails"
-              :initialRules="getAnalysisConfirmationMessageRules"
+              :initialRules="getTextAreaRules('isSendSimulationMails')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="true"
+              :required="formValues.isSendSimulationMails"
             />
           </div>
         </v-list-item-content>
@@ -432,10 +432,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' }),
-    getAnalysisConfirmationMessageRules() {
+    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' })
+  },
+  methods: {
+    getTextAreaRules(key) {
       const validations = []
-      if (this.formValues.isConfirmationBeforeAnalysis) {
+      if (this.formValues[key]) {
         validations.push((v) => this.validations.required(v, this.labels.Required))
         validations.push((v) =>
           this.validations.maxLength(
@@ -446,9 +448,7 @@ export default {
         )
       }
       return validations
-    }
-  },
-  methods: {
+    },
     getImagePreview() {
       try {
         return this.formValues.file && URL.createObjectURL(this.formValues.file)
