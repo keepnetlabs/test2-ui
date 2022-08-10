@@ -78,6 +78,16 @@ export default {
       requiredProps: {}
     }
   },
+  watch: {
+    required(val) {
+      if (val) {
+        this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }
+        this.rules.unshift((v) => Validations.required(v))
+      }
+      this.rules = this.applyRules ? this.initialRules || this.rules : []
+      this.placeholder = this.initialPlaceholder || labels.EnterDescription
+    }
+  },
   created() {
     if (this.required) {
       this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }

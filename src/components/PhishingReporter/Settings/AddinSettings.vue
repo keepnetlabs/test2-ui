@@ -257,7 +257,7 @@
               :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="formValues.isConfirmationBeforeAnalysis"
+              :required="getRequiredValue('isConfirmationBeforeAnalysis')"
             />
           </div>
           <div class="add-in-settings__body-item mb-4">
@@ -280,7 +280,7 @@
               :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="formValues.isDeleteEmailBeforeAnalysis"
+              :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
             />
           </div>
           <div class="add-in-settings__body-item mb-4">
@@ -303,7 +303,7 @@
               :initialRules="getTextAreaRules('isSendSimulationMails')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="formValues.isSendSimulationMails"
+              :required="getRequiredValue('isSendSimulationMails')"
             />
           </div>
         </v-list-item-content>
@@ -435,6 +435,13 @@ export default {
     ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' })
   },
   methods: {
+    getRequiredValue(key) {
+      let required = false
+      if (this.formValues[key]) {
+        required = true
+      }
+      return required
+    },
     getTextAreaRules(key) {
       const validations = []
       if (this.formValues[key]) {
@@ -469,6 +476,12 @@ export default {
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
+        this.formValues = {
+          ...this.formValues,
+          analysisConfirmationMessage: this.formValues.analysisConfirmationMessage || '',
+          analysisEmailDeleteMessage: this.formValues.analysisEmailDeleteMessage || '',
+          simulationMailMessage: this.formValues.simulationMailMessage || ''
+        }
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
