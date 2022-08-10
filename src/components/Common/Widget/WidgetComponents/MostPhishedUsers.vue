@@ -67,7 +67,7 @@ export default {
       columns: [
         {
           property: PROPERTY_STORE.EMAIL,
-          label: LABEL_STORE.EMAIL,
+          label: 'Email Address',
           thStyle: {
             width: '60%'
           },
