@@ -476,12 +476,6 @@ export default {
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.formValues = {
-          ...this.formValues,
-          analysisConfirmationMessage: this.formValues.analysisConfirmationMessage || '',
-          analysisEmailDeleteMessage: this.formValues.analysisEmailDeleteMessage || '',
-          simulationMailMessage: this.formValues.simulationMailMessage || ''
-        }
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
