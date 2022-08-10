@@ -15,8 +15,8 @@
               <span
                 v-if="value"
                 :id="`text--most-engaged-campaigns-name-${rowIndex}`"
-                class="k-widget-list__item"
-                style="color: #212121 !important; opacity: 0.7;"
+                class="k-widget-list__item cursor-pointer"
+                @click="$router.push(`/reports/campaign-reports/campaign-report/${row.resourceId}`)"
               >
                 {{ value }}
               </span>
