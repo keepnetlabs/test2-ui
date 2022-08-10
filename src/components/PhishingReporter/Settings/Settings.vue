@@ -205,8 +205,6 @@ export default {
         this.activateLoader()
       }
 
-      console.log('newFormData', newFormData)
-
       createPhishingReporter(formData)
         .then(() => {
           this.saveDisable = false
