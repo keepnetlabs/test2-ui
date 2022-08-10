@@ -20,7 +20,6 @@
         no-padding-bottom
         :show-filter-options="false"
         :is-settings-popup="false"
-        :count-row="5"
         :loading="isLoading"
         :table="tableData"
         :columns="tableOptions.columns"
@@ -87,6 +86,7 @@ export default {
       {
         property: 'eventTime',
         align: 'left',
+        fixed: this.interactionType ? 'left' : false,
         editable: false,
         label: 'Date',
         sortable: true,
@@ -105,7 +105,7 @@ export default {
         hideSort: false,
         show: true,
         type: 'text',
-        width: 220,
+        width: 250,
         filterableType: 'text'
       },
       {
@@ -130,7 +130,7 @@ export default {
         hideSort: false,
         show: true,
         type: 'text',
-        width: 180,
+        width: 160,
         filterableType: 'text'
       }
     ]

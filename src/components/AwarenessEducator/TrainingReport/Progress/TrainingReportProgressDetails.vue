@@ -2,7 +2,7 @@
   <AppDialog
     title-id="text--training-report-progress-details-popup-title"
     subtitle-id="text--training-report-progress-details-popup-subtitle"
-    maxHeightSize="665"
+    :maxHeightSize="'665'"
     :custom-size="'1000'"
     :icon="CONSTANTS.icon"
     title="Details of the user’s progress"
@@ -86,6 +86,7 @@ export default {
           {
             property: 'sessionRank',
             align: 'left',
+            fixed: 'left',
             editable: false,
             label: 'Session',
             sortable: true,
@@ -112,7 +113,6 @@ export default {
             align: 'left',
             editable: false,
             label: 'Session Started',
-            fixed: false,
             sortable: true,
             hideSort: false,
             show: true,
@@ -125,7 +125,6 @@ export default {
             align: 'left',
             editable: false,
             label: 'Session Ended',
-            fixed: false,
             sortable: true,
             hideSort: false,
             show: true,
@@ -146,7 +145,7 @@ export default {
             filterableType: 'text'
           },
           {
-            property: 'userIpAddresslist',
+            property: 'browserName',
             align: 'left',
             editable: false,
             label: 'Browser',
@@ -172,6 +171,7 @@ export default {
           {
             property: 'userIpAddresslist',
             align: 'left',
+            fixed: 'right',
             editable: false,
             label: 'IP',
             sortable: true,

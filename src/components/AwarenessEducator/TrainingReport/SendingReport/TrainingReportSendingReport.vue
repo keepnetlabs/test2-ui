@@ -242,7 +242,7 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 220,
+            width: 190,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.emailStatusEnum.map((status) => ({

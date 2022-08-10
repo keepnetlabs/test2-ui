@@ -117,7 +117,7 @@ export default {
     },
     getTrainingInfoData() {
       const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
-      const { targetGroupCount = 0, autoEnrollDescription = '', languages = ['EN'] } = this
+      const { targetGroupCount = 0, autoEnrollDescription = 'No', languages = ['EN'] } = this
         .trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
@@ -133,7 +133,7 @@ export default {
         },
         'Auto-enroll': {
           show: true,
-          value: autoEnrollDescription
+          value: autoEnrollDescription || 'No'
         },
         Languages: {
           show: true,
@@ -165,7 +165,7 @@ export default {
       }
     },
     getTrainingDeliveryData() {
-      const { reminderDescription = '', startDate = '' } = this.trainingSummary
+      const { reminderDescription = 'No', startDate = '' } = this.trainingSummary
       return {
         'Start Date': {
           show: true,
@@ -173,7 +173,7 @@ export default {
         },
         'Reminder Options': {
           show: true,
-          value: reminderDescription
+          value: reminderDescription || 'No'
         },
         'Delivery Status': {
           show: true,
