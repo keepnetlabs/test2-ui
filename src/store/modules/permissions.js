@@ -703,6 +703,9 @@ const store = {
     getDashboardReportedEmailTrendsPermission(state) {
       return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission
     },
+    getDashboardPhishingCampaignTrendsPermission(state) {
+      return state?.dashboardPermissions?.PHISHING_CAMPAIGN_TRENDS?.hasPermission
+    },
     getIncidentResponderNotifiedEmailPermission(state) {
       return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission
     },
@@ -772,7 +775,10 @@ const store = {
         phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
         roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
         recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
-        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
+        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions,
+        phishingCampaignTrendsCard: getters?.getCampaignReportsGetPermissions,
+        mostEngagedCampaignsCard: getters?.getCampaignReportsGetPermissions,
+        topPhishingSimulationReportersCard: getters?.getDashboardReportersPermission
       }
     },
     getAwarenessEducatorListGroupPermissions(state) {
