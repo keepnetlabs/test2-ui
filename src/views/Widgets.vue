@@ -743,7 +743,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.5602556581402198',
+          i: '0.5602556581402199',
           key: 'PhishingCampaignTrends',
           title: 'Phishing Campaign Trends',
           isAllowed: this?.permissions?.phishingCampaignTrendsCard
