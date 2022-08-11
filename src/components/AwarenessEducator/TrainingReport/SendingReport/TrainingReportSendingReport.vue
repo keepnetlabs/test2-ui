@@ -260,7 +260,8 @@ export default {
             type: 'text',
             filterableType: 'text',
             width: 150
-          },
+          }
+          /*
           {
             property: 'emailType',
             align: 'left',
@@ -273,6 +274,7 @@ export default {
             filterableType: 'text',
             width: 150
           }
+           */
         ],
         addButton: {
           show: false

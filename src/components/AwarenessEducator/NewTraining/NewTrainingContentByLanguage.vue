@@ -32,7 +32,7 @@
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
-        hint="Scorm 1.2 .zip file. Max. file size 40mb"
+        hint="Scorm 1.2 .zip file. Max. file size 40MB"
         style="width: 205px !important;"
         :size="40"
         :isShowFileProgress="true"
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     isLanguageDisabled() {
-      return !!this?.filePreviews?.length || this.isDisabled
+      return !!this?.filePreviews?.length
     }
   },
   methods: {
