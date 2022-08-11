@@ -89,6 +89,11 @@ export default {
             link.href = window.URL.createObjectURL(blob)
             link.download = `Campaign-Manager-Report.xlsx`
             link.click()
+          } else if (response.status === 201) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Campaign report will be generated',
+              ...COMMON_SNACKBAR
+            })
           } else if (response.status === 202) {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Campaign report is being generated',
