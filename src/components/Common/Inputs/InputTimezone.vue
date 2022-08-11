@@ -5,13 +5,16 @@
     type="autocomplete"
     id="input--timezone"
     class="input-timezone ml-2"
-    style="max-width: 195px;"
+    :style="getStyle"
     outlined
     dense
-    hide-details
+    :hide-details="!hint"
     placeholder="Select a timezone"
     min-width-type="huge"
+    :persistent-hint="persistentHint"
+    :hint="hint"
     :items="items"
+    :rules="rules"
     @change="$emit('input', $event)"
   />
 </template>
@@ -24,9 +27,31 @@ export default {
   props: {
     value: {
       type: String
+    },
+    hint: {
+      type: String
+    },
+    rules: {
+      type: Array,
+      default: () => []
+    },
+    persistentHint: {
+      type: Boolean,
+      default: false
+    },
+    isBlock: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
+    getStyle() {
+      if (this.isBlock) {
+        return ''
+      }
+
+      return 'max-width: 195px;'
+    },
     items() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))

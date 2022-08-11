@@ -127,6 +127,18 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
+                  <v-list-item-content>
+                    <label class="bottom-margin">Timezone</label>
+                    <InputTimezone
+                      v-model="formData.timeZoneId"
+                      hint="*Required"
+                      persistent-hint
+                      isBlock
+                      :rules="[(v) => validations.required(v)]"
+                    />
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">{{ labels.Address }}</label>
                     <InputAddress
@@ -555,6 +567,7 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -563,6 +576,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    InputTimezone,
     StepperFooter,
     InputAddress,
     InputDescription,
@@ -736,6 +750,7 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
+      this.formData.timeZoneId = this.selectedExtend.timeZoneId
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
