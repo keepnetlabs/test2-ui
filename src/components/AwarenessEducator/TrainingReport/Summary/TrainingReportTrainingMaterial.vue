@@ -24,7 +24,12 @@
           <div class="training-report-training-material__body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge size="mini" color="#2196F3" text="Scorm" :outline="false" />
-            <Badge size="mini" color="#757575" :outline="false">
+            <Badge
+              class-name="training-report-training-material__body-header-right-badge-language"
+              size="mini"
+              color="#757575"
+              :outline="false"
+            >
               <template #content>
                 <v-icon size="small">mdi-web</v-icon>
                 <span v-for="(language, index) in formData.languages" :key="language"

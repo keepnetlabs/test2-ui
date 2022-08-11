@@ -440,6 +440,8 @@ export default {
   },
   created() {
     this.callForLanguages('refEmailTemplatesList')
+  },
+  mounted() {
     this.getDatatableList()
   },
   methods: {
@@ -626,6 +628,7 @@ export default {
       })
     },
     getDatatableList() {
+      debugger
       if (this.getEmailTemplatesSearchPermissions) {
         this.loading = true
         getEmailTemplatesList(this.bodyData)
