@@ -1,9 +1,9 @@
 <template>
   <AppDialog
     v-if="status"
-    custom-size="926"
+    custom-size="950"
     max-height
-    max-height-size="900"
+    max-height-size="950"
     :status="status"
     icon="mdi-eye"
     size="ultraMaximum"
