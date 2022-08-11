@@ -7,6 +7,9 @@
         transform: rotate(-25deg);
     }
 }
+.v-content__wrap{
+  margin-top:20px;
+}
 
 .layout-container {
     .user-name-dropdown__content {
@@ -244,8 +247,8 @@
         &__logo-wrapper {
             max-width: 150px;
             max-height: 48px;
-            margin: 24px 24px 16px;
-            min-height: 48px;
+          margin: 44px 24px 16px;
+          min-height: 48px;
 
             &__logo {
                 max-height: 48px;
