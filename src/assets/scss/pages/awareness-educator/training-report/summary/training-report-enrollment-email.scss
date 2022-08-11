@@ -6,19 +6,21 @@
     }
 
     &__template-name {
-        font-weight: 600;
-        font-size: 18px;
+      font-weight: 600;
+      font-size: 16px;
+      color: #383B41;
     }
 
     &__created-by {
         color: #757575;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 12px;
         margin-bottom: 1rem;
     }
 
     &__description {
         font-weight: 400;
-        font-size: 14px;
+        font-size: 12px;
+        color: #383B41;
     }
 }

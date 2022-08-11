@@ -223,7 +223,7 @@ export default {
           },
           {
             property: 'lastSendDate',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Date Last Sent',
             fixed: false,
@@ -231,18 +231,18 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'date',
-            width: 160
+            width: 180
           },
           {
             property: 'lastSendingStatus',
-            align: 'left',
+            align: 'center',
             editable: false,
             fixed: false,
             label: 'Last Sending Status',
             sortable: true,
             show: true,
             type: 'slot',
-            width: 190,
+            width: 240,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.emailStatusEnum.map((status) => ({

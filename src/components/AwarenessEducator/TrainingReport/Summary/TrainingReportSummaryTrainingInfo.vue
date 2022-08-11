@@ -1,7 +1,7 @@
 <template>
   <CampaignManagerSummaryCard
     :isLoading="isLoading"
-    icon="mdi-alert-circle"
+    icon="mdi-information"
     :title="labels.TrainingInfo"
     :items="getItems"
   >

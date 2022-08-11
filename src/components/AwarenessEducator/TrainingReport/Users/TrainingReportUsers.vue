@@ -207,7 +207,7 @@ export default {
           },
           {
             property: 'status',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
