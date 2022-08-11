@@ -88,7 +88,7 @@ export default {
         align: 'left',
         fixed: this.interactionType ? 'left' : false,
         editable: false,
-        label: 'Date',
+        label: 'Date Opened',
         sortable: true,
         show: true,
         type: 'text',
@@ -137,13 +137,13 @@ export default {
     if (!this.interactionType)
       columns.unshift({
         property: 'interaction',
-        align: 'left',
+        align: 'center',
         fixed: 'left',
         editable: false,
         label: 'Interaction',
         sortable: true,
         show: true,
-        type: 'badge',
+        type: 'slot',
         width: 180,
         hideSort: false,
         filterableType: 'text'

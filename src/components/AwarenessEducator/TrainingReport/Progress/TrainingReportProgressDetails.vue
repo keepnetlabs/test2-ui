@@ -85,7 +85,7 @@ export default {
         columns: [
           {
             property: 'sessionRank',
-            align: 'left',
+            align: 'right',
             fixed: 'left',
             editable: false,
             label: 'Session',

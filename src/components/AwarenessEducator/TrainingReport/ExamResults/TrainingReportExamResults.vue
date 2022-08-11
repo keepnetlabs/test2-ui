@@ -163,7 +163,7 @@ export default {
           },
           {
             property: 'examStatus',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,

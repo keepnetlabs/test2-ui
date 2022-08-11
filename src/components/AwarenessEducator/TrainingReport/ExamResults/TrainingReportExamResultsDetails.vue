@@ -82,7 +82,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 140
+            width: 120
           },
           {
             property: 'examStatus',
