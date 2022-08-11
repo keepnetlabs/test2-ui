@@ -77,17 +77,16 @@ export default {
           {
             property: 'sessionRank',
             align: 'right',
-            label: 'Session #',
+            label: 'Session',
             fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
-            width: 140,
-            filterableType: 'number'
+            width: 140
           },
           {
             property: 'examStatus',
-            align: 'left',
+            align: 'center',
             fixed: false,
             editable: false,
             label: 'Status',
@@ -95,8 +94,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'badge',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: 'dateCompleted',
@@ -108,8 +106,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'date'
+            width: 200
           },
           {
             property: 'userAgent',
@@ -120,8 +117,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: 'browserName',
@@ -132,8 +128,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: 'userGeolocation',
@@ -144,8 +139,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: 'userIpAddresslist',
@@ -157,8 +151,7 @@ export default {
             hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           }
         ],
         addButton: {

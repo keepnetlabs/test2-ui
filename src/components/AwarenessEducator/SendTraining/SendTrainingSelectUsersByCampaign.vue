@@ -1,7 +1,11 @@
 <template>
   <div class="emailTemplatePreview" style="min-height: auto !important;">
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
-    <div v-else class="emailTemplatePreview__container" style="padding-top: 13px !important;">
+    <div
+      v-show="!isLoading"
+      class="emailTemplatePreview__container"
+      style="padding-top: 13px !important;"
+    >
       <div class="emailTemplatePreview__container-main">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
@@ -22,23 +26,29 @@
                     "
                   ></v-text-field>
                 </div>
-                <div v-if="false">
+                <div>
                   <KSelect
                     v-model="scenarioType"
                     placeholder="Scenario Type"
+                    clearable
                     outlined
                     persistent-hint
-                    style="padding-right: 4px !important;"
+                    style="padding-right: 4px !important; max-width: 200px !important;"
                     :items="scenarioTypeItems"
                   />
                 </div>
-                <div v-if="false">
+                <div>
                   <KSelect
                     v-model="language"
                     placeholder="Language"
+                    clearable
                     outlined
                     persistent-hint
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: 200px !important;
+                    "
                     :items="languageItems"
                   />
                 </div>
@@ -197,16 +207,19 @@
                     name="campaign-results"
                     id="send-training-campaign-results"
                   >
-                    <div class="send-training-campaign-results-container">
+                    <div
+                      class="send-training-campaign-results-container"
+                      style="margin-top: -20px;"
+                    >
                       <FormGroupHorizontalContent
                         :label="labels.SelectInstance"
-                        style="max-width: 700px;"
+                        style="margin-top: 0 !important;"
                       >
                         <KSelect
                           v-model.trim="phishingCampaignResourceId"
                           id="input--campaign-manager-advanced-settings-other-settings-percent"
                           class="ml-2"
-                          style="min-width: 548px;"
+                          style="min-width: 80%;"
                           outlined
                           dense
                           hide-details
@@ -219,8 +232,11 @@
                       :loading="isCampaignLoading"
                       class="mt-2"
                     />
-                    <div v-show="!isCampaignLoading" style="margin-top: 40px;">
-                      <div class="campaign-manager-target-user-groups-header">
+                    <div v-show="!isCampaignLoading" style="margin-top: 24px;">
+                      <div
+                        class="campaign-manager-target-user-groups-header"
+                        style="margin-right: 16px;"
+                      >
                         <v-icon color="#000000">mdi-account-multiple</v-icon>
                         <span class="campaign-manager-target-user-groups-header__text"
                           >Total {{ totalCampaignUsers }} users from
@@ -302,6 +318,11 @@ export default {
       type: String
     }
   },
+  inject: {
+    getLanguages: {
+      type: Function
+    }
+  },
   mixins: [useLoading],
   data() {
     return {
@@ -310,9 +331,8 @@ export default {
       search: '',
       scenarioType: '',
       language: '',
-      scenarioTypeItems: [],
+      scenarioTypeItems: ['Click-Only', 'Data Submission', 'Attachment'],
       tab: '',
-      languageItems: [],
       campaignItems: [],
       totalCampaignUsers: 0,
       isCampaignLoading: false,
@@ -337,6 +357,14 @@ export default {
     }
   },
   computed: {
+    languageItems() {
+      return (
+        this?.getLanguages()?.map((language) => ({
+          text: language.name,
+          value: language.code
+        })) || []
+      )
+    },
     getStyle() {
       const style = {}
       if (!this.getItems.length) {
@@ -379,34 +407,36 @@ export default {
           { FieldName: 'status', Operator: 'Contains', Value: val },
           { FieldName: 'createdBy', Operator: 'Contains', Value: val },
           { FieldName: 'createTime', Operator: 'Contains', Value: val },
-          { FieldName: 'lastLaunch', Operator: 'Contains', Value: val }
+          { FieldName: 'lastLaunch', Operator: 'Contains', Value: val },
+          { FieldName: 'methodType', Operator: 'Contains', Value: val },
+          { FieldName: 'languageShortCode', Operator: 'Contains', Value: val }
         ]
-        this.callForData()
+        this.callForData(true)
       }, 500)
     },
     language(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'language'
+        (item) => item.FieldName === 'languageShortCode'
       )
-      const obj = { Value: val, FieldName: 'language', Operator: 'Include' }
+      const obj = { Value: val || '', FieldName: 'languageShortCode', Operator: 'Include' }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
-      this.callForData()
+      this.callForData(true)
     },
     scenarioType(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'scenarioType'
+        (item) => item.FieldName === 'methodType'
       )
-      const obj = { Value: val, FieldName: 'scenarioType', Operator: 'Include' }
+      const obj = { Value: val || '', FieldName: 'methodType', Operator: 'Include' }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
-      this.callForData()
+      this.callForData(true)
     }
   },
   created() {
@@ -416,7 +446,8 @@ export default {
     isItemHaveTags(item) {
       return !item?.tags?.length
     },
-    callForData() {
+    callForData(fromSearch = false) {
+      if (fromSearch) this.setLoading(true)
       if (this.initial) this.setLoading(true)
       searchUnscheduledCampaigns(this.axiosPayload)
         .then((response) => {
@@ -437,6 +468,7 @@ export default {
           }
         })
         .finally(() => {
+          if (fromSearch) this.setLoading()
           if (this.initial) this.setLoading()
           if (this.initial) this.initial = false
         })
@@ -525,9 +557,9 @@ export default {
               position: 'right',
               labels: {
                 usePointStyle: true,
-                fontColor: '#757575',
-                fontFamily: 'Open-sans,sans-serif',
-                padding: 24,
+                color: '#383B41',
+                font: 'Open-sans,sans-serif',
+                padding: 32,
                 fontSize: 12,
                 generateLabels: (chart = {}) => {
                   const { data } = chart
@@ -545,7 +577,7 @@ export default {
           if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#67C23A', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              backgroundColor: ['#217124', '#E6A23C', '#F56C6C', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
                 labels.Opened,
@@ -558,12 +590,12 @@ export default {
           } else {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#217124', '#43A047'],
+              backgroundColor: ['#217124', '#B6791D', '#E6A23C', '#B83A3A', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
-                labels.Clicked,
-                labels.Opened,
-                labels.Submitted,
+                labels.ClickedThePhishingLink,
+                labels.OpenedEmail,
+                labels.SubmittedData,
                 labels.NotDelivered,
                 labels.ReportedAsSuspicious
               ],
