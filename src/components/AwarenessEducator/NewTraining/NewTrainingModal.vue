@@ -45,6 +45,7 @@
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :resource-id="trainingId"
               :step="step"
+              :is-edit="isEdit"
             />
           </v-stepper-content>
         </v-stepper-items>

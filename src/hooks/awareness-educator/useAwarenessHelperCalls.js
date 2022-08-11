@@ -30,7 +30,7 @@ export default {
       AwarenessEducatorService.getScormTypes().then((response) => {
         this.scormTypes =
           response?.data?.data?.map((type) => ({
-            text: type.name,
+            text: type.displayName,
             value: type.name
           })) || []
       })

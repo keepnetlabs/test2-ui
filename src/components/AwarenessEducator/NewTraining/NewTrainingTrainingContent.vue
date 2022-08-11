@@ -23,7 +23,11 @@
           @on-remove="handleRemove(index - 1)"
         />
       </div>
-      <div class="d-flex mt-2 ml-4 cursor-pointer" @click="handleAddLanguage">
+      <div
+        v-if="isRenderAddLanguage"
+        class="d-flex mt-2 ml-4 cursor-pointer"
+        @click="handleAddLanguage"
+      >
         <v-icon color="#2196f3">mdi-plus</v-icon>
         <div class="ml-2 new-integration__api-key__text" style="width: 150px;">
           ADD LANGUAGE
@@ -51,6 +55,9 @@ export default {
     },
     step: {
       type: Number
+    },
+    isEdit: {
+      type: Boolean
     }
   },
   inject: {
@@ -68,11 +75,14 @@ export default {
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
-        contentByLanguage: [{ file: null, languageId: '', isUploading: false }]
+        contentByLanguage: []
       }
     }
   },
   computed: {
+    isRenderAddLanguage() {
+      return !(this?.languages?.length === this?.formData?.contentByLanguage?.length)
+    },
     languages() {
       return (
         this?.getLanguages()?.map((language) => ({
@@ -108,6 +118,9 @@ export default {
         }
       }
     }
+  },
+  created() {
+    if (!this.isEdit) this.handleAddLanguage()
   },
   methods: {
     handleAddLanguage() {
