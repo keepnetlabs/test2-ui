@@ -40,7 +40,7 @@
     "regenerator-runtime": "^0.13.7",
     "v-mask": "^2.2.3",
     "v-offline": "^1.1.0",
-    "vue": "2.6.12",
+    "vue": "2.7.8",
     "vue-chartjs": "^3.5.1",
     "vue-clamp": "^0.2.2",
     "vue-custom-element": "^3.2.14",
@@ -59,7 +59,7 @@
     "vue-upload-component": "^2.8.20",
     "vue-video-player": "^5.0.2",
     "vuedraggable": "^2.23.2",
-    "vuetify": "2.3.19",
+    "vuetify": "2.6.9",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
@@ -89,8 +89,8 @@
     "vue-class-component": "^7.1.0",
     "vue-cli-plugin-vuetify": "2.0.9",
     "vue-jest": "^3.0.7",
-    "vue-template-compiler": "2.6.12",
-    "vuetify-loader": "1.6.0",
+    "vue-template-compiler": "2.7.8",
+    "vuetify-loader": "1.9.2",
     "webpack": "^4.44.1"
   },
   "eslintConfig": {

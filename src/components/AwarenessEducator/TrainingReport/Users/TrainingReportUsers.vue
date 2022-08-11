@@ -231,8 +231,7 @@ export default {
             show: true,
             type: 'text',
             width: 180,
-            filterableType: 'date',
-            filterableCustomFieldName: 'lastInteraction'
+            filterableType: 'date'
           }
         ],
         addButton: {
