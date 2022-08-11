@@ -143,7 +143,7 @@ export default {
         label: 'Interaction',
         sortable: true,
         show: true,
-        type: 'badge',
+        type: 'slot',
         width: 180,
         hideSort: false,
         filterableType: 'text'
