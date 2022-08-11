@@ -165,7 +165,7 @@ export default {
           },
           {
             property: 'openedCount',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Times Opened',
             fixed: false,

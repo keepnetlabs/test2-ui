@@ -181,7 +181,7 @@ export default {
           },
           {
             property: 'progress',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Progress',
             sortable: true,
@@ -233,7 +233,7 @@ export default {
           },
           {
             property: 'sessionCount',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Sessions',
             fixed: false,

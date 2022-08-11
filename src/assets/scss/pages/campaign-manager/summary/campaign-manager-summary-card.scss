@@ -39,10 +39,11 @@
             color: #383b41;
             word-break: break-all;
             padding: 16px 0;
+            justify-content: space-between;
 
             &:first-child {
                 padding: 0 0 16px 0 !important;
-                border-bottom: 1px solid #e0e0e0;
+                border-bottom: 1px solid #F2F2F2;
             }
 
             &:last-child {
@@ -50,7 +51,7 @@
             }
 
             &:not(:last-child) {
-                border-bottom: 1px solid #e0e0e0;
+                border-bottom: 1px solid #F2F2F2;
             }
 
             &-key {
