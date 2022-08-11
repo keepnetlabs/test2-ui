@@ -628,7 +628,6 @@ export default {
       })
     },
     getDatatableList() {
-      debugger
       if (this.getEmailTemplatesSearchPermissions) {
         this.loading = true
         getEmailTemplatesList(this.bodyData)

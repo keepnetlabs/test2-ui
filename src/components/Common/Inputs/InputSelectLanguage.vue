@@ -2,6 +2,7 @@
   <KSelect
     outlined
     type="autocomplete"
+    prepend-inner-icon="mdi-magnify"
     :required="required"
     :persistent-hint="persistentHint"
     :items="items"

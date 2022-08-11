@@ -56,7 +56,7 @@
           }
           &-left {
             font-weight: 600;
-            font-size: 20px;
+            font-size: 16px;
             color: #383b41;
           }
           &-right {
@@ -81,6 +81,11 @@
                 }
               }
             }
+          }
+          &-sub{
+            color: #757575;
+            font-weight: 600;
+            font-size: 12px;
           }
         }
         &-preview {
