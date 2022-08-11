@@ -236,6 +236,7 @@ export const labels = {
   ResendTraining: 'Resend Training',
   ResetPassword: 'Reset Password',
   Clicked: 'Clicked',
+  ClickedThePhishingLink: 'Clicked the phishing link',
   SubmittedData: 'Submitted Data',
   OpenedAttachment: 'Opened Attachment',
   NoResponse: 'No Response',

@@ -148,7 +148,7 @@
           :disabled="!sendReminderEvery"
         />
         <v-text-field
-          v-if="formData.enrollmentReminder.endType === 'AfterOccurences'"
+          v-if="formData.enrollmentReminder.endType === 'AfterOccurrences'"
           v-model="formData.enrollmentReminder.occurrenceCount"
           v-mask="'#######'"
           id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
@@ -159,7 +159,9 @@
           :disabled="!sendReminderEvery"
           :rules="rules.number"
         ></v-text-field>
-        <span v-if="formData.endType === 3" class="ml-2">times</span>
+        <span v-if="formData.enrollmentReminder.endType === 'AfterOccurrences'" class="ml-2"
+          >times</span
+        >
         <InputDate
           v-if="formData.enrollmentReminder.endType === 'OnDate'"
           v-model="formData.enrollmentReminder.stopTime"
@@ -211,6 +213,7 @@
           dense
           hide-details
           placeholder="Select a item"
+          position="top"
           style="max-width: 150px;"
           :items="enrollmentAutoEnrollTypeItems"
           :disabled="!isAutoEnroll"
@@ -226,6 +229,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 150px;"
+          position="top"
           :items="enrollmentAutoEnrollDayOfWeekItems"
           :disabled="!isAutoEnroll"
         />
@@ -251,6 +255,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 118px;"
+          position="top"
           :items="periodTypeItems"
           :disabled="!isAutoEnroll"
         />
@@ -346,7 +351,7 @@ export default {
         },
         {
           text: 'after occurences',
-          value: 'AfterOccurences'
+          value: 'AfterOccurrences'
         },
         {
           text: 'on date',

@@ -223,7 +223,7 @@ export default {
           },
           {
             property: 'lastSendDate',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Date Last Sent',
             fixed: false,

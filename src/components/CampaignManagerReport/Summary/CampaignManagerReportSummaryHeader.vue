@@ -1,3 +1,4 @@
+import { mdiConsoleNetworkOutline } from '@mdi/js'
 <template>
   <div class="campaign-manager-report-summary-header">
     <CampaignManagerReportSummaryResendDialog
@@ -82,14 +83,15 @@ export default {
       exportPhishingCampaignJob(this.id)
         .then((response) => {
           const { data } = response
-          if (data instanceof Blob) {
+          if (response.status === 200) {
+            const blob = new Blob([data])
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = window.URL.createObjectURL(blob)
             link.download = `Campaign-Manager-Report.xlsx`
             link.click()
-          } else {
+          } else if (response.status === 202) {
             this.$store.dispatch('common/createSnackBar', {
-              message: response.message,
+              message: 'Campaign report is being generated',
               ...COMMON_SNACKBAR
             })
           }
