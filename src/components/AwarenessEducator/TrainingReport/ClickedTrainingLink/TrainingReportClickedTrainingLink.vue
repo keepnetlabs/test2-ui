@@ -165,7 +165,7 @@ export default {
           },
           {
             property: 'clickedCount',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Times Clicked',
             fixed: false,
