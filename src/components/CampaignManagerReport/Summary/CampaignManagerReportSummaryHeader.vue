@@ -82,6 +82,7 @@ export default {
       this.isDownloadReportDisabled = true
       exportPhishingCampaignJob(this.id)
         .then((response) => {
+          console.log(response)
           const { data } = response
           if (response.status === 200) {
             const blob = new Blob([data])
@@ -89,6 +90,11 @@ export default {
             link.href = window.URL.createObjectURL(blob)
             link.download = `Campaign-Manager-Report.xlsx`
             link.click()
+          } else if (response.status === 201) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Campaign report will be generated',
+              ...COMMON_SNACKBAR
+            })
           } else if (response.status === 202) {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Campaign report is being generated',
