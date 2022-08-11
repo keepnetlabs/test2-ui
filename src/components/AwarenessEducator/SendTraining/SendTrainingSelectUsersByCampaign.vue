@@ -577,7 +577,7 @@ export default {
           if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#F56C6C', '#217124', '#43A047'],
+              backgroundColor: ['#757575', '#E6A23C', '#F56C6C', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
                 labels.Opened,
@@ -590,7 +590,7 @@ export default {
           } else {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#217124', '#B6791D', '#E6A23C', '#B83A3A', '#217124', '#43A047'],
+              backgroundColor: ['#757575', '#B6791D', '#E6A23C', '#B83A3A', '#217124', '#43A047'],
               labels: [
                 labels.NoResponse,
                 labels.ClickedThePhishingLink,
