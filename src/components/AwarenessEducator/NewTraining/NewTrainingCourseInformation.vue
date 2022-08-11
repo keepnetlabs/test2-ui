@@ -63,6 +63,7 @@
         :class="[getPreviewOfCoverImage ? 'mb-2' : 'mb-6']"
         hint="Only pdf, jpg, png files. Max. file size 30MB"
         :extensions="['pdf', 'jpg', 'png']"
+        style="max-width: 205px;"
         @inputFile="handleCoverImageChange"
       />
       <v-list-item v-if="getPreviewOfCoverImage" class="px-0 mb-6">
