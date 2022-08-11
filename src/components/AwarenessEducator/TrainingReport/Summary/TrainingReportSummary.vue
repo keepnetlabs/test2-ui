@@ -137,7 +137,7 @@ export default {
         },
         Languages: {
           show: true,
-          value: languages?.join(',')
+          value: languages?.join(', ')
         }
       }
     },
