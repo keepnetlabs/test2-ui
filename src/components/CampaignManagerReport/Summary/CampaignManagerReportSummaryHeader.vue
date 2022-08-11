@@ -82,7 +82,6 @@ export default {
       this.isDownloadReportDisabled = true
       exportPhishingCampaignJob(this.id)
         .then((response) => {
-          console.log(response)
           const { data } = response
           if (response.status === 200) {
             const blob = new Blob([data])
