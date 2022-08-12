@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormGroup :title="labels.Settings">
+    <FormGroup v-if="false" :title="labels.Settings">
       <v-checkbox
         v-model="formData.hasQuiz"
         id="input--new-training-modal-quiz"
