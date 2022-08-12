@@ -273,6 +273,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'SendTrainingSettings',
@@ -376,6 +377,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone'
+    }),
     isAllSelected() {
       return this.formData.languageIds.some((item) => item === 'All')
     },
@@ -409,9 +413,13 @@ export default {
     }
   },
   created() {
+    this.getSelectedTimeZone()
     this.callForContentLanguageItems()
   },
   watch: {
+    selectedTimeZone(val) {
+      this.formData.enrollmentScheduler.scheduledTimeZoneId = val
+    },
     isAllSelected(newVal) {
       if (newVal === true) {
         const validOptionValues = this.contentLanguageItems.map((item) => item.value)
@@ -422,6 +430,15 @@ export default {
     }
   },
   methods: {
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formData.enrollmentScheduler.scheduledTimeZoneId = this.$store?.getters[
+          'common/getSelectedTimeZone'
+        ]
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
+    },
     checkIsItemDisabled(item) {
       if (item.value === 'All') return false
       if (this.isAllSelected) return true
