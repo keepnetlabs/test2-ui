@@ -12,6 +12,7 @@
       :status="isShowDetailsModal"
       :item="selectedRow"
       interaction-type="opened"
+      first-column-label="Date Opened"
       @on-close="toggleIsShowDetailsModal"
     />
     <CampaignManagerReportHeader

@@ -40,7 +40,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
-        :disabled="isDisabled"
+        :disabled="!value.languageId"
         :deletable="false"
         @inputFile="handleFileChange"
       />
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     isLanguageDisabled() {
-      return !!this?.filePreviews?.length
+      return !!this?.filePreviews?.length || this.isDisabled
     }
   },
   methods: {

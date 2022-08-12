@@ -2,6 +2,12 @@
     &--readonly {
         pointer-events: none;
     }
+  &--disabled{
+    pointer-events: none;
+    .k-file-uploads__wrapper{
+      background: lightgray;
+    }
+  }
 
     &__wrapper {
         min-height: 40px;

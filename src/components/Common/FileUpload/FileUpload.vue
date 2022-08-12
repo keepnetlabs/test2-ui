@@ -1,5 +1,12 @@
 <template>
-  <div class="k-file-uploads" :class="['k-file-uploads', { 'k-file-uploads--readonly': readonly }]">
+  <div
+    class="k-file-uploads"
+    :class="[
+      'k-file-uploads',
+      { 'k-file-uploads--readonly': readonly },
+      { 'k-file-uploads--disabled': disabled }
+    ]"
+  >
     <div class="k-file-uploads__wrapper">
       <file-upload
         ref="upload"
@@ -114,6 +121,10 @@ export default {
     filePreviews: {
       type: Array,
       default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
