@@ -34,6 +34,7 @@
               :is-loading.sync="isTargetGroupLoading"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :search="search"
+              :is-all-groups="isAllGroups"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
             />
@@ -83,6 +84,10 @@ export default {
     },
     isValid: {
       type: Boolean
+    },
+    isAllGroups: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

@@ -42,6 +42,9 @@ export function getTargetGroups(config = {}) {
 export function searchTargetGroups(payload) {
   return testRequest.post('/target-groups/search', payload)
 }
+export function searchAllTargetGroups(payload) {
+  return testRequest.post('/target-groups/search/all', payload)
+}
 
 export function getTargetGroupsByName(payload) {
   return testRequest.post('/target-groups/search-name', payload)

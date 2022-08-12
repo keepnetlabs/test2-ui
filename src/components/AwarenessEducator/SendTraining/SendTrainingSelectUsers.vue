@@ -7,6 +7,7 @@
       <TargetGroups
         ref="refTargetGroups"
         class="mt-2"
+        is-all-groups
         :response-of-target-groups-items="responseOfTargetGroupsItems"
         :selected-target-groups="formData.targetGroupResourceIds"
         :is-valid="isTargetGroupsValid"
@@ -95,7 +96,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import { searchTargetGroups } from '@/api/targetUsers'
+import { searchAllTargetGroups } from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import SendTrainingSelectUsersByCampaign from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsersByCampaign'
 export default {
@@ -161,7 +162,7 @@ export default {
         }))
     },
     callForTargetGroups() {
-      searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
+      searchAllTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response
         }
