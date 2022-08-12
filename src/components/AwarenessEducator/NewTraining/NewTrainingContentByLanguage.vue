@@ -40,7 +40,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
-        :disabled="isDisabled"
+        :disabled="!value.languageId"
         :deletable="false"
         @inputFile="handleFileChange"
       />
