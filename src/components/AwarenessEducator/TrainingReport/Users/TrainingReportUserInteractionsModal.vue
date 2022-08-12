@@ -28,6 +28,7 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="5"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
