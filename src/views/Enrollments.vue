@@ -105,7 +105,7 @@ export default {
       this.toggleShowStopEnrollmentDialog()
     },
     handleSend(row) {
-      AwarenessEducatorService.sendEnrollment(row.id).then(() => {
+      AwarenessEducatorService.sendEnrollment(row.enrollmentId).then(() => {
         this.$refs.refTable.callForData()
       })
     },
