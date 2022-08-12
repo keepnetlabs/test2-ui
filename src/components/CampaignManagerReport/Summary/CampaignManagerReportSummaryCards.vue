@@ -6,22 +6,23 @@
         :title="labels.NoResponse"
         :is-loading="isLoading"
         :icon-src="noResponseIcon"
+        background-color="#0198AC"
       />
       <CampaignManagerReportSummaryInfoCard
-        v-bind="getOpenedData"
-        background-color="#E6A23C"
-        :title="labels.OpenedEmail"
+        v-bind="getSecondCardProps"
+        :background-color="getSecondCardColor"
+        :title="getSecondCardLabel"
         :is-loading="isLoading"
-        :icon-src="openedEmailIcon"
+        :icon-src="getSecondCardIcon"
       />
     </div>
     <div class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
         v-bind="getThirdCardProps"
-        background-color="#F56C6C"
+        :background-color="getThirdCardColor"
         :title="getThirdCardLabel"
         :is-loading="isLoading"
-        :icon-src="clickedLinkIcon"
+        :icon-src="getThirdCardIcon"
       />
       <CampaignManagerReportSummaryInfoCard
         v-bind="getFourthCardProps"
@@ -64,23 +65,82 @@ export default {
       openedEmailIcon: require('../../../assets/img/ic-opened-email.svg'),
       noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
       clickedLinkIcon: require('../../../assets/img/ic-exclude.svg'),
-      submittedDataIcon: require('../../../assets/img/enhanced_encryption.png')
+      submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
+      phishingReportersIcon: require('../../../assets/img/phishing-reporters.svg')
     }
   },
   computed: {
-    getThirdCardProps() {
+    getSecondCardProps() {
       if (this.method === 3 || this.method === 1) {
         return this.getPhishingReporterData
       }
 
-      return this.getClickedData
+      return this.getOpenedData
     },
-    getThirdCardLabel() {
+    getSecondCardLabel() {
       if (this.method === 3 || this.method === 1) {
-        return labels.Reporters
+        return labels.PhishingReporters
       }
 
-      return labels.ClickedLink
+      return labels.OpenedEmail
+    },
+    getSecondCardIcon() {
+      if (this.method === 3 || this.method === 1) {
+        return this.phishingReportersIcon
+      }
+
+      return this.openedEmailIcon
+    },
+    getSecondCardColor() {
+      if (this.method === 3 || this.method === 1) {
+        return '#217124'
+      }
+
+      return '#B6791D'
+    },
+    getThirdCardProps() {
+      if (this.method === 2) {
+        return this.getClickedData
+      }
+
+      if (this.method === 3 || this.method === 1) {
+        return this.getOpenedData
+      }
+
+      return this.getOpenedData
+    },
+    getThirdCardLabel() {
+      if (this.method === 2) {
+        return labels.ClickedLink
+      }
+
+      if (this.method === 3 || this.method === 1) {
+        return labels.OpenedEmail
+      }
+
+      return labels.OpenedEmail
+    },
+    getThirdCardColor() {
+      if (this.method === 2) {
+        return '#F56C6C'
+      }
+
+      if (this.method === 3 || this.method === 1) {
+        return '#B6791D'
+      }
+
+      return '#B6791D'
+    },
+    getThirdCardIcon() {
+      if (this.method === 2) {
+        return this.clickedLinkIcon
+      }
+
+      if (this.method === 3 || this.method === 1) {
+        return this.openedEmailIcon
+      }
+
+      return this.openedEmailIcon
     },
     getFourthCardProps() {
       if (this.method === 1) {

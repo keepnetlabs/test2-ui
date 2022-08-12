@@ -180,14 +180,14 @@ export default {
           },
           {
             property: 'examScore',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Score',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 120,
+            width: 140,
             filterableType: 'text'
           }
         ],
