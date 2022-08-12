@@ -51,3 +51,6 @@ export function exportAttacksVector(payload) {
     responseType: 'blob'
   })
 }
+export function getQuickScanReportCountById(resourceId) {
+  return emailThreatSimlatorRequest.get(`/quick-scan-report/counts-and-score/${resourceId}`)
+}

@@ -92,6 +92,8 @@ export function getBtnStatusColor(type) {
       return '#757575'
     case 'completed':
       return '#217124'
+    case 'complete':
+      return '#217124'
     case 'finished':
       return '#217124'
     case 'successful':
@@ -213,6 +215,8 @@ export function getTextColor(type) {
     case 'open':
       return '#f56c6c'
     case 'in progress':
+      return '#2196f3'
+    case 'inprogress':
       return '#2196f3'
     case 'false positive':
       return '#e6a23c'

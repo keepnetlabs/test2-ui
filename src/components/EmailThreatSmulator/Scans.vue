@@ -65,6 +65,7 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
+          @on-click="$router.push({ path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`})"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -393,31 +394,6 @@ export default {
   },
   created() {
     this.callForLanguages("refQuickScanList");
-    // getScenarioDataDetails()
-    //   .then((response) => {
-    //     this.scanDetails = response?.data?.data || {
-    //       methodTypes: [],
-    //       difficultyTypes: []
-    //     }
-    //     this.$set(
-    //       this.tableOptions.columns[1],
-    //       'filterableItems',
-    //       this.scanDetails.methodTypes.map((item) => {
-    //         console.log("ddd", item);
-    //         return { text: item.text, value: item.text }
-    //       })
-    //     )
-    //     this.$set(
-    //       this.tableOptions.columns[3],
-    //       'filterableItems',
-    //       this.scanDetails.difficultyTypes.map((item) => {
-    //         return { text: item.text, value: item.text }
-    //       })
-    //     )
-    //   })
-    //   .finally(() => {
-    //
-    //   });
     this.getDatatableList();
   },
 };

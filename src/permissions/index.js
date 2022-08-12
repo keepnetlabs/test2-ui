@@ -1369,4 +1369,16 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS: {
+    STATS: {
+      url: `quick-scan-report/stats/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    COUNT_AND_SCORE: {
+      url: `quick-scan-report/counts-and-score/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+  }
 }
