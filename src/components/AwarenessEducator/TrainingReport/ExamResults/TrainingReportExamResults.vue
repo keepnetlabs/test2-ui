@@ -13,11 +13,7 @@
       :item="selectedRow"
       @on-close="toggleIsShowDetailsModal"
     />
-    <CampaignManagerReportHeader
-      class="mb-6"
-      title="Exam Results"
-      subtitle="Users’ exam results"
-    />
+    <CampaignManagerReportHeader class="mb-6" title="Exam Results" subtitle="Users’ exam results" />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -36,12 +32,8 @@
       :add-button="tableOptions.addButton"
       :select-event="tableOptions.selectEvent"
       :axios-payload.sync="axiosPayload"
-      :saved-filters-local-storage-key="
-        tableOptions.savedFiltersLocalStorageKey
-      "
-      :saved-table-settings-local-storage-key="
-        tableOptions.savedTableSettingsLocalStorageKey
-      "
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -57,36 +49,36 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
+import DataTable from '@/components/DataTable'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import { useLoading } from "@/hooks/useLoading";
-import TrainingReportResendDialog from "@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog";
-import CampaignManagerReportHeader from "@/components/CampaignManagerReport/CampaignManagerReportHeader";
-import TrainingReportExamResultsDetails from "@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResultsDetails";
-import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
-import AwarenessEducatorService from "@/api/awarenessEducator";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
+import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import TrainingReportExamResultsDetails from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResultsDetails'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
-  name: "TrainingReportExamResults",
+  name: 'TrainingReportExamResults',
   components: {
     TrainingReportResendDialog,
     DataTable,
     CampaignManagerReportHeader,
-    TrainingReportExamResultsDetails,
+    TrainingReportExamResultsDetails
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
-      type: String,
+      type: String
     },
     formDetails: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
@@ -95,116 +87,115 @@ export default {
       isShowDetailsModal: false,
       isResendActionButtonDisabled: false,
       CONSTANTS: {
-        id: "training-report-exam-results-data-table",
-        ascending: "ascending",
+        id: 'training-report-exam-results-data-table',
+        ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: "email" }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
           DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_EXAM_RESULTS_TABLE,
-        savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.TRAINING_REPORT_EXAM_RESULTS_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_EXAM_RESULTS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true,
+          resend: true
         },
         columns: [
           {
-            property: "firstName",
-            align: "left",
+            property: 'firstName',
+            align: 'left',
             editable: false,
-            label: "First Name",
-            fixed: "left",
+            label: 'First Name',
+            fixed: 'left',
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "lastName",
-            align: "left",
+            property: 'lastName',
+            align: 'left',
             editable: false,
-            label: "Last Name",
+            label: 'Last Name',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "email",
-            align: "left",
+            property: 'email',
+            align: 'left',
             editable: false,
-            label: "Email",
+            label: 'Email',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "department",
-            align: "left",
+            property: 'department',
+            align: 'left',
             editable: false,
-            label: "Department",
+            label: 'Department',
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "examResultDate",
-            align: "left",
+            property: 'examResultDate',
+            align: 'left',
             editable: false,
-            label: "Date",
+            label: 'Date',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 200,
-            filterableType: "date",
+            filterableType: 'date'
           },
           {
-            property: "examStatus",
-            align: "center",
+            property: 'examStatus',
+            align: 'center',
             editable: false,
-            label: "Status",
+            label: 'Status',
             sortable: true,
             fixed: false,
             show: true,
-            type: "badge",
+            type: 'badge',
             width: 200,
-            filterableType: "select",
+            filterableType: 'select',
             filterableItems:
               this?.formDetails?.examStatusEnum?.map((item) => ({
                 text: item.displayName || item.name,
-                value: item.name,
-              })) || [],
+                value: item.name
+              })) || []
           },
           {
-            property: "examScore",
-            align: "right",
+            property: 'examScore',
+            align: 'right',
             editable: false,
-            label: "Score",
+            label: 'Score',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 140,
-            filterableType: "text",
-          },
+            filterableType: 'text'
+          }
         ],
         addButton: {
-          show: false,
+          show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportExamResults,
+          message: labels.EmptyTrainingReportExamResults
         },
         rowActions: [
           /*
@@ -219,56 +210,48 @@ export default {
            */
           {
             name: labels.Details,
-            id: "btn-interactions--row-actions-training-report-users",
-            icon: "$custom-details",
-            action: "on-details",
+            id: 'btn-interactions--row-actions-training-report-users',
+            icon: '$custom-details',
+            action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
-          },
-        ],
+          }
+        ]
       },
-      tableData: [],
-    };
+      tableData: []
+    }
   },
   created() {
-    this.callForData();
+    this.callForData()
   },
   methods: {
     getStatusBadgeProps(status) {
-      if (status === "Failed")
+      if (status === 'Failed')
         return {
-          color: "#B83A3A",
-          text: "Failed",
-        };
+          color: '#B83A3A',
+          text: 'Failed'
+        }
 
-      if (status === "Success")
+      if (status === 'Success')
         return {
-          color: "#217124",
-          text: "Success",
-        };
+          color: '#217124',
+          text: 'Success'
+        }
     },
     callForData() {
-      this.setLoading(true);
-      AwarenessEducatorService.examTrainingReportResults(
-        this.axiosPayload,
-        this.id
-      )
+      this.setLoading(true)
+      AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
-              data: {
-                results,
-                totalNumberOfRecords,
-                totalNumberOfPages,
-                pageNumber,
-              },
-            },
-          } = response;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
-          this.tableData = results || [];
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
         })
-        .finally(this.setLoading);
+        .finally(this.setLoading)
     },
     exportTrainingReportExamResultsTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -278,52 +261,47 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === "XLS" ? "Excel" : item,
-          filter: this.axiosPayload.filter,
-        };
-        AwarenessEducatorService.exportExamTrainingReportResults(
-          payload,
-          this.id
-        ).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
-          link.download = `Training-Exam-Results.${
-            item.toLocaleLowerCase() === "xls"
-              ? "xlsx"
-              : item.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        AwarenessEducatorService.exportExamTrainingReportResults(payload, this.id).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Training-Exam-Results.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
+      })
     },
     handleOnDetail(row) {
-      this.selectedRow = row;
-      this.toggleIsShowDetailsModal();
+      this.selectedRow = row
+      this.toggleIsShowDetailsModal()
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
         Types: [2],
-        items: Array.isArray(items)
-          ? items.map((item) => item.resourceId)
-          : [items.resourceId],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter,
-      };
-      this.resendPayload = payload;
-      this.toggleIsShowResendDialog();
+        filter: this.axiosPayload.filter
+      }
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {
-      this.isShowResendDialog = !this.isShowResendDialog;
+      this.isShowResendDialog = !this.isShowResendDialog
     },
     toggleIsShowDetailsModal() {
       if (this.isShowDetailsModal) {
-        this.selectedRow = null;
+        this.selectedRow = null
       }
-      this.isShowDetailsModal = !this.isShowDetailsModal;
-    },
-  },
-};
+      this.isShowDetailsModal = !this.isShowDetailsModal
+    }
+  }
+}
 </script>
