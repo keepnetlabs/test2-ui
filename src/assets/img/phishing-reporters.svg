@@ -1,13 +1,14 @@
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_2429_43285" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="30" height="30">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M26.2167 5H13.7833L5 13.7833V26.2167L13.7833 35H26.2167L35 26.2167V13.7833L26.2167 5V5ZM20 28.8333C18.8 28.8333 17.8333 27.8667 17.8333 26.6667C17.8333 25.4667 18.8 24.5 20 24.5C21.2 24.5 22.1667 25.4667 22.1667 26.6667C22.1667 27.8667 21.2 28.8333 20 28.8333V28.8333ZM21.6667 21.6667H18.3333V11.6667H21.6667V21.6667V21.6667Z" fill="white"/>
+<svg width="62" height="64" viewBox="0 0 62 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect opacity="0.3" width="64" height="64" rx="6" fill="white"/>
+<mask id="mask0_2384_41626" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="17" y="17" width="30" height="30">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M38.2167 17H25.7833L17 25.7833V38.2167L25.7833 47H38.2167L47 38.2167V25.7833L38.2167 17ZM32 40.8333C30.8 40.8333 29.8333 39.8667 29.8333 38.6667C29.8333 37.4667 30.8 36.5 32 36.5C33.2 36.5 34.1667 37.4667 34.1667 38.6667C34.1667 39.8667 33.2 40.8333 32 40.8333ZM33.6667 33.6667H30.3333V23.6667H33.6667V33.6667Z" fill="white"/>
 </mask>
-<g mask="url(#mask0_2429_43285)">
-<rect x="-21.6667" y="-21.6665" width="83.3333" height="83.3333" fill="#217124"/>
-<mask id="mask1_2429_43285" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-22" y="-22" width="84" height="84">
-<rect x="-21.6667" y="-21.6665" width="83.3333" height="83.3333" fill="white"/>
+<g mask="url(#mask0_2384_41626)">
+<rect x="-9.66675" y="-9.66699" width="83.3333" height="83.3333" fill="#217124"/>
+<mask id="mask1_2384_41626" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-10" y="-10" width="84" height="84">
+<rect x="-9.66675" y="-9.66699" width="83.3333" height="83.3333" fill="white"/>
 </mask>
-<g mask="url(#mask1_2429_43285)">
+<g mask="url(#mask1_2384_41626)">
 </g>
 </g>
 </svg>
