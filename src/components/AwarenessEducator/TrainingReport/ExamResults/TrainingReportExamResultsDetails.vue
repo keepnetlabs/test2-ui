@@ -110,6 +110,18 @@ export default {
             width: 200
           },
           {
+            property: 'examScore',
+            align: 'center',
+            editable: false,
+            label: 'Score',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 140,
+            filterableType: 'text'
+          },
+          {
             property: 'userAgent',
             align: 'left',
             editable: false,

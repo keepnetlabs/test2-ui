@@ -84,7 +84,6 @@
           v-model="formData.distributionSmtpDelayEvery"
           v-mask="'###'"
           id="input--campaign-manager-advanced-settings-time"
-          placeholder="Enter number"
           outlined
           class="edit-name-textfield edit-select standard-height ml-2"
           hide-details

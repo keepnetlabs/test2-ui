@@ -823,7 +823,7 @@
                 hide-details
               >
               </v-checkbox>
-              <span>Enable caching and enter duration(hours)</span>
+              <span>Enable caching and enter duration (hours)</span>
               <v-text-field
                 :value="formValues.cacheDuration"
                 v-mask="'###'"

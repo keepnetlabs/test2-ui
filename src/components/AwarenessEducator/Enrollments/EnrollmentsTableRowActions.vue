@@ -9,6 +9,14 @@
     />
     <RowActionsMenu>
       <DefaultMenuRowAction
+        v-if="!isShowReport"
+        :scope="scope"
+        :disabled="false"
+        icon="mdi-text-box"
+        text="View Report"
+        @on-click="routeToTrainingReport(scope.row)"
+      />
+      <DefaultMenuRowAction
         v-if="isRenderEditButton"
         :scope="scope"
         :disabled="rowActions[1].disabled"
@@ -24,14 +32,6 @@
         :text="rowActions[2].name"
         :checkIsOwnerProperty="false"
         @on-click="$emit('on-preview', scope.row)"
-      />
-      <DefaultMenuRowAction
-        v-if="!isShowReport"
-        :scope="scope"
-        :disabled="false"
-        icon="mdi-text-box"
-        text="View Report"
-        @on-click="routeToTrainingReport(scope.row)"
       />
       <DefaultMenuRowAction
         :scope="scope"
@@ -86,10 +86,10 @@ export default {
       if (this.isShowReport) {
         obj.icon = 'mdi-text-box'
         obj.text = 'View Report'
-      } else if (ENROLLMENT_STATUSES.SENDING) {
+      } else if (status === ENROLLMENT_STATUSES.SENDING) {
         obj.icon = 'mdi-stop'
         obj.text = 'Stop'
-      } else if (ENROLLMENT_STATUSES.SCHEDULED) {
+      } else if (status === ENROLLMENT_STATUSES.SCHEDULED) {
         obj.icon = 'mdi-send'
         obj.text = 'Send Now'
       }
@@ -108,9 +108,9 @@ export default {
         ].includes(status)
       ) {
         this.routeToTrainingReport(row)
-      } else if (ENROLLMENT_STATUSES.SENDING) {
+      } else if (status === ENROLLMENT_STATUSES.SENDING) {
         this.$emit('on-stop', row)
-      } else if (ENROLLMENT_STATUSES.SCHEDULED) {
+      } else if (status === ENROLLMENT_STATUSES.SCHEDULED) {
         this.$emit('on-send', row)
       }
     },

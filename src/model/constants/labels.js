@@ -519,6 +519,7 @@ export const labels = {
   TargetUsers: 'Target Users',
   DefineTags: 'Define tags for the rule',
   PhishingReporterSettings: 'PHISHING REPORTER SETTINGS',
+  PhishingReporters: 'Phishing Reporters',
   Details: 'Details',
   Priority: 'Priority',
   Tags: 'Tags',

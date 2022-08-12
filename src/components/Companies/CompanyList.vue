@@ -516,9 +516,9 @@ export default {
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
-    deleteConfirmedItem(selectedItem) {
-      deleteCompany(selectedItem.companyResourceId).then((response) => {
-        this?.$refs?.refDataList?.unSelectRow(selectedItem)
+    deleteConfirmedItem() {
+      deleteCompany(this.selectedRow.companyResourceId).then((response) => {
+        this?.$refs?.refDataList?.unSelectRow(this.selectedRow)
         if (response.data && response.data.message) {
           this.getTableData()
         }
