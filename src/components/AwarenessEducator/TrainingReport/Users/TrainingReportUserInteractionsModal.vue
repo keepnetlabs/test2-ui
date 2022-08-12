@@ -97,8 +97,7 @@ export default {
         show: true,
         type: 'text',
         width: 200,
-        hideSort: false,
-        filterableType: 'date'
+        hideSort: true
       },
       {
         property: 'userAgent',
@@ -106,11 +105,10 @@ export default {
         editable: false,
         label: 'User Agent',
         sortable: true,
-        hideSort: false,
+        hideSort: true,
         show: true,
         type: 'text',
-        width: 250,
-        filterableType: 'text'
+        width: 250
       },
       {
         property: 'browserName',
@@ -122,7 +120,7 @@ export default {
         type: 'text',
         width: 180,
         isEditable: false,
-        filterableType: 'text'
+        hideSort: true
       },
       {
         property: 'userGeolocation',
@@ -130,11 +128,10 @@ export default {
         editable: false,
         label: 'Geolocation',
         sortable: true,
-        hideSort: false,
+        hideSort: true,
         show: true,
         type: 'text',
-        width: 180,
-        filterableType: 'text'
+        width: 180
       },
       {
         property: 'userIpAddresslist',
@@ -143,11 +140,10 @@ export default {
         editable: false,
         label: 'IP',
         sortable: true,
-        hideSort: false,
+        hideSort: true,
         show: true,
         type: 'text',
-        width: 160,
-        filterableType: 'text'
+        width: 160
       }
     ]
     if (!this.interactionType)
@@ -161,8 +157,7 @@ export default {
         show: true,
         type: 'slot',
         width: 180,
-        hideSort: false,
-        filterableType: 'text'
+        hideSort: true
       })
     else {
       columns[columns.length - 1].width = 325

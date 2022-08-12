@@ -180,7 +180,7 @@ export default {
           },
           {
             property: 'examScore',
-            align: 'center',
+            align: 'right',
             editable: false,
             label: 'Score',
             fixed: false,
@@ -198,6 +198,7 @@ export default {
           message: labels.EmptyTrainingReportExamResults
         },
         rowActions: [
+          /*
           {
             name: labels.Resend,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -205,6 +206,8 @@ export default {
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
+
+           */
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',

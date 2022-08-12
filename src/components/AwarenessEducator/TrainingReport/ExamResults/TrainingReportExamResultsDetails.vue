@@ -80,6 +80,7 @@ export default {
             label: 'Session',
             fixed: 'left',
             sortable: true,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 120
@@ -91,7 +92,7 @@ export default {
             editable: false,
             label: 'Status',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'badge',
             width: 180
@@ -103,7 +104,7 @@ export default {
             label: 'Session End Date',
             fixed: false,
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 200
@@ -126,7 +127,7 @@ export default {
             editable: false,
             label: 'User Agent',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 180
@@ -137,7 +138,7 @@ export default {
             editable: false,
             label: 'Browser',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 180
@@ -148,7 +149,7 @@ export default {
             editable: false,
             label: 'Geolocation',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 180
@@ -160,7 +161,7 @@ export default {
             editable: false,
             label: 'IP',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 180
