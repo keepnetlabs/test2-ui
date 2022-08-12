@@ -396,6 +396,7 @@ import { scrollToComponent, isDifferent } from "@/utils/functions";
 import InputEmail from "@/components/Common/Inputs/InputEmail";
 import StepperFooter from "@/components/Stepper/StepperFooter";
 import { getValidateContinuousScan, getQuickScanCreate } from "@/api/emailThreatSimlator";
+import {COMMON_CONSTANTS} from "@/model/constants/commonConstants";
 
 export default {
   name: "NewScan",
@@ -513,9 +514,6 @@ export default {
           this.step += 1;
         }
       }
-      // if (currentStep === 2) {
-      //   this.step += 1
-      // }
     },
     backStep() {
       this.step -= 1;
@@ -592,6 +590,11 @@ export default {
         }
         getQuickScanCreate(requestBody)
           .then((response) => {
+            this.$store.dispatch("common/createSnackBar", {
+              message: this.isDuplicate ? "Scan successfully updated." : "Scan successfully added.",
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: "mdi-alert-circle",
+            });
             this.$emit("changeNewScanModalStatus", false, true);
           })
           .catch((error) => {
@@ -644,7 +647,7 @@ export default {
       this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit;
       if (this.scanDetails.distributeEmailOverMinutes > 0) {
         this.scanAndDeliveryValues.sendingLoopType.loopType = "DistributeEmails";
-        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeTimeMinute;
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeEmailOverMinutes;
         this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = "minutes";
       } else {
         this.scanAndDeliveryValues.sendingLoopType.loopType = "SMTP";
@@ -697,7 +700,7 @@ export default {
   height: 36px;
   margin-bottom: 10px;
   .left-input {
-    width: 90px;
+    width: 100px;
   }
   .right-input {
     width: 120px;

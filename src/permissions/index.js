@@ -1335,12 +1335,12 @@ export default {
       url: `quick-scan/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `quick-scan/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
-    // EXPORT: {
-    //   url: `quick-scan/search/export`,
-    //   hasPermission: false,
-    //   method: ENUMS.METHODS.POST
-    // }
   },
   ETS_ATTACK_VECTOR_PERMISSIONS: {
     SEARCH: {

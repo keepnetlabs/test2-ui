@@ -104,11 +104,11 @@ import {
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import labels from "@/model/constants/labels";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
-import { getQuickScanList, getQuickScanById } from "@/api/emailThreatSimlator";
 import {
-  // deleteScenarios,
-  exportScenarios,
-} from "@/api/scenarios";
+  getQuickScanList,
+  getQuickScanById,
+  exportQuickScan,
+} from "@/api/emailThreatSimlator";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import { mapGetters } from "vuex";
 import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
@@ -206,7 +206,7 @@ export default {
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getPhishingScenariosExportPermissions"],
+          disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionExport"],
         },
         selectEvent: {
           clipboard: true,
@@ -341,7 +341,7 @@ export default {
           exportType: exportType === "XLS" ? "Excel" : exportType,
           filter: this.bodyData.filter,
         };
-        exportScenarios(payload).then((response) => {
+        exportQuickScan(payload).then((response) => {
           const { data } = response;
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(data);
