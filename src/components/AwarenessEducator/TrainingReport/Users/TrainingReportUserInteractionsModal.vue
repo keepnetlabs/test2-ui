@@ -79,6 +79,10 @@ export default {
     },
     interactionType: {
       type: String
+    },
+    firstColumnLabel: {
+      type: String,
+      default: 'Date'
     }
   },
   data() {
@@ -88,11 +92,11 @@ export default {
         align: 'left',
         fixed: this.interactionType ? 'left' : false,
         editable: false,
-        label: 'Date Opened',
+        label: this.firstColumnLabel,
         sortable: true,
         show: true,
         type: 'text',
-        width: 180,
+        width: 200,
         hideSort: false,
         filterableType: 'date'
       },
@@ -106,6 +110,18 @@ export default {
         show: true,
         type: 'text',
         width: 250,
+        filterableType: 'text'
+      },
+      {
+        property: 'browserName',
+        align: 'left',
+        label: labels.Browser,
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        isEditable: false,
         filterableType: 'text'
       },
       {

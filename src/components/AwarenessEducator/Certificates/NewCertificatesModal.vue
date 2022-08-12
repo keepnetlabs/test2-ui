@@ -43,7 +43,7 @@
           ref="refEmailTemplate"
           onlyGrapes="true"
           :is-edit="!!selectedItem"
-          :activeBlockManagerComponents="{}"
+          :activeBlockManagerComponents="activeBlockManagerComponents"
           :template.sync="formData.template"
           @handleEditHtmlTemplate="formData.template = $event"
         />
@@ -64,6 +64,19 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { scrollToComponent } from '@/utils/functions'
+import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
+import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
+import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
+import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
+import email from '@/components/GrapesJs/Newsletter/mergedTexts/email'
+import trainingName from '@/components/GrapesJs/Newsletter/mergedTexts/trainingName'
+import trainingDescription from '@/components/GrapesJs/Newsletter/mergedTexts/trainingDescription'
+import trainingCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCoverImageUrl'
+import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
+import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
+import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
+import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
+import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
 export default {
   name: 'NewCertificatesModal',
   components: {
@@ -88,6 +101,21 @@ export default {
     return {
       labels,
       saveDisable: false,
+      activeBlockManagerComponents: {
+        '{COMPANYLOGO}': companyLogo,
+        '{FIRSTNAME}': firstName,
+        '{LASTNAME}': lastName,
+        '{FULLNAME}': fullName,
+        '{EMAIL}': email,
+        '{TRAININGNAME}': trainingName,
+        '{TRAININGDESCRIPTION}': trainingDescription,
+        '{TRAININGCOVERIMAGEURL}': trainingCoverImageUrl,
+        '{FROMEMAIL}': fromEmail,
+        '{FROMNAME}': fromName,
+        '{SUBJECT}': subject,
+        '{TRAININGCOMPLETEDATE}': trainingCompleteDate,
+        '{DATEEMAILSENT}': dateEmailSent
+      },
       formData: {
         name: '',
         description: '',
