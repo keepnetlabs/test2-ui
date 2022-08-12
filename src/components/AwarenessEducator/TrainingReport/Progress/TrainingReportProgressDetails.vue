@@ -90,11 +90,10 @@ export default {
             editable: false,
             label: 'Session',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 120,
-            filterableType: 'number'
+            width: 120
           },
           {
             property: 'progress',
@@ -102,11 +101,10 @@ export default {
             editable: false,
             label: 'Progress',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'badge',
-            width: 180,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: 'sessionStartDate',
@@ -114,11 +112,10 @@ export default {
             editable: false,
             label: 'Session Started',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'date'
+            width: 180
           },
           {
             property: 'sessionEndDate',
@@ -126,11 +123,10 @@ export default {
             editable: false,
             label: 'Session Ended',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 180,
-            filterableType: 'date'
+            width: 180
           },
           {
             property: 'userAgent',
@@ -138,11 +134,10 @@ export default {
             editable: false,
             label: 'User Agent',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 220,
-            filterableType: 'text'
+            width: 220
           },
           {
             property: 'browserName',
@@ -150,11 +145,10 @@ export default {
             editable: false,
             label: 'Browser',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 160,
-            filterableType: 'text'
+            width: 160
           },
           {
             property: 'userGeolocation',
@@ -162,11 +156,10 @@ export default {
             editable: false,
             label: 'Geolocation',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'text'
+            width: 200
           },
           {
             property: 'userIpAddresslist',
@@ -175,11 +168,10 @@ export default {
             editable: false,
             label: 'IP',
             sortable: true,
-            hideSort: false,
+            hideSort: true,
             show: true,
             type: 'text',
-            width: 200,
-            filterableType: 'text'
+            width: 200
           }
         ],
         addButton: {
