@@ -12,7 +12,7 @@ export const EMITS = {
 }
 
 export const ENROLLMENT_STATUSES = {
-  AUTO_ENROLL: 'AutoEnroll',
+  AUTO_ENROLL: 'Auto-Enroll',
   SENDING: 'Sending',
   FINISHED: 'Finished',
   SCHEDULED: 'Scheduled',
