@@ -122,7 +122,7 @@
             </v-icon>
           </v-btn>
           <v-icon
-            v-if="isTested"
+            v-if="isTested && !isTesting"
             :id="`btn--siem-integration-api-key-check`"
             class="ml-1"
             color="#43a047"

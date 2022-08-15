@@ -3,6 +3,7 @@
     <div
       id="btn-test-connection--mail-configuration"
       :class="{
+        'd-flex': true,
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
       }"
@@ -16,6 +17,15 @@
       <div class="test-connection__button" v-else>
         TEST CONNECTION
       </div>
+      <v-icon
+        v-if="isAllSuccess && !isLoading"
+        :id="`btn--siem-integration-api-key-check`"
+        class="ml-2 mb-7 mr-0"
+        color="#43a047"
+        left
+        medium
+        >mdi-check
+      </v-icon>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
       <div class="test-connection__testing-content__item" id="test-connection-item-authenticating">
@@ -130,9 +140,7 @@ export default {
         this.$emit('loading')
       }
       return !isLoading
-    }
-  },
-  methods: {
+    },
     isAllSuccess() {
       let isSuccess =
         this.checkApiConnectivity === 'success' &&
@@ -141,6 +149,13 @@ export default {
         this.checkEmailBodyAccess === 'success' &&
         this.checkEmailHeaderAccess === 'success' &&
         this.checkEmailMailFilter === 'success'
+
+      return isSuccess
+    }
+  },
+  methods: {
+    checkIfAllSuccess() {
+      const isSuccess = this.isAllSuccess
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
@@ -165,7 +180,7 @@ export default {
         checkApiConnectivityEWS(payload)
           .then(() => {
             this.checkApiConnectivity = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
@@ -173,12 +188,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkPrivilegesEWS(payload)
           .then(() => {
             this.checkPrivileges = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
@@ -186,12 +201,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkInboxAccessEWS(payload)
           .then(() => {
             this.checkInboxAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
@@ -199,12 +214,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkEmailBodyAccessEWS(payload)
           .then(() => {
             this.checkEmailBodyAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkEmailBodyAccess = 'error'
@@ -212,12 +227,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkEmailHeaderAccessEWS(payload)
           .then(() => {
             this.checkEmailHeaderAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkEmailHeaderAccess = 'error'
@@ -225,13 +240,13 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
           .finally(() => {
             checkEmailMailFilterEWS(payload)
               .then(() => {
                 this.checkEmailMailFilter = 'success'
-                this.isAllSuccess(true)
+                this.checkIfAllSuccess(true)
               })
               .catch((error) => {
                 this.checkEmailMailFilter = 'error'
@@ -244,7 +259,7 @@ export default {
         checkInboxAccessEWS(payload)
           .then(() => {
             this.checkInboxAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
@@ -252,7 +267,7 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
       }
     },

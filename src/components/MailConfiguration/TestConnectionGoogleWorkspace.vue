@@ -3,6 +3,7 @@
     <div
       id="btn-test-connection--mail-configuration"
       :class="{
+        'd-flex': true,
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
       }"
@@ -16,6 +17,15 @@
       <div class="test-connection__button" v-else>
         TEST CONNECTION
       </div>
+      <v-icon
+        v-if="isAllSuccess && !isLoading"
+        :id="`btn--siem-integration-api-key-check`"
+        class="ml-2 mb-7 mr-0"
+        color="#43a047"
+        left
+        medium
+        >mdi-check
+      </v-icon>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
       <div class="test-connection__testing-content__item" id="test-connection-item-authenticating">
@@ -150,9 +160,7 @@ export default {
         this.$emit('loading')
       }
       return !isLoading
-    }
-  },
-  methods: {
+    },
     isAllSuccess() {
       let isSuccess =
         this.checkApiConnectivity === 'success' &&
@@ -163,6 +171,13 @@ export default {
         this.checkUpdateCategory === 'success' &&
         this.checkDeleteEmail === 'success' &&
         this.checkInboxAccess === 'success'
+
+      return isSuccess
+    }
+  },
+  methods: {
+    checkIfAllSuccess() {
+      const isSuccess = this.isAllSuccess
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
@@ -182,7 +197,7 @@ export default {
         checkApiConnectivityGoogleWorkspace(payload)
           .then(() => {
             this.checkApiConnectivity = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
@@ -190,12 +205,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkPrivilegesGoogleWorkspace(payload)
           .then(() => {
             this.checkPrivileges = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
@@ -203,12 +218,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkAllUsersAccessGoogleWorkspace(payload)
           .then(() => {
             this.checkAllUsersAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkAllUsersAccess = 'error'
@@ -216,12 +231,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkEmailAccessGoogleWorkspace(payload)
           .then(() => {
             this.checkEmailAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkEmailAccess = 'error'
@@ -229,12 +244,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkCreateNewCategoryGoogleWorkspace(payload)
           .then(() => {
             this.checkCreateNewCategory = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
@@ -242,13 +257,13 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
           .finally(() => {
             checkUpdateCategoryGoogleWorkspace(payload)
               .then(() => {
                 this.checkUpdateCategory = 'success'
-                this.isAllSuccess(true)
+                this.checkIfAllSuccess(true)
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
@@ -261,7 +276,7 @@ export default {
         checkDeleteEmailGoogleWorkspace(payload)
           .then(() => {
             this.checkDeleteEmail = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkDeleteEmail = 'error'
@@ -269,12 +284,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkInboxAccessGoogleWorkspace(payload)
           .then(() => {
             this.checkInboxAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
@@ -282,7 +297,7 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
       }
     },
