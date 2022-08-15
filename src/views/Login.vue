@@ -374,7 +374,6 @@
                               placeholder="Enter new password"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
-                              validate-on-blur
                               autocomplete="disabled"
                               :append-icon="getNewPasswordFieldIcon"
                               :type="getNewPasswordFieldType"
@@ -404,7 +403,6 @@
                               :class="['reset-pass-textfield', { 'input-error': isErrorActive }]"
                               placeholder="Enter new password again"
                               outlined
-                              validate-on-blur
                               autocomplete="disabled"
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                               :append-icon="getReNewPasswordFieldIcon"
