@@ -63,7 +63,7 @@
             />
           </template>
           <v-icon
-            v-if="isTestConnectionValid"
+            v-if="isTestConnectionValid && !isTestingConnection"
             :id="`btn--siem-integration-api-key-check`"
             class="ml-1 mr-0"
             color="#43a047"

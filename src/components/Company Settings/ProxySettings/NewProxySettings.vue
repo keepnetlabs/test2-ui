@@ -122,7 +122,7 @@
                 >mdi-rotate-left
               </v-icon>
             </v-btn>
-            <span v-if="testConnectionSuccess" class="test-connection-success"
+            <span v-if="testConnectionSuccess && !isTesting" class="test-connection-success"
               >Connected successfully!</span
             >
           </div>
@@ -310,6 +310,7 @@ export default {
       if (refForm.validate() && !this.isTesting) {
         this.isTesting = true
         let payload = {
+          resourceId: this.resourceId,
           Address: this.formValues.address,
           AuthenticationTypeId: this.formValues.authenticationTypeId,
           Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,
