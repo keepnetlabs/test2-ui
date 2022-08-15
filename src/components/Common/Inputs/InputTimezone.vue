@@ -4,7 +4,7 @@
     :value="value"
     type="autocomplete"
     id="input--timezone"
-    class="input-timezone ml-2"
+    class="input-timezone"
     :style="getStyle"
     outlined
     dense
