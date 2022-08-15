@@ -3,6 +3,7 @@
     <div
       id="btn-test-connection--mail-configuration"
       :class="{
+        'd-flex': true,
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
       }"
@@ -16,6 +17,15 @@
       <div :style="!isLoading && { maxWidth: '160px' }" class="test-connection__button" v-else>
         TEST CONNECTION
       </div>
+      <v-icon
+        v-if="isAllSuccess && !isLoading"
+        :id="`btn--siem-integration-api-key-check`"
+        class="ml-2 mb-7 mr-0"
+        color="#43a047"
+        left
+        medium
+        >mdi-check
+      </v-icon>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
       <div class="test-connection__testing-content__item" id="test-connection-item-authenticating">
@@ -55,11 +65,16 @@ export default {
         this.$emit('loading')
       }
       return !isLoading
+    },
+    isAllSuccess() {
+      let isSuccess = this.checkApiConnectivity === 'success'
+
+      return isSuccess
     }
   },
   methods: {
-    isAllSuccess() {
-      let isSuccess = this.checkApiConnectivity === 'success'
+    checkIfAllSuccess() {
+      const isSuccess = this.isAllSuccess
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
@@ -77,14 +92,14 @@ export default {
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
-          this.isAllSuccess(true)
+          this.checkIfAllSuccess(true)
         })
         .catch((error) => {
           this.checkApiConnectivity = 'error'
           this.checkApiConnectivityMessage =
             (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
             error.response.data.message
-          this.isAllSuccess(false)
+          this.checkIfAllSuccess(false)
         })
     },
     setLoadingStates() {

@@ -112,7 +112,7 @@
                 </div>
 
                 <div class="template-list--item">
-                  {{ item.description || '\xa0' }}
+                  {{ getItemDescription(item) }}
                 </div>
                 <div class="template-list--item mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
@@ -314,6 +314,17 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    getItemDescription(item = {}) {
+      if (!item?.description) {
+        return '\xa0'
+      }
+
+      if (item?.description === 'null' || item?.description === 'undefined') {
+        return '\xa0'
+      }
+
+      return item?.description || '\xa0'
+    },
     callForSearch() {
       this.debounce(() => {
         const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
