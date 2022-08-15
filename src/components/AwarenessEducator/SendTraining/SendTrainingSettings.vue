@@ -77,7 +77,7 @@
               type="datetime"
               ref="refPicker"
               placeholder="Select Date and Time"
-              style="width: 100%; max-width: 222px;"
+              style="width: 100%; max-width: 220px;"
               :disabled="isScheduledTimeDisabled"
             />
             <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
@@ -92,7 +92,7 @@
               </transition>
             </div>
           </div>
-          <span class="v-label theme--light ml-2" style="font-size: 14px;">in</span>
+          <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
           <InputTimezone
             v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
             class="black-placeholder"
