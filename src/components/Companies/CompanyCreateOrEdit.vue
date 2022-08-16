@@ -134,6 +134,7 @@
                       hint="*Required"
                       persistent-hint
                       isBlock
+                      prependInnerIcon="mdi-magnify"
                       :rules="[(v) => validations.required(v)]"
                     />
                   </v-list-item-content>
