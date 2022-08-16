@@ -103,7 +103,7 @@ export default {
             sortable: true,
             hideSort: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             width: 180
           },
           {
@@ -212,6 +212,12 @@ export default {
         .finally(this.setLoading)
     },
     getStatusBadgeProps(progress) {
+      if (progress == 'Not Completed')
+        return {
+          color: '#B83A3A',
+          text: 'Not Completed'
+        }
+
       if (progress === 'In Progress')
         return {
           color: '#B6791D',
