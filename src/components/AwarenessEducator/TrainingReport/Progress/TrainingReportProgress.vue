@@ -129,7 +129,8 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_PROGRESS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true
+          resend: false,
+          clipboard: true
         },
         columns: [
           {

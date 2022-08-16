@@ -154,7 +154,8 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_USERS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true
+          resend: false,
+          clipboard: true
         },
         columns: [
           {
@@ -162,7 +163,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'First Name',
-            fixed: false,
+            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',

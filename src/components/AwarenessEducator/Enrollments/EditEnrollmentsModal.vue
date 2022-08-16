@@ -56,7 +56,7 @@
               :disabled="!sendReminderEvery"
             />
             <v-text-field
-              v-if="formData.enrollmentReminder.endType === 'AfterOccurences'"
+              v-if="formData.enrollmentReminder.endType === 'AfterOccurrences'"
               v-model="formData.enrollmentReminder.occurrenceCount"
               v-mask="'#######'"
               id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
@@ -66,7 +66,9 @@
               style="max-width: 64px;"
               :disabled="!sendReminderEvery"
             ></v-text-field>
-            <span v-if="formData.endType === 3" class="ml-2">times</span>
+            <span v-if="formData.enrollmentReminder.endType === 'AfterOccurrences'" class="ml-2"
+              >times</span
+            >
             <InputDate
               v-if="formData.enrollmentReminder.endType === 'OnDate'"
               v-model="formData.enrollmentReminder.stopTime"
@@ -223,7 +225,7 @@ export default {
         },
         {
           text: 'after occurrences',
-          value: 'AfterOccurences'
+          value: 'AfterOccurrences'
         },
         {
           text: 'on date',
