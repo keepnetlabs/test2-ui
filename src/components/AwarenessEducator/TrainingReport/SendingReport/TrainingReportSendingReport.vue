@@ -257,9 +257,10 @@ export default {
             label: 'SMTP',
             sortable: true,
             show: true,
+            fixed: 'right',
             type: 'text',
-            filterableType: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text'
           }
           /*
           {
@@ -292,7 +293,7 @@ export default {
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
 
-           */
+
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -300,6 +301,8 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
+
+           */
         ]
       },
       isShowExtendedView: false,
