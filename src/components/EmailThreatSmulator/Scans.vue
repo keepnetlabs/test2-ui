@@ -45,6 +45,7 @@
       :axios-payload.sync="bodyData"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      row-key="quickScanResourceId"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScanModalStatus(true)"
@@ -170,7 +171,7 @@ export default {
             show: true,
             type: "status",
             filterableType: "select",
-            filterableItems: ["Initial", "InProgress", "Completed", "Cancelled"],
+            filterableItems: ["Initial", "In Progress", "Completed", "Cancelled"],
             width: 180,
           },
           {
@@ -332,6 +333,7 @@ export default {
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      console.log("dd", reportAllPages);
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,

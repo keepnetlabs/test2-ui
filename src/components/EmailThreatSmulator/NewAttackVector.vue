@@ -40,6 +40,7 @@
               placeholder="Enter a name for the vector"
               type="number"
               v-bind="setNumberRangeRule(true)"
+              pattern="^[\d]+$"
               required
             />
           </form-group>
@@ -206,7 +207,9 @@ export default {
         requestFunc
           .then((response) => {
             this.$store.dispatch("common/createSnackBar", {
-              message: this.isEdit ? "Attack Vector successfully duplicated." : "Attack Vector successfully added.",
+              message: this.isEdit
+                ? "Attack Vector successfully duplicated."
+                : "Attack Vector successfully added.",
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: "mdi-alert-circle",
             });
@@ -216,10 +219,12 @@ export default {
             const errorResponse = error.response.data;
             let msg = errorResponse.message;
             if (errorResponse.validationMessages.length > 0) {
+              let msg = "";
               for (let i = 0; i < errorResponse.validationMessages.length; i++) {
                 const listMsg = errorResponse.validationMessages[i];
-                msg += listMsg + " ";
+                msg += listMsg + ", ";
               }
+              msg = msg.slice(0, -1);
             }
             this.$store.dispatch("common/createSnackBar", {
               message: msg,
@@ -239,8 +244,11 @@ export default {
   },
   watch: {
     formValues: {
-      handler: function (value, oldValue) {
-          this.isFormValuesChanged = true;
+      handler: function (value) {
+        this.isFormValuesChanged = true;
+        if (value.riskFactor) {
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]/g, "");
+        }
       },
       deep: true,
     },
@@ -252,12 +260,12 @@ export default {
   },
   created() {
     getLookupListByTypeId(24).then((categories) => {
-      const categoryList =  categories.data.data;
+      const categoryList = categories.data.data;
       this.categoryResources = categoryList;
       this.formValues.categoryResourceId = this.categoryResources[0];
       if (this.isEdit) {
         getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
-          const details =  response.data.data;
+          const details = response.data.data;
           this.formValues = details;
         });
       }

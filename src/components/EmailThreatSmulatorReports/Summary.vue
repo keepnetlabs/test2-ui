@@ -13,9 +13,10 @@
               <template v-slot:skeleton-content>
                 <div class="report-scores pa-4" :class="item.color">
                   <div class="score-title">{{ item.title }}</div>
-                  <div class="score-body mt-4">
+                  <div class="score-body mt-4 mb-7">
                     <span>{{ item.count }}</span> email
                   </div>
+                  <div v-if="item.percent !== null" class="score-footer"> {{item.percent}}% of attack vectors</div>
                   <div class="score-icon" :class="item.icon"></div>
                 </div>
               </template>
@@ -39,9 +40,9 @@
                     <div class="info-title">Status</div>
                     <div class="info-text">
                       <button
-                        v-if="scoresLoading"
+                        v-if="!scoresLoading"
                         type="button"
-                        :class="scanData.status.toLowerCase()"
+                        :class="scanData.status ? scanData.status.toLowerCase() : ''"
                       >
                         {{ scanData.status }}
                       </button>
@@ -89,17 +90,17 @@
         </v-col>
       </v-row>
     </v-container>
-    <!--stats start-->
+    <!--stats start -->
     <div class="type-and-status-container">
       <div class="title my-6">Stats</div>
       <card-loading :loading="scoresLoading">
         <template v-slot:skeleton-content>
           <div class="menu-bar mb-6">
             <div class="d-flex flex-row mb-6">
-              <div class="menu-item active mx-2 pt-3">
+              <div @click="isAttackType = true" class="menu-item mx-2 pt-3" :class="isAttackType ? 'active' : ''">
                 By Attack Types
               </div>
-              <div class="menu-item mx-2 pt-3">
+              <div @click="isAttackType = false" class="menu-item mx-2 pt-3" :class="!isAttackType ? 'active' : ''">
                 By Email Status
               </div>
             </div>
@@ -107,14 +108,15 @@
           </div>
         </template>
       </card-loading>
-      <div>
+      <!--by attack types start-->
+      <div v-if="isAttackType">
         <card-loading :loading="scoresLoading">
           <template v-slot:skeleton-content>
             <v-card class="info-details overflow-hidden">
               <div class="detail-header pa-5 justify-center">
                 <div class="d-flex flex-row">
                   <img src="../../assets/img/web-icon.svg" class="mr-4" />
-                  <span>Your Score</span>
+                  <span>By Attack Types</span>
                 </div>
               </div>
               <div class="detail-body">
@@ -122,23 +124,109 @@
                   <v-row no-gutters>
                     <v-col cols="12" lg="4" sm="6">
                       <v-card class="stats-item">
-                        <div class="types-menu no-overflow">
-                          <div class="d-flex justify-space-between">
-                            <div class="pl-6 py-4">Status</div>
-                            <div class="pr-6 py-4">
-                              eeee
+                        <div
+                          v-if="!scoresLoading"
+                          class="types-menu"
+                          :class="statsData.quickScanByAttackTypes.length < 5 ? 'no-overflow' : ''"
+                        >
+                          <div
+                            v-for="(item, index) in statsData.quickScanByAttackTypes"
+                            :key="index"
+                            class="d-flex justify-space-between types-menu-contents"
+                            :class="selectedAttackType === item ? 'selected' : ''"
+                            @click="selectedAttackType = item"
+                          >
+                            <div class="types-menu-contents-item pl-6 py-4">
+                              {{ item.categoryName }}
+                            </div>
+                            <div class="types-menu-contents-item pr-6 py-4">
+                              <button type="button">{{ item.percent }}%</button>
                             </div>
                           </div>
-                          <v-divider></v-divider>
-
-
                         </div>
                       </v-card>
                       <v-divider></v-divider>
                     </v-col>
                     <v-col cols="12" lg="8" sm="6">
-                      <v-card class="stats-item pa-2">
-                        One of three columns
+                      <v-card class="stats-item desc-detail pa-6">
+                        <div class="desc-detail-title mb-2">
+                          <span>{{ selectedAttackType.categoryName }}</span>
+                          <button type="button" class="ml-6">
+                            {{ selectedAttackType.count }} Emails
+                          </button>
+                        </div>
+                        <p class="mb-3 mt-0">
+                          {{ selectedAttackType.description }}
+                        </p>
+                        <ul>
+                          <li
+                            v-for="(item, index) in selectedAttackType.quickScanResultStats"
+                            :key="index"
+                            :class="item.resultName.toLowerCase()"
+                          >
+                            <span></span> {{ item.count }} {{ item.resultName }}
+                          </li>
+                        </ul>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </div>
+            </v-card>
+          </template>
+        </card-loading>
+      </div>
+      <!-- by email status start -->
+      <div v-else>
+        <card-loading :loading="scoresLoading">
+          <template v-slot:skeleton-content>
+            <v-card class="info-details overflow-hidden">
+              <div class="detail-header pa-5 justify-center">
+                <div class="d-flex flex-row">
+                  <img src="../../assets/img/web-icon.svg" class="mr-4" />
+                  <span>By Email Status</span>
+                </div>
+              </div>
+              <div class="detail-body">
+                <v-container>
+                  <v-row no-gutters>
+                    <v-col cols="12" lg="4" sm="6">
+                      <v-card class="stats-item">
+                        <div v-if="!scoresLoading" class="types-menu no-overflow">
+                          <div
+                            v-for="(item, index) in statsData.quickScanByEmailStatus"
+                            :key="index"
+                            class="d-flex justify-space-between types-menu-contents by-mail"
+                            :class="selectedEmailStatus === item ? 'selected' : ''"
+                            @click="selectedEmailStatus = item"
+                          >
+                            <div class="types-menu-contents-item pl-6 py-4">
+                              <span class="squared" :class="item.resultName.toLowerCase()"></span>
+                              {{ item.resultName }} Emails
+                            </div>
+                            <div class="types-menu-contents-item pr-6 py-4">
+                              <button :class="item.resultName.toLowerCase()" type="button">
+                                {{ item.percent }}%
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </v-card>
+                      <v-divider></v-divider>
+                    </v-col>
+                    <v-col cols="12" lg="8" sm="6">
+                      <v-card class="stats-item desc-detail">
+                        <div class="types-menu right-content pa-6">
+                          <ul>
+                            <li
+                              v-for="(item, index) in selectedEmailStatus.quickScanCategory"
+                              :key="index"
+                              class="normal"
+                            >
+                              {{ item.count }} {{ item.categoryName }}
+                            </li>
+                          </ul>
+                        </div>
                       </v-card>
                     </v-col>
                   </v-row>
@@ -154,7 +242,11 @@
 
 <script>
 import CardLoading from "@/components/SkeletonLoading/CardLoading";
-import { getQuickScanById, getQuickScanReportCountById } from "@/api/emailThreatSimlator";
+import {
+  getQuickScanById,
+  getQuickScanReportCountById,
+  getQuickScanReportStatsById,
+} from "@/api/emailThreatSimlator";
 export default {
   name: "Summary",
   components: {
@@ -165,17 +257,19 @@ export default {
       scoresLoading: true,
       scoreData: [],
       scanData: {},
+      statsData: [],
       score: 0,
+      selectedAttackType: {},
+      selectedEmailStatus: {},
+      isAttackType:true,
     };
   },
   methods: {
     getReportData(resourceId) {
-      getQuickScanById(resourceId).then((scoreData) => {
-        const details = scoreData.data.data;
+      getQuickScanById(resourceId).then((scanData) => {
+        const details = scanData.data.data;
         this.scanData = details;
-        console.log(details);
         getQuickScanReportCountById(resourceId).then((scoreData) => {
-          this.scoresLoading = false;
           const data = scoreData.data.data;
           this.scoreData = [
             {
@@ -183,32 +277,37 @@ export default {
               count: data.totalAttackSendCount,
               color: "blue",
               icon: "blue-icon",
-              percent: 0,
+              percent: null,
             },
             {
               title: "Secure Endpoints",
               count: data.secureEndpointsCount,
               color: "green",
               icon: "green-icon",
-              percent: 0,
+              percent: data.secureEndpointsPercent,
             },
             {
               title: "Insecure Endpoints",
               count: data.insecureEndpointsCount,
               color: "red",
               icon: "red-icon",
-              percent: 0,
+              percent: data.insecureEndpointsPercent,
             },
             {
               title: "Unchecked Emails",
               count: data.unckechedEndpointsCount,
               color: "gray",
               icon: "gray-icon",
-              percent: 0,
+              percent:  data.unckechedEndpointsPercent,
             },
           ];
           this.score = data.score;
-          console.log(data);
+          getQuickScanReportStatsById(resourceId).then((statsData) => {
+            this.scoresLoading = false;
+            this.statsData = statsData.data.data;
+            this.selectedAttackType = this.statsData.quickScanByAttackTypes[0];
+            this.selectedEmailStatus = this.statsData.quickScanByEmailStatus[0];
+          });
         });
       });
     },
@@ -266,6 +365,11 @@ export default {
         line-height: 48px;
       }
     }
+    .score-footer{
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 23px
+    }
     .score-icon {
       position: absolute;
       bottom: 4px;
@@ -309,6 +413,7 @@ export default {
         font-weight: 400;
         button {
           border: 1px solid #1173c1;
+          color: #1173c1;
           border-radius: 4px;
           padding: 4px 8px;
           font-weight: 600;
@@ -393,13 +498,13 @@ export default {
         scroll-padding: 50px 0 0 50px;
         &.no-overflow {
           overflow-y: hidden;
-          border-right: 1px solid #E0E0E0;
+          border-right: 1px solid #e0e0e0;
         }
         &::-webkit-scrollbar {
           width: 14px;
-          background-color: #FAFAFA;
-          border-right: 2px solid #E0E0E0;
-          border-left: 1px solid #E0E0E0;
+          background-color: #fafafa;
+          border-right: 2px solid #e0e0e0;
+          border-left: 1px solid #e0e0e0;
         }
 
         &::-webkit-scrollbar-thumb {
@@ -407,6 +512,136 @@ export default {
           background-clip: padding-box;
           border-radius: 9999px;
           background-color: #757575;
+        }
+        &.right-content {
+          &::-webkit-scrollbar {
+            width: 14px;
+            background-color:transparent;
+            border-right: 0;
+            border-left: 0;
+          }
+        }
+        .types-menu-contents {
+          border-bottom: 1px solid #e0e0e0;
+          cursor: pointer;
+          .types-menu-contents-item {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 21px;
+            color: #383b41;
+            button {
+              background: #e0e0e0;
+              border-radius: 4px;
+              padding: 2px 4px;
+              font-weight: 600;
+              font-size: 12px;
+              line-height: 16px;
+              color: #383b41;
+            }
+            .squared {
+              display: -webkit-inline-box;
+              border-radius: 100%;
+              width: 10px;
+              height: 10px;
+              background: #217124;
+              margin-right: 2px;
+              &.unchecked {
+                background-color: #e6a23c;
+              }
+              &.insecure {
+                background-color: #b83a3a;
+              }
+            }
+          }
+          &.selected {
+            background: #fefdf2;
+            .types-menu-contents-item {
+              button {
+                background: #383b41;
+                color: #ffffff;
+                &.unchecked {
+                  background-color: #b6791d;
+                  color: white;
+                }
+                &.insecure {
+                  background-color: #b83a3a;
+                  color: white;
+                }
+                &.secure {
+                  background-color: #217124;
+                  color: white;
+                }
+              }
+            }
+          }
+        }
+      }
+      &.desc-detail {
+        .desc-detail-title {
+          font-weight: 600;
+          font-size: 20px;
+          line-height: 24px;
+          color: #383b41;
+          span {
+            display: inline-table;
+            vertical-align: middle;
+          }
+          button {
+            padding: 4px 8px;
+            font-size: 12px;
+            line-height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+          }
+        }
+        p {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 21px;
+        }
+        ul {
+          list-style: none;
+          font-weight: 400;
+          font-size: 12px;
+          line-height: 19px;
+          padding: 0;
+          li {
+            &::before {
+              background-color: #217124;
+              border-radius: 50%;
+              content: "";
+              display: inline-block;
+              margin-right: 2px;
+              margin-bottom: 3px;
+              height: 10px;
+              width: 10px;
+              vertical-align: middle;
+            }
+            &.unchecked {
+              &::before {
+                background-color: #e6a23c;
+              }
+            }
+            &.insecure {
+              &::before {
+                background-color: #b83a3a;
+              }
+            }
+            &.normal {
+              font-weight: 400;
+              font-size: 14px;
+              line-height: 21px;
+              margin-bottom: 24px;
+              :last-of-type {
+                margin-bottom: 0;
+              }
+              &::before {
+                background-color: black;
+                height: 5px;
+                width: 5px;
+              }
+            }
+          }
         }
       }
     }

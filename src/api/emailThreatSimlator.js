@@ -18,6 +18,9 @@ export function getQuickScanCreate(payload) {
 export function getQuickScanById(resourceId) {
   return emailThreatSimlatorRequest.get(`/quick-scan/${resourceId}`)
 }
+export function getQuickScanCount() {
+  return emailThreatSimlatorRequest.get(`/quick-scan/continuous-scan-count`)
+}
 export function exportQuickScan(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/search/export`, payload, {
     responseType: 'blob'
@@ -53,4 +56,7 @@ export function exportAttacksVector(payload) {
 }
 export function getQuickScanReportCountById(resourceId) {
   return emailThreatSimlatorRequest.get(`/quick-scan-report/counts-and-score/${resourceId}`)
+}
+export function getQuickScanReportStatsById(resourceId) {
+  return emailThreatSimlatorRequest.get(`/quick-scan-report/stats/${resourceId}`)
 }

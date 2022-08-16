@@ -45,6 +45,7 @@
       :axios-payload.sync="bodyData"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      row-key="pluginResourceId"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScanModalStatus(true)"
@@ -177,6 +178,22 @@ export default {
             filterableType: "number",
           },
           {
+            property: "isActive",
+            align: "left",
+            editable: false,
+            label: "Status",
+            sortable: false,
+            show: true,
+            type: "text",
+            class: "test",
+            width: 130,
+            filterableType: "select",
+            filterableItems: [
+              { text: "Active", value: true },
+              { text: "Passive", value: false },
+            ],
+          },
+          {
             property: PROPERTY_STORE.CREATETIME,
             align: "left",
             editable: false,
@@ -300,7 +317,6 @@ export default {
     },
     handleEditAttackVector(row) {
       getAttackVectorById(row.pluginResourceId).then((response) => {
-        console.log(response);
         this.isEdit = true;
         this.attackVectorDetails = response.data.data;
         this.modalStatus = true;
@@ -362,6 +378,10 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
             this.serverSideProps.pageNumber = pageNumber;
             const { results = [] } = data;
+            for (let i = 0; i < results.length; i++) {
+              const data = results[i];
+              data.isActive = data.isActive ? "Active" : "Passive";
+            }
             this.tableData = results;
           })
           .catch(() => {
@@ -373,7 +393,6 @@ export default {
       }
     },
     handleActionDelete(row) {
-      console.log(row);
       this.selectedScan = row;
       this.showDeleteModal = true;
     },
