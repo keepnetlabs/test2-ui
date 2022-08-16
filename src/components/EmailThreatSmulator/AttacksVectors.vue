@@ -256,7 +256,6 @@ export default {
   },
   methods: {
     toggleShowPreviewDialog() {
-      console.log("a", this.isShowPreviewDialog);
       if (this.isShowPreviewDialog) this.selectedScan = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
@@ -312,7 +311,6 @@ export default {
       this.getDatatableList();
     },
     handleDelete(row) {
-      console.log(row);
       this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false);
     },
     handleEditAttackVector(row) {

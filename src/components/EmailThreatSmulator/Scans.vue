@@ -244,7 +244,6 @@ export default {
   },
   methods: {
     toggleShowPreviewDialog() {
-      console.log("a", this.isShowPreviewDialog);
       if (this.isShowPreviewDialog) this.selectedScan = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
@@ -300,12 +299,10 @@ export default {
       this.getDatatableList();
     },
     handleDelete(row) {
-      console.log(row);
       this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false);
     },
     handleDuplicateScan(row) {
       getQuickScanById(row.quickScanResourceId).then((response) => {
-        console.log(response);
         this.isDuplicate = true;
         this.scanDetails = response.data.data;
         this.modalStatus = true;
@@ -333,7 +330,6 @@ export default {
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      console.log("dd", reportAllPages);
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
