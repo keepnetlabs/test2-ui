@@ -86,7 +86,7 @@ export const labels = {
   MostEngagedCampaigns: 'Most Engaged Campaigns',
   TopPhishingSimulationReporters: 'Top Phishing Simulation Reporters',
   EmptyTopPhishingSimulationReporters: 'You do not have any reporter',
-  EmptyEnrollments: 'No training enrollled',
+  EmptyEnrollments: 'No training enrolled',
   CreateNewTrainingContent: 'Create New Training Content',
   EditTrainingContent: 'Edit Training Content',
   TrainingContent: 'Training Content',
