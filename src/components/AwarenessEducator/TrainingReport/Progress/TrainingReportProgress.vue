@@ -187,7 +187,7 @@ export default {
             label: 'Progress',
             sortable: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             width: 200,
             filterableType: 'select',
             filterableItems:
@@ -279,6 +279,12 @@ export default {
   },
   methods: {
     getStatusBadgeProps(progress) {
+      if (progress == 'Not Completed')
+        return {
+          color: '#B83A3A',
+          text: 'Not Completed'
+        }
+
       if (progress === 'In Progress')
         return {
           color: '#B6791D',
