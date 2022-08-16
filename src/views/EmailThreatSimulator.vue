@@ -1,8 +1,8 @@
 <template>
-  <KContainer id="phishing-simulator">
+  <KContainer id="email-threat-simulator">
     <el-tabs v-model="tab">
       <el-tab-pane v-if="getEtsQuickScanPermissionSearch" label="Scans" name="scans" id="tab-scans">
-        <Scans v-if="tab === 'scans'" ref="refScans" />
+        <scans v-if="tab === 'scans'" ref="refScans" />
       </el-tab-pane>
       <el-tab-pane
         v-if="getEtsAttackVectorPermissionSearch"
@@ -10,7 +10,7 @@
         name="attacksVectors"
         id="tab-attacks-vectors"
       >
-        <AttacksVectors v-if="tab === 'attacksVectors'" ref="refAttacksVectors" />
+        <attacks-vectors v-if="tab === 'attacksVectors'" ref="refAttacksVectors" />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -47,39 +47,10 @@ export default {
   },
   created() {
     if (!this.getEtsQuickScanPermissionSearch && this.getEtsAttackVectorPermissionSearch) {
-      this.tab = "emailTemplates";
-    } else if (
-      !this.getPhishingScenariosSearchPermissions &&
-      !this.getEtsQuickScanPermissionSearch &&
-      this.getLandingPageTemplatesSearchPermissions
-    ) {
-      this.tab = "landingPage";
+      this.tab = "attacksVectors";
+    } else if (this.getEtsQuickScanPermissionSearch && !this.getEtsAttackVectorPermissionSearch) {
+      this.tab = "scans";
     }
   },
-  beforeRouteLeave(to, from, next) {
-    const { refScans, refAttacksVectors } = this.$refs;
-
-    if (refScans && refScans.modalStatus) {
-      refScans.checkIfCanCLoseNewScenarioModal();
-      next(false);
-    } else if (refScans && refScans.isShowFastLaunch) {
-      if (refScans?.$refs?.fastLaunch?.isSubmitted) return next();
-      refScans.checkIfCanCloseFastLaunchModal();
-      next(false);
-    } else if (
-      refAttacksVectors &&
-      refAttacksVectors.$refs.newEmailTemplate &&
-      refAttacksVectors.$refs.newEmailTemplate.$refs.refEmailTemplate &&
-      refAttacksVectors.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
-    ) {
-      refAttacksVectors.checkIfCanCloseGrapesJSModal();
-      next(false);
-    } else if (refAttacksVectors && refAttacksVectors.modalStatus) {
-      refAttacksVectors.checkIfCanCloseNewEmailTemplate();
-      next(false);
-    } else {
-      next();
-    }
-  },
-}
+};
 </script>

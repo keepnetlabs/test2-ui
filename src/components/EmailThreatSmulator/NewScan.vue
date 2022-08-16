@@ -111,6 +111,15 @@
                     </div>
                   </form-group>
                   <form-group
+                    class-name="mt-4"
+                    v-if="emailSettingsValues.scanType == 'Manual'"
+                    title="Manual"
+                    sub-title="You must open manually every email that you received from <br/>
+                     noreply@emailthreatsimulator.com and click 'Report as failed'.
+                     <br/>(We don’t recommend this option)"
+                  >
+                  </form-group>
+                  <form-group
                     title="Password"
                     sub-title="Use your account password"
                     has-hint
@@ -183,7 +192,17 @@
                       v-model="scanAndDeliveryValues.continuousScan"
                       color="#2196f3"
                       label="Scan with new attack vectors when added"
+                      @change="getTotalCounts($event)"
                     />
+                    <v-alert
+                      v-if="scanAndDeliveryValues.continuousScan && totalCountMassage != ''"
+                      dense
+                      border="left"
+                      type="warning"
+                      icon="mdi-alert-outline"
+                    >
+                    {{totalCountMassage}}
+                    </v-alert>
                   </form-group>
                   <form-group
                     title="Distribution"
@@ -395,8 +414,12 @@ import * as Validations from "@/utils/validations";
 import { scrollToComponent, isDifferent } from "@/utils/functions";
 import InputEmail from "@/components/Common/Inputs/InputEmail";
 import StepperFooter from "@/components/Stepper/StepperFooter";
-import { getValidateContinuousScan, getQuickScanCreate } from "@/api/emailThreatSimlator";
-import {COMMON_CONSTANTS} from "@/model/constants/commonConstants";
+import {
+  getValidateContinuousScan,
+  getQuickScanCount,
+  getQuickScanCreate,
+} from "@/api/emailThreatSimlator";
+import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 
 export default {
   name: "NewScan",
@@ -464,6 +487,7 @@ export default {
         message: "",
       },
       isFormValuesChanged: false,
+      totalCountMassage: "",
     };
   },
   props: {
@@ -485,6 +509,21 @@ export default {
       if (isNeed) {
         return this.baseRules;
       }
+    },
+    getTotalCounts(val) {
+      if (val) {
+        getQuickScanCount().then((response) => {
+          const data = response.data;
+          this.totalCountMassage = data.message;
+
+          // this.$store.dispatch("common/createSnackBar", {
+          //   message: data.message,
+          //   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          //   icon: "mdi-alert-circle",
+          // });
+        });
+      }
+
     },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step));

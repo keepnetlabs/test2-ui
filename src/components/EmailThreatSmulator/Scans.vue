@@ -45,6 +45,7 @@
       :axios-payload.sync="bodyData"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      row-key="quickScanResourceId"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScanModalStatus(true)"
@@ -65,6 +66,7 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
+          @on-click="$router.push({ path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`})"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -169,7 +171,7 @@ export default {
             show: true,
             type: "status",
             filterableType: "select",
-            filterableItems: ["Initial", "InProgress", "Completed", "Cancelled"],
+            filterableItems: ["Initial", "In Progress", "Completed", "Cancelled"],
             width: 180,
           },
           {
@@ -242,7 +244,6 @@ export default {
   },
   methods: {
     toggleShowPreviewDialog() {
-      console.log("a", this.isShowPreviewDialog);
       if (this.isShowPreviewDialog) this.selectedScan = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
@@ -298,12 +299,10 @@ export default {
       this.getDatatableList();
     },
     handleDelete(row) {
-      console.log(row);
       this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false);
     },
     handleDuplicateScan(row) {
       getQuickScanById(row.quickScanResourceId).then((response) => {
-        console.log(response);
         this.isDuplicate = true;
         this.scanDetails = response.data.data;
         this.modalStatus = true;
@@ -393,31 +392,6 @@ export default {
   },
   created() {
     this.callForLanguages("refQuickScanList");
-    // getScenarioDataDetails()
-    //   .then((response) => {
-    //     this.scanDetails = response?.data?.data || {
-    //       methodTypes: [],
-    //       difficultyTypes: []
-    //     }
-    //     this.$set(
-    //       this.tableOptions.columns[1],
-    //       'filterableItems',
-    //       this.scanDetails.methodTypes.map((item) => {
-    //         console.log("ddd", item);
-    //         return { text: item.text, value: item.text }
-    //       })
-    //     )
-    //     this.$set(
-    //       this.tableOptions.columns[3],
-    //       'filterableItems',
-    //       this.scanDetails.difficultyTypes.map((item) => {
-    //         return { text: item.text, value: item.text }
-    //       })
-    //     )
-    //   })
-    //   .finally(() => {
-    //
-    //   });
     this.getDatatableList();
   },
 };

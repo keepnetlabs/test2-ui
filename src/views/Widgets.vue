@@ -30,7 +30,6 @@
         @handleOpenMenu="handleOpenMenu"
       />
     </div>
-
     <k-smart-grid
       ref="refGrid"
       :layout="layout"
