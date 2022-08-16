@@ -160,6 +160,13 @@ export default {
     changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs
       if (this.step === 1 && flag === 1) {
+        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs
+        if (refMakeAvailableFor) {
+          refMakeAvailableFor.validateAvailableFor(
+            refTrainingCourseInformation.formData.availableForRequests
+          )
+          if (!refMakeAvailableFor.isAvailableForValid) return
+        }
         if (refTrainingCourseInformation.validateForm()) {
           if (this.isEdit) return this.step++
           const { formData } = refTrainingCourseInformation
@@ -191,6 +198,9 @@ export default {
                   (content) => content.file && content.languageId
                 )
               } else {
+                this.isActionButtonDisabled = false
+              }
+              if (this.step === 1) {
                 this.isActionButtonDisabled = false
               }
             })

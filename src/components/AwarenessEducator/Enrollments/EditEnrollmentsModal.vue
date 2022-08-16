@@ -222,7 +222,7 @@ export default {
           value: 'QuizCompleted'
         },
         {
-          text: 'after occurences',
+          text: 'after occurrences',
           value: 'AfterOccurences'
         },
         {
