@@ -15,6 +15,7 @@
         required
         rows="2"
         height="100"
+        :max-length="300"
         :initial-placeholder="labels.Description"
       />
     </FormGroup>
