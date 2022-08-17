@@ -120,16 +120,16 @@
             <v-icon v-if="isTesting" class="ml-2 loading-spin" color="#2196f3" left medium
               >mdi-rotate-left
             </v-icon>
+            <v-icon
+              v-if="isTested && !isTesting"
+              :id="`btn--siem-integration-api-key-check`"
+              class="ml-2"
+              color="#43a047"
+              left
+              medium
+              >mdi-check
+            </v-icon>
           </v-btn>
-          <v-icon
-            v-if="isTested && !isTesting"
-            :id="`btn--siem-integration-api-key-check`"
-            class="ml-1"
-            color="#43a047"
-            left
-            medium
-            >mdi-check
-          </v-icon>
         </FormGroup>
         <FormGroup has-hint class-name="mt-6" title="Status">
           <v-switch

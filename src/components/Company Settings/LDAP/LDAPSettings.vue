@@ -3,7 +3,12 @@
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <v-form v-show="!isLoading" v-model="isFormValid" ref="refForm">
       <FormGroup :title="labels.Path" has-hint>
-        <InputUrl v-model="formData.url" id="input--ldap-path" placeholder="Enter LDAP path" />
+        <InputUrl
+          v-model="formData.url"
+          id="input--ldap-path"
+          placeholder="Enter LDAP path"
+          :rules="pathRules"
+        />
       </FormGroup>
       <FormGroup :title="labels.UserName" has-hint>
         <v-text-field
@@ -115,7 +120,13 @@ export default {
       isTestingConnection: false,
       isTestConnectionValid: false,
       isFormValid: false,
-      disabledStyle: { pointerEvents: 'none', opacity: '.5' }
+      disabledStyle: { pointerEvents: 'none', opacity: '.5' },
+      pathRules: [
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.urlOrIpAddress(v, 'Invalid URL or IP address'),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+        (v) => Validations.noWhitespace(v, labels.InvalidURL)
+      ]
     }
   },
   computed: {

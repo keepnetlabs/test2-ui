@@ -16,16 +16,10 @@
       </div>
       <div class="test-connection__button" v-else>
         TEST CONNECTION
+        <v-icon v-if="isAllSuccess && !isLoading" class="ml-2" color="#43a047" left medium
+          >mdi-check
+        </v-icon>
       </div>
-      <v-icon
-        v-if="isAllSuccess && !isLoading"
-        :id="`btn--siem-integration-api-key-check`"
-        class="ml-2 mb-7 mr-0"
-        color="#43a047"
-        left
-        medium
-        >mdi-check
-      </v-icon>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
       <div class="test-connection__testing-content__item" id="test-connection-item-authenticating">

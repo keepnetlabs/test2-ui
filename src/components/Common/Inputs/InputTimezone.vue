@@ -11,6 +11,7 @@
     :hide-details="!hint"
     placeholder="Select a timezone"
     min-width-type="huge"
+    :prepend-inner-icon="prependInnerIcon"
     :persistent-hint="persistentHint"
     :hint="hint"
     :items="items"
@@ -42,6 +43,10 @@ export default {
     isBlock: {
       type: Boolean,
       default: false
+    },
+    prependInnerIcon: {
+      type: String,
+      required: false
     }
   },
   computed: {
