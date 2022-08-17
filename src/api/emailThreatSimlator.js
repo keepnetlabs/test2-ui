@@ -60,3 +60,12 @@ export function getQuickScanReportCountById(resourceId) {
 export function getQuickScanReportStatsById(resourceId) {
   return emailThreatSimlatorRequest.get(`/quick-scan-report/stats/${resourceId}`)
 }
+
+export function getQuickScanReportList(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan-item/search`, payload)
+}
+export function exportQuickScanReportList(payload) {
+  return emailThreatSimlatorRequest.post(`/quick-scan-item/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
