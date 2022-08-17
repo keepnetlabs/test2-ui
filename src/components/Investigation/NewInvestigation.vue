@@ -614,6 +614,7 @@ export default {
   },
   props: [
     'isEdit',
+    'ísDuplicate',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
     'investigationDetailsData',
@@ -1252,7 +1253,7 @@ export default {
         this.$store.dispatch('threatSharing/checkName', this.name)
     },
     checkIsEdit() {
-      if (this.isEdit) {
+      if (this.isEdit || this.isDuplicate) {
         this.investigationName = this?.investigationDetailsData?.name || ''
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
           ({ mailConfigurationResourceId, type }) => ({
@@ -1299,8 +1300,10 @@ export default {
           }
           return acc
         }, [])
+        if (this.isDuplicate && !this.isEdit) {
+          this.selectedAction = 'noAction'
+        }
         this.filterList = [...headers, ...body, ...attachments]
-        this.selectedAction = 'noAction'
       }
     }
   },

@@ -121,10 +121,15 @@
               <v-icon v-if="isTesting" class="ml-2 loading-spin" color="#2196f3" left medium
                 >mdi-rotate-left
               </v-icon>
+              <v-icon
+                v-if="testConnectionSuccess && !isTesting"
+                class="ml-2"
+                color="#43a047"
+                left
+                medium
+                >mdi-check
+              </v-icon>
             </v-btn>
-            <span v-if="testConnectionSuccess && !isTesting" class="test-connection-success"
-              >Connected successfully!</span
-            >
           </div>
         </form-group>
       </v-form>
