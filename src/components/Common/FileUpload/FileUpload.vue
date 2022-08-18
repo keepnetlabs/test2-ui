@@ -210,7 +210,6 @@ export default {
   watch: {
     onUploadProgress() {
       if (this.onUploadProgress) {
-        console.log('this.onUploadProgress', this.onUploadProgress)
         return (this.uploadProgress = Math.round(
           (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
         ))
