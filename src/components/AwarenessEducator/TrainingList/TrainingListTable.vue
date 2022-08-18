@@ -59,18 +59,18 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[3].disabled || !scope.row.isEditable"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[3].disabled"
           :icon="tableOptions.rowActions[3].icon"
           :text="tableOptions.rowActions[3].name"
-          @on-click="handleActionDelete(scope.row)"
+          @on-click="handleDuplicate(scope.row)"
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[4].disabled"
+          :disabled="tableOptions.rowActions[4].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[4].icon"
           :text="tableOptions.rowActions[4].name"
-          @on-click="handleDuplicate(scope.row)"
+          @on-click="handleActionDelete(scope.row)"
         />
       </RowActionsMenu>
     </template>
@@ -164,16 +164,16 @@ export default {
             icon: 'mdi-eye'
           },
           {
-            name: labels.Delete,
-            icon: 'mdi-delete',
-            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
-          },
-          {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-training-list',
             icon: 'mdi-content-copy',
             action: 'on-duplicate'
             // disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
+          },
+          {
+            name: labels.Delete,
+            icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

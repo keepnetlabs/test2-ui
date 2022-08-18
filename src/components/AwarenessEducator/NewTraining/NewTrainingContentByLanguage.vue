@@ -42,6 +42,7 @@
         :file-previews="filePreviews"
         :disabled="!value.languageId"
         :deletable="false"
+        :is-backend-parsed="isBackendParsed"
         @inputFile="handleFileChange"
       />
     </FormGroupHorizontalContent>
@@ -86,6 +87,7 @@ export default {
       labels,
       isDisabled: false,
       progressEvent: undefined,
+      isBackendParsed: false,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -111,6 +113,7 @@ export default {
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
       this.isDisabled = true
+      this.isBackendParsed = false
       AwarenessEducatorService.uploadTrainingContent(
         payload,
         this.trainingResourceId,
@@ -120,6 +123,7 @@ export default {
         }
       )
         .then(() => {
+          this.isBackendParsed = true
           this.progressEvent = undefined
           this.abortController = null
           this.$emit('input', { ...this.value, file })
