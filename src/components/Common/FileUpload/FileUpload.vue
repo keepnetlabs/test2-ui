@@ -33,18 +33,24 @@
             <div class="k-file-uploads__item-details--filesize">
               <span>{{ file.size | formatSize }}</span>
               <span
-                v-if="isStandAlone && file.progress && uploadProgress < 100 && isShowFileProgress"
+                v-if="
+                  isStandAlone &&
+                  file.progress &&
+                  uploadProgress <= 100 &&
+                  isShowFileProgress &&
+                  !isBackendParsed
+                "
                 class="k-file-uploads__item-details--progress-value"
-                >{{ uploadProgress }}%</span
+                >{{ uploadProgress === 100 && !isBackendParsed ? 99 : uploadProgress }}%</span
               >
             </div>
             <div
               v-if="isStandAlone && file.progress && isShowFileProgress"
               class="k-file-uploads__item-details--fileprogress"
             >
-              <v-progress-linear :value="uploadProgress" v-if="uploadProgress < 100" />
+              <v-progress-linear :value="uploadProgress" v-if="uploadProgress <= 100" />
               <span
-                v-if="isStandAlone && file.progress && uploadProgress === 100"
+                v-if="isStandAlone && file.progress && isBackendParsed"
                 class="k-file-uploads__item-details--progress-value"
                 >{{ constant.UPLOADED_SUCCESSFULLY }}</span
               >
@@ -123,6 +129,10 @@ export default {
       default: () => []
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    isBackendParsed: {
       type: Boolean,
       default: false
     }
