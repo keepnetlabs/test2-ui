@@ -463,6 +463,7 @@ export default {
             text: 'All Languages',
             value: 'All'
           })
+          this.formData.languageIds = [...this.contentLanguageItems.map((item) => item.value)]
         }
       )
     },
