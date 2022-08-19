@@ -8,11 +8,11 @@
       v-if="modalStatus"
     >
       <new-attack-vector
-        ref="newScenarioModal"
+        ref="newAttackVectorModal"
         :status="modalStatus"
         :isEdit="isEdit"
         :attackVectorDetails="attackVectorDetails"
-        @changeNewScanModalStatus="changeNewScanModalStatus"
+        @changeNewAttackVectorModalStatus="changeNewAttackVectorModalStatus"
       />
     </v-overlay>
     <delete-attack-vector
@@ -54,7 +54,7 @@
       row-key="pluginResourceId"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
-      @addAction="changeNewScanModalStatus(true)"
+      @addAction="changeNewAttackVectorModalStatus(true)"
       @downloadEvent="exportTableData"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
@@ -160,20 +160,14 @@ export default {
     return {
       languageFilterOptions: [],
       attackVectorDetails: {},
-      isShowFastLaunch: false,
-      isShowPreviewDialog: false,
       selectedRow: null,
-      methodItems: [],
-      difficultyItems: [],
-      editableFormValues: {},
       loading: true,
       isEdit: false,
       labels,
-      selectedScenarioURL: "",
       tableData: [],
       showDeleteModal: false,
       showStatusModal: false,
-      selectedAttackVekctor: {},
+      selectedAttackVector: {},
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_ATTACK_VECTOR_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_ATTACK_VECTOR_TABLE,
@@ -286,7 +280,7 @@ export default {
         addButton: {
           show: true,
           action: "addAction",
-          tooltip: "Add a Scenario",
+          tooltip: "Add a Attack Vector",
           id: "btn-add--scan",
           disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionCreate"],
         },
@@ -315,7 +309,7 @@ export default {
       return `border-color: ${color};color: ${color};`;
     },
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedAttackVekctor = {};
+      if (this.isShowPreviewDialog) this.selectedAttackVector = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     resetPageNumber() {
@@ -383,25 +377,20 @@ export default {
         this.attackVectorDetails = response.data.data;
         this.modalStatus = true;
       });
-      this.selectedAttackVekctor = row;
+      this.selectedAttackVector = row;
       //quickScanResourceId
     },
-    checkIfCanCLoseNewScenarioModal() {
-      if (this.$refs.newScenarioModal) {
-        this.$refs.newScenarioModal.changeNewScanModalStatus();
+    checkIfCanCLoseNewModal() {
+      if (this.$refs.newAttackVectorModal) {
+        this.$refs.newAttackVectorModal.closeAttackVectorPopup();
       }
     },
-    checkIfCanCloseFastLaunchModal() {
-      if (this.$refs.fastLaunch) {
-        this.$refs.fastLaunch.closeOverlay();
-      }
-    },
-    changeNewScanModalStatus(status, restart) {
+    changeNewAttackVectorModalStatus(status, restart) {
       this.modalStatus = status;
       this.isEdit = false;
       this.attackVectorDetails = {};
       if (restart) {
-        this.selectedAttackVekctor = {};
+        this.selectedAttackVector = {};
         this.getDatatableList();
       }
     },
@@ -455,11 +444,11 @@ export default {
       }
     },
     handleActionDelete(row) {
-      this.selectedAttackVekctor = row;
+      this.selectedAttackVector = row;
       this.showDeleteModal = true;
     },
     handleActionStatus(row) {
-      this.selectedAttackVekctor = row;
+      this.selectedAttackVector = row;
       this.showStatusModal = true;
     },
     columnFilterChanged(filter) {

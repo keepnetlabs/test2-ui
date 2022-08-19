@@ -1,5 +1,5 @@
 <template>
-  <div id="scenarios">
+  <div id="Scans">
     <v-overlay
       id="add-new-quick-scan-overlay"
       :value="modalStatus"
@@ -9,7 +9,7 @@
       v-if="modalStatus"
     >
       <NewScan
-        ref="newScenarioModal"
+        ref="newScanModal"
         :status="modalStatus"
         :isDuplicate="isDuplicate"
         :scanDetails="scanDetails"
@@ -142,19 +142,12 @@ export default {
   mixins: [useCallForLanguagesForTableFilter],
   data() {
     return {
-      languageFilterOptions: [],
       scanDetails: {},
-      isShowFastLaunch: false,
-      isShowPreviewDialog: false,
       selectedRow: null,
-      methodItems: [],
-      difficultyItems: [],
-      editableFormValues: {},
       loading: true,
       isEdit: false,
       isDuplicate: false,
       labels,
-      selectedScenarioURL: "",
       tableData: [],
       showDeleteModal: false,
       selectedScan: {},
@@ -321,14 +314,9 @@ export default {
       this.selectedScan = row;
       //quickScanResourceId
     },
-    checkIfCanCLoseNewScenarioModal() {
-      if (this.$refs.newScenarioModal) {
-        this.$refs.newScenarioModal.changeNewScanModalStatus();
-      }
-    },
-    checkIfCanCloseFastLaunchModal() {
-      if (this.$refs.fastLaunch) {
-        this.$refs.fastLaunch.closeOverlay();
+    checkIfCanCLoseNewModal() {
+      if (this.$refs.newScanModal) {
+        this.$refs.newScanModal.closeNewScanPopup();
       }
     },
     changeNewScanModalStatus(status, restart) {
@@ -355,7 +343,7 @@ export default {
           const { data } = response;
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(data);
-          link.download = `Scenarios.${
+          link.download = `Scans.${
             exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
           }`;
           link.click();

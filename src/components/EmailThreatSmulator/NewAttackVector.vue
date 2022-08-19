@@ -73,7 +73,7 @@
         </v-form>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeNewScanPopup">
+        <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeAttackVectorPopup">
           {{ labels.Cancel }}
         </v-btn>
         <v-btn
@@ -176,14 +176,14 @@ export default {
         this.formValues.content = file;
       }
     },
-    closeNewScanPopup() {
+    closeAttackVectorPopup() {
       if (!this.isFormValuesChanged) {
-        return this.$emit("changeNewScanModalStatus", false);
+        return this.$emit("changeNewAttackVectorModalStatus", false);
       }
       this.$store.dispatch("common/setIsShowLeavingDialog", {
         show: true,
         callback: () => {
-          this.$emit("changeNewScanModalStatus", false);
+          this.$emit("changeNewAttackVectorModalStatus", false);
         },
       });
     },
@@ -218,7 +218,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: "mdi-alert-circle",
             });
-            this.$emit("changeNewScanModalStatus", false, true);
+            this.$emit("changeNewAttackVectorModalStatus", false, true);
           })
           .catch((error) => {
             const errorResponse = error.response.data;

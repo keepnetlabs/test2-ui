@@ -52,5 +52,18 @@ export default {
       this.tab = "scans";
     }
   },
+  beforeRouteLeave(to, from, next) {
+    const { refScans, refAttacksVectors } = this.$refs
+
+    if (refScans && refScans.modalStatus) {
+      refScans.checkIfCanCLoseNewModal()
+      next(false)
+    } else if (refAttacksVectors && refAttacksVectors.modalStatus) {
+      refAttacksVectors.checkIfCanCLoseNewModal()
+      next(false)
+    } else {
+      next()
+    }
+  }
 };
 </script>
