@@ -297,39 +297,60 @@ export default {
           const ids = refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
             (item) => item.value
           )
+          const targetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+
           if (!ids.length) {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
             refSendTrainingSelectUsers.isTargetGroupsValid = false
             return
           }
           this.isActionButtonDisabled = true
-          this.callForSelectedTargetGroups(ids)
-            .then((response) => {
-              const { results } = response?.data?.data || []
-              //User must have user count greater than 0
-              const totalUserCount = results.reduce((acc, item) => {
-                acc += item.userCount
-                return acc
-              }, 0)
-
-              if (totalUserCount) {
-                refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
-                refSendTrainingSelectUsers.isTargetGroupsValid = true
-                this.step += flag
-              } else {
-                refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
-                refSendTrainingSelectUsers.isTargetGroupsValid = false
-                this.$nextTick(() => {
-                  const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector(
-                    '.error--text'
-                  )
-                  scrollToComponent(el)
-                })
-              }
-              refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
-              refSendTrainingSelectUsers.formData.selectedTargetGroups = results
+          const totalUserCount = targetGroups.reduce((acc, item) => {
+            acc += item.userCount
+            return acc
+          }, 0)
+          if (totalUserCount) {
+            refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
+            refSendTrainingSelectUsers.isTargetGroupsValid = true
+            this.step += flag
+          } else {
+            refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+            refSendTrainingSelectUsers.isTargetGroupsValid = false
+            this.$nextTick(() => {
+              const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector('.error--text')
+              scrollToComponent(el)
             })
-            .finally(() => (this.isActionButtonDisabled = false))
+          }
+
+          // this.isActionButtonDisabled = true
+          // this.callForSelectedTargetGroups(ids)
+          //   .then((response) => {
+          //     const { results } = response?.data?.data || []
+          //     //User must have user count greater than 0
+          //     const totalUserCount = results.reduce((acc, item) => {
+          //       acc += item.userCount
+          //       return acc
+          //     }, 0)
+
+          //   if (totalUserCount) {
+          //     refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
+          //     refSendTrainingSelectUsers.isTargetGroupsValid = true
+          //     this.step += flag
+          //   } else {
+          //     refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
+          //     refSendTrainingSelectUsers.isTargetGroupsValid = false
+          //     this.$nextTick(() => {
+          //       const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector(
+          //         '.error--text'
+          //       )
+          //       scrollToComponent(el)
+          //     })
+          //   }
+          //   refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
+          //   refSendTrainingSelectUsers.formData.selectedTargetGroups = results
+          // })
+          // .finally(() => (this.isActionButtonDisabled = false))
+          this.isActionButtonDisabled = false
         } else if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 1) {
           const {
             formData: {
