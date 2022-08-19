@@ -774,11 +774,11 @@ const store = {
         widgets: getters?.getDashboardWidgetsPermission,
         phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
         roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
-        recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
-        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions,
-        phishingCampaignTrendsCard: getters?.getCampaignReportsGetPermissions,
-        mostEngagedCampaignsCard: getters?.getCampaignReportsGetPermissions,
-        topPhishingSimulationReportersCard: getters?.getDashboardReportersPermission
+        recentCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostPhishedUsersCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        phishingCampaignTrendsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostEngagedCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions
       }
     },
     getAwarenessEducatorListGroupPermissions(state) {
