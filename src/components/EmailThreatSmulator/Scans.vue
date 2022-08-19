@@ -66,7 +66,7 @@
           class="datatable-link"
         >
           <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
-            {{ scope.row.status }}
+            {{ scope.row.status.replace("InProgress", "In Progress") }}
           </div>
         </span>
       </template>
