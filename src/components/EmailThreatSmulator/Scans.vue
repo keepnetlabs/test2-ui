@@ -182,7 +182,7 @@ export default {
             show: true,
             type: "slot",
             filterableType: "select",
-            filterableItems: ["InProgress", "Completed", "Continuous "],
+            filterableItems: [{ text: 'In Progress', value: 'InProgress' }, "Completed", "Continuous "],
             width: 180,
           },
           {
