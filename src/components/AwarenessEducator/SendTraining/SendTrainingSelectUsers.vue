@@ -153,6 +153,7 @@ export default {
   },
   methods: {
     handleTableSelectionChange(items) {
+      this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
