@@ -252,49 +252,65 @@ export default {
       switch (this.step) {
         case 1:
           if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-            const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
-              (item) => item.value
-            )
-            searchTargetGroups({
-              pageNumber: 1,
-              pageSize: 2000000,
-              orderBy: 'CreateTime',
-              ascending: false,
-              filter: {
-                Condition: 'AND',
-                FilterGroups: [
-                  {
-                    Condition: 'AND',
-                    FilterItems: [],
-                    FilterGroups: []
-                  },
-                  {
-                    Condition: 'OR',
-                    FilterItems: [
-                      { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
-                    ],
-                    FilterGroups: []
-                  }
-                ]
-              }
-            }).then((response) => {
-              const { results } = response?.data?.data || []
-              const totalUserCount = results.reduce((acc, item) => {
-                acc += item.userCount
-                return acc
-              }, 0)
-              if (totalUserCount) {
-                refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-                refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-                this.changeStep()
-              } else {
-                refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-                refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-                this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-              }
-              refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
-                response.data.data.results
-            })
+            // const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
+            //   (item) => item.value
+            // )
+            const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
+            const totalUserCount = targetGroups.reduce((acc, item) => {
+              acc += item?.userCount || 0
+              return acc
+            }, 0)
+
+            if (totalUserCount) {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+              this.changeStep()
+            } else {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            }
+            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+            // searchTargetGroups({
+            //   pageNumber: 1,
+            //   pageSize: 2000000,
+            //   orderBy: 'CreateTime',
+            //   ascending: false,
+            //   filter: {
+            //     Condition: 'AND',
+            //     FilterGroups: [
+            //       {
+            //         Condition: 'AND',
+            //         FilterItems: [],
+            //         FilterGroups: []
+            //       },
+            //       {
+            //         Condition: 'OR',
+            //         FilterItems: [
+            //           { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
+            //         ],
+            //         FilterGroups: []
+            //       }
+            //     ]
+            //   }
+            // }).then((response) => {
+            //   const { results } = response?.data?.data || []
+            //   const totalUserCount = results.reduce((acc, item) => {
+            //     acc += item.userCount
+            //     return acc
+            //   }, 0)
+            //   if (totalUserCount) {
+            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+            //     this.changeStep()
+            //   } else {
+            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+            //     this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            //   }
+            //   refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
+            //     response.data.data.results
+            // })
           } else {
             if (!formData?.targetGroupResourceIds?.length) {
               refCampaignManagerCampaignInfo.isTargetGroupsValid = false
