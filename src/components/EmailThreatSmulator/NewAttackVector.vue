@@ -97,7 +97,6 @@ import labels from "@/model/constants/labels";
 import FormGroup from "@/components/SmallComponents/FormGroup";
 import FileUpload from "@/components/Common/FileUpload/FileUpload";
 import * as Validations from "@/utils/validations";
-import { scrollToComponent, isDifferent } from "@/utils/functions";
 import {
   getAttackVectorCreate,
   getAttackVectorUpdate,
@@ -122,7 +121,7 @@ export default {
       Validations: Validations,
       formValues: {
         name: "",
-        categoryResourceId: 1,
+        categoryResourceId: null,
         description: "",
         content: "",
         riskFactor: 1,
@@ -214,7 +213,7 @@ export default {
           .then((response) => {
             this.$store.dispatch("common/createSnackBar", {
               message: this.isEdit
-                ? "Attack Vector successfully duplicated."
+                ? "Attack Vector successfully updated."
                 : "Attack Vector successfully added.",
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: "mdi-alert-circle",
@@ -252,8 +251,8 @@ export default {
     formValues: {
       handler: function (value) {
         this.isFormValuesChanged = true;
-        if (value.riskFactor) {
-          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]/g, "");
+        if (this.formValues.riskFactor != "") {
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, "");
         }
       },
       deep: true,
@@ -268,10 +267,13 @@ export default {
     getLookupListByTypeId(24).then((categories) => {
       const categoryList = categories.data.data;
       this.categoryResources = categoryList;
-      this.formValues.categoryResourceId = this.categoryResources[0];
+      this.formValues.categoryResourceId = categoryList[0].resourceId;
       if (this.isEdit) {
         getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
           const details = response.data.data;
+          this.formValues.categoryResourceId = categoryList.find(
+            (x) => x.resourceId == details.categoryResourceId
+          ).resourceId;
           details.isActive = details.status == "Enabled" ? true : false;
           this.formValues = details;
         });
