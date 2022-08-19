@@ -442,33 +442,54 @@ export default {
           const { data } = response.data
           refCampaignManagerAdvancedSettings.isUsersOnline = !!data['onlineUsersCount']
         })
+        const targetGroups = refCampaignManagerCampaignInfo.selectedTargetGroups
         const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
           (item) => item.value
         )
-        this.callForSelectedTargetGroups(ids)
-          .then((response) => {
-            const { results } = response?.data?.data || []
-            //User must have user count greater than 0
-            const totalUserCount = results.reduce((acc, item) => {
-              acc += item.userCount
-              return acc
-            }, 0)
+        const totalUserCount = targetGroups.reduce((acc, item) => {
+          acc += item?.userCount || 0
+          return acc
+        }, 0)
 
-            refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
-            refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
-            if (totalUserCount) {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-              this.step += flag
-              refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
-            } else {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-            }
-            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = results
-          })
-          .finally(this.setActionButtonDisability)
+        refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
+        refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
+        if (totalUserCount) {
+          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+          refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+          this.step += flag
+          refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
+        } else {
+          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+          refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+          this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+        }
+        refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+
+        this.setActionButtonDisability(false)
+        // this.callForSelectedTargetGroups(ids)
+        //   .then((response) => {
+        //     const { results } = response?.data?.data || []
+        //     //User must have user count greater than 0
+        //     const totalUserCount = results.reduce((acc, item) => {
+        //       acc += item.userCount
+        //       return acc
+        //     }, 0)
+
+        //     refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
+        //     refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
+        //     if (totalUserCount) {
+        //       refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+        //       refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+        //       this.step += flag
+        //       refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
+        //     } else {
+        //       refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+        //       refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+        //       this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+        //     }
+        //     refCampaignManagerCampaignInfo.formData.selectedTargetGroups = results
+        //   })
+        //   .finally(this.setActionButtonDisability)
       } else {
         this.step += flag
       }

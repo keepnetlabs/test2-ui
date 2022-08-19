@@ -289,6 +289,7 @@ export default {
   },
   data() {
     return {
+      selectedTargetGroups: [],
       isAttachmentBasedScenario: false,
       axiosPayloadOfPhishingScenarios,
       initial: true,
@@ -496,6 +497,7 @@ export default {
       }
     },
     handleTableSelectionChange(items) {
+      this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
