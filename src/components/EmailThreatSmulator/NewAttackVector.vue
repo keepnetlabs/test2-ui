@@ -64,8 +64,8 @@
             <v-switch v-model="formValues.isActive" color="#2196F3" hide-details>
               <template #prepend>
                 <v-label>
-                  <span v-if="formValues.isActive" class="is-active-label">Enabled</span>
-                  <span v-else class="is-active-label passive">Disabled</span>
+                  <span v-if="formValues.isActive" class="is-active-label">ENABLED</span>
+                  <span v-else class="is-active-label passive">DISABLED</span>
                 </v-label>
               </template>
             </v-switch>
