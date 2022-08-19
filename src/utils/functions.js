@@ -150,26 +150,6 @@ export function getBtnStatusColor(type) {
       return 'rgba(184, 58, 58, 1)'
     case 'no match':
       return '#757575'
-    case 'initial':
-      return '#1173C1'
-    case 1:
-      return '#1173C1'
-    case 2:
-      return '#1173C1'
-    case 3:
-      return '#1173C1'
-    case 5:
-      return '#0198AC'
-    case 6:
-      return '#B6791D'
-    case 7:
-      return '#B6791D'
-    case 8:
-      return '#B83A3A'
-    case 9:
-      return '#B83A3A'
-    case 10:
-      return '#B83A3A'
     default:
       return '#00bcd4'
   }
@@ -215,8 +195,6 @@ export function getTextColor(type) {
     case 'open':
       return '#f56c6c'
     case 'in progress':
-      return '#2196f3'
-    case 'inprogress':
       return '#2196f3'
     case 'false positive':
       return '#e6a23c'

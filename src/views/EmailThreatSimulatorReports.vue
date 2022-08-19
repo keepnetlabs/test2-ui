@@ -1,11 +1,16 @@
 <template>
   <KContainer id="email-threat-simulator-report">
     <el-tabs v-model="tab">
-      <el-tab-pane v-if="getEtsQuickScanReportPermissionStat" label="Summary" name="summary" id="tab-summary">
+      <el-tab-pane
+        v-if="getEtsQuickScanReportPermissionStat"
+        label="Summary"
+        name="summary"
+        id="tab-summary"
+      >
         <Summary v-if="tab === 'summary'" ref="Summary" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getEtsQuickScanReportPermissionCount"
+        v-if="getEtsQuickScanReportPermissionSearch"
         label="Sent Attacks"
         name="sentAttacks"
         id="tab-send-attacks"
@@ -37,7 +42,7 @@ export default {
   computed: {
     ...mapGetters({
       getEtsQuickScanReportPermissionStat: "permissions/getEtsQuickScanReportPermissionStat",
-      getEtsQuickScanReportPermissionCount: "permissions/getEtsQuickScanReportPermissionCount",
+      getEtsQuickScanReportPermissionSearch: "permissions/getEtsQuickScanReportPermissionSearch",
     }),
   },
   methods: {
@@ -46,9 +51,12 @@ export default {
     },
   },
   created() {
-    if (!this.getEtsQuickScanReportPermissionStat && this.getEtsQuickScanReportPermissionCount) {
+    if (!this.getEtsQuickScanReportPermissionStat && this.getEtsQuickScanReportPermissionSearch) {
       this.tab = "sentAttacks";
-    } else if (this.getEtsQuickScanReportPermissionCount && !this.getEtsQuickScanReportPermissionCount) {
+    } else if (
+      this.getEtsQuickScanReportPermissionSearch &&
+      !this.getEtsQuickScanReportPermissionSearch
+    ) {
       this.tab = "summary";
     }
   },

@@ -55,22 +55,28 @@
               required
             />
           </form-group>
-          <form-group hint>
-            <v-checkbox v-model="formValues.isActive" label="Active"></v-checkbox>
+          <form-group
+            className="mt-8"
+            title="Status"
+            sub-title="This attack vector will be included to continous scans and new scans."
+            hint
+          >
+            <v-switch v-model="formValues.isActive" color="#2196F3" hide-details>
+              <template #prepend>
+                <v-label>
+                  <span v-if="formValues.isActive" class="is-active-label">Enabled</span>
+                  <span v-else class="is-active-label passive">Disabled</span>
+                </v-label>
+              </template>
+            </v-switch>
           </form-group>
         </v-form>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn
-          id="btn-cancel--target-users-add-user-to-people-modal"
-          class="add-user-overlay__footer-btn-cancel"
-          rounded
-          @click="closeNewScanPopup"
-        >
+        <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeNewScanPopup">
           {{ labels.Cancel }}
         </v-btn>
         <v-btn
-          id="btn-save--target-users-add-user-to-people-modal"
           class="add-user-overlay__footer-btn-save white--text"
           color="#2196f3"
           rounded
@@ -266,6 +272,7 @@ export default {
       if (this.isEdit) {
         getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
           const details = response.data.data;
+          details.isActive = details.status == "Enabled" ? true : false;
           this.formValues = details;
         });
       }
@@ -277,6 +284,18 @@ export default {
 .new-attack-vector {
   .k-form-group .v-list-item__content > *:not(:last-child) {
     margin-top: 3px;
+  }
+  .k-file-uploads__wrapper {
+    width: 220px;
+  }
+  .is-active-label {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 24px;
+    color: #2196f3;
+    &.passive {
+      color: #383b41;
+    }
   }
 }
 </style>

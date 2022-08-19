@@ -1,14 +1,13 @@
 <template>
   <div id="attack-vectors" class="attack-vectors">
     <v-overlay
-      id="add-new-quick-scan-overlay"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
       color="white"
       v-if="modalStatus"
     >
-      <NewAttackVector
+      <new-attack-vector
         ref="newScenarioModal"
         :status="modalStatus"
         :isEdit="isEdit"
@@ -16,17 +15,24 @@
         @changeNewScanModalStatus="changeNewScanModalStatus"
       />
     </v-overlay>
-    <DeleteAttackVector
+    <delete-attack-vector
       :status="showDeleteModal"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      :selectedItem="selectedScan"
+      @handleToggleRowSelection="handleToggleRowSelection($event)"
+      :selectedItem="selectedAttackVekctor"
+    />
+    <change-status-attackVector
+      :status="showStatusModal"
+      @handleSuccessStatusAction="handleSuccessStatusAction"
+      @handleCloseModal="showStatusModal = false"
+      @handleToggleRowSelection="handleToggleRowSelection($event)"
+      :selectedItem="selectedAttackVekctor"
     />
     <data-table
       v-if="getEtsAttackVectorPermissionSearch"
       id="quick-scan-data-table"
-      class="AttacksVector"
+      class="attacks-vector"
       ref="refAttacksVectorList"
       is-server-side
       selectable
@@ -59,21 +65,54 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span
+          v-if="scope.column.property === 'riskFactor'"
+          :id="`text--send-attack-result-${scope.$index}`"
+          class="datatable-link"
+        >
+          <div class="av-risk-factor py-1" :style="setStatusColor(scope.row.riskFactor)">
+            {{ scope.row.riskFactor }}
+          </div>
+        </span>
+        <span
+          v-if="scope.column.property === 'status'"
+          :id="`text--send-attack-result-${scope.$index}`"
+          class="datatable-link"
+        >
+          <div class="av-status py-1" :class="scope.row.status.toLowerCase()">
+            {{ scope.row.status }}
+          </div>
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
           @on-click="handleEditAttackVector(scope.row)"
         />
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          @on-click="handleActionDelete(scope.row)"
-        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="scope.row.status == 'Enabled' ? 'mdi-minus-circle-outline' : 'mdi-power-standby'"
+            :text="scope.row.status == 'Enabled' ? 'Disable' : 'Enable'"
+            :checkIsOwnerProperty="false"
+            @on-click="handleActionStatus(scope.row, true)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            :checkIsOwnerProperty="false"
+            @on-click="handleActionDelete(scope.row, true)"
+          />
+        </RowActionsMenu>
       </template>
     </data-table>
   </div>
@@ -83,6 +122,7 @@
 import DataTable from "../DataTable";
 import NewAttackVector from "./NewAttackVector";
 import DeleteAttackVector from "./DeleteAttackVector";
+import ChangeStatusAttackVector from "./ChangeStatusAttackVector";
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -102,13 +142,18 @@ import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunction
 import { mapGetters } from "vuex";
 import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 export default {
   name: "EmailTemplates",
   components: {
     DataTable,
     DeleteAttackVector,
+    ChangeStatusAttackVector,
     NewAttackVector,
     DefaultButtonRowAction,
+    DefaultMenuRowAction,
+    RowActionsMenu,
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -127,7 +172,8 @@ export default {
       selectedScenarioURL: "",
       tableData: [],
       showDeleteModal: false,
-      selectedScan: {},
+      showStatusModal: false,
+      selectedAttackVekctor: {},
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_ATTACK_VECTOR_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_ATTACK_VECTOR_TABLE,
@@ -173,25 +219,21 @@ export default {
             label: "Severity",
             sortable: true,
             show: true,
-            type: "badge",
+            type: "slot",
             width: 125,
             filterableType: "number",
           },
           {
-            property: "isActive",
+            property: "status",
             align: "left",
             editable: false,
             label: "Status",
             sortable: false,
             show: true,
-            type: "text",
-            class: "test",
+            type: "slot",
             width: 130,
             filterableType: "select",
-            filterableItems: [
-              { text: "Active", value: true },
-              { text: "Passive", value: false },
-            ],
+            filterableItems: [],
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -210,6 +252,12 @@ export default {
             icon: "mdi-pencil",
             action: "handleEdit",
             disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionUpdate"],
+          },
+          {
+            name: "Disable",
+            icon: "mdi-delete",
+            action: "handleStatus",
+            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionEnableDisable"],
           },
           {
             name: labels.Delete,
@@ -255,8 +303,19 @@ export default {
     }),
   },
   methods: {
+    setStatusColor(riskFactor) {
+      let color = "#1173C1";
+      if (riskFactor == 5) {
+        color = "#0198AC";
+      } else if (riskFactor >= 6 && riskFactor <= 7) {
+        color = "#B6791D";
+      } else if (riskFactor >= 8) {
+        color = "#B83A3A";
+      }
+      return `border-color: ${color};color: ${color};`;
+    },
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedScan = {};
+      if (this.isShowPreviewDialog) this.selectedAttackVekctor = {};
       this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     resetPageNumber() {
@@ -310,7 +369,12 @@ export default {
       this.showDeleteModal = false;
       this.getDatatableList();
     },
-    handleDelete(row) {
+    handleSuccessStatusAction() {
+      this.showStatusModal = false;
+      this.getDatatableList();
+    },
+    handleToggleRowSelection(row) {
+      alert(row);
       this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false);
     },
     handleEditAttackVector(row) {
@@ -319,7 +383,7 @@ export default {
         this.attackVectorDetails = response.data.data;
         this.modalStatus = true;
       });
-      this.selectedScan = row;
+      this.selectedAttackVekctor = row;
       //quickScanResourceId
     },
     checkIfCanCLoseNewScenarioModal() {
@@ -337,7 +401,7 @@ export default {
       this.isEdit = false;
       this.attackVectorDetails = {};
       if (restart) {
-        this.selectedScan = {};
+        this.selectedAttackVekctor = {};
         this.getDatatableList();
       }
     },
@@ -391,8 +455,12 @@ export default {
       }
     },
     handleActionDelete(row) {
-      this.selectedScan = row;
+      this.selectedAttackVekctor = row;
       this.showDeleteModal = true;
+    },
+    handleActionStatus(row) {
+      this.selectedAttackVekctor = row;
+      this.showStatusModal = true;
     },
     columnFilterChanged(filter) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
@@ -413,11 +481,31 @@ export default {
 };
 </script>
 <style lang="scss">
-.attack-vectors {
-  .k-badge__sizes--medium.v-btn {
-    width: 30px !important;
-    display: block;
-    margin: auto !important;
+.attacks-vector {
+  .av-risk-factor {
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: white;
+    width: 30px;
+    text-align: center;
+    margin: auto;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+  }
+  .av-status {
+    @extend .av-risk-factor;
+    width: 67px;
+    &.enabled {
+      color: #217124;
+      border: 1px solid #217124;
+    }
+    &.disabled {
+      color: #b6791d;
+      border: 1px solid #b6791d;
+    }
   }
 }
 </style>

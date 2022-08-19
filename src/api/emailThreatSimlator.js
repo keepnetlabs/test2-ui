@@ -49,6 +49,12 @@ export function getAttackVectorUpdate(payload, resourceId) {
 export function getAttackVectorById(resourceId) {
   return emailThreatSimlatorRequest.get(`/plugin/${resourceId}`)
 }
+export function disableAttackVector(payload) {
+  return emailThreatSimlatorRequest.put(`/plugin/passive`, payload)
+}
+export function enableAttackVector(payload) {
+  return emailThreatSimlatorRequest.put(`/plugin/active`, payload)
+}
 export function exportAttacksVector(payload) {
   return emailThreatSimlatorRequest.post(`/plugin/search/export`, payload, {
     responseType: 'blob'
@@ -59,4 +65,13 @@ export function getQuickScanReportCountById(resourceId) {
 }
 export function getQuickScanReportStatsById(resourceId) {
   return emailThreatSimlatorRequest.get(`/quick-scan-report/stats/${resourceId}`)
+}
+
+export function getQuickScanReportList(payload, resourceId) {
+  return emailThreatSimlatorRequest.post(`/quick-scan-item/${resourceId}/search`, payload)
+}
+export function exportQuickScanReportList(payload, resourceId) {
+  return emailThreatSimlatorRequest.post(`/quick-scan-item/${resourceId}/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
