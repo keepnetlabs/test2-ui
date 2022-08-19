@@ -807,11 +807,23 @@ const store = {
     getEtsAttackVectorPermissionExport(state) {
       return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission;
     },
+    getEtsAttackVectorPermissionEnableDisable(state) {
+      if (state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE) {
+        return true;
+      }
+      return false;
+    },
     getEtsQuickScanReportPermissionStat(state) {
       return state?.etsQuickScanReportPermissions?.STATS?.hasPermission;
     },
     getEtsQuickScanReportPermissionCount(state) {
       return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission;
+    },
+    getEtsQuickScanReportPermissionSearch(state) {
+      return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission;
+    },
+    getEtsQuickScanReportPermissionExport(state) {
+      return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission;
     },
   },
   mutations: {

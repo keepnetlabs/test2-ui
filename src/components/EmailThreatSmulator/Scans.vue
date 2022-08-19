@@ -26,7 +26,7 @@
     <data-table
       v-if="getEtsQuickScanPermissionSearch"
       id="quick-scan-data-table"
-      class="scenarios"
+      class="quick-scan"
       ref="refQuickScanList"
       is-server-side
       selectable
@@ -59,6 +59,17 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span
+          v-if="scope.column.property === 'status'"
+          :id="`text--send-attack-result-${scope.$index}`"
+          class="datatable-link"
+        >
+          <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
+            {{ scope.row.status }}
+          </div>
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
@@ -66,7 +77,11 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
-          @on-click="$router.push({ path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`})"
+          @on-click="
+            $router.push({
+              path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`,
+            })
+          "
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -106,11 +121,7 @@ import {
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import labels from "@/model/constants/labels";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
-import {
-  getQuickScanList,
-  getQuickScanById,
-  exportQuickScan,
-} from "@/api/emailThreatSimlator";
+import { getQuickScanList, getQuickScanById, exportQuickScan } from "@/api/emailThreatSimlator";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import { mapGetters } from "vuex";
 import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
@@ -164,14 +175,14 @@ export default {
           },
           {
             property: "status",
-            align: "center",
+            align: "left",
             editable: false,
             label: "Status",
             sortable: true,
             show: true,
-            type: "status",
+            type: "slot",
             filterableType: "select",
-            filterableItems: ["Initial", "In Progress", "Completed", "Cancelled"],
+            filterableItems: ["InProgress", "Completed", "Continuous "],
             width: 180,
           },
           {
@@ -191,7 +202,7 @@ export default {
             name: "View Report",
             icon: "mdi-receipt",
             action: "View Report",
-            disabled: !this.$store.getters["permissions/getPhishingScenariosPreviewPermissions"],
+            disabled: !this.$store.getters["permissions/getEtsQuickScanReportPermissionStat"],
           },
           {
             name: labels.Delete,
@@ -396,3 +407,37 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.quick-scan {
+  .qs-status {
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: white;
+    width: 80px;
+    text-align: center;
+    &.Initial {
+      color: #00bcd4;
+      border: 1px solid #00bcd4;
+    }
+    &.inprogress {
+      color: #1173c1;
+      border: 1px solid #1173c1;
+    }
+    &.completed {
+      color: #217124;
+      border: 1px solid #217124;
+    }
+    &.cancelled {
+      color: #b6791d;
+      border: 1px solid #b6791d;
+    }
+    &.continuous  {
+      color: #383b41;
+      border: 1px solid #383b41;
+    }
+  }
+}
+</style>

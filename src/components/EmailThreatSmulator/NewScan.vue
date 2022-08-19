@@ -78,7 +78,7 @@
                 <v-form ref="refFormStep1" lazy-validation class="mt-8">
                   <form-group
                     title="Scenario Name"
-                    sub-title="Enter emails address that you created for test purposes"
+                    sub-title="Enter email address that you created for test purposes"
                     hint
                   >
                     <InputEmail
@@ -90,7 +90,7 @@
                   </form-group>
                   <form-group
                     title="Choose an Option"
-                    sub-title="Automate the scan via entering the password to your account or choose manual <br/> method to manually find penetrated emails."
+                    sub-title="Automate the scan via entering the password to your account or choose the manual <br/> method to manually find penetrated emails."
                   >
                     <div class="radio-btn-list">
                       <v-radio-group
@@ -201,7 +201,7 @@
                       type="warning"
                       icon="mdi-alert-outline"
                     >
-                    {{totalCountMassage}}
+                      {{ totalCountMassage }}
                     </v-alert>
                   </form-group>
                   <form-group
@@ -394,7 +394,7 @@
         <StepperFooter
           :max-step="3"
           :step.sync="step"
-          :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+          :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: !acceptRule }"
           @on-cancel="closeNewScanPopup"
           @on-back="backStep"
           @on-next="nextStep(+1)"
@@ -443,7 +443,7 @@ export default {
         },
         {
           value: "Manual",
-          label: "Manual (no password required)",
+          label: "Manual (no password is required)",
         },
       ],
       labels,
@@ -523,7 +523,6 @@ export default {
           // });
         });
       }
-
     },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step));
