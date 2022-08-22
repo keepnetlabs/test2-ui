@@ -20,14 +20,14 @@
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleToggleRowSelection="handleToggleRowSelection($event)"
-      :selectedItem="selectedAttackVekctor"
+      :selectedItem="selectedAttackVector"
     />
     <change-status-attackVector
       :status="showStatusModal"
       @handleSuccessStatusAction="handleSuccessStatusAction"
       @handleCloseModal="showStatusModal = false"
       @handleToggleRowSelection="handleToggleRowSelection($event)"
-      :selectedItem="selectedAttackVekctor"
+      :selectedItem="selectedAttackVector"
     />
     <data-table
       v-if="getEtsAttackVectorPermissionSearch"

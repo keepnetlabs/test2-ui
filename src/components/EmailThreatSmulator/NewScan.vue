@@ -590,7 +590,7 @@ export default {
         const requestBody = {
           email: "",
           password: "",
-          mailProvider: "2",
+          mailTestType: "2",
           owaUrl: "",
           owaUsername: "",
           isContinuousScan: false,
@@ -601,9 +601,9 @@ export default {
         requestBody.email = this.emailSettingsValues.email;
         requestBody.password = this.emailSettingsValues.password;
         if (this.emailSettingsValues.scanType === "Manual") {
-          requestBody.mailProvider = "0";
+          requestBody.mailTestType = "0";
         } else {
-          requestBody.mailProvider = this.emailSettingsValues.owa ? "1" : "2";
+          requestBody.mailTestType = this.emailSettingsValues.owa ? "1" : "2";
         }
         requestBody.owaUrl = this.emailSettingsValues.owaUrl;
         requestBody.owaUsername = this.emailSettingsValues.username;

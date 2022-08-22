@@ -226,7 +226,7 @@ export default {
           const { data } = response;
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(data);
-          link.download = `Scenarios.${
+          link.download = `SentAttacks.${
             exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
           }`;
           link.click();
