@@ -167,6 +167,10 @@
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!template.content">
                       <div>
+                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--body">{{ templateName }}</span>
+                      </div>
+                      <div>
                         <span class="template-preview__text--title">Phishing URL: </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
@@ -241,6 +245,7 @@ export default {
       { text: 'Attachment', value: '7dLrW2kdBTDs' }
     ]
     return {
+      templateName: '',
       selectedTab: '1',
       landingPageTemplates: [],
       search: null,
@@ -465,6 +470,7 @@ export default {
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.landingPageTemplates = response?.data?.data?.landingPages || []
         })

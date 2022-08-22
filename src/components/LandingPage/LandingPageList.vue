@@ -41,6 +41,7 @@
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <LandingPageTemplateModalPreview
           v-show="!isPreviewLoading"
+          :templateName="landingPageParams.name"
           :landingPageTemplates="landingPageTemplates"
           :phishingUrl="landingPageParams.urlTemplate"
         />
@@ -451,6 +452,7 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
+          this.landingPageParams.name = data.name
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages[0].content
