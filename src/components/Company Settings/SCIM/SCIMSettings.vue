@@ -100,7 +100,8 @@ export default {
       if (this.isShowRevokeDialog) this.setSelectedRowToNull()
       this.isShowRevokeDialog = !this.isShowRevokeDialog
     },
-    handleCloseWithUpdate() {
+    handleCloseWithUpdate(row) {
+      this.$refs.refTable.$refs.refTable.unSelectRow(row)
       this.$refs.refTable.callForData()
     },
     handleCloseSuccessDialog() {

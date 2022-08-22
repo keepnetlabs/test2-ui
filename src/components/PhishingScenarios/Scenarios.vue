@@ -29,11 +29,9 @@
     </v-overlay>
     <DeleteScenario
       :status="showDeleteModal"
+      :selectedScenario="selectedScenario"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      @handleMultipleDelete="handleDeleteMultiple"
-      :selectedScenario="selectedScenario"
     />
     <PhishingScenarioPreview
       v-if="isShowPreviewDialog"
@@ -140,12 +138,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  deleteScenario,
-  exportScenarios,
-  getScenarioDataDetails,
-  getScenariosList
-} from '@/api/scenarios'
+import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
@@ -397,11 +390,6 @@ export default {
       }
       this.getDatatableList()
     },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item)
-      })
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -415,15 +403,10 @@ export default {
       this.bodyData = { ...this.bodyData, filter }
       this.getDatatableList()
     },
-    handleSuccessDeleteAction() {
+    handleSuccessDeleteAction(row) {
+      this.$refs.refScenariosList.unSelectRow(row)
       this.showDeleteModal = false
       this.getDatatableList()
-    },
-    handleDelete(row) {
-      this.$refs.refScenariosList.$refs.elTableRef.toggleRowSelection(row, false)
-      deleteScenario(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
     },
     handleFastLaunch(row = {}) {
       this.selectedRow = row

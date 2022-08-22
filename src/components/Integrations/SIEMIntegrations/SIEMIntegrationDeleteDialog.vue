@@ -76,7 +76,7 @@ export default {
       this.isActionButtonDisabled = true
       deleteSIEMIntegration(this.item.resourceId)
         .then(() => {
-          this.$emit('on-delete')
+          this.$emit('on-delete', this.item)
         })
         .finally(() => {
           this.isActionButtonDisabled = false

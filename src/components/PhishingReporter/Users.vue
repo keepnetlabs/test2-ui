@@ -483,6 +483,7 @@ export default {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then(() => {
           this.$refs.refUsersList.unSelectRow(this.selectedRow)
+          this.$refs.refUsersList.changeServerSideSelectionCount(-1)
           this.callForPhishingReporterUser()
         })
         .catch(() => {})
