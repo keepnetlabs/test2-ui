@@ -214,6 +214,7 @@ export default {
         (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.SecretToken, 2000))
       ],
       apiUrlRules: [
+        (v) => Validations.startsWithHttpOrHttps(v, labels.MustStartWithHttpOrHttps),
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.urlOrIpAddress(v),
         (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))

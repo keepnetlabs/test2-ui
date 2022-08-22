@@ -382,6 +382,7 @@ export const labels = {
   Confirm: 'CONFIRM',
   NotInstalled: 'Not Installed',
   ServiceProvider: 'Service Provider',
+  MustStartWithHttpOrHttps: 'Must start with http:// or https://',
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
