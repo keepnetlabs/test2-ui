@@ -47,7 +47,7 @@ export default {
     },
     handleDelete() {
       deleteScenario(this.selectedScenario.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
+        this.$emit('handleSuccessDeleteAction', this.selectedScenario)
       })
       this.closeModal()
     }

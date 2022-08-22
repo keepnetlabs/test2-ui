@@ -63,7 +63,10 @@ export default {
       this.isShowPreviewCertificateDialog = !this.isShowPreviewCertificateDialog
     },
     toggleShowDeleteCertificatesDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      if (forceUpdate) {
+        this.$refs.refTable.$refs.refTable.unSelectRow(this.selectedRow)
+        this.$refs.refTable.callForData()
+      }
       if (this.isShowDeleteCertificateDialog) this.selectedRow = null
       this.isShowDeleteCertificateDialog = !this.isShowDeleteCertificateDialog
     },

@@ -118,6 +118,7 @@ export default {
     },
     toggleShowDeleteTrainingDialog(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)
+      if (forceUpdate) this.$refs.refTable.$refs.refTable.unSelectRow(this.selectedRow)
       if (this.isShowDeleteTrainingDialog) this.selectedRow = null
       this.isShowDeleteTrainingDialog = !this.isShowDeleteTrainingDialog
     },

@@ -47,7 +47,7 @@ export default {
     },
     handleDelete() {
       deleteEmailTemplate(this.selectedEmailTemplate.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
+        this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
       })
       this.closeModal()
     }

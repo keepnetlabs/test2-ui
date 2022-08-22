@@ -55,7 +55,7 @@ export default {
       deleteSCIMSetting(this.selectedRow.resourceId)
         .then(() => {
           this.handleClose()
-          this.$emit('on-close-with-update')
+          this.$emit('on-close-with-update', this.selectedRow)
         })
         .finally(() => (this.isActionButtonDisabled = false))
     }

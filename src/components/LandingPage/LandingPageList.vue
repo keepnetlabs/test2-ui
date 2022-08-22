@@ -24,8 +24,6 @@
       :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      @handleMultipleDelete="handleDeleteMultiple"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -427,11 +425,6 @@ export default {
       this.resetPageNumber()
       this.getDatatableList()
     },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item)
-      })
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -445,15 +438,10 @@ export default {
       this.bodyData = { ...this.bodyData, filter }
       this.getDatatableList()
     },
-    handleSuccessDeleteAction() {
+    handleSuccessDeleteAction(row) {
+      this.$refs.refLandingPageList.unSelectRow(row)
       this.showDeleteModal = false
       this.getDatatableList()
-    },
-    handleDelete(row) {
-      this.$refs.refLandingPageList.$refs.elTableRef.toggleRowSelection(row, false)
-      deleteLandingPage(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
     },
     handlePreview(row) {
       const id = row.resourceId
