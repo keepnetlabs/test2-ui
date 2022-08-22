@@ -59,6 +59,7 @@
           id="campaign-manager-info--landing-content"
         >
           <LandingPageTemplateModalPreview
+            :templateName="landingPageParams.name"
             :landingPageTemplates="landingPageTemplates"
             :phishingUrl="landingPageParams.urlTemplate"
           />
