@@ -313,7 +313,7 @@
                   item-text="actionLabel"
                   item-value="actionValue"
                   position="top"
-                  placeholder="Delete Email"
+                  placeholder="Select an action"
                   @change="actionChanged"
                 ></k-select>
               </v-list-item-content>
@@ -1253,7 +1253,7 @@ export default {
         this.$store.dispatch('threatSharing/checkName', this.name)
     },
     checkIsEdit() {
-      if (this.isEdit || this.isDuplicate) {
+      if (this.isEdit) {
         this.investigationName = this?.investigationDetailsData?.name || ''
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
           ({ mailConfigurationResourceId, type }) => ({
@@ -1300,9 +1300,7 @@ export default {
           }
           return acc
         }, [])
-        if (this.isDuplicate && !this.isEdit) {
-          this.selectedAction = 'noAction'
-        }
+        this.selectedAction = 'NoAction'
         this.filterList = [...headers, ...body, ...attachments]
       }
     }
