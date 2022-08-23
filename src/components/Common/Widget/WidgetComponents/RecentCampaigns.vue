@@ -122,13 +122,22 @@ export default {
   },
   methods: {
     getChartOptionsForRow(row) {
+      if (row.method === 'Click-Only') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened],
+          showTooltipLine: true
+        }
+      }
       if (row.method === 'Attachment') {
         return {
           backgroundColor: ['#67C23A', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Opened, labels.OpenedAttachment],
           showTooltipLine: true
         }
-      } else {
+      }
+
+      if (row.method === 'Data Submission') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
