@@ -90,7 +90,12 @@ export default {
       ].includes(this.actionStatus)
     },
     getId() {
-      return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
+      const iconName = this.getIconName
+      let idStart = ''
+      if (iconName === 'mdi-text-box') idStart = 'view-report'
+      else if (iconName === 'mdi-stop') idStart = 'stop'
+      else idStart = 'send'
+      return `btn-${idStart}--row-action-${Math.random().toString().substring(2)}`
     },
     actionStatus() {
       return this.scope.row.status

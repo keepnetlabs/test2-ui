@@ -598,6 +598,7 @@
         :max-step="isAttachmentBasedScenario ? 3 : 4"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
         @on-next="nextStep(+1)"
@@ -645,6 +646,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
+        backButton: 'btn-back--add-or-edit-scenario-modal',
+        nextButton: 'btn-next--add-or-edit-scenario-modal',
+        saveButton: 'btn-save--add-or-edit-scenario-modal'
+      },
       isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
@@ -1001,6 +1008,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--scenario-modal',
+        backButton: 'btn-duplicate-back--scenario-modal',
+        nextButton: 'btn-duplicate-next--scenario-modal',
+        saveButton: 'btn-duplicate-save--scenario-modal'
+      }
+    }
     this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

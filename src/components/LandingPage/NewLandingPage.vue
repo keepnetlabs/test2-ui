@@ -398,6 +398,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
@@ -498,6 +499,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
+        backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
+        nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
+        saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
+      },
       languageOptions: [],
       disabledLabel: null,
       tab: 'page1',
@@ -981,6 +988,14 @@ export default {
     )
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
+        backButton: 'btn-duplicate-back--landing-page-templates-modal',
+        nextButton: 'btn-duplicate-next--landing-page-templates-modal',
+        saveButton: 'btn-duplicate-save--landing-page-templates-modal'
+      }
+    }
     this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0]?.value || ''
     this.formValues.domainRecordId = this.landingPageData.domainRecords[0]?.value || ''
     this.formValues.pathTypeId = this.landingPageData.pathTypes[0]?.value || ''

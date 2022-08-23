@@ -79,6 +79,7 @@
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -88,6 +89,7 @@
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
@@ -95,6 +97,7 @@
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[2].id"
             :scope="scope"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
@@ -104,6 +107,7 @@
             @on-click="handlePreview(scope.row)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[3].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
@@ -112,6 +116,7 @@
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[4].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[4].disabled"
             :icon="tableOptions.rowActions[4].icon"
@@ -283,30 +288,33 @@ export default {
             name: labels.FastLaunch,
             icon: 'mdi-send',
             action: 'on-fast-launch',
+            id: 'btn-fast-launch--scenarios-row-actions',
             disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
+            id: 'btn-edit--scenarios-row-actions',
             disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
           },
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            action: 'handlePreview',
+            id: 'btn-preview--scenarios-row-actions'
           },
           {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
-            action: 'handleEdit'
-            // disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
+            action: 'handleEdit',
+            id: 'btn-duplicate--scenarios-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--scenarios-row-actions',
             disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
           }
         ],
