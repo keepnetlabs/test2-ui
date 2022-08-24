@@ -97,18 +97,24 @@
       </template>
       <template #datatable-row-actions="{scope}">
         <TargetUserRowActionsEditButton
+          :id="tableOptions.rowActions[0].id"
           type="groups"
           :scope="scope"
           @on-click="handleEditBtnClick"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
             @on-click="handleAddGroup(scope.row)"
           />
-          <TargetGroupRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+          <TargetGroupRowActionsDeleteButton
+            :id="tableOptions.rowActions[2].id"
+            :scope="scope"
+            @on-delete="handleDelete"
+          />
         </RowActionsMenu>
       </template>
     </datatable>

@@ -111,7 +111,7 @@
         </v-btn>
 
         <v-btn
-          id="btn-next--phishing-reporter-settings-add-in-configuration"
+          id="btn-next-or-save--configure-new-company-modal"
           class="add-in-configuration__footer-btn-next"
           color="#2196f3"
           rounded

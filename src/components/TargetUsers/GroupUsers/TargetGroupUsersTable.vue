@@ -63,9 +63,14 @@
       </v-tooltip>
     </template>
     <template v-if="hasRowActions" #datatable-row-actions="{scope}">
-      <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
+      <TargetUserRowActionsEditButton
+        :id="tableOptions.rowActions[0].id"
+        :scope="scope"
+        @on-edit="handleEditTargetUsers"
+      />
       <RowActionsMenu>
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[1].id"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled"
           :icon="tableOptions.rowActions[1].icon"
@@ -73,6 +78,7 @@
           @on-click="handleAddToAnExistingGroup(scope.row)"
         />
         <TargetUserRowActionsRemoveFromGroupButton
+          :id="tableOptions.rowActions[2].id"
           :scope="scope"
           @on-remove="handleRemoveToGroup"
         />
@@ -424,17 +430,20 @@ export default {
         ? [
             {
               name: 'Edit this row',
+              id: 'btn-edit--target-group-users-row-actions',
               icon: 'mdi-pencil',
               action: 'handleEditTargetUsers',
               isNotShow: true
             },
             {
               name: 'Add to an existing group',
+              id: 'btn-add-to-an-exiting-group--target-group-users-row-actions',
               icon: 'mdi-account-multiple-plus',
               action: 'handleAddToAnExistingGroup'
             },
             {
               name: 'Remove from group',
+              id: 'btn-remove-from-group--target-group-users-row-actions',
               icon: 'mdi-minus-circle',
               action: 'handleRemoveToGroup'
             }

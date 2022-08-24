@@ -99,14 +99,13 @@ export default {
         rowActions: [
           {
             name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-opened',
+            id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-opened',
+            id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
             icon: '$custom-details',
             action: 'on-detail',
             disabled: !this.$store.getters[

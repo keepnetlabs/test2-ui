@@ -39,6 +39,8 @@
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
+        cancel-button-id="btn-cancel--target-users-add-to-an-existing-group-dialog-popup"
+        confirm-button-id="btn-confirm--target-users-add-to-an-existing-group-dialog-popup"
         :confirmButtonDisabled="getConfirmButtonDisabled"
         @handleClose="closeOverlay"
         @handleConfirm="handleConfirm"

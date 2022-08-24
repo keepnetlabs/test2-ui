@@ -73,6 +73,7 @@
         </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
+            :id="tableOptions.rowActions[0].id"
             :scope="scope"
             :icon="tableOptions.rowActions[0].icon"
             :text="tableOptions.rowActions[0].name"
@@ -81,6 +82,7 @@
           />
           <RowActionsMenu>
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[1].id"
               :scope="scope"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
@@ -88,6 +90,7 @@
               @on-click="handleDuplicate(scope.row)"
             />
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[2].id"
               :scope="scope"
               :disabled="tableOptions.rowActions[2].disabled"
               :icon="tableOptions.rowActions[2].icon"
@@ -96,6 +99,7 @@
               @on-click="handleMakeDefault(scope.row)"
             />
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[3].id"
               :scope="scope"
               :disabled="tableOptions.rowActions[3].disabled"
               :icon="tableOptions.rowActions[3].icon"
