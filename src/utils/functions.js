@@ -1,10 +1,14 @@
 export function getBtnStatusColor(type) {
-  if (typeof type === 'boolean' && type) {
-    type = 'yes'
-  } else if (typeof type === 'boolean' && !type) {
-    type = 'no'
+  let _type = type;
+  if (typeof _type === 'boolean' && _type) {
+    _type = 'yes'
+  } else if (typeof _type === 'boolean' && !_type) {
+    _type = 'no'
   }
-  switch (type && type.toLowerCase()) {
+  if (typeof _type !== "number") {
+    _type = _type.toLowerCase();
+  }
+  switch (_type && _type) {
     case 'pending':
       return '#00bcd4'
     case 'clean':
@@ -42,8 +46,6 @@ export function getBtnStatusColor(type) {
     case 'blocks':
       return '#F56C6C'
     case 'spam_report':
-      return '#F56C6C'
-    case 'dropped':
       return '#F56C6C'
     case 'malicious':
       return '#b83a3a'
@@ -95,6 +97,8 @@ export function getBtnStatusColor(type) {
     case 'not delivered':
       return '#757575'
     case 'completed':
+      return '#217124'
+    case 'complete':
       return '#217124'
     case 'finished':
       return '#217124'
