@@ -1,5 +1,6 @@
 <template>
   <DefaultButtonRowAction
+    :id="id"
     :scope="scope"
     :icon="icon"
     :disabled="getDisabledStatusOfAction"
@@ -30,6 +31,9 @@ export default {
     type: {
       type: String,
       default: 'users'
+    },
+    id: {
+      type: String
     }
   },
   computed: {

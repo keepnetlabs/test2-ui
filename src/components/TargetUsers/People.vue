@@ -192,15 +192,24 @@
         </div>
       </template>
       <template #datatable-row-actions="{scope}">
-        <TargetUserRowActionsEditButton :scope="scope" @on-click="handleEditTargetUsers" />
+        <TargetUserRowActionsEditButton
+          :scope="scope"
+          :id="tableOptions.rowActions[0].id"
+          @on-click="handleEditTargetUsers"
+        />
         <RowActionsMenu>
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[2].id"
             :text="tableOptions.rowActions[2].name"
             :icon="tableOptions.rowActions[2].icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
-          <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+          <TargetUserRowActionsDeleteButton
+            :scope="scope"
+            :id="tableOptions.rowActions[1].id"
+            @on-delete="handleDelete"
+          />
         </RowActionsMenu>
       </template>
     </datatable>

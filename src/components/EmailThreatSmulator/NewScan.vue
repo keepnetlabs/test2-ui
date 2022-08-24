@@ -406,295 +406,295 @@
 </template>
 
 <script>
-import AppModal from "../AppModal";
-import AppDialog from "@/components/AppDialog";
-import labels from "@/model/constants/labels";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import * as Validations from "@/utils/validations";
-import { scrollToComponent, isDifferent } from "@/utils/functions";
-import InputEmail from "@/components/Common/Inputs/InputEmail";
-import StepperFooter from "@/components/Stepper/StepperFooter";
+import AppModal from '../AppModal'
+import AppDialog from '@/components/AppDialog'
+import labels from '@/model/constants/labels'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import * as Validations from '@/utils/validations'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 import {
   getValidateContinuousScan,
   getQuickScanCount,
-  getQuickScanCreate,
-} from "@/api/emailThreatSimlator";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
+  getQuickScanCreate
+} from '@/api/emailThreatSimlator'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
-  name: "NewScan",
+  name: 'NewScan',
   components: {
     StepperFooter,
     AppModal,
     AppDialog,
     FormGroup,
-    InputEmail,
+    InputEmail
   },
   data() {
     return {
-      selectedTab: "1",
+      selectedTab: '1',
       emailLoginStatus: false,
-      smtpTimeTypes: ["seconds", "minutes", "hours"],
-      timeTypes: ["hours", "minutes"],
+      smtpTimeTypes: ['seconds', 'minutes', 'hours'],
+      timeTypes: ['hours', 'minutes'],
       scanOptions: [
         {
-          value: "Automate",
-          label: "Automate with password",
+          value: 'Automate',
+          label: 'Automate with password'
         },
         {
-          value: "Manual",
-          label: "Manual (no password is required)",
-        },
+          value: 'Manual',
+          label: 'Manual (no password is required)'
+        }
       ],
       labels,
       step: 1,
       Validations: Validations,
       emailSettingsValues: {
-        email: "",
-        scanType: "Automate",
-        password: "",
+        email: '',
+        scanType: 'Automate',
+        password: '',
         owa: false,
-        owaUrl: "",
-        username: "",
-        methodTypeId: "1",
+        owaUrl: '',
+        username: '',
+        methodTypeId: '1'
       },
       scanAndDeliveryValues: {
         continuousScan: false,
         sendingLimit: 50,
         sendingLoopType: {
-          loopType: "SMTP",
+          loopType: 'SMTP',
           smtpTimeMinute: 20,
-          smtpTimeType: "seconds",
+          smtpTimeType: 'seconds',
           distributeTimeMinute: 20,
-          distributeTimeType: "hours",
-        },
+          distributeTimeType: 'hours'
+        }
       },
       acceptRule: false,
       baseRules: {
-        hint: "*Required",
+        hint: '*Required',
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName)),
-        ],
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
       },
       permissionModalStatus: true,
       isSubmitDisabled: false,
-      continuosScanErrortext: "",
-      pageTitle: "Create New Scan",
+      continuosScanErrortext: '',
+      pageTitle: 'Create New Scan',
       submitError: {
         isArray: false,
-        message: "",
+        message: ''
       },
       isFormValuesChanged: false,
-      totalCountMassage: "",
-    };
+      totalCountMassage: ''
+    }
   },
   props: {
     status: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isDuplicate: {
       type: Boolean,
-      default: false,
+      default: false
     },
     scanDetails: {
       required: true,
-      type: Object,
-    },
+      type: Object
+    }
   },
   methods: {
     commonRules(isNeed) {
       if (isNeed) {
-        return this.baseRules;
+        return this.baseRules
       }
     },
     getTotalCounts(val) {
       if (val) {
         getQuickScanCount().then((response) => {
-          const data = response.data;
-          this.totalCountMassage = data.message;
+          const data = response.data
+          this.totalCountMassage = data.message
 
           // this.$store.dispatch("common/createSnackBar", {
           //   message: data.message,
           //   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           //   icon: "mdi-alert-circle",
           // });
-        });
+        })
       }
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step));
+      const currentStep = JSON.parse(JSON.stringify(this.step))
       if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate()) {
-          this.step += 1;
+          this.step += 1
         } else {
-          const el = this.$refs.refFormStep1.$el.querySelector(".v-messages__message");
-          scrollToComponent(el);
+          const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+          scrollToComponent(el)
         }
       }
       if (currentStep === 2) {
-        this.continuosScanErrortext = "";
+        this.continuosScanErrortext = ''
         if (this.scanAndDeliveryValues.continuousScan) {
           getValidateContinuousScan({
-            email: this.emailSettingsValues.email,
+            email: this.emailSettingsValues.email
           })
             .then((response) => {
               if (response.data.data.isValidateContinuousScan) {
-                this.step += 1;
+                this.step += 1
               }
             })
             .catch((error) => {
-              this.continuosScanErrortext = error.response.data.message;
-            });
+              this.continuosScanErrortext = error.response.data.message
+            })
         } else {
-          this.step += 1;
+          this.step += 1
         }
       }
     },
     backStep() {
-      this.step -= 1;
-      this.isSubmitDisabled = false;
+      this.step -= 1
+      this.isSubmitDisabled = false
     },
     closeNewScanPopup() {
       if (!this.isFormValuesChanged) {
-        return this.$emit("changeNewScanModalStatus", false);
+        return this.$emit('changeNewScanModalStatus', false)
       }
-      this.$store.dispatch("common/setIsShowLeavingDialog", {
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit("changeNewScanModalStatus", false);
-        },
-      });
+          this.$emit('changeNewScanModalStatus', false)
+        }
+      })
     },
     calculateTimeType(time, type, isDelayEvery) {
-      const t = parseInt(time);
+      const t = parseInt(time)
       if (isDelayEvery) {
-        if (type === "minutes") {
-          return t * 60;
-        } else if (type === "hours") {
-          return t * 60 * 60;
+        if (type === 'minutes') {
+          return t * 60
+        } else if (type === 'hours') {
+          return t * 60 * 60
         }
-        return t;
+        return t
       } else {
-        if (type === "hours") {
-          return t * 60;
+        if (type === 'hours') {
+          return t * 60
         }
-        return t;
+        return t
       }
     },
     submit() {
       if (this.$refs.refFormStep3.validate()) {
-        this.emailLoginStatus = false;
+        this.emailLoginStatus = false
         const requestBody = {
-          email: "",
-          password: "",
-          mailTestType: "2",
-          owaUrl: "",
-          owaUsername: "",
+          email: '',
+          password: '',
+          mailTestType: '2',
+          owaUrl: '',
+          owaUsername: '',
           isContinuousScan: false,
           delaySeconds: 0,
           sendingLimit: 0,
-          distributeEmailOverMinutes: 0,
-        };
-        requestBody.email = this.emailSettingsValues.email;
-        requestBody.password = this.emailSettingsValues.password;
-        if (this.emailSettingsValues.scanType === "Manual") {
-          requestBody.mailTestType = "0";
-        } else {
-          requestBody.mailTestType = this.emailSettingsValues.owa ? "1" : "2";
+          distributeEmailOverMinutes: 0
         }
-        requestBody.owaUrl = this.emailSettingsValues.owaUrl;
-        requestBody.owaUsername = this.emailSettingsValues.username;
-        requestBody.isContinuousScan = this.scanAndDeliveryValues.continuousScan;
-        requestBody.sendingLimit = this.scanAndDeliveryValues.sendingLimit;
+        requestBody.email = this.emailSettingsValues.email
+        requestBody.password = this.emailSettingsValues.password
+        if (this.emailSettingsValues.scanType === 'Manual') {
+          requestBody.mailTestType = '0'
+        } else {
+          requestBody.mailTestType = this.emailSettingsValues.owa ? '1' : '2'
+        }
+        requestBody.owaUrl = this.emailSettingsValues.owaUrl
+        requestBody.owaUsername = this.emailSettingsValues.username
+        requestBody.isContinuousScan = this.scanAndDeliveryValues.continuousScan
+        requestBody.sendingLimit = this.scanAndDeliveryValues.sendingLimit
 
-        if (this.scanAndDeliveryValues.sendingLoopType.loopType === "SMTP") {
-          requestBody.distributeEmailOverMinutes = 0;
+        if (this.scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP') {
+          requestBody.distributeEmailOverMinutes = 0
           requestBody.delaySeconds = this.calculateTimeType(
             this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute,
             this.scanAndDeliveryValues.sendingLoopType.smtpTimeType,
             true
-          );
+          )
         } else {
-          requestBody.sendingLimit = 0;
-          requestBody.delaySeconds = 0;
+          requestBody.sendingLimit = 0
+          requestBody.delaySeconds = 0
           requestBody.distributeEmailOverMinutes = this.calculateTimeType(
             this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute,
             this.scanAndDeliveryValues.sendingLoopType.distributeTimeType,
             false
-          );
+          )
         }
         getQuickScanCreate(requestBody)
           .then((response) => {
-            this.$store.dispatch("common/createSnackBar", {
-              message: this.isDuplicate ? "Scan successfully updated." : "Scan successfully added.",
+            this.$store.dispatch('common/createSnackBar', {
+              message: this.isDuplicate ? 'Scan successfully updated.' : 'Scan successfully added.',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: "mdi-alert-circle",
-            });
-            this.$emit("changeNewScanModalStatus", false, true);
+              icon: 'mdi-alert-circle'
+            })
+            this.$emit('changeNewScanModalStatus', false, true)
           })
           .catch((error) => {
-            this.emailLoginStatus = true;
-            const errorResponse = error.response.data;
-            this.submitError.isArray = false;
-            this.submitError.message = errorResponse.message;
+            this.emailLoginStatus = true
+            const errorResponse = error.response.data
+            this.submitError.isArray = false
+            this.submitError.message = errorResponse.message
             if (errorResponse.validationMessages.length > 0) {
-              this.submitError.isArray = true;
-              this.submitError.message = errorResponse.validationMessages;
+              this.submitError.isArray = true
+              this.submitError.message = errorResponse.validationMessages
             }
-            this.step = 1;
-          });
+            this.step = 1
+          })
       }
-    },
+    }
   },
   watch: {
     emailSettingsValues: {
       handler: function (value) {
-        this.isFormValuesChanged = true;
-        if (value.scanType === "Manual") {
-          this.emailSettingsValues.password = "";
-          this.emailSettingsValues.owa = false;
-          this.emailSettingsValues.owaUrl = "";
-          this.emailSettingsValues.username = "";
+        this.isFormValuesChanged = true
+        if (value.scanType === 'Manual') {
+          this.emailSettingsValues.password = ''
+          this.emailSettingsValues.owa = false
+          this.emailSettingsValues.owaUrl = ''
+          this.emailSettingsValues.username = ''
         }
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   computed: {
     validateCheckbox() {
-      return [this.acceptRule === true || labels.Required];
-    },
+      return [this.acceptRule === true || labels.Required]
+    }
   },
   created() {
     if (this.isDuplicate) {
-      this.pageTitle = "Duplicate Scan";
-      this.emailSettingsValues.email = this.scanDetails.email;
-      this.emailSettingsValues.password = this.scanDetails.password;
-      if (this.scanDetails.owaUrl !== "") {
-        this.emailSettingsValues.scanType = "Automate";
-        this.emailSettingsValues.owa = true;
-        this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl;
-        this.emailSettingsValues.username = this.scanDetails.owaUsername;
+      this.pageTitle = 'Duplicate Scan'
+      this.emailSettingsValues.email = this.scanDetails.email
+      this.emailSettingsValues.password = this.scanDetails.password
+      if (this.scanDetails.owaUrl !== '') {
+        this.emailSettingsValues.scanType = 'Automate'
+        this.emailSettingsValues.owa = true
+        this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl
+        this.emailSettingsValues.username = this.scanDetails.owaUsername
       } else {
-        this.emailSettingsValues.scanType = "Manual";
+        this.emailSettingsValues.scanType = 'Manual'
       }
-      this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan;
-      this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit;
+      this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan
+      this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit
       if (this.scanDetails.distributeEmailOverMinutes > 0) {
-        this.scanAndDeliveryValues.sendingLoopType.loopType = "DistributeEmails";
-        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeEmailOverMinutes;
-        this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = "minutes";
+        this.scanAndDeliveryValues.sendingLoopType.loopType = 'DistributeEmails'
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeEmailOverMinutes
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = 'minutes'
       } else {
-        this.scanAndDeliveryValues.sendingLoopType.loopType = "SMTP";
-        this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute = this.scanDetails.delaySeconds;
-        this.scanAndDeliveryValues.sendingLoopType.smtpTimeType = "seconds";
+        this.scanAndDeliveryValues.sendingLoopType.loopType = 'SMTP'
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute = this.scanDetails.delaySeconds
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeType = 'seconds'
       }
     }
-  },
-};
+  }
+}
 </script>
 <style lang="scss">
 .radio-btn-list {

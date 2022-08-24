@@ -77,7 +77,7 @@ export default {
         'permissions/getCampaignManagerParentUpdatePermissions'
     }),
     getId() {
-      return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
+      return `btn-preview--row-action-${Math.random().toString().substring(2)}`
     },
     actionStatus() {
       return this.scope.row.status

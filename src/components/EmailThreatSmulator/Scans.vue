@@ -66,7 +66,7 @@
           class="datatable-link"
         >
           <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
-            {{ scope.row.status.replace("InProgress", "In Progress") }}
+            {{ scope.row.status.replace('InProgress', 'In Progress') }}
           </div>
         </span>
       </template>
@@ -79,7 +79,7 @@
           :checkIsOwnerProperty="false"
           @on-click="
             $router.push({
-              path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`,
+              path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`
             })
           "
         />
@@ -108,36 +108,36 @@
 </template>
 
 <script>
-import DataTable from "../DataTable";
-import NewScan from "./NewScan";
-import DeleteScans from "./DeleteScans";
+import DataTable from '../DataTable'
+import NewScan from './NewScan'
+import DeleteScans from './DeleteScans'
 import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import labels from "@/model/constants/labels";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import { getQuickScanList, getQuickScanById, exportQuickScan } from "@/api/emailThreatSimlator";
-import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
-import { mapGetters } from "vuex";
-import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
-import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
-import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
-import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import labels from '@/model/constants/labels'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getQuickScanList, getQuickScanById, exportQuickScan } from '@/api/emailThreatSimlator'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 
 export default {
-  name: "EmailTemplates",
+  name: 'EmailTemplates',
   components: {
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
     DataTable,
     DeleteScans,
-    NewScan,
+    NewScan
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -157,175 +157,179 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Date Create",
+            label: 'Date Create',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
+            type: 'text',
+            filterableType: 'date'
           },
           {
-            property: "status",
-            align: "left",
+            property: 'status',
+            align: 'left',
             editable: false,
-            label: "Status",
+            label: 'Status',
             sortable: true,
             show: true,
-            type: "slot",
-            filterableType: "select",
-            filterableItems: [{ text: 'In Progress', value: 'InProgress' }, "Completed", "Continuous "],
-            width: 180,
+            type: 'slot',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'In Progress', value: 'InProgress' },
+              'Completed',
+              'Continuous '
+            ],
+            width: 180
           },
           {
-            property: "domain",
-            align: "left",
+            property: 'domain',
+            align: 'left',
             editable: false,
-            label: "Domain",
+            label: 'Domain',
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 240,
-            filterableType: "text",
-          },
+            filterableType: 'text'
+          }
         ],
         rowActions: [
           {
-            name: "View Report",
-            icon: "mdi-receipt",
-            action: "View Report",
-            disabled: !this.$store.getters["permissions/getEtsQuickScanReportPermissionStat"],
+            name: 'View Report',
+            icon: 'mdi-receipt',
+            action: 'View Report',
+            disabled: !this.$store.getters['permissions/getEtsQuickScanReportPermissionStat']
           },
           {
             name: labels.Delete,
-            icon: "mdi-delete",
-            action: "deleteAction",
-            disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionDelete"],
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionDelete']
           },
           {
-            name: "Duplicate",
-            icon: "mdi-content-copy",
-            action: "handleEdit",
-            disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionUpdate"],
-          },
+            name: 'Duplicate',
+            icon: 'mdi-content-copy',
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionUpdate']
+          }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionExport"],
+          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionExport']
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         empty: {
           message: LABEL_STORE.NO_SCAN,
           btn: labels.New,
-          icon: "mdi-plus",
-          id: "btn-empty--scan",
-          disabled: !this.$store.getters["permissions/getsQuickScanPermissionCreate"],
+          icon: 'mdi-plus',
+          id: 'btn-empty--scan',
+          disabled: !this.$store.getters['permissions/getsQuickScanPermissionCreate']
         },
         addButton: {
           show: true,
-          action: "addAction",
-          tooltip: "Add a Scan",
-          id: "btn-add--scan",
-          disabled: !this.$store.getters["permissions/getEtsQuickScanPermissionCreate"],
-        },
+          action: 'addAction',
+          tooltip: 'Add a Scan',
+          id: 'btn-add--scan',
+          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionCreate']
+        }
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
-      serverSideProps: new ServerSideProps(),
-    };
+      serverSideProps: new ServerSideProps()
+    }
   },
   computed: {
     ...mapGetters({
-      getEtsQuickScanPermissionSearch: "permissions/getEtsQuickScanPermissionSearch",
-    }),
+      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch'
+    })
   },
   methods: {
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedScan = {};
-      this.isShowPreviewDialog = !this.isShowPreviewDialog;
+      if (this.isShowPreviewDialog) this.selectedScan = {}
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     resetPageNumber() {
-      this.bodyData.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
-      this.resetPageNumber();
-      this.getDatatableList();
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber;
-      this.getDatatableList();
+      this.bodyData.pageNumber = pageNumber
+      this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === "ascending";
-      this.bodyData.orderBy = prop;
-      this.getDatatableList();
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.getDatatableList();
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
         orderBy: prop,
-        ascending: order === "ascending",
-      };
-      this.getDatatableList();
+        ascending: order === 'ascending'
+      }
+      this.getDatatableList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
-      };
-      this.getDatatableList();
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter };
-      this.getDatatableList();
+      this.bodyData = { ...this.bodyData, filter }
+      this.getDatatableList()
     },
     handleSuccessDeleteAction() {
-      this.showDeleteModal = false;
-      this.getDatatableList();
+      this.showDeleteModal = false
+      this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false);
+      this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false)
     },
     handleDuplicateScan(row) {
       getQuickScanById(row.quickScanResourceId).then((response) => {
-        this.isDuplicate = true;
-        this.scanDetails = response.data.data;
-        this.modalStatus = true;
-      });
-      this.selectedScan = row;
+        this.isDuplicate = true
+        this.scanDetails = response.data.data
+        this.modalStatus = true
+      })
+      this.selectedScan = row
       //quickScanResourceId
     },
     checkIfCanCLoseNewModal() {
       if (this.$refs.newScanModal) {
-        this.$refs.newScanModal.closeNewScanPopup();
+        this.$refs.newScanModal.closeNewScanPopup()
       }
     },
     changeNewScanModalStatus(status, restart) {
-      this.modalStatus = status;
-      this.isDuplicate = false;
-      this.scanDetails = {};
+      this.modalStatus = status
+      this.isDuplicate = false
+      this.scanDetails = {}
       if (restart) {
-        this.selectedScan = {};
-        this.getDatatableList();
+        this.selectedScan = {}
+        this.getDatatableList()
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -333,67 +337,67 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: "CreateTime",
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter: this.bodyData.filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
+        }
         exportQuickScan(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `Scans.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     getDatatableList() {
-      this.loading = true;
+      this.loading = true
       if (this.getEtsQuickScanPermissionSearch) {
         getQuickScanList(this.bodyData)
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-            this.serverSideProps.pageNumber = pageNumber;
-            const { results = [] } = data;
-            this.tableData = results;
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
           })
           .catch(() => {
-            this.tableData = [];
+            this.tableData = []
           })
-          .finally(() => (this.loading = false));
+          .finally(() => (this.loading = false))
       } else {
-        this.$router.push("/");
+        this.$router.push('/')
       }
     },
     handleActionDelete(row) {
-      this.selectedScan = row;
-      this.showDeleteModal = true;
+      this.selectedScan = row
+      this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
-      this.getDatatableList();
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
+      this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      );
-      this.getDatatableList();
-    },
+      )
+      this.getDatatableList()
+    }
   },
   created() {
-    this.callForLanguages("refQuickScanList");
-    this.getDatatableList();
-  },
-};
+    this.callForLanguages('refQuickScanList')
+    this.getDatatableList()
+  }
+}
 </script>
 <style lang="scss">
 .quick-scan {
@@ -422,7 +426,7 @@ export default {
       color: #b6791d;
       border: 1px solid #b6791d;
     }
-    &.continuous  {
+    &.continuous {
       color: #383b41;
       border: 1px solid #383b41;
     }

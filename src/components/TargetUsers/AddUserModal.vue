@@ -1,13 +1,13 @@
 <template>
   <app-modal
     :status="status"
-    @closeOverlay="status = false"
     :icon-name="getIcon"
     :title="getTitle"
     className="add-user-overlay"
     :saveDisable="saveDisable"
     title-id="text--target-users-people-create-user-modal-title"
     subtitle-id="text--target-users-people-create-user-modal-subtitle"
+    @closeOverlay="status = false"
   >
     <template v-slot:overlay-body>
       <target-users-check-license-dialog
@@ -170,7 +170,7 @@
         {{ labels.Cancel }}
       </v-btn>
       <v-btn
-        id="btn-save--target-users-add-user-to-people-modal"
+        :id="getSubmitButtonId"
         class="add-user-overlay__footer-btn-save white--text"
         color="#2196f3"
         rounded
@@ -270,6 +270,11 @@ export default {
     },
     getIcon() {
       return this.editData ? 'mdi-account-edit' : 'mdi-account-plus'
+    },
+    getSubmitButtonId() {
+      return this.editData
+        ? 'btn-edit--target-users-add-user-to-people-modal'
+        : 'btn-save--target-users-add-user-to-people-modal'
     }
   },
   methods: {

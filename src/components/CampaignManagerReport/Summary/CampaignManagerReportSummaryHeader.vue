@@ -20,6 +20,7 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
     </div>
     <div class="campaign-manager-report-summary-header__right">
       <v-btn
+        id="btn-download-report--campaign-reports"
         class="campaign-manager-report-summary-header__btn-download-report"
         rounded
         outlined
@@ -29,6 +30,7 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
         >{{ labels.DownloadReport }}</v-btn
       >
       <v-btn
+        id="btn-resend-campaign--campaign-reports"
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"

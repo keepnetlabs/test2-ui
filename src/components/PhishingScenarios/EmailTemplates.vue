@@ -103,6 +103,7 @@
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
+            id="btn-close--email-preview-popup"
             class="pa-0 k-dialog__button"
             text
             color="#2196f3"
@@ -152,6 +153,7 @@
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
@@ -161,6 +163,7 @@
         <RowActionsMenu>
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[1].id"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
@@ -168,6 +171,7 @@
           />
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[2].id"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
@@ -177,6 +181,7 @@
           />
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[3].id"
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
             :text="tableOptions.rowActions[3].name"
@@ -375,26 +380,28 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
+            action: 'handlePreview',
+            id: 'btn-preview--email-templates-row-actions'
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
+            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
+            id: 'btn-edit--email-templates-row-actions'
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'disable'
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+            action: 'disable',
+            id: 'btn-duplicate--email-templates-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
+            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
+            id: 'btn-delete--email-templates-row-actions'
           }
         ],
         downloadButton: {

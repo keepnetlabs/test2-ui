@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-email"
+    detailable-button-id="btn-preview--campaign-report-email-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowEmailTemplate"
     :title="labels.EmailThatWill"

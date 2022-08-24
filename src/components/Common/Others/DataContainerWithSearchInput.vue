@@ -18,6 +18,7 @@
           ></v-text-field>
         </slot>
         <v-btn
+          id="btn-add--exclude-ip-address"
           outlined
           rounded
           color="#2196F3"

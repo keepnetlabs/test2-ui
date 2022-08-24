@@ -119,12 +119,14 @@ export default {
         rowActions: [
           {
             name: labels.Edit,
+            id: 'btn-edit--siem-integrations-row-actions',
             icon: 'mdi-pencil',
             action: 'handleEdit',
             disabled: !this?.PERMISSIONS?.update
           },
           {
             name: labels.Delete,
+            id: 'btn-delete--siem-integrations-row-actions',
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this?.PERMISSIONS?.delete
@@ -152,7 +154,7 @@ export default {
           show: true,
           action: 'addAction',
           tooltip: 'Add an integration',
-          id: 'btn-add--integrations',
+          id: 'btn-add--siem-integrations',
           disabled: !this?.PERMISSIONS?.create
         }
       },

@@ -232,6 +232,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
@@ -341,6 +342,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
+        backButton: 'btn-back--add-or-edit-email-templates-modal',
+        nextButton: 'btn-next--add-or-edit-email-templates-modal',
+        saveButton: 'btn-save--add-or-edit-email-templates-modal'
+      },
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -460,9 +467,6 @@ export default {
     }
   },
   methods: {
-    onCloseRenameModal() {
-      this.isRenameModalVisible = false
-    },
     handleDeleteAttachment() {
       this.formValues.attachmentFiles = []
       this.isAddedNewPhishingFile = false
@@ -775,6 +779,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
+        backButton: 'btn-duplicate-back--email-templates-modal',
+        nextButton: 'btn-duplicate-next--email-templates-modal',
+        saveButton: 'btn-duplicate-save--email-templates-modal'
+      }
+    }
     this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {

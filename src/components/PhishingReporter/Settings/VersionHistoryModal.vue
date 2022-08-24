@@ -171,7 +171,8 @@ export default {
           {
             name: 'Details',
             icon: 'mdi-text-box',
-            action: 'handleDetails'
+            action: 'handleDetails',
+            id: 'btn-details--version-history-row-actions'
           }
         ],
         iEmpty: {

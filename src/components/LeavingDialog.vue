@@ -11,8 +11,8 @@
     <template #app-dialog-body> {{ content }} </template>
     <template #app-dialog-footer>
       <AppDialogFooter
-        cancel-button-id="btn-cancel--leaving-popup"
-        confirm-button-id="btn-delete--leaving-popup"
+        cancel-button-id="btn-continue-editing--leaving-popup"
+        confirm-button-id="btn-quit--leaving-popup"
         action-button-text="Quit"
         action-button-color="#F56C6C"
         cancel-button-text="Continue Editing"

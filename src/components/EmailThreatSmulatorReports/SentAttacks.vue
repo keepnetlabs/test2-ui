@@ -52,29 +52,26 @@
 </template>
 
 <script>
-import DataTable from "../DataTable";
+import DataTable from '../DataTable'
 import {
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import labels from "@/model/constants/labels";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import {
-  getQuickScanReportList,
-  exportQuickScanReportList,
-} from "@/api/emailThreatSimlator";
-import { getLookupListByTypeId } from "@/api/common";
-import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
-import { mapGetters } from "vuex";
-import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import labels from '@/model/constants/labels'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getQuickScanReportList, exportQuickScanReportList } from '@/api/emailThreatSimlator'
+import { getLookupListByTypeId } from '@/api/common'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 
 export default {
-  name: "SentAttacks",
+  name: 'SentAttacks',
   components: {
-    DataTable,
+    DataTable
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -87,203 +84,203 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_REPORT_SENT_ATTACK_TABLE,
         columns: [
           {
-            property: "pluginName",
-            align: "left",
+            property: 'pluginName',
+            align: 'left',
             editable: false,
-            label: "Attack Vector",
+            label: 'Attack Vector',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
-            width: 180,
+            type: 'text',
+            filterableType: 'date',
+            width: 180
           },
           {
-            property: "categoryName",
-            align: "left",
-            label: "Category",
+            property: 'categoryName',
+            align: 'left',
+            label: 'Category',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "select",
+            type: 'text',
+            filterableType: 'select',
             filterableItems: [],
-            width: 180,
+            width: 180
           },
           {
-            property: "deliveryStatus",
-            align: "left",
+            property: 'deliveryStatus',
+            align: 'left',
             editable: false,
-            label: "Status",
+            label: 'Status',
             sortable: true,
             show: true,
-            type: "badge",
-            filterableType: "select",
-            filterableItems: ["Success", "Error", "InProgress"],
-            width: 140,
+            type: 'badge',
+            filterableType: 'select',
+            filterableItems: ['Success', 'Error', 'InProgress'],
+            width: 140
           },
           {
-            property: "result",
-            align: "left",
+            property: 'result',
+            align: 'left',
             editable: false,
-            label: "Result",
+            label: 'Result',
             sortable: true,
             show: true,
-            type: "slot",
-            filterableType: "select",
-            filterableItems: ["Secure", "Insecure", "Unchecked"],
-          },
+            type: 'slot',
+            filterableType: 'select',
+            filterableItems: ['Secure', 'Insecure', 'Unchecked']
+          }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getEtsQuickScanReportPermissionExport"],
+          disabled: !this.$store.getters['permissions/getEtsQuickScanReportPermissionExport']
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         empty: {
-          message: LABEL_STORE.NO_SENT_ATTACK,
+          message: LABEL_STORE.NO_SENT_ATTACK
         },
         addButton: {
-          show: false,
-        },
+          show: false
+        }
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
-      qcsResourceId: "",
-    };
+      qcsResourceId: ''
+    }
   },
   computed: {
     ...mapGetters({
-      getEtsQuickScanReportPermissionSearch: "permissions/getEtsQuickScanReportPermissionSearch",
-    }),
+      getEtsQuickScanReportPermissionSearch: 'permissions/getEtsQuickScanReportPermissionSearch'
+    })
   },
   methods: {
     resetPageNumber() {
-      this.bodyData.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
-      this.resetPageNumber();
-      this.getDatatableList();
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber;
-      this.getDatatableList();
+      this.bodyData.pageNumber = pageNumber
+      this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === "ascending";
-      this.bodyData.orderBy = prop;
-      this.getDatatableList();
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.getDatatableList();
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
         orderBy: prop,
-        ascending: order === "ascending",
-      };
-      this.getDatatableList();
+        ascending: order === 'ascending'
+      }
+      this.getDatatableList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
-      };
-      this.getDatatableList();
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter };
-      this.getDatatableList();
+      this.bodyData = { ...this.bodyData, filter }
+      this.getDatatableList()
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: "CreateTime",
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter: this.bodyData.filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
+        }
         exportQuickScanReportList(payload, this.qcsResourceId).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `SentAttacks.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     getDatatableList() {
-      this.loading = true;
+      this.loading = true
       if (this.getEtsQuickScanReportPermissionSearch) {
         getQuickScanReportList(this.bodyData, this.qcsResourceId)
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-            this.serverSideProps.pageNumber = pageNumber;
-            const { results = [] } = data;
-            this.tableData = results;
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
           })
           .catch(() => {
-            this.tableData = [];
+            this.tableData = []
           })
-          .finally(() => (this.loading = false));
+          .finally(() => (this.loading = false))
       } else {
-        this.$router.push("/");
+        this.$router.push('/')
       }
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
-      this.getDatatableList();
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
+      this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      );
-      this.getDatatableList();
-    },
+      )
+      this.getDatatableList()
+    }
   },
   created() {
     getLookupListByTypeId(24).then((categories) => {
-      const categoryList = categories.data.data;
-      const categoryColumn = this.tableOptions.columns.find((x) => x.property == "categoryName");
+      const categoryList = categories.data.data
+      const categoryColumn = this.tableOptions.columns.find((x) => x.property == 'categoryName')
       const categoryColumnFilters = categoryList.map((x) => {
-        return { text: x.name, value: x.name };
-      });
-      categoryColumn.filterableItems = categoryColumnFilters;
-      this?.$refs?.refQuickScanSendAttackList?.reRenderFilters();
+        return { text: x.name, value: x.name }
+      })
+      categoryColumn.filterableItems = categoryColumnFilters
+      this?.$refs?.refQuickScanSendAttackList?.reRenderFilters()
 
-      this.qcsResourceId = this.$route.params.id;
-      this.callForLanguages("refQuickScanSendAttackList");
-      this.getDatatableList();
-    });
-  },
-};
+      this.qcsResourceId = this.$route.params.id
+      this.callForLanguages('refQuickScanSendAttackList')
+      this.getDatatableList()
+    })
+  }
+}
 </script>
 <style lang="scss">
 .sent-attacks {
@@ -298,13 +295,13 @@ export default {
     text-align: center;
     &.unchecked {
       background-color: #e0e0e0;
-      color: #383B41;
+      color: #383b41;
     }
     &.secure {
       background-color: #217124;
     }
     &.insecure {
-      background-color: #F56C6C;
+      background-color: #f56c6c;
     }
   }
 }

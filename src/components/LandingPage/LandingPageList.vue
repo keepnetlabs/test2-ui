@@ -49,6 +49,7 @@
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
+            id="btn-close--landing-page-preview-popup"
             class="pa-0 k-dialog__button"
             text
             color="#2196f3"
@@ -95,16 +96,9 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
-      <!-- <template v-slot:datatable-custom-column="{ scope }">
-        <div>
-          <span>{{ scope.row.name }}</span>
-          <v-icon v-if="scope.row.isDefault" color="#1173C1" class="pl-2"
-            >mdi-star-circle</v-icon
-          >
-        </div>
-      </template> -->
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -114,6 +108,7 @@
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
@@ -121,6 +116,7 @@
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[2].id"
             :scope="scope"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
@@ -130,6 +126,7 @@
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[3].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
@@ -265,8 +262,6 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            // filterableType: 'select',
-            // filterableItems: ['Custom', 'System'],
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },
@@ -300,33 +295,29 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getLandingPageTemplatesPreviewPermissions']
+            action: 'handlePreview',
+            id: 'btn-preview--landing-page-templates-row-actions'
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions']
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions'],
+            id: 'btn-edit--landing-page-templates-row-actions'
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'duplicate'
-            // disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
+            action: 'duplicate',
+            id: 'btn-duplicate--landing-page-templates-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions']
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions'],
+            id: 'btn-delete--landing-page-templates-row-actions'
           }
-          // {
-          //   name: labels.MakeDefault,
-          //   icon: "mdi-star-circle",
-          //   action: "makeDefaultAction",
-          //   disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions']
-          // },
         ],
         downloadButton: {
           show: true,

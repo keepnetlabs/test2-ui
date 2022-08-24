@@ -91,27 +91,27 @@
 </template>
 
 <script>
-import AppModal from "../AppModal";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
-import labels from "@/model/constants/labels";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import FileUpload from "@/components/Common/FileUpload/FileUpload";
-import * as Validations from "@/utils/validations";
+import AppModal from '../AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import labels from '@/model/constants/labels'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import FileUpload from '@/components/Common/FileUpload/FileUpload'
+import * as Validations from '@/utils/validations'
 import {
   getAttackVectorCreate,
   getAttackVectorUpdate,
-  getAttackVectorById,
-} from "@/api/emailThreatSimlator";
-import { getLookupListByTypeId } from "@/api/common";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
+  getAttackVectorById
+} from '@/api/emailThreatSimlator'
+import { getLookupListByTypeId } from '@/api/common'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
-  name: "NewScan",
+  name: 'NewScan',
   components: {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    FileUpload,
+    FileUpload
   },
   data() {
     return {
@@ -120,72 +120,72 @@ export default {
       labels,
       Validations: Validations,
       formValues: {
-        name: "",
+        name: '',
         categoryResourceId: null,
-        description: "",
-        content: "",
+        description: '',
+        content: '',
         riskFactor: 1,
-        isActive: false,
+        isActive: false
       },
       baseRules: {
-        hint: "*Required",
+        hint: '*Required',
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName)),
-        ],
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
       },
       numberRangeRule: {
-        hint: "*Required",
+        hint: '*Required',
         persistentHint: true,
-        rules: [(v) => Validations.numberRangeRule(v, 1, 10)],
+        rules: [(v) => Validations.numberRangeRule(v, 1, 10)]
       },
       isSubmitDisabled: false,
-      isFormValuesChanged: false,
-    };
+      isFormValuesChanged: false
+    }
   },
   props: {
     status: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isEdit: {
       type: Boolean,
-      default: false,
+      default: false
     },
     attackVectorDetails: {
       required: true,
-      type: Object,
-    },
+      type: Object
+    }
   },
   methods: {
     commonRules(isNeed) {
       if (isNeed) {
-        return this.baseRules;
+        return this.baseRules
       }
     },
     setNumberRangeRule(isNeed) {
       if (isNeed) {
-        return this.numberRangeRule;
+        return this.numberRangeRule
       }
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formValues.content = "";
+        this.formValues.content = ''
       } else {
-        this.formValues.content = file;
+        this.formValues.content = file
       }
     },
     closeAttackVectorPopup() {
       if (!this.isFormValuesChanged) {
-        return this.$emit("changeNewAttackVectorModalStatus", false);
+        return this.$emit('changeNewAttackVectorModalStatus', false)
       }
-      this.$store.dispatch("common/setIsShowLeavingDialog", {
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit("changeNewAttackVectorModalStatus", false);
-        },
-      });
+          this.$emit('changeNewAttackVectorModalStatus', false)
+        }
+      })
     },
     submit() {
       if (this.$refs.refAttackVectorForm.validate()) {
@@ -195,92 +195,92 @@ export default {
           description,
           content,
           riskFactor,
-          isActive,
-        } = this.formValues;
+          isActive
+        } = this.formValues
         const formData = {
           name,
           categoryResourceId,
           description,
           content,
           riskFactor,
-          isActive,
-        };
-        const payload = this.createFormDataPayload(formData);
+          isActive
+        }
+        const payload = this.createFormDataPayload(formData)
         const requestFunc = this.isEdit
           ? getAttackVectorUpdate(payload, this.attackVectorDetails.resourceId)
-          : getAttackVectorCreate(payload);
+          : getAttackVectorCreate(payload)
         requestFunc
           .then((response) => {
-            this.$store.dispatch("common/createSnackBar", {
+            this.$store.dispatch('common/createSnackBar', {
               message: this.isEdit
-                ? "Attack Vector successfully updated."
-                : "Attack Vector successfully added.",
+                ? 'Attack Vector successfully updated.'
+                : 'Attack Vector successfully added.',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: "mdi-alert-circle",
-            });
-            this.$emit("changeNewAttackVectorModalStatus", false, true);
+              icon: 'mdi-alert-circle'
+            })
+            this.$emit('changeNewAttackVectorModalStatus', false, true)
           })
           .catch((error) => {
-            const errorResponse = error.response.data;
-            let msg = errorResponse.message;
+            const errorResponse = error.response.data
+            let msg = errorResponse.message
             if (errorResponse.validationMessages.length > 0) {
-              let msg = "";
+              let msg = ''
               for (let i = 0; i < errorResponse.validationMessages.length; i++) {
-                const listMsg = errorResponse.validationMessages[i];
-                msg += listMsg + ", ";
+                const listMsg = errorResponse.validationMessages[i]
+                msg += listMsg + ', '
               }
-              msg = msg.slice(0, -1);
+              msg = msg.slice(0, -1)
             }
-            this.$store.dispatch("common/createSnackBar", {
+            this.$store.dispatch('common/createSnackBar', {
               message: msg,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: "mdi-alert-circle",
-            });
-          });
+              icon: 'mdi-alert-circle'
+            })
+          })
       }
     },
     createFormDataPayload(payload = {}) {
-      const formData = new FormData();
+      const formData = new FormData()
       for (const key of Object.keys(payload)) {
-        formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key]);
+        formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key])
       }
-      return formData;
-    },
+      return formData
+    }
   },
   watch: {
     formValues: {
       handler: function (value) {
-        this.isFormValuesChanged = true;
-        if (this.formValues.riskFactor != "") {
-          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, "");
+        this.isFormValuesChanged = true
+        if (this.formValues.riskFactor != '') {
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
         }
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   computed: {
     pageTitle() {
-      return this.isEdit ? "Edit Attack Vector" : "Create Attack Vector";
-    },
+      return this.isEdit ? 'Edit Attack Vector' : 'Create Attack Vector'
+    }
   },
   created() {
     getLookupListByTypeId(24).then((categories) => {
-      const categoryList = categories.data.data;
-      this.categoryResources = categoryList;
-      this.formValues.categoryResourceId = categoryList[0].resourceId;
+      const categoryList = categories.data.data
+      this.categoryResources = categoryList
+      this.formValues.categoryResourceId = categoryList[0].resourceId
       if (this.isEdit) {
         getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
-          const details = response.data.data;
+          const details = response.data.data
           this.formValues.categoryResourceId = categoryList.find(
             (x) => x.resourceId == details.categoryResourceId
-          ).resourceId;
-          details.isActive = details.status == "Enabled" ? true : false;
-          this.formValues = details;
-        });
+          ).resourceId
+          details.isActive = details.status == 'Enabled' ? true : false
+          this.formValues = details
+        })
       }
-    });
-  },
-};
+    })
+  }
+}
 </script>
 <style lang="scss">
 .new-attack-vector {
