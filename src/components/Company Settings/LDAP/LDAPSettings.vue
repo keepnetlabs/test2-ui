@@ -48,6 +48,7 @@
       </FormGroup>
       <FormGroup :title="labels.Connection">
         <v-btn
+          id="btn-test-connection--ldap-settings"
           class="fw-600 no-box-shadow"
           color="#2196f3"
           rounded
@@ -78,7 +79,12 @@
           </v-icon>
         </v-btn>
       </FormGroup>
-      <SaveChangesButton class="mt-8" :style="getButtonStyle" @click="handleSubmit" />
+      <SaveChangesButton
+        id="btn-save--ldap-settings"
+        class="mt-8"
+        :style="getButtonStyle"
+        @click="handleSubmit"
+      />
     </v-form>
   </div>
 </template>

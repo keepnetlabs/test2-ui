@@ -62,6 +62,7 @@
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -70,6 +71,7 @@
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
@@ -79,6 +81,7 @@
             "
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[2].id"
             :scope="scope"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
@@ -226,18 +229,21 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
+            id: 'btn-edit--integrations-row-actions',
             disabled: !this.permissions.UPDATE.hasPermission
           },
           {
             name: labels.Disable,
             icon: 'mdi-minus-circle-outline',
             action: 'disable',
+            id: 'btn-status-changer--integrations-row-actions',
             disabled: !this.permissions.DISABLE.hasPermission
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--integrations-row-actions',
             disabled: !this.permissions.DELETE.hasPermission
           }
         ],

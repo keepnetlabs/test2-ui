@@ -97,6 +97,7 @@
       </template>
       <template v-slot:datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="rowActions[0].id"
           :icon="rowActions[0].icon"
           :text="rowActions[0].name"
           :scope="scope"
@@ -104,6 +105,7 @@
           @on-click="investigationDetails(scope)"
         />
         <DefaultButtonRowAction
+          :id="rowActions[1].id"
           :icon="rowActions[1].icon"
           :text="rowActions[1].name"
           :scope="scope"
