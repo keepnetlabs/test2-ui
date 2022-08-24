@@ -6,7 +6,7 @@
       :id="id"
     />
     <CampaignManagerReportSummaryCards
-      :isAttachment="isAttachment"
+      :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
     />
@@ -81,6 +81,9 @@ export default {
     }
   },
   computed: {
+    getScenarioMethod() {
+      return this.campaignSummary?.scenarioInfo?.methodTypeId
+    },
     isAttachment() {
       return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
     },
@@ -197,7 +200,8 @@ export default {
           notDelivered: 0,
           openedEmail: 0,
           submittedEmail: 0,
-          attachmentOpenedEmail: 0
+          attachmentOpenedEmail: 0,
+          reportedEmail: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -209,7 +213,8 @@ export default {
         notDelivered = 0,
         openedEmail = 0,
         submittedEmail = 0,
-        attachmentOpenedEmail = 0
+        attachmentOpenedEmail = 0,
+        reportedEmail = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
@@ -217,7 +222,8 @@ export default {
         submittedEmail,
         noResponseEmail,
         notDelivered,
-        attachmentOpenedEmail
+        attachmentOpenedEmail,
+        reportedEmail
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },

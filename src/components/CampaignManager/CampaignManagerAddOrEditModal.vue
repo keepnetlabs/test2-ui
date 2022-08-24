@@ -354,29 +354,6 @@ export default {
         endDate: dateObj.endDate
       })
     },
-    callForSelectedTargetGroups(ids) {
-      return searchTargetGroups({
-        pageNumber: 1,
-        pageSize: 2000000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [{ FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }],
-              FilterGroups: []
-            }
-          ]
-        }
-      })
-    },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()
       return value.length === 1 ? `0${value}` : `${value}`
@@ -442,33 +419,29 @@ export default {
           const { data } = response.data
           refCampaignManagerAdvancedSettings.isUsersOnline = !!data['onlineUsersCount']
         })
+        const targetGroups = refCampaignManagerCampaignInfo.selectedTargetGroups
         const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
           (item) => item.value
         )
-        this.callForSelectedTargetGroups(ids)
-          .then((response) => {
-            const { results } = response?.data?.data || []
-            //User must have user count greater than 0
-            const totalUserCount = results.reduce((acc, item) => {
-              acc += item.userCount
-              return acc
-            }, 0)
+        const totalUserCount = targetGroups.reduce((acc, item) => {
+          acc += item?.userCount || 0
+          return acc
+        }, 0)
 
-            refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
-            refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
-            if (totalUserCount) {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-              this.step += flag
-              refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
-            } else {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-            }
-            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = results
-          })
-          .finally(this.setActionButtonDisability)
+        refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
+        refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
+        if (totalUserCount) {
+          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+          refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+          this.step += flag
+          refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
+        } else {
+          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+          refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+          this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+        }
+        refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+        this.setActionButtonDisability(false)
       } else {
         this.step += flag
       }

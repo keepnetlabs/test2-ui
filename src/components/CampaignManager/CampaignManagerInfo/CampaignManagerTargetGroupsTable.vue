@@ -31,7 +31,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { searchTargetGroups } from '@/api/targetUsers'
+import { searchAllTargetGroups, searchTargetGroups } from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
@@ -51,6 +51,10 @@ export default {
     },
     responseOfTargetGroupsItems: {
       type: Object
+    },
+    isAllGroups: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -134,7 +138,7 @@ export default {
         ],
         iEmpty: {
           message: labels.EmptyTargetGroup,
-          subMes: 'Go to Company>Target Users to add Target Groups',
+          subMes: 'Go to Company > Target Users to add Target Groups',
           id: 'btn-empty--campaign-manager-empty-target-group'
         },
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -156,13 +160,23 @@ export default {
     callForData() {
       this.$nextTick(() => {
         this.setLoading(true)
-        searchTargetGroups(this.axiosPayload)
-          .then((response) => {
-            this.setDefaultResponseParams(response)
-          })
-          .finally(() => {
-            this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
-          })
+        if (this.isAllGroups) {
+          searchAllTargetGroups(this.axiosPayload)
+            .then((response) => {
+              this.setDefaultResponseParams(response)
+            })
+            .finally(() => {
+              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+            })
+        } else {
+          searchTargetGroups(this.axiosPayload)
+            .then((response) => {
+              this.setDefaultResponseParams(response)
+            })
+            .finally(() => {
+              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+            })
+        }
       })
     },
     setDefaultResponseParams(response) {

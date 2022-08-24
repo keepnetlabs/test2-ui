@@ -2,11 +2,19 @@
   <el-tabs
     v-model="tab"
     id="settings-el-tabs"
-    :class="['k-sub-tab', { 'ldap-field-mapping-disabled': isFieldMappingDisabled }]"
+    :class="[
+      'k-sub-tab',
+      {
+        'ldap-field-mapping-disabled': isFieldMappingDisabled,
+        'ldap-scheduled-syncs-disabled': isNotConfiguredYet
+      }
+    ]"
     :before-leave="handleBeforeLeave"
   >
     <el-tab-pane id="ldap-settings" label="Settings" name="settings">
+      <LDAPNotConfigured v-if="isNotConfiguredYet" @integrateClicked="onIntegrateClicked" />
       <LDAPSettings
+        v-if="!isNotConfiguredYet"
         :initial-form-data="initialFormData"
         :is-loading="isLoading"
         :field-mappings="fieldMappings"
@@ -22,7 +30,6 @@
       <LDAPScheduledSyncs
         v-if="tab === 'scheduled-syncs'"
         :resource-id="resourceId"
-        :custom-fields="customFields"
         :field-mappings="fieldMappings"
       />
     </el-tab-pane>
@@ -57,6 +64,7 @@ import { useLoading } from '@/hooks/useLoading'
 import LDAPSettings from '@/components/Company Settings/LDAP/LDAPSettings'
 import LDAPScheduledSyncs from '@/components/Company Settings/LDAP/LDAPScheduledSyncs'
 import LDAPFieldMappings from '@/components/Company Settings/LDAP/LDAPFieldMappings'
+import LDAPNotConfigured from '@/components/Company Settings/LDAP/LDAPNotConfigured'
 import LDAPService from '@/api/ldap'
 import {
   defaultFieldMappings,
@@ -66,10 +74,11 @@ import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import { mapGetters } from 'vuex'
 export default {
   name: 'LDAP',
-  components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings },
+  components: { LDAPFieldMappings, LDAPScheduledSyncs, LDAPSettings, LDAPNotConfigured },
   mixins: [useLoading],
   data() {
     return {
+      isNotConfiguredYet: false,
       tab: 'settings',
       isFieldMappingDisabled: false,
       initialFormData: null,
@@ -89,8 +98,14 @@ export default {
     this.callForCustomFields()
   },
   methods: {
+    onIntegrateClicked() {
+      this.isNotConfiguredYet = false
+    },
     handleBeforeLeave(val) {
-      return !(this.isFieldMappingDisabled && val === 'field-mapping')
+      return !(
+        (this.isFieldMappingDisabled && val === 'field-mapping') ||
+        (this.isNotConfiguredYet && val === 'scheduled-syncs')
+      )
     },
     callForData() {
       this.setLoading(true)
@@ -115,6 +130,7 @@ export default {
         .catch((e) => {
           const { response } = e
           if (response?.status === 404) {
+            this.isNotConfiguredYet = true
             this.isFieldMappingDisabled = true
             if (this.tab === 'field-mapping') this.tab = 'settings'
           }

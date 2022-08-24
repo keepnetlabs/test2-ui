@@ -340,6 +340,85 @@ export default {
       method: ENUMS.METHODS.POST,
     },
   },
+  AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS: {
+    TRAININGS: {
+      url: `trainings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    ENROLLMENTS: {
+      url: `enrollments/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CERTIFICATES: {
+      url: `certificates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  AWARENESS_EDUCATOR_PERMISSIONS: {
+    SEND_TRAINING: {
+      url: `enrollments`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE_TRAINING: {
+      url: `trainings/draft`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_TRAINING: {
+      url: `trainings/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_TRAINING: {
+      url: `trainings/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT_TRAINING: {
+      url: `trainings/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_ENROLLMENT: {
+      url: `enrollments/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_ENROLLMENT: {
+      url: `enrollments/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT_ENROLLMENT: {
+      url: `enrollments/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_CERTIFICATE: {
+      url: `certificates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_CERTIFICATE: {
+      url: `certificates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    CREATE_CERTIFICATE: {
+      url: `certificates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT_CERTIFICATE: {
+      url: `certificates/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   INCIDENT_RESPONDER_LIST_GROUP_PERMISSIONS: {
     NOTIFIED_EMAIL: {
       url: `notified-emails/search`,

@@ -43,10 +43,12 @@ const {
   SYSTEM_USERS_PERMISSIONS,
   ROLES_PERMISSIONS,
   LDAP_PERMISSIONS,
+  AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  AWARENESS_EDUCATOR_PERMISSIONS,
   ETS_QUICK_SCAN_PERMISSIONS,
   ETS_ATTACK_VECTOR_PERMISSIONS,
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
-} = PERMISSIONS;
+} = PERMISSIONS
 
 const defaultState = {
   permissions: [],
@@ -92,12 +94,14 @@ const defaultState = {
   systemRolesPermissions: ROLES_PERMISSIONS,
   ldapPermissions: LDAP_PERMISSIONS,
   excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
+  awarenessEducatorListGroupPermissions: AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
   etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
   etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
-};
-let state = JSON.parse(localStorage.getItem("permissions")) || defaultState;
-state = JSON.parse(JSON.stringify(state));
+}
+let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
+state = JSON.parse(JSON.stringify(state))
 const store = {
   namespaced: true,
   state,
@@ -705,6 +709,9 @@ const store = {
     getDashboardReportedEmailTrendsPermission(state) {
       return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission;
     },
+    getDashboardPhishingCampaignTrendsPermission(state) {
+      return state?.dashboardPermissions?.PHISHING_CAMPAIGN_TRENDS?.hasPermission
+    },
     getIncidentResponderNotifiedEmailPermission(state) {
       return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission;
     },
@@ -773,9 +780,12 @@ const store = {
         widgets: getters?.getDashboardWidgetsPermission,
         phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
         roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
-        recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
-        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions,
-      };
+        recentCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostPhishedUsersCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        phishingCampaignTrendsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostEngagedCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions
+      }
     },
     getEtsQuickScanPermissionSearch(state) {
       return state?.etsQuickScanPermissions?.SEARCH?.hasPermission;
@@ -825,6 +835,54 @@ const store = {
     getEtsQuickScanReportPermissionExport(state) {
       return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission;
     },
+    getAwarenessEducatorListGroupPermissions(state) {
+      return state?.awarenessEducatorListGroupPermissions?.isOneOfThemPermitted
+    },
+    getTrainingSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.TRAININGS?.hasPermission
+    },
+    getEnrollmentsSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.ENROLLMENTS?.hasPermission
+    },
+    getCertificatesSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.CERTIFICATES?.hasPermission
+    },
+    getSendTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.SEND_TRAINING?.hasPermission
+    },
+    getCreateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_TRAINING?.hasPermission
+    },
+    getUpdateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_TRAINING?.hasPermission
+    },
+    getExportTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_TRAINING?.hasPermission
+    },
+    getDeleteTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_TRAINING?.hasPermission
+    },
+    getEnrollmentEditPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_ENROLLMENT?.hasPermission
+    },
+    getDeleteEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_ENROLLMENT?.hasPermission
+    },
+    getExportEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_ENROLLMENT?.hasPermission
+    },
+    getDeleteCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_CERTIFICATE?.hasPermission
+    },
+    getEditCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_CERTIFICATE?.hasPermission
+    },
+    getCreateCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_CERTIFICATE?.hasPermission
+    },
+    getExportCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_CERTIFICATE?.hasPermission
+    }
   },
   mutations: {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
@@ -832,52 +890,54 @@ const store = {
     },
     SET_ALL_PERMISSIONS(state = {}) {
       const statePermissionKeys = [
-        "playbookPermissions",
-        "dashboardPermissions",
-        "threatSharingPermissions",
-        "threatSharingLeftMenuPermissions",
-        "phishingSimulatorLeftMenuPermissions",
-        "phishingScenarioLeftMenuPermissions",
-        "campaignManagerLeftMenuPermissions",
-        "settingsLeftMenuPermissions",
-        "incidentResponderListGroupPermissions",
-        "incidentResponderOtherPermissions",
-        "incidentResponderLeftMenuPermissions",
-        "phishingReporterLeftMenuPermissions",
-        "reportsLeftMenuPermissions",
-        "companyLeftMenuPermissions",
-        "phishingScenariosPermissions",
-        "emailTemplatesPermissions",
-        "landingPageTemplatesPermissions",
-        "campaignManagerParentPermissions",
-        "campaignReportsPermissions",
-        "domainPermisisons",
-        "dnsPermissions",
-        "investigationPermissions",
-        "integrationPermissions",
-        "advancedSettingsPermissions",
-        "mailConfigurationPermissions",
-        "phishingReporterPermissions",
-        "targetUsersPermissions",
-        "targetGroupsPermissions",
-        "companiesPermissions",
-        "companyGroupsPermissions",
-        "smtpSettingsPermissions",
-        "notificationTemplatesPermissions",
-        "restApiPermissions",
-        "whiteLabelingPermissions",
-        "proxySettingsPermissions",
-        "samlIntegrationPermissions",
-        "scimSettingsPermissions",
-        "siemIntegrationPermissions",
-        "systemUsersPermissions",
-        "systemRolesPermissions",
-        "ldapPermissions",
-        "excludeIpAddressPermissions",
+        'playbookPermissions',
+        'dashboardPermissions',
+        'threatSharingPermissions',
+        'threatSharingLeftMenuPermissions',
+        'phishingSimulatorLeftMenuPermissions',
+        'phishingScenarioLeftMenuPermissions',
+        'campaignManagerLeftMenuPermissions',
+        'settingsLeftMenuPermissions',
+        'incidentResponderListGroupPermissions',
+        'incidentResponderOtherPermissions',
+        'incidentResponderLeftMenuPermissions',
+        'phishingReporterLeftMenuPermissions',
+        'reportsLeftMenuPermissions',
+        'companyLeftMenuPermissions',
+        'phishingScenariosPermissions',
+        'emailTemplatesPermissions',
+        'landingPageTemplatesPermissions',
+        'campaignManagerParentPermissions',
+        'campaignReportsPermissions',
+        'domainPermisisons',
+        'dnsPermissions',
+        'investigationPermissions',
+        'integrationPermissions',
+        'advancedSettingsPermissions',
+        'mailConfigurationPermissions',
+        'phishingReporterPermissions',
+        'targetUsersPermissions',
+        'targetGroupsPermissions',
+        'companiesPermissions',
+        'companyGroupsPermissions',
+        'smtpSettingsPermissions',
+        'notificationTemplatesPermissions',
+        'restApiPermissions',
+        'whiteLabelingPermissions',
+        'proxySettingsPermissions',
+        'samlIntegrationPermissions',
+        'scimSettingsPermissions',
+        'siemIntegrationPermissions',
+        'systemUsersPermissions',
+        'systemRolesPermissions',
+        'ldapPermissions',
+        'excludeIpAddressPermissions',
+        'awarenessEducatorListGroupPermissions',
+        'awarenessEducatorPermissions',
         "etsQuickScanPermissions",
         "etsAttackVectorPermissions",
         "etsQuickScanReportPermissions",
-      ];
+      ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] };
         const permissions = Object.keys(permissionObject).filter(

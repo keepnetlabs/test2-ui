@@ -121,10 +121,15 @@
               <v-icon v-if="isTesting" class="ml-2 loading-spin" color="#2196f3" left medium
                 >mdi-rotate-left
               </v-icon>
+              <v-icon
+                v-if="testConnectionSuccess && !isTesting"
+                class="ml-2"
+                color="#43a047"
+                left
+                medium
+                >mdi-check
+              </v-icon>
             </v-btn>
-            <span v-if="testConnectionSuccess" class="test-connection-success"
-              >Connected successfully!</span
-            >
           </div>
         </form-group>
       </v-form>
@@ -310,6 +315,7 @@ export default {
       if (refForm.validate() && !this.isTesting) {
         this.isTesting = true
         let payload = {
+          resourceId: this.resourceId,
           Address: this.formValues.address,
           AuthenticationTypeId: this.formValues.authenticationTypeId,
           Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,

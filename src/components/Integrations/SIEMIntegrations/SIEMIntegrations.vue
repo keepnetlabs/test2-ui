@@ -76,7 +76,8 @@ export default {
       this.toggleShowAddOrEditModal()
       this.callForData()
     },
-    handleDeleteItem() {
+    handleDeleteItem(row) {
+      this.$refs.refTable.$refs.refTable.unSelectRow(row)
       this.toggleShowDeleteDialog()
       this.callForData()
     }

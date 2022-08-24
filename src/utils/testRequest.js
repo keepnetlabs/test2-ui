@@ -34,7 +34,7 @@ testService.interceptors.request.use(
 testService.interceptors.response.use(
   (response) => {
     //if there is global loader param
-    response.config.loading &&
+    response?.config?.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
     //if there is snackbar obj
@@ -49,7 +49,12 @@ testService.interceptors.response.use(
   },
   (error) => {
     //if there is global loader param
-    error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    error?.config?.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+
+    if (error?.message && error?.message === 'canceled') {
+      return Promise.resolve({})
+    }
 
     if (error?.response?.status === 503) {
       return Promise.resolve({})

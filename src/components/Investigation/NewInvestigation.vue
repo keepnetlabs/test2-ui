@@ -313,7 +313,7 @@
                   item-text="actionLabel"
                   item-value="actionValue"
                   position="top"
-                  placeholder="Delete Email"
+                  placeholder="Select an action"
                   @change="actionChanged"
                 ></k-select>
               </v-list-item-content>
@@ -614,6 +614,7 @@ export default {
   },
   props: [
     'isEdit',
+    'ísDuplicate',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
     'investigationDetailsData',
@@ -677,7 +678,15 @@ export default {
     },
     setTargetUsers(response) {
       const { data: { data = [] } = [] } = response
-      this.specificUserItems = [...this.specificUserItems, ...data.results]
+      const newItems = data.results
+        .map((item) => {
+          if (this.targetUsersValue.includes(item.email)) return undefined
+          return {
+            email: item.email
+          }
+        })
+        .filter(Boolean)
+      this.specificUserItems = [...this.specificUserItems, ...newItems]
     },
     checkAllSingularity() {
       this.filterList.forEach((item, index) => this.checkSingularity(item, index))
@@ -1274,6 +1283,8 @@ export default {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
             (item) => item.targetUser
           )
+          const newItems = this.targetUsersValue.map((email) => ({ email }))
+          this.specificUserItems = [...this.specificUserItems, ...newItems]
         }
         const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
@@ -1299,8 +1310,8 @@ export default {
           }
           return acc
         }, [])
+        this.selectedAction = 'NoAction'
         this.filterList = [...headers, ...body, ...attachments]
-        this.selectedAction = 'noAction'
       }
     }
   },

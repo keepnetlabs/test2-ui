@@ -49,11 +49,9 @@
     </AppDialog>
     <DeleteEmailTemplates
       :status="showDeleteModal"
+      :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      @handleMultipleDelete="handleDeleteMultiple"
-      :selectedEmailTemplate="selectedEmailTemplate"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -201,7 +199,6 @@ import {
   exportEmailTemplates,
   getEmailTemplatePreviewContent
 } from '@/api/phishingsimulator'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -355,7 +352,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'textArray',
+            type: 'smallBadge',
             width: 150,
             hasTooltip: true,
             filterableType: 'text',
@@ -440,6 +437,8 @@ export default {
   },
   created() {
     this.callForLanguages('refEmailTemplatesList')
+  },
+  mounted() {
     this.getDatatableList()
   },
   methods: {
@@ -517,11 +516,6 @@ export default {
       this.resetPageNumber()
       this.getDatatableList()
     },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item)
-      })
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -534,15 +528,10 @@ export default {
       this.bodyData = { ...this.bodyData, filter }
       this.getDatatableList()
     },
-    handleSuccessDeleteAction() {
+    handleSuccessDeleteAction(row) {
+      this.$refs.refEmailTemplatesList.unSelectRow(row)
       this.showDeleteModal = false
       this.getDatatableList()
-    },
-    handleDelete(row) {
-      deleteIntegration(row.resourceId).then(() => {
-        this.$refs.refEmailTemplatesList.unSelectRow(row)
-        this.getDatatableList()
-      })
     },
     handlePreview(row) {
       this.isTemplateDetails = true

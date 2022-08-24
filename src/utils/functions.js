@@ -23,6 +23,12 @@ export function getBtnStatusColor(type) {
       return '#F56C6C'
     case 'inactive':
       return '#b83a3a'
+    case 'sending':
+      return '#1173C1'
+    case 'scheduled':
+      return '#1173C1'
+    case 'finished':
+      return '#217124'
     case 'warning':
       return '#b6791d'
     case 'processing':

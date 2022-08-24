@@ -135,7 +135,10 @@ export default {
       if (id) {
         getCampaignJobSummary(this.$route?.params?.id)
           .then((response) => {
-            if (response?.data?.data?.scenarioInfo?.methodTypeId === 3) {
+            if (response?.data?.data?.scenarioInfo?.methodTypeId === 1) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              this.tabItems.splice(tabIndex, 1)
+            } else if (response?.data?.data?.scenarioInfo?.methodTypeId === 3) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {

@@ -158,6 +158,10 @@ export function searchCampaignManager(payload = {}) {
   return testRequest.post('/phishing-simulator/phishing-campaign/search', payload)
 }
 
+export function searchUnscheduledCampaigns(payload = {}) {
+  return testRequest.post('phishing-simulator/phishing-campaign/search/unscheduled', payload)
+}
+
 export function exportCampaignManager(payload = {}) {
   return testRequest.post('phishing-simulator/phishing-campaign/search/export', payload, {
     responseType: 'blob'

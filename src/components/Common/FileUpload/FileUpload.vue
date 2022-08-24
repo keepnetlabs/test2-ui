@@ -1,5 +1,12 @@
 <template>
-  <div class="k-file-uploads" :class="['k-file-uploads', { 'k-file-uploads--readonly': readonly }]">
+  <div
+    class="k-file-uploads"
+    :class="[
+      'k-file-uploads',
+      { 'k-file-uploads--readonly': readonly },
+      { 'k-file-uploads--disabled': disabled }
+    ]"
+  >
     <div class="k-file-uploads__wrapper">
       <file-upload
         ref="upload"
@@ -18,7 +25,7 @@
         <v-icon>mdi-folder-open</v-icon>
       </file-upload>
       <template v-if="isPreviewVisible">
-        <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+        <div v-for="file in getFiles" :key="file.id" class="k-file-uploads__item">
           <div class="k-file-uploads__item-details">
             <div class="k-file-uploads__item-details--filename">
               {{ displayFileName(file.name) }}
@@ -26,24 +33,30 @@
             <div class="k-file-uploads__item-details--filesize">
               <span>{{ file.size | formatSize }}</span>
               <span
-                v-if="isStandAlone && file.progress && uploadProgress < 100 && isShowFileProgress"
+                v-if="
+                  isStandAlone &&
+                  file.progress &&
+                  uploadProgress <= 100 &&
+                  isShowFileProgress &&
+                  !isBackendParsed
+                "
                 class="k-file-uploads__item-details--progress-value"
-                >{{ uploadProgress }}%</span
+                >{{ uploadProgress === 100 && !isBackendParsed ? 99 : uploadProgress }}%</span
               >
             </div>
             <div
               v-if="isStandAlone && file.progress && isShowFileProgress"
               class="k-file-uploads__item-details--fileprogress"
             >
-              <v-progress-linear :value="uploadProgress" v-if="uploadProgress < 100" />
+              <v-progress-linear :value="uploadProgress" v-if="uploadProgress <= 100" />
               <span
-                v-if="isStandAlone && file.progress && uploadProgress === 100"
+                v-if="isStandAlone && file.progress && isBackendParsed"
                 class="k-file-uploads__item-details--progress-value"
                 >{{ constant.UPLOADED_SUCCESSFULLY }}</span
               >
             </div>
           </div>
-          <div class="k-file-uploads__item-actions">
+          <div v-if="deletable" class="k-file-uploads__item-actions">
             <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
           </div>
         </div>
@@ -65,6 +78,10 @@ export default {
     size: {
       type: Number,
       default: 200
+    },
+    deletable: {
+      type: Boolean,
+      default: true
     },
     isLoading: {
       type: Boolean,
@@ -106,6 +123,18 @@ export default {
     isPreviewVisible: {
       type: Boolean,
       default: true
+    },
+    filePreviews: {
+      type: Array,
+      default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    isBackendParsed: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -116,6 +145,12 @@ export default {
     }
   },
   computed: {
+    getFiles() {
+      if (this.files.length) {
+        return this.files
+      }
+      return this.filePreviews
+    },
     _extensions() {
       const arr = [...this.extensions]
       return arr.toString()
@@ -167,18 +202,18 @@ export default {
       }
     },
     clear() {
-      //this.$emit('clear')
-      //this.$refs.upload.update(file, { active: false })
+      this.$emit('on-clear')
       this.files = []
       this.uploadProgress = 0
     }
   },
   watch: {
-    // files(val) {},
     onUploadProgress() {
-      return (this.uploadProgress = Math.round(
-        (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
-      ))
+      if (this.onUploadProgress) {
+        return (this.uploadProgress = Math.round(
+          (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
+        ))
+      }
     }
   }
 }

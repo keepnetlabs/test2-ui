@@ -813,7 +813,7 @@
             v-if="isVmrayOrVirusTotal"
             title="Cache"
             class-name="mt-4"
-            style="max-width: 565px;"
+            style="max-width: max-content;"
           >
             <div class="campaign-manager-advanced-settings__other-settings-last">
               <v-checkbox
@@ -823,7 +823,7 @@
                 hide-details
               >
               </v-checkbox>
-              <span>Enable caching and enter duration(hours)</span>
+              <span>Enable caching and enter duration (hours)</span>
               <v-text-field
                 :value="formValues.cacheDuration"
                 v-mask="'###'"

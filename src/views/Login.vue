@@ -374,13 +374,13 @@
                               placeholder="Enter new password"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
-                              validate-on-blur
                               autocomplete="disabled"
                               :append-icon="getNewPasswordFieldIcon"
                               :type="getNewPasswordFieldType"
                               :rules="[
                                 rules.required,
                                 rules.minPassword,
+                                rules.maxPassword,
                                 rules.equalToConfirmPassword(reNewPassword)
                               ]"
                               @click:append="isHideNewPassword = !isHideNewPassword"
@@ -403,7 +403,6 @@
                               :class="['reset-pass-textfield', { 'input-error': isErrorActive }]"
                               placeholder="Enter new password again"
                               outlined
-                              validate-on-blur
                               autocomplete="disabled"
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                               :append-icon="getReNewPasswordFieldIcon"
@@ -411,6 +410,7 @@
                               :rules="[
                                 rules.required,
                                 rules.minPassword,
+                                rules.maxPassword,
                                 rules.equalToNewPassword(newPassword)
                               ]"
                               @click:append="isHideReNewPassword = !isHideReNewPassword"
@@ -539,7 +539,6 @@ import {
   setMFA
 } from '@/api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
@@ -609,6 +608,13 @@ export default {
         min: (v) => v.length >= 8 || 'Minimum 8 characters',
         max: (v) => v.length < 254 || 'Email address cannot exceed 320 characters',
         required: (value) => !!value || 'Required',
+        maxPassword: (value) => {
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
+          return (
+            (value && value.length < 1000 && pattern.test(value)) ||
+            'Password must be at most 1000 characters 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
+          )
+        },
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (

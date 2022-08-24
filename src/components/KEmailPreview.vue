@@ -40,7 +40,8 @@ export default {
     html() {
       this.iframeKey = `key-${Math.random().toString().substring(8)}`
       this.resizeIframe()
-    }
+    },
+    height(val) {}
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
@@ -75,14 +76,14 @@ export default {
           ) {
             height += 20
           }
-          height = height + 12
+          height = height + 18
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)
         }
         if (!this.stopCalculateFrame) {
           this.numberHeight = height
-          this.height = iframe.contentWindow.document.body ? height + 12 + 'px' : iframe.height
+          this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = window.requestAnimationFrame(() => this.resizeIframe())
         }
       }

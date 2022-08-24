@@ -369,6 +369,7 @@ export default {
     deleteConfirmedItem(selectedItem) {
       deleteCompanyGroup(selectedItem.resourceId).then((response) => {
         this.$refs.refGroupDataList.unSelectRow(selectedItem)
+        this?.$refs?.refDataList?.changeServerSideSelectionCount(-1)
         if (response.data && response.data.message) {
           this.getTableData()
         }

@@ -165,14 +165,24 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  RECIPIENT_TYPE: 'recipientType',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
+  AUDIENCE: 'audience',
+  TRAINING_NAME: 'trainingName',
+  START_DATE: 'startDate',
+  TARGET_AUDIENCE: 'targetAudience',
   TAGS: 'tags',
   COUNT: 'count',
+  ENROLLED_BY: 'enrolledBy',
   TOEMAIL: 'toEmail',
   EMAİL: 'email',
+  OWNER: 'owner',
   FROMEMAIL: 'fromEmail',
+  CATEGORY: 'category',
+  DISTRIBUTED: 'distributed',
   CAMPAIGN_STATUS: 'campaignStatus',
+  LANGUAGES: 'languages',
   STARTDATE: 'startDate',
   TARGET_USERS: 'targetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
@@ -304,9 +314,17 @@ export const PROPERTY_STORE = {
 }
 
 export const TABLE_SETTINGS_KEYS = {
+  TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
+  TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTableSettings',
+  TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTableSettings',
+  TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTableSettings',
+  TRAINING_REPORT_NO_RESPONSE_TABLE: 'TrainingReportNoResponseTableSettings',
+  TRAINING_REPORT_SENDING_REPORT_TABLE: 'TrainingReportSendingReportTableSettings',
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
+  CERTIFICATES_LIST: 'CertificatesListTableSettings',
   CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
     'CampaignManagerReportPhishingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentTableSettings',
@@ -320,6 +338,7 @@ export const TABLE_SETTINGS_KEYS = {
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
   INVESTIGATIONS: 'InvestigationsTableSettings',
+  ENROLLMENTS_LIST: 'EnrollmentsTableSettings',
   INVESTIGATION_DETAILS_TARGET_USER: 'InvestigationDetailsTargetUserTableSettings',
   INVESTIGATION_DETAILS_LIST: 'InvestigationDetailsListTableSettings',
   INTEGRATION: 'IntegrationTableSettings',
@@ -333,6 +352,7 @@ export const TABLE_SETTINGS_KEYS = {
   COMPANY_GROUP_LIST: 'CompanyGroupListTableSettings',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetailsTableSettings',
   SMTP_SETTINGS: 'SmtpSettingsTableSettings',
+  TRAINING_LIST: 'TrainingListTableSettings',
   NOTIFICATION_TEMPLATE: 'NotificationTemplateTableSettings',
   REST_API: 'RestApiTableSettings',
   SYSTEM_USERS_PEOPLE: 'SystemUsersPeopleTableSettings',
@@ -454,12 +474,21 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
+  TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
+  TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTable',
+  TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTable',
+  TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTable',
+  TRAINING_REPORT_NO_RESPONSE_TABLE: 'TrainingReportNoResponseTable',
+  TRAINING_REPORT_SENDING_REPORT_TABLE: 'TrainingReportSendingReportTable',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
+  CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentDataTableSearchKeys',
+  ENROLLMENTS_LIST: 'EnrollmentListSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
   SCIM_SETTINGS: 'SCIMSettingsDataTableSearchKeys',
@@ -467,6 +496,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SIEM_INTEGRATION: 'SiemIntegrationSearchKeys',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApiSearchKeys',
+  TRAINING_LIST: 'TrainingListSearchKeys',
   CAMPAIGN_REPORTS: 'CampaignReportsSearchKeys',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:

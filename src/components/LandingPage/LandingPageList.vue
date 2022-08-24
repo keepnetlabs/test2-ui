@@ -24,8 +24,6 @@
       :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      @handleMultipleDelete="handleDeleteMultiple"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -43,6 +41,7 @@
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <LandingPageTemplateModalPreview
           v-show="!isPreviewLoading"
+          :templateName="landingPageParams.name"
           :landingPageTemplates="landingPageTemplates"
           :phishingUrl="landingPageParams.urlTemplate"
         />
@@ -279,7 +278,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'textArray',
+            type: 'smallBadge',
             width: 150,
             hasTooltip: true,
             filterableType: 'text'
@@ -427,11 +426,6 @@ export default {
       this.resetPageNumber()
       this.getDatatableList()
     },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item)
-      })
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -445,15 +439,10 @@ export default {
       this.bodyData = { ...this.bodyData, filter }
       this.getDatatableList()
     },
-    handleSuccessDeleteAction() {
+    handleSuccessDeleteAction(row) {
+      this.$refs.refLandingPageList.unSelectRow(row)
       this.showDeleteModal = false
       this.getDatatableList()
-    },
-    handleDelete(row) {
-      this.$refs.refLandingPageList.$refs.elTableRef.toggleRowSelection(row, false)
-      deleteLandingPage(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
     },
     handlePreview(row) {
       const id = row.resourceId
@@ -463,6 +452,7 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
+          this.landingPageParams.name = data.name
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages[0].content

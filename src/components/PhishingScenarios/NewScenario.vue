@@ -184,6 +184,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
+                    :method="getSelectedMethod"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -653,7 +654,7 @@ export default {
       showTemplate2: false,
       languageOptions: [],
       methods: [
-        { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+        { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
         { text: 'Data Submission', value: 'DYC0gugxJMjT' },
         { text: 'Attachment', value: '7dLrW2kdBTDs' }
       ],
@@ -909,11 +910,17 @@ export default {
         this.formValues.emailTemplateId = null
         this.formValues.landingPageTemplateId = null
         this.landingPageTemplateId = null
+        this.landingPageTemplateResourceId = null
         this.emailTemplateResourceId = null
       }
     }
   },
   computed: {
+    getSelectedMethod() {
+      return this.formValues?.methodTypeId
+        ? this.methods[Number(this.formValues?.methodTypeId) - 1].text
+        : ''
+    },
     getStep2Subtitle() {
       const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
         (mType) => mType.value === this.formValues.methodTypeId

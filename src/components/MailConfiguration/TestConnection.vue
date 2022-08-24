@@ -3,6 +3,7 @@
     <div
       id="btn-test-connection--mail-configuration"
       :class="{
+        'd-flex': true,
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
       }"
@@ -15,6 +16,9 @@
       </div>
       <div class="test-connection__button" v-else>
         TEST CONNECTION
+        <v-icon v-if="isAllSuccess && !isLoading" class="ml-2" color="#43a047" left medium
+          >mdi-check
+        </v-icon>
       </div>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
@@ -118,6 +122,7 @@ export default {
   data() {
     return {
       isSave: false,
+      isTesting: false,
       checkApiConnectivity: null,
       checkPrivileges: null,
       checkAllUsersAccess: null,
@@ -153,9 +158,7 @@ export default {
         this.$emit('loading')
       }
       return !isLoading
-    }
-  },
-  methods: {
+    },
     isAllSuccess() {
       let isSuccess =
         this.checkApiConnectivity === 'success' &&
@@ -166,10 +169,18 @@ export default {
         this.checkUpdateCategory === 'success' &&
         this.checkDeleteEmail === 'success' &&
         this.checkInboxAccess === 'success'
+
+      return isSuccess
+    }
+  },
+  methods: {
+    checkIfAllSuccess() {
+      const isSuccess = this.isAllSuccess
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
     testConnection(isSave) {
+      this.isTesting = true
       this.isSave = isSave
       if (this.isValidate()) {
         this.isLoadingStarted = true
@@ -186,7 +197,7 @@ export default {
         checkApiConnectivity(payload)
           .then(() => {
             this.checkApiConnectivity = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
@@ -194,12 +205,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkPrivileges(payload)
           .then(() => {
             this.checkPrivileges = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
@@ -207,12 +218,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkAllUsersAccess(payload)
           .then(() => {
             this.checkAllUsersAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkAllUsersAccess = 'error'
@@ -220,12 +231,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkEmailAccess(payload)
           .then(() => {
             this.checkEmailAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkEmailAccess = 'error'
@@ -233,12 +244,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkCreateNewCategory(payload)
           .then(() => {
             this.checkCreateNewCategory = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
@@ -246,13 +257,13 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
           .finally(() => {
             checkUpdateCategory(payload)
               .then(() => {
                 this.checkUpdateCategory = 'success'
-                this.isAllSuccess(true)
+                this.checkIfAllSuccess(true)
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
@@ -265,7 +276,7 @@ export default {
         checkDeleteEmail(payload)
           .then(() => {
             this.checkDeleteEmail = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkDeleteEmail = 'error'
@@ -273,12 +284,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
         checkInboxAccess(payload)
           .then(() => {
             this.checkInboxAccess = 'success'
-            this.isAllSuccess(true)
+            this.checkIfAllSuccess(true)
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
@@ -286,7 +297,7 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
-            this.isAllSuccess(false)
+            this.checkIfAllSuccess(false)
           })
       }
     },

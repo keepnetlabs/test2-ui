@@ -11,11 +11,19 @@
     />
     <DataContainerWithSearchInput
       ref="refSearchInput"
-      :labels="{ title: labels.ExcludeIPAddress, subtitle: labels.ExcludeIPAddressSubtitle }"
+      :labels="{
+        title: labels.ExcludeIPAddress,
+        subtitle: labels.ExcludeIPAddressSubtitle
+      }"
       @on-add-click="handleIpAddressesAdd"
     >
       <template #search-input>
-        <InputIpAddress id="input--settings-exclude-ip-address" v-model.trim="ipAddressSearch" />
+        <InputIpAddress
+          v-model.trim="ipAddressSearch"
+          id="input--settings-exclude-ip-address"
+          errorMessage="This is not a valid IP address"
+          :rules="ipRules"
+        />
       </template>
     </DataContainerWithSearchInput>
     <DataContainerWithSearch
@@ -79,7 +87,11 @@ export default {
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
-      labels
+      labels,
+      ipRules: [
+        (v) => Validations.ip(v, 'This is not a valid IP address'),
+        (v) => Validations.startsWithSpace(v)
+      ]
     }
   },
   created() {

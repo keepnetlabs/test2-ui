@@ -23,7 +23,10 @@
             class="widget__header-icon ml-1"
             >mdi-close-circle</v-icon
           >
-          <router-link :to="'/investigations'" id="btn-link--dashboard-to-investigations">
+          <router-link
+            :to="'/incident-responder/investigations'"
+            id="btn-link--dashboard-to-investigations"
+          >
             <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
         </div>

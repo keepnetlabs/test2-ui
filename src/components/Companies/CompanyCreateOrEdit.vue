@@ -127,6 +127,19 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
+                  <v-list-item-content>
+                    <label class="bottom-margin">Timezone</label>
+                    <InputTimezone
+                      v-model="formData.timeZoneId"
+                      hint="*Required"
+                      persistent-hint
+                      isBlock
+                      prependInnerIcon="mdi-magnify"
+                      :rules="[(v) => validations.required(v)]"
+                    />
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">{{ labels.Address }}</label>
                     <InputAddress
@@ -262,7 +275,7 @@
                           v-model="formData.LicenseStartDate"
                           id="input--company-license-start-date"
                           type="date"
-                          format="dd.MM.yyyy"
+                          :format="getDateFormat"
                           :disabled="stepLock"
                           :rules="[(v) => !!v || 'Required']"
                         />
@@ -314,7 +327,7 @@
                             v-model="formData.LicenseEndDate"
                             id="input--company-license-end-date"
                             type="date"
-                            format="dd.MM.yyyy"
+                            :format="getDateFormat"
                             :disabled="stepLock || isEndDateDisabled"
                             :picker-options="datePickerOptions"
                             :rules="[(v) => !!v || 'Required']"
@@ -555,6 +568,7 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -563,6 +577,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    InputTimezone,
     StepperFooter,
     InputAddress,
     InputDescription,
@@ -579,6 +594,8 @@ export default {
   },
   data() {
     return {
+      dateFormat: localStorage.getItem('selectedDateFormat'),
+      timeFormat: localStorage.getItem('selectedTimeFormat'),
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -656,6 +673,20 @@ export default {
     }
   },
   computed: {
+    getDateFormat() {
+      if (this.dateFormat) {
+        return this.dateFormat.replaceAll('/', '.').replaceAll('Y', 'y').replaceAll('D', 'd')
+      }
+
+      return `dd.MM.yyyy`
+    },
+    getTimeFormat() {
+      if (this.timeFormat) {
+        if (this.timeFormat === '12h') return 'hh:mm a'
+        else return 'hh:mm'
+      }
+      return 'hh:mm'
+    },
     getImagePreview() {
       if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length > 0) {
         return this.getPreviewLogoUrl[0]
@@ -736,6 +767,7 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
+      this.formData.timeZoneId = this.selectedExtend.timeZoneId
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
@@ -882,8 +914,34 @@ export default {
           return item.resourceId === this.formData.LicenseTypeResourceId
         }).name
 
+        const [
+          startFirstPart,
+          startSecondPart,
+          startThirdPart
+        ] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        const [endFirstPart, endSecondPart, endThirdPart] = this.formData.LicenseEndDate.split(
+          ' '
+        )[0].split('/')
+
+        let LicenseStartDate, LicenseEndDate
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          LicenseStartDate = `${startFirstPart}-${startSecondPart}-${startThirdPart}`
+          LicenseEndDate = `${endFirstPart}-${endSecondPart}-${endThirdPart}`
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          LicenseStartDate = `${startThirdPart}-${startFirstPart}-${startSecondPart}`
+          LicenseEndDate = `${endThirdPart}-${endFirstPart}-${endSecondPart}`
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
+          LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`
+        } else {
+          LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
+          LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`
+        }
+
+        const payload = { ...this.formData, LicenseStartDate, LicenseEndDate }
+
         if (this.edit) {
-          updateCompany(this.selectedExtend.resourceId, { ...this.formData })
+          updateCompany(this.selectedExtend.resourceId, payload)
             .then(() => {
               this.saveDisable = false
               this.cancelForm()
@@ -892,7 +950,7 @@ export default {
               this.saveDisable = false
             })
         } else {
-          createCompany({ ...this.formData })
+          createCompany(payload)
             .then((response) => {
               const {
                 data: { data }
@@ -984,18 +1042,44 @@ export default {
       let start = new Date()
       if (!!this.formData.LicenseStartDate) {
         const [datePart, timePart] = this.formData.LicenseStartDate.split(' ')
-        const [date, month, year] = datePart.split('/')
-        const [hours, minutes] = timePart.split(':')
-        start = new Date(year, month - 1, date, hours, minutes)
+        const [firstPart, secondPart, thirdPart] = datePart.split('/')
+        let minutes, hours
+        if (this.timeFormat && this.timeFormat === '12h') {
+          // remove PM - AM part
+          const [hoursPart, minutesPart] = timePart.split(' ')[0].split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        } else {
+          const [hoursPart, minutesPart] = timePart.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        }
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          start = new Date(firstPart, secondPart - 1, thirdPart, hours, minutes)
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          start = new Date(thirdPart, firstPart - 1, secondPart, hours, minutes)
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          start = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        } else {
+          start = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        }
       }
       if (this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
-        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
-        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseStartDate = this.$moment(start).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
+        this.formData.LicenseEndDate = this.$moment(end).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
       } else if (this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
-        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
-        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseStartDate = this.$moment(start).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
+        this.formData.LicenseEndDate = this.$moment(end).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
       }
     },
     editStepLock() {

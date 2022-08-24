@@ -29,11 +29,9 @@
     </v-overlay>
     <DeleteScenario
       :status="showDeleteModal"
+      :selectedScenario="selectedScenario"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
-      @handleDelete="handleDelete($event)"
-      @handleMultipleDelete="handleDeleteMultiple"
-      :selectedScenario="selectedScenario"
     />
     <PhishingScenarioPreview
       v-if="isShowPreviewDialog"
@@ -61,8 +59,12 @@
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
       :axios-payload.sync="bodyData"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -141,12 +143,14 @@ import { getDefaultAxiosPayload } from "@/utils/functions";
 import labels from "@/model/constants/labels";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import {
-  deleteScenario,
   exportScenarios,
   getScenarioDataDetails,
   getScenariosList,
 } from "@/api/scenarios";
-import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+} from "@/utils/helperFunctions";
 import PhishingScenariosFastLaunch from "@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch";
 import PhishingScenarioPreview from "@/components/PhishingScenarios/PhishingScenarioPreview";
 import { mapGetters } from "vuex";
@@ -290,13 +294,17 @@ export default {
             name: labels.FastLaunch,
             icon: "mdi-send",
             action: "on-fast-launch",
-            disabled: !this.$store.getters["permissions/getPhishingScenariosPreviewPermissions"],
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosPreviewPermissions"
+            ],
           },
           {
             name: labels.Edit,
             icon: "mdi-pencil",
             action: "handleEdit",
-            disabled: !this.$store.getters["permissions/getPhishingScenariosEditPermissions"],
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosEditPermissions"
+            ],
           },
           {
             name: labels.Preview,
@@ -314,12 +322,16 @@ export default {
             name: labels.Delete,
             icon: "mdi-delete",
             action: "deleteAction",
-            disabled: !this.$store.getters["permissions/getPhishingScenariosDeletePermissions"],
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosDeletePermissions"
+            ],
           },
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getPhishingScenariosExportPermissions"],
+          disabled: !this.$store.getters[
+            "permissions/getPhishingScenariosExportPermissions"
+          ],
         },
         selectEvent: {
           clipboard: true,
@@ -338,7 +350,9 @@ export default {
           action: "addAction",
           tooltip: "Add a Scenario",
           id: "btn-add--scenarios",
-          disabled: !this.$store.getters["permissions/getPhishingScenariosCreatePermissions"],
+          disabled: !this.$store.getters[
+            "permissions/getPhishingScenariosCreatePermissions"
+          ],
         },
       },
       modalStatus: false,
@@ -352,7 +366,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getPhishingScenariosSearchPermissions: "permissions/getPhishingScenariosSearchPermissions",
+      getPhishingScenariosSearchPermissions:
+        "permissions/getPhishingScenariosSearchPermissions",
     }),
     isAttachmentBasedScenario() {
       return this.selectedRow?.method === "Attachment" || undefined;
@@ -397,11 +412,6 @@ export default {
       };
       this.getDatatableList();
     },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item);
-      });
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -415,15 +425,10 @@ export default {
       this.bodyData = { ...this.bodyData, filter };
       this.getDatatableList();
     },
-    handleSuccessDeleteAction() {
+    handleSuccessDeleteAction(row) {
+      this.$refs.refScenariosList.unSelectRow(row);
       this.showDeleteModal = false;
       this.getDatatableList();
-    },
-    handleDelete(row) {
-      this.$refs.refScenariosList.$refs.elTableRef.toggleRowSelection(row, false);
-      deleteScenario(row.resourceId).then(() => {
-        this.getDatatableList();
-      });
     },
     handleFastLaunch(row = {}) {
       this.selectedRow = row;
@@ -487,7 +492,9 @@ export default {
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(data);
           link.download = `Scenarios.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
+            exportType.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : exportType.toLocaleLowerCase()
           }`;
           link.click();
         });
@@ -501,7 +508,11 @@ export default {
             const {
               data: { data },
             } = response;
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
+            const {
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+            } = response.data.data;
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
             this.serverSideProps.pageNumber = pageNumber;
@@ -521,7 +532,10 @@ export default {
       this.showDeleteModal = true;
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.bodyData
+      );
       this.getDatatableList();
     },
     columnFilterCleared(fieldName) {

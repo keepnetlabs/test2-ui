@@ -516,9 +516,10 @@ export default {
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
-    deleteConfirmedItem(selectedItem) {
-      deleteCompany(selectedItem.companyResourceId).then((response) => {
-        this?.$refs?.refDataList?.unSelectRow(selectedItem)
+    deleteConfirmedItem() {
+      deleteCompany(this.selectedRow.companyResourceId).then((response) => {
+        this?.$refs?.refDataList?.unSelectRow(this.selectedRow)
+        this?.$refs?.refDataList?.changeServerSideSelectionCount(-1)
         if (response.data && response.data.message) {
           this.getTableData()
         }
@@ -527,7 +528,7 @@ export default {
     deleteMultipleConfirmedItems() {
       this.isDeleting = true
       bulkDeleteCompanies(this.multipleDeletePayload)
-        .then((response) => {
+        .then(() => {
           if (this.$refs?.refDataList) {
             this?.$refs?.refDataList?.resetSelectableParams()
           }

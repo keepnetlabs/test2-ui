@@ -1,41 +1,46 @@
-import Vue from "vue";
-import Router from "vue-router";
-import Login from "@/views/Login.vue";
-import DashBoard from "@/views/DashBoard";
-import Main from "@/layout/Main";
-import ThreatSharing from "@/views/ThreatSharing";
-import Community from "@/views/Community";
-import ShowAllJobs from "@/views/ShowAllJobs";
-import TargetUsers from "@/views/TargetUsers";
-import IncidentResponder from "@/views/IncidentResponder";
-import EmailDetails from "@/components/IncidentResponder/emailDetails";
-import AuthenticationService from "@/services/authentication";
-import AuthenticationStatus from "@/model/constants/authenticationStatus";
-import InvestigationComponent from "@/views/Investigations.vue";
-import InvestigationDetailsComponent from "@/views/InvestigationDetails.vue";
-import PhishingReporter from "@/views/PhishingReporter";
-import Integrations from "@/views/Integrations";
-import Playbook from "@/views/Playbook";
-import Audit from "@/views/Audit";
-import MailConfiguration from "@/components/MailConfiguration/MailConfiguration";
-import store from "@/store";
-import Companies from "@/views/Companies";
-import Company from "@/views/Company";
-import CompanySettings from "@/views/CompanySettings";
-import SystemUsers from "@/views/SystemUsers";
-import TargetGroupUsers from "@/components/TargetUsers/GroupUsers/TargetGroupUsers";
-import PhishingSimulator from "@/views/PhishingSimulator";
-import Sandbox from "@/views/Sandbox";
-import Settings from "@/views/Settings";
-import CampaignManager from "@/views/CampaignManager";
-import CampaignManagerReport from "@/views/CampaignManagerReport";
-import CampaignReports from "@/views/CampaignReports";
-import Reports from "@/views/Reports";
-import PhishingSimulatorRoute from "@/views/PhishingSimulatorRoute";
+import Vue from 'vue'
+import Router from 'vue-router'
+import Login from '@/views/Login.vue'
+import DashBoard from '@/views/DashBoard'
+import Main from '@/layout/Main'
+import ThreatSharing from '@/views/ThreatSharing'
+import Community from '@/views/Community'
+import ShowAllJobs from '@/views/ShowAllJobs'
+import TargetUsers from '@/views/TargetUsers'
+import IncidentResponder from '@/views/IncidentResponder'
+import EmailDetails from '@/components/IncidentResponder/emailDetails'
+import AuthenticationService from '@/services/authentication'
+import AuthenticationStatus from '@/model/constants/authenticationStatus'
+import InvestigationComponent from '@/views/Investigations.vue'
+import InvestigationDetailsComponent from '@/views/InvestigationDetails.vue'
+import PhishingReporter from '@/views/PhishingReporter'
+import Integrations from '@/views/Integrations'
+import Playbook from '@/views/Playbook'
+import Audit from '@/views/Audit'
+import MailConfiguration from '@/components/MailConfiguration/MailConfiguration'
+import store from '@/store'
+import Companies from '@/views/Companies'
+import Company from '@/views/Company'
+import CompanySettings from '@/views/CompanySettings'
+import SystemUsers from '@/views/SystemUsers'
+import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
+import PhishingSimulator from '@/views/PhishingSimulator'
+import Sandbox from '@/views/Sandbox'
+import Settings from '@/views/Settings'
+import CampaignManager from '@/views/CampaignManager'
+import CampaignManagerReport from '@/views/CampaignManagerReport'
+import CampaignReports from '@/views/CampaignReports'
+import Reports from '@/views/Reports'
+import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import TrainingReport from '@/views/TrainingReport'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import TrainingList from '@/views/TrainingList'
+import Enrollments from '@/views/Enrollments'
+import Certificates from '@/views/Certificates'
+import Scorm from '@/views/Scorm'
 import EmailThreatSimulator from "@/views/EmailThreatSimulator";
 import EmailThreatSimulatorReports from "@/views/EmailThreatSimulatorReports";
-
-Vue.use(Router);
+Vue.use(Router)
 const router = new Router({
   mode: "history",
   linkExactActiveClass: "active-link",
@@ -59,7 +64,15 @@ const router = new Router({
       },
     },
     {
-      path: "/",
+      path: '/training/scorm/watch',
+      name: 'scorm',
+      component: Scorm,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/',
       component: Main,
       children: [
         {
@@ -116,8 +129,62 @@ const router = new Router({
           force: true,
         },
         {
-          path: "/company/job-log",
-          name: "Job Log",
+          path: '/awareness-educator',
+          name: 'Awareness Educator',
+          component: AwarenessEducator,
+          meta: {
+            parentName: 'Dashboard',
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
+          },
+          children: [
+            {
+              path: 'training-list',
+              name: 'Training List',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getTrainingSearchPermission'
+              },
+              component: TrainingList
+            },
+            {
+              path: 'enrollments',
+              name: 'Enrollments',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
+              },
+              component: Enrollments
+            },
+            {
+              path: 'certificates',
+              name: 'Certificates',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getCertificatesSearchPermission'
+              },
+              component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              props: true,
+              params: true,
+              component: TrainingReport
+            }
+          ]
+        },
+        {
+          path: '/company/job-log',
+          name: 'Job Log',
           component: ShowAllJobs,
           meta: {
             isAuthenticated: true,
@@ -375,9 +442,9 @@ const router = new Router({
           component: CampaignReports,
           meta: {
             isAuthenticated: true,
-            parentName: "Reports",
-            permissionStoreKey: "permissions/getReportsLeftMenuPermissions",
-          },
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
         },
         {
           path: "/email-threat-simulator",
@@ -402,50 +469,8 @@ const router = new Router({
           },
           params: true,
           props: true,
-        },
-        // {
-        //   path: '/reports',
-        //   name: 'Reports',
-        //   component: Reports,
-        //   meta: {
-        //     isAuthenticated: true,
-        //     permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //   },
-        //   children: [
-        //     {
-        //       path: '/campaign-reports',
-        //       name: 'Campaign Reports',
-        //       component: CampaignReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports',
-        //         permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //       }
-        //     }
-        //     /*
-        //     {
-        //       path: '/simple-reports',
-        //       name: 'Simple Reports',
-        //       component: SimpleReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     },
-        //     {
-        //       path: `/simple-reports/:id`,
-        //       name: 'Simple Report Details',
-        //       component: SimpleReportDetails,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     }
-
-        //      */
-        //   ]
-        // }
-      ],
+        }
+      ]
     },
     {
       path: "*",
