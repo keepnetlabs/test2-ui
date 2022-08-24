@@ -51,6 +51,6 @@ export default {
       })
       this.closeModal()
     }
-  },
+  }
 }
 </script>

@@ -16,7 +16,9 @@
                   <div class="score-body mt-4 mb-7">
                     <span>{{ item.count }}</span> email
                   </div>
-                  <div v-if="item.percent !== null" class="score-footer"> {{item.percent}}% of attack vectors</div>
+                  <div v-if="item.percent !== null" class="score-footer">
+                    {{ item.percent }}% of attack vectors
+                  </div>
                   <div class="score-icon" :class="item.icon"></div>
                 </div>
               </template>
@@ -97,10 +99,18 @@
         <template v-slot:skeleton-content>
           <div class="menu-bar mb-6">
             <div class="d-flex flex-row mb-6">
-              <div @click="isAttackType = true" class="menu-item mx-2 pt-3" :class="isAttackType ? 'active' : ''">
+              <div
+                @click="isAttackType = true"
+                class="menu-item mx-2 pt-3"
+                :class="isAttackType ? 'active' : ''"
+              >
                 By Attack Types
               </div>
-              <div @click="isAttackType = false" class="menu-item mx-2 pt-3" :class="!isAttackType ? 'active' : ''">
+              <div
+                @click="isAttackType = false"
+                class="menu-item mx-2 pt-3"
+                :class="!isAttackType ? 'active' : ''"
+              >
                 By Email Status
               </div>
             </div>
@@ -241,16 +251,16 @@
 </template>
 
 <script>
-import CardLoading from "@/components/SkeletonLoading/CardLoading";
+import CardLoading from '@/components/SkeletonLoading/CardLoading'
 import {
   getQuickScanById,
   getQuickScanReportCountById,
-  getQuickScanReportStatsById,
-} from "@/api/emailThreatSimlator";
+  getQuickScanReportStatsById
+} from '@/api/emailThreatSimlator'
 export default {
-  name: "Summary",
+  name: 'Summary',
   components: {
-    CardLoading,
+    CardLoading
   },
   data() {
     return {
@@ -261,62 +271,62 @@ export default {
       score: 0,
       selectedAttackType: {},
       selectedEmailStatus: {},
-      isAttackType:true,
-    };
+      isAttackType: true
+    }
   },
   methods: {
     getReportData(resourceId) {
       getQuickScanById(resourceId).then((scanData) => {
-        const details = scanData.data.data;
-        this.scanData = details;
+        const details = scanData.data.data
+        this.scanData = details
         getQuickScanReportCountById(resourceId).then((scoreData) => {
-          const data = scoreData.data.data;
+          const data = scoreData.data.data
           this.scoreData = [
             {
-              title: "Total Attacks Sent",
+              title: 'Total Attacks Sent',
               count: data.totalAttackSendCount,
-              color: "blue",
-              icon: "blue-icon",
-              percent: null,
+              color: 'blue',
+              icon: 'blue-icon',
+              percent: null
             },
             {
-              title: "Secure Endpoints",
+              title: 'Secure Endpoints',
               count: data.secureEndpointsCount,
-              color: "green",
-              icon: "green-icon",
-              percent: data.secureEndpointsPercent,
+              color: 'green',
+              icon: 'green-icon',
+              percent: data.secureEndpointsPercent
             },
             {
-              title: "Insecure Endpoints",
+              title: 'Insecure Endpoints',
               count: data.insecureEndpointsCount,
-              color: "red",
-              icon: "red-icon",
-              percent: data.insecureEndpointsPercent,
+              color: 'red',
+              icon: 'red-icon',
+              percent: data.insecureEndpointsPercent
             },
             {
-              title: "Unchecked Emails",
+              title: 'Unchecked Emails',
               count: data.unckechedEndpointsCount,
-              color: "gray",
-              icon: "gray-icon",
-              percent:  data.unckechedEndpointsPercent,
-            },
-          ];
-          this.score = data.score;
+              color: 'gray',
+              icon: 'gray-icon',
+              percent: data.unckechedEndpointsPercent
+            }
+          ]
+          this.score = data.score
           getQuickScanReportStatsById(resourceId).then((statsData) => {
-            this.scoresLoading = false;
-            this.statsData = statsData.data.data;
-            this.selectedAttackType = this.statsData.quickScanByAttackTypes[0];
-            this.selectedEmailStatus = this.statsData.quickScanByEmailStatus[0];
-          });
-        });
-      });
-    },
+            this.scoresLoading = false
+            this.statsData = statsData.data.data
+            this.selectedAttackType = this.statsData.quickScanByAttackTypes[0]
+            this.selectedEmailStatus = this.statsData.quickScanByEmailStatus[0]
+          })
+        })
+      })
+    }
   },
   created() {
-    const resourceId = this.$route.params.id;
-    this.getReportData(resourceId);
-  },
-};
+    const resourceId = this.$route.params.id
+    this.getReportData(resourceId)
+  }
+}
 </script>
 
 <style lang="scss">
@@ -365,10 +375,10 @@ export default {
         line-height: 48px;
       }
     }
-    .score-footer{
+    .score-footer {
       font-weight: 600;
       font-size: 16px;
-      line-height: 23px
+      line-height: 23px;
     }
     .score-icon {
       position: absolute;
@@ -377,16 +387,16 @@ export default {
       width: 64px;
       height: 64px;
       &.blue-icon {
-        background: url("../../assets/img/total-attack-sent-icon.svg") no-repeat center center;
+        background: url('../../assets/img/total-attack-sent-icon.svg') no-repeat center center;
       }
       &.green-icon {
-        background: url("../../assets/img/secure-endpoint-icon.svg") no-repeat center center;
+        background: url('../../assets/img/secure-endpoint-icon.svg') no-repeat center center;
       }
       &.red-icon {
-        background: url("../../assets/img/insecure-endpoints-icon.svg") no-repeat center center;
+        background: url('../../assets/img/insecure-endpoints-icon.svg') no-repeat center center;
       }
       &.gray-icon {
-        background: url("../../assets/img/unchecked-emails-icon.svg") no-repeat center center;
+        background: url('../../assets/img/unchecked-emails-icon.svg') no-repeat center center;
       }
     }
   }
@@ -444,7 +454,7 @@ export default {
           line-height: 25px;
           color: #091e42;
         }
-        background: url("../../assets/img/report-chart-background.svg") no-repeat center center;
+        background: url('../../assets/img/report-chart-background.svg') no-repeat center center;
         .v-progress-circular__underlay {
           stroke: transparent !important;
         }
@@ -516,7 +526,7 @@ export default {
         &.right-content {
           &::-webkit-scrollbar {
             width: 14px;
-            background-color:transparent;
+            background-color: transparent;
             border-right: 0;
             border-left: 0;
           }
@@ -609,7 +619,7 @@ export default {
             &::before {
               background-color: #217124;
               border-radius: 50%;
-              content: "";
+              content: '';
               display: inline-block;
               margin-right: 2px;
               margin-bottom: 3px;

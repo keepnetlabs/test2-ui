@@ -1,12 +1,12 @@
 export function getBtnStatusColor(type) {
-  let _type = type;
+  let _type = type
   if (typeof _type === 'boolean' && _type) {
     _type = 'yes'
   } else if (typeof _type === 'boolean' && !_type) {
     _type = 'no'
   }
-  if (typeof _type !== "number") {
-    _type = _type.toLowerCase();
+  if (typeof _type !== 'number') {
+    _type = _type.toLowerCase()
   }
   switch (_type && _type) {
     case 'pending':

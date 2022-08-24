@@ -232,7 +232,11 @@
             v-if="getEtsQuickScanPermissionSearch"
             to="/email-threat-simulator"
             id="btn--link-navigator-menu-email-threat-simulator"
-            :class="['menu-link-default', (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') && 'active-link']"
+            :class="[
+              'menu-link-default',
+              (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') &&
+                'active-link'
+            ]"
             @click.native="deleteTSVuexData"
           >
             <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />

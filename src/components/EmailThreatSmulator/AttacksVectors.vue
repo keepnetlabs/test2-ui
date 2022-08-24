@@ -1,12 +1,6 @@
 <template>
   <div id="attack-vectors" class="attack-vectors">
-    <v-overlay
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
-      v-if="modalStatus"
-    >
+    <v-overlay :value="modalStatus" :opacity="1" :z-index="99" color="white" v-if="modalStatus">
       <new-attack-vector
         ref="newAttackVectorModal"
         :status="modalStatus"
@@ -119,33 +113,33 @@
 </template>
 
 <script>
-import DataTable from "../DataTable";
-import NewAttackVector from "./NewAttackVector";
-import DeleteAttackVector from "./DeleteAttackVector";
-import ChangeStatusAttackVector from "./ChangeStatusAttackVector";
+import DataTable from '../DataTable'
+import NewAttackVector from './NewAttackVector'
+import DeleteAttackVector from './DeleteAttackVector'
+import ChangeStatusAttackVector from './ChangeStatusAttackVector'
 import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import labels from "@/model/constants/labels";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import labels from '@/model/constants/labels'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   getAttackVectorList,
   getAttackVectorById,
-  exportAttacksVector,
-} from "@/api/emailThreatSimlator";
-import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
-import { mapGetters } from "vuex";
-import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
-import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
-import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
-import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
+  exportAttacksVector
+} from '@/api/emailThreatSimlator'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
-  name: "EmailTemplates",
+  name: 'EmailTemplates',
   components: {
     DataTable,
     DeleteAttackVector,
@@ -153,7 +147,7 @@ export default {
     NewAttackVector,
     DefaultButtonRowAction,
     DefaultMenuRowAction,
-    RowActionsMenu,
+    RowActionsMenu
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -173,225 +167,225 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_ATTACK_VECTOR_TABLE,
         columns: [
           {
-            property: "pluginName",
-            align: "left",
+            property: 'pluginName',
+            align: 'left',
             editable: false,
-            label: "Attack Vector Name",
+            label: 'Attack Vector Name',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 190,
+            type: 'text',
+            filterableType: 'text',
+            width: 190
           },
           {
-            property: "categoryName",
-            align: "left",
+            property: 'categoryName',
+            align: 'left',
             editable: false,
-            label: "Type",
+            label: 'Type',
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 150,
-            filterableType: "text",
+            filterableType: 'text'
           },
           {
-            property: "hash",
-            align: "left",
+            property: 'hash',
+            align: 'left',
             editable: false,
-            label: "Hash",
+            label: 'Hash',
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 105,
-            filterableType: "text",
+            filterableType: 'text'
           },
           {
-            property: "riskFactor",
-            align: "left",
+            property: 'riskFactor',
+            align: 'left',
             editable: false,
-            label: "Severity",
+            label: 'Severity',
             sortable: true,
             show: true,
-            type: "slot",
+            type: 'slot',
             width: 125,
-            filterableType: "number",
+            filterableType: 'number'
           },
           {
-            property: "status",
-            align: "left",
+            property: 'status',
+            align: 'left',
             editable: false,
-            label: "Status",
+            label: 'Status',
             sortable: false,
             show: true,
-            type: "slot",
+            type: 'slot',
             width: 130,
-            filterableType: "select",
-            filterableItems: [],
+            filterableType: 'select',
+            filterableItems: []
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Date Create",
+            label: 'Date Create',
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
-          },
+            type: 'text',
+            filterableType: 'date'
+          }
         ],
         rowActions: [
           {
-            name: "Edit",
-            icon: "mdi-pencil",
-            action: "handleEdit",
-            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionUpdate"],
+            name: 'Edit',
+            icon: 'mdi-pencil',
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionUpdate']
           },
           {
-            name: "Disable",
-            icon: "mdi-delete",
-            action: "handleStatus",
-            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionEnableDisable"],
+            name: 'Disable',
+            icon: 'mdi-delete',
+            action: 'handleStatus',
+            disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionEnableDisable']
           },
           {
             name: labels.Delete,
-            icon: "mdi-delete",
-            action: "deleteAction",
-            disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionDelete"],
-          },
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionDelete']
+          }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionExport"],
+          disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionExport']
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         empty: {
           message: LABEL_STORE.NO_ATTACK_VECTOR,
           btn: labels.New,
-          icon: "mdi-plus",
-          id: "btn-empty--scan",
-          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionCreate"],
+          icon: 'mdi-plus',
+          id: 'btn-empty--scan',
+          disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionCreate']
         },
         addButton: {
           show: true,
-          action: "addAction",
-          tooltip: "Add a Attack Vector",
-          id: "btn-add--scan",
-          disabled: !this.$store.getters["permissions/getEtsAttackVectorPermissionCreate"],
-        },
+          action: 'addAction',
+          tooltip: 'Add a Attack Vector',
+          id: 'btn-add--scan',
+          disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionCreate']
+        }
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
-      serverSideProps: new ServerSideProps(),
-    };
+      serverSideProps: new ServerSideProps()
+    }
   },
   computed: {
     ...mapGetters({
-      getEtsAttackVectorPermissionSearch: "permissions/getEtsAttackVectorPermissionSearch",
-    }),
+      getEtsAttackVectorPermissionSearch: 'permissions/getEtsAttackVectorPermissionSearch'
+    })
   },
   methods: {
     setStatusColor(riskFactor) {
-      let color = "#1173C1";
+      let color = '#1173C1'
       if (riskFactor == 5) {
-        color = "#0198AC";
+        color = '#0198AC'
       } else if (riskFactor >= 6 && riskFactor <= 7) {
-        color = "#B6791D";
+        color = '#B6791D'
       } else if (riskFactor >= 8) {
-        color = "#B83A3A";
+        color = '#B83A3A'
       }
-      return `border-color: ${color};color: ${color};`;
+      return `border-color: ${color};color: ${color};`
     },
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedAttackVector = {};
-      this.isShowPreviewDialog = !this.isShowPreviewDialog;
+      if (this.isShowPreviewDialog) this.selectedAttackVector = {}
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     resetPageNumber() {
-      this.bodyData.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
-      this.resetPageNumber();
-      this.getDatatableList();
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber;
-      this.getDatatableList();
+      this.bodyData.pageNumber = pageNumber
+      this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === "ascending";
-      this.bodyData.orderBy = prop;
-      this.getDatatableList();
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.getDatatableList();
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
         orderBy: prop,
-        ascending: order === "ascending",
-      };
-      this.getDatatableList();
+        ascending: order === 'ascending'
+      }
+      this.getDatatableList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
-      };
-      this.getDatatableList();
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter };
-      this.getDatatableList();
+      this.bodyData = { ...this.bodyData, filter }
+      this.getDatatableList()
     },
     handleSuccessDeleteAction() {
-      this.showDeleteModal = false;
-      this.getDatatableList();
+      this.showDeleteModal = false
+      this.getDatatableList()
     },
     handleSuccessStatusAction() {
-      this.showStatusModal = false;
-      this.getDatatableList();
+      this.showStatusModal = false
+      this.getDatatableList()
     },
     handleToggleRowSelection(row) {
-      alert(row);
-      this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false);
+      alert(row)
+      this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false)
     },
     handleEditAttackVector(row) {
       getAttackVectorById(row.pluginResourceId).then((response) => {
-        this.isEdit = true;
-        this.attackVectorDetails = response.data.data;
-        this.modalStatus = true;
-      });
-      this.selectedAttackVector = row;
+        this.isEdit = true
+        this.attackVectorDetails = response.data.data
+        this.modalStatus = true
+      })
+      this.selectedAttackVector = row
       //quickScanResourceId
     },
     checkIfCanCLoseNewModal() {
       if (this.$refs.newAttackVectorModal) {
-        this.$refs.newAttackVectorModal.closeAttackVectorPopup();
+        this.$refs.newAttackVectorModal.closeAttackVectorPopup()
       }
     },
     changeNewAttackVectorModalStatus(status, restart) {
-      this.modalStatus = status;
-      this.isEdit = false;
-      this.attackVectorDetails = {};
+      this.modalStatus = status
+      this.isEdit = false
+      this.attackVectorDetails = {}
       if (restart) {
-        this.selectedAttackVector = {};
-        this.getDatatableList();
+        this.selectedAttackVector = {}
+        this.getDatatableList()
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -399,75 +393,75 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: "CreateTime",
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter: this.bodyData.filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
+        }
         exportAttacksVector(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `AttacksVector.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     getDatatableList() {
-      this.loading = true;
+      this.loading = true
       if (this.getEtsAttackVectorPermissionSearch) {
         getAttackVectorList(this.bodyData)
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-            this.serverSideProps.pageNumber = pageNumber;
-            const { results = [] } = data;
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
             for (let i = 0; i < results.length; i++) {
-              const data = results[i];
-              data.isActive = data.isActive ? "Active" : "Passive";
+              const data = results[i]
+              data.isActive = data.isActive ? 'Active' : 'Passive'
             }
-            this.tableData = results;
+            this.tableData = results
           })
           .catch(() => {
-            this.tableData = [];
+            this.tableData = []
           })
-          .finally(() => (this.loading = false));
+          .finally(() => (this.loading = false))
       } else {
-        this.$router.push("/");
+        this.$router.push('/')
       }
     },
     handleActionDelete(row) {
-      this.selectedAttackVector = row;
-      this.showDeleteModal = true;
+      this.selectedAttackVector = row
+      this.showDeleteModal = true
     },
     handleActionStatus(row) {
-      this.selectedAttackVector = row;
-      this.showStatusModal = true;
+      this.selectedAttackVector = row
+      this.showStatusModal = true
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData);
-      this.getDatatableList();
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
+      this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      );
-      this.getDatatableList();
-    },
+      )
+      this.getDatatableList()
+    }
   },
   created() {
-    this.callForLanguages("refAttacksVectorList");
-    this.getDatatableList();
-  },
-};
+    this.callForLanguages('refAttacksVectorList')
+    this.getDatatableList()
+  }
+}
 </script>
 <style lang="scss">
 .attacks-vector {

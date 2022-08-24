@@ -1,5 +1,5 @@
-import PERMISSIONS from "@/permissions";
-import Vue from "vue";
+import PERMISSIONS from '@/permissions'
+import Vue from 'vue'
 const {
   PLAYBOOK_PERMISSIONS,
   DASHBOARD_PERMISSIONS,
@@ -47,7 +47,7 @@ const {
   AWARENESS_EDUCATOR_PERMISSIONS,
   ETS_QUICK_SCAN_PERMISSIONS,
   ETS_ATTACK_VECTOR_PERMISSIONS,
-  ETS_QUICK_SCAN_REPORT_PERMISSIONS,
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -98,7 +98,7 @@ const defaultState = {
   awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
   etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
-  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
+  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -107,381 +107,381 @@ const store = {
   state,
   getters: {
     getPermissions(state) {
-      return state.permission;
+      return state.permission
     },
     getDashboardPermissions(state) {
-      return state?.dashboardPermissions?.isOneOfThemPermitted;
+      return state?.dashboardPermissions?.isOneOfThemPermitted
     },
     getThreatSharingLeftMenuPermissions(state) {
-      return state?.threatSharingLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.threatSharingLeftMenuPermissions?.isOneOfThemPermitted
     },
     getThreatSharingAllCommunitiesPermission(state) {
-      return state?.threatSharingLeftMenuPermissions?.ALL_COMMUNITIES?.hasPermission;
+      return state?.threatSharingLeftMenuPermissions?.ALL_COMMUNITIES?.hasPermission
     },
     getThreatSharingMyCommunitiesPermission(state) {
-      return state?.threatSharingLeftMenuPermissions?.MY_COMMUNITIES?.hasPermission;
+      return state?.threatSharingLeftMenuPermissions?.MY_COMMUNITIES?.hasPermission
     },
     getThreatSharingCommunityPostsPermission(state) {
-      return state?.threatSharingLeftMenuPermissions?.COMMUNITY_POSTS?.hasPermission;
+      return state?.threatSharingLeftMenuPermissions?.COMMUNITY_POSTS?.hasPermission
     },
     getThreatSharingMyInvitationsPermission(state) {
-      return state?.threatSharingPermissions?.MY_INVITATIONS?.hasPermission;
+      return state?.threatSharingPermissions?.MY_INVITATIONS?.hasPermission
     },
     getThreatSharingCreateCommunityPermission(state) {
-      return state?.threatSharingPermissions?.CREATE_COMMUNITY?.hasPermission;
+      return state?.threatSharingPermissions?.CREATE_COMMUNITY?.hasPermission
     },
     getThreatSharingEditCommunityPermission(state) {
-      return state?.threatSharingPermissions?.EDIT_COMMUNITYT?.hasPermission;
+      return state?.threatSharingPermissions?.EDIT_COMMUNITYT?.hasPermission
     },
     getThreatSharingLeaveCommunityPermission(state) {
-      return state?.threatSharingPermissions?.LEAVE_COMMUNITYT?.hasPermission;
+      return state?.threatSharingPermissions?.LEAVE_COMMUNITYT?.hasPermission
     },
     getThreatSharingDeleteCommunityPermission(state) {
-      return state?.threatSharingPermissions?.DELETE_COMMUNITY?.hasPermission;
+      return state?.threatSharingPermissions?.DELETE_COMMUNITY?.hasPermission
     },
     getThreatSharingInviteToCommunityPermission(state) {
-      return state?.threatSharingPermissions?.INVITE_TO_COMMUNITY?.hasPermission;
+      return state?.threatSharingPermissions?.INVITE_TO_COMMUNITY?.hasPermission
     },
     getThreatSharingSuggestedCommunitiesPermission(state) {
-      return state?.threatSharingPermissions?.SUGGESTED_COMMUNITIES?.hasPermission;
+      return state?.threatSharingPermissions?.SUGGESTED_COMMUNITIES?.hasPermission
     },
     getThreatSharingPostIncidentPermission(state) {
-      return state?.threatSharingPermissions?.POST_INCIDENT?.hasPermission;
+      return state?.threatSharingPermissions?.POST_INCIDENT?.hasPermission
     },
     getThreatSharingMyLastPostsPermission(state) {
-      return state?.threatSharingPermissions?.MY_LAST_POSTS?.hasPermission;
+      return state?.threatSharingPermissions?.MY_LAST_POSTS?.hasPermission
     },
     getThreatSharingTopPostsPermission(state) {
-      return state?.threatSharingPermissions?.TOP_POSTS?.hasPermission;
+      return state?.threatSharingPermissions?.TOP_POSTS?.hasPermission
     },
     getThreatSharingGetPostPermission(state) {
-      return state?.threatSharingPermissions?.GET_POST?.hasPermission;
+      return state?.threatSharingPermissions?.GET_POST?.hasPermission
     },
     getThreatSharingSharePostPermission(state) {
-      return state?.threatSharingPermissions?.SHARE_POST?.hasPermission;
+      return state?.threatSharingPermissions?.SHARE_POST?.hasPermission
     },
     getThreatSharingDeletePostPermission(state) {
-      return state?.threatSharingPermissions?.DELETE_POST?.hasPermission;
+      return state?.threatSharingPermissions?.DELETE_POST?.hasPermission
     },
     getThreatSharingCreateCommentPermission(state) {
-      return state?.threatSharingPermissions?.CREATE_COMMENT?.hasPermission;
+      return state?.threatSharingPermissions?.CREATE_COMMENT?.hasPermission
     },
     getThreatSharingEditCommentPermission(state) {
-      return state?.threatSharingPermissions?.EDIT_COMMENT?.hasPermission;
+      return state?.threatSharingPermissions?.EDIT_COMMENT?.hasPermission
     },
     getThreatSharingDeleteCommentPermission(state) {
-      return state?.threatSharingPermissions?.DELETE_COMMENT?.hasPermission;
+      return state?.threatSharingPermissions?.DELETE_COMMENT?.hasPermission
     },
     getThreatSharingGetIncidentsPermission(state) {
-      return state?.threatSharingPermissions?.GET_INCIDENTS?.hasPermission;
+      return state?.threatSharingPermissions?.GET_INCIDENTS?.hasPermission
     },
     getThreatSharingGetMembersPermission(state) {
-      return state?.threatSharingPermissions?.GET_MEMBERS?.hasPermission;
+      return state?.threatSharingPermissions?.GET_MEMBERS?.hasPermission
     },
     getPhishingSimulatorLeftMenuPermissions(state) {
-      return state?.phishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.phishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted
     },
     getPhishingScenarioLeftMenuPermissions(state) {
-      return state?.phishingScenarioLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.phishingScenarioLeftMenuPermissions?.isOneOfThemPermitted
     },
     getPhishingScenariosSearchPermissions(state) {
-      return state?.phishingScenariosPermissions?.SEARCH?.hasPermission;
+      return state?.phishingScenariosPermissions?.SEARCH?.hasPermission
     },
     getPhishingScenariosPreviewPermissions(state) {
-      return state?.phishingScenariosPermissions?.PREVIEW?.hasPermission;
+      return state?.phishingScenariosPermissions?.PREVIEW?.hasPermission
     },
     getPhishingScenariosEditPermissions(state) {
-      return state?.phishingScenariosPermissions?.EDIT?.hasPermission;
+      return state?.phishingScenariosPermissions?.EDIT?.hasPermission
     },
     getPhishingScenariosCreatePermissions(state) {
-      return state?.phishingScenariosPermissions?.CREATE?.hasPermission;
+      return state?.phishingScenariosPermissions?.CREATE?.hasPermission
     },
     getPhishingScenariosDeletePermissions(state) {
-      return state?.phishingScenariosPermissions?.DELETE?.hasPermission;
+      return state?.phishingScenariosPermissions?.DELETE?.hasPermission
     },
     getPhishingScenariosExportPermissions(state) {
-      return state?.phishingScenariosPermissions?.EXPORT?.hasPermission;
+      return state?.phishingScenariosPermissions?.EXPORT?.hasPermission
     },
     getEmailTemplatesSearchPermissions(state) {
-      return state?.emailTemplatesPermissions?.SEARCH?.hasPermission;
+      return state?.emailTemplatesPermissions?.SEARCH?.hasPermission
     },
     getEmailTemplatesPreviewPermissions(state) {
-      return state?.emailTemplatesPermissions?.PREVIEW?.hasPermission;
+      return state?.emailTemplatesPermissions?.PREVIEW?.hasPermission
     },
     getEmailTemplatesEditPermissions(state) {
-      return state?.emailTemplatesPermissions?.EDIT?.hasPermission;
+      return state?.emailTemplatesPermissions?.EDIT?.hasPermission
     },
     getEmailTemplatesCreatePermissions(state) {
-      return state?.emailTemplatesPermissions?.CREATE?.hasPermission;
+      return state?.emailTemplatesPermissions?.CREATE?.hasPermission
     },
     getEmailTemplatesDeletePermissions(state) {
-      return state?.emailTemplatesPermissions?.DELETE?.hasPermission;
+      return state?.emailTemplatesPermissions?.DELETE?.hasPermission
     },
     getEmailTemplatesExportPermissions(state) {
-      return state?.emailTemplatesPermissions?.EXPORT?.hasPermission;
+      return state?.emailTemplatesPermissions?.EXPORT?.hasPermission
     },
     getLandingPageTemplatesSearchPermissions(state) {
-      return state?.landingPageTemplatesPermissions?.SEARCH?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.SEARCH?.hasPermission
     },
     getLandingPageTemplatesPreviewPermissions(state) {
-      return state?.landingPageTemplatesPermissions?.PREVIEW?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.PREVIEW?.hasPermission
     },
     getLandingPageTemplatesEditPermissions(state) {
-      return state?.landingPageTemplatesPermissions?.EDIT?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.EDIT?.hasPermission
     },
     getLandingPageTemplatesCreatePermissions(state) {
-      return state?.landingPageTemplatesPermissions?.CREATE?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.CREATE?.hasPermission
     },
     getLandingPageTemplatesDeletePermissions(state) {
-      return state?.landingPageTemplatesPermissions?.DELETE?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.DELETE?.hasPermission
     },
     getLandingPageTemplatesExportPermissions(state) {
-      return state?.landingPageTemplatesPermissions?.EXPORT?.hasPermission;
+      return state?.landingPageTemplatesPermissions?.EXPORT?.hasPermission
     },
     getCampaignManagerLeftMenuPermissions(state) {
-      return state?.campaignManagerLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.campaignManagerLeftMenuPermissions?.isOneOfThemPermitted
     },
     getCampaignManagerParentSearchPermissions(state) {
-      return state?.campaignManagerParentPermissions?.SEARCH?.hasPermission;
+      return state?.campaignManagerParentPermissions?.SEARCH?.hasPermission
     },
     getCampaignManagerParentPreviewPermissions(state) {
-      return state?.campaignManagerParentPermissions?.PREVIEW?.hasPermission;
+      return state?.campaignManagerParentPermissions?.PREVIEW?.hasPermission
     },
     getCampaignManagerParentDeletePermissions(state) {
-      return state?.campaignManagerParentPermissions?.DELETE?.hasPermission;
+      return state?.campaignManagerParentPermissions?.DELETE?.hasPermission
     },
     getCampaignManagerParentGetPermissions(state) {
-      return state?.campaignManagerParentPermissions?.GET?.hasPermission;
+      return state?.campaignManagerParentPermissions?.GET?.hasPermission
     },
     getCampaignManagerParentCreatePermissions(state) {
-      return state?.campaignManagerParentPermissions?.CREATE?.hasPermission;
+      return state?.campaignManagerParentPermissions?.CREATE?.hasPermission
     },
     getCampaignManagerParentExportPermissions(state) {
-      return state?.campaignManagerParentPermissions?.EXPORT?.hasPermission;
+      return state?.campaignManagerParentPermissions?.EXPORT?.hasPermission
     },
     getCampaignManagerParentUpdatePermissions(state) {
-      return state?.campaignManagerParentPermissions?.UPDATE?.hasPermission;
+      return state?.campaignManagerParentPermissions?.UPDATE?.hasPermission
     },
     getSettingsLeftMenuPermissions(state) {
-      return state?.settingsLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.settingsLeftMenuPermissions?.isOneOfThemPermitted
     },
     getDomainCreatePermissions(state) {
-      return state?.domainPermisisons?.CREATE?.hasPermission;
+      return state?.domainPermisisons?.CREATE?.hasPermission
     },
     getDomainSearchPermissions(state) {
-      return state?.domainPermisisons?.SEARCH?.hasPermission;
+      return state?.domainPermisisons?.SEARCH?.hasPermission
     },
     getDomainUpdatePermissions(state) {
-      return state?.domainPermisisons?.UPDATE?.hasPermission;
+      return state?.domainPermisisons?.UPDATE?.hasPermission
     },
     getDomainDeletePermissions(state) {
-      return state?.domainPermisisons?.DELETE?.hasPermission;
+      return state?.domainPermisisons?.DELETE?.hasPermission
     },
     getDomainGetPermissions(state) {
-      return state?.domainPermisisons?.GET?.hasPermission;
+      return state?.domainPermisisons?.GET?.hasPermission
     },
     getDomainExportPermissions(state) {
-      return state?.domainPermisisons?.EXPORT?.hasPermission;
+      return state?.domainPermisisons?.EXPORT?.hasPermission
     },
     getDomainFormDetailsPermissions(state) {
-      return state?.domainPermisisons?.FORM_DETAILS?.hasPermission;
+      return state?.domainPermisisons?.FORM_DETAILS?.hasPermission
     },
     getDnsCreatePermissions(state) {
-      return state?.dnsPermissions?.CREATE?.hasPermission;
+      return state?.dnsPermissions?.CREATE?.hasPermission
     },
     getDnsSearchPermissions(state) {
-      return state?.dnsPermissions?.SEARCH?.hasPermission;
+      return state?.dnsPermissions?.SEARCH?.hasPermission
     },
     getDnsUpdatePermissions(state) {
-      return state?.dnsPermissions?.UPDATE?.hasPermission;
+      return state?.dnsPermissions?.UPDATE?.hasPermission
     },
     getDnsDeletePermissions(state) {
-      return state?.dnsPermissions?.DELETE?.hasPermission;
+      return state?.dnsPermissions?.DELETE?.hasPermission
     },
     getDnsGetPermissions(state) {
-      return state?.dnsPermissions?.GET?.hasPermission;
+      return state?.dnsPermissions?.GET?.hasPermission
     },
     getDnsExportPermissions(state) {
-      return state?.dnsPermissions?.EXPORT?.hasPermission;
+      return state?.dnsPermissions?.EXPORT?.hasPermission
     },
     getExcludedIpAddressGetPermissions(state) {
-      return state?.excludeIpAddressPermissions?.GET?.hasPermission;
+      return state?.excludeIpAddressPermissions?.GET?.hasPermission
     },
     getExcludedIpAddressPostPermissions(state) {
-      return state?.excludeIpAddressPermissions?.POST?.hasPermission;
+      return state?.excludeIpAddressPermissions?.POST?.hasPermission
     },
     getIncidentResponderListGroupPermissions(state) {
-      return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted;
+      return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
     },
     getIncidentResponderLeftMenuPermissions(state) {
-      return state?.incidentResponderLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.incidentResponderLeftMenuPermissions?.isOneOfThemPermitted
     },
     getInvestigationsSearchPermission(state) {
-      return state?.incidentResponderListGroupPermissions?.INVESTIGATIONS?.hasPermission;
+      return state?.incidentResponderListGroupPermissions?.INVESTIGATIONS?.hasPermission
     },
     getIntegrationsSearchPermission(state) {
-      return state?.incidentResponderListGroupPermissions?.INTEGRATIONS?.hasPermission;
+      return state?.incidentResponderListGroupPermissions?.INTEGRATIONS?.hasPermission
     },
     getPlaybookSearchPermission(state) {
-      return state?.incidentResponderListGroupPermissions?.PLAYBOOKS?.hasPermission;
+      return state?.incidentResponderListGroupPermissions?.PLAYBOOKS?.hasPermission
     },
     getMailConfigurationSearchPermission(state) {
-      return state?.incidentResponderListGroupPermissions?.MAIL_CONFIGURATIONS?.hasPermission;
+      return state?.incidentResponderListGroupPermissions?.MAIL_CONFIGURATIONS?.hasPermission
     },
     getCrossCompanyPermissions(state) {
       const {
         SUMMARY = {},
         SEARCH_LOG = {},
         SEARCH_STATS = {},
-        NOTIFY_RESULT = {},
-      } = state?.incidentResponderListGroupPermissions;
+        NOTIFY_RESULT = {}
+      } = state?.incidentResponderListGroupPermissions
       return [
         SUMMARY?.hasPermission,
         SEARCH_LOG?.hasPermission,
         SEARCH_STATS?.hasPermission,
-        NOTIFY_RESULT?.hasPermission,
-      ].some((permission) => permission);
+        NOTIFY_RESULT?.hasPermission
+      ].some((permission) => permission)
     },
     getCrossCompanyPagePermissions() {
-      const { SEARCH_LOG = {}, SEARCH_STATS = {} } = state?.incidentResponderListGroupPermissions;
+      const { SEARCH_LOG = {}, SEARCH_STATS = {} } = state?.incidentResponderListGroupPermissions
       return {
         SEARCH_LOG,
-        SEARCH_STATS,
-      };
+        SEARCH_STATS
+      }
     },
     getPhishingReporterLeftMenuPermissions(state) {
-      return state?.phishingReporterLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.phishingReporterLeftMenuPermissions?.isOneOfThemPermitted
     },
     getPhishingReporterSearchPermissions(state) {
-      return state?.phishingReporterPermissions?.SEARCH?.hasPermission;
+      return state?.phishingReporterPermissions?.SEARCH?.hasPermission
     },
     getPhishingReporterSummaryPermissions(state) {
-      return state?.phishingReporterPermissions?.SUMMARY?.hasPermission;
+      return state?.phishingReporterPermissions?.SUMMARY?.hasPermission
     },
     getPhishingReporterGetPermissions(state) {
-      return state?.phishingReporterPermissions?.GET?.hasPermission;
+      return state?.phishingReporterPermissions?.GET?.hasPermission
     },
     getPhishingReporterSavePermissions(state) {
-      return state?.phishingReporterPermissions?.SAVE?.hasPermission;
+      return state?.phishingReporterPermissions?.SAVE?.hasPermission
     },
     getPhishingReporterDeleteUserPermissions(state) {
-      return state?.phishingReporterPermissions?.DELETE_USER?.hasPermission;
+      return state?.phishingReporterPermissions?.DELETE_USER?.hasPermission
     },
     getReportsLeftMenuPermissions(state) {
-      return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
     },
     getCampaignReportsSearchPermissions(state) {
-      return state?.campaignReportsPermissions?.SEARCH?.hasPermission;
+      return state?.campaignReportsPermissions?.SEARCH?.hasPermission
     },
     getCampaignReportsGetPermissions(state) {
-      return state?.campaignReportsPermissions?.GET?.hasPermission;
+      return state?.campaignReportsPermissions?.GET?.hasPermission
     },
     getCampaignReportsDeletePermissions(state) {
-      return state?.campaignReportsPermissions?.DELETE?.hasPermission;
+      return state?.campaignReportsPermissions?.DELETE?.hasPermission
     },
     getCampaignReportsOpenedPermissions(state) {
-      return state?.campaignReportsPermissions?.OPENED?.hasPermission;
+      return state?.campaignReportsPermissions?.OPENED?.hasPermission
     },
     getCampaignReportsOpenedDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.OPENED_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.OPENED_DETAILS?.hasPermission
     },
     getCampaignReportsClickedPermissions(state) {
-      return state?.campaignReportsPermissions?.CLICKED?.hasPermission;
+      return state?.campaignReportsPermissions?.CLICKED?.hasPermission
     },
     getCampaignReportsClickedDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.CLICKED_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.CLICKED_DETAILS?.hasPermission
     },
     getCampaignReportsOpenedAttachmentPermissions(state) {
-      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT?.hasPermission;
+      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT?.hasPermission
     },
     getCampaignReportsOpenedAttachmentDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT_DETAILS?.hasPermission
     },
     getCampaignReportsSubmittedDataPermissions(state) {
-      return state?.campaignReportsPermissions?.SUBMITTED_DATA?.hasPermission;
+      return state?.campaignReportsPermissions?.SUBMITTED_DATA?.hasPermission
     },
     getCampaignReportsSubmittedDataDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.SUBMITTED_DATA_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.SUBMITTED_DATA_DETAILS?.hasPermission
     },
     getCampaignReportsNoResponsePermissions(state) {
-      return state?.campaignReportsPermissions?.NO_RESPONSE?.hasPermission;
+      return state?.campaignReportsPermissions?.NO_RESPONSE?.hasPermission
     },
     getCampaignReportsPhishingReporterPermissions(state) {
-      return state?.campaignReportsPermissions?.PHISHING_REPORTER?.hasPermission;
+      return state?.campaignReportsPermissions?.PHISHING_REPORTER?.hasPermission
     },
     getCampaignReportsPhishingReporterDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.PHISHING_REPORTER_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.PHISHING_REPORTER_DETAILS?.hasPermission
     },
     getCampaignReportsSendingReportPermissions(state) {
-      return state?.campaignReportsPermissions?.SENDING_REPORT?.hasPermission;
+      return state?.campaignReportsPermissions?.SENDING_REPORT?.hasPermission
     },
     getCampaignReportsSendingReportDetailsPermissions(state) {
-      return state?.campaignReportsPermissions?.SENDING_REPORT_DETAILS?.hasPermission;
+      return state?.campaignReportsPermissions?.SENDING_REPORT_DETAILS?.hasPermission
     },
     getCampaignReportsResendPermissions(state) {
-      return state?.campaignReportsPermissions?.RESEND?.hasPermission;
+      return state?.campaignReportsPermissions?.RESEND?.hasPermission
     },
     getCompanyLeftMenuPermissions(state) {
-      return state?.companyLeftMenuPermissions?.isOneOfThemPermitted;
+      return state?.companyLeftMenuPermissions?.isOneOfThemPermitted
     },
     getTargetUsersLeftMenuPermissions(state) {
-      const { TARGET_USERS = {}, TARGET_GROUPS = {} } = state?.companyLeftMenuPermissions;
-      return TARGET_USERS?.hasPermission || TARGET_GROUPS?.hasPermission;
+      const { TARGET_USERS = {}, TARGET_GROUPS = {} } = state?.companyLeftMenuPermissions
+      return TARGET_USERS?.hasPermission || TARGET_GROUPS?.hasPermission
     },
     getTargetUsersSearchPermissions(state) {
-      return state?.targetUsersPermissions?.SEARCH?.hasPermission;
+      return state?.targetUsersPermissions?.SEARCH?.hasPermission
     },
     getTargetUsersCreatePermissions(state) {
-      return state?.targetUsersPermissions?.CREATE?.hasPermission;
+      return state?.targetUsersPermissions?.CREATE?.hasPermission
     },
     getTargetUsersEditPermissions(state) {
-      return state?.targetUsersPermissions?.EDIT?.hasPermission;
+      return state?.targetUsersPermissions?.EDIT?.hasPermission
     },
     getTargetUsersDeletePermissions(state) {
-      return state?.targetUsersPermissions?.DELETE?.hasPermission;
+      return state?.targetUsersPermissions?.DELETE?.hasPermission
     },
     getTargetGroupsSearchPermissions(state) {
-      return state?.targetGroupsPermissions?.SEARCH?.hasPermission;
+      return state?.targetGroupsPermissions?.SEARCH?.hasPermission
     },
     getTargetGroupsCreatePermissions(state) {
-      return state?.targetGroupsPermissions?.CREATE?.hasPermission;
+      return state?.targetGroupsPermissions?.CREATE?.hasPermission
     },
     getTargetGroupsEditPermissions(state) {
-      return state?.targetGroupsPermissions?.EDIT?.hasPermission;
+      return state?.targetGroupsPermissions?.EDIT?.hasPermission
     },
     getTargetGroupsDeletePermissions(state) {
-      return state?.targetGroupsPermissions?.DELETE?.hasPermission;
+      return state?.targetGroupsPermissions?.DELETE?.hasPermission
     },
     getTargetGroupsDeleteUsersPermissions(state) {
-      return state?.targetGroupsPermissions?.DELETE_USERS?.hasPermission;
+      return state?.targetGroupsPermissions?.DELETE_USERS?.hasPermission
     },
     getCompaniesSearchPermissions(state) {
-      return state?.companiesPermissions?.SEARCH?.hasPermission;
+      return state?.companiesPermissions?.SEARCH?.hasPermission
     },
     getCompaniesCreatePermissions(state) {
-      return state?.companiesPermissions?.CREATE?.hasPermission;
+      return state?.companiesPermissions?.CREATE?.hasPermission
     },
     getCompaniesEditPermissions(state) {
-      return state?.companiesPermissions?.EDIT?.hasPermission;
+      return state?.companiesPermissions?.EDIT?.hasPermission
     },
     getCompaniesDeletePermissions(state) {
-      return state?.companiesPermissions?.DELETE?.hasPermission;
+      return state?.companiesPermissions?.DELETE?.hasPermission
     },
     getCompanyGroupsSearchPermissions(state) {
-      return state?.companyGroupsPermissions?.SEARCH?.hasPermission;
+      return state?.companyGroupsPermissions?.SEARCH?.hasPermission
     },
     getCompanyGroupsCreatePermissions(state) {
-      return state?.companyGroupsPermissions?.CREATE?.hasPermission;
+      return state?.companyGroupsPermissions?.CREATE?.hasPermission
     },
     getCompanyGroupsEditPermissions(state) {
-      return state?.companyGroupsPermissions?.EDIT?.hasPermission;
+      return state?.companyGroupsPermissions?.EDIT?.hasPermission
     },
     getCompanyGroupsDeletePermissions(state) {
-      return state?.companyGroupsPermissions?.DELETE?.hasPermission;
+      return state?.companyGroupsPermissions?.DELETE?.hasPermission
     },
     getCompaniesLeftMenuPermissions(state) {
-      const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions;
-      return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission;
+      const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions
+      return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
       return (
@@ -493,154 +493,154 @@ const store = {
         getters?.getSAMLIntegrationSearchPermissions ||
         getters?.getSCIMSettingsSearchPermissions ||
         getters?.getSIEMIntegrationSearchPermissions
-      );
+      )
     },
     getSMTPSettingsSearchPermissions(state) {
-      return state?.smtpSettingsPermissions?.SEARCH?.hasPermission;
+      return state?.smtpSettingsPermissions?.SEARCH?.hasPermission
     },
     getSMTPSettingsCreatePermissions(state) {
-      return state?.smtpSettingsPermissions?.CREATE?.hasPermission;
+      return state?.smtpSettingsPermissions?.CREATE?.hasPermission
     },
     getSMTPSettingsUpdatePermissions(state) {
-      return state?.smtpSettingsPermissions?.UPDATE?.hasPermission;
+      return state?.smtpSettingsPermissions?.UPDATE?.hasPermission
     },
     getSMTPSettingsDeletePermissions(state) {
-      return state?.smtpSettingsPermissions?.DELETE?.hasPermission;
+      return state?.smtpSettingsPermissions?.DELETE?.hasPermission
     },
     getSMTPSettingsGetPermissions(state) {
-      return state?.smtpSettingsPermissions?.GET?.hasPermission;
+      return state?.smtpSettingsPermissions?.GET?.hasPermission
     },
     getSMTPSettingsExportPermissions(state) {
-      return state?.smtpSettingsPermissions?.EXPORT?.hasPermission;
+      return state?.smtpSettingsPermissions?.EXPORT?.hasPermission
     },
     getNotificationTemplatesSearchPermissions(state) {
-      return state?.notificationTemplatesPermissions?.SEARCH?.hasPermission;
+      return state?.notificationTemplatesPermissions?.SEARCH?.hasPermission
     },
     getNotificationTemplatesCreatePermissions(state) {
-      return state?.notificationTemplatesPermissions?.CREATE?.hasPermission;
+      return state?.notificationTemplatesPermissions?.CREATE?.hasPermission
     },
     getNotificationTemplatesUpdatePermissions(state) {
-      return state?.notificationTemplatesPermissions?.EDIT?.hasPermission;
+      return state?.notificationTemplatesPermissions?.EDIT?.hasPermission
     },
     getNotificationTemplatesDeletePermissions(state) {
-      return state?.notificationTemplatesPermissions?.DELETE?.hasPermission;
+      return state?.notificationTemplatesPermissions?.DELETE?.hasPermission
     },
     getNotificationTemplatesGetPermissions(state) {
-      return state?.notificationTemplatesPermissions?.GET?.hasPermission;
+      return state?.notificationTemplatesPermissions?.GET?.hasPermission
     },
     getNotificationTemplatesExportPermissions(state) {
-      return state?.notificationTemplatesPermissions?.EXPORT?.hasPermission;
+      return state?.notificationTemplatesPermissions?.EXPORT?.hasPermission
     },
     getNotificationTemplatesMakeDefaultPermissions(state) {
-      return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission;
+      return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
     },
     getRestApiSearchPermissions(state) {
-      return state?.restApiPermissions?.SEARCH?.hasPermission;
+      return state?.restApiPermissions?.SEARCH?.hasPermission
     },
     getRestApiCreatePermissions(state) {
-      return state?.restApiPermissions?.CREATE?.hasPermission;
+      return state?.restApiPermissions?.CREATE?.hasPermission
     },
     getRestApiUpdatePermissions(state) {
-      return state?.restApiPermissions?.UPDATE?.hasPermission;
+      return state?.restApiPermissions?.UPDATE?.hasPermission
     },
     getRestApiDeletePermissions(state) {
-      return state?.restApiPermissions?.DELETE?.hasPermission;
+      return state?.restApiPermissions?.DELETE?.hasPermission
     },
     getRestApiGetPermissions(state) {
-      return state?.restApiPermissions?.GET?.hasPermission;
+      return state?.restApiPermissions?.GET?.hasPermission
     },
     getRestApiExportPermissions(state) {
-      return state?.restApiPermissions?.EXPORT?.hasPermission;
+      return state?.restApiPermissions?.EXPORT?.hasPermission
     },
     getWhiteLabelingGetPermissions(state) {
-      return state?.whiteLabelingPermissions?.GET?.hasPermission;
+      return state?.whiteLabelingPermissions?.GET?.hasPermission
     },
     getWhiteLabelingUpdatePermissions(state) {
-      return state?.whiteLabelingPermissions?.UPDATE?.hasPermission;
+      return state?.whiteLabelingPermissions?.UPDATE?.hasPermission
     },
     getWhiteLabelingDeletePermissions(state) {
-      return state?.whiteLabelingPermissions?.DELETE?.hasPermission;
+      return state?.whiteLabelingPermissions?.DELETE?.hasPermission
     },
     getProxySettingsSearchPermissions(state) {
-      return state?.proxySettingsPermissions?.SEARCH?.hasPermission;
+      return state?.proxySettingsPermissions?.SEARCH?.hasPermission
     },
     getProxySettingsCreatePermissions(state) {
-      return state?.proxySettingsPermissions?.CREATE?.hasPermission;
+      return state?.proxySettingsPermissions?.CREATE?.hasPermission
     },
     getProxySettingsUpdatePermissions(state) {
-      return state?.proxySettingsPermissions?.UPDATE?.hasPermission;
+      return state?.proxySettingsPermissions?.UPDATE?.hasPermission
     },
     getProxySettingsDeletePermissions(state) {
-      return state?.proxySettingsPermissions?.DELETE?.hasPermission;
+      return state?.proxySettingsPermissions?.DELETE?.hasPermission
     },
     getProxySettingsGetPermissions(state) {
-      return state?.proxySettingsPermissions?.GET?.hasPermission;
+      return state?.proxySettingsPermissions?.GET?.hasPermission
     },
     getProxySettingsExportPermissions(state) {
-      return state?.proxySettingsPermissions?.EXPORT?.hasPermission;
+      return state?.proxySettingsPermissions?.EXPORT?.hasPermission
     },
     getProxySettingsTestPermissions(state) {
-      return state?.proxySettingsPermissions?.TEST?.hasPermission;
+      return state?.proxySettingsPermissions?.TEST?.hasPermission
     },
     getSAMLIntegrationSearchPermissions(state) {
-      return state?.samlIntegrationPermissions?.SEARCH?.hasPermission;
+      return state?.samlIntegrationPermissions?.SEARCH?.hasPermission
     },
     getSAMLIntegrationCreatePermissions(state) {
-      return state?.samlIntegrationPermissions?.CREATE?.hasPermission;
+      return state?.samlIntegrationPermissions?.CREATE?.hasPermission
     },
     getSAMLIntegrationUpdatePermissions(state) {
-      return state?.samlIntegrationPermissions?.UPDATE?.hasPermission;
+      return state?.samlIntegrationPermissions?.UPDATE?.hasPermission
     },
     getSAMLIntegrationDeletePermissions(state) {
-      return state?.samlIntegrationPermissions?.DELETE?.hasPermission;
+      return state?.samlIntegrationPermissions?.DELETE?.hasPermission
     },
     getSAMLIntegrationGetPermissions(state) {
-      return state?.samlIntegrationPermissions?.GET?.hasPermission;
+      return state?.samlIntegrationPermissions?.GET?.hasPermission
     },
     getSAMLIntegrationExportPermissions(state) {
-      return state?.samlIntegrationPermissions?.EXPORT?.hasPermission;
+      return state?.samlIntegrationPermissions?.EXPORT?.hasPermission
     },
     getSCIMSettingsSearchPermissions(state) {
-      return state?.scimSettingsPermissions?.SEARCH?.hasPermission;
+      return state?.scimSettingsPermissions?.SEARCH?.hasPermission
     },
     getSCIMSettingsCreatePermissions(state) {
-      return state?.scimSettingsPermissions?.CREATE?.hasPermission;
+      return state?.scimSettingsPermissions?.CREATE?.hasPermission
     },
     getSCIMSettingsUpdatePermissions(state) {
-      return state?.scimSettingsPermissions?.UPDATE?.hasPermission;
+      return state?.scimSettingsPermissions?.UPDATE?.hasPermission
     },
     getSCIMSettingsDeletePermissions(state) {
-      return state?.scimSettingsPermissions?.DELETE?.hasPermission;
+      return state?.scimSettingsPermissions?.DELETE?.hasPermission
     },
     getSCIMSettingsGetPermissions(state) {
-      return state?.scimSettingsPermissions?.GET?.hasPermission;
+      return state?.scimSettingsPermissions?.GET?.hasPermission
     },
     getSCIMSettingsExportPermissions(state) {
-      return state?.scimSettingsPermissions?.EXPORT?.hasPermission;
+      return state?.scimSettingsPermissions?.EXPORT?.hasPermission
     },
     getSCIMSettingsRevokePermissions(state) {
-      return state?.scimSettingsPermissions?.REVOKE?.hasPermission;
+      return state?.scimSettingsPermissions?.REVOKE?.hasPermission
     },
     getSCIMSettingsFieldsPermissions(state) {
-      return state?.scimSettingsPermissions?.FIELDS?.hasPermission;
+      return state?.scimSettingsPermissions?.FIELDS?.hasPermission
     },
     getSIEMIntegrationSearchPermissions(state) {
-      return state?.siemIntegrationPermissions?.SEARCH?.hasPermission;
+      return state?.siemIntegrationPermissions?.SEARCH?.hasPermission
     },
     getSIEMIntegrationCreatePermissions(state) {
-      return state?.siemIntegrationPermissions?.CREATE?.hasPermission;
+      return state?.siemIntegrationPermissions?.CREATE?.hasPermission
     },
     getSIEMIntegrationUpdatePermissions(state) {
-      return state?.siemIntegrationPermissions?.UPDATE?.hasPermission;
+      return state?.siemIntegrationPermissions?.UPDATE?.hasPermission
     },
     getSIEMIntegrationDeletePermissions(state) {
-      return state?.siemIntegrationPermissions?.DELETE?.hasPermission;
+      return state?.siemIntegrationPermissions?.DELETE?.hasPermission
     },
     getSIEMIntegrationGetPermissions(state) {
-      return state?.siemIntegrationPermissions?.GET?.hasPermission;
+      return state?.siemIntegrationPermissions?.GET?.hasPermission
     },
     getSIEMIntegrationExportPermissions(state) {
-      return state?.siemIntegrationPermissions?.EXPORT?.hasPermission;
+      return state?.siemIntegrationPermissions?.EXPORT?.hasPermission
     },
     getSIEMIntegrationPermissions(state, getters) {
       return {
@@ -649,123 +649,123 @@ const store = {
         update: getters.getSIEMIntegrationUpdatePermissions,
         delete: getters.getSIEMIntegrationDeletePermissions,
         get: getters.getSIEMIntegrationGetPermissions,
-        export: getters.getSIEMIntegrationExportPermissions,
-      };
+        export: getters.getSIEMIntegrationExportPermissions
+      }
     },
     getSystemUserSearchPermission(state) {
-      const { SYSTEM_USERS = {}, ROLES = {} } = state?.companyLeftMenuPermissions;
-      return SYSTEM_USERS?.hasPermission || ROLES?.hasPermission;
+      const { SYSTEM_USERS = {}, ROLES = {} } = state?.companyLeftMenuPermissions
+      return SYSTEM_USERS?.hasPermission || ROLES?.hasPermission
     },
     getSystemUsersSearchPermission(state) {
-      return state?.systemUsersPermissions?.SEARCH?.hasPermission;
+      return state?.systemUsersPermissions?.SEARCH?.hasPermission
     },
     getSystemUsersCreatePermission(state) {
-      return state?.systemUsersPermissions?.CREATE?.hasPermission;
+      return state?.systemUsersPermissions?.CREATE?.hasPermission
     },
     getSystemUsersUpdatePermission(state) {
-      return state?.systemUsersPermissions?.UPDATE?.hasPermission;
+      return state?.systemUsersPermissions?.UPDATE?.hasPermission
     },
     getSystemUsersDeletePermission(state) {
-      return state?.systemUsersPermissions?.DELETE?.hasPermission;
+      return state?.systemUsersPermissions?.DELETE?.hasPermission
     },
     getSystemUsersExportPermission(state) {
-      return state?.systemUsersPermissions?.EXPORT?.hasPermission;
+      return state?.systemUsersPermissions?.EXPORT?.hasPermission
     },
     getSystemRolesSearchPermission(state) {
-      return state?.systemRolesPermissions?.SEARCH?.hasPermission;
+      return state?.systemRolesPermissions?.SEARCH?.hasPermission
     },
     getSystemRolesCreatePermission(state) {
-      return state?.systemRolesPermissions?.CREATE?.hasPermission;
+      return state?.systemRolesPermissions?.CREATE?.hasPermission
     },
     getSystemRolesUpdatePermission(state) {
-      return state?.systemRolesPermissions?.UPDATE?.hasPermission;
+      return state?.systemRolesPermissions?.UPDATE?.hasPermission
     },
     getSystemRolesDeletePermission(state) {
-      return state?.systemRolesPermissions?.DELETE?.hasPermission;
+      return state?.systemRolesPermissions?.DELETE?.hasPermission
     },
     getSystemRolesExportPermission(state) {
-      return state?.systemRolesPermissions?.EXPORT?.hasPermission;
+      return state?.systemRolesPermissions?.EXPORT?.hasPermission
     },
     getAuditLogSearchPermission(state) {
-      const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions;
-      return AUDIT_LOGS?.hasPermission;
+      const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions
+      return AUDIT_LOGS?.hasPermission
     },
     getJobLogsSearchPermission(state) {
-      const { JOB_LOGS = {} } = state?.companyLeftMenuPermissions;
-      return JOB_LOGS?.hasPermission;
+      const { JOB_LOGS = {} } = state?.companyLeftMenuPermissions
+      return JOB_LOGS?.hasPermission
     },
     getIncidentResponderSummaryPermission(state) {
-      return state?.dashboardPermissions?.IR_SUMMARY?.hasPermission;
+      return state?.dashboardPermissions?.IR_SUMMARY?.hasPermission
     },
     getIncidentResponderTopRulesPermission(state) {
-      return state?.dashboardPermissions?.IR_TOP_RULES?.hasPermission;
+      return state?.dashboardPermissions?.IR_TOP_RULES?.hasPermission
     },
     getIncidentResponderRunningInvestigationsPermission(state) {
-      return state?.dashboardPermissions?.IR_RUNNING_INVESTIGATIONS?.hasPermission;
+      return state?.dashboardPermissions?.IR_RUNNING_INVESTIGATIONS?.hasPermission
     },
     getDashboardReportersPermission(state) {
-      return state?.dashboardPermissions?.REPORTERS?.hasPermission;
+      return state?.dashboardPermissions?.REPORTERS?.hasPermission
     },
     getDashboardReportedEmailTrendsPermission(state) {
-      return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission;
+      return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission
     },
     getDashboardPhishingCampaignTrendsPermission(state) {
       return state?.dashboardPermissions?.PHISHING_CAMPAIGN_TRENDS?.hasPermission
     },
     getIncidentResponderNotifiedEmailPermission(state) {
-      return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission;
+      return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission
     },
     getIncidentResponderNotifiedEmailReAnalyze(state) {
-      return state?.incidentResponderOtherPermissions?.RE_ANALYZE?.hasPermission;
+      return state?.incidentResponderOtherPermissions?.RE_ANALYZE?.hasPermission
     },
     getIncidentResponderROISettingGetPermission(state) {
-      return state?.incidentResponderOtherPermissions?.GET_ROI_SETTINGS?.hasPermission;
+      return state?.incidentResponderOtherPermissions?.GET_ROI_SETTINGS?.hasPermission
     },
     getIncidentResponderROISettingPostPermission(state) {
-      return state?.incidentResponderOtherPermissions?.POST_ROI_SETTINGS?.hasPermission;
+      return state?.incidentResponderOtherPermissions?.POST_ROI_SETTINGS?.hasPermission
     },
     getDashboardWidgetsPermission(state) {
-      return state?.dashboardPermissions?.WIDGETS?.hasPermission;
+      return state?.dashboardPermissions?.WIDGETS?.hasPermission
     },
     getInvestigationPermissions(state) {
-      return state?.investigationPermissions;
+      return state?.investigationPermissions
     },
     getIntegrationPermissions(state) {
-      return state?.integrationPermissions;
+      return state?.integrationPermissions
     },
     getAdvancedSettingsPermissions(state) {
-      return state?.advancedSettingsPermissions;
+      return state?.advancedSettingsPermissions
     },
     getPlaybookPermissions(state) {
-      return state?.playbookPermissions;
+      return state?.playbookPermissions
     },
     getMailConfigurationPermissions(state) {
-      return state?.mailConfigurationPermissions;
+      return state?.mailConfigurationPermissions
     },
     getLDAPDetailPermission(state) {
-      return state?.ldapPermissions?.DETAIL?.hasPermission;
+      return state?.ldapPermissions?.DETAIL?.hasPermission
     },
     getLDAPSettingCreatePermission(state) {
-      return state?.ldapPermissions?.SETTING_CREATE?.hasPermission;
+      return state?.ldapPermissions?.SETTING_CREATE?.hasPermission
     },
     getLDAPSettingUpdatePermission(state) {
-      return state?.ldapPermissions?.SETTING_UPDATE?.hasPermission;
+      return state?.ldapPermissions?.SETTING_UPDATE?.hasPermission
     },
     getLDAPSettingSchedulePermission(state) {
-      return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission;
+      return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission
     },
     getLDAPFieldMappingPermissions(state) {
-      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions;
-      return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission;
+      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions
+      return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission
     },
     getLDAPCreateConfigPermission(state) {
-      return state?.ldapPermissions?.CREATE_CONFIG?.hasPermission;
+      return state?.ldapPermissions?.CREATE_CONFIG?.hasPermission
     },
     getLDAPScheduleUpdatePermission(state) {
-      return state?.ldapPermissions?.SCHEDULE_UPDATE?.hasPermission;
+      return state?.ldapPermissions?.SCHEDULE_UPDATE?.hasPermission
     },
     getLDAPScheduleDeletePermission(state) {
-      return state?.ldapPermissions?.SCHEDULE_DELETE?.hasPermission;
+      return state?.ldapPermissions?.SCHEDULE_DELETE?.hasPermission
     },
     getWidgetsPermissions(state, getters) {
       return {
@@ -788,52 +788,52 @@ const store = {
       }
     },
     getEtsQuickScanPermissionSearch(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission;
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanPermissionCreate(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission;
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanPermissionUpdate(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission;
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanPermissionDelete(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission;
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanPermissionExport(state) {
-      return state?.etsQuickScanPermissions?.EXPORT?.hasPermission;
+      return state?.etsQuickScanPermissions?.EXPORT?.hasPermission
     },
     getEtsAttackVectorPermissionSearch(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission;
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
     getEtsAttackVectorPermissionCreate(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission;
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
     getEtsAttackVectorPermissionUpdate(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission;
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
     getEtsAttackVectorPermissionDelete(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission;
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
     getEtsAttackVectorPermissionExport(state) {
-      return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission;
+      return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
     },
     getEtsAttackVectorPermissionEnableDisable(state) {
       if (state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE) {
-        return true;
+        return true
       }
-      return false;
+      return false
     },
     getEtsQuickScanReportPermissionStat(state) {
-      return state?.etsQuickScanReportPermissions?.STATS?.hasPermission;
+      return state?.etsQuickScanReportPermissions?.STATS?.hasPermission
     },
     getEtsQuickScanReportPermissionCount(state) {
-      return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission;
+      return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission
     },
     getEtsQuickScanReportPermissionSearch(state) {
-      return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission;
+      return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanReportPermissionExport(state) {
-      return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission;
+      return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission
     },
     getAwarenessEducatorListGroupPermissions(state) {
       return state?.awarenessEducatorListGroupPermissions?.isOneOfThemPermitted
@@ -886,7 +886,7 @@ const store = {
   },
   mutations: {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
-      state.permissions = permissions;
+      state.permissions = permissions
     },
     SET_ALL_PERMISSIONS(state = {}) {
       const statePermissionKeys = [
@@ -934,46 +934,46 @@ const store = {
         'excludeIpAddressPermissions',
         'awarenessEducatorListGroupPermissions',
         'awarenessEducatorPermissions',
-        "etsQuickScanPermissions",
-        "etsAttackVectorPermissions",
-        "etsQuickScanReportPermissions",
+        'etsQuickScanPermissions',
+        'etsAttackVectorPermissions',
+        'etsQuickScanReportPermissions'
       ]
       statePermissionKeys.map((key) => {
-        const permissionObject = { ...state[key] };
+        const permissionObject = { ...state[key] }
         const permissions = Object.keys(permissionObject).filter(
-          (key) => key !== "isOneOfThemPermitted"
-        );
-        let isOneOfThemPermitted = false;
+          (key) => key !== 'isOneOfThemPermitted'
+        )
+        let isOneOfThemPermitted = false
         for (const permissionKey of permissions) {
-          const permission = permissionObject[permissionKey];
-          const { url, method } = permission;
-          permission.hasPermission = state.permissions.includes(`${url}|${method}`);
-          if (permission.hasPermission) isOneOfThemPermitted = true;
+          const permission = permissionObject[permissionKey]
+          const { url, method } = permission
+          permission.hasPermission = state.permissions.includes(`${url}|${method}`)
+          if (permission.hasPermission) isOneOfThemPermitted = true
         }
-        permissionObject.isOneOfThemPermitted = isOneOfThemPermitted;
-        state[key] = permissionObject;
-      });
-      localStorage.setItem("permissions", JSON.stringify(state));
+        permissionObject.isOneOfThemPermitted = isOneOfThemPermitted
+        state[key] = permissionObject
+      })
+      localStorage.setItem('permissions', JSON.stringify(state))
     },
     RESET_STATE(state) {
-      const defaultStateKeys = Object.keys(defaultState);
+      const defaultStateKeys = Object.keys(defaultState)
       for (const key of defaultStateKeys) {
-        Vue.set(state, key, defaultState[key]);
+        Vue.set(state, key, defaultState[key])
       }
-    },
+    }
   },
   actions: {
     setPermissionsList({ commit, dispatch }, payload = []) {
-      commit("SET_PERMISSIONS_LIST", payload);
-      dispatch("setAllPermissions");
+      commit('SET_PERMISSIONS_LIST', payload)
+      dispatch('setAllPermissions')
     },
     setAllPermissions({ commit }) {
-      commit("SET_ALL_PERMISSIONS");
+      commit('SET_ALL_PERMISSIONS')
     },
     resetState({ commit }) {
-      commit("RESET_STATE");
-    },
-  },
-};
+      commit('RESET_STATE')
+    }
+  }
+}
 
-export default store;
+export default store

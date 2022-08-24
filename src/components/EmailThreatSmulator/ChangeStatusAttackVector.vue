@@ -20,39 +20,39 @@
 </template>
 
 <script>
-import AppDialog from "../AppDialog";
-import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
-import { disableAttackVector, enableAttackVector } from "@/api/emailThreatSimlator";
+import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { disableAttackVector, enableAttackVector } from '@/api/emailThreatSimlator'
 export default {
-  name: "ChangeStatusAttackVector",
+  name: 'ChangeStatusAttackVector',
   components: {
     AppDialog,
-    AppDialogFooter,
+    AppDialogFooter
   },
   props: {
     status: {
-      type: Boolean,
+      type: Boolean
     },
     selectedItem: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   methods: {
     closeModal() {
-      this.$emit("handleCloseModal");
+      this.$emit('handleCloseModal')
     },
     handleStatus() {
-      const payload = { resourceIds: [] };
-      payload.resourceIds.push(this.selectedItem.pluginResourceId);
+      const payload = { resourceIds: [] }
+      payload.resourceIds.push(this.selectedItem.pluginResourceId)
       const requestFunc =
-        this.selectedItem.status == "Enabled"
+        this.selectedItem.status == 'Enabled'
           ? disableAttackVector(payload)
-          : enableAttackVector(payload);
+          : enableAttackVector(payload)
       requestFunc.then(() => {
-        this.$emit("handleSuccessStatusAction");
-      });
-      this.closeModal();
-    },
-  },
-};
+        this.$emit('handleSuccessStatusAction')
+      })
+      this.closeModal()
+    }
+  }
+}
 </script>

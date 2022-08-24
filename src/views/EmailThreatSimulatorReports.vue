@@ -22,43 +22,43 @@
 </template>
 
 <script>
-import SentAttacks from "@/components/EmailThreatSmulatorReports/SentAttacks";
-import Summary from "@/components/EmailThreatSmulatorReports/Summary";
-import { mapGetters } from "vuex";
-import KContainer from "@/components/KContainer/KContainer";
+import SentAttacks from '@/components/EmailThreatSmulatorReports/SentAttacks'
+import Summary from '@/components/EmailThreatSmulatorReports/Summary'
+import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
 
 export default {
-  name: "EMailThreatSimulatorReports",
+  name: 'EMailThreatSimulatorReports',
   components: {
     KContainer,
     SentAttacks,
-    Summary,
+    Summary
   },
   data() {
     return {
-      tab: "summary",
-    };
+      tab: 'summary'
+    }
   },
   computed: {
     ...mapGetters({
-      getEtsQuickScanReportPermissionStat: "permissions/getEtsQuickScanReportPermissionStat",
-      getEtsQuickScanReportPermissionSearch: "permissions/getEtsQuickScanReportPermissionSearch",
-    }),
+      getEtsQuickScanReportPermissionStat: 'permissions/getEtsQuickScanReportPermissionStat',
+      getEtsQuickScanReportPermissionSearch: 'permissions/getEtsQuickScanReportPermissionSearch'
+    })
   },
   methods: {
     changeTabStatus(tabStatus) {
-      this.tab = tabStatus;
-    },
+      this.tab = tabStatus
+    }
   },
   created() {
     if (!this.getEtsQuickScanReportPermissionStat && this.getEtsQuickScanReportPermissionSearch) {
-      this.tab = "sentAttacks";
+      this.tab = 'sentAttacks'
     } else if (
       this.getEtsQuickScanReportPermissionSearch &&
       !this.getEtsQuickScanReportPermissionSearch
     ) {
-      this.tab = "summary";
+      this.tab = 'summary'
     }
-  },
-};
+  }
+}
 </script>
