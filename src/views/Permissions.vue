@@ -21,7 +21,9 @@
       subtitle="The permission will deleted permanently"
       @changeStatus="closeDeleteDialog"
     >
-      <template v-slot:app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
+      <template v-slot:app-dialog-body>
+        {{ deletePermissionName }} will be deleted.
+      </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
           cancel-button-id="btn-cancel--delete-permission-popup"
@@ -52,8 +54,12 @@
           :addButton="tableOptions.addButton"
           :rowActions="tableOptions.rowActions"
           :axios-payload.sync="bodyData"
-          :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-          :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+          :saved-filters-local-storage-key="
+            tableOptions.savedFiltersLocalStorageKey
+          "
+          :saved-table-settings-local-storage-key="
+            tableOptions.savedTableSettingsLocalStorageKey
+          "
           :download-button="{ show: false }"
           @openPermissionModal="openPermissionModal"
           @refreshAction="getDatatableList"
@@ -89,38 +95,41 @@
 </template>
 
 <script>
-import DataTable from '../components/DataTable'
+import DataTable from "../components/DataTable";
 import {
   COMMON_CONSTANTS,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import labels from '@/model/constants/labels'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import NewPermissions from '@/components/Permissions/NewPermissions'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import labels from "@/model/constants/labels";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import NewPermissions from "@/components/Permissions/NewPermissions";
 import {
   deletePermission,
   getPermissionLogs,
   getPermissionAll,
-  getPermissionData
-} from '@/api/permissions'
-import AppDialog from '../components/AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import { mapGetters } from 'vuex'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+  getPermissionData,
+} from "@/api/permissions";
+import AppDialog from "../components/AppDialog";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+} from "@/utils/helperFunctions";
+import { mapGetters } from "vuex";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
 
 export default {
-  name: 'Permission',
+  name: "Permission",
   components: {
     DefaultButtonRowAction,
     NewPermissions,
     DataTable,
     AppDialogFooter,
-    AppDialog
+    AppDialog,
   },
   data() {
     return {
@@ -133,107 +142,114 @@ export default {
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES,
         columns: [
           {
             property: PROPERTY_STORE.ROLENAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: LABEL_STORE.ROLENAMEPERMISSION,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 240,
-            filterableType: 'text'
+            filterableType: "text",
           },
           {
             property: PROPERTY_STORE.USERCOUNT,
-            align: 'center',
+            align: "center",
             editable: false,
             label: LABEL_STORE.USERCOUNT,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'number',
+            type: "number",
             width: 140,
-            filterableType: 'number',
-            emptyText: 0
+            filterableType: "number",
+            emptyText: 0,
           },
           {
             property: PROPERTY_STORE.TENANTUSERCOUNT,
-            align: 'center',
+            align: "center",
             editable: false,
             label: labels.TenantUserCount,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'number',
+            type: "number",
             width: 180,
-            filterableType: 'number',
-            emptyText: 0
+            filterableType: "number",
+            emptyText: 0,
           },
           {
             property: PROPERTY_STORE.TYPENAME,
-            align: 'center',
+            align: "center",
             editable: false,
             label: LABEL_STORE.TYPENAME,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'badge',
+            type: "badge",
             width: 150,
-            filterableType: 'select',
+            filterableType: "select",
             filterableItems: [
-              { text: 'System', value: '1' },
-              { text: 'Custom', value: '2' }
+              { text: "System", value: "1" },
+              { text: "Custom", value: "2" },
             ],
-            filterableCustomFieldName: 'Type'
+            filterableCustomFieldName: "Type",
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: LABEL_STORE.CREATETIME,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'date'
-          }
+            type: "text",
+            filterableType: "date",
+          },
         ],
         addButton: {
           show: true,
           tooltip: labels.ADDAPERMISSION,
-          action: 'openPermissionModal',
-          id: 'btn-add--permissions',
-          disabled: !this.$store.getters['permissions/getSystemRolesCreatePermission']
+          action: "openPermissionModal",
+          id: "btn-add--permissions",
+          disabled: !this.$store.getters[
+            "permissions/getSystemRolesCreatePermission"
+          ],
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         empty: {
-          message: LABEL_STORE.PERMISSIONS
+          message: LABEL_STORE.PERMISSIONS,
         },
         rowActions: [
           {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            id: 'btn-empty--permissions',
-            action: 'editPermissions',
+            name: "Edit this row",
+            icon: "mdi-pencil",
+            id: "btn-empty--permissions",
+            action: "editPermissions",
             isNotShow: true,
-            disabled: !this.$store.getters['permissions/getSystemRolesUpdatePermission']
+            disabled: !this.$store.getters[
+              "permissions/getSystemRolesUpdatePermission"
+            ],
           },
           {
-            name: 'Delete',
-            id: 'btn-delete--permissions',
-            icon: 'mdi-delete',
-            action: 'delete',
-            disabled: !this.$store.getters['permissions/getSystemRolesDeletePermission']
-          }
-        ]
+            name: "Delete",
+            id: "btn-delete--permissions",
+            icon: "mdi-delete",
+            action: "delete",
+            disabled: !this.$store.getters[
+              "permissions/getSystemRolesDeletePermission"
+            ],
+          },
+        ],
       },
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
@@ -242,40 +258,42 @@ export default {
       isEdit: false,
       resourceId: null,
       permissions: [],
-      permissionEditData: null
-    }
+      permissionEditData: null,
+    };
   },
   computed: {
     ...mapGetters({
-      getSystemRolesUpdatePermission: 'permissions/getSystemRolesUpdatePermission',
-      getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
-    })
+      getSystemRolesUpdatePermission:
+        "permissions/getSystemRolesUpdatePermission",
+      getSystemRolesSearchPermission:
+        "permissions/getSystemRolesSearchPermission",
+    }),
   },
   created() {
-    this.getPermissions()
-    this.getDatatableList()
+    this.getPermissions();
+    this.getDatatableList();
   },
   methods: {
     handleEditAction({ resourceId } = {}) {
       if (this.getSystemRolesUpdatePermission) {
-        this.isEdit = true
-        this.selectedEditSmtpSettings = resourceId
-        this.toggleSmtpModalStatus()
+        this.isEdit = true;
+        this.selectedEditSmtpSettings = resourceId;
+        this.toggleSmtpModalStatus();
       }
     },
     closeDeleteDialog() {
-      this.deleteDialog = false
+      this.deleteDialog = false;
     },
     handleDeleteDialog() {
       deletePermission(this.deletePermissionId)
         .then(() => {
-          this.$refs.refPermissionList.unSelectRow(this.selectedItem)
-          this.deleteDialog = false
-          this.getDatatableList()
+          this.$refs.refPermissionList.unSelectRow(this.selectedItem);
+          this.deleteDialog = false;
+          this.getDatatableList();
         })
         .catch(() => {
           this.$store.dispatch(
-            'common/createSnackBar',
+            "common/createSnackBar",
             {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message:
@@ -284,160 +302,178 @@ export default {
                   error.response.data.validationMessages[0]) ||
                 error.response.data.message ||
                 error.response.data.Message,
-              icon: 'mdi-alert'
+              icon: "mdi-alert",
             },
             { root: true }
-          )
-        })
+          );
+        });
     },
     handleDelete(item) {
-      this.deletePermissionName = item.roleName
-      this.deletePermissionId = item?.resourceId
-      this.selectedItem = item
-      this.deleteDialog = true
+      this.deletePermissionName = item.roleName;
+      this.deletePermissionId = item?.resourceId;
+      this.selectedItem = item;
+      this.deleteDialog = true;
     },
     editPermissions(item) {
-      this.resourceId = item?.resourceId
-      this.isEdit = true
+      this.resourceId = item?.resourceId;
+      this.isEdit = true;
       getPermissionData(this.resourceId).then((response) => {
-        this.permissionEditData = response.data.data
-        this.togglePermissionModalStatus()
-      })
+        this.permissionEditData = response.data.data;
+        this.togglePermissionModalStatus();
+      });
     },
     getPermissions() {
       getPermissionAll().then((response) => {
-        let sortedPermissions = []
+        let sortedPermissions = [];
         response.data.data.map((item) => {
           switch (item.moduleName) {
-            case 'Threat Sharing':
-              sortedPermissions[0] = item
-              break
-            case 'Phishing Simulation':
-              sortedPermissions[1] = item
-              break
-            case 'Awareness Educator':
-              sortedPermissions[2] = item
-              break
-            case 'Incident Responder':
-              sortedPermissions[3] = item
-              break
-            case 'Phishing Reporter Add-In':
-              sortedPermissions[4] = item
-              break
-            case 'Company':
-              sortedPermissions[5] = item
-              break
+            case "Threat Sharing":
+              sortedPermissions[0] = item;
+              break;
+            case "Phishing Simulation":
+              sortedPermissions[1] = item;
+              break;
+            case "Awareness Educator":
+              sortedPermissions[2] = item;
+              break;
+            case "Incident Responder":
+              sortedPermissions[3] = item;
+              break;
+            case "Phishing Reporter Add-In":
+              sortedPermissions[4] = item;
+              break;
+            case "Email Threat Simulator":
+              sortedPermissions[5] = item;
+            case "Company":
+              sortedPermissions[6] = item;
+              break;
             default:
-              break
+              break;
           }
-        })
-        this.permissions = sortedPermissions.filter((item) => item)
+        });
+        this.permissions = sortedPermissions.filter((item) => item);
         function search_and_delete(obj, search_term) {
           if (obj && obj.children === null) {
-            delete obj['children']
+            delete obj["children"];
           }
           if (obj && !obj.permissionResourceId) {
-            obj.permissionResourceId = Math.random()
+            obj.permissionResourceId = Math.random();
           }
           if (obj && obj.children) {
-            obj.children = obj.children.filter((elem) => search_and_delete(elem, search_term))
+            obj.children = obj.children.filter((elem) =>
+              search_and_delete(elem, search_term)
+            );
           }
-          return obj
+          return obj;
         }
         for (let i = 0; i < this.permissions.length; i++) {
-          this.permissions[i] = search_and_delete(this.permissions[i], 'children')
+          this.permissions[i] = search_and_delete(
+            this.permissions[i],
+            "children"
+          );
         }
-      })
+      });
     },
     closeOverlayWithUpdate() {
       if (this.newPermissionsModalStatus) {
-        this.resourceId = null
-        this.isEdit = false
+        this.resourceId = null;
+        this.isEdit = false;
       }
-      this.newPermissionsModalStatus = !this.newPermissionsModalStatus
-      this.getDatatableList()
+      this.newPermissionsModalStatus = !this.newPermissionsModalStatus;
+      this.getDatatableList();
     },
     togglePermissionModalStatus() {
       if (this.newPermissionsModalStatus) {
-        this.resourceId = null
-        this.isEdit = false
+        this.resourceId = null;
+        this.isEdit = false;
       }
-      this.newPermissionsModalStatus = !this.newPermissionsModalStatus
+      this.newPermissionsModalStatus = !this.newPermissionsModalStatus;
     },
     openPermissionModal() {
-      this.togglePermissionModalStatus()
+      this.togglePermissionModalStatus();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
+      this.bodyData.pageNumber = pageNumber;
+      this.getDatatableList();
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
+      this.bodyData.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.getDatatableList();
     },
     resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.bodyData.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter(
+        (filterItem) => {
+          const column = this.tableOptions.columns.find(
+            (col) =>
+              col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          );
+          return column.filterableType;
+        }
+      );
       function myFunction(item) {
-        if (item.FieldName === 'TypeName') {
-          item.FieldName = 'Type'
+        if (item.FieldName === "TypeName") {
+          item.FieldName = "Type";
         }
       }
-      filterItems.forEach(myFunction)
-      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.getDatatableList()
+      filterItems.forEach(myFunction);
+      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems];
+      this.resetPageNumber();
+      this.getDatatableList();
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
+      this.bodyData.ascending = order === "ascending";
+      this.bodyData.orderBy = prop;
+      this.getDatatableList();
     },
     getDatatableList() {
-      this.loading = true
+      this.loading = true;
       getPermissionLogs(this.bodyData)
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
+              data: {
+                results,
+                totalNumberOfRecords,
+                totalNumberOfPages,
+                pageNumber,
+              },
+            },
+          } = response;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
+          this.tableData = results;
         })
         .catch(() => {})
         .finally(() => {
-          this.loading = false
-        })
+          this.loading = false;
+        });
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.bodyData
+      );
+      this.getDatatableList();
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      )
-      this.getDatatableList()
+      );
+      this.getDatatableList();
     },
     checkIfCanClosePermissionsModal() {
       if (this.$refs.permissionsModal) {
-        this.$refs.permissionsModal.closeOverlay()
+        this.$refs.permissionsModal.closeOverlay();
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

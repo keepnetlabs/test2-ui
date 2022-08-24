@@ -59,8 +59,12 @@
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
       :axios-payload.sync="bodyData"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -125,31 +129,38 @@
 </template>
 
 <script>
-import DataTable from '../DataTable'
-import NewScenario from './NewScenario'
-import DeleteScenario from './DeleteScenario'
+import DataTable from "../DataTable";
+import NewScenario from "./NewScenario";
+import DeleteScenario from "./DeleteScenario";
 import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import labels from '@/model/constants/labels'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
-import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
-import { mapGetters } from 'vuex'
-import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
-import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import labels from "@/model/constants/labels";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import {
+  exportScenarios,
+  getScenarioDataDetails,
+  getScenariosList,
+} from "@/api/scenarios";
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+} from "@/utils/helperFunctions";
+import PhishingScenariosFastLaunch from "@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch";
+import PhishingScenarioPreview from "@/components/PhishingScenarios/PhishingScenarioPreview";
+import { mapGetters } from "vuex";
+import useCallForLanguagesForTableFilter from "@/hooks/useCallForLanguagesForTableFilter";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
 
 export default {
-  name: 'EmailTemplates',
+  name: "EmailTemplates",
   components: {
     DefaultMenuRowAction,
     RowActionsMenu,
@@ -158,7 +169,7 @@ export default {
     PhishingScenariosFastLaunch,
     DataTable,
     DeleteScenario,
-    NewScenario
+    NewScenario,
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -176,7 +187,7 @@ export default {
       isDuplicate: false,
       scenarioId: null,
       labels,
-      selectedScenarioURL: '',
+      selectedScenarioURL: "",
       tableData: [],
       showDeleteModal: false,
       selectedScenario: {},
@@ -186,153 +197,163 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.NAME,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Scenario Name',
+            label: "Scenario Name",
             sortable: true,
             show: true,
-            type: 'text',
-            fixed: 'left',
+            type: "text",
+            fixed: "left",
             width: 240,
-            filterableType: 'text'
+            filterableType: "text",
           },
           {
-            property: 'method',
-            align: 'left',
+            property: "method",
+            align: "left",
             editable: false,
-            label: 'Method',
+            label: "Method",
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             fixed: false,
             width: 240,
-            filterableType: 'select',
+            filterableType: "select",
             filterableItems: [
-              { text: 'Click Only', value: 'Click-Only' },
-              { text: 'Data Submission', value: 'Data Submission' },
-              { text: 'Attachment', value: 'Attachment' }
-            ]
+              { text: "Click Only", value: "Click-Only" },
+              { text: "Data Submission", value: "Data Submission" },
+              { text: "Attachment", value: "Attachment" },
+            ],
           },
           {
             property: PROPERTY_STORE.LANGUAGE,
-            align: 'left',
+            align: "left",
             editable: false,
             label: labels.LANGUAGE,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             fixed: false,
             width: 175,
-            filterableType: 'select',
+            filterableType: "select",
             filterableItems: [],
-            filterableCustomFieldName: 'languageTypeResourceId'
+            filterableCustomFieldName: "languageTypeResourceId",
           },
           {
             property: PROPERTY_STORE.TAGS,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Tags',
+            label: "Tags",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'smallBadge',
+            type: "smallBadge",
             width: 150,
             hasTooltip: true,
-            filterableType: 'text',
-            filterableCustomFieldName: PROPERTY_STORE.TAGS
+            filterableType: "text",
+            filterableCustomFieldName: PROPERTY_STORE.TAGS,
           },
           {
-            property: 'difficulty',
-            align: 'center',
+            property: "difficulty",
+            align: "center",
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
             show: true,
-            type: 'status',
-            filterableType: 'select',
-            filterableItems: ['Easy', 'Medium', 'Hard'],
-            width: 180
+            type: "status",
+            filterableType: "select",
+            filterableItems: ["Easy", "Medium", "Hard"],
+            width: 180,
           },
           {
             property: PROPERTY_STORE.CREATEDBY,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Created By',
+            label: "Created By",
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 180,
-            filterableType: 'text'
+            filterableType: "text",
             // filterableType: 'select',
             // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'date'
-          }
+            type: "text",
+            filterableType: "date",
+          },
         ],
         rowActions: [
           {
             name: labels.FastLaunch,
-            icon: 'mdi-send',
-            action: 'on-fast-launch',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            icon: "mdi-send",
+            action: "on-fast-launch",
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosPreviewPermissions"
+            ],
           },
           {
             name: labels.Edit,
-            icon: 'mdi-pencil',
-            action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
+            icon: "mdi-pencil",
+            action: "handleEdit",
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosEditPermissions"
+            ],
           },
           {
             name: labels.Preview,
-            icon: 'mdi-eye',
-            action: 'handlePreview'
+            icon: "mdi-eye",
+            action: "handlePreview",
             // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
-            name: 'Duplicate',
-            icon: 'mdi-content-copy',
-            action: 'handleEdit'
+            name: "Duplicate",
+            icon: "mdi-content-copy",
+            action: "handleEdit",
             // disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
           },
           {
             name: labels.Delete,
-            icon: 'mdi-delete',
-            action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
-          }
+            icon: "mdi-delete",
+            action: "deleteAction",
+            disabled: !this.$store.getters[
+              "permissions/getPhishingScenariosDeletePermissions"
+            ],
+          },
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getPhishingScenariosExportPermissions']
+          disabled: !this.$store.getters[
+            "permissions/getPhishingScenariosExportPermissions"
+          ],
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         empty: {
           message: LABEL_STORE.NO_SCENARIO,
           btn: labels.New,
-          icon: 'mdi-plus',
-          id: 'btn-empty--scenarios'
+          icon: "mdi-plus",
+          id: "btn-empty--scenarios",
         },
         addButton: {
           show: true,
-          action: 'addAction',
-          tooltip: 'Add a Scenario',
-          id: 'btn-add--scenarios',
-          disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
-        }
+          action: "addAction",
+          tooltip: "Add a Scenario",
+          id: "btn-add--scenarios",
+          disabled: !this.$store.getters[
+            "permissions/getPhishingScenariosCreatePermissions"
+          ],
+        },
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
@@ -340,118 +361,119 @@ export default {
       serverSideProps: new ServerSideProps(),
       selectedScenarioHeader: null,
       templateHTML: null,
-      selectedPhishingScenario: {}
-    }
+      selectedPhishingScenario: {},
+    };
   },
   computed: {
     ...mapGetters({
-      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
+      getPhishingScenariosSearchPermissions:
+        "permissions/getPhishingScenariosSearchPermissions",
     }),
     isAttachmentBasedScenario() {
-      return this.selectedRow?.method === 'Attachment' || undefined
-    }
+      return this.selectedRow?.method === "Attachment" || undefined;
+    },
   },
   methods: {
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
-      this.isShowPreviewDialog = !this.isShowPreviewDialog
+      if (this.isShowPreviewDialog) this.selectedPhishingScenario = {};
+      this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.bodyData.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.getDatatableList()
+        ...searchFilter.filter.FilterGroups[0].FilterItems,
+      ];
+      this.resetPageNumber();
+      this.getDatatableList();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
+      this.bodyData.pageNumber = pageNumber;
+      this.getDatatableList();
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
+      this.bodyData.ascending = order === "ascending";
+      this.bodyData.orderBy = prop;
+      this.getDatatableList();
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
+      this.bodyData.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.getDatatableList();
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
         orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getDatatableList()
+        ascending: order === "ascending",
+      };
+      this.getDatatableList();
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
+      };
+      this.getDatatableList();
     },
     searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
+      this.bodyData = { ...this.bodyData, filter };
+      this.getDatatableList();
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refScenariosList.unSelectRow(row)
-      this.showDeleteModal = false
-      this.getDatatableList()
+      this.$refs.refScenariosList.unSelectRow(row);
+      this.showDeleteModal = false;
+      this.getDatatableList();
     },
     handleFastLaunch(row = {}) {
-      this.selectedRow = row
-      this.toggleShowFastLaunch()
+      this.selectedRow = row;
+      this.toggleShowFastLaunch();
     },
     handlePreview(row) {
-      this.selectedPhishingScenario = row
-      this.toggleShowPreviewDialog()
+      this.selectedPhishingScenario = row;
+      this.toggleShowPreviewDialog();
     },
     toggleShowFastLaunch() {
-      if (this.isShowFastLaunch) this.selectedRow = null
-      this.isShowFastLaunch = !this.isShowFastLaunch
+      if (this.isShowFastLaunch) this.selectedRow = null;
+      this.isShowFastLaunch = !this.isShowFastLaunch;
     },
     handleEdit(row, isDuplicate) {
-      this.selectedRow = row
-      this.editableFormValues = row
-      this.modalStatus = true
-      this.isEdit = true
-      this.isDuplicate = isDuplicate
-      this.scenarioId = row.resourceId
+      this.selectedRow = row;
+      this.editableFormValues = row;
+      this.modalStatus = true;
+      this.isEdit = true;
+      this.isDuplicate = isDuplicate;
+      this.scenarioId = row.resourceId;
     },
     checkIfCanCLoseNewScenarioModal() {
       if (this.$refs.newScenarioModal) {
-        this.$refs.newScenarioModal.changeNewScenarioModalStatus()
+        this.$refs.newScenarioModal.changeNewScenarioModalStatus();
       }
     },
     checkIfCanCloseFastLaunchModal() {
       if (this.$refs.fastLaunch) {
-        this.$refs.fastLaunch.closeOverlay()
+        this.$refs.fastLaunch.closeOverlay();
       }
     },
     changeNewScenarioModalStatus(status, restart) {
-      this.modalStatus = status
-      this.scenarioId = null
-      this.isEdit = false
-      this.isDuplicate = false
+      this.modalStatus = status;
+      this.scenarioId = null;
+      this.isEdit = false;
+      this.isDuplicate = false;
       if (!status) {
-        this.selectedRow = null
+        this.selectedRow = null;
       }
       if (restart) {
-        this.editableFormValues = {}
-        this.scenarioId = null
-        this.isEdit = false
-        this.isDuplicate = false
-        this.getDatatableList()
+        this.editableFormValues = {};
+        this.scenarioId = null;
+        this.isEdit = false;
+        this.isDuplicate = false;
+        this.getDatatableList();
       }
     },
     exportScenario({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -459,88 +481,97 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
+          orderBy: "CreateTime",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: this.bodyData.filter,
+        };
         exportScenarios(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `Scenarios.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+            exportType.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : exportType.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
     getDatatableList() {
-      this.loading = true
+      this.loading = true;
       if (this.getPhishingScenariosSearchPermissions) {
         getScenariosList(this.bodyData)
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
+              data: { data },
+            } = response;
+            const {
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+            } = response.data.data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            const { results = [] } = data;
+            this.tableData = results;
           })
           .catch(() => {
-            this.tableData = []
+            this.tableData = [];
           })
-          .finally(() => (this.loading = false))
+          .finally(() => (this.loading = false));
       } else {
-        this.$router.push('/')
+        this.$router.push("/");
       }
     },
     handleActionDelete(row) {
-      this.selectedScenario = row
-      this.showDeleteModal = true
+      this.selectedScenario = row;
+      this.showDeleteModal = true;
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.bodyData
+      );
+      this.getDatatableList();
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      )
-      this.getDatatableList()
-    }
+      );
+      this.getDatatableList();
+    },
   },
   created() {
-    this.callForLanguages('refScenariosList')
+    this.callForLanguages("refScenariosList");
     getScenarioDataDetails()
       .then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {
           methodTypes: [],
-          difficultyTypes: []
-        }
+          difficultyTypes: [],
+        };
         this.$set(
           this.tableOptions.columns[1],
-          'filterableItems',
+          "filterableItems",
           this.scenarioDetailsLookup.methodTypes.map((item) => {
-            return { text: item.text, value: item.text }
+            return { text: item.text, value: item.text };
           })
-        )
+        );
         this.$set(
           this.tableOptions.columns[3],
-          'filterableItems',
+          "filterableItems",
           this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-            return { text: item.text, value: item.text }
+            return { text: item.text, value: item.text };
           })
-        )
+        );
       })
       .finally(() => {
-        this.getDatatableList()
-      })
-  }
-}
+        this.getDatatableList();
+      });
+  },
+};
 </script>
