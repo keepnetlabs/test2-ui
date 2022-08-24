@@ -129,7 +129,7 @@
                 <make-available-for
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
-                  v-model="formValues.availableForRequests"
+                  v-model="availableForRequests"
                   sub-title="Select companies that should see this scenario in their libraries"
                 />
               </v-form>
@@ -687,7 +687,6 @@ export default {
         difficultyTypeId: '1',
         emailTemplateId: null,
         landingPageTemplateId: null,
-        availableForRequests: [],
         languageTypeResourceId: '862249c19aad',
         tags: []
       },
@@ -801,7 +800,7 @@ export default {
       const currentStep = JSON.parse(JSON.stringify(this.step))
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
-        this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (currentStep === 1) {
@@ -886,11 +885,15 @@ export default {
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
+      const payload = {
+        ...this.formValues,
+        availableForRequests: this.availableForRequests
+      }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(this.formValues, this.scenarioId)
+        updateScenario(payload, this.scenarioId)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -898,7 +901,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(this.formValues)
+        createScenario(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -1041,7 +1044,7 @@ export default {
               availableForList
             )
             if (!availableForListFromBackend.length) {
-              this.formValues.availableForRequests = [
+              this.availableForRequests = [
                 {
                   id: 'MyCompanyOnly',
                   label: 'My company only',
@@ -1050,10 +1053,10 @@ export default {
                 }
               ]
             } else {
-              this.formValues.availableForRequests = availableForListFromBackend
+              this.availableForRequests = availableForListFromBackend
             }
           } else {
-            this.formValues.availableForRequests = [
+            this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
                 label: 'My company only',

@@ -1,15 +1,5 @@
 <template>
-  <app-modal
-    :status="status"
-    icon-name="mdi-email"
-    :title="
-      !isEdit
-        ? 'New Email Template'
-        : isDuplicate
-        ? 'Duplicate Email Template'
-        : 'Edit Email Template'
-    "
-  >
+  <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -769,8 +759,14 @@ export default {
       }, {})
     }
   },
-
   computed: {
+    getTitle() {
+      return this.isEdit
+        ? 'Edit Email Template'
+        : this.isDuplicate
+        ? 'Duplicate Email Template'
+        : 'New Email Template'
+    },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
     },
