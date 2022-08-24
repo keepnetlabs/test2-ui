@@ -84,7 +84,7 @@ export function urlWithPort(value, message = 'Invalid URL') {
 
 export function domain(value, message) {
   value = getValue(value)
-  return /^[a-zA-Z0-9]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
+  return /^[a-zA-Z0-9\-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
 }
 
 export function phone(value, message) {
