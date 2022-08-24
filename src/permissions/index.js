@@ -1393,5 +1393,91 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  ETS_QUICK_SCAN_PERMISSIONS: {
+    SEARCH: {
+      url: `quick-scan/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `quick-scan`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `quick-scan/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `quick-scan/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `quick-scan/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  ETS_ATTACK_VECTOR_PERMISSIONS: {
+    SEARCH: {
+      url: `plugin/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `plugin`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `plugin/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `plugin{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `plugin/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    ENABLE: {
+      url: `plugin/active`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DISABLE: {
+      url: `plugin/passive`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    }
+  },
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS: {
+    STATS: {
+      url: `quick-scan-report/stats/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    COUNT_AND_SCORE: {
+      url: `quick-scan-report/counts-and-score/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SEARCH: {
+      url: `quick-scan-item/{resourceId}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT: {
+      url: `quick-scan-item/{resourceId}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }

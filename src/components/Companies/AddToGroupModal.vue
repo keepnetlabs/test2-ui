@@ -46,7 +46,7 @@
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
         <v-btn
-          id="btn-back--company-add-to-group-modal"
+          id="btn-cancel--company-add-to-group-modal"
           @click="changeStatus(false)"
           color="#f56c6c"
           class="delete-user__footer-button"

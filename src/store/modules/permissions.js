@@ -44,7 +44,10 @@ const {
   ROLES_PERMISSIONS,
   LDAP_PERMISSIONS,
   AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
-  AWARENESS_EDUCATOR_PERMISSIONS
+  AWARENESS_EDUCATOR_PERMISSIONS,
+  ETS_QUICK_SCAN_PERMISSIONS,
+  ETS_ATTACK_VECTOR_PERMISSIONS,
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -92,7 +95,10 @@ const defaultState = {
   ldapPermissions: LDAP_PERMISSIONS,
   excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
   awarenessEducatorListGroupPermissions: AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
-  awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS
+  awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
+  etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
+  etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
+  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -781,6 +787,54 @@ const store = {
         topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions
       }
     },
+    getEtsQuickScanPermissionSearch(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionCreate(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionUpdate(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionDelete(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionExport(state) {
+      return state?.etsQuickScanPermissions?.EXPORT?.hasPermission
+    },
+    getEtsAttackVectorPermissionSearch(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionCreate(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionUpdate(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionDelete(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionExport(state) {
+      return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
+    },
+    getEtsAttackVectorPermissionEnableDisable(state) {
+      if (state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE) {
+        return true
+      }
+      return false
+    },
+    getEtsQuickScanReportPermissionStat(state) {
+      return state?.etsQuickScanReportPermissions?.STATS?.hasPermission
+    },
+    getEtsQuickScanReportPermissionCount(state) {
+      return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission
+    },
+    getEtsQuickScanReportPermissionSearch(state) {
+      return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanReportPermissionExport(state) {
+      return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission
+    },
     getAwarenessEducatorListGroupPermissions(state) {
       return state?.awarenessEducatorListGroupPermissions?.isOneOfThemPermitted
     },
@@ -879,7 +933,10 @@ const store = {
         'ldapPermissions',
         'excludeIpAddressPermissions',
         'awarenessEducatorListGroupPermissions',
-        'awarenessEducatorPermissions'
+        'awarenessEducatorPermissions',
+        'etsQuickScanPermissions',
+        'etsAttackVectorPermissions',
+        'etsQuickScanReportPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

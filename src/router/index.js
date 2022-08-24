@@ -38,6 +38,8 @@ import TrainingList from '@/views/TrainingList'
 import Enrollments from '@/views/Enrollments'
 import Certificates from '@/views/Certificates'
 import Scorm from '@/views/Scorm'
+import EmailThreatSimulator from '@/views/EmailThreatSimulator'
+import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -443,6 +445,30 @@ const router = new Router({
             parentName: 'Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
+        },
+        {
+          path: '/email-threat-simulator',
+          name: 'Email Threat Simulator',
+          component: EmailThreatSimulator,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true,
+          props: true
+        },
+        {
+          path: '/email-threat-simulator/report/:id',
+          name: 'Scan Report',
+          component: EmailThreatSimulatorReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Email Threat Simulator',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true,
+          props: true
         }
       ]
     },

@@ -1,15 +1,5 @@
 <template>
-  <app-modal
-    :status="status"
-    icon-name="mdi-email"
-    :title="
-      !isEdit
-        ? 'New Email Template'
-        : isDuplicate
-        ? 'Duplicate Email Template'
-        : 'Edit Email Template'
-    "
-  >
+  <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -232,6 +222,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
@@ -341,6 +332,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
+        backButton: 'btn-back--add-or-edit-email-templates-modal',
+        nextButton: 'btn-next--add-or-edit-email-templates-modal',
+        saveButton: 'btn-save--add-or-edit-email-templates-modal'
+      },
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -460,9 +457,6 @@ export default {
     }
   },
   methods: {
-    onCloseRenameModal() {
-      this.isRenameModalVisible = false
-    },
     handleDeleteAttachment() {
       this.formValues.attachmentFiles = []
       this.isAddedNewPhishingFile = false
@@ -765,8 +759,14 @@ export default {
       }, {})
     }
   },
-
   computed: {
+    getTitle() {
+      return this.isEdit
+        ? 'Edit Email Template'
+        : this.isDuplicate
+        ? 'Duplicate Email Template'
+        : 'New Email Template'
+    },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
     },
@@ -775,6 +775,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
+        backButton: 'btn-duplicate-back--email-templates-modal',
+        nextButton: 'btn-duplicate-next--email-templates-modal',
+        saveButton: 'btn-duplicate-save--email-templates-modal'
+      }
+    }
     this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {

@@ -111,6 +111,9 @@ export const LABEL_STORE = {
   NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification templates',
   NO_AUDIT: 'You do not have any audit logs',
   NO_SCENARIO: 'You do not have any scenarios',
+  NO_SCAN: 'You do not have any scan',
+  NO_ATTACK_VECTOR: 'You do not have any attack vector',
+  NO_SENT_ATTACK: 'You do not have any Sent Attacks',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -366,7 +369,10 @@ export const TABLE_SETTINGS_KEYS = {
   DOMAINS: 'DomainsListTableSettingsKey',
   LANDINGPAGES: 'LandingPagesTableSettingsKey',
   SCENARIOS: 'Scenarios',
-  LASTLAUNCH: 'lastLaunch'
+  LASTLAUNCH: 'lastLaunch',
+  ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
+  ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorSettings',
+  ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -524,7 +530,10 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
   DOMAINS: 'DomainsSearchContainerKeys',
   LANDINGPAGES: 'LandingPagesSearchContainerKeys',
-  SCENARIOS: 'ScenariosSearchKeys'
+  SCENARIOS: 'ScenariosSearchKeys',
+  ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
+  ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
+  ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackKeys'
 }
 
 export const INTEGRATION_TYPES = {

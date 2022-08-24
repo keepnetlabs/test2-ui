@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :disabled="isDisabled" @click="$emit('on-click', scope)">
+  <v-list-item :id="id" :disabled="isDisabled" @click="$emit('on-click', scope)">
     <v-list-item-title>
       <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
       <span>{{ text }}</span>
@@ -26,6 +26,9 @@ export default {
     checkIsOwnerProperty: {
       type: Boolean,
       default: true
+    },
+    id: {
+      type: String
     }
   },
   computed: {

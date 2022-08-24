@@ -6,7 +6,7 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
+    row-key="trainingId"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"

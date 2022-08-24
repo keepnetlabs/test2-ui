@@ -14,6 +14,7 @@
         <slot name="header-right">
           <v-btn
             v-if="detailable"
+            :id="detailableButtonId"
             class="campaign-manager-summary-card__button mr-6"
             rounded
             outlined
@@ -82,6 +83,9 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    detailableButtonId: {
+      type: String
     }
   },
   methods: {

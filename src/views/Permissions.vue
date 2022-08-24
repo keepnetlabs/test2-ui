@@ -68,6 +68,7 @@
         >
           <template #datatable-row-actions="{ scope }">
             <DefaultButtonRowAction
+              :id="tableOptions.rowActions[0].id"
               :icon="tableOptions.rowActions[0].icon"
               :text="tableOptions.rowActions[0].name"
               :scope="scope"
@@ -75,6 +76,7 @@
               @on-click="editPermissions(scope.row)"
             />
             <DefaultButtonRowAction
+              :id="tableOptions.rowActions[1].id"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
               :scope="scope"
@@ -324,8 +326,10 @@ export default {
             case 'Phishing Reporter Add-In':
               sortedPermissions[4] = item
               break
-            case 'Company':
+            case 'Email Threat Simulator':
               sortedPermissions[5] = item
+            case 'Company':
+              sortedPermissions[6] = item
               break
             default:
               break

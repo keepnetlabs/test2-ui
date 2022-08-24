@@ -12,8 +12,8 @@
     <template #app-dialog-footer>
       <AppDialogFooter
         type="delete"
-        cancel-button-id="btn-cancel--campaign-manager-popup"
-        confirm-button-id="btn-delete--campaign-manager-popup"
+        cancel-button-id="btn-cancel--siem-integrations-popup"
+        confirm-button-id="btn-delete--siem-integrations-popup"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
@@ -76,7 +76,7 @@ export default {
       this.isActionButtonDisabled = true
       deleteSIEMIntegration(this.item.resourceId)
         .then(() => {
-          this.$emit('on-delete')
+          this.$emit('on-delete', this.item)
         })
         .finally(() => {
           this.isActionButtonDisabled = false

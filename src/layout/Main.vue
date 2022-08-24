@@ -229,6 +229,20 @@
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
+            v-if="getEtsQuickScanPermissionSearch"
+            to="/email-threat-simulator"
+            id="btn--link-navigator-menu-email-threat-simulator"
+            :class="[
+              'menu-link-default',
+              (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') &&
+                'active-link'
+            ]"
+            @click.native="deleteTSVuexData"
+          >
+            <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />
+          </router-link>
+
+          <router-link
             v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
@@ -706,6 +720,7 @@ import {
   mdiHome,
   mdiChevronRight,
   mdiFlag,
+  mdiShieldHalfFull,
   mdiFlash,
   mdiHook,
   mdiChevronDown,
@@ -762,6 +777,7 @@ export default {
         mdiHome,
         mdiChevronRight,
         mdiFlag,
+        mdiShieldHalfFull,
         mdiFlash,
         mdiHook,
         mdiChevronDown,
@@ -925,6 +941,7 @@ export default {
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
       companyLicense: 'whitelabel/getCompanyLicense',
       getDashboardPermissions: 'permissions/getDashboardPermissions',
+      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch',
       getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',

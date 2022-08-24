@@ -129,7 +129,7 @@
                 <make-available-for
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
-                  v-model="formValues.availableForRequests"
+                  v-model="availableForRequests"
                   sub-title="Select companies that should see this scenario in their libraries"
                 />
               </v-form>
@@ -598,6 +598,7 @@
         :max-step="isAttachmentBasedScenario ? 3 : 4"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
         @on-next="nextStep(+1)"
@@ -645,6 +646,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
+        backButton: 'btn-back--add-or-edit-scenario-modal',
+        nextButton: 'btn-next--add-or-edit-scenario-modal',
+        saveButton: 'btn-save--add-or-edit-scenario-modal'
+      },
       isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
@@ -680,7 +687,6 @@ export default {
         difficultyTypeId: '1',
         emailTemplateId: null,
         landingPageTemplateId: null,
-        availableForRequests: [],
         languageTypeResourceId: '862249c19aad',
         tags: []
       },
@@ -794,7 +800,7 @@ export default {
       const currentStep = JSON.parse(JSON.stringify(this.step))
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
-        this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (currentStep === 1) {
@@ -879,11 +885,15 @@ export default {
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
+      const payload = {
+        ...this.formValues,
+        availableForRequests: this.availableForRequests
+      }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(this.formValues, this.scenarioId)
+        updateScenario(payload, this.scenarioId)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -891,7 +901,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(this.formValues)
+        createScenario(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -1001,6 +1011,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--scenario-modal',
+        backButton: 'btn-duplicate-back--scenario-modal',
+        nextButton: 'btn-duplicate-next--scenario-modal',
+        saveButton: 'btn-duplicate-save--scenario-modal'
+      }
+    }
     this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -1026,7 +1044,7 @@ export default {
               availableForList
             )
             if (!availableForListFromBackend.length) {
-              this.formValues.availableForRequests = [
+              this.availableForRequests = [
                 {
                   id: 'MyCompanyOnly',
                   label: 'My company only',
@@ -1035,10 +1053,10 @@ export default {
                 }
               ]
             } else {
-              this.formValues.availableForRequests = availableForListFromBackend
+              this.availableForRequests = availableForListFromBackend
             }
           } else {
-            this.formValues.availableForRequests = [
+            this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
                 label: 'My company only',

@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    row-key="enrollmentId"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"

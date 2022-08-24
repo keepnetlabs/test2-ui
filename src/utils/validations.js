@@ -84,7 +84,7 @@ export function urlWithPort(value, message = 'Invalid URL') {
 
 export function domain(value, message) {
   value = getValue(value)
-  return /^[a-zA-Z0-9]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
+  return /^[a-zA-Z0-9\-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
 }
 
 export function phone(value, message) {
@@ -199,4 +199,9 @@ export function isDomainUrl(value, message = 'Invalid URL') {
       value
     ) || message
   )
+}
+export function numberRangeRule(value, min = 0, max = 999) {
+  if (value == '' && value == null) return false
+  if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
+  return `Value has to be between ${min} and ${max}`
 }

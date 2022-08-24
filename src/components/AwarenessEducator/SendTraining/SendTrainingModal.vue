@@ -264,29 +264,6 @@ export default {
         this.trainingPreviewData.trainingUrl = data.trainingUrl
       })
     },
-    callForSelectedTargetGroups(ids) {
-      return searchTargetGroups({
-        pageNumber: 1,
-        pageSize: 2000000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [{ FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }],
-              FilterGroups: []
-            }
-          ]
-        }
-      })
-    },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },
@@ -321,35 +298,6 @@ export default {
               scrollToComponent(el)
             })
           }
-
-          // this.isActionButtonDisabled = true
-          // this.callForSelectedTargetGroups(ids)
-          //   .then((response) => {
-          //     const { results } = response?.data?.data || []
-          //     //User must have user count greater than 0
-          //     const totalUserCount = results.reduce((acc, item) => {
-          //       acc += item.userCount
-          //       return acc
-          //     }, 0)
-
-          //   if (totalUserCount) {
-          //     refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
-          //     refSendTrainingSelectUsers.isTargetGroupsValid = true
-          //     this.step += flag
-          //   } else {
-          //     refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
-          //     refSendTrainingSelectUsers.isTargetGroupsValid = false
-          //     this.$nextTick(() => {
-          //       const el = refSendTrainingSelectUsers.$refs.refForm.$el.querySelector(
-          //         '.error--text'
-          //       )
-          //       scrollToComponent(el)
-          //     })
-          //   }
-          //   refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
-          //   refSendTrainingSelectUsers.formData.selectedTargetGroups = results
-          // })
-          // .finally(() => (this.isActionButtonDisabled = false))
           this.isActionButtonDisabled = false
         } else if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 1) {
           const {

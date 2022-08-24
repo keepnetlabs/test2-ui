@@ -13,8 +13,8 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
-        cancel-button-id="btn-cancel--integrations-popup"
-        confirm-button-id="btn-delete--integrations-popup"
+        cancel-button-id="btn-cancel--domains-popup"
+        confirm-button-id="btn-delete--domains-popup"
         type="delete"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"

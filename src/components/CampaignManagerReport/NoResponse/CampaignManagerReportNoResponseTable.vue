@@ -92,10 +92,9 @@ export default {
         rowActions: [
           {
             name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-opened',
+            id: 'btn-resend--row-actions-campaign-manager-report-no-response',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
         ]
       }

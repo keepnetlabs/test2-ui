@@ -84,7 +84,10 @@ export default {
       })
     },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      if (forceUpdate) {
+        this.$refs.refTable.$refs.refTable.unSelectRow(this.selectedRow)
+        this.$refs.refTable.callForData()
+      }
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
       this.isShowDeleteEnrollmentsDialog = !this.isShowDeleteEnrollmentsDialog
     },
