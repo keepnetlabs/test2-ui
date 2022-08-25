@@ -77,7 +77,7 @@
                 </v-alert>
                 <v-form ref="refFormStep1" lazy-validation class="mt-8">
                   <form-group
-                    title="Scenario Name"
+                    title="Test Email Address"
                     sub-title="Enter email address that you created for test purposes"
                     hint
                   >
@@ -475,7 +475,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
         ]
       },
       permissionModalStatus: true,
@@ -515,12 +515,6 @@ export default {
         getQuickScanCount().then((response) => {
           const data = response.data
           this.totalCountMassage = data.message
-
-          // this.$store.dispatch("common/createSnackBar", {
-          //   message: data.message,
-          //   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          //   icon: "mdi-alert-circle",
-          // });
         })
       }
     },

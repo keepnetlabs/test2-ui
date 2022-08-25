@@ -1,5 +1,24 @@
 <template>
   <div class="new-attack-vector">
+    <app-dialog
+      icon="mdi-power-standby"
+      title="Enable Attack Vectors?"
+      v-if="showActiveStatusModal"
+      :status="showActiveStatusModal"
+    >
+      <template v-slot:app-dialog-body>
+        <span>
+          Are you sure you want to enable these attack vectors?
+        </span>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <app-dialog-footer
+          type="confirm"
+          @handleClose=";(showActiveStatusModal = false), (formValues.isActive = false)"
+          @handleConfirm="showActiveStatusModal = false"
+        />
+      </template>
+    </app-dialog>
     <app-modal :status="status" icon-name="mdi-shield-half-full" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-form ref="refAttackVectorForm">
@@ -49,7 +68,7 @@
               width="216"
               hint="Max. file size 200MB"
               ref="refFileUpload"
-              :extensions="['txt', 'zip']"
+              :extensions="[]"
               @inputFile="onFileChanged"
               :size="200"
               required
@@ -61,7 +80,12 @@
             sub-title="This attack vector will be included to continous scans and new scans."
             hint
           >
-            <v-switch v-model="formValues.isActive" color="#2196F3" hide-details>
+            <v-switch
+              v-model="formValues.isActive"
+              @change="isActiveChange()"
+              color="#2196F3"
+              hide-details
+            >
               <template #prepend>
                 <v-label>
                   <span v-if="formValues.isActive" class="is-active-label">ENABLED</span>
@@ -96,6 +120,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import FileUpload from '@/components/Common/FileUpload/FileUpload'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import {
   getAttackVectorCreate,
@@ -104,6 +129,7 @@ import {
 } from '@/api/emailThreatSimlator'
 import { getLookupListByTypeId } from '@/api/common'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AppDialog from '@/components/AppDialog'
 
 export default {
   name: 'NewScan',
@@ -111,7 +137,9 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    FileUpload
+    FileUpload,
+    AppDialog,
+    AppDialogFooter
   },
   data() {
     return {
@@ -132,7 +160,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage('Vector Name'))
         ]
       },
       numberRangeRule: {
@@ -141,7 +169,8 @@ export default {
         rules: [(v) => Validations.numberRangeRule(v, 1, 10)]
       },
       isSubmitDisabled: false,
-      isFormValuesChanged: false
+      isFormValuesChanged: false,
+      showActiveStatusModal: false
     }
   },
   props: {
@@ -186,6 +215,11 @@ export default {
           this.$emit('changeNewAttackVectorModalStatus', false)
         }
       })
+    },
+    isActiveChange() {
+      if (this.formValues.isActive) {
+        this.showActiveStatusModal = true
+      }
     },
     submit() {
       if (this.$refs.refAttackVectorForm.validate()) {
