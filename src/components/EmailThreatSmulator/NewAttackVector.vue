@@ -125,7 +125,8 @@ import * as Validations from '@/utils/validations'
 import {
   getAttackVectorCreate,
   getAttackVectorUpdate,
-  getAttackVectorById
+  getAttackVectorById,
+  getLookupNameList
 } from '@/api/emailThreatSimlator'
 import { getLookupListByTypeId } from '@/api/common'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -298,20 +299,23 @@ export default {
     }
   },
   created() {
-    getLookupListByTypeId(24).then((categories) => {
-      const categoryList = categories.data.data
-      this.categoryResources = categoryList
-      this.formValues.categoryResourceId = categoryList[0].resourceId
-      if (this.isEdit) {
-        getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
-          const details = response.data.data
-          this.formValues.categoryResourceId = categoryList.find(
-            (x) => x.resourceId == details.categoryResourceId
-          ).resourceId
-          details.isActive = details.status == 'Enabled' ? true : false
-          this.formValues = details
-        })
-      }
+    getLookupNameList().then((categories) => {
+      const lookupId = categories.data.data.find((x) => x.name == 'PluginCategory')
+      getLookupListByTypeId(lookupId.id).then((categories) => {
+        const categoryList = categories.data.data
+        this.categoryResources = categoryList
+        this.formValues.categoryResourceId = categoryList[0].resourceId
+        if (this.isEdit) {
+          getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
+            const details = response.data.data
+            this.formValues.categoryResourceId = categoryList.find(
+              (x) => x.resourceId == details.categoryResourceId
+            ).resourceId
+            details.isActive = details.status == 'Enabled' ? true : false
+            this.formValues = details
+          })
+        }
+      })
     })
   }
 }
