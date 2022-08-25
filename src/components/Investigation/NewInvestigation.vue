@@ -373,7 +373,8 @@ import {
   getSelectSearchPayload,
   getTimeZoneForMoment,
   scrollToComponent,
-  isDifferent
+  isDifferent,
+  convertTo12Hr
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -419,6 +420,7 @@ export default {
 
   data() {
     return {
+      storageTimeFormat: localStorage.getItem('selectedTimeFormat'),
       initialFormValues: null,
       warningMessage: null,
       saveDisable: false,
@@ -1211,7 +1213,23 @@ export default {
           }
         }
 
-        const [startDate, endDate] = this.date
+        let startDate = this.date[0]
+        let endDate = this.date[1]
+
+        if (!this.storageTimeFormat) {
+          const startDateTime = convertTo12Hr(startDate.split(' ')[1])
+          const endDateTime = convertTo12Hr(endDate.split(' ')[1])
+
+          const startDateParts = startDate.split(' ')
+          const endDateParts = endDate.split(' ')
+
+          startDateParts[1] = startDateTime
+          endDateParts[1] = endDateTime
+
+          startDate = startDateParts.join(' ')
+          endDate = endDateParts.join(' ')
+        }
+
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),
