@@ -287,6 +287,7 @@ export default {
             return acc
           }, 0)
           if (totalUserCount) {
+            refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
             refSendTrainingSelectUsers.isTargetGroupsValid = true
             this.step += flag
