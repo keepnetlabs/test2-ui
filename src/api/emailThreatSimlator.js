@@ -1,6 +1,4 @@
 import emailThreatSimlatorRequest from '@/utils/emailThreatSimulatorRequest'
-import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-import uploadRequest from '@/utils/uploadRequest'
 import testRequest from '@/utils/testRequest'
 
 export function getQuickScanList(payload) {
@@ -74,4 +72,7 @@ export function exportQuickScanReportList(payload, resourceId) {
   return emailThreatSimlatorRequest.post(`/quick-scan-item/${resourceId}/search/export`, payload, {
     responseType: 'blob'
   })
+}
+export function getLookupNameList() {
+  return testRequest.get(`/codetypes`)
 }
