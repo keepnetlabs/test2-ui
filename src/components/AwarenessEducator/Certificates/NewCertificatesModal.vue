@@ -39,7 +39,9 @@
           sub-title="Companies that will see this setting in their libraries"
         />
         <FormGroup :title="labels.CertificateTemplate"> </FormGroup>
+        <DatatableLoading v-if="loading" :loading="loading" />
         <EmailTemplate
+          v-else
           ref="refEmailTemplate"
           onlyGrapes="true"
           :is-edit="!!selectedItem"
@@ -77,9 +79,11 @@ import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
 import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
 import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'NewCertificatesModal',
   components: {
+    DatatableLoading,
     EmailTemplate,
     MakeAvailableFor,
     InputDescription,
@@ -99,6 +103,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       labels,
       saveDisable: false,
       activeBlockManagerComponents: {
@@ -136,8 +141,11 @@ export default {
     }
   },
   created() {
-    this.callForData()
-    this.getDefaultCertificateTemplate()
+    if (this.selectedItem) {
+      this.callForData()
+    } else {
+      this.getDefaultCertificateTemplate()
+    }
   },
   methods: {
     getDefaultCertificateTemplate() {
@@ -148,15 +156,16 @@ export default {
       })
     },
     callForData() {
-      if (this.selectedItem) {
-        AwarenessEducatorService.getCertificate(this.selectedItem.id).then((response) => {
+      this.loading = true
+      AwarenessEducatorService.getCertificate(this.selectedItem.id)
+        .then((response) => {
           const { name, description, template, availableForList } = response?.data?.data
           this.formData.name = name
           this.formData.description = description
           this.formData.template = template
           this.setMakeAvailableForData(availableForList)
         })
-      }
+        .finally(() => (this.loading = false))
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
