@@ -25,7 +25,7 @@
     />
     <data-table
       v-if="getEtsAttackVectorPermissionSearch"
-      id="quick-scan-data-table"
+      id="attack-vectors-data-table"
       class="attacks-vector"
       ref="refAttacksVectorList"
       is-server-side
@@ -268,14 +268,14 @@ export default {
           message: LABEL_STORE.NO_ATTACK_VECTOR,
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--scan',
+          id: 'btn-empty--attack-vector',
           disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionCreate']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Attack Vector',
-          id: 'btn-add--scan',
+          id: 'btn-add--attack-vector-empty',
           disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionCreate']
         }
       },
@@ -362,7 +362,6 @@ export default {
       this.getDatatableList()
     },
     handleToggleRowSelection(row) {
-      alert(row)
       this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false)
     },
     handleEditAttackVector(row) {

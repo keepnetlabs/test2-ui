@@ -229,7 +229,7 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--scan',
-          disabled: !this.$store.getters['permissions/getsQuickScanPermissionCreate']
+          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionCreate']
         },
         addButton: {
           show: true,
