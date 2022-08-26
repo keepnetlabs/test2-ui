@@ -1213,22 +1213,7 @@ export default {
           }
         }
 
-        let startDate = this.date[0]
-        let endDate = this.date[1]
-
-        if (!this.storageTimeFormat) {
-          const startDateTime = convertTo12Hr(startDate.split(' ')[1])
-          const endDateTime = convertTo12Hr(endDate.split(' ')[1])
-
-          const startDateParts = startDate.split(' ')
-          const endDateParts = endDate.split(' ')
-
-          startDateParts[1] = startDateTime
-          endDateParts[1] = endDateTime
-
-          startDate = startDateParts.join(' ')
-          endDate = endDateParts.join(' ')
-        }
+        const [startDate, endDate] = this.date
 
         const newInvestigationObj = {
           headers: this.filterData(headersData),
