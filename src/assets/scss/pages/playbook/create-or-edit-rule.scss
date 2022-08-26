@@ -124,7 +124,7 @@
 .wizard {
     align-self: stretch;
     box-shadow: none;
-
+  box-shadow: none !important;
     &__header.v-stepper__header {
         justify-content: flex-start;
         padding: 0 6rem;
