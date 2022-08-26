@@ -19,8 +19,26 @@
     </div>
   </div>
 </template>
+
 <script>
+// import { getSystemUserSettings } from '@/api/settings'
+
 export default {
   name: 'App'
+  // created() {
+  //   this.$store.dispatch('login/getWhiteLabelByUrl')
+  //   this.getSystemUserSettings()
+  // },
+  // methods: {
+  //   getSystemUserSettings() {
+  //     getSystemUserSettings()
+  //       .then((response) => {
+  //         this.formValues = response.data.data
+  //       })
+  //       .finally(() => {
+  //         this.loadingSettingsModal = false
+  //       })
+  //   }
+  // }
 }
 </script>
