@@ -93,6 +93,7 @@
                       :on-upload-progress="onUploadProgress"
                       :is-loading="step1Loading"
                       :size="200"
+                      :is-backend-parsed="isBackendParsed"
                     />
                     <p
                       class="target-user-import-file__total-excel-score"
@@ -571,6 +572,7 @@ export default {
   },
   data() {
     return {
+      isBackendParsed: false,
       allCustomColumns: null,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
@@ -1203,6 +1205,7 @@ export default {
       this.formData.file = file
       this.isExcelUploaded = true
       this.step1Loading = true
+      this.isBackendParsed = false
       uploadExcelOrCsvForTargetUsers(file, (e) => {
         this.onUploadProgress = e
       })
@@ -1215,7 +1218,9 @@ export default {
           this.step1Loading = false
           this.formData.file = null
         })
-        .finally(() => {})
+        .finally(() => {
+          this.isBackendParsed = true
+        })
     },
     getUploadedExcelData() {
       this.step2Loading = true
