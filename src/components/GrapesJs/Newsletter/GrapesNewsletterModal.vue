@@ -883,7 +883,12 @@ export default {
             const code = codeViewer.editor.getValue()
 
             const callback = (importedCode = code) => {
-              editor.setComponents(importedCode)
+              editor.setComponents(
+                importedCode.replace(
+                  new RegExp('{COMPANYLOGO}', 'g'),
+                  this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl
+                )
+              )
               editor.Modal.close()
             }
             minifyHTML(code)
