@@ -881,7 +881,6 @@ export default {
           btnImp.onclick = () => {
             editor.DomComponents.getWrapper().set('content', '')
             const code = codeViewer.editor.getValue()
-
             const callback = (importedCode = code) => {
               editor.setComponents(
                 importedCode.replace(
