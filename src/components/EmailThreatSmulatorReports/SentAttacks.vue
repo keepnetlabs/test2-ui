@@ -62,7 +62,11 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getQuickScanReportList, exportQuickScanReportList } from '@/api/emailThreatSimlator'
+import {
+  getQuickScanReportList,
+  exportQuickScanReportList,
+  getLookupNameList
+} from '@/api/emailThreatSimlator'
 import { getLookupListByTypeId } from '@/api/common'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
@@ -266,18 +270,21 @@ export default {
     }
   },
   created() {
-    getLookupListByTypeId(24).then((categories) => {
-      const categoryList = categories.data.data
-      const categoryColumn = this.tableOptions.columns.find((x) => x.property == 'categoryName')
-      const categoryColumnFilters = categoryList.map((x) => {
-        return { text: x.name, value: x.name }
-      })
-      categoryColumn.filterableItems = categoryColumnFilters
-      this?.$refs?.refQuickScanSendAttackList?.reRenderFilters()
+    getLookupNameList().then((lookupNameList) => {
+      const lookups = lookupNameList.data.data.find((x) => x.name == 'PluginCategory')
+      getLookupListByTypeId(lookups.id).then((categories) => {
+        const categoryList = categories.data.data
+        const categoryColumn = this.tableOptions.columns.find((x) => x.property == 'categoryName')
+        const categoryColumnFilters = categoryList.map((x) => {
+          return { text: x.name, value: x.name }
+        })
+        categoryColumn.filterableItems = categoryColumnFilters
+        this?.$refs?.refQuickScanSendAttackList?.reRenderFilters()
 
-      this.qcsResourceId = this.$route.params.id
-      this.callForLanguages('refQuickScanSendAttackList')
-      this.getDatatableList()
+        this.qcsResourceId = this.$route.params.id
+        this.callForLanguages('refQuickScanSendAttackList')
+        this.getDatatableList()
+      })
     })
   }
 }
