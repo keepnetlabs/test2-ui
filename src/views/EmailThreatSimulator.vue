@@ -54,7 +54,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScans, refAttacksVectors } = this.$refs
-
     if (refScans && refScans.modalStatus) {
       refScans.checkIfCanCLoseNewModal()
       next(false)

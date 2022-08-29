@@ -360,8 +360,6 @@ export default {
             this.tableData = []
           })
           .finally(() => (this.loading = false))
-      } else {
-        this.$router.push('/')
       }
     },
     handleActionDelete(row) {
