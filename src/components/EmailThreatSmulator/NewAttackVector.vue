@@ -299,9 +299,9 @@ export default {
     }
   },
   created() {
-    getLookupNameList().then((categories) => {
-      const lookupId = categories.data.data.find((x) => x.name == 'PluginCategory')
-      getLookupListByTypeId(lookupId.id).then((categories) => {
+    getLookupNameList().then((lookupNameList) => {
+      const lookups = lookupNameList.data.data.find((x) => x.name == 'PluginCategory')
+      getLookupListByTypeId(lookups.id).then((categories) => {
         const categoryList = categories.data.data
         this.categoryResources = categoryList
         this.formValues.categoryResourceId = categoryList[0].resourceId
