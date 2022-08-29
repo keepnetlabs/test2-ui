@@ -143,10 +143,12 @@ export default {
               this.disableScroll = false
               this.isScrolling = false
             })
-            const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
-            keys.map((key) => {
-              this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
-            })
+            if (this?.$refs?.refTreeSelect?.remoteSearch) {
+              const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
+              keys.map((key) => {
+                this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
+              })
+            }
           })
         }, 500)
       }
@@ -320,14 +322,16 @@ export default {
       this.treeSelectOptions[3].children.map((item) => {
         item.isDisabled = isDisabled
       })
-      const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
-      keys.map((key) => {
-        const object = this.$refs.refTreeSelect.remoteSearch[key]
-        if (object) {
-          object?.options[2]?.children?.map((item) => (item.isDisabled = isDisabled))
-          object?.options[3]?.children?.map((item) => (item.isDisabled = isDisabled))
-        }
-      })
+      if (this?.$refs?.refTreeSelect?.remoteSearch) {
+        const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
+        keys.map((key) => {
+          const object = this.$refs.refTreeSelect.remoteSearch[key]
+          if (object) {
+            object?.options[2]?.children?.map((item) => (item.isDisabled = isDisabled))
+            object?.options[3]?.children?.map((item) => (item.isDisabled = isDisabled))
+          }
+        })
+      }
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
