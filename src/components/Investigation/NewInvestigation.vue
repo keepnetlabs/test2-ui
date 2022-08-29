@@ -1297,7 +1297,7 @@ export default {
           }
           return acc
         }, [])
-        const body = this.investigationDetailsData.bodies.reduce((acc, item) => {
+        const body = this?.investigationDetailsData?.bodies?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key !== 'resourceId') {
               acc.push({ option: key, text: value })
@@ -1305,7 +1305,7 @@ export default {
           }
           return acc
         }, [])
-        const attachments = this.investigationDetailsData.attachments.reduce((acc, item) => {
+        const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
               acc.push({ option: key, text: value })
