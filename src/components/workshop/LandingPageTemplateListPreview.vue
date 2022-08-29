@@ -199,6 +199,10 @@
                   </div>
                   <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                     <div>
+                      <span class="template-preview__text--title">Template Name: </span>
+                      <span class="template-preview__text--body">{{ templateName }}</span>
+                    </div>
+                    <div>
                       <span class="template-preview__text--title">Phishing URL: </span>
                       <span class="template-preview__text--body">{{ templateURL }}</span>
                     </div>
