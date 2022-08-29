@@ -202,9 +202,9 @@ export default {
           .catch((error) => {
             this.checkApiConnectivity = 'error'
             this.checkApiConnectivityMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
+              (error?.response?.data?.validationMessages &&
+                error?.response?.data?.validationMessages[0]) ||
+              error?.response?.data?.message
             this.checkIfAllSuccess(false)
           })
         checkPrivileges(payload)
@@ -215,9 +215,9 @@ export default {
           .catch((error) => {
             this.checkPrivileges = 'error'
             this.checkPrivilegesMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
+              (error?.response?.data?.validationMessages &&
+                error?.response?.data?.validationMessages[0]) ||
+              error?.response?.data?.message
             this.checkIfAllSuccess(false)
           })
         checkAllUsersAccess(payload)
