@@ -55,7 +55,7 @@ export function startsWithHttpOrHttps(value, message = 'Must start with http:// 
 
   if (value.includes(' ')) return message
 
-  return /^(http|https):/.test(value) || message
+  return /^(http|https):\/\//.test(value) || message
 }
 
 export function urlOrIpAddress(value, message = 'Invalid URL') {
