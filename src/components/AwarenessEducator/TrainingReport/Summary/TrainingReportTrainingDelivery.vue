@@ -71,8 +71,8 @@ export default {
       return `${emailDeliveredUserCount} / ${totalTargetUserCount} sent`
     },
     getNotDeliveredValue() {
-      const { emailNotDeliveredUserCount = '' } = this.helperData
-      return `${emailNotDeliveredUserCount} not delivered`
+      const { emailErrorUserCount = '' } = this.helperData
+      return `${emailErrorUserCount} not delivered`
     }
   }
 }

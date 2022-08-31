@@ -32,9 +32,9 @@
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
-        hint="Scorm 1.2 .zip file. Max. file size 40MB"
         style="width: 205px !important;"
         :size="40"
+        :hint="getHint"
         :isShowFileProgress="true"
         :is-stand-alone="true"
         :onUploadProgress="progressEvent"
@@ -79,6 +79,10 @@ export default {
     },
     filePreviews: {
       type: Array
+    },
+    typeWithDisplayName: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -88,6 +92,7 @@ export default {
       isDisabled: false,
       progressEvent: undefined,
       isBackendParsed: false,
+      scormType: 'Scorm',
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -101,6 +106,11 @@ export default {
   computed: {
     isLanguageDisabled() {
       return !!this?.filePreviews?.length || this.isDisabled
+    },
+    getHint() {
+      return `${
+        this.typeWithDisplayName ? this.typeWithDisplayName : this.scormType
+      } .zip file. Max. file size 40MB`
     }
   },
   methods: {
@@ -122,7 +132,8 @@ export default {
           this.progressEvent = progressEvent
         }
       )
-        .then(() => {
+        .then((response) => {
+          this.scormType = response?.data?.data?.typeWithDisplayName
           this.isBackendParsed = true
           this.progressEvent = undefined
           this.abortController = null
