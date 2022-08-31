@@ -168,7 +168,7 @@ export default {
           if (!refMakeAvailableFor.isAvailableForValid) return
         }
         if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
+          if (this.isEdit || this.trainingId) return this.step++
           const { formData } = refTrainingCourseInformation
           const {
             name,
