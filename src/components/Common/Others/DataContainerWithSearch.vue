@@ -70,6 +70,7 @@
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
+              :showValidationErrorMesssage="showValidationErrorMesssage"
               :text-field-default-value.sync="getItems[index].textFieldDefaultValue"
               :is-edit.sync="getItems[index].isEdit"
               @on-delete="handleItemDelete"
@@ -121,6 +122,10 @@ export default {
     textFieldErrorMessage: {
       type: String,
       default: 'This Domain is not valid!'
+    },
+    showValidationErrorMesssage: {
+      type: Boolean,
+      default: false
     },
     textFieldRules: {
       type: Array,
