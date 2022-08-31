@@ -168,7 +168,15 @@ export default {
           if (!refMakeAvailableFor.isAvailableForValid) return
         }
         if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit || this.trainingId) return this.step++
+          if (this.isEdit) return this.step++
+          if (this.trainingId) {
+            if (refTrainingContent) {
+              this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
+                (content) => content.file && content.languageId
+              )
+            }
+            return this.step++
+          }
           const { formData } = refTrainingCourseInformation
           const {
             name,
