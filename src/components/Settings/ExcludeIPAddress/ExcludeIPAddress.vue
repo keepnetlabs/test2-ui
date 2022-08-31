@@ -29,6 +29,7 @@
     <DataContainerWithSearch
       v-model.trim="dataContainerWithSearchItems"
       removeDuplicates
+      showValidationErrorMesssage
       ref="dataContainerWithSearch"
       text-field-error-message="Invalid IP address"
       text-field-placeholder="Enter IP address"
