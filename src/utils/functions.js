@@ -1122,3 +1122,61 @@ export function copyToClipboard(textToCopy) {
     })
   }
 }
+
+export function rgba2hex(orig) {
+  var a,
+    isPercent,
+    rgb = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i),
+    alpha = ((rgb && rgb[4]) || '').trim(),
+    hex = rgb
+      ? (rgb[1] | (1 << 8)).toString(16).slice(1) +
+        (rgb[2] | (1 << 8)).toString(16).slice(1) +
+        (rgb[3] | (1 << 8)).toString(16).slice(1)
+      : orig
+
+  if (alpha !== '') {
+    a = alpha
+  } else {
+    a = 1
+  }
+  // multiply before convert to HEX
+  a = ((a * 255) | (1 << 8)).toString(16).slice(1)
+  hex = hex + a
+
+  return `#${hex}`
+}
+
+export function addOutlookPolyfills(template) {
+  const doc = new DOMParser().parseFromString(template, 'text/html')
+  const anchorTags = doc.getElementsByTagName('a')
+
+  for (let i = 0; i < anchorTags.length; i++) {
+    const tdWrapper = document.createElement('td')
+    tdWrapper.style.padding = anchorTags[i].style.padding
+    anchorTags[i].style.padding = ''
+    const tableWrapper = document.createElement('table')
+    if (
+      anchorTags[i].style.backgroundColor.includes('rgb') ||
+      anchorTags[i].style.backgroundColor.includes('rgba')
+    ) {
+      const hexColor = rgba2hex(anchorTags[i].style.backgroundColor)
+      tableWrapper.setAttribute('bgcolor', hexColor)
+      tableWrapper.style.backgroundColor = hexColor
+      tableWrapper.style.borderRadius = anchorTags[i].style.borderRadius
+    }
+    const strongChild = document.createElement('strong')
+    strongChild.style.fontWeight = 'normal'
+    const fontChild = document.createElement('font')
+    fontChild.innerText = anchorTags[i].innerText
+    const hexColor = rgba2hex(anchorTags[i].style.color)
+    fontChild.setAttribute('color', hexColor)
+    strongChild.appendChild(fontChild)
+    anchorTags[i].innerHTML = new XMLSerializer().serializeToString(strongChild)
+    anchorTags[i].parentNode.insertBefore(tdWrapper, anchorTags[i])
+    tdWrapper.appendChild(anchorTags[i])
+    tdWrapper.parentNode.insertBefore(tableWrapper, tdWrapper)
+    tableWrapper.appendChild(tdWrapper)
+  }
+
+  return new XMLSerializer().serializeToString(doc)
+}

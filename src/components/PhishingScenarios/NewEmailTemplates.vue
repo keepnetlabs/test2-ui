@@ -247,7 +247,7 @@ import {
   updatePhishingEmailTemplate
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, addOutlookPolyfills } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
@@ -589,6 +589,8 @@ export default {
             this.availableForRequests
           )
         }
+        const newTemplate = addOutlookPolyfills(payload.template)
+        payload.template = newTemplate
         delete payload.attachments
         if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId)
