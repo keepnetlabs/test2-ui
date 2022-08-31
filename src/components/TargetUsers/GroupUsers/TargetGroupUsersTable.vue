@@ -66,7 +66,7 @@
       <TargetUserRowActionsEditButton
         :id="tableOptions.rowActions[0].id"
         :scope="scope"
-        @on-edit="handleEditTargetUsers"
+        @on-click="handleEditTargetUsers"
       />
       <RowActionsMenu>
         <DefaultMenuRowAction
@@ -493,9 +493,6 @@ export default {
           link.click()
         })
       })
-    },
-    toggleLoading() {
-      this.loading = !this.loading
     }
   }
 }
