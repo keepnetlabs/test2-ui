@@ -41,6 +41,7 @@
         :extensions="['.zip']"
         :file-previews="filePreviews"
         :disabled="!value.languageId"
+        :readonly="isReadonly"
         :deletable="false"
         :is-backend-parsed="isBackendParsed"
         @inputFile="handleFileChange"
@@ -89,6 +90,7 @@ export default {
     return {
       abortController: null,
       labels,
+      isReadonly: false,
       isDisabled: false,
       progressEvent: undefined,
       isBackendParsed: false,
@@ -123,6 +125,7 @@ export default {
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
       this.isDisabled = true
+      this.isReadonly = true
       this.isBackendParsed = false
       AwarenessEducatorService.uploadTrainingContent(
         payload,
@@ -139,7 +142,9 @@ export default {
           this.abortController = null
           this.$emit('input', { ...this.value, file })
         })
-        .finally(() => {})
+        .finally(() => {
+          this.isReadonly = false
+        })
     },
     handleRemove() {
       if (this.abortController) {
