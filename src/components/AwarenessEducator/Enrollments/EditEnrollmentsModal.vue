@@ -29,6 +29,7 @@
               class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
               style="max-width: 64px;"
               :disabled="!sendReminderEvery"
+              :rules="rules.number"
             ></v-text-field>
             <KSelect
               v-model.trim="formData.enrollmentReminder.periodType"
@@ -65,6 +66,7 @@
               class="ml-2 absolute-text-input-error"
               style="max-width: 64px;"
               :disabled="!sendReminderEvery"
+              :rules="rules.number"
             ></v-text-field>
             <span v-if="formData.enrollmentReminder.endType === 'AfterOccurrences'" class="ml-2"
               >times</span
@@ -128,6 +130,7 @@
               class="ml-2 absolute-text-input-error"
               style="max-width: 64px;"
               :disabled="!isAutoEnroll"
+              :rules="rules.number"
             ></v-text-field>
             <KSelect
               v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
@@ -193,19 +196,26 @@ export default {
       isDateValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      rules: {
+        number: [
+          (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => v > 0 || 'Enter number greater than 0',
+          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+        ]
+      },
       formData: {
         markedAsTest: false,
         enrollmentAutoEnroll: {
           type: 'SameDay',
           dayOfWeek: 0,
-          emailPeriodTypeEnum: 1,
-          periodCount: 0
+          emailPeriodTypeEnum: 'Day',
+          periodCount: 1
         },
         enrollmentReminder: {
-          periodCount: 0,
-          periodType: 1,
-          endType: 1,
-          occurrenceCount: 0,
+          periodCount: 1,
+          periodType: 'Day',
+          endType: 'TrainingCompleted',
+          occurrenceCount: 1,
           stopTime: ''
         }
       },
@@ -295,12 +305,16 @@ export default {
       }
     },
     handleSubmit() {
-      const payload = JSON.parse(JSON.stringify(this.formData))
-      if (!this.sendReminderEvery) payload.enrollmentReminder = null
-      if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
-      AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId).then(() => {
-        this.$emit(EMITS.ON_CLOSE, true)
-      })
+      if (this.$refs.refForm.validate()) {
+        const payload = JSON.parse(JSON.stringify(this.formData))
+        if (!this.sendReminderEvery) payload.enrollmentReminder = null
+        if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+        AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId).then(
+          () => {
+            this.$emit(EMITS.ON_CLOSE, true)
+          }
+        )
+      }
     }
   }
 }
