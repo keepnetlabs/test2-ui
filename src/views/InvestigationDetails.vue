@@ -2766,7 +2766,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData?.headers || []))
+      const headers = JSON.parse(JSON.stringify(this?.investigationDetailsData?.headers || []))
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName
@@ -2775,7 +2775,7 @@ export default {
         header['Ip Address'] = ipAddress
         header['Sender Name'] = senderName
       })
-      const attachments = JSON.parse(JSON.stringify(this.investigationDetailsData.attachments))
+      const attachments = JSON.parse(JSON.stringify(this?.investigationDetailsData?.attachments))
 
       attachments.forEach((attachment) => {
         const name = attachment.name
@@ -2796,14 +2796,6 @@ export default {
     investigationDetailsListData(val) {
       this.loading = false
       vm.$forceUpdate()
-      // TODO: Ask all emailLastAction cases
-      // const data =  val.results.map((item,index) => ({...item,emailLastAction:{
-      //   isTooltip:true,
-      //   text:'Message sent',
-      //   status:'Running',
-      //   actionType:'Warning',
-      // }})) || [];
-
       const data = val.results || []
       this.investigationDetailsList = data
       if (this.$refs.refInvestigationListData) {
