@@ -20,6 +20,7 @@
           :training-resource-id="resourceId"
           :is-removable="formData.contentByLanguage.length > 1"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
+          :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
@@ -139,7 +140,8 @@ export default {
       this.formData.contentByLanguage = trainingContents.map((content) => ({
         languageId: content.languageId,
         file: null,
-        filePreviews: [{ name: content.name, size: content.size }]
+        filePreviews: [{ name: content.name, size: content.size }],
+        typeWithDisplayName: content.typeWithDisplayName
       }))
     },
     handleRemove(index) {
