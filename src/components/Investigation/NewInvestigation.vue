@@ -441,7 +441,7 @@ export default {
   },
   data() {
     return {
-      parsedFormat: getTimeZoneForMoment(),
+      parsedFormat: getTimeZone(false),
       initialFormValues: null,
       warningMessage: null,
       saveDisable: false,
