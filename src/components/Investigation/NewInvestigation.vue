@@ -246,6 +246,8 @@
                     id="input--investigation-email-date-range"
                     type="datetimerange"
                     ref="refPicker"
+                    :format="parsedFormat"
+                    :valueFormat="parsedFormat"
                     :picker-options="pickerOptions"
                     :rules="[]"
                     :defaultTime="['00:00:00', '23:59:00']"
@@ -374,7 +376,8 @@ import {
   getTimeZoneForMoment,
   scrollToComponent,
   isDifferent,
-  convertTo12Hr
+  convertTo12Hr,
+  getTimeZone
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -385,6 +388,7 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     FormGroup,
@@ -401,6 +405,19 @@ export default {
     'select-search-handler': SelectSearchHandler
   },
   watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+          const parsedFormatForMoment = getTimeZoneForMoment(val)
+          this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+            parsedFormatForMoment
+          )}`
+        }
+      }
+    },
     date(val) {
       if (val && val.length > 0) {
         this.isDateValid = true
@@ -417,10 +434,14 @@ export default {
       this.checkAllSingularity()
     }
   },
-
+  computed: {
+    ...mapGetters({
+      timezoneFormat: 'auth/getTimezoneFormat'
+    })
+  },
   data() {
     return {
-      storageTimeFormat: localStorage.getItem('selectedTimeFormat'),
+      parsedFormat: getTimeZoneForMoment(),
       initialFormValues: null,
       warningMessage: null,
       saveDisable: false,

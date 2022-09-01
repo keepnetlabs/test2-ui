@@ -13,8 +13,17 @@ export default {
   methods: {
     getSystemUserSettings() {
       getSystemUserSettings().then((response) => {
-        localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
-        localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+        if (response?.data?.data?.dateFormat) {
+          localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+        }
+        if (response?.data?.data?.timeFormat) {
+          localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+        }
+        const payload = {
+          dateFormat: response?.data?.data?.dateFormat || null,
+          timeFormat: response?.data?.data?.timeFormat || null
+        }
+        this.$store.commit('auth/SET_FORMATS', payload)
       })
     }
   }

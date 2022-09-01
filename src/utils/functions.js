@@ -886,9 +886,9 @@ export function eventFire(el, etype) {
   }
 }
 
-export function getTimeZone(isDate) {
-  let timeZone = localStorage.getItem('selectedDateFormat')
-  let timeFormat = localStorage.getItem('selectedTimeFormat')
+export function getTimeZone(isDate, fallback) {
+  let timeZone = localStorage.getItem('selectedDateFormat') || fallback?.dateFormat || ''
+  let timeFormat = localStorage.getItem('selectedTimeFormat') || fallback?.timeFormat || ''
   let is12H = timeFormat === '12h'
 
   if (is12H) {
@@ -981,9 +981,9 @@ export function convertTo12Hr(time) {
   return time.join('') // return adjusted time or original string
 }
 
-export function getTimeZoneForMoment() {
-  let timeZone = localStorage.getItem('selectedDateFormat')
-  let timeFormat = localStorage.getItem('selectedTimeFormat')
+export function getTimeZoneForMoment(fallback) {
+  let timeZone = localStorage.getItem('selectedDateFormat') || fallback?.dateFormat || ''
+  let timeFormat = localStorage.getItem('selectedTimeFormat') || fallback?.timeFormat || ''
 
   let is12H = timeFormat === '12h'
 
