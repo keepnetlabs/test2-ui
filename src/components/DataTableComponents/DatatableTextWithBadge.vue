@@ -92,7 +92,7 @@ export default {
     }
   },
   created() {
-    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property]
+    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property] || []
     this.getBadges()
   },
 
@@ -101,7 +101,8 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     mapper() {
-      return this.scope.row[this.col.property]
+      const arr = this.scope.row[this.col.property] || []
+      return arr
         .map((item) => {
           if (!item) return null
           let uppercaseCount = 0
@@ -120,7 +121,7 @@ export default {
         .filter(Boolean)
     },
     getBadges() {
-      if (this.badges.length > 0) {
+      if (this.badges && this.badges.length > 0) {
         let renderedCount = 0
         const width = Math.floor(this.scope.column.width) || 40
         let totalWidth = 0,

@@ -16,7 +16,7 @@
     <template v-slot:overlay-body>
       <app-modal-body-header
         title="Define New Role"
-        sub-title="Create a user role by defining permissons. Expand module rows to set detailed authorizations. "
+        sub-title="Create a user role by defining permissions. Expand module rows to set detailed authorizations. "
       />
       <v-form ref="refForm">
         <form-group title="Role Title" has-hint>

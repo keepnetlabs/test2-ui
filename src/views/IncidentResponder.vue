@@ -1776,7 +1776,7 @@ export default {
       return this?.irSummary?.roiSummary?.revenue || 0
     },
     isRoiSummaryEmpty() {
-      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = this.irSummary
+      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = this.irSummary || {}
       return revenue === '0' && time === '0'
     },
     isPhishingEmpty() {
