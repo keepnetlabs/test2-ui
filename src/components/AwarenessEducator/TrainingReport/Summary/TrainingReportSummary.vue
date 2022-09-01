@@ -148,7 +148,7 @@ export default {
       }
     },
     isTestTraining() {
-      const { isTest = false } = this.trainingSummary
+      const { isTest = false } = this.trainingSummary || {}
       return isTest
     },
     getTrainingDeliveryHelperData() {

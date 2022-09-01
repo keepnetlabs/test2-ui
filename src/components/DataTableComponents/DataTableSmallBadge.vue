@@ -99,7 +99,7 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-      const badges = this.scope.row[this.col.property]
+      const badges = this.scope.row[this.col.property] || []
       const width = this.scope.column.width
       if (
         badges &&
