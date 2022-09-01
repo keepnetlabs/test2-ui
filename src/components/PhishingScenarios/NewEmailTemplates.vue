@@ -763,11 +763,15 @@ export default {
   },
   computed: {
     getTitle() {
-      return this.isEdit
-        ? 'Edit Email Template'
-        : this.isDuplicate
-        ? 'Duplicate Email Template'
-        : 'New Email Template'
+      if (this.isEdit && this.isDuplicate) {
+        return 'Duplicate Email Template'
+      }
+
+      if (this.isEdit) {
+        return 'Edit Email Template'
+      }
+
+      return 'New Email Template'
     },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
