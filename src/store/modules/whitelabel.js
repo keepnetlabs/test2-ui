@@ -123,7 +123,7 @@ const whitelabel = {
       context.commit('TOGGLE_LOADING', true)
       resolveWhiteLabel()
         .then((response) => {
-          context.commit('SET_DATA', response.data.data)
+          context.commit('SET_DATA', response?.data?.data)
         })
         .finally(() => context.commit('TOGGLE_LOADING', false))
     },
