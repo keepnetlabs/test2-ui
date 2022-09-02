@@ -57,13 +57,13 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadPngJpgOrPdf">
+    <FormGroup :title="labels.CoverImageTrainingUrl" :sub-title="labels.UploadPngJpgOrPdf">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
         :class="[getPreviewOfCoverImage ? 'mb-2' : 'mb-6']"
-        hint="Only pdf, jpg, png files. Max. file size 2MB"
-        :extensions="['pdf', 'jpg', 'png']"
+        hint="Only jpg, png files. Max. file size 2MB"
+        :extensions="['jpg', 'png']"
         :size="2"
         style="max-width: 205px;"
         @inputFile="handleCoverImageChange"
