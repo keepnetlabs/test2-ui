@@ -66,7 +66,7 @@
           <form-group title="Upload file" sub-title="Upload attack vector file" hint>
             <file-upload
               width="216"
-              hint="Max. file size 2 GB"
+              hint=""
               ref="refFileUpload"
               :extensions="[]"
               @inputFile="onFileChanged"
