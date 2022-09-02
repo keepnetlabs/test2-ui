@@ -3,12 +3,27 @@
 </template>
 <script>
 import { getSystemUserSettings } from '@/api/settings'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'App',
   created() {
     this.$store.dispatch('login/getWhiteLabelByUrl')
-    this.getSystemUserSettings()
+  },
+  computed: {
+    ...mapGetters({
+      user: 'auth/userGetter'
+    })
+  },
+  watch: {
+    user: {
+      deep: true,
+      handler(val) {
+        if (Object.keys(val).length > 0) {
+          this.getSystemUserSettings()
+        }
+      }
+    }
   },
   methods: {
     getSystemUserSettings() {
