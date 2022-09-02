@@ -624,9 +624,12 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
-            .addEventListener('scroll', this.handleScroll)
+          const element = document.querySelector(
+            '#input--company-manager-advanced-settings-smtp .k-select__menu'
+          )
+          if (element) {
+            element.addEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },
@@ -636,9 +639,12 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
-            .removeEventListener('scroll', this.handleScroll)
+          const element = document.querySelector(
+            '#input--company-manager-advanced-settings-smtp .k-select__menu'
+          )
+          if (element) {
+            element.removeEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },

@@ -69,7 +69,7 @@ export default {
       if (this.isMultiple) {
         this.$emit('confirmMultipleDelete')
       } else {
-        this.$emit('confirmDelete', this.item)
+        this.$emit('confirmDelete', this.selectedRow)
       }
       this.$emit('changeModalStatus', false)
     }
