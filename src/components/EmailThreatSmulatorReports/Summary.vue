@@ -11,7 +11,7 @@
           <v-card>
             <card-loading :loading="scoresLoading">
               <template v-slot:skeleton-content>
-                <div class="report-scores pa-4" :class="item.color">
+                <div class="report-scores pa-4 pr-2" :class="item.color">
                   <div class="score-title">{{ item.title }}</div>
                   <div class="score-body mt-4 mb-7">
                     <span>{{ item.count }}</span> email
@@ -331,6 +331,27 @@ export default {
 
 <style lang="scss">
 .ets-report-page {
+  @media screen and (min-width: 1264px) {
+    .container {
+      max-width: 100% !important;
+    }
+  }
+  @media screen and (max-width: 1388px) {
+    .col-sm-6 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+  @media screen and (max-width: 887px) {
+    .col-12 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
   .report-title {
     font-weight: 400;
     font-size: 16px;
@@ -376,6 +397,7 @@ export default {
       }
     }
     .score-footer {
+      width: 85%;
       font-weight: 600;
       font-size: 16px;
       line-height: 23px;

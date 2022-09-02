@@ -791,13 +791,13 @@ const store = {
       return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
     },
     getEtsQuickScanPermissionCreate(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+      return state?.etsQuickScanPermissions?.CREATE?.hasPermission
     },
     getEtsQuickScanPermissionUpdate(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+      return state?.etsQuickScanPermissions?.UPDATE?.hasPermission
     },
     getEtsQuickScanPermissionDelete(state) {
-      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+      return state?.etsQuickScanPermissions?.DELETE?.hasPermission
     },
     getEtsQuickScanPermissionExport(state) {
       return state?.etsQuickScanPermissions?.EXPORT?.hasPermission
@@ -806,13 +806,13 @@ const store = {
       return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
     },
     getEtsAttackVectorPermissionCreate(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+      return state?.etsAttackVectorPermissions?.CREATE?.hasPermission
     },
     getEtsAttackVectorPermissionUpdate(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+      return state?.etsAttackVectorPermissions?.UPDATE?.hasPermission
     },
     getEtsAttackVectorPermissionDelete(state) {
-      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+      return state?.etsAttackVectorPermissions?.DELETE?.hasPermission
     },
     getEtsAttackVectorPermissionExport(state) {
       return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
