@@ -482,7 +482,6 @@ export default {
         this.getRequestMembers()
       })
     },
-    listRequests() {},
     refuseRequest(reqId) {
       refuseCommunityMembershipRequest(reqId).then(() => {
         this.getMembers()

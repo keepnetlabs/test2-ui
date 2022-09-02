@@ -31,10 +31,15 @@ const widgetsStore = {
     getRecentCampaignsCard: (state) =>
       state.recentCampaignsCard.map((row) => {
         const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+        if (row.method === 'Click-Only') {
+          campaignStatus.push(row['totalClickedCount'])
+        }
         if (row.method === 'Attachment') {
           campaignStatus.push(row['totalAttachmentOpenedCount'])
-        } else {
-          campaignStatus.splice(1, 0, row['totalClickedCount'])
+        }
+
+        if (row.method === 'Data Submission') {
+          campaignStatus.push(row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
         }
         return {
