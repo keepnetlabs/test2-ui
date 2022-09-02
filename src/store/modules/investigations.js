@@ -53,8 +53,7 @@ const investigations = {
       state.getStatsAndMenuData = payload?.data
     },
     SET_INVESTIGATIONLIST(state, payload) {
-      let data = payload?.data
-      data.results.userStats = payload?.data?.results
+      let data = payload?.data || {}
       let stateData = data?.results?.map((item) => {
         const { completedUsersCount = 0, scannedUsersCount = 0 } = item
         return {
