@@ -558,7 +558,9 @@ export default {
   methods: {
     getKeyValue(item) {
       const { key = '' } = item || { key: '' }
-      return key.substring(0, 1).toUpperCase() + key.substring(1, key.length)
+      return typeof key === 'string'
+        ? key.substring(0, 1).toUpperCase() + key.substring(1, key.length)
+        : ''
     },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)

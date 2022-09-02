@@ -57,14 +57,14 @@ export default {
   },
   computed: {
     getTooltipText() {
-      const { randomlyUsersCount = 0, totalTargetUserCount } = this.helperData
+      const { randomlyUsersCount = 0, totalTargetUserCount = 0 } = this.helperData || {}
       return (
         this.isTooltip &&
         `(Only active and random ${randomlyUsersCount} of ${totalTargetUserCount} total users)`
       )
     },
     isTooltip() {
-      const { sendOnlyActiveUsers = false, sendRandomlyUsers = false } = this.helperData
+      const { sendOnlyActiveUsers = false, sendRandomlyUsers = false } = this.helperData || {}
       return sendOnlyActiveUsers && sendRandomlyUsers
     },
     getBodyValue() {
