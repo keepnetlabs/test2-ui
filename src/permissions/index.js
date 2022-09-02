@@ -1438,7 +1438,7 @@ export default {
       method: ENUMS.METHODS.PUT
     },
     DELETE: {
-      url: `plugin{resourceId}`,
+      url: `plugin/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
