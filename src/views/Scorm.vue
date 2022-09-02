@@ -31,7 +31,7 @@ export default {
               const {
                 data: { data }
               } = response
-              this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_APP_API_TEST}&scoAddress=${data.trainingUrl}`
+              this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_AWARENESS_URL}&scoAddress=${data.trainingUrl}`
             })
             .catch((error) => {
               window.alert(error?.response?.data?.message)

@@ -82,6 +82,7 @@ export const labels = {
   CreateNewTraining: 'Create New Training',
   ContentType: 'Content Type',
   CoverImage: 'Cover Image',
+  CoverImageTrainingUrl: 'Upload a cover image for the training',
   MostPhishedUsers: 'Most Phished Users',
   MostEngagedCampaigns: 'Most Engaged Campaigns',
   TopPhishingSimulationReporters: 'Top Phishing Simulation Reporters',
