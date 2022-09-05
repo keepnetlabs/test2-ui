@@ -178,7 +178,7 @@ export default {
             filterableItems: [
               { text: 'In Progress', value: 'InProgress' },
               'Completed',
-              'Continuous '
+              'Continuous'
             ],
             width: 180
           },
