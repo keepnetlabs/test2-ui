@@ -417,7 +417,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
-import { scrollToComponent, isDifferent, addOutlookPolyfills } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
@@ -767,9 +767,6 @@ export default {
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
-        }
-        for (let i = 0; i < payload.landingPages.length; i++) {
-          payload.landingPages[i].content = addOutlookPolyfills(payload.landingPages[i].content)
         }
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
