@@ -92,7 +92,7 @@
   color:rgba(0, 0, 0, 0.72) !important;
 }
 
-.el-input.is-disabled .el-input__inner{
+.el-input.is-disabled .el-input__inner,.el-input.is-disabled .el-input__icon{
   color:rgba(0, 0, 0, 0.72) !important;
   cursor:auto !important;
 }
