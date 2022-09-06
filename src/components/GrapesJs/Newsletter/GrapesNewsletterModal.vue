@@ -37,8 +37,8 @@ import customMacroAttachment from './mergedTexts/customMacroAttachment'
 import trainingUrl from './mergedTexts/trainingUrl'
 import phishingUrl from './mergedTexts/phishingUrl'
 import macroUrl from './mergedTexts/macroUrl'
-import { uploadEmlOrMsg } from '../../../api/threatSharing'
-import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
+import { uploadEmlOrMsg } from '@/api/threatSharing'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import plugin from 'grapesjs-style-bg'
 import 'grapick/dist/grapick.min.css'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
@@ -51,7 +51,6 @@ import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
-import button from '@/components/GrapesJs/Newsletter/components/button'
 export default {
   name: 'GrapesNewsletterModal',
   components: { DefaultErrorDialog },
@@ -70,7 +69,6 @@ export default {
           exampleComponent: exampleComponent,
           exampleComponent2: exampleComponent2,
           amazonTemplate: amazonTemplate,
-          button: button,
           to: to,
           toName: toName,
           subject: subject,
@@ -302,7 +300,6 @@ export default {
 
               try {
                 //checking is valid url
-                const url = new URL(value)
                 if (!validations.isDomainUrl(value, '')) {
                   renderErrorMessage()
                 }
@@ -315,7 +312,7 @@ export default {
                 component.components(value)
               }
             },
-            handleClick(e) {
+            handleClick(s) {
               const { urlredirection } = this.model.getAttributes()
               if (urlredirection) {
                 //urlredirection
@@ -360,7 +357,7 @@ export default {
               el.parentElement.constructor.name !== 'HTMLinkElement' &&
               el.parentElement.constructor.name !== 'HTMLBodyElement'
             ) {
-              const result = {
+              return {
                 type: 'link',
                 tagName: 'a',
                 components: [
@@ -371,7 +368,6 @@ export default {
                   }
                 ]
               }
-              return result
             }
           },
           model: {
@@ -590,7 +586,7 @@ export default {
           },
           {
             isComponent: function (el) {
-              if (el.tagName == 'A') {
+              if (el.tagName === 'A') {
                 return { type: 'link' }
               }
             }
@@ -600,7 +596,6 @@ export default {
       })
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
-      blockManager.add('General Button', button)
       let pn = this.editor.Panels
       pn.getButton('options', 'export-template').set('className', 'fa fa-import')
       pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-code')
@@ -630,12 +625,6 @@ export default {
             label: 'Basic'
           }
         }
-        if (block.attributes.id === 'General Button') {
-          block.attributes.category = {
-            id: 'Basic',
-            label: 'Basic'
-          }
-        }
         if (block.attributes.id === 'sect100') {
           block.attributes.category = {
             label: 'Layout'
@@ -656,10 +645,62 @@ export default {
           block.attributes.category = {
             label: 'Basic'
           }
-          block.attributes.content = block.attributes.content.replace(
-            'button',
-            'button grapes-custom-button'
-          )
+          block.attributes.content = `
+        <table
+          border="0"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+          style="border-collapse: separate; line-height: 100%"
+        >
+          <tbody>
+            <tr>
+              <td class="aligncenter content-block">
+                <div>
+                  <!--[if mso]>
+                    <v:roundrect
+                      xmlns:v="urn:schemas-microsoft-com:vml"
+                      xmlns:w="urn:schemas-microsoft-com:office:word"
+                      style=" v-text-anchor: middle"
+                      arcsize="17%"
+                      strokecolor="#2196F3"
+                      fillcolor="#2196F3"
+                    >
+                      <w:anchorlock />
+                      <center
+                        style="
+                          color: #ffffff;
+                          font-family: Helvetica;
+                          font-size: 16px;
+                          font-weight: 400;
+                        "
+                      >
+                        Button
+                      </center>
+                    </v:roundrect>
+                  <![endif]-->
+                  <a
+                    style="
+                        background-color: #2196F3;
+                        padding: 8px 12px;
+                        border-radius: 4px;
+                        display: inline-block;
+                      color: #ffffff;
+                      font-family: Helvetica, sans-serif;
+                      font-size: 16px;
+                      font-weight: 400;
+                      text-align: center;
+                      text-decoration: none;
+                      -webkit-text-size-adjust: none;
+                      mso-hide: all;
+                    "
+                    >Button
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>`
         } else if (block.attributes.id === 'divider') {
           block.attributes.category = {
             label: 'Layout'
@@ -826,15 +867,12 @@ export default {
         .then((response) => {
           this.getGrapesWebModalDraw(response.data.data.body)
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting details of uploaded file'
           })
         })
-    },
-    cloneUrlButtonCLick() {
-      this.cloneUrlPage = this.cloneUrl
     },
     getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
