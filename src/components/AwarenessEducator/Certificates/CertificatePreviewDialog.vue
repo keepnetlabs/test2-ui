@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       isPreviewLoading: false,
-      template: []
+      template: ''
     }
   },
   computed: {
@@ -53,7 +53,7 @@ export default {
       return 'Certificate Template Preview'
     },
     getSubtitle() {
-      return this?.selectedRow?.name
+      return this?.selectedRow?.name || ''
     }
   },
   created() {

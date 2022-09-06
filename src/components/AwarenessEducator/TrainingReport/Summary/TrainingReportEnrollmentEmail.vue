@@ -39,7 +39,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import { getDefaultEmailTemplate, getEmailTemplate } from '@/api/company'
+import { getDefaultEmailTemplate } from '@/api/company'
 
 export default {
   name: 'TrainingReportEnrollmentEmail',
