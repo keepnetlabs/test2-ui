@@ -51,6 +51,7 @@ import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import button from '@/components/GrapesJs/Newsletter/components/button'
 export default {
   name: 'GrapesNewsletterModal',
   components: { DefaultErrorDialog },
@@ -69,6 +70,7 @@ export default {
           exampleComponent: exampleComponent,
           exampleComponent2: exampleComponent2,
           amazonTemplate: amazonTemplate,
+          button: button,
           to: to,
           toName: toName,
           subject: subject,
@@ -598,6 +600,7 @@ export default {
       })
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
+      blockManager.add('General Button', button)
       let pn = this.editor.Panels
       pn.getButton('options', 'export-template').set('className', 'fa fa-import')
       pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-code')
@@ -622,6 +625,12 @@ export default {
       const blocks = blockManager.getAll()
       blocks.map((block) => {
         if (block.attributes.id === 'Submit Phishing Button') {
+          block.attributes.category = {
+            id: 'Basic',
+            label: 'Basic'
+          }
+        }
+        if (block.attributes.id === 'General Button') {
           block.attributes.category = {
             id: 'Basic',
             label: 'Basic'
