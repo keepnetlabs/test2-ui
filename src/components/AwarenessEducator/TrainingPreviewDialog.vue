@@ -36,7 +36,6 @@ import { EMITS } from './utils'
 import TrainingPreview from '@/components/AwarenessEducator/TrainingPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import AppDialog from '@/components/AppDialog'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingPreviewDialog',
   components: { AppDialog, DatatableLoading, TrainingPreview },
