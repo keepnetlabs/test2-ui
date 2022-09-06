@@ -385,11 +385,6 @@ export default {
           )?.text
         : ''
     },
-    getSelectedEmailTimeType() {
-      return this.formDetails['distributionEmailOverTimeTypes'].find(
-        (item) => item.value === this.formData.distributionEmailOverTimeTypeId
-      )?.text
-    },
     getDistributionTextRenderStatus() {
       return this.formData.distributionTypeId === '1'
         ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery

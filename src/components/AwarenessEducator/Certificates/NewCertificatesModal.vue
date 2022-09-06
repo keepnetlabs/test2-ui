@@ -156,6 +156,7 @@ export default {
             new RegExp('{COMPANYLOGO}', 'g'),
             this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl
           )
+          console.log('this.formdaTA.TEMPLATE', this.formData.template)
         }
       })
     },

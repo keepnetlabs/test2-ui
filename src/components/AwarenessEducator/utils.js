@@ -1,4 +1,4 @@
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export const EMITS = {

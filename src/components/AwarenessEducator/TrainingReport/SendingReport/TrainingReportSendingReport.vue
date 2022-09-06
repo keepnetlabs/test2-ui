@@ -107,7 +107,6 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
@@ -422,14 +421,13 @@ export default {
       //   })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      const payload = {
+      this.resendPayload = {
         Types: [2],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
         filter: this.axiosPayload.filter
       }
-      this.resendPayload = payload
       this.toggleIsShowResendDialog()
     },
     confirmResend() {},

@@ -407,9 +407,6 @@ export default {
     },
     trainingTimeItems() {
       return this.getDistributionEmailOverTimeTypes()
-    },
-    isDistributionSmtpDelayDisabled() {
-      return this.formData.distributionTypeId !== '1'
     }
   },
   created() {
