@@ -105,6 +105,7 @@ export default {
     return {
       activeBreakpoint: 'lg',
       initialLayout: [],
+      initialAvailableWidgets: [],
       layout: [],
       showPlaybookModal: false,
       selectedPlaybookId: null,
@@ -507,7 +508,7 @@ export default {
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({ key: item.key, name: item.title, isAllowed: true })
+      this.availableWidgets.push({ ...item, name: item.title })
     },
     handleOpenMenu() {
       this.editMode = true
@@ -538,9 +539,11 @@ export default {
     },
     layoutResized() {},
     handleEditMode() {
+      this.initialAvailableWidgets = JSON.parse(JSON.stringify(this.availableWidgets))
       this.editMode = true
     },
     handleCancelEditMode() {
+      this.availableWidgets = JSON.parse(JSON.stringify(this.initialAvailableWidgets))
       this.editMode = false
       this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
