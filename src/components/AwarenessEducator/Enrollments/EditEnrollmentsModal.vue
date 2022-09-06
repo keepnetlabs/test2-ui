@@ -133,6 +133,7 @@
               :rules="rules.number"
             ></v-text-field>
             <KSelect
+              v-if="formData.enrollmentAutoEnroll.type === 'In'"
               v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
               id="input--enrollment-auto-enroll-period-type"
               class="ml-2"
@@ -293,6 +294,8 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     handleEnrollmentTypeChange(val) {
+      debugger
+      console.log('formData.enrollmentAutoEnroll.type ', this.formData.enrollmentAutoEnroll.type)
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in...'

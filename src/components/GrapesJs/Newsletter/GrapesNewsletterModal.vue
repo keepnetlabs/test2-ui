@@ -885,7 +885,7 @@ export default {
               editor.setComponents(
                 importedCode.replace(
                   new RegExp('{COMPANYLOGO}', 'g'),
-                  this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl
+                  this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
                 )
               )
               editor.Modal.close()
