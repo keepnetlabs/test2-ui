@@ -776,7 +776,7 @@ export default {
       }
       for (const [key, value] of Object.entries(blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
-          const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
           value.content.components[0].src = logoUrl
         }
         blockManager.add(key, value)
@@ -885,7 +885,7 @@ export default {
               editor.setComponents(
                 importedCode.replace(
                   new RegExp('{COMPANYLOGO}', 'g'),
-                  this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
+                  this?.$store?.state?.whitelabel.mainLogoUrl || ''
                 )
               )
               editor.Modal.close()

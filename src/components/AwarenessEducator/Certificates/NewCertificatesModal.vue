@@ -156,7 +156,7 @@ export default {
             const template = response?.data?.data?.template || ''
             this.formData.template = template.replace(
               new RegExp('{COMPANYLOGO}', 'g'),
-              this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
+              this?.$store?.state?.whitelabel?.mainLogoUrl || ''
             )
             console.log('this.formdaTA.TEMPLATE', this.formData.template)
           }
@@ -174,7 +174,7 @@ export default {
           this.formData.description = description
           this.formData.template = template.replace(
             new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
+            this?.$store?.state?.whitelabel?.mainLogoUrl || ''
           )
           this.setMakeAvailableForData(availableForList)
         })
