@@ -28,10 +28,7 @@
               <div v-on="on" style="display: inline-block;">
                 <v-btn
                   id="btn-add--dashboard-widgets"
-                  :class="[
-                    'widget-button mr-2',
-                    { 'widget-button--disabled': !availableWidgets.length }
-                  ]"
+                  :class="['widget-button mr-2', { 'widget-button--disabled': !canRenderMenu }]"
                   style="font-size: 20px;"
                   rounded
                   color="transparent"
@@ -39,10 +36,10 @@
                 >
               </div>
             </template>
-            <v-list v-if="availableWidgets.length">
+            <v-list v-if="canRenderMenu">
               <v-list-item
                 v-if="widget.isAllowed"
-                v-for="widget in availableWidgets"
+                v-for="widget in widgets"
                 @click="handleAddWidget(widget)"
                 :key="widget.key"
               >
@@ -88,12 +85,16 @@ export default {
   },
   data() {
     return {
-      mdiViewDashboard
+      mdiViewDashboard,
+      widgets: []
     }
   },
   computed: {
     isEditModeDisabled() {
       return !this?.permissions?.widgets
+    },
+    canRenderMenu() {
+      return this.widgets.length && this.widgets.some((widget) => widget.isAllowed)
     }
   },
   methods: {
@@ -111,6 +112,25 @@ export default {
     },
     handleOpenMenu() {
       this.$emit('handleOpenMenu')
+    }
+  },
+  watch: {
+    availableWidgets: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        const currentAvailableWidgets = JSON.parse(JSON.stringify(val))
+        const currentAvailableWidgetKeys = currentAvailableWidgets.map((widget) => widget.key)
+        const uniqueWidgetKeys = [...new Set(currentAvailableWidgetKeys)]
+        const uniqueWidgets = currentAvailableWidgets
+          .map((widget) => {
+            if (uniqueWidgetKeys.includes(widget.key)) {
+              return widget
+            } else return undefined
+          })
+          .filter(Boolean)
+        this.widgets = JSON.parse(JSON.stringify(uniqueWidgets))
+      }
     }
   }
 }
