@@ -69,7 +69,9 @@
           v-model="formValues.availableForRequests"
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
+          <DatatableLoading v-if="loading" :loading="loading" />
           <email-template
+            v-else
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
@@ -176,10 +178,12 @@ import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
 import trainingCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCoverImageUrl'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 
 export default {
   name: 'NewNotificationTemplate',
   components: {
+    DatatableLoading,
     InputTag,
     MakeAvailableFor,
     KSelect,
@@ -209,6 +213,7 @@ export default {
   data() {
     return {
       labels,
+      loading: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
@@ -302,17 +307,40 @@ export default {
     }
     this.callForDatas()
     if (this.selectedItem && this.selectedItem.resourceId) {
-      getEmailTemplate(this.selectedItem.resourceId).then((response) => {
-        const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        const {
-          data: { data }
-        } = response
-        for (let [key, value] of Object.entries(data)) {
-          if (key === 'availableForList') {
-            if (value.length) {
-              const availableForListFromBackend = getAvailableForListFromBackend(value)
-              if (!availableForListFromBackend.length) {
+      this.loading = true
+      getEmailTemplate(this.selectedItem.resourceId)
+        .then((response) => {
+          const logoKey = '{COMPANYLOGO}'
+          const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          const {
+            data: { data }
+          } = response
+          for (let [key, value] of Object.entries(data)) {
+            if (key === 'availableForList') {
+              if (value.length) {
+                const availableForListFromBackend = getAvailableForListFromBackend(value)
+                if (!availableForListFromBackend.length) {
+                  this.formValues['availableForRequests'] = [
+                    {
+                      id: 'MyCompanyOnly',
+                      label: 'My company only',
+                      type: 'MyCompanyOnly',
+                      resourceId: null
+                    }
+                  ]
+                  this.nonEditableAvailableForRequests = [
+                    {
+                      id: 'MyCompanyOnly',
+                      label: 'My company only',
+                      type: 'MyCompanyOnly',
+                      resourceId: null
+                    }
+                  ]
+                } else {
+                  this.formValues['availableForRequests'] = availableForListFromBackend
+                  this.nonEditableAvailableForRequests = availableForListFromBackend
+                }
+              } else {
                 this.formValues['availableForRequests'] = [
                   {
                     id: 'MyCompanyOnly',
@@ -321,40 +349,22 @@ export default {
                     resourceId: null
                   }
                 ]
-                this.nonEditableAvailableForRequests = [
-                  {
-                    id: 'MyCompanyOnly',
-                    label: 'My company only',
-                    type: 'MyCompanyOnly',
-                    resourceId: null
-                  }
-                ]
-              } else {
-                this.formValues['availableForRequests'] = availableForListFromBackend
-                this.nonEditableAvailableForRequests = availableForListFromBackend
               }
-            } else {
-              this.formValues['availableForRequests'] = [
-                {
-                  id: 'MyCompanyOnly',
-                  label: 'My company only',
-                  type: 'MyCompanyOnly',
-                  resourceId: null
-                }
-              ]
+              continue
             }
-            continue
+            if (key === 'template') {
+              value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
+            }
+            this.formValues[key] = value
           }
-          if (key === 'template') {
-            value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
+          if (this.isDuplicate) {
+            this.formValues.name = this.formValues.name + ' - COPY'
           }
-          this.formValues[key] = value
-        }
-        if (this.isDuplicate) {
-          this.formValues.name = this.formValues.name + ' - COPY'
-        }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      })
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
   beforeDestroy() {
