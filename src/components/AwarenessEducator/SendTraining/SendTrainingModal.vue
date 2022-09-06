@@ -106,7 +106,6 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import SendTrainingSelectUsers from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsers'
 import SendTrainingSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSettings'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { scrollToComponent } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -319,7 +318,6 @@ export default {
           ]
           if (selections.every((selection) => !selection)) {
             refSendTrainingSelectUsers.targetUserCheckboxSelectionError = true
-            return
           } else this.step += flag
         }
       } else if (this.step === 2 && flag === 1) {

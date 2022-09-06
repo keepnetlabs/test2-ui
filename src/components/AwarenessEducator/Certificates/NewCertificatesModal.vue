@@ -149,15 +149,21 @@ export default {
   },
   methods: {
     getDefaultCertificateTemplate() {
-      AwarenessEducatorService.getDefaultCertificateTemplate().then((response) => {
-        if (!this.selectedItem) {
-          const template = response?.data?.data?.template || ''
-          this.formData.template = template.replace(
-            new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl
-          )
-        }
-      })
+      this.loading = true
+      AwarenessEducatorService.getDefaultCertificateTemplate()
+        .then((response) => {
+          if (!this.selectedItem) {
+            const template = response?.data?.data?.template || ''
+            this.formData.template = template.replace(
+              new RegExp('{COMPANYLOGO}', 'g'),
+              this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
+            )
+            console.log('this.formdaTA.TEMPLATE', this.formData.template)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     callForData() {
       this.loading = true
@@ -168,7 +174,7 @@ export default {
           this.formData.description = description
           this.formData.template = template.replace(
             new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl
+            this?.$store?.state?.dashboard?.selectedCompanyObject?.logoUrl || ''
           )
           this.setMakeAvailableForData(availableForList)
         })

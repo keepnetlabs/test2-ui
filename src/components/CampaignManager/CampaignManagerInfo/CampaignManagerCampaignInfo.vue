@@ -603,7 +603,7 @@ export default {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
     },
     handleItemDetailsChange(item = {}) {
-      this.isAttachmentBasedScenario = item.methodTypeId === 3 ? true : false
+      this.isAttachmentBasedScenario = item.methodTypeId === 3
     },
     handleOnPhishingScenarioChange(item = {}) {
       this.formData.phishingScenario = {

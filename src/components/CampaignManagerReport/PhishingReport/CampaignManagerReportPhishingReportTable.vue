@@ -35,7 +35,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'

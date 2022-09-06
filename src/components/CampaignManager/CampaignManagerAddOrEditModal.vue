@@ -112,7 +112,6 @@ import {
   getCampaignManager,
   updateCampaignManager
 } from '@/api/phishingsimulator'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'

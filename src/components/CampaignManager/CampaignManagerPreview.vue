@@ -104,7 +104,7 @@ export default {
       return 'Campaign Template Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name
+      return this.selectedRow.name || ''
     }
   },
   created() {
@@ -120,7 +120,7 @@ export default {
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
           const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
-          this.isAttachmentBasedScenario = methodTypeId === 3 ? true : false
+          this.isAttachmentBasedScenario = methodTypeId === 3
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
             name: phishingScenarioPreviewDto?.emailTemplate?.name || '',

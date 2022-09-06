@@ -47,7 +47,7 @@ import {
   exportCampaignJobUserEmailOpened,
   searchCampaignJobUserEmailOpened
 } from '@/api/phishingsimulator'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 
 export default {
