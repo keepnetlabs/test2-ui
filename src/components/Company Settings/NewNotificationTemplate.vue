@@ -311,7 +311,7 @@ export default {
       getEmailTemplate(this.selectedItem.resourceId)
         .then((response) => {
           const logoKey = '{COMPANYLOGO}'
-          const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
           const {
             data: { data }
           } = response
@@ -375,7 +375,7 @@ export default {
       let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
       if (htmlTemplate) {
         const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+        const logoUrl = this.$store.state.whitelabel.mainLogoUrl
         this.formValues.template = htmlTemplate.replace(new RegExp(logoKey, 'g'), logoUrl)
       }
     },
