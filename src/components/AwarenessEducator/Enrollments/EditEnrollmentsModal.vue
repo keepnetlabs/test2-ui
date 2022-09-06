@@ -133,6 +133,7 @@
               :rules="rules.number"
             ></v-text-field>
             <KSelect
+              v-if="formData.enrollmentAutoEnroll.type === 'In'"
               v-model.trim="formData.enrollmentAutoEnroll.emailPeriodTypeEnum"
               id="input--enrollment-auto-enroll-period-type"
               class="ml-2"

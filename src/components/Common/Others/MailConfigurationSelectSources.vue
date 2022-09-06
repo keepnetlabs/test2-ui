@@ -126,7 +126,7 @@ export default {
         const {
           data: { data }
         } = response
-        this.options = data.map((item, index) => {
+        this.options = data.map((item) => {
           if (item.type.toLowerCase() === 'outlook') {
             item['mailConfigurationName'] = 'Outlook'
           }
@@ -135,10 +135,6 @@ export default {
             statusName: !!item.statusName ? item.statusName : 'Running'
           }
         })
-        // this.options.unshift(
-        //   { mailConfigurationName: 'All', mailConfigurationResourceId: 'all' },
-        //   { divider: true }
-        // )
         if (this.value.length) {
           this.selectedSources = this.options.filter((item) =>
             this.value.find(

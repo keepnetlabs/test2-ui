@@ -443,9 +443,6 @@ export default {
     this.callForData()
   },
   methods: {
-    isItemHaveTags(item) {
-      return !item?.tags?.length
-    },
     callForData(fromSearch = false) {
       if (fromSearch) this.setLoading(true)
       if (this.initial) this.setLoading(true)

@@ -1408,7 +1408,7 @@ export default {
     UPDATE: {
       url: `quick-scan/{resourceId}`,
       hasPermission: false,
-      method: ENUMS.METHODS.PUT
+      method: ENUMS.METHODS.GET
     },
     DELETE: {
       url: `quick-scan/{resourceId}`,

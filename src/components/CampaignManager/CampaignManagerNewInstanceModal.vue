@@ -182,7 +182,7 @@ import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignMa
 import CustomError from '@/components/CustomError'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { searchTargetGroups } from '@/api/targetUsers'
-import { createCampaignInstance, launchPhishingCampaign } from '@/api/phishingsimulator'
+import { launchPhishingCampaign } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 import { isDifferent } from '@/utils/functions'
 import * as validations from '@/utils/validations'

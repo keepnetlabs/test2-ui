@@ -56,7 +56,6 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { callForCampaignReports, exportCampaignReports } from '@/api/phishingsimulator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
