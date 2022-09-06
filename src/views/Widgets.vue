@@ -508,7 +508,11 @@ export default {
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({ ...item, name: item.title })
+      this.availableWidgets.push({
+        key: item.key,
+        name: item.title,
+        isAllowed: item.isAllowed
+      })
     },
     handleOpenMenu() {
       this.editMode = true
