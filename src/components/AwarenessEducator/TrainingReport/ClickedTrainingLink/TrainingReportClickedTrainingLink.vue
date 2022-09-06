@@ -252,14 +252,13 @@ export default {
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      const payload = {
+      this.resendPayload = {
         Types: [2],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
         filter: this.axiosPayload.filter
       }
-      this.resendPayload = payload
       this.toggleIsShowResendDialog()
     },
     handleOnDetail(row) {

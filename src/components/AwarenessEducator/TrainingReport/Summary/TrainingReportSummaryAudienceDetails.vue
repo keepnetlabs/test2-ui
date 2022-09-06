@@ -181,8 +181,7 @@ export default {
             type: 'textArray',
             filterableType: 'text',
             width: 150,
-            hasTooltip: true,
-            filterableType: 'text'
+            hasTooltip: true
           },
           {
             property: 'dateCreated',

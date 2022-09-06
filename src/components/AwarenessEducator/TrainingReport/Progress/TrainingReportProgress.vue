@@ -279,7 +279,7 @@ export default {
   },
   methods: {
     getStatusBadgeProps(progress) {
-      if (progress == 'Not Completed')
+      if (progress === 'Not Completed')
         return {
           color: '#B83A3A',
           text: 'Not Completed'
