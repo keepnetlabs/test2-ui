@@ -463,8 +463,12 @@ export default {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
-      this.listData[index].selected = true
-      this.selectedPreviousIndex = index
+      if (index !== undefined) {
+        if (this.listData[index]) {
+          this.listData[index].selected = true
+        }
+        this.selectedPreviousIndex = index
+      }
       this.loadingTemplatePreview = true
       this.$emit('selectedLandingPageChange', item.id)
       this.$emit('selectedLandingPageTemplateResourceId', item.resourceId)
