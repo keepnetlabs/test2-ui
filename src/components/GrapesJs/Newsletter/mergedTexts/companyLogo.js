@@ -1,5 +1,4 @@
 import companyLogoMergeText from '../blocks/mergedTextsBlocks/companyLogo'
-import store from '@/store'
 const companyLogo = {
   label: 'Company Logo',
   category: 'Merge Tags',
@@ -10,6 +9,7 @@ const companyLogo = {
     class: 'merged-text',
     icon: 'fa fa-text',
     isUrl: false,
+    src: '{COMPANYLOGO}',
     id: 'logo-url'
   },
   content: {
@@ -17,8 +17,10 @@ const companyLogo = {
     type: 'image',
     components: companyLogoMergeText,
     id: 'logo-url',
+    src: '{COMPANYLOGO}',
     attributes: {
       icon: 'fa fa-text',
+      src: '{COMPANYLOGO}',
       isUrl: false,
       'data-title': 'Company Logo',
       id: 'logo-url'

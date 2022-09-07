@@ -499,7 +499,6 @@ export default {
           }
         }
       })
-      const logoUrl = store.state.whitelabel.mainLogoUrl
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (
           droppedComponent &&
@@ -507,13 +506,12 @@ export default {
           droppedComponent.attributes.attributes &&
           droppedComponent.attributes.attributes['data-title'] === 'Company Logo'
         ) {
+          /*
           for (const img of document
             .getElementsByClassName('gjs-frame')[0]
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
-            droppedComponent.attributes.src = logoUrl
-            img.src = logoUrl
-            img.className = img.className.replace(new RegExp('gjs-plh-image', 'g'), '')
           }
+           */
         } else if (
           droppedComponent &&
           block.attributes &&
@@ -611,7 +609,10 @@ export default {
       document.querySelector('span[title="Preview"]').addEventListener('click', () => {
         const win = window.open('', 'Title')
         win.document.title = 'Mail Preview'
-        win.document.body.innerHTML = this.getGrapesEditorContent()
+        win.document.body.innerHTML = this.getGrapesEditorContent().replace(
+          new RegExp('{COMPANYLOGO}', 'g'),
+          this?.$store?.state?.whitelabel.mainLogoUrl || ''
+        )
       })
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
@@ -774,8 +775,7 @@ export default {
       }
       for (const [key, value] of Object.entries(blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
-          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
-          value.content.components[0].src = logoUrl
+          value.content.components[0].src = '{COMPANYLOGO}'
         }
         blockManager.add(key, value)
       }
@@ -877,12 +877,7 @@ export default {
             editor.DomComponents.getWrapper().set('content', '')
             const code = codeViewer.editor.getValue()
             const callback = (importedCode = code) => {
-              editor.setComponents(
-                importedCode.replace(
-                  new RegExp('{COMPANYLOGO}', 'g'),
-                  this?.$store?.state?.whitelabel.mainLogoUrl || ''
-                )
-              )
+              editor.setComponents(importedCode)
               editor.Modal.close()
             }
             minifyHTML(code)

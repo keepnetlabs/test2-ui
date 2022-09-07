@@ -799,7 +799,7 @@
                 @click="onEmptyBtnClicked"
               >
                 <!-- empty action -->
-                <v-icon class="mr-1" style="margin-top: -1px;">{{ empty.icon }}</v-icon>
+                <v-icon class="mr-1">{{ empty.icon }}</v-icon>
                 <span>{{ empty.btn }} </span>
               </v-btn>
             </slot>
