@@ -130,7 +130,7 @@
                   </div>
                   <div class="template-list--item mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                    <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
                   </div>
                 </div>
               </div>
