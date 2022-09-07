@@ -330,6 +330,7 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert-circle'
           })
+          this.$router.push({ path: '/email-threat-simulator' })
         })
     }
   },
