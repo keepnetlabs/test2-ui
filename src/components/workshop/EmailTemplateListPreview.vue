@@ -429,10 +429,12 @@ export default {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
-      if (this.listData[index]) {
-        this.listData[index].selected = true
+      if (index !== undefined) {
+        if (this.listData[index]) {
+          this.listData[index].selected = true
+        }
+        this.selectedPreviousIndex = index
       }
-      this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
       this.$emit('selectedEmailTemplateChange', item.id, item)
       this.$emit('selectedEmailTemplateResourceId', item.resourceId)
