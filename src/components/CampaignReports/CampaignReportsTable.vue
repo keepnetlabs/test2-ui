@@ -188,16 +188,19 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => {
-            const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+            const campaignStatus = [row['totalNoResponseCount']]
             if (row.method === 'Click-Only') {
               campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.push(row['totalOpenedCount'])
             }
             if (row.method === 'Attachment') {
+              campaignStatus.push(row['totalOpenedCount'])
               campaignStatus.push(row['totalAttachmentOpenedCount'])
             }
 
             if (row.method === 'Data Submission') {
               campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.push(row['totalOpenedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
             }
             return {
