@@ -22,7 +22,7 @@
           v-model.trim="ipAddressSearch"
           id="input--settings-exclude-ip-address"
           errorMessage="This is not a valid IP address"
-          :rules="ipRules"
+          :rules="rules"
         />
       </template>
     </DataContainerWithSearchInput>
@@ -92,11 +92,21 @@ export default {
       ipRules: [
         (v) => Validations.ip(v, 'This is not a valid IP address'),
         (v) => Validations.startsWithSpace(v)
-      ]
+      ],
+      rules: []
     }
   },
   created() {
     this.getExcludedIPAddresses()
+  },
+  watch: {
+    ipAddressSearch(val) {
+      if (!!val) {
+        this.rules = this.ipRules
+      } else {
+        this.rules = []
+      }
+    }
   },
   methods: {
     getExcludedIPAddresses() {
@@ -122,8 +132,10 @@ export default {
       this.dataContainerWithSearchItems = newItems
     },
     handleIpAddressesAdd() {
-      this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
-      this.resetIpAddresses()
+      if (!!this.ipAddressSearch) {
+        this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
+        this.resetIpAddresses()
+      }
     },
     resetIpAddresses() {
       this.ipAddressSearch = ''

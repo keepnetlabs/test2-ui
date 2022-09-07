@@ -779,7 +779,6 @@
                 <v-checkbox
                   v-model="formValues.isHideUrlParameter"
                   id="input--integration-is-hide-url-parameter"
-                  class="black--text"
                   color="#2196f3"
                   :label="`Hide URL Parameters`"
                   :disabled="!formValues.isSendUrl || !selectedIntegrationType.isSendUrl"
