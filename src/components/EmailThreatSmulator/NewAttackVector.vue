@@ -161,7 +161,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage('Vector Name'))
+          (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Vector Name', 160))
         ]
       },
       numberRangeRule: {
