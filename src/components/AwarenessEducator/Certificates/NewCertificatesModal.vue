@@ -153,12 +153,7 @@ export default {
       AwarenessEducatorService.getDefaultCertificateTemplate()
         .then((response) => {
           if (!this.selectedItem) {
-            const template = response?.data?.data?.template || ''
-            this.formData.template = template.replace(
-              new RegExp('{COMPANYLOGO}', 'g'),
-              this?.$store?.state?.whitelabel?.mainLogoUrl || ''
-            )
-            console.log('this.formdaTA.TEMPLATE', this.formData.template)
+            this.formData.template = response?.data?.data?.template || ''
           }
         })
         .finally(() => {
@@ -172,10 +167,7 @@ export default {
           const { name, description, template, availableForList } = response?.data?.data
           this.formData.name = name
           this.formData.description = description
-          this.formData.template = template.replace(
-            new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.whitelabel?.mainLogoUrl || ''
-          )
+          this.formData.template = template
           this.setMakeAvailableForData(availableForList)
         })
         .finally(() => (this.loading = false))
