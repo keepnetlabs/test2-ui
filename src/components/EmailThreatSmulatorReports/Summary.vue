@@ -257,6 +257,7 @@ import {
   getQuickScanReportCountById,
   getQuickScanReportStatsById
 } from '@/api/emailThreatSimlator'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'Summary',
   components: {
@@ -276,50 +277,60 @@ export default {
   },
   methods: {
     getReportData(resourceId) {
-      getQuickScanById(resourceId).then((scanData) => {
-        const details = scanData.data.data
-        this.scanData = details
-        getQuickScanReportCountById(resourceId).then((scoreData) => {
-          const data = scoreData.data.data
-          this.scoreData = [
-            {
-              title: 'Total Attacks Sent',
-              count: data.totalAttackSendCount,
-              color: 'blue',
-              icon: 'blue-icon',
-              percent: null
-            },
-            {
-              title: 'Secure Endpoints',
-              count: data.secureEndpointsCount,
-              color: 'green',
-              icon: 'green-icon',
-              percent: data.secureEndpointsPercent
-            },
-            {
-              title: 'Insecure Endpoints',
-              count: data.insecureEndpointsCount,
-              color: 'red',
-              icon: 'red-icon',
-              percent: data.insecureEndpointsPercent
-            },
-            {
-              title: 'Unchecked Emails',
-              count: data.unckechedEndpointsCount,
-              color: 'gray',
-              icon: 'gray-icon',
-              percent: data.unckechedEndpointsPercent
-            }
-          ]
-          this.score = data.score
-          getQuickScanReportStatsById(resourceId).then((statsData) => {
-            this.scoresLoading = false
-            this.statsData = statsData.data.data
-            this.selectedAttackType = this.statsData.quickScanByAttackTypes[0]
-            this.selectedEmailStatus = this.statsData.quickScanByEmailStatus[0]
+      getQuickScanById(resourceId)
+        .then((scanData) => {
+          const details = scanData.data.data
+          this.scanData = details
+          getQuickScanReportCountById(resourceId).then((scoreData) => {
+            const data = scoreData.data.data
+            this.scoreData = [
+              {
+                title: 'Total Attacks Sent',
+                count: data.totalAttackSendCount,
+                color: 'blue',
+                icon: 'blue-icon',
+                percent: null
+              },
+              {
+                title: 'Secure Endpoints',
+                count: data.secureEndpointsCount,
+                color: 'green',
+                icon: 'green-icon',
+                percent: data.secureEndpointsPercent
+              },
+              {
+                title: 'Insecure Endpoints',
+                count: data.insecureEndpointsCount,
+                color: 'red',
+                icon: 'red-icon',
+                percent: data.insecureEndpointsPercent
+              },
+              {
+                title: 'Unchecked Emails',
+                count: data.unckechedEndpointsCount,
+                color: 'gray',
+                icon: 'gray-icon',
+                percent: data.unckechedEndpointsPercent
+              }
+            ]
+            this.score = data.score
+            getQuickScanReportStatsById(resourceId).then((statsData) => {
+              this.scoresLoading = false
+              this.statsData = statsData.data.data
+              this.selectedAttackType = this.statsData.quickScanByAttackTypes[0]
+              this.selectedEmailStatus = this.statsData.quickScanByEmailStatus[0]
+            })
           })
         })
-      })
+        .catch((error) => {
+          const errorResponse = error.response.data
+          let msg = errorResponse.message
+          this.$store.dispatch('common/createSnackBar', {
+            message: msg,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     }
   },
   created() {
