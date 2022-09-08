@@ -376,6 +376,7 @@ export default {
             },
             init() {
               this.on('change:attributes:URL', this.handleAttrChange)
+              this.on('change:attributes:src', this.srcChange)
             },
             handleAttrChange(component, value) {
               try {
@@ -402,6 +403,9 @@ export default {
               coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
                 at
               })
+            },
+            srcChange(component, value) {
+              component.set('src', value)
             }
           },
           view: {
