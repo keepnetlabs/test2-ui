@@ -198,7 +198,6 @@ import DataTable from '../DataTable'
 import NewEmailTemplates from './NewEmailTemplates'
 import DeleteEmailTemplates from './DeleteEmailTemplates'
 import AppDialog from '../AppDialog'
-import { deleteIntegration, disableIntegration, enableIntegration } from '@/api/integrations'
 import {
   getEmailTemplatesList,
   exportEmailTemplates,
@@ -226,7 +225,6 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
-
 export default {
   name: 'EmailTemplates',
   components: {

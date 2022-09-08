@@ -2524,7 +2524,7 @@ export default {
       }
     },
     setVisibleBody() {
-      let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
+      let urls = this.uploadRespond.urls.filter((item) => item.isHidden)
       for (let url of urls) {
         let els = document
           .getElementById('last-preview-body-shadow-root-for-preview')
@@ -2550,7 +2550,7 @@ export default {
         'last-preview-body-shadow-root-for-preview'
       )?.shadowRoot?.innerHTML
     },
-    handleTagItemChange(value) {
+    handleTagItemChange() {
       this.querySelections(this.searchIncident || '')
       if (this.isFindIncidentLoading) return false
     },

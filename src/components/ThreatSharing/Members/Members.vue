@@ -519,7 +519,6 @@ export default {
           this.isRemoveFromCommunityButtonDisabled = false
         })
     },
-    onRemoveMember() {},
     getMembers() {
       const payload = {
         pageNumber: 1,

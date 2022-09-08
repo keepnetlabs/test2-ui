@@ -84,7 +84,7 @@ export default {
     NewCommunity
   },
   watch: {
-    tab(value) {
+    tab() {
       this.getSelectedTabData()
     }
   },

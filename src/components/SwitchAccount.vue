@@ -100,8 +100,6 @@ import { getMyCompanies } from '@/api/company'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
 import SwitchAccountTreeView from '@/components/SwitchAccountTreeView'
-const sleep = (d) => new Promise((r) => setTimeout(r, d))
-let called = false
 export default {
   name: 'SwitchAccount',
   components: { SwitchAccountTreeView },
@@ -187,10 +185,6 @@ export default {
       if (menu) {
         menu.style.visibility = status
       }
-    },
-    companiesRouterClick() {
-      this.setSwitchDialog(false)
-      this.$router.push('/company/companies')
     },
     sort(items, value) {
       return value
@@ -327,9 +321,6 @@ export default {
     ...mapState({
       currentCompany: (state) => state.dashboard.selectedCompany
     }),
-    isShowingSwitchAccountTreeView() {
-      return this.isMenuOpen && !this.isCompaniesLoading
-    },
     switchDialog: {
       get() {
         return this.isSwitchDialogOpen

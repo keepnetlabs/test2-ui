@@ -66,9 +66,6 @@ export default {
     },
     onAcceptRequesst() {
       this.$emit('acceptRequest')
-    },
-    onTogglePanel() {
-      this.$emit('togglePanel')
     }
   }
 }

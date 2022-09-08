@@ -266,13 +266,12 @@ export default {
   },
   methods: {
     handleMultipleDeleteOfCompanyGroups(items, excludedItems, selectAll) {
-      const payload = {
+      this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.resourceId),
         excludedItems,
         selectAll,
         filter: this.payload.filter
       }
-      this.multipleDeletePayload = payload
       this.multipleDeleteGroupCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
         : items.length
@@ -378,7 +377,7 @@ export default {
     deleteMultipleConfirmedItems() {
       this.isDeleting = true
       bulkDeleteCompanyGroups(this.multipleDeletePayload)
-        .then((response) => {
+        .then(() => {
           if (this.$refs?.refGroupDataList) {
             this?.$refs?.refGroupDataList?.resetSelectableParams()
           }

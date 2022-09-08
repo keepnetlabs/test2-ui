@@ -118,7 +118,6 @@ import NewAttackVector from './NewAttackVector'
 import DeleteAttackVector from './DeleteAttackVector'
 import ChangeStatusAttackVector from './ChangeStatusAttackVector'
 import {
-  getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,

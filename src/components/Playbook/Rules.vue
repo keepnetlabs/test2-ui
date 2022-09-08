@@ -378,9 +378,6 @@ export default {
       }
       return this.PERMISSIONS.CREATE.hasPermission ? obj : { ...obj, disabled: true }
     },
-    getStatus(row) {
-      return JSON.stringify(row.resourceId) === JSON.stringify(this.selectedMatch.resourceId)
-    },
     toggleMatchingModal() {
       this.showMatchingModal = !this.showMatchingModal
     },

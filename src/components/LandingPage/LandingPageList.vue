@@ -157,8 +157,7 @@ import {
   getLandingPageFormDetails,
   getLandingPageList,
   getLandingPageTemplatePreviewContent,
-  exportLandingPage,
-  deleteLandingPage
+  exportLandingPage
 } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'

@@ -96,7 +96,6 @@ import {
 } from '@/api/phishingsimulator'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
 
 export default {

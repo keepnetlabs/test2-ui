@@ -69,7 +69,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { sendFeedback } from '../api/dashboard'
+import { sendFeedback } from '@/api/dashboard'
 import labels from '@/model/constants/labels'
 
 export default {

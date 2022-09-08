@@ -205,9 +205,7 @@ export default {
         currentDiagnosticTool,
         this.initialDiagnosticToolValues
       )
-      if (isDiagnosticToolChanged) return true
-
-      return false
+      return !!isDiagnosticToolChanged
     },
     closeOverlay() {
       const isChanged = this.checkIfAnyStepChanged()

@@ -770,7 +770,7 @@ export default {
     toggleEditStatus() {
       this.editMode = !this.editMode
     },
-    multipleValues(key, val) {
+    multipleValues(key) {
       // This method controls whether selected items has same value or not
       if (this.isMultiple && this.value.length > 1) {
         return true
@@ -794,13 +794,11 @@ export default {
       }
     },
     getTop() {
-      const a =
-        this.containerStyle && this.containerStyle.top
-          ? Number(this.containerStyle.top.substring(0, this.containerStyle.top.indexOf('p'))) -
+      return this.containerStyle && this.containerStyle.top
+        ? Number(this.containerStyle.top.substring(0, this.containerStyle.top.indexOf('p'))) -
             120 +
             'px'
-          : false
-      return a
+        : false
     },
     getMultipleComboValue(prop) {
       return prop ? prop : []
@@ -862,7 +860,7 @@ export default {
       if (this.$refs.refForm.validate()) {
         if (this.isEditableRuntime) {
           if (this.value.length === 1) {
-            this.value.map((item, index) => {
+            this.value.map((item) => {
               const keys = Object.keys(item)
               keys.map((key) => {
                 //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
@@ -871,7 +869,7 @@ export default {
             })
           } else {
             this.editedPopupProperties.map((key) => {
-              this.value.map((item, index) => {
+              this.value.map((item) => {
                 item[key] = this.copyOfEditedRows[0][key]
               })
             })
@@ -910,11 +908,6 @@ export default {
     },
     getDataTableFieldLabel(type) {
       return getDataTableFieldLabel(type)
-    },
-    hasEditPopupFooter() {
-      return this.copyOfEditedRows.some((item) => {
-        return item['createTime'] || item['lastUpdateDate'] || item['createTime']
-      })
     },
     handleMultipleEdits(item, key, value) {
       item.map((i) => {
