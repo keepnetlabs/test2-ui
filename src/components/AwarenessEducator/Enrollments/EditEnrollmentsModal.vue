@@ -81,6 +81,7 @@
               format="dd/MM/yyyy"
               style="width: 100%; max-width: 180px;"
               :disabled="!sendReminderEvery"
+              :picker-options="datePickerOptions"
             />
           </div>
         </FormGroup>
@@ -257,7 +258,10 @@ export default {
         { text: 'Thursday', value: 4 },
         { text: 'Friday', value: 5 },
         { text: 'Saturday', value: 6 }
-      ]
+      ],
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      }
     }
   },
   computed: {
@@ -289,6 +293,9 @@ export default {
           this.formData = { ...this.formData, ...response?.data?.data }
         })
       }
+    },
+    disabledEndDates(val) {
+      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
     },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)

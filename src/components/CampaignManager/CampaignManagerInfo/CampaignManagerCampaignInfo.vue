@@ -157,6 +157,7 @@
               placeholder="Select Date Select Time"
               style="width: 100%; max-width: 222px;"
               :disabled="isScheduledTimeDisabled"
+              :picker-options="datePickerOptions"
             />
             <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
               <transition appear name="bounce">
@@ -289,6 +290,9 @@ export default {
   },
   data() {
     return {
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
       selectedTargetGroups: [],
       isAttachmentBasedScenario: false,
       axiosPayloadOfPhishingScenarios,
@@ -450,6 +454,9 @@ export default {
     this.$emit('initialFormValues', initialFormValues)
   },
   methods: {
+    disabledEndDates(val) {
+      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
+    },
     setInitialName(value) {
       this.formData.name = value
       const initialFormValues = JSON.parse(JSON.stringify(this.formData))

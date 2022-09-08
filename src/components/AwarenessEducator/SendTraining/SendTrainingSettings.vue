@@ -78,6 +78,7 @@
               ref="refPicker"
               placeholder="Select Date and Time"
               style="width: 100%; max-width: 220px;"
+              :picker-options="datePickerOptions"
               :disabled="isScheduledTimeDisabled"
             />
             <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
@@ -171,6 +172,7 @@
           placeholder="Select Date"
           format="dd/MM/yyyy"
           style="width: 100%; max-width: 180px;"
+          :picker-options="datePickerOptions"
           :disabled="!sendReminderEvery"
         />
       </div>
@@ -304,6 +306,9 @@ export default {
       isDateValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
       formData: {
         languageIds: [],
         markedAsTest: false,
@@ -427,6 +432,9 @@ export default {
     }
   },
   methods: {
+    disabledEndDates(val) {
+      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
+    },
     getSelectedTimeZone() {
       if (this.$store?.getters['common/getSelectedTimeZone']) {
         this.formData.enrollmentScheduler.scheduledTimeZoneId = this.$store?.getters[
