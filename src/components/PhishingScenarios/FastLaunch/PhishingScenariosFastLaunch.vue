@@ -182,9 +182,11 @@ export default {
     callForGetPhishingScenario() {
       getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
         (response) => {
-          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-            this.selectedScenario.name
-          )
+          if (this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo) {
+            this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+              this.selectedScenario.name
+            )
+          }
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
           const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate

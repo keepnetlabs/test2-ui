@@ -1284,9 +1284,11 @@ export default {
           key: 'communities',
           communitiesData
         })
-        this.$router.push({
-          path: `/threat-sharing/community/${post.communityResourceId}`
-        })
+        if (post.communityResourceId !== this.$route.params.id) {
+          this.$router.push({
+            path: `/threat-sharing/community/${post.communityResourceId}`
+          })
+        }
       }
     },
     closeNewInvestigationModal() {
