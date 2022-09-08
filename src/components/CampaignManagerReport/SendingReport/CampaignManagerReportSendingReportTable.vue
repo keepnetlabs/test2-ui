@@ -194,7 +194,7 @@ export default {
             show: true
           },
           {
-            property: 'originatingIP',
+            property: 'outboundIP',
             label: labels.SenderIP,
             isEditable: false,
             type: 'text',
