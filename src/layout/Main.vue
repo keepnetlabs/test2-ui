@@ -494,20 +494,6 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <!--
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/reports/simple-reports"
-                  id="btn--link-navigator-menu-simple-reports"
-                  route-name="Simple Reports"
-                  :active-class-comparator="
-                    () => routerName === 'Simple Reports' || routerName === 'Simple Report Details'
-                  "
-                />
-              </v-list-item-content>
-            </v-list-item>
-            !-->
           </v-list-group>
           <v-list-group
             v-if="getCompanyLeftMenuPermissions"
@@ -987,10 +973,7 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' ||
-        routerName === 'Simple Reports' ||
-        routerName === 'Campaign Report' ||
-        routerName === 'Simple Report Details'
+        routerName === 'Campaign Reports' || routerName === 'Campaign Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]

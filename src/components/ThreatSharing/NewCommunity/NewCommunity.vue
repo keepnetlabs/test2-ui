@@ -290,11 +290,6 @@ export default {
     }
   },
   methods: {
-    blurIndustry() {
-      if (!this.selectedCategory || !this.selectedCategory.name) {
-        this.selectedCategory = null
-      }
-    },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
     },

@@ -998,62 +998,6 @@
                   </template>
                   <span v-else> </span>
                 </template>
-                <!-- <template #datatable-row-actions="{ scope }">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        v-on="on"
-                        class="btn-hover"
-                        icon
-                        :id="rowActions[0].id"
-                        :disabled="rowActions[0].disabled"
-                        @click="deleteInvestigationDetails(scope.row)"
-                      >
-                        <v-icon>{{ rowActions[0].icon }}</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>{{ rowActions[0].name }}</span>
-                  </v-tooltip>
-                  <v-menu bottom left offset-y transition="scale-transition">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="btn-hover" icon v-on="on">
-                        <v-icon @click.native="selectedMenuIndex = scope.$index"
-                          >mdi-dots-vertical</v-icon
-                        >
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        :id="rowActions[1].id"
-                        class="sub-menu-el"
-                        :disabled="rowActions[1].disabled"
-                        @click="sendInvestigationDetailsWarningMessage(scope.row)"
-                      >
-                        <v-list-item-title @click="() => {}">
-                          <v-icon
-                            class="investigation-details-emails__row-actions__overflow-menu__icon"
-                            >{{ rowActions[1].icon }}</v-icon
-                          >
-                          <span>{{ rowActions[1].name }}</span>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        :id="rowActions[2].id"
-                        class="sub-menu-el"
-                        :disabled="rowActions[2].disabled"
-                        @click="deleteAndSendNotification(scope.row)"
-                      >
-                        <v-list-item-title @click="() => {}">
-                          <v-icon
-                            class="investigation-details-emails__row-actions__overflow-menu__icon"
-                            >{{ rowActions[2].icon }}</v-icon
-                          >
-                          <span>{{ rowActions[2].name }}</span>
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template> -->
               </datatable>
             </div>
             <div
@@ -1576,12 +1520,6 @@ export default {
         axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length
       )
     },
-    getMailCountByFolderName(folderName = '') {
-      const { statsAndMenuData } = this
-      return (
-        statsAndMenuData?.folders?.find((item) => item['folderName'] === folderName)?.mailCount || 0
-      )
-    },
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
       this.investigationTargetUsersListBodyData.pageSize = pageSize
       this.serverSidePropsForTargetUsers.pageSize = pageSize
@@ -1780,18 +1718,6 @@ export default {
         return 100
       }
       return Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100)
-    },
-    getTooltipText(action) {
-      let retValue = ''
-      if (action.warningMessage) {
-        retValue += action.warningMessage
-      }
-      if (action.actionResultErrorMessage && action.warningMessage) {
-        retValue = `${retValue}\n\n"${action.actionResultErrorMessage}"`
-      } else if (action.actionResultErrorMessage) {
-        retValue = `${action.actionResultErrorMessage}"`
-      }
-      return retValue
     },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       let fileName = 'Investigation Details '
@@ -2276,9 +2202,6 @@ export default {
     },
     createCommunityFromMobileInfo() {
       this.isWantToAddNewInvestigation = true
-    },
-    deleteAndSendNotification() {
-      this.isWantToDeleteAndNotify = true
     },
     isWantToDeleteAndNotifyConfirm() {},
     sendInvestigationDetailsWarningMessage(value, excludedResourceIdList, isSelectedAllEver) {

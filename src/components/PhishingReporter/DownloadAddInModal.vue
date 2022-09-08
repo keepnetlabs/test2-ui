@@ -167,7 +167,6 @@
 </template>
 
 <script>
-import Logos from './Logos'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import {
   downloadDiagnosticTool,

@@ -102,6 +102,7 @@
                 placeholder="Select Date Select Time"
                 style="width: 100%; max-width: 222px;"
                 :disabled="isScheduledTimeDisabled"
+                :picker-options="datePickerOptions"
               />
               <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
                 <transition appear name="bounce">
@@ -221,6 +222,9 @@ export default {
   },
   data() {
     return {
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
       labels,
       initialFormValues: JSON.parse(JSON.stringify(defaultFormValues)),
       formValues: JSON.parse(JSON.stringify(defaultFormValues)),
@@ -315,6 +319,9 @@ export default {
     }
   },
   methods: {
+    disabledEndDates(val) {
+      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
+    },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {

@@ -165,13 +165,6 @@ export default {
           return true
         }
       },
-      maxFive: (v) => {
-        if (v.length > 5) {
-          return 'Maximum 5 email for each invite'
-        } else {
-          return true
-        }
-      },
       required: (v) => (v && v.length >= 1) || 'You should type an email to invite'
     },
     validEmail: false,
@@ -248,12 +241,6 @@ export default {
     },
     onResize() {
       this.windowWidth = window.outerWidth
-    },
-    onEditClose() {
-      this.isWantToEditCommunity = false
-    },
-    onCancelLeave() {
-      this.isWantToLeaveFromCommunity = false
     },
     mobileInfoClicked() {
       this.$store.commit('threatSharing/SET_MOBILE_INFO', true)

@@ -999,7 +999,6 @@ import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
-import * as validations from '@/utils/validations'
 export default {
   name: 'NewIntegration',
   components: {
@@ -1819,7 +1818,7 @@ export default {
         this.loadingState.push('loading')
         this.customIntegrationTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.customIntegrationTestLoadingStatus = 'success'
           })
@@ -1848,7 +1847,7 @@ export default {
         this.loadingState.push('loading')
         this.spamHouseTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.spamHouseTestLoadingStatus = 'success'
           })

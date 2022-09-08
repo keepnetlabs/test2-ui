@@ -1305,10 +1305,6 @@ export default {
         if (!isFormValid) {
           this.showRequiredAreaModal = true
         }
-        //this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
-        //if (!isFormValid) {
-        //this.$refs.refMapTable.showErrorSelect()
-        //}
       }
       if (isFormValid) {
         if (this.activeStep === 1) {

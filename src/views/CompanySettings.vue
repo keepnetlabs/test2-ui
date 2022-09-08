@@ -141,7 +141,7 @@ export default {
       if (!query || !query.tab) return
       this.tab = query.tab
       this.$nextTick(() => {
-        this.$router.replace(this.$route.fullPath.replace('tab=notification-template&', ''))
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
       })
     }
   },

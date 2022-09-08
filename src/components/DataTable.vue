@@ -946,11 +946,7 @@ import {
   getDataTableFieldLabel,
   copyToClipboard
 } from '@/utils/functions'
-import {
-  columnStandards,
-  DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
+import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -3048,12 +3044,6 @@ export default {
       this.isSelectedAllEver = false
       this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
-    },
-    reRenderColumns(filterValues = {}) {
-      this.$nextTick(() => {
-        this.filterValues = filterValues
-        this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
-      })
     },
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues

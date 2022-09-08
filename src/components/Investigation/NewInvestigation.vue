@@ -368,7 +368,7 @@
 <script>
 import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
-import { getTargetUsers, searchTargetGroups } from '../../api/targetUsers'
+import { getTargetUsers, searchTargetGroups } from '@/api/targetUsers'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import {
   getDefaultAxiosPayload,
@@ -376,7 +376,6 @@ import {
   getTimeZoneForMoment,
   scrollToComponent,
   isDifferent,
-  convertTo12Hr,
   getTimeZone
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -419,13 +418,9 @@ export default {
       }
     },
     date(val) {
-      if (val && val.length > 0) {
-        this.isDateValid = true
-      } else {
-        this.isDateValid = false
-      }
+      this.isDateValid = val && val.length > 0
     },
-    targetUsersValue(newVal, oldVal) {
+    targetUsersValue(newVal) {
       if (newVal[0] === '') {
         newVal.splice(0, 1)
       }
@@ -748,12 +743,7 @@ export default {
       }
     },
     checkCheckboxValidation() {
-      let isCheckboxEmpty = this.scanTypes.length === 0
-      if (isCheckboxEmpty) {
-        this.checkboxError = true
-      } else {
-        this.checkboxError = false
-      }
+      this.checkboxError = this.scanTypes.length === 0
     },
     handleTargetUserTypeChange() {
       this.targetUsersValue = []
@@ -1229,6 +1219,7 @@ export default {
                   regex: this.filterList[index].text
                 })
               }
+              break
             default:
               break
           }
@@ -1279,11 +1270,6 @@ export default {
         })
       }
     },
-    checkInvestigationName() {
-      // investigaiton rule checking
-      if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threatSharing/checkName', this.name)
-    },
     checkIsEdit() {
       if (this.isEdit) {
         this.investigationName = this?.investigationDetailsData?.name || ''
@@ -1297,11 +1283,10 @@ export default {
         this.targetUserType = this.investigationDetailsData.targetUserType
         if (this.investigationDetailsData.targetUserType === 'Groups') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
-            let obj = {
+            return {
               name: item.targetUser,
               resourceId: item.targetGroupResourceId
             }
-            return obj
           })
         } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(

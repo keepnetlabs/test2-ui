@@ -7,7 +7,7 @@
       <a
         id="threat-sharing-right-column-go-to-post-details-your-posts-button"
         @click="onClickPostDetails"
-        >{{ post.title }}</a
+        >{{ post.postTitle || post.title }}</a
       >
     </div>
     <div

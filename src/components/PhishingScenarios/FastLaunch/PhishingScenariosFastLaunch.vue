@@ -96,7 +96,6 @@ import {
 } from '@/api/phishingsimulator'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
 
 export default {
@@ -183,9 +182,11 @@ export default {
     callForGetPhishingScenario() {
       getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
         (response) => {
-          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-            this.selectedScenario.name
-          )
+          if (this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo) {
+            this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+              this.selectedScenario.name
+            )
+          }
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
           const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate

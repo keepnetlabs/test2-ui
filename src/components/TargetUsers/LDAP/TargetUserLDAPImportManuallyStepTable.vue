@@ -50,7 +50,6 @@
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'

@@ -38,7 +38,6 @@
             :disabled="!!selectedItem || editItemsDisabled"
             outlined
             :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
-            @change="changeTemplateType"
           />
         </form-group>
         <form-group title="SMTP" has-hint>
@@ -310,8 +309,6 @@ export default {
       this.loading = true
       getEmailTemplate(this.selectedItem.resourceId)
         .then((response) => {
-          const logoKey = '{COMPANYLOGO}'
-          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
           const {
             data: { data }
           } = response
@@ -352,9 +349,6 @@ export default {
               }
               continue
             }
-            if (key === 'template') {
-              value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
-            }
             this.formValues[key] = value
           }
           if (this.isDuplicate) {
@@ -371,14 +365,6 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
-    changeTemplateType(resId) {
-      let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
-      if (htmlTemplate) {
-        const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.whitelabel.mainLogoUrl
-        this.formValues.template = htmlTemplate.replace(new RegExp(logoKey, 'g'), logoUrl)
-      }
-    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response
