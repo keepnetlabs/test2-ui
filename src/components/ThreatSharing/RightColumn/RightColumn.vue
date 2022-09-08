@@ -914,12 +914,15 @@ export default {
           })
         }
         if (this.$route.name === 'Community') {
-          this.$router.replace({ query: null, params: null })
-          this.$router.push({
-            name: 'Community',
+          this.$router.replace({
             query: { postId: post.communityPostResourceId },
             params: { communityName: post.communityName, id: post.communityResourceId }
           })
+          // this.$router.push({
+          //   name: 'Community',
+          //   query: { postId: post.communityPostResourceId },
+          //   params: { communityName: post.communityName, id: post.communityResourceId }
+          // })
           //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
           this.$router.replace({ query: null, params: null })
@@ -992,14 +995,11 @@ export default {
             communitiesData
           })
         }
-        //this.$router.replace({ query: null })
-        let previousRouteName = this.$route.name
-        this.$router.push({
-          name: 'Community',
-          params: { communityName: post.communityName, id: post.communityResourceId }
-        })
-        if (previousRouteName === 'Community') {
-          //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
+        if (this.$route.params.id !== post.communityResourceId) {
+          this.$router.push({
+            name: 'Community',
+            params: { communityName: post.communityName, id: post.communityResourceId }
+          })
         }
         this.getAllRightColumnData()
       }
