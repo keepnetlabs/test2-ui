@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'MapTable',
   computed: {
@@ -64,19 +63,9 @@ export default {
   },
   props: { mapTableData: { required: true } },
   methods: {
-    showErrorSelect() {
-      setTimeout(() => {
-        let el = this.$refs.refMapTableForm.$el.querySelector('.error--text')
-        scrollToComponent(el)
-      }, 250)
-    },
-    checkItem(item) {
-      return item['required']
-    },
-    setSelectDisableItemsToFalse(item) {
+    setSelectDisableItemsToFalse() {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-        let item = { ...i, disabled: false }
-        return item
+        return { ...i, disabled: false }
       })
     },
     setSelectDisableItems(item) {
@@ -90,11 +79,10 @@ export default {
         let isDisabled = _this.mapTableData.headers.find((x) => {
           return x.selectedValue && x.selectedValue.name === i.name
         })
-        let obj = {
+        return {
           ...i,
           disabled: isDisabled
         }
-        return obj
       })
       this.mapTableData.columns[0].disabled = false
       this.$emit('on-change', { ...item, header, index })
@@ -129,20 +117,6 @@ export default {
           selectedValue: isExist || null
         }
       })
-    },
-    exportMapTableData() {
-      let data = this.mapTableData.headers.map((item) => {
-        let dataObject = {
-          name: item.name,
-          selected: item.disabled,
-          selectedValue: item.selectedValue
-        }
-        return dataObject
-      })
-      return data
-    },
-    getMapTableDataValidation() {
-      return this.$refs.refMapTableForm.validate()
     },
     getMapTableData() {
       return this.mapTableData

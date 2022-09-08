@@ -1155,7 +1155,7 @@ export default {
     })
   },
   watch: {
-    '$route.query.postId'(val) {
+    '$route.query.postId'() {
       this.getPostDetails(this.$route.query.postId, 0, true)
     }
   },
@@ -1189,16 +1189,12 @@ export default {
       switch (item) {
         case 'wKBhLuFZ46y9':
           return 'TLP-GREEN'
-          break
         case 'RhHwRcLlZxek':
           return 'TLP-AMBER'
-          break
         case 'YpUZxVhYJlKg':
           return 'TLP-RED'
-          break
         case 'wFlYRDMW946M':
           return 'TLP-WHITE'
-          break
         default:
           break
       }
@@ -1207,16 +1203,12 @@ export default {
       switch (item) {
         case 'wKBhLuFZ46y9':
           return 'Limited disclosure, restricted to the community.'
-          break
         case 'RhHwRcLlZxek':
           return 'Limited disclosure, restricted to participants’ organizations.'
-          break
         case 'YpUZxVhYJlKg':
           return 'Not for disclosure, restricted to participants only.'
-          break
         case 'wFlYRDMW946M':
           return 'Disclosure is not limited.'
-          break
         default:
           break
       }
@@ -1225,16 +1217,12 @@ export default {
       switch (item) {
         case 'wKBhLuFZ46y9':
           return 'TLP: GREEN'
-          break
         case 'RhHwRcLlZxek':
           return 'TLP: AMBER'
-          break
         case 'YpUZxVhYJlKg':
           return 'TLP: RED'
-          break
         case 'wFlYRDMW946M':
           return 'TLP: WHITE'
-          break
         default:
           break
       }
@@ -1301,7 +1289,7 @@ export default {
         })
       }
     },
-    closeNewInvestigationModal(value) {
+    closeNewInvestigationModal() {
       this.$emit('refreshData')
       this.isWantToAddNewInvestigation = false
       document.getElementById('component-incidents').style.zIndex = 6

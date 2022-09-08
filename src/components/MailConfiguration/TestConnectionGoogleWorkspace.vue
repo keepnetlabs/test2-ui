@@ -156,7 +156,7 @@ export default {
       return !isLoading
     },
     isAllSuccess() {
-      let isSuccess =
+      return (
         this.checkApiConnectivity === 'success' &&
         this.checkPrivileges === 'success' &&
         this.checkAllUsersAccess === 'success' &&
@@ -165,8 +165,7 @@ export default {
         this.checkUpdateCategory === 'success' &&
         this.checkDeleteEmail === 'success' &&
         this.checkInboxAccess === 'success'
-
-      return isSuccess
+      )
     }
   },
   methods: {

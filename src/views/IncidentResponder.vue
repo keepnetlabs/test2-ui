@@ -1058,11 +1058,7 @@ export default {
             editOptions: {
               component: 'select',
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
-                } else {
-                  return false
-                }
+                return row.status === 'BeingAnalyzed'
               },
               props: {
                 items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
@@ -1239,11 +1235,7 @@ export default {
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
-              } else {
-                return false
-              }
+              return row.status === 'BeingAnalyzed'
             },
             props: {
               items: [
@@ -1605,11 +1597,7 @@ export default {
             editOptions: {
               component: 'select',
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
-                } else {
-                  return false
-                }
+                return row.status === 'BeingAnalyzed'
               },
               props: {
                 items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
@@ -1625,11 +1613,7 @@ export default {
             editOptions: {
               component: 'select',
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
-                } else {
-                  return false
-                }
+                return row.status === 'BeingAnalyzed'
               },
               props: {
                 items: [

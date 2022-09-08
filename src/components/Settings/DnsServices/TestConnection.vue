@@ -61,9 +61,7 @@ export default {
       return !isLoading
     },
     isAllSuccess() {
-      let isSuccess = this.checkApiConnectivity === 'success'
-
-      return isSuccess
+      return this.checkApiConnectivity === 'success'
     }
   },
   methods: {

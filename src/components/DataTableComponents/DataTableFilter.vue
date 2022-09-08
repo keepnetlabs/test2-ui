@@ -604,16 +604,6 @@ export default {
     isShowSearchTextField() {
       return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
     },
-    inBetweenDatesPickerOptions() {
-      return {
-        disabledDate: (time) => {
-          return !this.$moment(time.getTime()).isBetween(
-            this.$moment(Date.now()).subtract(15, 'days').format(getTimeZoneForMoment()),
-            this.$moment(Date.now()).format(getTimeZoneForMoment())
-          )
-        }
-      }
-    },
     getDateKey() {
       return this.$store?.state?.auth?.user?.userCompany?.timeZone
     },
@@ -639,10 +629,7 @@ export default {
       if (this.filterValueBetween[0] && this.filterValueBetween[1]) {
         return false
       }
-      if (this.filterValue) {
-        return false
-      }
-      return true
+      return !this.filterValue
     },
     getFilterButtonDisabled() {
       switch (this.filterableType) {

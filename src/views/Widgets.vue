@@ -541,7 +541,6 @@ export default {
         1
       )
     },
-    layoutResized() {},
     handleEditMode() {
       this.initialAvailableWidgets = JSON.parse(JSON.stringify(this.availableWidgets))
       this.editMode = true

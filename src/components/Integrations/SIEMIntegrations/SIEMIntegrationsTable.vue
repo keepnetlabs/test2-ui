@@ -190,7 +190,7 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -216,10 +216,6 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.callForData()
-    },
-    handleSortChange({ prop, order }) {
-      this.axiosPayload = { ...this.axiosPayload, orderBy: prop, ascending: order === 'ascending' }
       this.callForData()
     },
     handlePaginationChange({ pageSize, pageNumber }) {

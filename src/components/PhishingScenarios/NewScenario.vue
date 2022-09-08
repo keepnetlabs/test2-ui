@@ -835,10 +835,9 @@ export default {
                       (difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName
                     )
                     ?.value.toString() || ''
-                const difficultyColor = this.getDifficultyColor(
+                this.emailDifficultyChipColor = this.getDifficultyColor(
                   this.selectedEmailTemplate.difficultyName
                 )
-                this.emailDifficultyChipColor = difficultyColor
               }
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.step += 1
@@ -862,10 +861,9 @@ export default {
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
               )?.description
-              const difficultyColor = this.getDifficultyColor(
+              this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate.difficultyName
               )
-              this.emailDifficultyChipColor = difficultyColor
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.step += 1

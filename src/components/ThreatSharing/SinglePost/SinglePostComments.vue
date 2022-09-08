@@ -206,7 +206,7 @@ export default {
         })
         .finally(() => ((this.isEditCommentButtonDisabled = false), (this.commentsLoading = false)))
     },
-    addPostComment(postId, communId) {
+    addPostComment(postId) {
       this.isPostButtonDisabled = true
       if (this.$refs.refCommentForm.validate()) {
         const payload = {

@@ -323,9 +323,6 @@ export default {
     this.getMfaStatus()
   },
   computed: {
-    dynamicID() {
-      return 'dynamicID-' + Math.floor(Math.random() * Date.now().toString())
-    },
     getTitle() {
       let title = null
       switch (this.step) {

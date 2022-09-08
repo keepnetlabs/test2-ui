@@ -44,7 +44,6 @@ import 'grapick/dist/grapick.min.css'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
-import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
@@ -312,7 +311,7 @@ export default {
                 component.components(value)
               }
             },
-            handleClick(s) {
+            handleClick() {
               const { urlredirection } = this.model.getAttributes()
               if (urlredirection) {
                 //urlredirection

@@ -142,8 +142,6 @@
                   </span>
                   <div
                     v-if="!search && !companyValue && !threats && routerName === 'Community'"
-                    block
-                    rounded
                     class="create-post-incident"
                     id="threat-sharing-post-incident-button"
                     @click="showPostIncident = true"
@@ -267,16 +265,16 @@ export default {
   }),
   watch: {
     incidentLoading: function (newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal !== newVal) {
         this.$emit('setThreatSharingStepLoading', newVal)
       }
     },
     openEditPopupItem: function (newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal !== newVal) {
         this.showPostIncident = true
       }
     },
-    refreshIncidents: function (newVal, oldVal) {
+    refreshIncidents: function (newVal) {
       if (newVal && !this.isLoadState) {
         this.getIncidentList()
       }
@@ -296,17 +294,16 @@ export default {
         }
       }
     },
-    '$route.query.postId'(val) {
+    '$route.query.postId'() {
       this.$forceUpdate()
     }
   },
   methods: {
-    callForIncidentList(v) {
+    callForIncidentList() {
       !this.isLoadState && this.getIncidentList('', '', true)
     },
     checkDatatableIsEmpty() {
-      let result = this.search || this.companyValue || this.threats.length
-      return result
+      return this.search || this.companyValue || this.threats.length
     },
     handleSizeChange(val) {
       this.itemsPerPage = val
@@ -537,15 +534,6 @@ export default {
           }
         }
       }
-    },
-    nextPage() {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1
-    },
-    formerPage() {
-      if (this.page - 1 >= 1) this.page -= 1
-    },
-    updateItemsPerPage(number) {
-      this.itemsPerPage = number
     }
   },
   created() {
