@@ -78,6 +78,7 @@ export const labels = {
   SendTrainingSettingsSub: 'Define enrollment settings',
   SendTrainingSummarySub: 'Review your settings and preview templates before sending',
   UploadPngJpgOrPdf: 'Upload png, jpg or pdf',
+  UploadCoverImageForTheTraining: 'Upload a cover image for the training',
   AddTraining: 'Add Training',
   CreateNewTraining: 'Create New Training',
   ContentType: 'Content Type',

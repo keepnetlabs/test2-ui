@@ -6,7 +6,7 @@
         background-color="#B6791D"
         :title="labels.OpenedEmail"
         :is-loading="isLoading"
-        :icon-src="clickedLinkIcon"
+        :icon-src="openedEmailIcon"
       />
       <TrainingReportSummaryInfoCard
         v-bind="getInProgressData"
@@ -57,7 +57,7 @@ export default {
     return {
       labels,
       noResponseIcon: require('../../../../assets/img/ic-check-box.svg'),
-      clickedLinkIcon: require('../../../../assets/img/ic-exclude.svg'),
+      openedEmailIcon: require('../../../../assets/img/ic-opened-email.svg'),
       inProgressIcon: require('../../../../assets/img/hourglass.svg'),
       helpIcon: require('../../../../assets/img/help.svg')
     }

@@ -178,7 +178,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportOpenedDetail
+          message: 'No details for the user who hasn’t responded yet'
         },
         rowActions: [],
         downloadButton: {
