@@ -45,6 +45,7 @@
       :languages="languages"
     />
     <TrainingReportCertificate
+      v-if="getCertificateEmailNotificationTemplateTypeResourceId"
       :form-data="getCertificateData"
       :isFetchingSummary="isLoading"
       :certificate-email-notification-template-type-resource-id="
