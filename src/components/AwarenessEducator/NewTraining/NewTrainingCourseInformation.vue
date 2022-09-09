@@ -57,7 +57,7 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImageTrainingUrl" :sub-title="labels.UploadPngJpgOrPdf">
+    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheTraining">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
