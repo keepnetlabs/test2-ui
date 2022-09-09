@@ -193,7 +193,7 @@ export default {
             : 'No',
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
-              ? 'Starting now'
+              ? 'Now'
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
         formData.certificateData = refSendTrainingSettings.formData.awardCertificate
