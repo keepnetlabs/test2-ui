@@ -39,7 +39,6 @@ export default {
     col: {
       type: Object
     }
-  },
-  created() {}
+  }
 }
 </script>

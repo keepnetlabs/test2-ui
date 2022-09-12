@@ -477,6 +477,9 @@
                 <div v-if="col.type === 'textWithBadge'">
                   <datatable-text-with-badge :scope="scope" :col="col" />
                 </div>
+                <div v-if="col.type === 'defaultTemplate'">
+                  <data-table-default-template :scope="scope" />
+                </div>
 
                 <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
                 <data-table-attachment
@@ -952,8 +955,10 @@ import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
+import DataTableDefaultTemplate from '@/components/DataTableComponents/DataTableDefaultTemplate'
 export default {
   components: {
+    DataTableDefaultTemplate,
     DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
