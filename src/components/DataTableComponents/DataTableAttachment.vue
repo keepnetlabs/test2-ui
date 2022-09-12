@@ -3,7 +3,9 @@
     <span v-if="props.scope.row && props.scope.row[props.col.property] > 0">
       <v-icon color="#43a047">mdi-check</v-icon>
     </span>
-    <span v-else />
+    <span v-else>
+      <v-icon color="#757575">mdi-cancel</v-icon>
+    </span>
   </div>
 </template>
 
