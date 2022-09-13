@@ -101,6 +101,8 @@
                 ref="refPicker"
                 placeholder="Select Date Select Time"
                 style="width: 100%; max-width: 222px;"
+                :format="parsedFormat"
+                :valueFormat="parsedFormat"
                 :disabled="isScheduledTimeDisabled"
                 :picker-options="datePickerOptions"
               />
@@ -185,7 +187,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { launchPhishingCampaign } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
-import { isDifferent } from '@/utils/functions'
+import { isDifferent, getTimeZone } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 
 const defaultFormValues = {
@@ -222,6 +224,7 @@ export default {
   },
   data() {
     return {
+      parsedFormat: getTimeZone(false),
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
@@ -278,7 +281,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone'
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
@@ -299,6 +303,15 @@ export default {
     }
   },
   watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
     selectedTimeZone(val) {
       this.formValues.scheduledDateTimeZoneId = val
     },
@@ -472,6 +485,8 @@ export default {
         const payload = {
           ...this.formValues,
           scheduleTypeId: parseInt(this.formValues.scheduleTypeId),
+          scheduledDate:
+            parseInt(this.formValues.scheduleTypeId) !== 3 ? null : this.formValues.scheduledDate,
           targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(
             (target) => target.value
           )

@@ -156,6 +156,8 @@
               ref="refPicker"
               placeholder="Select Date Select Time"
               style="width: 100%; max-width: 222px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
               :disabled="isScheduledTimeDisabled"
               :picker-options="datePickerOptions"
             />
@@ -231,6 +233,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { mapGetters } from 'vuex'
 import CustomError from '@/components/CustomError'
+import { getTimeZone } from '../../../utils/functions'
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
   pageSize: 10,
@@ -290,6 +293,7 @@ export default {
   },
   data() {
     return {
+      parsedFormat: getTimeZone(false),
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
@@ -369,7 +373,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone'
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupErrorMessage() {
       return this.formData.targetGroupResourceIds.length
@@ -387,6 +392,15 @@ export default {
     }
   },
   watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
     phishingScenarioSelectItems(newItems) {
       const selectedScenarioIndex = newItems.findIndex(
         (item) => item.value === this.formData?.phishingScenario?.value
