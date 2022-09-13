@@ -197,7 +197,7 @@ export default {
         rowActions: [
           {
             name: 'View Report',
-            icon: 'mdi-receipt',
+            icon: 'mdi mdi-text-box',
             action: 'View Report',
             disabled: !this.$store.getters['permissions/getEtsQuickScanReportPermissionStat']
           },
