@@ -485,13 +485,17 @@ export default {
           const payload = {
             name: campaignManagerFormData.name,
             phishingScenarioResourceId: campaignManagerFormData.phishingScenarioResourceId,
-            scheduleTypeId: campaignManagerFormData.scheduleTypeId,
             duration: campaignManagerFormData.duration,
             targetGroupResourceIds: campaignManagerFormData.targetGroupResourceIds.map(
               (item) => item.value
             ),
             scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
             scheduledDate: campaignManagerFormData.scheduledDate,
+            scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
+            scheduledDate:
+              parseInt(campaignManagerFormData.scheduleTypeId) !== 3
+                ? null
+                : campaignManagerFormData.scheduledDate,
             distributionTypeId: advancedSettingsFormData.distributionTypeId,
             distributionSmtpDelayEvery: advancedSettingsFormData.distributionSmtpDelayEvery,
             distributionSmtpDelayTimeTypeId:
