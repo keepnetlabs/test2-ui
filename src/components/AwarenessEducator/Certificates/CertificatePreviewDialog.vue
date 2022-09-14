@@ -64,7 +64,11 @@ export default {
       this.isPreviewLoading = true
       AwarenessEducatorService.getCertificate(this.selectedRow.id)
         .then((response) => {
-          this.template = response?.data?.data?.template
+          this.template =
+            response?.data?.data?.template?.replace(
+              new RegExp('{COMPANYLOGO}', 'g'),
+              this?.$store?.state?.whitelabel.mainLogoUrl || ''
+            ) || ''
         })
         .finally(() => {
           this.isPreviewLoading = false

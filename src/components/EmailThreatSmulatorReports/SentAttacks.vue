@@ -54,7 +54,6 @@
 <script>
 import DataTable from '../DataTable'
 import {
-  PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -96,8 +95,20 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date',
+            filterableType: 'text',
             width: 180
+          },
+          {
+            property: 'extension',
+            align: 'left',
+            editable: false,
+            label: 'Extension',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 130
           },
           {
             property: 'categoryName',
@@ -120,7 +131,7 @@ export default {
             show: true,
             type: 'badge',
             filterableType: 'select',
-            filterableItems: ['Success', 'Error', 'InProgress'],
+            filterableItems: ['Success', 'Error', { text: 'In Progress', value: 'InProgress' }],
             width: 140
           },
           {
@@ -132,7 +143,18 @@ export default {
             show: true,
             type: 'slot',
             filterableType: 'select',
-            filterableItems: ['Secure', 'Insecure', 'Unchecked']
+            filterableItems: ['Secure', 'Insecure', 'Unchecked'],
+            width: 140
+          },
+          {
+            property: 'deliverTime',
+            align: 'left',
+            editable: false,
+            label: 'Email Sent Date',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'date'
           }
         ],
         downloadButton: {
@@ -300,6 +322,7 @@ export default {
     background-color: #217124;
     width: 80px;
     text-align: center;
+    cursor: context-menu;
     &.unchecked {
       background-color: #e0e0e0;
       color: #383b41;
