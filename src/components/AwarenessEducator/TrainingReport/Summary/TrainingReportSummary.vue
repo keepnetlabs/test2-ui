@@ -296,12 +296,12 @@ export default {
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}
-      const { companyName = '' } = trainingDetails
+      const { companyName = '', trainingDescription = '' } = trainingDetails
       const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
       return {
         name,
         createdBy: companyName,
-        description,
+        description: description || trainingDescription,
         template
       }
     },
