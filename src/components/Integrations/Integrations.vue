@@ -74,8 +74,8 @@
             :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
-            :icon="tableOptions.rowActions[1].icon"
-            :text="scope.row.status === labels.Active ? labels.InActive : labels.Active"
+            :icon="scope.row.status === labels.Active ? 'mdi-minus-circle-outline' : 'mdi-power'"
+            :text="scope.row.status === labels.Active ? labels.Deactivate : labels.Activate"
             @on-click="
               scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
             "
