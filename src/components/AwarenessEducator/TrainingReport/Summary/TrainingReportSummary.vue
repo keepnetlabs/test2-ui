@@ -296,7 +296,7 @@ export default {
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}
-      const { companyName = '', trainingDescription = '' } = trainingDetails
+      const { companyName = '', description: trainingDescription = '' } = trainingDetails
       const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
       return {
         name,
