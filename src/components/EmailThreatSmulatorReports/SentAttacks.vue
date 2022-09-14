@@ -131,7 +131,7 @@ export default {
             show: true,
             type: 'badge',
             filterableType: 'select',
-            filterableItems: ['Success', 'Error', 'InProgress'],
+            filterableItems: ['Success', 'Error', { text: 'In Progress', value: 'InProgress' }],
             width: 140
           },
           {
