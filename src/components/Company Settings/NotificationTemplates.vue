@@ -362,9 +362,6 @@ export default {
         })
       })
     },
-    getDisabledStatusOfAction(row) {
-      return !row.isOwner
-    },
     handleDelete(row) {
       this.selectedItem = row
       if (row.isDefault) {

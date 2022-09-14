@@ -455,7 +455,7 @@ export default {
   },
   methods: {
     disabledEndDates(val) {
-      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
+      return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
     setInitialName(value) {
       this.formData.name = value

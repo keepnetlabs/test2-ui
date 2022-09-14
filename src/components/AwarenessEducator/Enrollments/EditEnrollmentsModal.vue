@@ -295,7 +295,7 @@ export default {
       }
     },
     disabledEndDates(val) {
-      return new Date().getTime() + 1000 * 60 * 60 > val.getTime()
+      return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
