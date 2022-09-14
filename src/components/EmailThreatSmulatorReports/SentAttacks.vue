@@ -54,7 +54,6 @@
 <script>
 import DataTable from '../DataTable'
 import {
-  PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
