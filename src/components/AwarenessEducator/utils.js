@@ -75,7 +75,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     filterableType: 'text',
-    type: 'slot',
+    type: 'defaultTemplate',
     width: 160
   },
   DESCRIPTION: {

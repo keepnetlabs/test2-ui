@@ -66,6 +66,7 @@ import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/Train
 import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { useLoading } from '@/hooks/useLoading'
+import { getDefaultEmailTemplate } from '@/api/company'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -93,7 +94,8 @@ export default {
       targetGroups: [],
       trainingSummary: {},
       interval: null,
-      languages: []
+      languages: [],
+      enrollmentEmailData: {}
     }
   },
   computed: {
@@ -294,16 +296,13 @@ export default {
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}
-      const {
-        name = 'Training Enrollment Email',
-        companyName = '',
-        description = 'Default training enrollment email'
-      } = trainingDetails
-
+      const { companyName = '', description: trainingDescription = '' } = trainingDetails
+      const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
       return {
         name,
         createdBy: companyName,
-        description
+        description: description || trainingDescription,
+        template
       }
     },
     getCertificateData() {
@@ -334,6 +333,7 @@ export default {
   created() {
     this.callForLanguages()
     this.callForData()
+    this.callForEnrollmentEmail()
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -345,23 +345,32 @@ export default {
         this.callApis()
       }, 15000)
     },
+    callForEnrollmentEmail() {
+      if (this.getTrainingEmailNotificationTemplateTypeResourceId) {
+        getDefaultEmailTemplate(this.getTrainingEmailNotificationTemplateTypeResourceId)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            this.enrollmentEmailData = data?.template || {}
+          })
+          .finally(this.setLoading)
+      }
+    },
     callApis(isUseLoading = false) {
       if (isUseLoading) {
         this.setLoading(true)
       }
-      AwarenessEducatorService.getTrainingReportSummary(this.id)
-        .then((response) => {
-          this.trainingSummary = response?.data?.data
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.trainingSummary?.trainingDetails?.name || ''
-          )
-        })
-        .finally(() => {
-          if (isUseLoading) {
-            this.setLoading(false)
-          }
-        })
+      AwarenessEducatorService.getTrainingReportSummary(this.id).then((response) => {
+        this.trainingSummary = response?.data?.data
+        this.$store.dispatch(
+          'common/setActivePageRouterName',
+          this.trainingSummary?.trainingDetails?.name || ''
+        )
+        if (isUseLoading) {
+          this.callForEnrollmentEmail()
+        }
+      })
     },
     callForLanguages() {
       AwarenessEducatorService.getLanguages().then((response) => {
