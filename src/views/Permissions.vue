@@ -270,28 +270,11 @@ export default {
       this.deleteDialog = false
     },
     handleDeleteDialog() {
-      deletePermission(this.deletePermissionId)
-        .then(() => {
-          this.$refs.refPermissionList.unSelectRow(this.selectedItem)
-          this.deleteDialog = false
-          this.getDatatableList()
-        })
-        .catch(() => {
-          this.$store.dispatch(
-            'common/createSnackBar',
-            {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message:
-                (error.response.data &&
-                  error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message ||
-                error.response.data.Message,
-              icon: 'mdi-alert'
-            },
-            { root: true }
-          )
-        })
+      deletePermission(this.deletePermissionId).then(() => {
+        this.$refs.refPermissionList.unSelectRow(this.selectedItem)
+        this.deleteDialog = false
+        this.getDatatableList()
+      })
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName
