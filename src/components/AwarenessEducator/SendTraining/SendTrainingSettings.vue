@@ -424,6 +424,15 @@ export default {
     this.callForContentLanguageItems()
   },
   watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
     selectedTimeZone(val) {
       this.formData.enrollmentScheduler.scheduledTimeZoneId = val
     },
