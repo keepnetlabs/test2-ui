@@ -77,8 +77,16 @@
           :text="tableOptions.rowActions[1].name"
           @on-click="handleAddToAnExistingGroup(scope.row)"
         />
-        <TargetUserRowActionsRemoveFromGroupButton
+        <DefaultMenuRowAction
           :id="tableOptions.rowActions[2].id"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[2].disabled"
+          :icon="tableOptions.rowActions[2].icon"
+          :text="tableOptions.rowActions[2].name"
+          @on-click="handleCreateGroupWithUser(scope.row)"
+        />
+        <TargetUserRowActionsRemoveFromGroupButton
+          :id="tableOptions.rowActions[3].id"
           :scope="scope"
           @on-remove="handleRemoveToGroup"
         />
@@ -159,7 +167,8 @@ export default {
     'handleAddUsersSelectionClick',
     'handleRemoveToGroup',
     'handleRemoveUsersSelectionClick',
-    'handleRouteBackToTargetUsers'
+    'handleRouteBackToTargetUsers',
+    'handleCreateGroupWithUser'
   ],
   data() {
     return {
@@ -442,6 +451,12 @@ export default {
               action: 'handleAddToAnExistingGroup'
             },
             {
+              name: 'Create a group with user',
+              id: 'btn-create-group-with-user--target-group-users-row-actions',
+              icon: 'mdi-account-multiple',
+              action: 'handleCreateGroupWithUser'
+            },
+            {
               name: 'Remove from group',
               id: 'btn-remove-from-group--target-group-users-row-actions',
               icon: 'mdi-minus-circle',
@@ -449,6 +464,9 @@ export default {
             }
           ]
         : []
+    },
+    handleCreateGroupWithUser(selectedRow = {}) {
+      this.$emit('handleCreateGroupWithUser', selectedRow)
     },
     handleAddUsersSelectionClick() {
       this.$emit('handleAddUsersSelectionClick', this.selections)
