@@ -14,6 +14,7 @@
     <app-dialog
       v-if="deleteDialog"
       :status="deleteDialog"
+      type="delete"
       title-id="text--permissions-delete-popup-title"
       subtitle-id="text--permissions-delete-popup-subtitle"
       icon="mdi-delete"
@@ -21,8 +22,8 @@
       subtitle="The permission will deleted permanently"
       @changeStatus="closeDeleteDialog"
     >
-      <template v-slot:app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
+      <template #app-dialog-footer>
         <app-dialog-footer
           cancel-button-id="btn-cancel--delete-permission-popup"
           confirm-button-id="btn-delete--delete-permission-popup"

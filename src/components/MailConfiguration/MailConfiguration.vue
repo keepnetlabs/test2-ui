@@ -513,6 +513,7 @@
     </app-modal>
     <app-dialog
       v-if="deleteDialog"
+      type="delete"
       icon="mdi-delete"
       title="Delete Mail Configuration?"
       :subtitle="`The ${deleteItemType} mail configuration will deleted permanently`"

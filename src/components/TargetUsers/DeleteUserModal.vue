@@ -1,6 +1,7 @@
 <template>
   <app-dialog
     :status="isShow"
+    type="delete"
     icon="mdi-delete"
     title="Delete User?"
     subtitle="The user will deleted permanently"

@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Integration?"
     subtitle="The integration will deleted permanently"

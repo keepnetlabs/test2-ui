@@ -1,9 +1,10 @@
 <template>
   <app-dialog
     v-if="!!selectedRow"
+    :status="isShow"
+    type="delete"
     title-id="text--company-group-details-delete-popup-title"
     subtitle-id="text--company-group-details-delete-popup-subtitle"
-    :status="isShow"
     icon="mdi-delete"
     title="Warning!"
   >

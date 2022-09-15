@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--certificate-dialog-delete-popup-title"
     subtitle-id="text--certificate-dialog-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

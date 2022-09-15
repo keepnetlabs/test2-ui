@@ -1,6 +1,7 @@
 <template>
   <div id="users" class="users">
     <app-dialog
+      type="delete"
       icon="mdi-alert"
       title="Delete Phishing User(s)?"
       :subtitle="getSubTitle"

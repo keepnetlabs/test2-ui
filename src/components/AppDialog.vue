@@ -17,13 +17,13 @@
           class="k-dialog__header"
           :class="[maxHeight && 'k-dialog__header-max-height']"
         >
-          <div class="v-btn v-cart-icon-wrapper" v-if="icon">
-            <v-icon :color="iconColor" class="ml-2" left medium>
+          <div :class="getIconWrapperClass" v-if="icon">
+            <v-icon :color="getIconColor" class="ml-2" left medium>
               {{ icon }}
             </v-icon>
           </div>
           <div>
-            <v-list-item-title class="k-dialog__title" :id="titleId">{{ title }}</v-list-item-title>
+            <v-list-item-title :class="getTitleClass" :id="titleId">{{ title }}</v-list-item-title>
             <v-list-item-subtitle v-if="subtitle" class="k-dialog__sub-title" :id="subtitleId">{{
               subtitle
             }}</v-list-item-subtitle>
@@ -122,6 +122,10 @@ export default {
     },
     subtitleId: {
       type: String
+    },
+    type: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -147,6 +151,23 @@ export default {
         retValue = this.customSize
       }
       return retValue
+    },
+    getTitleClass() {
+      const className = ['k-dialog__title']
+      if (this.isDelete) className.push('k-dialog__title--delete')
+      return className
+    },
+    isDelete() {
+      return this?.type?.toLowerCase() === 'delete'
+    },
+    getIconColor() {
+      if (this.isDelete) return '#B83A3A'
+      return this.iconColor
+    },
+    getIconWrapperClass() {
+      const className = ['v-btn v-cart-icon-wrapper']
+      if (this.isDelete) className.push('k-dialog__delete-icon-wrapper')
+      return className
     }
   },
   methods: {

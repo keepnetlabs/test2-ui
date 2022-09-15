@@ -19,6 +19,7 @@
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
       icon="mdi-delete"
+      type="delete"
       title="Delete Community?"
       :subtitle="deleteCommunityName"
       :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"

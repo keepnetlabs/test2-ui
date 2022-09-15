@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--scheduled-sync-delete-popup-title"
     subtitle-id="scheduled-sync-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--training-dialog-delete-popup-title"
     subtitle-id="text--training-dialog-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

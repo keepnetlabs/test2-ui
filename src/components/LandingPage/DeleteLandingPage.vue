@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Landing Page Template?"
     subtitle="Landing Page will deleted permanently"

@@ -2,6 +2,7 @@
   <AppDialog
     v-if="status"
     :status="status"
+    type="delete"
     title="Remove from group ?"
     icon="mdi-minus-circle"
     subtitle="User(s) will be removed from target group"
