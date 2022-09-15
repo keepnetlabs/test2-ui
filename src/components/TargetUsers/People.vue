@@ -58,6 +58,13 @@
       @on-close="toggleImportLDAPModal"
       @on-close-with-update="callForGetTargetUserCustomFieldsByCompanyId"
     />
+    <TargetUserToAddToGroupDialog
+      v-if="isShowingTargetUserAddToGroup"
+      :status="isShowingTargetUserAddToGroup"
+      :user="selectedUserToAddToGroup"
+      @onConfirm="handleConfirmAddUserToGroup"
+      @onClose="toggleShowingTargetUserAddToGroup"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -203,6 +210,13 @@
             :id="tableOptions.rowActions[2].id"
             :text="tableOptions.rowActions[2].name"
             :icon="tableOptions.rowActions[2].icon"
+            @on-click="handleAddUserToGroup(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[3].id"
+            :text="tableOptions.rowActions[3].name"
+            :icon="tableOptions.rowActions[3].icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton
@@ -258,6 +272,7 @@ import {
   defaultFieldMappings,
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
+import TargetUserToAddToGroupDialog from '@/components/TargetUsers/TargetUserToAddToGroupDialog'
 
 export default {
   name: 'People',
@@ -273,7 +288,8 @@ export default {
     DeleteUserModal,
     Datatable,
     AddUserModal,
-    TargetUserImportFromAFile
+    TargetUserImportFromAFile,
+    TargetUserToAddToGroupDialog
   },
   props: {
     companyLicense: {
@@ -286,7 +302,9 @@ export default {
       labels,
       ldapResourceId: '',
       isInitial: true,
+      isShowingTargetUserAddToGroup: false,
       isShowImportLDAPModal: false,
+      selectedUserToAddToGroup: null,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
@@ -444,6 +462,12 @@ export default {
             disabled: !this.$store.getters['permissions/getTargetUsersDeletePermissions']
           },
           {
+            name: 'Add users to group',
+            id: 'btn-add-users-to-group--target-users-people-row-actions',
+            icon: 'mdi-account-multiple-plus',
+            action: 'add-group'
+          },
+          {
             name: 'View user’s groups',
             icon: 'mdi-account-supervisor-outline',
             action: 'viewUserGroups',
@@ -505,8 +529,23 @@ export default {
       this.selectedUserToViewGroups = selectedRow
       this.toggleShowingTargetUserViewTargetGroups()
     },
+    handleAddUserToGroup(selectedRow = {}) {
+      this.selectedUserToAddToGroup = selectedRow
+      this.toggleShowingTargetUserAddToGroup()
+    },
+    handleConfirmAddUserToGroup(groups = []) {
+      // TODO: Insert add user to group(s) logic here
+      this.selectedUserToAddToGroup = null
+      this.toggleShowingTargetUserAddToGroup()
+    },
     toggleShowingTargetUserViewTargetGroups() {
       this.isShowingTargetUserViewTargetGroups = !this.isShowingTargetUserViewTargetGroups
+    },
+    toggleShowingTargetUserAddToGroup() {
+      if (this.isShowingTargetUserAddToGroup) {
+        this.selectedUserToAddToGroup = null
+      }
+      this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
