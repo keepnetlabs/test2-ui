@@ -18,6 +18,7 @@
     <app-dialog
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
+      type="delete"
       icon="mdi-delete"
       title="Delete Incident?"
       title-id="text--threat-sharing-incident-single-post-delete-popup-title"

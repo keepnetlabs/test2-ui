@@ -1,6 +1,7 @@
 <template>
   <app-dialog
     :status="isShow"
+    type="delete"
     icon="mdi-delete"
     title="Warning!"
     title-id="text--company-delete-popup-title"

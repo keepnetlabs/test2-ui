@@ -155,6 +155,7 @@
     <app-dialog
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
+      type="delete"
       icon="mdi-delete"
       title="Delete Community?"
       title-id="text--threat-sharing-right-delete-community-popup-title"

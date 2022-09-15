@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--campaign-manager-delete-popup-title"
     subtitle-id="text--campaign-manager-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

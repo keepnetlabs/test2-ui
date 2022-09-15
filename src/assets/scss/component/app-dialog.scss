@@ -29,6 +29,9 @@
         color: #2196f3 !important;
         white-space: pre-wrap;
         word-break: break-word;
+      &--delete{
+        color: #B83A3A !important;
+      }
     }
 
     &__sub-title {
@@ -37,7 +40,8 @@
         letter-spacing: normal;
         white-space: pre-wrap;
         word-break: break-word;
-        color: rgba(0, 0, 0, 0.87) !important;
+        font-weight: 400;
+        color: #383B41 !important;
     }
 
     &__body {
@@ -121,4 +125,8 @@
             letter-spacing: normal;
         }
     }
+}
+.k-dialog__delete-icon-wrapper.v-cart-icon-wrapper{
+  background: #FEF7F7 !important;
+  border: 1px solid #B83A3A !important;
 }

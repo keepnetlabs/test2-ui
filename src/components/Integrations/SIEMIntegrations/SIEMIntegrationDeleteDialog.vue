@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--siem-integration-delete-popup-title"
     subtitle-id="text--siem-integration-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

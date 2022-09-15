@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Scenario?"
     subtitle="Scenario will deleted permanently"

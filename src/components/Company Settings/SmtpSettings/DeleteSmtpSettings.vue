@@ -1,6 +1,7 @@
 <template>
   <app-dialog
     :status="status"
+    type="delete"
     icon="mdi-alert"
     title="Delete SMTP Setting"
     :subtitle="getSubtitle"

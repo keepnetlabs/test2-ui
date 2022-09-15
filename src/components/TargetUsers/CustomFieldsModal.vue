@@ -12,6 +12,7 @@
     <template v-slot:overlay-body>
       <app-dialog
         :status="isWantToDelete"
+        type="delete"
         icon="mdi-alert"
         title="Delete Custom Field"
         subtitle="Do you want to delete this custom field?"

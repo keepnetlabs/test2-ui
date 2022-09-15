@@ -70,7 +70,7 @@
                   title="Method"
                   sub-title="Select the phishing technique for this scenario"
                 >
-                  <v-select
+                  <KSelect
                     v-bind="commonRules"
                     v-model="formValues.methodTypeId"
                     :items="scenarioDetailsLookup.methodTypes"
@@ -81,6 +81,7 @@
                     hint="*Required"
                     required
                     persistent-hint
+                    :slots="{ item: true }"
                   >
                     <template #item="{item}">
                       <div :class="['mail-configuration-select-sources__item-container']">
@@ -100,7 +101,7 @@
                         </div>
                       </div>
                     </template>
-                  </v-select>
+                  </KSelect>
                 </form-group>
                 <form-group
                   has-hint
@@ -627,10 +628,12 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'NewScenarios',
   components: {
+    KSelect,
     StepperFooter,
     KEmailPreview,
     AppModal,

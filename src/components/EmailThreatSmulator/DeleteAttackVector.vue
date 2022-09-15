@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Attack Vector?"
     subtitle="Scans will deleted permanently"

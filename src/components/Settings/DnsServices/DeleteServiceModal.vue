@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete DNS?"
     subtitle="The DNS will deleted permanently"

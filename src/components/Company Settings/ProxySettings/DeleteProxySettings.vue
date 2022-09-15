@@ -1,12 +1,13 @@
 <template>
   <app-dialog
     :status="status"
-    icon="mdi-alert"
-    title="Delete Proxy Setting"
-    :subtitle="getSubtitle"
+    type="delete"
     id="proxy-settings-delete-popup"
     title-id="text--proxy-settings-delete-popup-title"
     subtitle-id="text--proxy-settings-delete-popup-subtitle"
+    icon="mdi-alert"
+    title="Delete Proxy Setting"
+    :subtitle="getSubtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
