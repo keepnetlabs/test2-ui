@@ -65,6 +65,12 @@
       @onConfirm="handleConfirmAddUserToGroup"
       @onClose="toggleShowingTargetUserAddToGroup"
     />
+    <TargetUserCreateGroupWithUserDialog
+      v-if="isShowingTargetUserCreateGroupWithUser"
+      :status="isShowingTargetUserCreateGroupWithUser"
+      @onConfirm="handleConfirmCreateUserWithGroup"
+      @onClose="toggleShowingTargetUserCreateGroupWithUser"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -217,6 +223,13 @@
             :id="tableOptions.rowActions[3].id"
             :text="tableOptions.rowActions[3].name"
             :icon="tableOptions.rowActions[3].icon"
+            @on-click="handleCreateGroupWithUser(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :text="tableOptions.rowActions[4].name"
+            :icon="tableOptions.rowActions[4].icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton
@@ -273,6 +286,7 @@ import {
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
 import TargetUserToAddToGroupDialog from '@/components/TargetUsers/TargetUserToAddToGroupDialog'
+import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
 
 export default {
   name: 'People',
@@ -289,7 +303,8 @@ export default {
     Datatable,
     AddUserModal,
     TargetUserImportFromAFile,
-    TargetUserToAddToGroupDialog
+    TargetUserToAddToGroupDialog,
+    TargetUserCreateGroupWithUserDialog
   },
   props: {
     companyLicense: {
@@ -304,6 +319,8 @@ export default {
       isInitial: true,
       isShowingTargetUserAddToGroup: false,
       isShowImportLDAPModal: false,
+      isShowingTargetUserCreateGroupWithUser: false,
+      selectedUserToCreateGroupWith: null,
       selectedUserToAddToGroup: null,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
@@ -465,7 +482,13 @@ export default {
             name: 'Add users to group',
             id: 'btn-add-users-to-group--target-users-people-row-actions',
             icon: 'mdi-account-multiple-plus',
-            action: 'add-group'
+            action: 'add-user-to-group'
+          },
+          {
+            name: 'Create a group with user',
+            id: 'btn-create-group-with-user--target-users-people-row-actions',
+            icon: 'mdi-account-multiple',
+            action: 'create-group-with-user'
           },
           {
             name: 'View user’s groups',
@@ -538,6 +561,15 @@ export default {
       this.selectedUserToAddToGroup = null
       this.toggleShowingTargetUserAddToGroup()
     },
+    handleConfirmCreateUserWithGroup(groupName = '') {
+      // TODO: Insert create group with user logic here
+      this.selectedUserToCreateGroupWith = null
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
+    handleCreateGroupWithUser(selectedRow = {}) {
+      this.selectedUserToCreateGroupWith = selectedRow
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
     toggleShowingTargetUserViewTargetGroups() {
       this.isShowingTargetUserViewTargetGroups = !this.isShowingTargetUserViewTargetGroups
     },
@@ -546,6 +578,12 @@ export default {
         this.selectedUserToAddToGroup = null
       }
       this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
+    },
+    toggleShowingTargetUserCreateGroupWithUser() {
+      if (this.isShowingTargetUserCreateGroupWithUser) {
+        this.selectedUserToCreateGroupWith = null
+      }
+      this.isShowingTargetUserCreateGroupWithUser = !this.isShowingTargetUserCreateGroupWithUser
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
