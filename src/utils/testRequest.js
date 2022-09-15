@@ -96,7 +96,8 @@ testService.interceptors.response.use(
                     error?.response?.data?.validationMessages?.length &&
                     error?.response?.data?.validationMessages[0]) ||
                   error?.response?.data?.message ||
-                  error?.response?.data?.Message,
+                  error?.response?.data?.Message ||
+                  error.message,
                 icon: 'mdi-alert'
               },
               { root: true }
@@ -122,6 +123,7 @@ testService.interceptors.response.use(
                 error?.response?.data?.validationMessages[0]) ||
               error?.response?.data?.message ||
               error?.response?.data?.Message ||
+              error.message ||
               'Something Went Wrong',
             icon: 'mdi-alert'
           },
