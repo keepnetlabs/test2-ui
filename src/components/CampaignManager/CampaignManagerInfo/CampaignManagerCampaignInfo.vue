@@ -233,7 +233,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { mapGetters } from 'vuex'
 import CustomError from '@/components/CustomError'
-import { getTimeZone } from '../../../utils/functions'
+import { getTimeZone } from '@/utils/functions'
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
   pageSize: 10,

@@ -78,6 +78,8 @@
               ref="refPicker"
               placeholder="Select Date and Time"
               style="width: 100%; max-width: 220px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
               :picker-options="datePickerOptions"
               :disabled="isScheduledTimeDisabled"
             />
@@ -276,6 +278,7 @@ import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
 import { mapGetters } from 'vuex'
+import { getTimeZone } from '@/utils/functions'
 
 export default {
   name: 'SendTrainingSettings',
@@ -300,6 +303,7 @@ export default {
   },
   data() {
     return {
+      parsedFormat: getTimeZone(false),
       labels,
       Validations,
       contentLanguageItems: [],
@@ -383,7 +387,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone'
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
     }),
     isAllSelected() {
       return this.formData.languageIds.some((item) => item === 'All')
