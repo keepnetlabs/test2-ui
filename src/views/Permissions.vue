@@ -14,6 +14,7 @@
     <app-dialog
       v-if="deleteDialog"
       :status="deleteDialog"
+      type="delete"
       title-id="text--permissions-delete-popup-title"
       subtitle-id="text--permissions-delete-popup-subtitle"
       icon="mdi-delete"
@@ -21,8 +22,8 @@
       subtitle="The permission will deleted permanently"
       @changeStatus="closeDeleteDialog"
     >
-      <template v-slot:app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
+      <template #app-dialog-footer>
         <app-dialog-footer
           cancel-button-id="btn-cancel--delete-permission-popup"
           confirm-button-id="btn-delete--delete-permission-popup"
@@ -269,28 +270,11 @@ export default {
       this.deleteDialog = false
     },
     handleDeleteDialog() {
-      deletePermission(this.deletePermissionId)
-        .then(() => {
-          this.$refs.refPermissionList.unSelectRow(this.selectedItem)
-          this.deleteDialog = false
-          this.getDatatableList()
-        })
-        .catch(() => {
-          this.$store.dispatch(
-            'common/createSnackBar',
-            {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message:
-                (error.response.data &&
-                  error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message ||
-                error.response.data.Message,
-              icon: 'mdi-alert'
-            },
-            { root: true }
-          )
-        })
+      deletePermission(this.deletePermissionId).then(() => {
+        this.$refs.refPermissionList.unSelectRow(this.selectedItem)
+        this.deleteDialog = false
+        this.getDatatableList()
+      })
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName

@@ -2,6 +2,7 @@
   <div class="playbook-rules">
     <app-dialog
       v-if="getDeleteModalPermission"
+      type="delete"
       icon="mdi-alert"
       title="Delete Playbook Rule"
       body="Do you want to delete playbook rule?"

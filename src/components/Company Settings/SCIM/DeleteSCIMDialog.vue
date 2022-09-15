@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--scim-settings-delete-popup-title"
     subtitle-id="text--scim-settings-delete-popup-subtitle"
     :icon="CONSTANTS.icon"

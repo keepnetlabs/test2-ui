@@ -1,6 +1,7 @@
 <template>
   <app-dialog
     :status="status"
+    type="delete"
     icon="mdi-delete"
     :title="getTitle"
     @changeStatus="closeModal"

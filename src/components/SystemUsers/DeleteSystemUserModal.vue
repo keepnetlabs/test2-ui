@@ -2,6 +2,7 @@
   <app-dialog
     v-if="status"
     :status="status"
+    type="delete"
     icon="mdi-delete"
     title="Delete System User(s)?"
     :subtitle="getSubTitle"

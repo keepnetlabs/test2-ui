@@ -2,6 +2,7 @@
   <app-dialog
     v-if="!!isShow"
     :status="isShow"
+    type="delete"
     icon="mdi-delete"
     title="Warning!"
     title-id="text--company-group-delete-popup-title"
