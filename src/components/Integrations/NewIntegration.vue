@@ -785,7 +785,11 @@
                 ></v-checkbox>
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
-                    <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
+                    <v-icon
+                      v-on="{ ...tooltip }"
+                      :disabled="!formValues.isSendUrl || !selectedIntegrationType.isSendUrl"
+                      >mdi-help-circle</v-icon
+                    >
                   </template>
                   <span class="tooltip-span" style="max-width: 50px;">{{
                     'Send URLs without query string parameters'
