@@ -12,8 +12,9 @@ export function getPermissionData(id) {
 }
 export function deletePermission(id) {
   return testRequest.delete(`/roles/${id}`, {
-    snackbar: COMMON_SNACKBAR,
-    loading: true
+    snackbar: {
+      hideError: true
+    }
   })
 }
 export function createPermissionRoles(payload) {

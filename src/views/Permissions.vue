@@ -33,6 +33,11 @@
         />
       </template>
     </app-dialog>
+    <cannot-delete-role-dialog
+      v-if="isShowCannotDeleteDialog"
+      :status="isShowCannotDeleteDialog"
+      @on-close="toggleShowCannotDeleteDialog"
+    />
     <div class="permission-logs__container">
       <div class="permission-logs__datatable">
         <data-table
@@ -102,7 +107,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getErrorMessage } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
 import {
   deletePermission,
@@ -115,10 +120,12 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import CannotDeleteRoleDialog from '@/components/Permissions/CannotDeleteRoleDialog'
 
 export default {
   name: 'Permission',
   components: {
+    CannotDeleteRoleDialog,
     DefaultButtonRowAction,
     NewPermissions,
     DataTable,
@@ -127,6 +134,7 @@ export default {
   },
   data() {
     return {
+      isShowCannotDeleteDialog: false,
       deleteDialog: false,
       deletePermissionName: null,
       deletePermissionId: null,
@@ -270,11 +278,29 @@ export default {
       this.deleteDialog = false
     },
     handleDeleteDialog() {
-      deletePermission(this.deletePermissionId).then(() => {
-        this.$refs.refPermissionList.unSelectRow(this.selectedItem)
-        this.deleteDialog = false
-        this.getDatatableList()
-      })
+      deletePermission(this.deletePermissionId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$refs.refPermissionList.unSelectRow(this.selectedItem)
+          this.deleteDialog = false
+          this.getDatatableList()
+        })
+        .catch((e) => {
+          if (e?.response?.status === 400) {
+            this.deleteDialog = false
+            this.toggleShowCannotDeleteDialog()
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: getErrorMessage(e),
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
+          }
+        })
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName
@@ -337,6 +363,9 @@ export default {
           this.permissions[i] = search_and_delete(this.permissions[i], 'children')
         }
       })
+    },
+    toggleShowCannotDeleteDialog() {
+      this.isShowCannotDeleteDialog = !this.isShowCannotDeleteDialog
     },
     closeOverlayWithUpdate() {
       if (this.newPermissionsModalStatus) {
