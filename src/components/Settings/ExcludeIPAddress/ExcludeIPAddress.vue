@@ -34,7 +34,7 @@
       text-field-error-message="Invalid IP address"
       text-field-placeholder="Enter IP address"
       invalid-message="There are invalid entries, please change them."
-      :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
+      :text-field-rules="[(v) => Validations.ipv4Oripv6(v), (v) => Validations.startsWithSpace(v)]"
       @input="handleInput"
     />
     <button
@@ -90,7 +90,7 @@ export default {
       dataContainerWithSearchItems: [],
       labels,
       ipRules: [
-        (v) => Validations.ip(v, 'This is not a valid IP address'),
+        (v) => Validations.ipv4Oripv6(v, 'This is not a valid IP address'),
         (v) => Validations.startsWithSpace(v)
       ]
     }
