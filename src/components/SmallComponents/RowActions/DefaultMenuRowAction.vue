@@ -1,7 +1,7 @@
 <template>
   <v-list-item :id="id" :disabled="isDisabled" @click="$emit('on-click', scope)">
     <v-list-item-title>
-      <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
+      <v-icon size="18" :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
       <span>{{ text }}</span>
     </v-list-item-title>
   </v-list-item>

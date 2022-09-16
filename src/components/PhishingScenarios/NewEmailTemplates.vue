@@ -573,6 +573,8 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          isDuplicated: this.isDuplicate,
+          duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
           description: this.formValues.description || '',
           attachmentFiles: [
             ...this.formValues.attachmentFiles,

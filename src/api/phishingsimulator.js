@@ -49,6 +49,8 @@ export function updatePhishingEmailTemplate(payload, id) {
 export function createPhishingEmailTemplate(payload) {
   const formData = new FormData()
 
+  formData.append('isDuplicated', payload.isDuplicated)
+  formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
   formData.append('name', payload.name)
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
@@ -75,12 +77,17 @@ export function createPhishingEmailTemplate(payload) {
     ? payload.attachmentFiles[0]?.name
       ? payload.attachmentFiles[0]?.name?.split('.')[1]
       : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-    : null
+    : payload.phishingFileName.split('.')[1] || null
 
   if (payload.isAttachmentBasedTemplate) {
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-    formData.append('phishingFile', payload.attachmentFiles[0])
+    formData.append(
+      'phishingFile',
+      payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
+    )
     formData.append('phishingFileType', phishingFileType)
+    formData.append('phishingFileName', payload.phishingFileName)
+    formData.append('isPhishingFileModified', payload.isPhishingFileModified)
   }
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
