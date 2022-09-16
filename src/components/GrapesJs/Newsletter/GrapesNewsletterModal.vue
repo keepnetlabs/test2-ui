@@ -649,10 +649,25 @@ export default {
           block.attributes.category = {
             label: 'Basic'
           }
-          block.attributes.content = block.attributes.content.replace(
-            'button',
-            'button grapes-custom-button'
-          )
+          block.attributes.content = `<div>
+  <!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">
+        <w:anchorlock/>
+        <center>
+    <![endif]-->
+  <a href=""
+    style="background-color:#2196F3;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:34px;text-align:center;text-decoration:none;min-width:65px;-webkit-text-size-adjust:none;">
+    Button
+  </a>
+  <!--[if mso]>
+        </center>
+    </v:roundrect>
+    <![endif]-->
+</div>`
+          // block.attributes.content = block.attributes.content.replace(
+          //   'button',
+          //   'button grapes-custom-button'
+          // )
         } else if (block.attributes.id === 'divider') {
           block.attributes.category = {
             label: 'Layout'
