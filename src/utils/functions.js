@@ -1352,3 +1352,16 @@ export function addOutlookPolyfills(template) {
 
   return new XMLSerializer().serializeToString(doc)
 }
+
+export const getErrorMessage = (error) => {
+  return (
+    (error?.response?.data &&
+      error?.response?.data?.validationMessages &&
+      error?.response?.data?.validationMessages?.length &&
+      error?.response?.data?.validationMessages[0]) ||
+    error?.response?.data?.message ||
+    error?.response?.data?.Message ||
+    error.message ||
+    'Something Went Wrong'
+  )
+}

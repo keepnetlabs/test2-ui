@@ -15,6 +15,7 @@ export const labels = {
   EmptyTrainingReportProgress: 'No one has training progress, yet',
   Interactions: 'Interactions',
   TrainingMaterial: 'Training Material',
+  CannotDeleteUserRole: 'Cannot Delete User Role',
   EnrollmentEmailTemplate: 'Enrollment Email Template',
   CompletedTraining: 'Completed Training',
   TrainingSummary: 'Training Summary',

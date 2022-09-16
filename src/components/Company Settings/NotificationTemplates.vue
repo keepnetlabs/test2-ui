@@ -28,6 +28,12 @@
       :templateName="selectedItem.name"
       @closeOverlay="toggleDeleteDefaultTemplateWarningModal"
     />
+    <NotificationTemplatesPreviewDialog
+      v-if="showNotificationTemplatePreviewDialog"
+      :status="showNotificationTemplatePreviewDialog"
+      :selected-row="selectedItem"
+      @on-close="toggleNotificationPreviewDialog"
+    />
     <div class="notification-templates__container">
       <DataTable
         v-if="getNotificationTemplatesSearchPermissions"
@@ -59,6 +65,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @handlePreview="handlePreview"
       >
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
@@ -76,7 +83,7 @@
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
               :checkIsOwnerProperty="false"
-              @on-click="handleDuplicate(scope.row)"
+              @on-click="handlePreview(scope.row)"
             />
             <DefaultMenuRowAction
               :id="tableOptions.rowActions[2].id"
@@ -85,7 +92,7 @@
               :icon="tableOptions.rowActions[2].icon"
               :text="tableOptions.rowActions[2].name"
               :checkIsOwnerProperty="false"
-              @on-click="handleMakeDefault(scope.row)"
+              @on-click="handleDuplicate(scope.row)"
             />
             <DefaultMenuRowAction
               :id="tableOptions.rowActions[3].id"
@@ -93,6 +100,14 @@
               :disabled="tableOptions.rowActions[3].disabled"
               :icon="tableOptions.rowActions[3].icon"
               :text="tableOptions.rowActions[3].name"
+              @on-click="handleMakeDefault(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :id="tableOptions.rowActions[4].id"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[4].disabled"
+              :icon="tableOptions.rowActions[4].icon"
+              :text="tableOptions.rowActions[4].name"
               @on-click="handleDelete(scope.row)"
             />
           </RowActionsMenu>
@@ -131,9 +146,11 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/DefaultTemplateDeleteWarningModal'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog'
 export default {
   name: 'NotificationTemplates',
   components: {
+    NotificationTemplatesPreviewDialog,
     RowActionsMenu,
     DefaultMenuRowAction,
     DefaultButtonRowAction,
@@ -147,6 +164,7 @@ export default {
   data() {
     return {
       showDeleteDefaultNotificationTemplateWarningModal: false,
+      showNotificationTemplatePreviewDialog: false,
       isDuplicate: false,
       categories: [],
       tableData: [],
@@ -287,11 +305,16 @@ export default {
             disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           },
           {
+            name: labels.Preview,
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            id: 'btn-preview--notification-template-row-actions'
+          },
+          {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
             id: 'btn-duplicate--notification-template-row-actions',
             action: 'handleDuplicate'
-            // disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
             name: 'Make Default',
@@ -362,6 +385,10 @@ export default {
         })
       })
     },
+    handlePreview(row) {
+      this.selectedItem = row
+      this.toggleNotificationPreviewDialog()
+    },
     handleDelete(row) {
       this.selectedItem = row
       if (row.isDefault) {
@@ -411,6 +438,12 @@ export default {
           this.$refs.newNotificationTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
         }
       }
+    },
+    toggleNotificationPreviewDialog() {
+      if (this.showNotificationTemplatePreviewDialog) {
+        this.selectedItem = null
+      }
+      this.showNotificationTemplatePreviewDialog = !this.showNotificationTemplatePreviewDialog
     },
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {
