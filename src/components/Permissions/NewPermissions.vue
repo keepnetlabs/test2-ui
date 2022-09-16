@@ -13,7 +13,7 @@
     @closeOverlay="closeOverlay"
     @submit="submit"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <app-modal-body-header
         title="Define New Role"
         sub-title="Create a user role by defining permissions. Expand module rows to set detailed authorizations. "
