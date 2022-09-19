@@ -66,7 +66,11 @@ export default {
       this.isLoading = true
       getEmailTemplate(this.selectedRow.resourceId)
         .then((response) => {
-          this.emailTemplate = response?.data?.data?.template || ''
+          this.emailTemplate =
+            response?.data?.data?.template?.replace(
+              new RegExp('{COMPANYLOGO}', 'g'),
+              this?.$store?.state?.whitelabel.mainLogoUrl || ''
+            ) || ''
         })
         .finally(() => (this.isLoading = false))
     },

@@ -9,8 +9,9 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body
-      >This user role is assigned to the system users. In order to delete this role you must change
-      the roles of these user and make sure this role is not assigned to any user.</template
+      >This user role is assigned to {{ systemUserCount }} system users. In order to delete this
+      role you must change the roles of these user and make sure this role is not assigned to any
+      user.</template
     >
     <template #app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -39,6 +40,9 @@ export default {
     },
     templateName: {
       type: String
+    },
+    systemUserCount: {
+      type: Number
     }
   },
   data() {
