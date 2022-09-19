@@ -36,6 +36,7 @@
     <cannot-delete-role-dialog
       v-if="isShowCannotDeleteDialog"
       :status="isShowCannotDeleteDialog"
+      :system-user-count="systemUserCount"
       @on-close="toggleShowCannotDeleteDialog"
     />
     <div class="permission-logs__container">
@@ -134,6 +135,7 @@ export default {
   },
   data() {
     return {
+      systemUserCount: 0,
       isShowCannotDeleteDialog: false,
       deleteDialog: false,
       deletePermissionName: null,
@@ -306,6 +308,7 @@ export default {
       this.deletePermissionName = item.roleName
       this.deletePermissionId = item?.resourceId
       this.selectedItem = item
+      this.systemUserCount = item.userCount
       this.deleteDialog = true
     },
     editPermissions(item) {
