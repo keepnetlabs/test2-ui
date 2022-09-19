@@ -75,11 +75,19 @@
                   :outline="false"
                 />
                 <Badge
-                  v-if="currentFormData.landingPageParams.method"
+                  v-if="
+                    currentFormData.landingPageParams.method ||
+                    currentFormData.emailTemplateParams.method
+                  "
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(currentFormData.landingPageParams.method)"
+                  :text="
+                    getBadgeText(
+                      currentFormData.landingPageParams.method ||
+                        currentFormData.emailTemplateParams.method
+                    )
+                  "
                   :outline="false"
                 />
                 <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -214,6 +222,7 @@ export default {
           difficulty: val?.emailTemplateParams?.difficulty || '',
           attachments: val?.emailTemplateParams?.attachments || [],
           languageShortCode: val?.emailTemplateParams?.languageShortCode,
+          method: val?.emailTemplateParams?.method,
           phishingFileName: val?.emailTemplateParams?.phishingFileName || null
         },
         landingPageParams: {

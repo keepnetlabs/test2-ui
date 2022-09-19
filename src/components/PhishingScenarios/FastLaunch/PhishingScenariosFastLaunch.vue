@@ -97,6 +97,7 @@ import {
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'PhishingScenariosFastLaunch',
@@ -125,7 +126,8 @@ export default {
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
-      isSubmitted: false
+      isSubmitted: false,
+      languageOptions: []
     }
   },
   computed: {
@@ -158,6 +160,11 @@ export default {
     }
   },
   created() {
+    LookupLocalStorage.getSingle(21).then((response) => {
+      this.languageOptions =
+        response?.map((language) => ({ text: language.description, value: language.resourceId })) ||
+        []
+    })
     this.callForDefaultSmtpSetting()
     this.callForFormDetails()
     this.callForGetPhishingScenario()
@@ -189,12 +196,24 @@ export default {
           }
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            categoryResourceId,
+            languageTypeResourceId
+          } = emailTemplate
 
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
+            languageShortCode: this.languageOptions.find(
+              (language) => language.value === languageTypeResourceId
+            )?.text,
+            method: methods.find((item) => item.value === categoryResourceId)?.text,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
           }
           this.emailTemplate = template
@@ -205,14 +224,18 @@ export default {
               landingPages,
               urlTemplate,
               difficultyTypeId,
-              methodTypeId
+              methodTypeId,
+              languageTypeResourceId
             } = landingPageTemplate
             this.landingPageParams = {
               name: landingPageName,
               description,
               urlTemplate,
               difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text
+              method: methods[methodTypeId - 1].text,
+              languageShortCode: this.languageOptions.find(
+                (language) => language.value === languageTypeResourceId
+              )?.text
             }
             this.landingPageTemplate = landingPages
           }
