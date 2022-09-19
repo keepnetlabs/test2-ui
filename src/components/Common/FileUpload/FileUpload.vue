@@ -63,6 +63,11 @@
       </template>
     </div>
     <div v-if="hint" class="k-file-uploads__hint">{{ hint }}</div>
+    <div v-if="hasError" class="v-messages theme--light error--text" role="alert">
+      <div class="v-messages__wrapper">
+        <div class="v-messages__message">{{ errorText }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -106,6 +111,14 @@ export default {
       default: undefined
     },
     hint: {
+      type: String,
+      default: null
+    },
+    hasError: {
+      type: Boolean,
+      default: false
+    },
+    errorText: {
       type: String,
       default: null
     },
