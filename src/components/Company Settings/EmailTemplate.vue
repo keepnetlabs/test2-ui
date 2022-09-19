@@ -69,6 +69,8 @@
         :value="attachmentFiles"
         :is-preview-visible="false"
         :size="size"
+        :hasError="!!isAttachmentError"
+        :errorText="isAttachmentError || ''"
         @inputFile="onFileChanged"
       />
       <div
@@ -179,7 +181,8 @@ export default {
     'templateType',
     'extensions',
     'fileUploadHint',
-    'size'
+    'size',
+    'isAttachmentError'
   ],
   data() {
     return {

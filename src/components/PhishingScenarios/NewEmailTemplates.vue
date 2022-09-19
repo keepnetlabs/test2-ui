@@ -196,6 +196,7 @@
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
+                        :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
                         :extensions="['doc', 'docx', 'html', 'htm']"
@@ -338,6 +339,7 @@ export default {
         nextButton: 'btn-next--add-or-edit-email-templates-modal',
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
+      isAttachmentError: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -523,8 +525,10 @@ export default {
           })
         }
         this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.isAttachmentError = false
       } else {
         this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
+        this.isAttachmentError = false
       }
       this.isPhishingFileModified = true
       this.isAddedNewPhishingFile = true
@@ -563,6 +567,10 @@ export default {
       this.step -= 1
     },
     submit() {
+      if (this.isAttachmentBasedTemplate && this.formValues.attachmentFiles.length === 0) {
+        this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
+        return
+      }
       this.isSubmitDisabled = true
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
@@ -573,6 +581,8 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          isDuplicated: this.isDuplicate,
+          duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
           description: this.formValues.description || '',
           attachmentFiles: [
             ...this.formValues.attachmentFiles,
