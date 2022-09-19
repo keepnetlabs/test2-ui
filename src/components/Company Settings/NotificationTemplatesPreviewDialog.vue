@@ -66,7 +66,6 @@ export default {
       this.isLoading = true
       getEmailTemplate(this.selectedRow.resourceId)
         .then((response) => {
-          console.log('response?.data?.data?.template', response?.data?.data?.template)
           this.emailTemplate = response?.data?.data?.template || ''
         })
         .finally(() => (this.isLoading = false))
