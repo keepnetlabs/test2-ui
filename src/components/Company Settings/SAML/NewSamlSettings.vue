@@ -53,10 +53,20 @@
                 persistent-hint
                 hint="*Required"
                 :rules="[
-                  (v) => validations.required(v, labels.Required),
+                  (v) => {
+                    if (v.length) return true
+                    else if (!dataContainerWithSearchItems.length) {
+                      return labels.Required
+                    } else return true
+                  },
                   (v) =>
                     validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Domain, 256)),
-                  (v) => validations.domain(v, labels.InvalidDomainName)
+                  (v) => {
+                    if (v.length) return validations.domain(v, labels.InvalidDomainName)
+                    else if (!dataContainerWithSearchItems.length) {
+                      return labels.InvalidDomainName
+                    } else return true
+                  }
                 ]"
               ></v-text-field>
               <v-btn
