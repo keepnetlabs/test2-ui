@@ -307,7 +307,7 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refQuickScanList.$refs.elTableRef.toggleRowSelection(row, false)
+      this?.$refs?.refQuickScanList?.$refs?.elTableRef?.toggleRowSelection(row, false)
     },
     handleDuplicateScan(row) {
       getQuickScanById(row.quickScanResourceId).then((response) => {
