@@ -204,12 +204,12 @@ export default {
           ...refCampaignManagerCampaignInfo.formData,
           ...refCampaignManagerAdvancedSettings.formData,
           emailTemplate:
-            refCampaignManagerCampaignInfo?.$refs.refCampaignManagerPhishingScenarios
+            refCampaignManagerCampaignInfo?.$refs?.refCampaignManagerPhishingScenarios
               ?.emailTemplate || '',
           emailTemplateParams,
           landingPageTemplates:
-            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-              .landingPageTemplates,
+            refCampaignManagerCampaignInfo?.$refs?.refCampaignManagerPhishingScenarios
+              ?.landingPageTemplates,
           landingPageParams
         }
 
