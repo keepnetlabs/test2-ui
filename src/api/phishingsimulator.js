@@ -25,13 +25,13 @@ export function updatePhishingEmailTemplate(payload, id) {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
 
-  const phishingFileType = payload.attachmentFiles[0]
-    ? payload.attachmentFiles[0]?.name
-      ? payload.attachmentFiles[0]?.name?.split('.')[1]
-      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-    : null
-
   if (payload.isAttachmentBasedTemplate) {
+    const phishingFileType = payload.attachmentFiles[0]
+      ? payload.attachmentFiles[0]?.name
+        ? payload.attachmentFiles[0]?.name?.split('.')[1]
+        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+      : payload?.phishingFileName?.split('.')?.[1] || null
+
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',
@@ -73,13 +73,13 @@ export function createPhishingEmailTemplate(payload) {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
 
-  const phishingFileType = payload.attachmentFiles[0]
-    ? payload.attachmentFiles[0]?.name
-      ? payload.attachmentFiles[0]?.name?.split('.')[1]
-      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-    : payload.phishingFileName.split('.')[1] || null
-
   if (payload.isAttachmentBasedTemplate) {
+    const phishingFileType = payload.attachmentFiles[0]
+      ? payload.attachmentFiles[0]?.name
+        ? payload.attachmentFiles[0]?.name?.split('.')[1]
+        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+      : payload?.phishingFileName?.split('.')?.[1] || null
+
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',
