@@ -58,13 +58,13 @@ export default {
   },
   computed: {
     hasLandingPageTemplate() {
-      return this.landingPageTemplates.length > 0
+      return this?.landingPageTemplates?.length > 0
     },
     getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+      return this?.landingPageTemplates[this.selectedLandingPageIndex]?.content
     },
     hasNextTemplate() {
-      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
+      return this?.landingPageTemplates?.length - 1 > this.selectedLandingPageIndex
     },
     hasPreviousTemplate() {
       return this.selectedLandingPageIndex > 0

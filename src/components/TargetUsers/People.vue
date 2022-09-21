@@ -652,7 +652,7 @@ export default {
               (item) => item.resourceId === selectedUser.resourceId
             )
           ) {
-            this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
+            this?.$refs?.refPeopleTable?.$refs?.elTableRef?.toggleRowSelection(selectedUser, false)
             this.$refs.refPeopleTable.serverSideSelectionCount -= 1
           }
           if (selections?.[selections.length - 1]?.resourceId === selectedUser?.resourceId) {
