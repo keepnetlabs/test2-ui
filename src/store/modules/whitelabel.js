@@ -151,7 +151,16 @@ const whitelabel = {
     },
     callForSystemInfoSummary(context = {}, payload = {}) {
       callForSystemInfoSummary().then((response) => {
-        const { versionInfo, companyLicense } = response.data
+        const { versionInfo, companyLicense } = response?.data || {
+          versionInfo: {
+            data: {
+              version: ''
+            }
+          },
+          companyLicense: {
+            data: ''
+          }
+        }
         context.commit('SET_SYSTEM_VERSION', versionInfo?.data?.version || '')
         if (payload.checkExceedDialog) {
           const { isLicenseExceeded, isLimited } = companyLicense.data

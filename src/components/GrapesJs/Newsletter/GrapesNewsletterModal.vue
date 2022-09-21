@@ -395,13 +395,15 @@ export default {
                 styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]
               }
-              const coll = component.collection
+              const coll = component?.collection || []
               const at = coll.indexOf(component)
               el.setAttribute('href', value)
               coll.remove(component)
-              coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
-                at
-              })
+              if (at !== -1) {
+                coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
+                  at
+                })
+              }
             },
             srcChange(component, value) {
               component.set('src', value)

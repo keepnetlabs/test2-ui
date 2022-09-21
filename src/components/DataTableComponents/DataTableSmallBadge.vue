@@ -67,7 +67,9 @@ export default {
   },
   computed: {
     getTooltipText() {
-      const unRenderedBadges = this.badges.slice(this.maximumRenderedBadgeCount, this.badges.length)
+      const unRenderedBadges = this.badges
+        .slice(this.maximumRenderedBadgeCount, this.badges.length)
+        .filter(Boolean)
       return unRenderedBadges.join(',')
     }
   },
@@ -91,7 +93,7 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-      const badges = this.scope.row[this.col.property] || []
+      const badges = this.scope.row[this.col.property].filter(Boolean) || []
       const width = this.scope.column.width
       if (
         badges &&
