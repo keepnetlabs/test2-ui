@@ -92,7 +92,9 @@ export default {
     }
   },
   created() {
-    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property] || []
+    this.badges = this.col.hasMapper
+      ? this.mapper()
+      : this.scope.row[this.col.property].filter(Boolean) || []
     this.getBadges()
   },
 
@@ -101,7 +103,7 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     mapper() {
-      const arr = this.scope.row[this.col.property] || []
+      const arr = this.scope.row[this.col.property].filter(Boolean) || []
       return arr
         .map((item) => {
           if (!item) return null

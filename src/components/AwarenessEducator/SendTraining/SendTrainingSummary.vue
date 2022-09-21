@@ -43,10 +43,10 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.enrollmentData.template"
+                v-if="!!getEnrollmentTemplate"
                 ref="refPreview"
-                :html="formData.enrollmentData.template"
                 is-extra-height
+                :html="getEnrollmentTemplate"
               />
             </div>
           </div>
@@ -185,6 +185,9 @@ export default {
     }
   },
   computed: {
+    getEnrollmentTemplate() {
+      return this.formData?.enrollmentData?.template || ''
+    },
     getSettingItems() {
       return this?.formData?.settings
     },

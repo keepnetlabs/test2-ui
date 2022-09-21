@@ -220,7 +220,7 @@ export default {
             type: 'slot',
             width: 130,
             filterableType: 'select',
-            filterableItems: ['Enabled','Disabled']
+            filterableItems: ['Enabled', 'Disabled']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
