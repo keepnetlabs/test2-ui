@@ -90,7 +90,9 @@ const whitelabel = {
       for (const key of Object.keys(state)) {
         if (key === 'faviconUrl' && payload[key]) {
           const favIcon = document.querySelector('link[rel="icon"]')
-          favIcon.href = payload[key]
+          if (favIcon) {
+            favIcon.href = payload[key]
+          }
         } else if (key === 'brandName' && payload[key]) {
           document.title = payload[key]
         }

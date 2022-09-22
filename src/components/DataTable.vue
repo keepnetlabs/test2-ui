@@ -1462,7 +1462,7 @@ export default {
 
       //totalTable length
       this.totalLength = this.getTotalLength(table)
-      if (!table.length && this.showOverFlowTooltip) {
+      if (table !== undefined && !table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
       //if there is filtered data and search go to search function
