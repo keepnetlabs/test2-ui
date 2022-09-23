@@ -14,7 +14,12 @@
     <template #app-dialog-body>
       <div v-if="tableData && tableData.length" class="job-log-details__progress">
         <span class="job-log-details__progress-header">Progress</span>
-        <span :class="{ 'ml-1': progress !== 100, 'job-log-details__progress-value-text': true }">
+        <span
+          :class="{
+            'ml-1': progress !== 100,
+            'job-log-details__progress-value-text': true
+          }"
+        >
           {{ progress + '%' }}
         </span>
         <v-progress-linear
@@ -144,39 +149,39 @@ export default {
             align: 'left',
             editable: false,
             label: 'Department',
-            fixed: 'right',
+            fixed: false,
             hideSort: true,
             show: true,
             type: 'text',
             filterableType: false
+          },
+          {
+            property: 'Priority',
+            align: 'center',
+            editable: false,
+            label: 'Priority',
+            fixed: false,
+            hideSort: true,
+            show: true,
+            type: 'badge',
+            width: 150,
+            filterableType: false
+          },
+          {
+            property: 'Status',
+            align: 'center',
+            editable: false,
+            label: 'Status',
+            fixed: 'right',
+            hideSort: true,
+            show: true,
+            type: 'badge',
+            isEditable: true,
+            isWithTooltip: true,
+            filterableType: false
+            // filterableType: 'select',
+            // filterableItems: ['Running', 'Failed', 'Completed']
           }
-          // {
-          //   property: 'Priority',
-          //   align: 'left',
-          //   editable: false,
-          //   label: 'Priority',
-          //   fixed: false,
-          //   hideSort: true,
-          //   show: true,
-          //   type: 'priority',
-          //   width: 150,
-          //   filterableType: false
-          // },
-          // {
-          //   property: 'Status',
-          //   align: 'center',
-          //   editable: false,
-          //   label: 'Status',
-          //   fixed: 'right',
-          //   hideSort: true,
-          //   show: true,
-          //   type: 'status',
-          //   isEditable: true,
-          //   isWithTooltip: true,
-          //   filterableType: false
-          //   // filterableType: 'select',
-          //   // filterableItems: ['Running', 'Failed', 'Completed']
-          // }
         ],
         rowActions: [],
         addButton: {
@@ -207,7 +212,19 @@ export default {
           const resultArray = []
           for (let i = 0; i < processResults.length; i++) {
             const results = processResults[i]
-              .map((result) => JSON.parse(result.inputData || null))
+              .map((result) => {
+                if (result?.inputData) {
+                  const parsedData = JSON.parse(result.inputData)
+                  parsedData['Status'] = this.getStatusName(
+                    parsedData?.Status !== undefined ? parsedData?.Status : ''
+                  )
+                  parsedData['Priority'] = this.getPriorityName(
+                    parsedData?.Priority !== undefined ? parsedData?.Priority : ''
+                  )
+                  return parsedData
+                }
+                return undefined
+              })
               .filter(Boolean)
             resultArray.push(...results)
           }
@@ -215,6 +232,38 @@ export default {
           this.progress = data.progress
         })
         .finally(this.setLoading)
+    },
+    getStatusName(status) {
+      switch (status) {
+        case 0:
+          return 'Waiting'
+        case 1:
+          return 'Started'
+        case 2:
+          return 'Working'
+        case 3:
+          return 'Finished'
+        case 4:
+          return 'Failed'
+        default:
+          return ''
+      }
+    },
+    getPriorityName(priority) {
+      switch (priority) {
+        case 1:
+          return 'Very Low'
+        case 2:
+          return 'Low'
+        case 3:
+          return 'Medium'
+        case 4:
+          return 'High'
+        case 5:
+          return 'Very High'
+        default:
+          return ''
+      }
     },
     handleClose() {
       this.$emit('onClose')

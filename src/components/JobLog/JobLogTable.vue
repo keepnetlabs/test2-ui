@@ -115,23 +115,23 @@ export default {
             type: 'text',
             width: 150,
             filterableType: false
+          },
+          {
+            property: 'status',
+            align: 'center',
+            editable: false,
+            label: 'Status',
+            fixed: false,
+            hideSort: true,
+            show: true,
+            type: 'badge',
+            isEditable: true,
+            isWithTooltip: true,
+            width: 150,
+            filterableType: false
+            // filterableType: 'select',
+            // filterableItems: ['Running', 'Failed', 'Completed']
           }
-          //   {
-          //     property: 'status',
-          //     align: 'center',
-          //     editable: false,
-          //     label: 'Status',
-          //     fixed: false,
-          //     hideSort: true,
-          //     show: true,
-          //     type: 'status',
-          //     isEditable: true,
-          //     isWithTooltip: true,
-          //     width: 150,
-          //     filterableType: false
-          //     // filterableType: 'select',
-          //     // filterableItems: ['Running', 'Failed', 'Completed']
-          //   },
           //   {
           //     property: 'createdBy',
           //     align: 'left',
@@ -177,9 +177,28 @@ export default {
           const {
             data: { data }
           } = response
-          this.tableData = data
+          this.tableData = data.map((item) => ({
+            ...item,
+            status: this.getStatusName(item.status)
+          }))
         })
         .finally(this.setLoading)
+    },
+    getStatusName(status) {
+      switch (status) {
+        case 0:
+          return 'Waiting'
+        case 1:
+          return 'Started'
+        case 2:
+          return 'Working'
+        case 3:
+          return 'Finished'
+        case 4:
+          return 'Failed'
+        default:
+          return ''
+      }
     },
     exportJobLogData(downloadTypes) {
       //   downloadTypes.exportTypes.forEach((item) => {
