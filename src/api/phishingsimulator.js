@@ -1,7 +1,7 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function updatePhishingEmailTemplate(payload, id) {
+export function updatePhishingEmailTemplate(payload = {}, id) {
   const formData = new FormData()
 
   formData.append('name', payload.name)
@@ -25,13 +25,13 @@ export function updatePhishingEmailTemplate(payload, id) {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
 
-  const phishingFileType = payload.attachmentFiles[0]
-    ? payload.attachmentFiles[0]?.name
-      ? payload.attachmentFiles[0]?.name?.split('.')[1]
-      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-    : null
-
   if (payload.isAttachmentBasedTemplate) {
+    const phishingFileType = payload.attachmentFiles[0]
+      ? payload.attachmentFiles[0]?.name
+        ? payload.attachmentFiles[0]?.name?.split('.')[1]
+        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+      : payload?.phishingFileName?.split('.')?.[1] || null
+
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',
@@ -46,7 +46,7 @@ export function updatePhishingEmailTemplate(payload, id) {
     snackbar: COMMON_SNACKBAR
   })
 }
-export function createPhishingEmailTemplate(payload) {
+export function createPhishingEmailTemplate(payload = {}) {
   const formData = new FormData()
 
   formData.append('isDuplicated', payload.isDuplicated)
@@ -73,13 +73,13 @@ export function createPhishingEmailTemplate(payload) {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
 
-  const phishingFileType = payload.attachmentFiles[0]
-    ? payload.attachmentFiles[0]?.name
-      ? payload.attachmentFiles[0]?.name?.split('.')[1]
-      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-    : payload.phishingFileName.split('.')[1] || null
-
   if (payload.isAttachmentBasedTemplate) {
+    const phishingFileType = payload.attachmentFiles[0]
+      ? payload.attachmentFiles[0]?.name
+        ? payload.attachmentFiles[0]?.name?.split('.')[1]
+        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+      : payload?.phishingFileName?.split('.')?.[1] || null
+
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',

@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      badges: this.defaultBadges || [],
+      badges: this.defaultBadges.filter(Boolean) || [],
       maximumRenderedBadgeWidth: null,
       maximumRenderedBadgeCount: 0,
       unRenderedBadgeCount: 0

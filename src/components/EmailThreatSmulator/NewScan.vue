@@ -940,10 +940,10 @@ export default {
             this.emailLoginStatus = true
             const errorResponse = error.response.data
             this.submitError.isArray = false
-            this.submitError.message = errorResponse.message
-            if (errorResponse.validationMessages.length > 0) {
+            this.submitError.message = errorResponse?.message || ''
+            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
               this.submitError.isArray = true
-              this.submitError.message = errorResponse.validationMessages
+              this.submitError.message = errorResponse?.validationMessages || []
             }
             this.step = 1
           })

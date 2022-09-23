@@ -258,7 +258,7 @@ export default {
           .catch((error) => {
             const errorResponse = error.response.data
             let msg = errorResponse.message
-            if (errorResponse.validationMessages.length > 0) {
+            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
               let msg = ''
               for (let i = 0; i < errorResponse.validationMessages.length; i++) {
                 const listMsg = errorResponse.validationMessages[i]

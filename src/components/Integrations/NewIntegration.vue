@@ -1870,9 +1870,17 @@ export default {
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-      const { name, isSendFile, isSendFileHash, isSendUrl, isSendIp } = this.selectedIntegrationType
+      const {
+        name,
+        isSendFile,
+        isSendFileHash,
+        isSendUrl,
+        isSendIp,
+        isHideUrlParameter
+      } = this.selectedIntegrationType
 
       this.formValues.isSendUrl = isSendUrl
+      this.formValues.isHideUrlParameter = isHideUrlParameter
       this.formValues.isSendFileHash = isSendFileHash
       this.formValues.isSendFile = isSendFile
       this.formValues.isSendIp = isSendIp
