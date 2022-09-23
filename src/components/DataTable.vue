@@ -567,7 +567,7 @@
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableOptions="col.filterableOptions"
-                  :showSelect:="col.showSelect"
+                  :showSelect="col.showSelect"
                   :show-select-search="col.showSelectSearch"
                   :filterOptionProps="col.filterOptionProps"
                   :defaultDate="col.defaultDate"

@@ -403,6 +403,8 @@ export const labels = {
   EmptySamlTable: 'You do not have any SAML configuration',
   EmptyCampaignManager: 'You do not have any Campaign',
   EmptyCampaignManagerReport: 'You do not have any Campaign Report',
+  EmptyJobLog: 'You do not have any Job',
+  EmptyJobDetailsLog: 'This job does not contain any detail',
   EmptySamlTableButton: 'Create a new SAML configuration',
   CreateNewNotificationTemplate: 'Create New Notification Template',
   EditNewNotificationTemplate: 'Edit Notification Template',
