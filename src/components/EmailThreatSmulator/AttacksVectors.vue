@@ -220,7 +220,7 @@ export default {
             type: 'slot',
             width: 130,
             filterableType: 'select',
-            filterableItems: ['Enabled','Disabled']
+            filterableItems: ['Enabled', 'Disabled']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -361,7 +361,7 @@ export default {
       this.getDatatableList()
     },
     handleToggleRowSelection(row) {
-      this.$refs.refAttacksVectorList.$refs.elTableRef.toggleRowSelection(row, false)
+      this?.$refs?.refAttacksVectorList?.$refs?.elTableRef?.toggleRowSelection(row, false)
     },
     handleEditAttackVector(row) {
       getAttackVectorById(row.pluginResourceId).then((response) => {

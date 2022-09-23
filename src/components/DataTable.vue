@@ -567,7 +567,7 @@
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableOptions="col.filterableOptions"
-                  :showSelect:="col.showSelect"
+                  :showSelect="col.showSelect"
                   :show-select-search="col.showSelectSearch"
                   :filterOptionProps="col.filterOptionProps"
                   :defaultDate="col.defaultDate"
@@ -1462,7 +1462,7 @@ export default {
 
       //totalTable length
       this.totalLength = this.getTotalLength(table)
-      if (!table.length && this.showOverFlowTooltip) {
+      if (table !== undefined && !table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
       //if there is filtered data and search go to search function
@@ -1512,7 +1512,7 @@ export default {
           this.$nextTick(() => {
             this.tableData.forEach((item) => {
               if (!this.excludedResourceIdList.find((id) => id === item[this.rowKey])) {
-                this.$refs.elTableRef.toggleRowSelection(item, true)
+                this?.$refs?.elTableRef?.toggleRowSelection(item, true)
               }
             })
           })
@@ -1531,9 +1531,9 @@ export default {
             })
 
             if (thisTableItem) {
-              this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+              this?.$refs?.elTableRef?.toggleRowSelection(thisTableItem, true)
             } else {
-              this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+              this?.$refs?.elTableRef?.toggleRowSelection(selectedItem, true)
             }
           })
         })
@@ -1743,9 +1743,9 @@ export default {
             return JSON.stringify(item) === JSON.stringify(selectedItem)
           })
           if (thisTableItem) {
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+            this?.$refs?.elTableRef?.toggleRowSelection(thisTableItem, true)
           } else {
-            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+            this?.$refs?.elTableRef?.toggleRowSelection(selectedItem, true)
           }
         })
       })
@@ -1761,9 +1761,9 @@ export default {
             return item[this.rowKey] === selectedItem[this.rowKey]
           })
           if (thisTableItem) {
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+            this?.$refs?.elTableRef?.toggleRowSelection(thisTableItem, true)
           } else {
-            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+            this?.$refs?.elTableRef?.toggleRowSelection(selectedItem, true)
           }
         })
       })
@@ -1801,7 +1801,7 @@ export default {
       if (multipleSelection.length) {
         for (const row of multipleSelection) {
           this.$nextTick(() => {
-            this.$refs.elTableRef.toggleRowSelection(row, true)
+            this?.$refs?.elTableRef?.toggleRowSelection(row, true)
           })
         }
       }
@@ -1915,7 +1915,7 @@ export default {
       for (let row of rows) {
         this.addItemToClusteredItems(row)
         if (this.selectCheckboxesLazy || this.selectionCheckbox) {
-          this.$refs.elTableRef.toggleRowSelection(row, true)
+          this?.$refs?.elTableRef?.toggleRowSelection(row, true)
         }
         //
       }
@@ -2009,7 +2009,7 @@ export default {
     selectAllItems() {
       this.multipleSelection = this.getAllItems(this.initialData, [])
       for (let item of this.multipleSelection) {
-        this.$refs.elTableRef.toggleRowSelection(item, true)
+        this?.$refs?.elTableRef?.toggleRowSelection(item, true)
       }
     },
     handleRefresh() {
@@ -2166,7 +2166,7 @@ export default {
       if (this.groupable) {
         if (this.clusteredItems.length) {
           for (let item of this.clusteredItems) {
-            this.$refs.elTableRef.toggleRowSelection(item, false)
+            this?.$refs?.elTableRef?.toggleRowSelection(item, false)
           }
           this.selection = []
           this.clusteredItems = []
@@ -2192,7 +2192,7 @@ export default {
           if (child.children) {
             this.selectChildren(child, selection)
           }
-          this.$refs.elTableRef.toggleRowSelection(child, true)
+          this?.$refs?.elTableRef?.toggleRowSelection(child, true)
           this.handleToggleOrLazyWhenCheckboxSelected(child)
           this.addItemToClusteredItems(child)
           if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
@@ -2635,7 +2635,7 @@ export default {
         if (row.children) {
           this.selectChildrenByRowCheckbox(row.children, selection)
         }
-        this.$refs.elTableRef.toggleRowSelection(row, true)
+        this?.$refs?.elTableRef?.toggleRowSelection(row, true)
         if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
           this.addItemToClusteredItems(row)
           selection.push(row)
@@ -2654,7 +2654,7 @@ export default {
         if (clusteredIndex > -1) {
           this.clusteredItems.splice(clusteredIndex, 1)
         }
-        this.$refs.elTableRef.toggleRowSelection(row, false)
+        this?.$refs?.elTableRef?.toggleRowSelection(row, false)
         const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
         if (ind > -1) {
           selection.splice(ind, 1)
@@ -2698,7 +2698,7 @@ export default {
               if (child.children) {
                 this.selectChildrenByRowCheckbox(child.children, selection)
               }
-              this.$refs.elTableRef.toggleRowSelection(child, true)
+              this?.$refs?.elTableRef?.toggleRowSelection(child, true)
               this.handleToggleOrLazyWhenCheckboxSelected(child)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
                 this.addItemToClusteredItems(child)
@@ -2711,7 +2711,7 @@ export default {
               if (child.children) {
                 this.unSelectChildrenByRowCheckbox(child.children, selection)
               }
-              this.$refs.elTableRef.toggleRowSelection(child, false)
+              this?.$refs?.elTableRef?.toggleRowSelection(child, false)
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)
               )
@@ -2832,7 +2832,7 @@ export default {
                 (selection) => selection[this.rowKey] === item[[this.rowKey]]
               )
             ) {
-              this.$refs.elTableRef.toggleRowSelection(item, false)
+              this?.$refs?.elTableRef?.toggleRowSelection(item, false)
               if (this.isServerSide && this.isServerSideSelection) {
                 if (this.isSelectedAllEver) {
                   this.excludedResourceIdList.push(item[this.rowKey])
@@ -2867,7 +2867,7 @@ export default {
                     : JSON.stringify(item) === JSON.stringify(selectedItem)
                 })
               : selectedItem
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem)
+            this?.$refs?.elTableRef?.toggleRowSelection(thisTableItem)
             if (this.isServerSide && this.isServerSideSelection) {
               this.serverSideSelectionCount--
             }
@@ -2959,7 +2959,7 @@ export default {
         .catch(() => {})
     },
     unSelectRow(row) {
-      this.$refs.elTableRef.toggleRowSelection(row, false)
+      this?.$refs?.elTableRef?.toggleRowSelection(row, false)
     },
     changeServerSideSelectionCount(count = 0) {
       this.serverSideSelectionCount += count
@@ -2986,7 +2986,7 @@ export default {
       // Edit actions should handle here.
       // selections property is an array and has the selected row object data
       if (selections) {
-        this.$refs.elTableRef.toggleRowSelection(selections, true)
+        this?.$refs?.elTableRef?.toggleRowSelection(selections, true)
         let tempArray = []
         if (selections.constructor.name !== 'Array') {
           tempArray.push(selections)

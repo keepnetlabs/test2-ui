@@ -2698,7 +2698,9 @@ export default {
         header['Ip Address'] = ipAddress
         header['Sender Name'] = senderName
       })
-      const attachments = JSON.parse(JSON.stringify(this?.investigationDetailsData?.attachments))
+      const attachments = JSON.parse(
+        JSON.stringify(this?.investigationDetailsData?.attachments || [])
+      )
 
       attachments.forEach((attachment) => {
         const name = attachment.name

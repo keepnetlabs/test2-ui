@@ -788,7 +788,7 @@ export default {
       },
       isFormValuesChanged: false,
       totalCountMassage: '',
-      disableStartButtonStatus: false,
+      disableStartButtonStatus: false
     }
   },
   props: {
@@ -921,7 +921,7 @@ export default {
             false
           )
         }
-        this.acceptRule = false;
+        this.acceptRule = false
         getQuickScanCreate(requestBody)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -930,17 +930,17 @@ export default {
               icon: 'mdi-alert-circle'
             })
             this.$emit('changeNewScanModalStatus', false, true)
-            this.acceptRule = true;
+            this.acceptRule = true
           })
           .catch((error) => {
-            this.acceptRule = true;
+            this.acceptRule = true
             this.emailLoginStatus = true
             const errorResponse = error.response.data
             this.submitError.isArray = false
-            this.submitError.message = errorResponse.message
-            if (errorResponse.validationMessages.length > 0) {
+            this.submitError.message = errorResponse?.message || ''
+            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
               this.submitError.isArray = true
-              this.submitError.message = errorResponse.validationMessages
+              this.submitError.message = errorResponse?.validationMessages || []
             }
             this.step = 1
           })

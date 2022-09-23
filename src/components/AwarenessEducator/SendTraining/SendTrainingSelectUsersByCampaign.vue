@@ -376,7 +376,7 @@ export default {
       return style
     },
     isLandingPageTabsVisible() {
-      return this.landingPageTemplates?.length > 1
+      return this?.landingPageTemplates?.length > 1
     },
     getItems() {
       return this.campaignItems
@@ -392,7 +392,7 @@ export default {
         : 'Please try adjusting your search or filter'
     },
     getSingleTemplateDetails() {
-      return this.landingPageTemplates?.[0]?.content || ''
+      return this?.landingPageTemplates?.[0]?.content || ''
     },
     isFilterOrSearchActive() {
       const { search } = this

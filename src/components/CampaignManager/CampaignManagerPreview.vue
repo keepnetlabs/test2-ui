@@ -119,7 +119,8 @@ export default {
       getCampaignManagerPreview(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-          const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
+          const { landingPageTemplate: landingPage, methodTypeId } =
+            phishingScenarioPreviewDto || {}
           this.isAttachmentBasedScenario = methodTypeId === 3
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {

@@ -1,7 +1,7 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function updatePhishingEmailTemplate(payload, id) {
+export function updatePhishingEmailTemplate(payload = {}, id) {
   const formData = new FormData()
 
   formData.append('name', payload.name)
@@ -46,7 +46,7 @@ export function updatePhishingEmailTemplate(payload, id) {
     snackbar: COMMON_SNACKBAR
   })
 }
-export function createPhishingEmailTemplate(payload) {
+export function createPhishingEmailTemplate(payload = {}) {
   const formData = new FormData()
 
   formData.append('isDuplicated', payload.isDuplicated)
