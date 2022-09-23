@@ -40,6 +40,7 @@ import Certificates from '@/views/Certificates'
 import Scorm from '@/views/Scorm'
 import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
+import JobLog from '@/views/JobLog'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -185,7 +186,7 @@ const router = new Router({
         {
           path: '/company/job-log',
           name: 'Job Log',
-          component: ShowAllJobs,
+          component: JobLog,
           meta: {
             isAuthenticated: true,
             parentName: 'Company',

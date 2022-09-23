@@ -1,0 +1,26 @@
+#job-log-details-data-table {
+  .table-wrapper {
+    padding-top: 0px !important;
+  }
+}
+
+.job-log-details {
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    max-width: 230px;
+    margin-bottom: 1rem;
+  }
+
+  &__progress-header {
+    font-style: normal;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  &__progress-value-text {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+}
