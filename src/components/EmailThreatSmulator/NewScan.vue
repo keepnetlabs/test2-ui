@@ -694,7 +694,10 @@
         <StepperFooter
           :max-step="3"
           :step.sync="step"
-          :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: !acceptRule }"
+          :disabled-statuses="{
+            nextButton: isSubmitDisabled,
+            submitButton: !disableStartButtonStatus
+          }"
           @on-cancel="closeNewScanPopup"
           @on-back="backStep"
           @on-next="nextStep(+1)"
@@ -921,7 +924,7 @@ export default {
             false
           )
         }
-        this.acceptRule = false
+        this.disableStartButtonStatus = false
         getQuickScanCreate(requestBody)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -930,10 +933,10 @@ export default {
               icon: 'mdi-alert-circle'
             })
             this.$emit('changeNewScanModalStatus', false, true)
-            this.acceptRule = true
+            this.disableStartButtonStatus = true
           })
           .catch((error) => {
-            this.acceptRule = true
+            this.disableStartButtonStatus = true
             this.emailLoginStatus = true
             const errorResponse = error.response.data
             this.submitError.isArray = false
@@ -959,6 +962,10 @@ export default {
         }
       },
       deep: true
+    },
+    acceptRule(val) {
+      this.disableStartButtonStatus = val
+      console.log('a', val)
     }
   },
   computed: {
