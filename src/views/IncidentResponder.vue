@@ -18,68 +18,6 @@
         @on-close="toggleEmailTemplateModal"
         @on-confirm="handleConfirmSelectedEmailTemplate"
       />
-      <app-dialog
-        size="big"
-        icon="mdi-cog"
-        subtitle="To calculate saving in time and money for automating the email analysis"
-        class-name="roi-modal"
-        title-id="text--incident-responder-roi-summary-title"
-        subtitle-id="text--incident-responder-roi-summary-subtitle"
-        :status="isShowRoi"
-        :title="'ROI Summary Settings'"
-        @changeStatus="isShowRoi = false"
-      >
-        <template v-slot:app-dialog-body>
-          <v-form ref="form" lazy-validation>
-            <v-list-item class="roi-modal__list-item">
-              <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
-                <v-text-field
-                  v-mask="'###'"
-                  v-model="baseManHour"
-                  id="input--incident-responder-roi-popup-saved-time"
-                  placeholder="Enter saved time"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height"
-                  :rules="[
-                    (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
-                  ]"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="roi-modal__list-item">
-              <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
-                <v-text-field
-                  v-mask="'###'"
-                  v-model="baseManHourCost"
-                  id="input--incident-responder-roi-popup-hourly-rate"
-                  placeholder="Enter hourly rate"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height"
-                  :rules="[
-                    (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
-                  ]"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-          </v-form>
-        </template>
-        <template v-slot:app-dialog-footer>
-          <div class="download-modal__footer justify-end">
-            <app-dialog-footer
-              cancel-button-id="btn-cancel--incident-responder-roi-popup"
-              confirm-button-id="btn-save--incident-responder-roi-popup"
-              :actionButtonText="labels.Save"
-              :confirmButtonDisabled="isRoiSettingSubmitButtonDisabled"
-              @handleClose="isShowRoi = false"
-              @handleConfirm="submitRoiModal"
-            />
-          </div>
-        </template>
-      </app-dialog>
       <new-investigation
         v-if="isWantToAddNewInvestigation"
         ref="refNewInvestigation"
@@ -89,242 +27,7 @@
         @closeWithRoute="handleRouteToInvestigationDetails"
         @closeAdd="isWantToAddNewInvestigation = false"
       />
-      <div v-if="getIncidentResponderSummaryPermission" class="columns-row">
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
-        >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-phishing-reporter"
-              :class="[
-                'dashboard-cards phishing-reporter mr-2',
-                {
-                  'no-data__opacity-blue': isPhishingEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">Phishing Reporter</span>
-                <router-link
-                  to="/phishing-reporter"
-                  id="btn-link--incident-responder-to-phishing-reporter"
-                >
-                  <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
-                </router-link>
-              </div>
-              <div v-if="!isPhishingEmpty" class="columns-row__body">
-                <div class="card-body">
-                  <div
-                    class="biggest"
-                    id="card--incident-responder-phishing-reporter-online-users-count"
-                  >
-                    {{ getPhishingReporterOnlineUserCount }}
-                  </div>
-                </div>
-                <div
-                  class="card-footer"
-                  id="card--incident-responder-phishing-reporter-total-users-count"
-                >
-                  of
-                  {{ getPhishingReporterTotalUserCount }}
-                  user(s) are
-                </div>
-                <div class="card-status">{{ labels.Online }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  Add-in isn’t installed at any users’ account
-                </div>
-              </div>
-              <div
-                class="bg-image"
-                style="bottom: 10px; right: -11px;"
-                :style="[isPhishingEmpty && { opacity: 0.4 }]"
-              >
-                <img src="../assets/img/ph-crone.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          class="dashboard-cards__skeleton-loading"
-          :class="[incidentLoading && 'dashboard-cards-loading']"
-        >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-incident-analysis"
-              :class="[
-                'dashboard-cards mr-2',
-                {
-                  'no-data__opacity-red': isNotifiedEmailEmpty,
-                  'bg-image-incident-analysis': !isNotifiedEmailEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">{{ labels.IncidentAnalysis }}</span>
-              </div>
-              <div v-if="!isNotifiedEmailEmpty" class="columns-row__body">
-                <div class="card-body">
-                  <div
-                    class="biggest"
-                    id="card--incident-responder-incident-analysis-notified-harmful-count"
-                  >
-                    {{ getIncidentAnalysisNotifiedHarmfulCount }}
-                  </div>
-                </div>
-                <div
-                  id="card--incident-responder-incident-analysis-reported-mail-count"
-                  class="card-footer"
-                >
-                  of
-                  {{ getIncidentAnalysisNotifiedReportedMailCount }}
-                  reported email(s)
-                </div>
-                <div class="card-status">{{ labels.FoundHarmful }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  {{ labels.NoEmailAnalysed }}
-                </div>
-              </div>
-              <div class="bg-image" :style="[isNotifiedEmailEmpty && { opacity: 0.3 }]">
-                <img src="../assets/img/ic-warning.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
-        >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-investigations"
-              :class="[
-                'dashboard-cards investigations mr-2',
-                {
-                  'no-data__opacity-green': !isInvestigationsEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">Investigations</span>
-                <router-link
-                  id="btn-link--incident-responder-to-investigations"
-                  to="/investigations"
-                >
-                  <v-icon style="opacity: 0.8;" color="white">mdi-open-in-new</v-icon>
-                </router-link>
-              </div>
-              <div v-if="isInvestigationsEmpty" class="columns-row__body" style="margin-top: 13px;">
-                <div class="card-body d-flex">
-                  <div class="body-row">
-                    <span
-                      id="card--incident-responder-investigations-automatic-investigation-count"
-                      class="body-row__number"
-                    >
-                      {{ getAutomaticInvestigationCount }}
-                    </span>
-
-                    <span class="body-row__text" style="margin-left: 4px;">{{
-                      labels.LowerAuto
-                    }}</span>
-                  </div>
-                  <div class="body-row" style="margin-left: 64px;">
-                    <span
-                      class="body-row__number"
-                      id="card--incident-responder-investigations-manual-investigation-count"
-                      >{{ getManuelInvestigationCount }}
-                    </span>
-
-                    <span class="body-row__text">{{ labels.LowerManual }}</span>
-                  </div>
-                </div>
-                <div class="card-status mt-7">
-                  {{ labels.IncidentsResolved }}
-                </div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  {{ labels.NoInvestigationStarted }}
-                </div>
-              </div>
-              <div class="bg-image" :style="[!isInvestigationsEmpty && { opacity: 0.4 }]">
-                <img src="../assets/img/ic-check-box.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
-        >
-          <template #skeleton-content>
-            <div
-              id="card--incident-responder-roi-summary"
-              :class="[
-                'dashboard-cards',
-                {
-                  'no-data__opacity-purple': isRoiSummaryEmpty,
-                  'roi-summary': !isRoiSummaryEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">{{ labels.RoiSummary }}</span>
-                <v-icon
-                  v-if="getIncidentResponderROISettingGetPermission"
-                  id="btn-show--incident-responder-roi-summary"
-                  color="#fff"
-                  @click="isShowRoi = true"
-                  >mdi-cog</v-icon
-                >
-              </div>
-              <div v-if="!isRoiSummaryEmpty" class="card-body d-flex roi-summary__body-container">
-                <div class="body-row">
-                  <span
-                    id="card--incident-responder-roi-summary-time"
-                    class="body-row__number"
-                    style="white-space: nowrap;"
-                  >
-                    {{ getROISummaryTime }}
-                  </span>
-
-                  <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
-                </div>
-                <div class="body-row body-row--2">
-                  <span class="body-row__number" id="card--incident-responder-roi-summary-revenue">
-                    ${{ getROISummaryRevenue }}
-                  </span>
-
-                  <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
-                </div>
-                <div class="card-status">{{ labels.Saved }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  You haven’t saved any work
-                </div>
-              </div>
-              <div class="bg-image">
-                <img src="../assets/img/ic-insert-chart.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-      </div>
+      <IncidentResponderHeaderCards />
       <div class="double-table">
         <div v-if="getIncidentResponderTopRulesPermission" class="column">
           <v-card>
@@ -788,13 +491,11 @@
 </template>
 <script>
 import {
-  getRoiSettings,
   getRunningInvestigations,
   getTopRules,
   searchNotifiedMail,
   updateNotifiedEmail,
-  updateNotifiedEmailBulk,
-  updateRoiSettings
+  updateNotifiedEmailBulk
 } from '@/api/incidentResponder'
 import {
   getDataTableFieldLabel,
@@ -818,7 +519,6 @@ import {
 import AppDialog from '../components/AppDialog'
 import { required, startsWith, maxLength } from '@/utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
@@ -829,8 +529,10 @@ import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncide
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
 import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import IncidentResponderHeaderCards from '@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards'
 export default {
   components: {
+    IncidentResponderHeaderCards,
     SelectEmailTemplateModal,
     MatchingIncidentModal,
     ReAnalyzeIncidentDialog,
@@ -841,7 +543,6 @@ export default {
     AppDialog,
     DataTableColorfulText,
     CreateOrEditRule,
-    CardLoading,
     AppModal
   },
   props: {
@@ -876,19 +577,13 @@ export default {
     reportedEmailsData: [],
     bindPropsIsSafari: {},
     reportedEmailsLoading: false,
-    incidentLoading: true,
     showPlaybookModal: false,
     selectedPlaybookId: null,
-    roiRate: '',
     selectedEmail: null,
-    roiTask: '',
     selectedMatch: null,
-    isShowRoi: false,
     extendedViewLoading: true,
     isShowingClusteredTable: false,
     showMatchingModal: false,
-    baseManHour: null,
-    baseManHourCost: null,
     validations: {
       required,
       startsWith,
@@ -1702,34 +1397,14 @@ export default {
   computed: {
     ...mapGetters({
       irSummary: 'investigations/irSummaryGetter',
-      getIncidentResponderSummaryPermission: 'permissions/getIncidentResponderSummaryPermission',
       getIncidentResponderTopRulesPermission: 'permissions/getIncidentResponderTopRulesPermission',
       getIncidentResponderRunningInvestigationsPermission:
         'permissions/getIncidentResponderRunningInvestigationsPermission',
       getIncidentResponderNotifiedEmailPermission:
         'permissions/getIncidentResponderNotifiedEmailPermission',
       getIncidentResponderNotifiedEmailReAnalyze:
-        'permissions/getIncidentResponderNotifiedEmailReAnalyze',
-      getIncidentResponderROISettingGetPermission:
-        'permissions/getIncidentResponderROISettingGetPermission',
-      getIncidentResponderROISettingPostPermission:
-        'permissions/getIncidentResponderROISettingPostPermission'
+        'permissions/getIncidentResponderNotifiedEmailReAnalyze'
     }),
-    getPhishingReporterOnlineUserCount() {
-      return this?.irSummary?.phishingReporterUserStatusCount?.onlineUsersCount || 0
-    },
-    getManuelInvestigationCount() {
-      return this?.irSummary.investigationTypeCount?.manualInvestigationCount || 0
-    },
-    getAutomaticInvestigationCount() {
-      return this?.irSummary?.investigationTypeCount?.automaticInvestigationCount || 0
-    },
-    getIncidentAnalysisNotifiedHarmfulCount() {
-      return this?.irSummary?.notifiedEmailResultCount?.harmfulCount || 0
-    },
-    getIncidentAnalysisNotifiedReportedMailCount() {
-      return this?.irSummary.notifiedEmailResultCount.reportedMailCount || 0
-    },
     getReportedEmailTitle() {
       return this.isShowingClusteredTable
         ? this.clusteredRow[this.getClusteredField(this.selectedCluster)]
@@ -1739,77 +1414,6 @@ export default {
       return this.isShowingClusteredTable
         ? `Reported emails clustered by ${this.selectedCluster}`
         : labels.SummaryOfReportedEmails
-    },
-    getPhishingReporterTotalUserCount() {
-      const { irSummary } = this
-      return (
-        (irSummary &&
-          irSummary.phishingReporterUserStatusCount &&
-          irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-            irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
-        0
-      )
-    },
-    isRoiSettingSubmitButtonDisabled() {
-      return this.isConfirmButtonDisabled || !this.getIncidentResponderROISettingPostPermission
-    },
-    getROISummaryTime() {
-      return this?.irSummary?.roiSummary?.time || 0
-    },
-    getROISummaryRevenue() {
-      return this?.irSummary?.roiSummary?.revenue || 0
-    },
-    isRoiSummaryEmpty() {
-      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = this.irSummary || {}
-      return revenue === '0' && time === '0'
-    },
-    isPhishingEmpty() {
-      const data = this.irSummary
-      if (data && !data.phishingReporterUserStatusCount) {
-        return true
-      } else if (
-        data &&
-        data.phishingReporterUserStatusCount &&
-        (data.phishingReporterUserStatusCount.onlineUsersCount ||
-          data.phishingReporterUserStatusCount.offlineUsersCount)
-      ) {
-        return false
-      } else {
-        return true
-      }
-    },
-    isInvestigationsEmpty() {
-      const summary = this.irSummary
-      if (summary && summary.investigationTypeCount) {
-        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
-        if (investigationTypeCountKeys.length > 0) {
-          let hasValue = false
-          for (let key of investigationTypeCountKeys) {
-            if (summary.investigationTypeCount[key]) {
-              hasValue = true
-            }
-          }
-          return hasValue
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    },
-    isNotifiedEmailEmpty() {
-      const data = this.irSummary
-      if (data && !data.notifiedEmailResultCount) {
-        return true
-      } else if (
-        data &&
-        data.notifiedEmailResultCount &&
-        data.notifiedEmailResultCount.reportedMailCount
-      ) {
-        return false
-      } else {
-        return true
-      }
     },
     getTitle() {
       return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
@@ -1836,15 +1440,7 @@ export default {
       }
     }
   },
-  mounted() {
-    this.incidentLoading = true
-    this.addQuery()
-  },
   created() {
-    this.$store.dispatch('investigations/getIrSummary').finally(() => {
-      this.showDatatable = true
-      this.incidentLoading = false
-    })
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
@@ -1853,10 +1449,8 @@ export default {
       }
     }
     this.getEmailTypesAndEmailTemplates()
-    window.addEventListener('resize', this.addQuery)
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.addQuery)
     const tableState = this.$refs.refReportedEmails.getState()
     let clusteredTableState
     if (this.isShowingClusteredTable) {
@@ -2226,38 +1820,10 @@ export default {
       if (!isLoadState) {
         this.callForSearchNotifiedMail()
       }
-      if (this.getIncidentResponderROISettingGetPermission) {
-        this.callForGetRoiSettings()
-      }
     },
     closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
-    },
-    addQuery() {
-      const navigatorWidth = document.querySelector('nav.page-nav').style.width
-      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      if (width < 1050 && width > 750) {
-        document
-          .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
-          )
-          .forEach((item) => {
-            item.style = 'width: calc(50%) !important;max-width: calc(50%) !important;'
-          })
-
-        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
-      } else {
-        document
-          .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
-          )
-          .forEach((item) => {
-            item.style = ''
-          })
-        const columnsRowContainer = document.querySelector('.columns-row')
-        if (columnsRowContainer) document.querySelector('.columns-row').style = ''
-      }
     },
     handleRouteToInvestigationDetails(resp) {
       if (resp?.data?.data?.resourceId) {
@@ -2280,35 +1846,6 @@ export default {
     },
     getDataTableFieldLabel(text) {
       return getDataTableFieldLabel(text)
-    },
-    callForGetRoiSettings() {
-      getRoiSettings().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.baseManHour = data.baseManHour
-        this.baseManHourCost = data.baseManHourCost
-      })
-    },
-    submitRoiModal() {
-      if (this.$refs.form.validate()) {
-        this.isConfirmButtonDisabled = true
-        updateRoiSettings({
-          baseManHour: this.baseManHour,
-          baseManHourCost: this.baseManHourCost
-        })
-          .then(() => {
-            this.incidentLoading = true
-            this.callForGetRoiSettings()
-            this.isShowRoi = false
-            this.$store.dispatch('investigations/getIrSummary').finally(() => {
-              this.incidentLoading = false
-            })
-          })
-          .finally(() => {
-            this.isConfirmButtonDisabled = false
-          })
-      }
     },
     onEditClick({ selected: selections, isEditPopupOpen, isMultiple, isSelectedAllEver }) {
       if (isEditPopupOpen && selections.length) {
