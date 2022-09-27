@@ -6,6 +6,12 @@
       :selected-row="selectedRow"
       @on-close="toggleShowEditEnrollmentModal"
     />
+    <SendEnrollmentDialog
+      v-if="isShowSendEnrollmentDialog"
+      :status="isShowSendEnrollmentDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowSendEnrollmentDialog"
+    />
     <DeleteEnrollmentDialog
       v-if="isShowDeleteEnrollmentsDialog"
       :status="isShowDeleteEnrollmentsDialog"
@@ -51,10 +57,12 @@ import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelp
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/EditEnrollmentsModal'
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
+import SendEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/SendEnrollmentDialog'
 
 export default {
   name: 'Enrollments',
   components: {
+    SendEnrollmentDialog,
     EditEnrollmentsModal,
     StopEnrollmentDialog,
     DeleteEnrollmentDialog,
@@ -65,6 +73,7 @@ export default {
   mixins: [useAwarenessHelperCalls],
   data() {
     return {
+      isShowSendEnrollmentDialog: false,
       isShowDeleteEnrollmentsDialog: false,
       selectedRow: null,
       isShowStopEnrollmentDialog: false,
@@ -108,9 +117,8 @@ export default {
       this.toggleShowStopEnrollmentDialog()
     },
     handleSend(row) {
-      AwarenessEducatorService.sendEnrollment(row.enrollmentId).then(() => {
-        this.$refs.refTable.callForData()
-      })
+      this.selectedRow = row
+      this.toggleShowSendEnrollmentDialog()
     },
     toggleShowEditEnrollmentModal(forceUpdate) {
       if (forceUpdate) this.$refs.refTable.callForData()
@@ -126,6 +134,11 @@ export default {
         this.selectedRow = { ...row, trainingId: response?.data?.data?.trainingId }
         this.toggleShowPreviewDialog()
       })
+    },
+    toggleShowSendEnrollmentDialog(forceUpdate = false) {
+      if (forceUpdate) this.$refs.refTable.callForData()
+      if (this.isShowSendEnrollmentDialog) this.selectedRow = null
+      this.isShowSendEnrollmentDialog = !this.isShowSendEnrollmentDialog
     }
   }
 }
