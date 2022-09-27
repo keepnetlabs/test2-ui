@@ -18,68 +18,6 @@
         @on-close="toggleEmailTemplateModal"
         @on-confirm="handleConfirmSelectedEmailTemplate"
       />
-      <app-dialog
-        size="big"
-        icon="mdi-cog"
-        subtitle="To calculate saving in time and money for automating the email analysis"
-        class-name="roi-modal"
-        title-id="text--incident-responder-roi-summary-title"
-        subtitle-id="text--incident-responder-roi-summary-subtitle"
-        :status="isShowRoi"
-        :title="'ROI Summary Settings'"
-        @changeStatus="isShowRoi = false"
-      >
-        <template v-slot:app-dialog-body>
-          <v-form ref="form" lazy-validation>
-            <v-list-item class="roi-modal__list-item">
-              <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
-                <v-text-field
-                  v-mask="'###'"
-                  v-model="baseManHour"
-                  id="input--incident-responder-roi-popup-saved-time"
-                  placeholder="Enter saved time"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height"
-                  :rules="[
-                    (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
-                  ]"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="roi-modal__list-item">
-              <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
-                <v-text-field
-                  v-mask="'###'"
-                  v-model="baseManHourCost"
-                  id="input--incident-responder-roi-popup-hourly-rate"
-                  placeholder="Enter hourly rate"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height"
-                  :rules="[
-                    (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
-                  ]"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-          </v-form>
-        </template>
-        <template v-slot:app-dialog-footer>
-          <div class="download-modal__footer justify-end">
-            <app-dialog-footer
-              cancel-button-id="btn-cancel--incident-responder-roi-popup"
-              confirm-button-id="btn-save--incident-responder-roi-popup"
-              :actionButtonText="labels.Save"
-              :confirmButtonDisabled="isRoiSettingSubmitButtonDisabled"
-              @handleClose="isShowRoi = false"
-              @handleConfirm="submitRoiModal"
-            />
-          </div>
-        </template>
-      </app-dialog>
       <new-investigation
         v-if="isWantToAddNewInvestigation"
         ref="refNewInvestigation"
@@ -89,363 +27,36 @@
         @closeWithRoute="handleRouteToInvestigationDetails"
         @closeAdd="isWantToAddNewInvestigation = false"
       />
-      <div v-if="getIncidentResponderSummaryPermission" class="columns-row">
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
+      <AppModal
+        v-if="showPlaybookModal"
+        title-id="text--create-playbook-title"
+        class-name="incident-responder__playbook"
+        :status="showPlaybookModal"
+        :icon-name="getIconName"
+        :title="getTitle"
+        :show-footer="false"
+      >
+        <template v-slot:overlay-body>
+          <CreateOrEditRule
+            v-if="showPlaybookModal"
+            :playbookId="selectedPlaybookId"
+            @cancelForm="togglePlaybookModal"
+            @closeFormWithUpdate="closePlaybookWithUpdate"
+          />
+        </template>
+      </AppModal>
+      <IncidentResponderHeaderCards ref="refIncidentResponderCards" />
+      <div
+        v-if="getIncidentResponderNotifiedEmailPermission"
+        class="table-row"
+        style="padding-top: 0;"
+      >
+        <v-card
+          style="
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+          "
         >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-phishing-reporter"
-              :class="[
-                'dashboard-cards phishing-reporter mr-2',
-                {
-                  'no-data__opacity-blue': isPhishingEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">Phishing Reporter</span>
-                <router-link
-                  to="/phishing-reporter"
-                  id="btn-link--incident-responder-to-phishing-reporter"
-                >
-                  <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
-                </router-link>
-              </div>
-              <div v-if="!isPhishingEmpty" class="columns-row__body">
-                <div class="card-body">
-                  <div
-                    class="biggest"
-                    id="card--incident-responder-phishing-reporter-online-users-count"
-                  >
-                    {{ getPhishingReporterOnlineUserCount }}
-                  </div>
-                </div>
-                <div
-                  class="card-footer"
-                  id="card--incident-responder-phishing-reporter-total-users-count"
-                >
-                  of
-                  {{ getPhishingReporterTotalUserCount }}
-                  user(s) are
-                </div>
-                <div class="card-status">{{ labels.Online }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  Add-in isn’t installed at any users’ account
-                </div>
-              </div>
-              <div
-                class="bg-image"
-                style="bottom: 10px; right: -11px;"
-                :style="[isPhishingEmpty && { opacity: 0.4 }]"
-              >
-                <img src="../assets/img/ph-crone.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          class="dashboard-cards__skeleton-loading"
-          :class="[incidentLoading && 'dashboard-cards-loading']"
-        >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-incident-analysis"
-              :class="[
-                'dashboard-cards mr-2',
-                {
-                  'no-data__opacity-red': isNotifiedEmailEmpty,
-                  'bg-image-incident-analysis': !isNotifiedEmailEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">{{ labels.IncidentAnalysis }}</span>
-              </div>
-              <div v-if="!isNotifiedEmailEmpty" class="columns-row__body">
-                <div class="card-body">
-                  <div
-                    class="biggest"
-                    id="card--incident-responder-incident-analysis-notified-harmful-count"
-                  >
-                    {{ getIncidentAnalysisNotifiedHarmfulCount }}
-                  </div>
-                </div>
-                <div
-                  id="card--incident-responder-incident-analysis-reported-mail-count"
-                  class="card-footer"
-                >
-                  of
-                  {{ getIncidentAnalysisNotifiedReportedMailCount }}
-                  reported email(s)
-                </div>
-                <div class="card-status">{{ labels.FoundHarmful }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  {{ labels.NoEmailAnalysed }}
-                </div>
-              </div>
-              <div class="bg-image" :style="[isNotifiedEmailEmpty && { opacity: 0.3 }]">
-                <img src="../assets/img/ic-warning.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
-        >
-          <template v-slot:skeleton-content>
-            <div
-              id="card--incident-responder-investigations"
-              :class="[
-                'dashboard-cards investigations mr-2',
-                {
-                  'no-data__opacity-green': !isInvestigationsEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">Investigations</span>
-                <router-link
-                  id="btn-link--incident-responder-to-investigations"
-                  to="/investigations"
-                >
-                  <v-icon style="opacity: 0.8;" color="white">mdi-open-in-new</v-icon>
-                </router-link>
-              </div>
-              <div v-if="isInvestigationsEmpty" class="columns-row__body" style="margin-top: 13px;">
-                <div class="card-body d-flex">
-                  <div class="body-row">
-                    <span
-                      id="card--incident-responder-investigations-automatic-investigation-count"
-                      class="body-row__number"
-                    >
-                      {{ getAutomaticInvestigationCount }}
-                    </span>
-
-                    <span class="body-row__text" style="margin-left: 4px;">{{
-                      labels.LowerAuto
-                    }}</span>
-                  </div>
-                  <div class="body-row" style="margin-left: 64px;">
-                    <span
-                      class="body-row__number"
-                      id="card--incident-responder-investigations-manual-investigation-count"
-                      >{{ getManuelInvestigationCount }}
-                    </span>
-
-                    <span class="body-row__text">{{ labels.LowerManual }}</span>
-                  </div>
-                </div>
-                <div class="card-status mt-7">
-                  {{ labels.IncidentsResolved }}
-                </div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  {{ labels.NoInvestigationStarted }}
-                </div>
-              </div>
-              <div class="bg-image" :style="[!isInvestigationsEmpty && { opacity: 0.4 }]">
-                <img src="../assets/img/ic-check-box.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-        <CardLoading
-          :loading="incidentLoading"
-          :class="[
-            'dashboard-cards__skeleton-loading',
-            incidentLoading && 'dashboard-cards-loading'
-          ]"
-        >
-          <template #skeleton-content>
-            <div
-              id="card--incident-responder-roi-summary"
-              :class="[
-                'dashboard-cards',
-                {
-                  'no-data__opacity-purple': isRoiSummaryEmpty,
-                  'roi-summary': !isRoiSummaryEmpty
-                }
-              ]"
-            >
-              <div class="card-header">
-                <span class="head">{{ labels.RoiSummary }}</span>
-                <v-icon
-                  v-if="getIncidentResponderROISettingGetPermission"
-                  id="btn-show--incident-responder-roi-summary"
-                  color="#fff"
-                  @click="isShowRoi = true"
-                  >mdi-cog</v-icon
-                >
-              </div>
-              <div v-if="!isRoiSummaryEmpty" class="card-body d-flex roi-summary__body-container">
-                <div class="body-row">
-                  <span
-                    id="card--incident-responder-roi-summary-time"
-                    class="body-row__number"
-                    style="white-space: nowrap;"
-                  >
-                    {{ getROISummaryTime }}
-                  </span>
-
-                  <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
-                </div>
-                <div class="body-row body-row--2">
-                  <span class="body-row__number" id="card--incident-responder-roi-summary-revenue">
-                    ${{ getROISummaryRevenue }}
-                  </span>
-
-                  <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
-                </div>
-                <div class="card-status">{{ labels.Saved }}</div>
-              </div>
-              <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  You haven’t saved any work
-                </div>
-              </div>
-              <div class="bg-image">
-                <img src="../assets/img/ic-insert-chart.svg" />
-              </div>
-            </div>
-          </template>
-        </CardLoading>
-      </div>
-      <div class="double-table">
-        <div v-if="getIncidentResponderTopRulesPermission" class="column">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2 id="text--incident-responder-playbook-top-rules">
-                  {{ labels.TopRules }}
-                </h2>
-                <p id="text--incident-responder-most-triggered-playbook-top-rules">
-                  {{ labels.MostTriggeredPlaybookRules }}
-                </p>
-              </div>
-              <div class="action">
-                <v-btn
-                  id="btn-link--incident-responder-playbook"
-                  class="btn-action btn-playbook"
-                  block
-                  rounded
-                  @click="$router.push('/incident-responder/playbook')"
-                >
-                  {{ labels.Playbook }}
-                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-            <div class="table">
-              <datatable
-                id="incident-responder-top-rules-data-table"
-                class="no-sub-border-datatable"
-                :loading="investigationsLoading || topRulesLoading"
-                :columns="topRules.columns"
-                :table="topRules.table"
-                :pageSizes="[]"
-                :selectable="false"
-                :filterable="false"
-                :border="false"
-                :showHeader="false"
-                :rowActions="[]"
-                :addUsers="topRules.addMenu"
-                :empty="topRules.iEmpty"
-                :selectEvent="topRules.selectEvent"
-                @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-              >
-                <template v-slot:datatable-column-popup="{ scope, col }">
-                  <span v-if="scope.row[col.property] === 0">
-                    {{ labels.NoMatchEmptyText }}
-                  </span>
-                  <span v-else class="popup-link" @click="matchingPopupClick(scope.row)">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }}
-                    {{ labels.Matches }}
-                  </span>
-                  <matching-incident-modal
-                    v-if="showMatchingModal"
-                    :status="scope.row.resourceId === selectedMatch.resourceId"
-                    :selectedMatch="selectedMatch"
-                    @closeOverlay="showMatchingModal = false"
-                  />
-                </template>
-                <template v-slot:datatable-custom-column="{ scope }">
-                  <span
-                    v-if="scope.row.ruleName"
-                    class="datatable-link"
-                    @click="handeRuleNameClick(scope.row.resourceId)"
-                  >
-                    {{ scope.row.ruleName }}
-                  </span>
-                  <span v-else> </span>
-                </template>
-              </datatable>
-            </div>
-          </v-card>
-        </div>
-        <div v-if="getIncidentResponderRunningInvestigationsPermission" class="column">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2 id="text--incident-responder-investigations-recent-investigations">
-                  {{ labels.RecentInvestigations }}
-                </h2>
-                <p id="text--incident-responder-investigations-most-recent-investigations">
-                  {{ labels.MostRecentInvestigations }}
-                </p>
-              </div>
-              <div class="action">
-                <v-btn
-                  id="btn-link--incident-responder-investigation"
-                  class="btn-action btn-investigations"
-                  style="padding: 0 13px !important;"
-                  block
-                  rounded
-                  @click.native="$router.push('/incident-responder/investigations')"
-                >
-                  {{ labels.Investigations }}
-                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-            <div class="table investigations">
-              <datatable
-                id="incident-responder-investigations-data-table"
-                class="no-sub-border-datatable"
-                :loading="investigationsLoading || topRulesLoading"
-                :table="investigationsData"
-                :columns="recentInv.columns"
-                :selectable="false"
-                :filterable="false"
-                :border="false"
-                :showHeader="false"
-                :rowActions="[]"
-                :pageSizes="[]"
-                :addUsers="recentInv.addMenu"
-                :empty="recentInv.iEmpty"
-                :selectEvent="recentInv.selectEvent"
-                @onEmptyBtnClicked="onEmptyBtnClicked"
-              />
-            </div>
-          </v-card>
-        </div>
-      </div>
-      <div v-if="getIncidentResponderNotifiedEmailPermission" class="table-row">
-        <v-card>
           <div class="header">
             <div class="title">
               <h2>
@@ -765,36 +376,63 @@
           </datatable>
         </v-card>
       </div>
+      <div class="double-table">
+        <div v-if="getIncidentResponderTopRulesPermission" class="column">
+          <TopRules
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+          />
+        </div>
+        <div v-if="getIncidentResponderRunningInvestigationsPermission" class="column">
+          <RecentInvestigations
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+            "
+          />
+        </div>
+      </div>
+      <div class="double-table">
+        <div
+          v-if="getIncidentResponderNotifiedEmailPermission"
+          class="column"
+          style="width: calc(40% - 16px); min-height: 300px;"
+        >
+          <RecentlyReportedIncidents
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+            :has-link="false"
+          />
+        </div>
+        <div
+          v-if="getDashboardReportedEmailTrendsPermission"
+          class="column"
+          style="width: calc(60% - 16px); max-height: 367px;"
+        >
+          <ReportedEmailTrends
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+            :has-link="false"
+          />
+        </div>
+      </div>
     </div>
-    <app-modal
-      v-if="showPlaybookModal"
-      title-id="text--create-playbook-title"
-      class-name="incident-responder__playbook"
-      :status="showPlaybookModal"
-      :icon-name="getIconName"
-      :title="getTitle"
-      :show-footer="false"
-    >
-      <template v-slot:overlay-body>
-        <CreateOrEditRule
-          v-if="showPlaybookModal"
-          :playbookId="selectedPlaybookId"
-          @cancelForm="togglePlaybookModal"
-          @closeFormWithUpdate="closePlaybookWithUpdate"
-        />
-      </template>
-    </app-modal>
   </div>
 </template>
 <script>
 import {
-  getRoiSettings,
-  getRunningInvestigations,
-  getTopRules,
   searchNotifiedMail,
   updateNotifiedEmail,
-  updateNotifiedEmailBulk,
-  updateRoiSettings
+  updateNotifiedEmailBulk
 } from '@/api/incidentResponder'
 import {
   getDataTableFieldLabel,
@@ -815,33 +453,35 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import AppDialog from '../components/AppDialog'
 import { required, startsWith, maxLength } from '@/utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
-import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
 import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import IncidentResponderHeaderCards from '@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards'
+import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
+import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
+import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
+import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
 export default {
   components: {
+    ReportedEmailTrends,
+    RecentlyReportedIncidents,
+    RecentInvestigations,
+    TopRules,
+    IncidentResponderHeaderCards,
     SelectEmailTemplateModal,
-    MatchingIncidentModal,
     ReAnalyzeIncidentDialog,
     TheRecordsButton,
-    AppDialogFooter,
     Datatable,
     NewInvestigation,
-    AppDialog,
     DataTableColorfulText,
     CreateOrEditRule,
-    CardLoading,
     AppModal
   },
   props: {
@@ -869,142 +509,23 @@ export default {
     labels,
     clusteredRow: null,
     isConfirmButtonDisabled: false,
-    topRulesLoading: false,
     isCustomMessageMultiple: false,
-    investigationsLoading: false,
-    investigationsData: [],
     reportedEmailsData: [],
     bindPropsIsSafari: {},
     reportedEmailsLoading: false,
-    incidentLoading: true,
     showPlaybookModal: false,
     selectedPlaybookId: null,
-    roiRate: '',
     selectedEmail: null,
-    roiTask: '',
     selectedMatch: null,
-    isShowRoi: false,
     extendedViewLoading: true,
     isShowingClusteredTable: false,
     showMatchingModal: false,
-    baseManHour: null,
-    baseManHourCost: null,
     validations: {
       required,
       startsWith,
       maxLength
     },
     extendedViewValue: [],
-    topRules: {
-      table: [],
-      columns: [
-        {
-          property: 'ruleName',
-          align: 'left',
-          editable: false,
-          label: 'Rule Name',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'slot',
-          minWidth: '40'
-        },
-        {
-          property: 'matchCount',
-          align: 'left',
-          editable: false,
-          label: 'Matching Incidents',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'popup',
-          minWidth: '30',
-          emptyText: 'No Match'
-        },
-        {
-          property: 'status',
-          align: 'center',
-          editable: false,
-          label: 'Status',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'status',
-          minWidth: '30',
-          hasTooltip: true
-        }
-      ],
-      iEmpty: {
-        message: labels.NoRulesConfigured,
-        btn: labels.New,
-        icon: 'mdi-plus',
-        id: 'btn-empty--incident-responder-rules'
-      },
-      addUsers: {
-        show: false,
-        popUp: false
-      },
-      addMenu: {
-        show: false,
-        popUp: false
-      },
-      selectEvent: {}
-    },
-    recentInv: {
-      table: [],
-      columns: [
-        {
-          property: 'name',
-          align: 'left',
-          editable: false,
-          label: labels.InvestigationName,
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'link',
-          href: '/incident-responder/investigations/investigation-details',
-          hrefKey: 'resourceId',
-          minWidth: '40'
-        },
-        {
-          property: 'progress',
-          align: 'center',
-          editable: false,
-          label: getStoreValue('progress'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'progress',
-          minWidth: '30'
-        },
-        {
-          property: 'status',
-          align: 'center',
-          editable: false,
-          label: getStoreValue('status'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'status',
-          minWidth: '30'
-        }
-      ],
-      addUsers: {
-        show: false,
-        popUp: false
-      },
-      addMenu: {
-        show: false,
-        popUp: false
-      },
-      iEmpty: {
-        message: labels.NoInvestigation,
-        btn: labels.New,
-        icon: 'mdi-plus',
-        id: 'btn-empty--incident-responder-investigation'
-      },
-      selectEvent: {}
-    },
     emails: {
       savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL,
       savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.REPORTED_EMAIL,
@@ -1702,7 +1223,6 @@ export default {
   computed: {
     ...mapGetters({
       irSummary: 'investigations/irSummaryGetter',
-      getIncidentResponderSummaryPermission: 'permissions/getIncidentResponderSummaryPermission',
       getIncidentResponderTopRulesPermission: 'permissions/getIncidentResponderTopRulesPermission',
       getIncidentResponderRunningInvestigationsPermission:
         'permissions/getIncidentResponderRunningInvestigationsPermission',
@@ -1710,26 +1230,9 @@ export default {
         'permissions/getIncidentResponderNotifiedEmailPermission',
       getIncidentResponderNotifiedEmailReAnalyze:
         'permissions/getIncidentResponderNotifiedEmailReAnalyze',
-      getIncidentResponderROISettingGetPermission:
-        'permissions/getIncidentResponderROISettingGetPermission',
-      getIncidentResponderROISettingPostPermission:
-        'permissions/getIncidentResponderROISettingPostPermission'
+      getDashboardReportedEmailTrendsPermission:
+        'permissions/getDashboardReportedEmailTrendsPermission'
     }),
-    getPhishingReporterOnlineUserCount() {
-      return this?.irSummary?.phishingReporterUserStatusCount?.onlineUsersCount || 0
-    },
-    getManuelInvestigationCount() {
-      return this?.irSummary.investigationTypeCount?.manualInvestigationCount || 0
-    },
-    getAutomaticInvestigationCount() {
-      return this?.irSummary?.investigationTypeCount?.automaticInvestigationCount || 0
-    },
-    getIncidentAnalysisNotifiedHarmfulCount() {
-      return this?.irSummary?.notifiedEmailResultCount?.harmfulCount || 0
-    },
-    getIncidentAnalysisNotifiedReportedMailCount() {
-      return this?.irSummary.notifiedEmailResultCount.reportedMailCount || 0
-    },
     getReportedEmailTitle() {
       return this.isShowingClusteredTable
         ? this.clusteredRow[this.getClusteredField(this.selectedCluster)]
@@ -1740,85 +1243,11 @@ export default {
         ? `Reported emails clustered by ${this.selectedCluster}`
         : labels.SummaryOfReportedEmails
     },
-    getPhishingReporterTotalUserCount() {
-      const { irSummary } = this
-      return (
-        (irSummary &&
-          irSummary.phishingReporterUserStatusCount &&
-          irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-            irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
-        0
-      )
-    },
-    isRoiSettingSubmitButtonDisabled() {
-      return this.isConfirmButtonDisabled || !this.getIncidentResponderROISettingPostPermission
-    },
-    getROISummaryTime() {
-      return this?.irSummary?.roiSummary?.time || 0
-    },
-    getROISummaryRevenue() {
-      return this?.irSummary?.roiSummary?.revenue || 0
-    },
-    isRoiSummaryEmpty() {
-      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = this.irSummary || {}
-      return revenue === '0' && time === '0'
-    },
-    isPhishingEmpty() {
-      const data = this.irSummary
-      if (data && !data.phishingReporterUserStatusCount) {
-        return true
-      } else if (
-        data &&
-        data.phishingReporterUserStatusCount &&
-        (data.phishingReporterUserStatusCount.onlineUsersCount ||
-          data.phishingReporterUserStatusCount.offlineUsersCount)
-      ) {
-        return false
-      } else {
-        return true
-      }
-    },
-    isInvestigationsEmpty() {
-      const summary = this.irSummary
-      if (summary && summary.investigationTypeCount) {
-        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
-        if (investigationTypeCountKeys.length > 0) {
-          let hasValue = false
-          for (let key of investigationTypeCountKeys) {
-            if (summary.investigationTypeCount[key]) {
-              hasValue = true
-            }
-          }
-          return hasValue
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    },
-    isNotifiedEmailEmpty() {
-      const data = this.irSummary
-      if (data && !data.notifiedEmailResultCount) {
-        return true
-      } else if (
-        data &&
-        data.notifiedEmailResultCount &&
-        data.notifiedEmailResultCount.reportedMailCount
-      ) {
-        return false
-      } else {
-        return true
-      }
-    },
     getTitle() {
       return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
     },
     getIconName() {
       return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
-    },
-    getSelectedMatchingIncidentsSubtitle() {
-      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     },
     getEmailTemplateName() {
       if (this.isMultipleSelectedTemplateResourceId) return '(Multiple Values)'
@@ -1836,15 +1265,8 @@ export default {
       }
     }
   },
-  mounted() {
-    this.incidentLoading = true
-    this.addQuery()
-  },
   created() {
-    this.$store.dispatch('investigations/getIrSummary').finally(() => {
-      this.showDatatable = true
-      this.incidentLoading = false
-    })
+    this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
@@ -1853,10 +1275,8 @@ export default {
       }
     }
     this.getEmailTypesAndEmailTemplates()
-    window.addEventListener('resize', this.addQuery)
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.addQuery)
     const tableState = this.$refs.refReportedEmails.getState()
     let clusteredTableState
     if (this.isShowingClusteredTable) {
@@ -1930,13 +1350,12 @@ export default {
       }
     },
     initDatas() {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
       this.callForSearchNotifiedMail()
       if (this.clusteredRow) {
         this.callForClusteredTable()
       }
-      this.$store.dispatch('investigations/getIrSummary')
+      this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+      this.$refs.refIncidentResponderCards.callForData()
     },
     toggleShowReAnalyzeDialog() {
       this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
@@ -2221,43 +1640,13 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     initMethods(isLoadState = false) {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
       if (!isLoadState) {
         this.callForSearchNotifiedMail()
-      }
-      if (this.getIncidentResponderROISettingGetPermission) {
-        this.callForGetRoiSettings()
       }
     },
     closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
-    },
-    addQuery() {
-      const navigatorWidth = document.querySelector('nav.page-nav').style.width
-      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      if (width < 1050 && width > 750) {
-        document
-          .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
-          )
-          .forEach((item) => {
-            item.style = 'width: calc(50%) !important;max-width: calc(50%) !important;'
-          })
-
-        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
-      } else {
-        document
-          .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
-          )
-          .forEach((item) => {
-            item.style = ''
-          })
-        const columnsRowContainer = document.querySelector('.columns-row')
-        if (columnsRowContainer) document.querySelector('.columns-row').style = ''
-      }
     },
     handleRouteToInvestigationDetails(resp) {
       if (resp?.data?.data?.resourceId) {
@@ -2280,35 +1669,6 @@ export default {
     },
     getDataTableFieldLabel(text) {
       return getDataTableFieldLabel(text)
-    },
-    callForGetRoiSettings() {
-      getRoiSettings().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.baseManHour = data.baseManHour
-        this.baseManHourCost = data.baseManHourCost
-      })
-    },
-    submitRoiModal() {
-      if (this.$refs.form.validate()) {
-        this.isConfirmButtonDisabled = true
-        updateRoiSettings({
-          baseManHour: this.baseManHour,
-          baseManHourCost: this.baseManHourCost
-        })
-          .then(() => {
-            this.incidentLoading = true
-            this.callForGetRoiSettings()
-            this.isShowRoi = false
-            this.$store.dispatch('investigations/getIrSummary').finally(() => {
-              this.incidentLoading = false
-            })
-          })
-          .finally(() => {
-            this.isConfirmButtonDisabled = false
-          })
-      }
     },
     onEditClick({ selected: selections, isEditPopupOpen, isMultiple, isSelectedAllEver }) {
       if (isEditPopupOpen && selections.length) {
@@ -2489,41 +1849,6 @@ export default {
 
       this.extendedViewValue = rows
     },
-    callForGetRunningInvestigations() {
-      if (this.getIncidentResponderRunningInvestigationsPermission) {
-        this.investigationsLoading = true
-        getRunningInvestigations()
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.investigationsData = data || []
-          })
-          .catch(() => {
-            this.investigationsData = []
-          })
-          .finally(() => {
-            this.investigationsLoading = false
-          })
-      }
-    },
-    callForGetTopRules() {
-      if (this.getIncidentResponderTopRulesPermission) {
-        this.topRulesLoading = true
-        getTopRules()
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-
-            this.topRules.table = data || []
-          })
-          .catch(() => {
-            this.topRules.table = []
-          })
-          .finally(() => (this.topRulesLoading = false))
-      }
-    },
     callForSearchNotifiedMail() {
       if (this.getIncidentResponderNotifiedEmailPermission) {
         this.reportedEmailsLoading = true
@@ -2561,9 +1886,6 @@ export default {
         path: '/incident-responder/investigations',
         query: { openPopup: true }
       })
-    },
-    onTopRulesEmptyBtnClicked() {
-      this.$router.push({ path: '/incident-responder/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
@@ -2636,13 +1958,12 @@ export default {
         payload.notificationTemplateResourceId = this.selectedTemplateResourceId
 
         updateNotifiedEmailBulk(payload).finally(() => {
-          this.callForGetRunningInvestigations()
-          this.callForGetTopRules()
+          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+          this.$refs.refIncidentResponderCards.callForData()
           this.callForSearchNotifiedMail()
           if (this.clusteredRow) {
             this.callForClusteredTable()
           }
-          this.$store.dispatch('investigations/getIrSummary')
         })
       } else {
         const [item] = selectedRows
@@ -2657,13 +1978,12 @@ export default {
           notificationTemplateResourceId: this.selectedTemplateResourceId
         }
         updateNotifiedEmail(item.resourceId, payload).then(() => {
-          this.callForGetRunningInvestigations()
-          this.callForGetTopRules()
+          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+          this.$refs.refIncidentResponderCards.callForData()
           this.callForSearchNotifiedMail()
           if (this.clusteredRow) {
             this.callForClusteredTable()
           }
-          this.$store.dispatch('investigations/getIrSummary')
         })
       }
     },

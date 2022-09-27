@@ -8,6 +8,7 @@ export const labels = {
   PhishingCampaignTrends: 'Phishing Campaign Trends',
   ExcludeFromThisReport: 'Exclude from this report',
   IncludeToThisReport: 'Include back to this report',
+  RecentIncidents: 'Recent Incidents',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
   EmptyTrainingReportExamResults: 'No one has taken the exam, yet',
   EmptyTrainingReportOpened: 'No one has opened the email, yet',

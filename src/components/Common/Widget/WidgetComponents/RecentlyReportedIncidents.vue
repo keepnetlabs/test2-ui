@@ -1,13 +1,13 @@
 <template>
   <WidgetLoading :loading="isLoading">
-    <template v-slot:skeleton-content>
+    <template #skeleton-content>
       <v-btn style="display: none;" />
       <widget-container>
         <widget-header
           button-id="btn-link--recently-reported-incidents"
           close-button-id="btn-close--recently-reported-incidents"
           :title="getTitle"
-          :link="{ href: '/incident-responder', text: 'All' }"
+          :link="getLink"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
         />
@@ -67,6 +67,10 @@ export default {
   props: {
     editMode: {
       type: Boolean
+    },
+    hasLink: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -101,13 +105,16 @@ export default {
       }
     }
   },
-  created() {
-    this.callForRecentlyReportedIncidents()
-  },
   computed: {
     getTitle() {
-      return labels.RecentlyReportedIncidents
+      return labels.RecentIncidents
+    },
+    getLink() {
+      return this.hasLink ? { href: '/incident-responder', text: 'All' } : null
     }
+  },
+  created() {
+    this.callForRecentlyReportedIncidents()
   },
   methods: {
     callForRecentlyReportedIncidents() {
