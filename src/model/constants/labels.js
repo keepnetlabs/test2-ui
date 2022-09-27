@@ -46,7 +46,7 @@ export const labels = {
     'Send trainings with selected intervals or over a specified time period. Limit number of trainings to be sent in each batch.',
   ContentLanguage: 'Content Language',
   ExcludeIPAddressSubtitle:
-    'The interactions from the listed IP addresses will not be registered in your campaign statistics. ',
+    'Interaction from listed IP addresses will not be registered in your campaign statistics. You can remove or edit listed IPs anytime. The supported formats are IPv4 or IPv6 single host and IPv4 or IPv6 network that is specified in CIDR format.',
   ExcludeUserAgent: 'Exclude User Agent',
   ExcludeUserAgentSubtitle: 'Ignore interactions with Phishing Simulator emails and landing pages',
   CertificateTemplate: 'Certificate Template',
