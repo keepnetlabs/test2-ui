@@ -85,7 +85,7 @@ const router = new Router({
           component: DashBoard
         },
         {
-          path: '/',
+          path: '/company',
           name: 'Company',
           meta: {
             isAuthenticated: true,
