@@ -193,7 +193,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Hash',
-            sortable: true,
+            sortable: false,
             show: true,
             type: 'text',
             width: 105,

@@ -123,6 +123,17 @@ export default {
             width: 180
           },
           {
+            property: 'hash',
+            align: 'left',
+            editable: false,
+            label: 'Hash',
+            sortable: false,
+            show: true,
+            type: 'text',
+            width: 105,
+            filterableType: 'text'
+          },
+          {
             property: 'deliveryStatus',
             align: 'left',
             editable: false,
@@ -155,7 +166,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'date'
-          }
+          },
         ],
         downloadButton: {
           show: true,

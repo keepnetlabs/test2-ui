@@ -10,6 +10,7 @@ export function getWidgets() {
   return testRequest.get(API_URL, { loading: true })
 }
 
-export function getSummary(payload = {}) {
-  return testRequest.get('/dashboard/summary', { loading: true })
+export function getSummary(payload = {}, isLoading = true) {
+  const config = isLoading ? { loading: isLoading } : {}
+  return testRequest.get('/dashboard/summary', config)
 }
