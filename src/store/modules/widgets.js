@@ -97,9 +97,9 @@ const widgetsStore = {
     }
   },
   actions: {
-    callForWidgets({ commit, dispatch }, payload) {
+    callForWidgets({ commit, dispatch }, payload = { isLoading: true }) {
       commit('SET_LOADING', true)
-      return getSummary(payload)
+      return getSummary({}, payload?.isLoading)
         .then((response) => {
           const {
             dashboardSummary,

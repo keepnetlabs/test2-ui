@@ -27,128 +27,36 @@
         @closeWithRoute="handleRouteToInvestigationDetails"
         @closeAdd="isWantToAddNewInvestigation = false"
       />
-      <IncidentResponderHeaderCards />
-      <div class="double-table">
-        <div v-if="getIncidentResponderTopRulesPermission" class="column">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2 id="text--incident-responder-playbook-top-rules">
-                  {{ labels.TopRules }}
-                </h2>
-                <p id="text--incident-responder-most-triggered-playbook-top-rules">
-                  {{ labels.MostTriggeredPlaybookRules }}
-                </p>
-              </div>
-              <div class="action">
-                <v-btn
-                  id="btn-link--incident-responder-playbook"
-                  class="btn-action btn-playbook"
-                  block
-                  rounded
-                  @click="$router.push('/incident-responder/playbook')"
-                >
-                  {{ labels.Playbook }}
-                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-            <div class="table">
-              <datatable
-                id="incident-responder-top-rules-data-table"
-                class="no-sub-border-datatable"
-                :loading="investigationsLoading || topRulesLoading"
-                :columns="topRules.columns"
-                :table="topRules.table"
-                :pageSizes="[]"
-                :selectable="false"
-                :filterable="false"
-                :border="false"
-                :showHeader="false"
-                :rowActions="[]"
-                :addUsers="topRules.addMenu"
-                :empty="topRules.iEmpty"
-                :selectEvent="topRules.selectEvent"
-                @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-              >
-                <template v-slot:datatable-column-popup="{ scope, col }">
-                  <span v-if="scope.row[col.property] === 0">
-                    {{ labels.NoMatchEmptyText }}
-                  </span>
-                  <span v-else class="popup-link" @click="matchingPopupClick(scope.row)">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }}
-                    {{ labels.Matches }}
-                  </span>
-                  <matching-incident-modal
-                    v-if="showMatchingModal"
-                    :status="scope.row.resourceId === selectedMatch.resourceId"
-                    :selectedMatch="selectedMatch"
-                    @closeOverlay="showMatchingModal = false"
-                  />
-                </template>
-                <template v-slot:datatable-custom-column="{ scope }">
-                  <span
-                    v-if="scope.row.ruleName"
-                    class="datatable-link"
-                    @click="handeRuleNameClick(scope.row.resourceId)"
-                  >
-                    {{ scope.row.ruleName }}
-                  </span>
-                  <span v-else> </span>
-                </template>
-              </datatable>
-            </div>
-          </v-card>
-        </div>
-        <div v-if="getIncidentResponderRunningInvestigationsPermission" class="column">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2 id="text--incident-responder-investigations-recent-investigations">
-                  {{ labels.RecentInvestigations }}
-                </h2>
-                <p id="text--incident-responder-investigations-most-recent-investigations">
-                  {{ labels.MostRecentInvestigations }}
-                </p>
-              </div>
-              <div class="action">
-                <v-btn
-                  id="btn-link--incident-responder-investigation"
-                  class="btn-action btn-investigations"
-                  style="padding: 0 13px !important;"
-                  block
-                  rounded
-                  @click.native="$router.push('/incident-responder/investigations')"
-                >
-                  {{ labels.Investigations }}
-                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-            <div class="table investigations">
-              <datatable
-                id="incident-responder-investigations-data-table"
-                class="no-sub-border-datatable"
-                :loading="investigationsLoading || topRulesLoading"
-                :table="investigationsData"
-                :columns="recentInv.columns"
-                :selectable="false"
-                :filterable="false"
-                :border="false"
-                :showHeader="false"
-                :rowActions="[]"
-                :pageSizes="[]"
-                :addUsers="recentInv.addMenu"
-                :empty="recentInv.iEmpty"
-                :selectEvent="recentInv.selectEvent"
-                @onEmptyBtnClicked="onEmptyBtnClicked"
-              />
-            </div>
-          </v-card>
-        </div>
-      </div>
-      <div v-if="getIncidentResponderNotifiedEmailPermission" class="table-row">
-        <v-card>
+      <AppModal
+        v-if="showPlaybookModal"
+        title-id="text--create-playbook-title"
+        class-name="incident-responder__playbook"
+        :status="showPlaybookModal"
+        :icon-name="getIconName"
+        :title="getTitle"
+        :show-footer="false"
+      >
+        <template v-slot:overlay-body>
+          <CreateOrEditRule
+            v-if="showPlaybookModal"
+            :playbookId="selectedPlaybookId"
+            @cancelForm="togglePlaybookModal"
+            @closeFormWithUpdate="closePlaybookWithUpdate"
+          />
+        </template>
+      </AppModal>
+      <IncidentResponderHeaderCards ref="refIncidentResponderCards" />
+      <div
+        v-if="getIncidentResponderNotifiedEmailPermission"
+        class="table-row"
+        style="padding-top: 0;"
+      >
+        <v-card
+          style="
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+          "
+        >
           <div class="header">
             <div class="title">
               <h2>
@@ -468,31 +376,60 @@
           </datatable>
         </v-card>
       </div>
+      <div class="double-table">
+        <div v-if="getIncidentResponderTopRulesPermission" class="column">
+          <TopRules
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+          />
+        </div>
+        <div v-if="getIncidentResponderRunningInvestigationsPermission" class="column">
+          <RecentInvestigations
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+            "
+          />
+        </div>
+      </div>
+      <div class="double-table">
+        <div
+          v-if="getIncidentResponderNotifiedEmailPermission"
+          class="column"
+          style="width: calc(40% - 16px); min-height: 300px;"
+        >
+          <RecentlyReportedIncidents
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+            :has-link="false"
+          />
+        </div>
+        <div
+          v-if="getDashboardReportedEmailTrendsPermission"
+          class="column"
+          style="width: calc(60% - 16px); max-height: 367px;"
+        >
+          <ReportedEmailTrends
+            style="
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              border-radius: 12px;
+              min-height: 300px;
+            "
+            :has-link="false"
+          />
+        </div>
+      </div>
     </div>
-    <app-modal
-      v-if="showPlaybookModal"
-      title-id="text--create-playbook-title"
-      class-name="incident-responder__playbook"
-      :status="showPlaybookModal"
-      :icon-name="getIconName"
-      :title="getTitle"
-      :show-footer="false"
-    >
-      <template v-slot:overlay-body>
-        <CreateOrEditRule
-          v-if="showPlaybookModal"
-          :playbookId="selectedPlaybookId"
-          @cancelForm="togglePlaybookModal"
-          @closeFormWithUpdate="closePlaybookWithUpdate"
-        />
-      </template>
-    </app-modal>
   </div>
 </template>
 <script>
 import {
-  getRunningInvestigations,
-  getTopRules,
   searchNotifiedMail,
   updateNotifiedEmail,
   updateNotifiedEmailBulk
@@ -516,31 +453,33 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import AppDialog from '../components/AppDialog'
 import { required, startsWith, maxLength } from '@/utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import labels from '@/model/constants/labels'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
-import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
 import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import IncidentResponderHeaderCards from '@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards'
+import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
+import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
+import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
+import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
 export default {
   components: {
+    ReportedEmailTrends,
+    RecentlyReportedIncidents,
+    RecentInvestigations,
+    TopRules,
     IncidentResponderHeaderCards,
     SelectEmailTemplateModal,
-    MatchingIncidentModal,
     ReAnalyzeIncidentDialog,
     TheRecordsButton,
-    AppDialogFooter,
     Datatable,
     NewInvestigation,
-    AppDialog,
     DataTableColorfulText,
     CreateOrEditRule,
     AppModal
@@ -570,10 +509,7 @@ export default {
     labels,
     clusteredRow: null,
     isConfirmButtonDisabled: false,
-    topRulesLoading: false,
     isCustomMessageMultiple: false,
-    investigationsLoading: false,
-    investigationsData: [],
     reportedEmailsData: [],
     bindPropsIsSafari: {},
     reportedEmailsLoading: false,
@@ -590,116 +526,6 @@ export default {
       maxLength
     },
     extendedViewValue: [],
-    topRules: {
-      table: [],
-      columns: [
-        {
-          property: 'ruleName',
-          align: 'left',
-          editable: false,
-          label: 'Rule Name',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'slot',
-          minWidth: '40'
-        },
-        {
-          property: 'matchCount',
-          align: 'left',
-          editable: false,
-          label: 'Matching Incidents',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'popup',
-          minWidth: '30',
-          emptyText: 'No Match'
-        },
-        {
-          property: 'status',
-          align: 'center',
-          editable: false,
-          label: 'Status',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'status',
-          minWidth: '30',
-          hasTooltip: true
-        }
-      ],
-      iEmpty: {
-        message: labels.NoRulesConfigured,
-        btn: labels.New,
-        icon: 'mdi-plus',
-        id: 'btn-empty--incident-responder-rules'
-      },
-      addUsers: {
-        show: false,
-        popUp: false
-      },
-      addMenu: {
-        show: false,
-        popUp: false
-      },
-      selectEvent: {}
-    },
-    recentInv: {
-      table: [],
-      columns: [
-        {
-          property: 'name',
-          align: 'left',
-          editable: false,
-          label: labels.InvestigationName,
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'link',
-          href: '/incident-responder/investigations/investigation-details',
-          hrefKey: 'resourceId',
-          minWidth: '40'
-        },
-        {
-          property: 'progress',
-          align: 'center',
-          editable: false,
-          label: getStoreValue('progress'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'progress',
-          minWidth: '30'
-        },
-        {
-          property: 'status',
-          align: 'center',
-          editable: false,
-          label: getStoreValue('status'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'status',
-          minWidth: '30'
-        }
-      ],
-      addUsers: {
-        show: false,
-        popUp: false
-      },
-      addMenu: {
-        show: false,
-        popUp: false
-      },
-      iEmpty: {
-        message: labels.NoInvestigation,
-        btn: labels.New,
-        icon: 'mdi-plus',
-        id: 'btn-empty--incident-responder-investigation'
-      },
-      selectEvent: {}
-    },
     emails: {
       savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL,
       savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.REPORTED_EMAIL,
@@ -1403,7 +1229,9 @@ export default {
       getIncidentResponderNotifiedEmailPermission:
         'permissions/getIncidentResponderNotifiedEmailPermission',
       getIncidentResponderNotifiedEmailReAnalyze:
-        'permissions/getIncidentResponderNotifiedEmailReAnalyze'
+        'permissions/getIncidentResponderNotifiedEmailReAnalyze',
+      getDashboardReportedEmailTrendsPermission:
+        'permissions/getDashboardReportedEmailTrendsPermission'
     }),
     getReportedEmailTitle() {
       return this.isShowingClusteredTable
@@ -1420,9 +1248,6 @@ export default {
     },
     getIconName() {
       return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
-    },
-    getSelectedMatchingIncidentsSubtitle() {
-      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     },
     getEmailTemplateName() {
       if (this.isMultipleSelectedTemplateResourceId) return '(Multiple Values)'
@@ -1441,6 +1266,7 @@ export default {
     }
   },
   created() {
+    this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
@@ -1524,13 +1350,12 @@ export default {
       }
     },
     initDatas() {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
       this.callForSearchNotifiedMail()
       if (this.clusteredRow) {
         this.callForClusteredTable()
       }
-      this.$store.dispatch('investigations/getIrSummary')
+      this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+      this.$refs.refIncidentResponderCards.callForData()
     },
     toggleShowReAnalyzeDialog() {
       this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
@@ -1815,8 +1640,6 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     initMethods(isLoadState = false) {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
       if (!isLoadState) {
         this.callForSearchNotifiedMail()
       }
@@ -2026,41 +1849,6 @@ export default {
 
       this.extendedViewValue = rows
     },
-    callForGetRunningInvestigations() {
-      if (this.getIncidentResponderRunningInvestigationsPermission) {
-        this.investigationsLoading = true
-        getRunningInvestigations()
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.investigationsData = data || []
-          })
-          .catch(() => {
-            this.investigationsData = []
-          })
-          .finally(() => {
-            this.investigationsLoading = false
-          })
-      }
-    },
-    callForGetTopRules() {
-      if (this.getIncidentResponderTopRulesPermission) {
-        this.topRulesLoading = true
-        getTopRules()
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-
-            this.topRules.table = data || []
-          })
-          .catch(() => {
-            this.topRules.table = []
-          })
-          .finally(() => (this.topRulesLoading = false))
-      }
-    },
     callForSearchNotifiedMail() {
       if (this.getIncidentResponderNotifiedEmailPermission) {
         this.reportedEmailsLoading = true
@@ -2098,9 +1886,6 @@ export default {
         path: '/incident-responder/investigations',
         query: { openPopup: true }
       })
-    },
-    onTopRulesEmptyBtnClicked() {
-      this.$router.push({ path: '/incident-responder/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
@@ -2173,13 +1958,12 @@ export default {
         payload.notificationTemplateResourceId = this.selectedTemplateResourceId
 
         updateNotifiedEmailBulk(payload).finally(() => {
-          this.callForGetRunningInvestigations()
-          this.callForGetTopRules()
+          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+          this.$refs.refIncidentResponderCards.callForData()
           this.callForSearchNotifiedMail()
           if (this.clusteredRow) {
             this.callForClusteredTable()
           }
-          this.$store.dispatch('investigations/getIrSummary')
         })
       } else {
         const [item] = selectedRows
@@ -2194,13 +1978,12 @@ export default {
           notificationTemplateResourceId: this.selectedTemplateResourceId
         }
         updateNotifiedEmail(item.resourceId, payload).then(() => {
-          this.callForGetRunningInvestigations()
-          this.callForGetTopRules()
+          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+          this.$refs.refIncidentResponderCards.callForData()
           this.callForSearchNotifiedMail()
           if (this.clusteredRow) {
             this.callForClusteredTable()
           }
-          this.$store.dispatch('investigations/getIrSummary')
         })
       }
     },

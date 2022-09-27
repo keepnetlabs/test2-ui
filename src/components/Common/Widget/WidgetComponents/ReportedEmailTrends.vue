@@ -1,12 +1,12 @@
 <template>
   <WidgetLoading :loading="isLoading">
-    <template v-slot:skeleton-content>
+    <template #skeleton-content>
       <widget-container>
         <widget-header
           button-id="btn-link--reported-email-trends"
           close-button-id="btn-close--reported-email-trends"
           :title="getTitle"
-          :link="{ href: '/incident-responder', text: 'Incident Responder' }"
+          :link="getLink"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
         />
@@ -56,6 +56,10 @@ export default {
   props: {
     editMode: {
       type: Boolean
+    },
+    hasLink: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -75,6 +79,9 @@ export default {
     }),
     getTitle() {
       return labels.ReportedEmailTrends
+    },
+    getLink() {
+      return this.hasLink ? { href: '/incident-responder', text: 'Incident Responder' } : null
     }
   },
   watch: {
