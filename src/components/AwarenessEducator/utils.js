@@ -17,9 +17,10 @@ export const ENROLLMENT_STATUSES = {
   SENDING: 'Sending',
   FINISHED: 'Finished',
   SCHEDULED: 'Scheduled',
+  ERROR: 'Error',
+  STOPPED: 'Stopped',
   PAUSED: 'Paused',
   ARCHIVED: 'Archived',
-  ERROR: 'Error',
   DELETED: 'Deleted'
 }
 
