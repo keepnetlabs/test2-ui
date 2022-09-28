@@ -8,7 +8,8 @@ export const EMITS = {
   ON_EDIT: 'on-edit',
   ON_CLOSE: 'on-close',
   ON_TRAINING: 'on-training',
-  ON_ITEM_CHANGE: 'on-item-change'
+  ON_ITEM_CHANGE: 'on-item-change',
+  ON_DUPLICATE: 'on-duplicate'
 }
 
 export const ENROLLMENT_STATUSES = {
@@ -16,9 +17,10 @@ export const ENROLLMENT_STATUSES = {
   SENDING: 'Sending',
   FINISHED: 'Finished',
   SCHEDULED: 'Scheduled',
+  ERROR: 'Error',
+  STOPPED: 'Stopped',
   PAUSED: 'Paused',
   ARCHIVED: 'Archived',
-  ERROR: 'Error',
   DELETED: 'Deleted'
 }
 

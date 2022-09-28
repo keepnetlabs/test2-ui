@@ -166,7 +166,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'date'
-          },
+          }
         ],
         downloadButton: {
           show: true,

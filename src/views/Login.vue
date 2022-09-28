@@ -701,7 +701,9 @@ export default {
         this.setQueryResetPasswordOrCreatePassword()
       } else {
         //go to main page
-        this.$router.push('/')
+        if (this.$route.name !== 'Dashboard') {
+          this.$router.push('/')
+        }
       }
     } else {
       //if it is not logined then remove permissions from local storage
@@ -1070,7 +1072,9 @@ export default {
               localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
             })
             .finally(() => {
-              this.$router.push('/')
+              if (this.$route.name !== 'Dashboard') {
+                this.$router.push('/')
+              }
             })
         }
       }

@@ -10,12 +10,12 @@
       <v-icon class="mr-1" style="margin-top: -1px;">mdi-plus</v-icon>
       <span>INTEGRATE WITH LDAP</span>
     </v-btn>
-    <a
+    <!-- <a
       class="ldap-not-configured__link"
       target="_blank"
       href="https://doc.keepnetlabs.com/Next-Generation-Product/modules/company/company-settings/ldap-integration"
       >Installation and configuration guide</a
-    >
+    > -->
   </div>
 </template>
 
