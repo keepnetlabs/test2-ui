@@ -285,6 +285,10 @@ const deleteEnrollment = (resourceId) => {
   })
 }
 
+const searchTrash = (payload) => {
+  return testRequest.post(`/enrollments/archive/search`, payload)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -342,5 +346,6 @@ export default {
   getTrainingReportInteractions,
   getProgressDetailsTable,
   duplicateTraining,
-  deleteTrainingFile
+  deleteTrainingFile,
+  searchTrash
 }
