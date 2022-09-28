@@ -99,6 +99,9 @@ export default {
     },
     selectedItem: {
       type: Object
+    },
+    isDuplicate: {
+      type: Boolean
     }
   },
   data() {
@@ -131,13 +134,21 @@ export default {
   },
   computed: {
     getModalTitle() {
-      return this.selectedItem ? labels.EditCertificate : labels.CreateNewCertificate
+      return this.selectedItem
+        ? this.isDuplicate
+          ? labels.DuplicateCertificate
+          : labels.EditCertificate
+        : labels.CreateNewCertificate
     },
     getBodyTitle() {
       return labels.TrainingCertificateInformation
     },
     getBodySubtitle() {
-      return this.selectedItem ? labels.EditCertificateSub : labels.CreateNewCertificateSub
+      return this.selectedItem
+        ? this.isDuplicate
+          ? labels.DuplicateCertificateSub
+          : labels.EditCertificateSub
+        : labels.CreateNewCertificateSub
     }
   },
   created() {
@@ -165,7 +176,7 @@ export default {
       AwarenessEducatorService.getCertificate(this.selectedItem.id)
         .then((response) => {
           const { name, description, template, availableForList } = response?.data?.data
-          this.formData.name = name
+          this.formData.name = this.isDuplicate ? `${name} - Copy` : name
           this.formData.description = description
           this.formData.template = template
           this.setMakeAvailableForData(availableForList)
@@ -206,7 +217,7 @@ export default {
     submit() {
       if (this.$refs.refForm.validate()) {
         this.saveDisable = true
-        if (this.selectedItem) {
+        if (this.selectedItem && !this.isDuplicate) {
           AwarenessEducatorService.updateCertificate(this.formData, this.selectedItem.id)
             .then(() => {
               this.$emit(EMITS.ON_CLOSE, true)
