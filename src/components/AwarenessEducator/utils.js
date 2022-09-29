@@ -8,7 +8,8 @@ export const EMITS = {
   ON_EDIT: 'on-edit',
   ON_CLOSE: 'on-close',
   ON_TRAINING: 'on-training',
-  ON_ITEM_CHANGE: 'on-item-change'
+  ON_ITEM_CHANGE: 'on-item-change',
+  ON_DUPLICATE: 'on-duplicate'
 }
 
 export const ENROLLMENT_STATUSES = {

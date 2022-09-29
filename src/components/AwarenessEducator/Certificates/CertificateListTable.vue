@@ -65,6 +65,15 @@
           :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
         />
+        <DefaultMenuRowAction
+          :scope="scope"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[4].disabled"
+          :icon="tableOptions.rowActions[4].icon"
+          :text="tableOptions.rowActions[4].name"
+          :checkIsOwnerProperty="false"
+          @on-click="handleDuplicate(scope.row)"
+        />
       </RowActionsMenu>
     </template>
   </DataTable>
@@ -140,20 +149,30 @@ export default {
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
+            id: 'btn-edit--row-actions-certificate-list',
             disabled: !this.$store.getters['permissions/getEditCertificatePermission']
           },
           {
             name: labels.MakeDefault,
+            id: 'btn-delete--row-actions-certificate-list',
             icon: 'mdi-star-circle'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
+            id: 'btn-delete--row-actions-certificate-list',
             disabled: !this.$store.getters['permissions/getDeleteCertificatePermission']
           },
           {
             name: labels.Preview,
+            id: 'btn-preview--row-actions-certificate-list',
             icon: 'mdi-eye'
+          },
+          {
+            name: labels.Duplicate,
+            id: 'btn-duplicate--row-actions-certificate-list',
+            icon: 'mdi-content-copy',
+            action: 'on-duplicate'
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -196,6 +215,9 @@ export default {
     },
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
+    },
+    handleDuplicate(row) {
+      this.$emit(EMITS.ON_DUPLICATE, row)
     },
     exportCertificateList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

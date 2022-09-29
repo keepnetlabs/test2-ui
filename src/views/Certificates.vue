@@ -4,6 +4,7 @@
       v-if="isShowNewCertificateModal"
       :status="isShowNewCertificateModal"
       :selected-item="selectedRow"
+      :is-duplicate="isDuplicate"
       @on-close="toggleShowNewCertificateModal"
     />
     <DeleteCertificateDialog
@@ -24,6 +25,7 @@
       @on-preview="handlePreviewRowClick"
       @on-edit="handleEditRowClick"
       @on-action-delete="handleDeleteRowClick"
+      @on-duplicate="handleDuplicateRowClick"
     />
   </KContainer>
 </template>
@@ -49,13 +51,17 @@ export default {
       isShowDeleteCertificateDialog: false,
       isShowPreviewCertificateDialog: false,
       selectedRow: null,
-      isEdit: false
+      isEdit: false,
+      isDuplicate: false
     }
   },
   methods: {
     toggleShowNewCertificateModal(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
-      if (this.isShowNewCertificateModal) this.selectedRow = null
+      if (this.isShowNewCertificateModal) {
+        this.selectedRow = null
+        this.isDuplicate = false
+      }
       this.isShowNewCertificateModal = !this.isShowNewCertificateModal
     },
     toggleShowPreviewModal() {
@@ -82,6 +88,11 @@ export default {
     handlePreviewRowClick(row) {
       this.selectedRow = row
       this.toggleShowPreviewModal()
+    },
+    handleDuplicateRowClick(row) {
+      this.selectedRow = row
+      this.isDuplicate = true
+      this.toggleShowNewCertificateModal()
     }
   }
 }
