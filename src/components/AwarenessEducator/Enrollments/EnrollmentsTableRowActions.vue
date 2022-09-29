@@ -26,7 +26,6 @@
       />
       <DefaultMenuRowAction
         :scope="scope"
-        :check-is-owner-property="false"
         :disabled="rowActions[2].disabled"
         :icon="rowActions[2].icon"
         :text="rowActions[2].name"
@@ -74,7 +73,8 @@ export default {
       return [
         ENROLLMENT_STATUSES.AUTO_ENROLL,
         ENROLLMENT_STATUSES.FINISHED,
-        ENROLLMENT_STATUSES.ERROR
+        ENROLLMENT_STATUSES.ERROR,
+        ENROLLMENT_STATUSES.STOPPED
       ].includes(this.scope.row.status)
     },
     getFirstActionParams() {
@@ -104,7 +104,8 @@ export default {
         [
           ENROLLMENT_STATUSES.AUTO_ENROLL,
           ENROLLMENT_STATUSES.FINISHED,
-          ENROLLMENT_STATUSES.ERROR
+          ENROLLMENT_STATUSES.ERROR,
+          ENROLLMENT_STATUSES.STOPPED
         ].includes(status)
       ) {
         this.routeToTrainingReport(row)
