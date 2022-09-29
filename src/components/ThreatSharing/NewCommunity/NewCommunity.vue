@@ -199,7 +199,7 @@
         text
         @click="onCreateClicked"
         id="threat-sharing-new-community-update-or-create-modal-button"
-        >{{ resourceId ? 'Update' : 'Create' }}
+        >{{ resourceId ? 'Save' : 'Create' }}
       </v-btn>
     </div>
   </div>
