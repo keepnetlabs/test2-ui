@@ -34,6 +34,7 @@
           @on-close="toggleShowPreviewDialog"
         />
         <EnrollmentsTable
+          v-if="tab === 'enrollments'"
           ref="refTable"
           :categories="categories"
           :languages="tableLanguageFilter"

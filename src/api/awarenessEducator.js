@@ -289,6 +289,22 @@ const searchTrash = (payload) => {
   return testRequest.post(`/enrollments/archive/search`, payload)
 }
 
+const deletePermanentlyEnrollment = (resourceId) => {
+  return testRequest.delete(`/enrollments/archive/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const restoreEnrollment = (resourceId = '') => {
+  return testRequest.post(
+    `/enrollments/archive/${resourceId}/restore`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -347,5 +363,7 @@ export default {
   getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile,
-  searchTrash
+  searchTrash,
+  deletePermanentlyEnrollment,
+  restoreEnrollment
 }

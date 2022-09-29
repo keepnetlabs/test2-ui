@@ -27,6 +27,9 @@
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
+    @on-delete="handleDelete"
+    @on-view-report="handleViewReport"
+    @on-restore="handleRestore"
   >
   </DataTable>
 </template>
@@ -86,14 +89,24 @@ export default {
           show: false
         },
         downloadButton: {
-          show: true,
-          disabled: !this.$store.getters['permissions/getExportEnrollmentPermission']
+          show: false
         },
         rowActions: [
           {
-            name: labels.Delete,
+            name: labels.ViewReport,
+            icon: 'mdi-text-box',
+            action: 'on-view-report',
+            isNotShow: true
+          },
+          {
+            name: labels.Restore,
+            icon: '$refresh-left',
+            action: 'on-restore'
+          },
+          {
+            name: labels.DeletePermanently,
             icon: 'mdi-delete',
-            disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
+            action: 'on-delete'
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -119,6 +132,20 @@ export default {
           this.tableData = results || []
         })
         .finally(this.setLoading)
+    },
+    handleDelete(row) {
+      this.$emit('on-delete', row)
+    },
+    handleViewReport(row) {
+      this.$router.push({
+        name: 'Training Report',
+        params: {
+          id: row.enrollmentId
+        }
+      })
+    },
+    handleRestore(row) {
+      this.$emit('on-restore', row)
     }
   }
 }
