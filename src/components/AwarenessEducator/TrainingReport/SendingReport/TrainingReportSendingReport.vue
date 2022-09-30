@@ -383,27 +383,6 @@ export default {
       return 'Event history is only available for Sendgrid'
     }
   },
-  watch: {
-    getEvents: {
-      deep: true,
-      handler(val) {
-        console.log('getEvents', val)
-      }
-    },
-    extendedViewOptions: {
-      immediate: true,
-      deep: true,
-      handler(val) {
-        console.log('extendedViewOptions', val)
-      }
-    },
-    extendedViewValue: {
-      deep: true,
-      handler(val) {
-        console.log('extendedViewValue', val)
-      }
-    }
-  },
   created() {
     this.callForData()
   },
