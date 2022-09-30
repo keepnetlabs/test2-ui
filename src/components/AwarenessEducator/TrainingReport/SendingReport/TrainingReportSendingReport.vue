@@ -288,13 +288,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-resend',
-            action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
-          },
+          // {
+          //   name: labels.Resend,
+          //   id: 'btn-interactions--row-actions-training-report-users',
+          //   icon: '$custom-resend',
+          //   action: 'on-resend'
+          //   // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+          // },
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
