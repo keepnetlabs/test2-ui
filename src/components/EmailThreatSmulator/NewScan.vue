@@ -965,7 +965,6 @@ export default {
     },
     acceptRule(val) {
       this.disableStartButtonStatus = val
-      console.log('a', val)
     }
   },
   computed: {

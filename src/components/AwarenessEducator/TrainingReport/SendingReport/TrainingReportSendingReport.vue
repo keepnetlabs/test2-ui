@@ -29,6 +29,10 @@
       :row-actions="tableOptions.rowActions"
       :add-button="tableOptions.addButton"
       :select-event="tableOptions.selectEvent"
+      :extended-view-options="extendedViewOptions"
+      :extended-view-loading="extendedViewLoading"
+      :extended-view-value="extendedViewValue"
+      :is-show-extended-view-with-external-value.sync="isShowExtendedView"
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
@@ -72,10 +76,10 @@
             margin-bottom: 8px;
           "
         >
-          Event history
+          Event History
         </div>
         <div v-for="(event, index) in getEvents" :key="index">
-          <CampaignManagerReportSendingReportEvent
+          <TrainingReportSendingReportExtendedView
             :item="{
               title: `Received By ${
                 event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
@@ -117,9 +121,9 @@ import { useLoading } from '@/hooks/useLoading'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import Badge from '@/components/Badge'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
 
 export default {
   name: 'TrainingReportSendingReport',
@@ -128,7 +132,7 @@ export default {
     DataTable,
     Badge,
     CampaignManagerReportHeader,
-    CampaignManagerReportSendingReportEvent
+    TrainingReportSendingReportExtendedView
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -257,7 +261,7 @@ export default {
             label: 'SMTP',
             sortable: true,
             show: true,
-            fixed: 'right',
+            fixed: false,
             type: 'text',
             width: 150,
             filterableType: 'text'
@@ -284,16 +288,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
-          {
-            name: labels.Resend,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-resend',
-            action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
-          },
-
-
+          // {
+          //   name: labels.Resend,
+          //   id: 'btn-interactions--row-actions-training-report-users',
+          //   icon: '$custom-resend',
+          //   action: 'on-resend'
+          //   // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+          // },
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
@@ -301,8 +302,6 @@ export default {
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
-
-           */
         ]
       },
       isShowExtendedView: false,
@@ -310,21 +309,21 @@ export default {
         title: labels.EmailInformation,
         col: [
           {
-            property: PROPERTY_STORE.SUBJECT,
+            property: 'subject',
             label: labels.Subject,
             isEditable: false,
             type: 'text',
             show: true
           },
           {
-            property: PROPERTY_STORE.TOEMAIL,
+            property: 'to',
             label: labels.To,
             isEditable: false,
             type: 'text',
             show: true
           },
           {
-            property: PROPERTY_STORE.FROMEMAIL,
+            property: 'from',
             label: labels.From,
             isEditable: false,
             type: 'text',
@@ -338,7 +337,7 @@ export default {
             show: true
           },
           {
-            property: 'originatingIP',
+            property: 'senderIp',
             label: labels.SenderIP,
             isEditable: false,
             type: 'text',
@@ -360,10 +359,48 @@ export default {
       tableData: []
     }
   },
+  computed: {
+    getEvents() {
+      const { events = [] } = this.extendedViewValue[0] || { events: [] }
+      return events
+        ? events.map((event) => ({
+            status:
+              event?.event === 'bounce'
+                ? event?.bounceType?.substring(0, 1)?.toUpperCase() +
+                  event?.bounceType?.substring(1)
+                : event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
+            date: event.timestamp,
+            reason: this.getEventReason(event),
+            mxServer: event.mxServer
+          }))
+        : []
+    },
+    getNoEventMessage() {
+      const provider = this.extendedViewValue[0]?.serviceProvider || ''
+      if (provider === ENUMS.SEND_GRID) {
+        return 'Activity details will be available in a few minutes...'
+      }
+      return 'Event history is only available for Sendgrid'
+    }
+  },
   created() {
     this.callForData()
   },
   methods: {
+    getEventReason(event = {}) {
+      const { reason, event: eventName } = event
+      if (reason) return reason
+      switch (eventName) {
+        case 'processed':
+          return `We sent the email using the shared IP address ${
+            this.extendedViewValue[0]?.originatingIP || ''
+          }.`
+        case 'delivered':
+          return 'This email was delivered'
+        default:
+          return ''
+      }
+    },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
     },
@@ -406,19 +443,22 @@ export default {
       })
     },
     handleOnDetail(row) {
-      // this.extendedViewLoading = true
-      // this.isShowExtendedView = true
-      // getCampaignJobEmailActivity(row.resourceId)
-      //   .then((response) => {
-      //     const { data: { data = [] } = {} } = response || { data: { data: [] } }
-      //     this.extendedViewValue = [data]
-      //   })
-      //   .catch(() => {
-      //     this.isShowExtendedView = false
-      //   })
-      //   .finally(() => {
-      //     this.extendedViewLoading = false
-      //   })
+      this.extendedViewLoading = true
+      this.isShowExtendedView = true
+      AwarenessEducatorService.getTrainingReportSendingReportDetails(
+        row.enrollmentId,
+        row.targetUserResourceId
+      )
+        .then((response) => {
+          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          this.extendedViewValue = [data]
+        })
+        .catch(() => {
+          this.isShowExtendedView = false
+        })
+        .finally(() => {
+          this.extendedViewLoading = false
+        })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
