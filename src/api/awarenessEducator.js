@@ -259,6 +259,10 @@ const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/exam-result-details/${resourceId}`)
 }
 
+const getTrainingReportSendingReportDetails = (enrollmentId, resourceId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${resourceId}`)
+}
+
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
 }
@@ -367,6 +371,7 @@ export default {
   getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile,
+  getTrainingReportSendingReportDetails,
   searchTrash,
   deletePermanentlyEnrollment,
   restoreEnrollment,
