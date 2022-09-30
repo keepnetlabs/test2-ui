@@ -95,7 +95,8 @@ export default {
       trainingSummary: {},
       interval: null,
       languages: [],
-      enrollmentEmailData: {}
+      enrollmentEmailData: {},
+      certificateEmailData: {}
     }
   },
   computed: {
@@ -306,12 +307,17 @@ export default {
       }
     },
     getCertificateData() {
-      const { trainingDetails = {} } = this.trainingSummary || {}
-      const { companyName = '' } = trainingDetails
-
+      const { name = '', companyName = '', description = '', template = '' } =
+        this.certificateEmailData || {}
       return {
-        name: 'Default Certificate',
-        createdBy: companyName
+        name,
+        createdBy: companyName,
+        description,
+        template:
+          template?.replace(
+            new RegExp('{COMPANYLOGO}', 'g'),
+            this?.$store?.state?.whitelabel.mainLogoUrl || ''
+          ) || ''
       }
     },
     getTrainingMaterialData() {
@@ -326,14 +332,15 @@ export default {
       }
     },
     getCertificateEmailNotificationTemplateTypeResourceId() {
-      const { certificateEmailNotificationTemplateTypeResourceId = '' } = this.trainingSummary || {}
-      return certificateEmailNotificationTemplateTypeResourceId
+      const { certificateAttachmentResourceId = '' } = this.trainingSummary || {}
+      return certificateAttachmentResourceId
     }
   },
   created() {
     this.callForLanguages()
     this.callForData()
     this.callForEnrollmentEmail()
+    this.callForCertificate()
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -357,6 +364,21 @@ export default {
           .finally(this.setLoading)
       }
     },
+    callForCertificate() {
+      if (this.getCertificateEmailNotificationTemplateTypeResourceId) {
+        this.setLoading(true)
+        AwarenessEducatorService.getCertificateHtml(
+          this.getCertificateEmailNotificationTemplateTypeResourceId
+        )
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            this.certificateEmailData = data
+          })
+          .finally(this.setLoading)
+      }
+    },
     callApis(isUseLoading = false) {
       if (isUseLoading) {
         this.setLoading(true)
@@ -369,6 +391,7 @@ export default {
         )
         if (isUseLoading) {
           this.callForEnrollmentEmail()
+          this.callForCertificate()
         }
       })
     },

@@ -127,7 +127,6 @@ export function getEmailTemplate(resourceId = '') {
 export function getDefaultEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}/default`)
 }
-
 export function exportEmailTemplate(payload = {}) {
   return testRequest.post('/companies/email-templates/search/export', payload, {
     responseType: 'blob'

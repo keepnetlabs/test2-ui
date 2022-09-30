@@ -1,50 +1,58 @@
 <template>
-  <KContainer tabless id="enrollments">
-    <EditEnrollmentsModal
-      v-if="isShowEditEnrollmentModal"
-      :status="isShowEditEnrollmentModal"
-      :selected-row="selectedRow"
-      @on-close="toggleShowEditEnrollmentModal"
-    />
-    <SendEnrollmentDialog
-      v-if="isShowSendEnrollmentDialog"
-      :status="isShowSendEnrollmentDialog"
-      :selected-row="selectedRow"
-      @on-close="toggleShowSendEnrollmentDialog"
-    />
-    <DeleteEnrollmentDialog
-      v-if="isShowDeleteEnrollmentsDialog"
-      :status="isShowDeleteEnrollmentsDialog"
-      :selected-row="selectedRow"
-      @on-close="toggleShowDeleteEnrollmentsDialog"
-    />
-    <StopEnrollmentDialog
-      v-if="isShowStopEnrollmentDialog"
-      :status="isShowStopEnrollmentDialog"
-      :selected-row="selectedRow"
-      @on-close="toggleShowStopEnrollmentDialog"
-    />
-    <TrainingPreviewDialog
-      v-if="isShowPreviewDialog"
-      :status="isShowPreviewDialog"
-      :selected-row="selectedRow"
-      :languages="languages"
-      @on-close="toggleShowPreviewDialog"
-    />
-    <EnrollmentsTable
-      ref="refTable"
-      :categories="categories"
-      :languages="tableLanguageFilter"
-      :target-audiences="targetAudiences"
-      :scorm-types="scormTypes"
-      :main-languages="languages"
-      :enrollmentStatusEnum="enrollmentStatusEnum"
-      @on-delete="handleDeleteRowClick"
-      @on-stop="handleStop"
-      @on-send="handleSend"
-      @on-edit="handleEditRowClick"
-      @on-preview="handlePreviewRowClick"
-    />
+  <KContainer id="enrollments">
+    <el-tabs v-model="tab">
+      <el-tab-pane label="Enrollments" name="enrollments" id="enrollments-content">
+        <EditEnrollmentsModal
+          v-if="isShowEditEnrollmentModal"
+          :status="isShowEditEnrollmentModal"
+          :selected-row="selectedRow"
+          @on-close="toggleShowEditEnrollmentModal"
+        />
+        <SendEnrollmentDialog
+          v-if="isShowSendEnrollmentDialog"
+          :status="isShowSendEnrollmentDialog"
+          :selected-row="selectedRow"
+          @on-close="toggleShowSendEnrollmentDialog"
+        />
+        <DeleteEnrollmentDialog
+          v-if="isShowDeleteEnrollmentsDialog"
+          :status="isShowDeleteEnrollmentsDialog"
+          :selected-row="selectedRow"
+          @on-close="toggleShowDeleteEnrollmentsDialog"
+        />
+        <StopEnrollmentDialog
+          v-if="isShowStopEnrollmentDialog"
+          :status="isShowStopEnrollmentDialog"
+          :selected-row="selectedRow"
+          @on-close="toggleShowStopEnrollmentDialog"
+        />
+        <TrainingPreviewDialog
+          v-if="isShowPreviewDialog"
+          :status="isShowPreviewDialog"
+          :selected-row="selectedRow"
+          :languages="languages"
+          @on-close="toggleShowPreviewDialog"
+        />
+        <EnrollmentsTable
+          v-if="tab === 'enrollments'"
+          ref="refTable"
+          :categories="categories"
+          :languages="tableLanguageFilter"
+          :target-audiences="targetAudiences"
+          :scorm-types="scormTypes"
+          :main-languages="languages"
+          :enrollmentStatusEnum="enrollmentStatusEnum"
+          @on-delete="handleDeleteRowClick"
+          @on-stop="handleStop"
+          @on-send="handleSend"
+          @on-edit="handleEditRowClick"
+          @on-preview="handlePreviewRowClick"
+        />
+      </el-tab-pane>
+      <el-tab-pane label="Trash" name="trash" id="trash-content">
+        <Trash v-if="tab === 'trash'" />
+      </el-tab-pane>
+    </el-tabs>
   </KContainer>
 </template>
 
@@ -58,10 +66,12 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/EditEnrollmentsModal'
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import SendEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/SendEnrollmentDialog'
+import Trash from '@/components/AwarenessEducator/Enrollments/Trash'
 
 export default {
   name: 'Enrollments',
   components: {
+    Trash,
     SendEnrollmentDialog,
     EditEnrollmentsModal,
     StopEnrollmentDialog,
@@ -73,6 +83,7 @@ export default {
   mixins: [useAwarenessHelperCalls],
   data() {
     return {
+      tab: 'enrollments',
       isShowSendEnrollmentDialog: false,
       isShowDeleteEnrollmentsDialog: false,
       selectedRow: null,

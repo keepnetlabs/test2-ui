@@ -39,6 +39,12 @@
       @closeDialog="toggleShowRemoveUserModal"
       @handleRemoveUsers="handleRemoveUsers"
     />
+    <TargetUserCreateGroupWithUserDialog
+      v-if="isShowingTargetUserCreateGroupWithUser"
+      :status="isShowingTargetUserCreateGroupWithUser"
+      @onConfirm="handleConfirmCreateUserWithGroup"
+      @onClose="toggleShowingTargetUserCreateGroupWithUser"
+    />
     <TargetGroupUsersTable
       ref="refTable"
       has-selection-slot
@@ -51,6 +57,7 @@
       @handleRemoveToGroup="handleRemoveToGroup"
       @handleRemoveUsersSelectionClick="handleRemoveUsersSelectionClick"
       @handleRouteBackToTargetUsers="handleRouteBackToTargetUsers"
+      @handleCreateGroupWithUser="handleCreateGroupWithUser"
     />
   </KContainer>
 </template>
@@ -64,6 +71,8 @@ import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/T
 import TargetGroupsUsersRemoveFromGroups from '@/components/TargetUsers/GroupUsers/TargetGroupsUsersRemoveFromGroups'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import KContainer from '@/components/KContainer/KContainer'
+import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
+
 export default {
   name: 'TargetGroupUsers',
   components: {
@@ -73,10 +82,13 @@ export default {
     TargetGroupUsersAddUsersModal,
     TargetGroupUsersAddToAnExistingGroupModal,
     TargetGroupUsersTable,
-    TargetUserEditUserModal: AddUserModal
+    TargetUserEditUserModal: AddUserModal,
+    TargetUserCreateGroupWithUserDialog
   },
   data() {
     return {
+      isShowingTargetUserCreateGroupWithUser: false,
+      selectedUserToCreateGroupWith: null,
       customFields: [],
       resourceId: null,
       showEditUserModal: false,
@@ -203,6 +215,21 @@ export default {
     },
     toggleShowAddToAnExistingGroupModal() {
       this.showAddToAnExistingGroupModal = !this.showAddToAnExistingGroupModal
+    },
+    handleCreateGroupWithUser(selectedRow = {}) {
+      this.selectedUserToCreateGroupWith = selectedRow
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
+    handleConfirmCreateUserWithGroup(groupName = '') {
+      // TODO: Insert create group with user logic here
+      this.selectedUserToCreateGroupWith = null
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
+    toggleShowingTargetUserCreateGroupWithUser() {
+      if (this.isShowingTargetUserCreateGroupWithUser) {
+        this.selectedUserToCreateGroupWith = null
+      }
+      this.isShowingTargetUserCreateGroupWithUser = !this.isShowingTargetUserCreateGroupWithUser
     }
   }
 }
