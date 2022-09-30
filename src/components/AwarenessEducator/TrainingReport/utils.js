@@ -65,4 +65,18 @@ export function getStatusBadgeProps(status) {
       textBlack: true
     }
   }
+  if (status === 'Processing') {
+    return {
+      color: '#1173C1',
+      text: 'Processing',
+      outline: true
+    }
+  }
+  if (status === 'NotDelivered' || status === 'Not Delivered') {
+    return {
+      color: '#B83A3A',
+      text: 'Not Delivered',
+      outline: true
+    }
+  }
 }
