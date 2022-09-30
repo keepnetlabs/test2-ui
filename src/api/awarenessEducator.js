@@ -289,6 +289,30 @@ const deleteEnrollment = (resourceId) => {
   })
 }
 
+const searchTrash = (payload) => {
+  return testRequest.post(`/enrollments/archive/search`, payload)
+}
+
+const deletePermanentlyEnrollment = (resourceId) => {
+  return testRequest.delete(`/enrollments/archive/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const restoreEnrollment = (resourceId = '') => {
+  return testRequest.post(
+    `/enrollments/archive/${resourceId}/restore`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const getCertificateHtml = (resourceId) => {
+  return testRequest.post(`/training-reports/certificate/${resourceId}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -347,5 +371,9 @@ export default {
   getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile,
-  getTrainingReportSendingReportDetails
+  getTrainingReportSendingReportDetails,
+  searchTrash,
+  deletePermanentlyEnrollment,
+  restoreEnrollment,
+  getCertificateHtml
 }

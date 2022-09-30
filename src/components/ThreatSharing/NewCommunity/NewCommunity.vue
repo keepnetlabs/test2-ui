@@ -39,7 +39,7 @@
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title
               title-id="text--threat-sharing-new-community-modal-title"
-              class="v-card-headline"
+              class="k-overlay__title"
               >{{ resourceId ? 'Edit' : 'Create New' }} Community
             </v-list-item-title>
           </v-list-item-content>
@@ -117,8 +117,9 @@
               <div class="new-community__radio-group">
                 <v-radio-group
                   v-model="privacystatusid"
-                  id="input--threat-sharing-community-privacy-status"
                   :mandatory="false"
+                  class="my-4 p-0"
+                  id="input--threat-sharing-community-privacy-status"
                   row
                 >
                   <v-radio
@@ -198,7 +199,7 @@
         text
         @click="onCreateClicked"
         id="threat-sharing-new-community-update-or-create-modal-button"
-        >{{ resourceId ? 'Update' : 'Create' }}
+        >{{ resourceId ? 'Save' : 'Create' }}
       </v-btn>
     </div>
   </div>

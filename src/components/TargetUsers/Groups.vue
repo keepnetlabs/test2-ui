@@ -28,7 +28,6 @@
       @handleDelete="handleDeleteGroup"
       @handleMultipleDelete="handleDeleteGroupMultiple"
     />
-
     <datatable
       v-bind="tableState"
       ref="refGroupsTable"

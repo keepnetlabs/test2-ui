@@ -316,6 +316,7 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRASH_LIST: 'TrashListTableSettings',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTableSettings',
   TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTableSettings',
   TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTableSettings',
@@ -476,6 +477,7 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
+  TRASH_LIST: 'TrashListTable',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTable',
   TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTable',
   TRAINING_REPORT_EXAM_RESULTS_TABLE: 'TrainingReportExamResultsTable',
