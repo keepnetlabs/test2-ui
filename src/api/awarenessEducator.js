@@ -305,6 +305,10 @@ const restoreEnrollment = (resourceId = '') => {
   )
 }
 
+const getCertificateHtml = (resourceId) => {
+  return testRequest.post(`/training-reports/certificate/${resourceId}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -365,5 +369,6 @@ export default {
   deleteTrainingFile,
   searchTrash,
   deletePermanentlyEnrollment,
-  restoreEnrollment
+  restoreEnrollment,
+  getCertificateHtml
 }
