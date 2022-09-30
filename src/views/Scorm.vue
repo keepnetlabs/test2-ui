@@ -1,5 +1,11 @@
 <template>
-  <iframe v-if="src" frameborder="0" :src="src" style="width: 100vw; height: 100vh;"></iframe>
+  <iframe
+    v-if="src"
+    allowfullscreen
+    frameborder="0"
+    :src="src"
+    style="width: 100vw; height: 100vh;"
+  ></iframe>
 </template>
 <script>
 import AwarenessEducatorService from '@/api/awarenessEducator'
