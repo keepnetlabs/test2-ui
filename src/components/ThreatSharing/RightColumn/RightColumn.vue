@@ -341,7 +341,7 @@
               class="about-community-statement"
               >{{ communityDetails.description }}</span
             >
-            <v-row>
+            <v-row class="mt-1 mb-8">
               <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                 <span
                   id="text--threat-sharing-right-column-community-owner"
@@ -380,7 +380,7 @@
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
-                    >+ Invite</a
+                    ><v-icon :size="24" color="#2196f3">mdi-plus</v-icon>Invite</a
                   >
                 </v-col>
               </v-row>
