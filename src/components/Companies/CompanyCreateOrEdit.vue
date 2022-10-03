@@ -482,7 +482,7 @@
                       no-data-text="No training content available"
                       :slots="{ item: true, selection: false }"
                     >
-                      <template v-slot:item="{ item }">
+                      <template #item="{ item }">
                         <v-list-item-content>
                           <v-list-item-title :id="item.titleId"> {{ item.name }}</v-list-item-title>
                           <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
@@ -522,6 +522,26 @@
                     </k-select>
                   </v-list-item-content>
                 </v-list-item>
+                <FormGroup
+                  title="Preferred Language"
+                  sub-title="Sort contents in this language first on lists and tables"
+                >
+                  <k-select
+                    v-model="formData.PreferredLanguageTypeResourceId"
+                    :items="languageItems"
+                    :return-object="false"
+                    position="top"
+                    class="tlp-select"
+                    id="input--company-preferred-language"
+                    outlined
+                    hint="*Required"
+                    persistent-hint
+                    placeholder="Select an option"
+                    item-text="name"
+                    item-value="resourceId"
+                  >
+                  </k-select>
+                </FormGroup>
               </v-form>
             </v-stepper-content>
           </v-stepper-items>
@@ -569,6 +589,7 @@ import InputAddress from '@/components/Common/Inputs/InputAddress'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -577,6 +598,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    FormGroup,
     InputTimezone,
     StepperFooter,
     InputAddress,
@@ -596,6 +618,7 @@ export default {
     return {
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
+      languageItems: [],
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -612,6 +635,7 @@ export default {
         File: null,
         logoURL: null,
         Name: '',
+        PreferredLanguageTypeResourceId: '',
         Description: '',
         IndustryResourceId: '',
         CountryResourceId: '',
@@ -799,14 +823,7 @@ export default {
       }
     },
     isFormDataChanged() {
-      const isChanged = isDifferent(this.formData, this.defaultFormData)
-      return isChanged
-      // return Object.keys(this.formData).some((key) => {
-      //   if (Array.isArray(this.formData[key])) {
-      //     return this.formData[key].length !== this.defaultFormData[key].length
-      //   }
-      //   return this.formData[key] !== this.defaultFormData[key]
-      // })
+      return isDifferent(this.formData, this.defaultFormData)
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []
@@ -815,12 +832,16 @@ export default {
       this.$emit('closeFormConfigureNewCompanyModal', this.createdCompanyResourceId)
     },
     getLookupContents() {
-      Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7]), getLicences()]).then(
+      Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7, 21]), getLicences()]).then(
         (responses) => {
           const res = responses[0] || []
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+          this.languageItems = [
+            { name: 'All Languages', resourceId: '' },
+            ...res?.filter((item) => item.genericCodeTypeId === 21)
+          ]
           this.notificationTemplates = res
             .filter((item) => item.genericCodeTypeId === 5)
             .map((notificationTemplate, ind) => {
@@ -913,7 +934,6 @@ export default {
         this.formData.LicenseTypeName = this.licenceTypes.find((item) => {
           return item.resourceId === this.formData.LicenseTypeResourceId
         }).name
-
         const [
           startFirstPart,
           startSecondPart,
@@ -1023,18 +1043,11 @@ export default {
       this.activeStep = 1
       this.$emit('cancelForm')
     },
-    datePickerValidation() {
-      return this.formData.LicenseStartDate && this.formData.LicenseEndDate
-        ? ''
-        : 'Start and end dates should be picked'
-    },
     expiryPeriodValidation(value) {
       let validation = true
-
       if (!value) {
         validation = 'Required'
       }
-
       return validation
     },
     expiryPeriodChange() {

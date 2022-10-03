@@ -10,7 +10,7 @@
     dense
     :hide-details="!hint"
     placeholder="Select a timezone"
-    min-width-type="huge"
+    :min-width-type="isBlock ? '' : 'huge'"
     :prepend-inner-icon="prependInnerIcon"
     :persistent-hint="persistentHint"
     :hint="hint"

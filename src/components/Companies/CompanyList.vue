@@ -13,7 +13,7 @@
       class-name="company-create-edit"
       :show-header="false"
     >
-      <template v-slot:overlay-body>
+      <template #overlay-body>
         <CompanyCreateOrEdit
           ref="refCreateOrEditModal"
           :selectedRow="selectedRow"
@@ -96,7 +96,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @handleMultipleDelete="handleMultipleDeleteOfCompanies"
     >
-      <template v-slot:datatable-custom-column="{ scope }">
+      <template #datatable-custom-column="{ scope }">
         <span
           v-if="scope.column.property === 'companyName'"
           :id="`text--company-name-${scope.$index}`"
@@ -123,7 +123,7 @@
           </span>
         </template>
       </template>
-      <template v-slot:extended-custom-view-slot>
+      <template #extended-custom-view-slot>
         <company-list-extend
           ref="extend"
           v-show="isShowExtended"
@@ -183,6 +183,7 @@ export default {
       isDeleting: false,
       loading: true,
       tableData: [],
+      isMultipleDelete: false,
       createdCompanyResourceIdForConfigureCompany: '',
       isShowConfigureCompanyModal: false,
       tableHeight: 0,
@@ -374,13 +375,12 @@ export default {
   },
   methods: {
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
-      const payload = {
+      this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.companyResourceId),
         excludedItems,
         selectAll,
         filter: this.payload.filter
       }
-      this.multipleDeletePayload = payload
       this.multipleDeleteCompanyCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
         : items.length
