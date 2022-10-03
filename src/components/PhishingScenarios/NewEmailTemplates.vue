@@ -199,9 +199,9 @@
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
-                        :extensions="['doc', 'docx', 'html', 'htm']"
-                        :size="2"
-                        fileUploadHint="Only word and html files. Max. file size 2MB"
+                        :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                        :size="5"
+                        fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
@@ -516,12 +516,20 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        const fileExtension = file.name ? file.name.substring(file.name.length - 4) : ''
+        const fileExtension = file.name ? file.name.split('.').pop() : ''
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
           newFile = new File([file], file.name, {
             type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          })
+        } else if (fileExtension === 'ppt') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.ms-powerpoint'
+          })
+        } else if (fileExtension === 'pptx') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
           })
         }
         this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
