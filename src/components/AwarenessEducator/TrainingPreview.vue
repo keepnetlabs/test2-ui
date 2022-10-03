@@ -24,6 +24,7 @@
       v-if="activeTemplate"
       :key="iframeKey"
       frameborder="0"
+      allowfullscreen
       :src="activeTemplate"
       style="min-width: 1200px; min-height: 900px;"
     ></iframe>
