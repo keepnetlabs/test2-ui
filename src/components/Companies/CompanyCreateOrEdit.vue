@@ -766,6 +766,7 @@ export default {
     this.getLookupContents()
     this.getCompanyGroups()
     if (this.edit) {
+      this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
       this.formData.logoURL = this.selectedExtend.logoUrl
       this.formData.Name = this.selectedExtend.name
