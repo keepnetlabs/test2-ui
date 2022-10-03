@@ -1,4 +1,3 @@
-
 .pop-up-card__invite-member {
   .v-select__selections input {
     min-height: 32px;
@@ -12,7 +11,7 @@
     padding: 0 !important;
     width: 100%;
     box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
-    0 3px 14px 2px rgba(255, 255, 255, 0.12);
+      0 3px 14px 2px rgba(255, 255, 255, 0.12);
   }
 
   .right-column-header {
@@ -22,7 +21,7 @@
     padding: 10px 0 !important;
 
     .header-p {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -70,7 +69,7 @@
   .create-com-btn {
     background-color: #2196f3 !important;
     color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -88,7 +87,7 @@
 
   .right-side- {
     &title {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-style: normal;
@@ -107,7 +106,7 @@
     display: flex;
     margin-top: 10px;
     margin-left: 0px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: bold;
     font-style: normal;
@@ -166,7 +165,7 @@
 
   .ts-body {
     margin-top: 8px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-style: normal;
@@ -177,7 +176,7 @@
   }
 
   .ts-user-comp {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -201,7 +200,7 @@
     width: 100%;
     border-radius: 20px;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
     background-color: #ffffff;
     padding: 29px 32px 16px 32px;
   }
@@ -213,7 +212,7 @@
   }
 
   .ts-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 24px;
     font-weight: normal;
     font-style: normal;
@@ -294,7 +293,7 @@
   }
 
   .filter-field {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px;
     font-weight: 600;
     font-stretch: normal;
@@ -307,7 +306,7 @@
   .create-com-btn {
     background-color: #2196f3 !important;
     color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -387,7 +386,7 @@
   }
 
   .right-side-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -398,7 +397,7 @@
   }
 
   .right-side-sub-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -417,7 +416,7 @@
     letter-spacing: normal;
     color: #434343;
     a {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -434,7 +433,7 @@
   }
 
   .about-community-statement {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -445,7 +444,8 @@
   }
 
   .about-community-table-td {
-    font-family: 'Open Sans', sans-serif !important;
+    padding-top: 0 !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 16px;
     font-weight: normal;
     font-stretch: normal;
@@ -456,7 +456,7 @@
   }
 
   .about-community-table-td-sec {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -481,7 +481,7 @@
 
   .like-count,
   .comment-count {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -502,7 +502,7 @@
     border: none !important;
     border-radius: 4px;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
     background-color: #ffffff;
 
     .suggested-row {
@@ -529,7 +529,7 @@
       max-width: 100%;
 
       .suggested-title {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 16px;
         font-weight: normal;
         font-stretch: normal;
@@ -555,7 +555,7 @@
         }
 
         .suggested-industry {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 14px !important;
           font-weight: 600 !important;
           font-stretch: normal;
@@ -590,7 +590,7 @@
         color: #fff !important;
         width: min-content;
         text-transform: uppercase;
-        font-weight:600;
+        font-weight: 600;
 
         @media only screen and (max-width: 500px) {
           padding: 0 3px !important;
@@ -600,7 +600,7 @@
   }
 
   .community-notification-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -615,7 +615,7 @@
     align-items: center;
     justify-content: space-between;
     height: 25px !important;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -637,7 +637,7 @@
   }
 
   .v-card-headline {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -675,7 +675,7 @@
   }
 
   .delete-info {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px;
     font-weight: normal;
     font-stretch: normal;
@@ -686,7 +686,7 @@
   }
 
   .invite-sub-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -705,7 +705,7 @@
     display: flex;
 
     .v-label {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
@@ -721,7 +721,7 @@
       border-radius: 18px !important;
 
       > span > span {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
@@ -755,7 +755,7 @@
   }
 
   .empty-posts {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -767,14 +767,14 @@
   }
 
   .empty-suggested-span {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
   }
 
   .create-first-btn {
     min-width: 70% !important;
     width: 221px !important;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px !important;
     font-weight: 400 !important;
     font-stretch: normal !important;
@@ -786,7 +786,7 @@
   .create-community-button {
     background-color: #2196f3 !important;
     color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -800,7 +800,7 @@
 
   .right-col-semibold-label {
     color: rgba(0, 0, 0, 0.87);
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 16px;
     font-weight: 600;
   }
@@ -816,5 +816,13 @@
       background-color: rgba(0, 0, 0, 0.5);
       box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
     }
+  }
+}
+
+#threat-sharing-right-column-invite-plus {
+  display: flex;
+  align-items: center;
+  &:hover {
+    text-decoration: none !important;
   }
 }
