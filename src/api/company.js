@@ -61,11 +61,15 @@ export function createCompany(payload) {
     if (Array.isArray(payload[key])) {
       payload[key].forEach((x) => formData.append(key, x))
     } else {
-      payload[key] && formData.append(key, payload[key])
+      if (key === 'PreferredLanguageTypeResourceId') {
+        formData.append(key, payload[key] || '')
+      } else {
+        payload[key] && formData.append(key, payload[key])
+      }
     }
   }
 
-  return testRequest.post(`/companies`, formData, { loading: true, snackbar: COMMON_SNACKBAR })
+  return testRequest.post(`/companies`, formData, { snackbar: COMMON_SNACKBAR })
 }
 export function updateCompany(id, payload) {
   const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
@@ -81,7 +85,11 @@ export function updateCompany(id, payload) {
     if (Array.isArray(payload[key])) {
       payload[key].forEach((x) => formData.append(key, x))
     } else {
-      payload[key] && formData.append(key, payload[key])
+      if (key === 'PreferredLanguageTypeResourceId') {
+        formData.append(key, payload[key] || '')
+      } else {
+        payload[key] && formData.append(key, payload[key])
+      }
     }
   }
 
