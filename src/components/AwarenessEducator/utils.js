@@ -212,6 +212,18 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ENROLLMENT_STATUSES_FILTER
   },
+  STATUS_TRASH: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 150,
+    filterableType: 'select',
+    filterableItems: ['Archived']
+  },
   TARGET_USERS: {
     property: PROPERTY_STORE.RECIPIENT_TYPE,
     align: 'left',
