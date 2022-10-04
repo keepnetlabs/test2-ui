@@ -93,12 +93,22 @@ export default {
             align: 'left',
             label: 'Group Name',
             fixed: false,
-            sortable: true,
             show: true,
             type: 'text',
-            width: 240,
-            isEditable: true,
-            filterableType: 'text'
+            width: 200,
+            hideFilter: true,
+            hideSort: true
+          },
+          {
+            property: 'userCount',
+            align: 'left',
+            label: 'Users',
+            sortable: true,
+            show: true,
+            width: 120,
+            type: 'text',
+            hideFilter: true,
+            hideSort: true
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -107,8 +117,19 @@ export default {
             sortable: true,
             show: true,
             type: 'priority',
-            isEditable: true,
-            width: 170
+            width: 170,
+            hideFilter: true,
+            hideSort: true
+          },
+          {
+            property: 'companyName',
+            align: 'left',
+            label: 'Company',
+            sortable: true,
+            show: true,
+            type: 'text',
+            hideFilter: true,
+            hideSort: true
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -119,7 +140,9 @@ export default {
             type: 'text',
             isEditable: true,
             width: 300,
-            overrideWidth: true
+            overrideWidth: true,
+            hideFilter: true,
+            hideSort: true
           }
         ],
         downloadButton: { show: false },
