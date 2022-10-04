@@ -509,6 +509,7 @@ export default {
           this.isCertificateTextDisabled = true
         }
         this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+        this.$refs.refDomainToAddForm.validate()
       })
     },
     callForRoles() {
