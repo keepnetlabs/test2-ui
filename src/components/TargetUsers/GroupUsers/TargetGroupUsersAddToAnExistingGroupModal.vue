@@ -98,16 +98,16 @@ export default {
             width: 200,
             filterableType: 'text'
           },
-          {
-            property: 'userCount',
-            align: 'left',
-            label: 'Users',
-            sortable: true,
-            show: true,
-            width: 120,
-            type: 'text',
-            filterableType: 'number'
-          },
+          // {
+          //   property: 'userCount',
+          //   align: 'left',
+          //   label: 'Users',
+          //   sortable: true,
+          //   show: true,
+          //   width: 120,
+          //   type: 'text',
+          //   filterableType: 'number'
+          // },
           {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
