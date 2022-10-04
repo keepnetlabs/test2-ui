@@ -54,7 +54,6 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
-  CONSTANTS,
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
