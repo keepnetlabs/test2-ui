@@ -54,6 +54,7 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
+  CONSTANTS,
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
@@ -96,8 +97,7 @@ export default {
             show: true,
             type: 'text',
             width: 200,
-            hideFilter: true,
-            hideSort: true
+            filterableType: 'text'
           },
           {
             property: 'userCount',
@@ -107,8 +107,7 @@ export default {
             show: true,
             width: 120,
             type: 'text',
-            hideFilter: true,
-            hideSort: true
+            filterableType: 'number'
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -118,8 +117,8 @@ export default {
             show: true,
             type: 'priority',
             width: 170,
-            hideFilter: true,
-            hideSort: true
+            filterableType: 'select',
+            filterableItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High']
           },
           {
             property: 'companyName',
@@ -128,8 +127,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            hideFilter: true,
-            hideSort: true
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -141,8 +139,7 @@ export default {
             isEditable: true,
             width: 300,
             overrideWidth: true,
-            hideFilter: true,
-            hideSort: true
+            filterableType: 'date'
           }
         ],
         downloadButton: { show: false },
@@ -228,7 +225,7 @@ export default {
       this.callForTargetGroups()
     },
     sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop
       this.callForTargetGroups()
     },
