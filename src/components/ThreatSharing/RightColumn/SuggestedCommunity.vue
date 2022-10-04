@@ -9,9 +9,9 @@
       </div>
       <div class="suggested-com-detail">
         <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-        <b
+        <span
           :id="`text--threat-sharing-right-column-suggest-communities-item-member-count-${index}`"
-          >{{ community.memberCount }}</b
+          >{{ community.memberCount }}</span
         ><span class="suggested-row__seperator">•</span>
         <span
           :id="`text--threat-sharing-right-column-suggest-communities-item-industry-name-${index}`"
@@ -50,13 +50,13 @@
         <v-icon v-if="community.isJoined" class="mr-2" style="color: #fff !important;"
           >mdi-account-clock
         </v-icon>
-        <div v-if="community.privacyStatusName != 'Private'" :key="community.resourceId">
+        <div v-if="community.privacyStatusName != 'Private'">
           JOIN
         </div>
-        <div v-else-if="community.isJoined" :key="community.resourceId">
+        <div v-else-if="community.isJoined">
           Request Sent
         </div>
-        <div v-else :key="community.resourceId">Request to join</div>
+        <div v-else>Request to join</div>
       </v-btn>
     </div>
   </div>
