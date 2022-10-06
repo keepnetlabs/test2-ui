@@ -1,9 +1,9 @@
 <template>
   <app-modal
     :status="status"
-    iconName="mdi-magnify"
-    :title="`Start New Manual Investigation`"
     title-id="text--incident-responder-new-investigation-modal-title"
+    icon-name="mdi-magnify"
+    title="Start New Manual Investigation"
   >
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
@@ -97,7 +97,6 @@
                     small-chips
                     deletable-chips
                     :return-object="true"
-                    prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
                     :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
                   />
@@ -134,7 +133,6 @@
                     "
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-                    prepend-inner-icon="mdi-magnify"
                   />
                 </div>
               </v-list-item-content>

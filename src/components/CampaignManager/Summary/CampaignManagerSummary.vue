@@ -212,30 +212,34 @@ export default {
     }
   },
   watch: {
-    formData(val) {
-      this.currentFormData = {
-        ...val,
-        emailTemplateParams: {
-          fromName: val?.emailTemplateParams?.fromName || '',
-          fromAddress: val?.emailTemplateParams?.fromAddress || '',
-          name: val?.emailTemplateParams?.name || '',
-          difficulty: val?.emailTemplateParams?.difficulty || '',
-          attachments: val?.emailTemplateParams?.attachments || [],
-          languageShortCode: val?.emailTemplateParams?.languageShortCode,
-          method: val?.emailTemplateParams?.method,
-          phishingFileName: val?.emailTemplateParams?.phishingFileName || null
-        },
-        landingPageParams: {
-          landingPageTemplates: val?.landingPageTemplates || null,
-          name: val?.landingPageParams?.name || '',
-          description: val?.landingPageParams?.description || '',
-          urlTemplate: val?.landingPageParams?.urlTemplate || '',
-          difficulty: val?.landingPageParams?.difficulty || '',
-          method: val?.landingPageParams?.method || '',
-          languageShortCode: val?.landingPageParams?.languageShortCode
-        },
-        landingPageTemplate: val?.landingPageTemplate || ''
-      }
+    formData: {
+      handler(val) {
+        this.currentFormData = {
+          ...val,
+          emailTemplateParams: {
+            fromName: val?.emailTemplateParams?.fromName || '',
+            fromAddress: val?.emailTemplateParams?.fromAddress || '',
+            name: val?.emailTemplateParams?.name || '',
+            difficulty: val?.emailTemplateParams?.difficulty || '',
+            attachments: val?.emailTemplateParams?.attachments || [],
+            languageShortCode: val?.emailTemplateParams?.languageShortCode,
+            method: val?.emailTemplateParams?.method,
+            phishingFileName: val?.emailTemplateParams?.phishingFileName || null
+          },
+          landingPageParams: {
+            landingPageTemplates: val?.landingPageTemplates || null,
+            name: val?.landingPageParams?.name || '',
+            description: val?.landingPageParams?.description || '',
+            urlTemplate: val?.landingPageParams?.urlTemplate || '',
+            difficulty: val?.landingPageParams?.difficulty || '',
+            method: val?.landingPageParams?.method || '',
+            languageShortCode: val?.landingPageParams?.languageShortCode
+          },
+          landingPageTemplate: val?.landingPageTemplate || ''
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   computed: {

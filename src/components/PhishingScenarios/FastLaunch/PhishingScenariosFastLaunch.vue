@@ -203,7 +203,8 @@ export default {
             name,
             difficultyResourceId,
             categoryResourceId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            phishingFileName
           } = emailTemplate
 
           this.emailTemplateParams = {
@@ -214,7 +215,8 @@ export default {
               (language) => language.value === languageTypeResourceId
             )?.text,
             method: methods.find((item) => item.value === categoryResourceId)?.text,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            phishingFileName
           }
           this.emailTemplate = template
           if (landingPageTemplate) {

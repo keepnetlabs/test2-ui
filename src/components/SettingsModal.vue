@@ -37,7 +37,6 @@
                       item-value="id"
                       outlined
                       placeholder="Select your timezone"
-                      prepend-inner-icon="mdi-magnify"
                     ></k-select>
                   </div>
                   <div class="mb-8">
