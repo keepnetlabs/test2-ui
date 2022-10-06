@@ -836,7 +836,7 @@
                 class="mx-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
-                :rules="numberValidation"
+                :rules="formValues.isCachingEnabled ? numberValidation : []"
                 @input="handleCacheDurationChange"
               ></v-text-field>
               <span>and query count</span>
@@ -849,7 +849,7 @@
                 class="ml-2 absolute-text-input-error"
                 style="max-width: 64px;"
                 :disabled="!formValues.isCachingEnabled"
-                :rules="numberValidationQuery"
+                :rules="formValues.isCachingEnabled ? numberValidationQuery : []"
                 @input="handleCacheQueryCountChange"
               ></v-text-field>
             </div>
