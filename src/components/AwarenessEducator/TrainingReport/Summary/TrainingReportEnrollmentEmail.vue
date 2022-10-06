@@ -12,12 +12,9 @@
         <div class="training-report-enrollment-template__template-name">
           {{ formData.name }}
         </div>
-        <div class="training-report-enrollment-template__created-by">
+        <div class="training-report-enrollment-template__created-by" style="margin-bottom: 0;">
           Training enrollment email template • <span style="font-weight: 400;">by</span>
           {{ formData.createdBy }}
-        </div>
-        <div class="training-report-enrollment-template__description">
-          {{ formData.description }}
         </div>
       </div>
       <div
