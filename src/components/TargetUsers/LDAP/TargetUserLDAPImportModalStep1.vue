@@ -32,7 +32,6 @@
         custom-menu-class="target-user-ldap__target-groups"
         outlined
         clearable
-        prepend-inner-icon="mdi-magnify"
         autocomplete="disabled"
         placeholder="- All Users -"
         no-data-text="No user group available"
