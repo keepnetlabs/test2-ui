@@ -173,7 +173,6 @@
                           multiple
                           persistent-hint
                           hide-details
-                          prepend-inner-icon="mdi-magnify"
                           :menu-props="{
                             offsetY: true
                           }"
