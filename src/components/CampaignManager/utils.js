@@ -141,5 +141,6 @@ export const ACTION_STATUSES = {
   DELETE: 'Delete',
   COMPLETE: 'Completed',
   CANCEL: 'Canceled',
-  IDLE: 'Idle'
+  IDLE: 'Idle',
+  ERROR: 'Error'
 }

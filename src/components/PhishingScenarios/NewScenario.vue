@@ -278,14 +278,18 @@
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
                           <div
-                            v-if="getPhishingFile"
+                            v-if="
+                              summaryData &&
+                              summaryData.emailTemplate &&
+                              summaryData.emailTemplate.phishingFileName
+                            "
                             class="attachment-wrapper mt-2 mb-0"
                             style="position: relative;"
                           >
                             <div class="attachment blue-attach mb-0">
                               <AttachmentsPreview
                                 :deletable="false"
-                                :att="getPhishingFile"
+                                :att="{ name: summaryData.emailTemplate.phishingFileName }"
                                 :isEmailTemplate="true"
                               />
                             </div>
@@ -347,30 +351,6 @@
                               summaryData.emailTemplate.languageShortCode
                             }}
                           </v-chip>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="hasEmailAttachments"
-                      class="summary-content"
-                      style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
-                    >
-                      <div
-                        v-for="(att, ind) of summaryData.emailTemplate.attachments"
-                        :key="ind + att.name"
-                        class="preview-attch-wrapper"
-                      >
-                        <div class="attachment-wrapper">
-                          <div
-                            class="attachment blue-attach"
-                            :id="'single-post-attachments-' + att.name"
-                          >
-                            <AttachmentsPreview
-                              :deletable="false"
-                              :att="att"
-                              :isEmailTemplate="true"
-                            />
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -964,9 +944,6 @@ export default {
       }
 
       return false
-    },
-    hasEmailAttachments() {
-      return this.summaryData?.emailTemplate?.attachments?.length > 0
     },
     getModalTitle() {
       return !this.isEdit

@@ -72,12 +72,17 @@
               <span class="template-list--item__sub-header--span">by</span>
               {{ formData.trainingData.createdBy }}
             </div>
-          </div>
-          <div
-            v-if="isShowTrainingEmail"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            {{ formData.trainingData.description }}
+            <div
+              style="
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 19px;
+                color: #383b41;
+                margin-top: 8px;
+              "
+            >
+              {{ formData.trainingData.description }}
+            </div>
           </div>
         </template>
       </CampaignManagerSummaryCard>
