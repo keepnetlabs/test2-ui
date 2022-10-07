@@ -102,7 +102,10 @@ export default {
     },
     getRowActions() {
       const rowActions = this.rowActions
-      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+      if (
+        this.actionStatus === ACTION_STATUSES.RUNNING ||
+        this.actionStatus === ACTION_STATUSES.ERROR
+      ) {
         const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
         copyOfRowActions.splice(0, 1)
         copyOfRowActions.splice(0, 0, {
