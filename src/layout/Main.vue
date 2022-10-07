@@ -317,6 +317,19 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              v-if="getVishingCampaignManagerLeftMenuPermissions || true"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/campaign-manager"
+                  id="btn--link-navigator-menu-vishing-campaign-manager"
+                  route-name="Campaign Manager"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
 
           <v-list-group
@@ -896,6 +909,8 @@ export default {
       getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
       getVishingLeftMenuPermissions: 'permissions/getVishingLeftMenuPermissions',
       getVishingTemplatesLeftMenuPermissions: 'permissions/getVishingTemplatesLeftMenuPermissions',
+      getVishingCampaignManagerLeftMenuPermissions:
+        'permissions/getVishingCampaignManagerLeftMenuPermissions',
       getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
       getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
       getIncidentResponderListGroupPermissions:
@@ -972,7 +987,10 @@ export default {
     },
     getVishingClasses() {
       const routerName = this.routerName
-      const isSelected = routerName === 'Vishing' || routerName === 'Vishing Templates'
+      const isSelected =
+        routerName === 'Vishing' ||
+        routerName === 'Vishing Templates' ||
+        routerName === 'Vishing Campaign Manager'
       return {
         'primary--text active-menu-parent': isSelected,
         'un-selected-list-item': !isSelected

@@ -574,7 +574,9 @@ export const labels = {
   CreatedBy: 'Created By',
   dnsServiceProviderName: 'Service Provider',
   LANGUAGE: 'Language',
-  Type: 'Type'
+  Type: 'Type',
+  NoVishingCampaigns: 'You do not have any vishing campaigns',
+  TryAgain: 'Try Again'
 }
 
 export default labels

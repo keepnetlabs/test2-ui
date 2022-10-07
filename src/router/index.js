@@ -34,6 +34,7 @@ import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import VishingRoute from '@/views/VishingRoute'
 import VishingTemplates from '@/views/VishingTemplates'
+import VishingCampaignManager from '@/views/VishingCampaignManager'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -108,6 +109,16 @@ const router = new Router({
             permissionStoreKey: 'permissions/getVishingTemplatesLeftMenuPermissions'
           },
           component: VishingTemplates
+        },
+        {
+          path: '/vishing/campaign-manager',
+          name: 'Vishing Campaign Manager',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Vishing',
+            permissionStoreKey: 'permissions/getVishingCampaignManagerLeftMenuPermissions'
+          },
+          component: VishingCampaignManager
         },
         {
           path: '/threat-sharing',

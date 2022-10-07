@@ -79,7 +79,6 @@
           />
           <DefaultMenuRowAction
             :scope="scope"
-            :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
@@ -412,7 +411,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `EmailTemplates.${
+          link.download = `VishingTemplates.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()

@@ -44,7 +44,8 @@ const {
   ROLES_PERMISSIONS,
   LDAP_PERMISSIONS,
   VISHING_LEFT_MENU_PERMISSIONS,
-  VISHING_TEMPLATES_PERMISSIONS
+  VISHING_TEMPLATES_PERMISSIONS,
+  VISHING_CAMPAIGN_MANAGER_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -92,7 +93,8 @@ const defaultState = {
   ldapPermissions: LDAP_PERMISSIONS,
   excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
   vishingLeftMenuPermissions: VISHING_LEFT_MENU_PERMISSIONS,
-  vishingTemplatesPermissions: VISHING_TEMPLATES_PERMISSIONS
+  vishingTemplatesPermissions: VISHING_TEMPLATES_PERMISSIONS,
+  vishingCampaignManagerPermissions: VISHING_CAMPAIGN_MANAGER_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -310,6 +312,9 @@ const store = {
     },
     getVishingTemplatesLeftMenuPermissions(state) {
       return state?.vishingTemplatesPermissions?.isOneOfThemPermitted
+    },
+    getVishingCampaignManagerLeftMenuPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.isOneOfThemPermitted
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -833,7 +838,8 @@ const store = {
         'ldapPermissions',
         'excludeIpAddressPermissions',
         'vishingLeftMenuPermissions',
-        'vishingTemplatesPermissions'
+        'vishingTemplatesPermissions',
+        'vishingCampaignManagerPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

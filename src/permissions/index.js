@@ -222,6 +222,13 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  VISHING_CAMPAIGN_MANAGER_PERMISSIONS: {
+    SEARCH: {
+      url: `vishing/campaign-manager/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   PHISHING_SCENARIO_LEFT_MENU_PERMISSIONS: {
     EMAIL_TEMPLATE: {
       url: `phishing-simulator/email-templates`,
