@@ -845,7 +845,9 @@ export default {
     getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
-      this.editor.setComponents(html)
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      this.editor.setComponents(doc.children[0].outerHTML)
+      this.editor.getWrapper().setStyle(doc.body.style.cssText)
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
@@ -897,7 +899,9 @@ export default {
             editor.DomComponents.getWrapper().set('content', '')
             const code = codeViewer.editor.getValue()
             const callback = (importedCode = code) => {
-              editor.setComponents(importedCode)
+              const doc = new DOMParser().parseFromString(importedCode, 'text/html')
+              editor.setComponents(doc.children[0].outerHTML)
+              editor.getWrapper().setStyle(doc.body.style.cssText)
               editor.Modal.close()
             }
             minifyHTML(code)
