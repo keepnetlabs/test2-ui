@@ -51,13 +51,6 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
-          :disabled="tableOptions.rowActions[2].disabled || !scope.row.isEditable"
-          :icon="tableOptions.rowActions[2].icon"
-          :text="tableOptions.rowActions[2].name"
-          @on-click="handleActionDelete(scope.row)"
-        />
-        <DefaultMenuRowAction
-          :scope="scope"
           :check-is-owner-property="false"
           :disabled="tableOptions.rowActions[3].disabled"
           :icon="tableOptions.rowActions[3].icon"
@@ -73,6 +66,13 @@
           :text="tableOptions.rowActions[4].name"
           :checkIsOwnerProperty="false"
           @on-click="handleDuplicate(scope.row)"
+        />
+        <DefaultMenuRowAction
+          :scope="scope"
+          :disabled="tableOptions.rowActions[2].disabled || !scope.row.isEditable"
+          :icon="tableOptions.rowActions[2].icon"
+          :text="tableOptions.rowActions[2].name"
+          @on-click="handleActionDelete(scope.row)"
         />
       </RowActionsMenu>
     </template>
