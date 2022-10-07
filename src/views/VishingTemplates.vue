@@ -148,7 +148,11 @@ export default {
       isDuplicate: false,
       tableData: [],
       isDeleteModalVisible: false,
-      selectedTemplate: null,
+      // TODO: Set initial value to null
+      selectedTemplate: {
+        resourceId: '123',
+        name: 'Template Name'
+      },
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHINGTEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHINGTEMPLATES,
