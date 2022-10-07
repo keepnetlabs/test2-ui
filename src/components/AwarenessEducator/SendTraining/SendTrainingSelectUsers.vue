@@ -171,6 +171,7 @@ export default {
       })
     },
     handleCampaignChange(item) {
+      this.totalTargetUserCount = item.targetUsers
       this.methodTypeId = item.methodTypeId
       if (this.methodTypeId === 3) {
         this.formData.userWhoClickedEmail = false
