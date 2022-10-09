@@ -6,7 +6,7 @@
         icon
         :ripple="!isDisabled"
         :class="{ 'default-button-row-action--disabled': isDisabled }"
-        @click.native="!isDisabled && $emit('on-click', scope)"
+        @click="handleClick"
       >
         <v-icon :ripple="!isDisabled">{{ icon }}</v-icon>
       </v-btn>
@@ -40,9 +40,16 @@ export default {
     isDisabled() {
       const { row } = this.scope
       if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
-        return this.disabled || !row.isOwner
+        return !!this.disabled || !row.isOwner
       }
-      return this.disabled
+      return !!this.disabled
+    }
+  },
+  methods: {
+    handleClick() {
+      if (!this.isDisabled) {
+        this.$emit('on-click', this.scope)
+      }
     }
   }
 }

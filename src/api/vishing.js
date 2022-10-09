@@ -6,7 +6,8 @@ export function getVishingTemplatePreview(id) {
   return new Promise((res) => {
     setTimeout(() => {
       res({
-        name: 'Template Name',
+        name: 'Microsoft',
+        senderPhoneNumber: '+90 535 061 82 67',
         steps: [
           {
             type: 'Text to Speech',

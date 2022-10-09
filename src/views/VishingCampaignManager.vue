@@ -1,5 +1,18 @@
 <template>
   <KContainer id="vishing-campaign-manager">
+    <VishingTemplatePreview
+      v-if="isPreviewVisible"
+      isCampaign
+      :status="isPreviewVisible"
+      :selectedRow="selectedRow"
+      @on-close="onToggleShowPreviewModal"
+    />
+    <DeleteVishingCampaignDialog
+      :status="isDeleteModalVisible"
+      :selectedRow="selectedRow"
+      @onCancel="handleCloseDeleteModal"
+      @onConfirm="handleConfirmDelete"
+    />
     <DataTable
       id="vishing-campaign-manager-data-table"
       ref="refTable"
@@ -20,7 +33,6 @@
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-      @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewVishingTemplateModalStatus(true)"
@@ -35,6 +47,12 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <div class="vishing-campaign-manager__status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" size="medium" />
+        </div>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           v-if="scope.row.status === 'Scheduled'"
@@ -43,7 +61,7 @@
           :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
           :checkIsOwnerProperty="false"
-          @onClick="handleLaunch(scope.row)"
+          @on-click="handleLaunch(scope.row)"
         />
         <DefaultButtonRowAction
           v-if="scope.row.status === 'Running'"
@@ -52,7 +70,7 @@
           :disabled="tableOptions.rowActions[7].disabled"
           :text="tableOptions.rowActions[7].name"
           :checkIsOwnerProperty="false"
-          @onClick="handleStop(scope.row)"
+          @on-click="handleStop(scope.row)"
         />
         <DefaultButtonRowAction
           v-if="scope.row.status === 'Completed' || scope.row.status === 'Cancelled'"
@@ -61,7 +79,7 @@
           :disabled="tableOptions.rowActions[1].disabled"
           :text="tableOptions.rowActions[1].name"
           :checkIsOwnerProperty="false"
-          @onClick="handlePreview(scope.row)"
+          @on-click="handlePreview(scope.row)"
         />
         <DefaultButtonRowAction
           v-if="scope.row.status === 'Error'"
@@ -70,7 +88,7 @@
           :disabled="tableOptions.rowActions[6].disabled"
           :text="tableOptions.rowActions[6].name"
           :checkIsOwnerProperty="false"
-          @onClick="handleTryAgain(scope.row)"
+          @on-click="handleTryAgain(scope.row)"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -80,7 +98,7 @@
             :disabled="tableOptions.rowActions[1].disabled"
             :text="tableOptions.rowActions[1].name"
             :checkIsOwnerProperty="false"
-            @onClick="handlePreview(scope.row)"
+            @on-click="handlePreview(scope.row)"
           />
           <DefaultMenuRowAction
             v-if="scope.row.status === 'Scheduled'"
@@ -88,7 +106,7 @@
             :icon="tableOptions.rowActions[2].icon"
             :disabled="tableOptions.rowActions[2].disabled"
             :text="tableOptions.rowActions[2].name"
-            @onClick="handleEdit(scope.row)"
+            @on-click="handleEdit(scope.row)"
           />
           <DefaultMenuRowAction
             v-if="!['Scheduled', 'Idle'].includes(scope.row.status)"
@@ -136,12 +154,16 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getVishingCampaigns, exportVishingCampaigns } from '@/api/vishing'
+import { getVishingCampaigns, exportVishingCampaigns, deleteVishingCampaign } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import { getStatusBadgeProps } from '@/components/VishingCampaignManager/utils'
+import Badge from '@/components/Badge'
+import VishingTemplatePreview from '@/components/VishingTemplates/VishingTemplatePreview'
+import DeleteVishingCampaignDialog from '@/components/VishingCampaignManager/DeleteVishingCampaignDialog'
 
 export default {
   name: 'VishingCampaignManager',
@@ -150,7 +172,10 @@ export default {
     DataTable,
     DefaultButtonRowAction,
     RowActionsMenu,
-    DefaultMenuRowAction
+    DefaultMenuRowAction,
+    Badge,
+    VishingTemplatePreview,
+    DeleteVishingCampaignDialog
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
@@ -197,9 +222,9 @@ export default {
             label: 'Status',
             sortable: true,
             show: true,
-            type: 'status',
+            type: 'slot',
             filterableType: 'select',
-            filterableItems: ['Completed', 'Running', 'Idle', 'Scheduled', 'Cancelled'],
+            filterableItems: ['Completed', 'Running', 'Idle', 'Scheduled', 'Cancelled', 'Error'],
             width: 180
           },
           {
@@ -254,7 +279,7 @@ export default {
           {
             name: labels.Launch,
             icon: 'mdi-send',
-            action: 'on-launch'
+            action: 'handleLaunch'
           },
           {
             name: labels.Preview,
@@ -278,7 +303,7 @@ export default {
           {
             name: labels.Delete,
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'handleDelete'
             // disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
           },
           {
@@ -356,6 +381,9 @@ export default {
       // this.$router.push('/')
       // }
     },
+    getStatusBadgeProps(status) {
+      return getStatusBadgeProps(status)
+    },
     exportVishingCampaigns({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -382,11 +410,12 @@ export default {
       if (this.isPreviewVisible) this.selectedRow = null
       this.isPreviewVisible = !this.isPreviewVisible
     },
+    handleViewReport(row) {},
     handleTryAgain(row) {},
     handleStop(row) {},
     handleLaunch(row) {},
     handlePreview(row) {
-      this.vishingTemplateId = row.resourceId
+      this.selectedRow = row
       this.onToggleShowPreviewModal()
     },
     handleEdit(row, isDuplicate) {
@@ -396,14 +425,18 @@ export default {
       this.isDuplicate = isDuplicate
       this.vishingTemplateId = row.resourceId
     },
-    handleDeleteConfirm() {
-      deleteVishingTemplate(this.selectedRow.resourceId)
-        .then(this.getDatatableList)
-        .finally(this.onCloseDeleteModal)
+    handleConfirmDelete() {
+      deleteVishingCampaign(this.selectedRow.resourceId)
+        .then(this.callForData)
+        .finally(this.handleCloseDeleteModal)
     },
     handleActionDelete(row) {
       this.selectedRow = row
       this.isDeleteModalVisible = true
+    },
+    handleCloseDeleteModal() {
+      this.selectedRow = null
+      this.isDeleteModalVisible = false
     }
   }
 }

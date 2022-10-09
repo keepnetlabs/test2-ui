@@ -15,13 +15,18 @@
       <div v-else class="template-preview pt-3">
         <div class="template-preview__text">
           <div>
-            <span class="template-preview__text--body">{{ templateName }}</span>
+            <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
+          </div>
+          <div v-if="templateData.senderPhoneNumber">
+            <span class="template-preview__text--body"
+              >Sender Phone Number: {{ templateData.senderPhoneNumber }}</span
+            >
           </div>
         </div>
         <div class="template-preview__steps">
-          <div v-for="(step, index) in steps" :key="index">
+          <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
             <VishingTemplatePreviewStep :step="step" :index="index" />
-            <hr v-if="index !== steps.length - 1" />
+            <hr v-if="index !== templateData.steps.length - 1" />
           </div>
         </div>
       </div>
@@ -50,6 +55,9 @@ export default {
     VishingTemplatePreviewStep
   },
   props: {
+    isCampaign: {
+      type: Boolean
+    },
     status: {
       type: Boolean
     },
@@ -62,16 +70,21 @@ export default {
       isLoading: false,
       labels,
       timeoutId: '',
-      steps: [],
-      templateName: ''
+      templateData: null
     }
   },
   computed: {
     getTitle() {
+      if (this.isCampaign) {
+        return 'Vishing Campaign Preview'
+      }
       return 'Vishing Template Preview'
     },
     getSubtitle() {
       return this.selectedRow.name
+    },
+    isRenderSteps() {
+      return this.templateData?.steps?.length > 0
     }
   },
   created() {
@@ -85,8 +98,7 @@ export default {
       this.isLoading = true
       getVishingTemplatePreview(this.selectedRow.resourceId)
         .then((response) => {
-          this.templateName = response.name
-          this.steps = response.steps
+          this.templateData = response
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
