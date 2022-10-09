@@ -58,6 +58,19 @@
       @on-close="toggleImportLDAPModal"
       @on-close-with-update="callForGetTargetUserCustomFieldsByCompanyId"
     />
+    <TargetUserAddToAnExistingGroupModal
+      v-if="isShowingTargetUserAddToGroup"
+      :status="isShowingTargetUserAddToGroup"
+      :selected-rows="getSelectedRow"
+      @closeOverlay="toggleShowingTargetUserAddToGroup"
+      @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
+    />
+    <TargetUserCreateGroupWithUserDialog
+      v-if="isShowingTargetUserCreateGroupWithUser"
+      :status="isShowingTargetUserCreateGroupWithUser"
+      @onConfirm="handleConfirmCreateUserWithGroup"
+      @onClose="toggleShowingTargetUserCreateGroupWithUser"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -80,6 +93,7 @@
       :axios-payload.sync="payload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @handleSelectionChange="handleSelectionChange"
       @deleteAction="handleDelete"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="handleClickEmptyBtnClicked"
@@ -94,6 +108,21 @@
       @searchChangedEvent="handleSearchChange"
       @viewUserGroups="handleViewUserGroups"
     >
+      <template #selection-all-slot>
+        <v-tooltip bottom opacity="1">
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="btn-selected-hover mr-1"
+              icon
+              v-on="on"
+              @click="handleAddUsersSelectionClick"
+            >
+              <v-icon class="selection-icons" color="white">mdi-account-plus</v-icon>
+            </v-btn>
+          </template>
+          <span class="tooltip-span">Add Users</span>
+        </v-tooltip>
+      </template>
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
           <template v-slot:activator="{ on: menu }">
@@ -192,15 +221,38 @@
         </div>
       </template>
       <template #datatable-row-actions="{scope}">
-        <TargetUserRowActionsEditButton :scope="scope" @on-click="handleEditTargetUsers" />
+        <TargetUserRowActionsEditButton
+          :scope="scope"
+          :id="tableOptions.rowActions[0].id"
+          @on-click="handleEditTargetUsers"
+        />
         <RowActionsMenu>
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[2].id"
             :text="tableOptions.rowActions[2].name"
             :icon="tableOptions.rowActions[2].icon"
-            @on-click="handleViewUserGroups(scope.row)"
+            @on-click="handleAddUserToGroup(scope.row)"
           />
-          <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[3].id"
+            :text="tableOptions.rowActions[3].name"
+            :icon="tableOptions.rowActions[3].icon"
+            @on-click="handleCreateGroupWithUser(scope.row)"
+          />
+          <!-- <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[3].id"
+            :text="tableOptions.rowActions[3].name"
+            :icon="tableOptions.rowActions[3].icon"
+            @on-click="handleViewUserGroups(scope.row)"
+          /> -->
+          <TargetUserRowActionsDeleteButton
+            :scope="scope"
+            :id="tableOptions.rowActions[1].id"
+            @on-delete="handleDelete"
+          />
         </RowActionsMenu>
       </template>
     </datatable>
@@ -249,6 +301,9 @@ import {
   defaultFieldMappings,
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
+import TargetUserToAddToGroupDialog from '@/components/TargetUsers/TargetUserToAddToGroupDialog'
+import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
+import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 
 export default {
   name: 'People',
@@ -264,7 +319,9 @@ export default {
     DeleteUserModal,
     Datatable,
     AddUserModal,
-    TargetUserImportFromAFile
+    TargetUserImportFromAFile,
+    TargetUserCreateGroupWithUserDialog,
+    TargetUserAddToAnExistingGroupModal: TargetGroupUsersAddToAnExistingGroupModal
   },
   props: {
     companyLicense: {
@@ -274,10 +331,15 @@ export default {
   emits: ['call-for-company-licenses'],
   data() {
     return {
+      selection: [],
       labels,
       ldapResourceId: '',
       isInitial: true,
+      isShowingTargetUserAddToGroup: false,
       isShowImportLDAPModal: false,
+      isShowingTargetUserCreateGroupWithUser: false,
+      selectedUserToCreateGroupWith: null,
+      selectedUserToAddToGroup: null,
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
@@ -435,11 +497,23 @@ export default {
             disabled: !this.$store.getters['permissions/getTargetUsersDeletePermissions']
           },
           {
+            name: 'Add users to group',
+            id: 'btn-add-users-to-group--target-users-people-row-actions',
+            icon: 'mdi-account-multiple-plus',
+            action: 'add-user-to-group'
+          },
+          {
             name: 'View user’s groups',
             icon: 'mdi-account-supervisor-outline',
             action: 'viewUserGroups',
             id: 'btn-view--target-users-people-row-actions'
           }
+          // {
+          //   name: 'Create a group with user',
+          //   id: 'btn-create-group-with-user--target-users-people-row-actions',
+          //   icon: 'mdi-account-multiple',
+          //   action: 'create-group-with-user'
+          // },
         ]
       },
       addUsersItems: [
@@ -460,7 +534,13 @@ export default {
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
       getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
-    })
+    }),
+    getSelectedRow() {
+      if (this.selectedUserToAddToGroup.constructor.name === 'Array') {
+        return this.selectedUserToAddToGroup
+      }
+      return [this.selectedUserToAddToGroup]
+    }
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
@@ -496,8 +576,38 @@ export default {
       this.selectedUserToViewGroups = selectedRow
       this.toggleShowingTargetUserViewTargetGroups()
     },
+    handleAddUserToGroup(selectedRow = {}) {
+      this.selectedUserToAddToGroup = selectedRow
+      this.toggleShowingTargetUserAddToGroup()
+    },
+    handleConfirmAddUserToGroup(groups = []) {
+      // TODO: Insert add user to group(s) logic here
+      this.selectedUserToAddToGroup = null
+      this.toggleShowingTargetUserAddToGroup()
+    },
+    handleConfirmCreateUserWithGroup(groupName = '') {
+      // TODO: Insert create group with user logic here
+      this.selectedUserToCreateGroupWith = null
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
+    handleCreateGroupWithUser(selectedRow = {}) {
+      this.selectedUserToCreateGroupWith = selectedRow
+      this.toggleShowingTargetUserCreateGroupWithUser()
+    },
     toggleShowingTargetUserViewTargetGroups() {
       this.isShowingTargetUserViewTargetGroups = !this.isShowingTargetUserViewTargetGroups
+    },
+    toggleShowingTargetUserAddToGroup() {
+      if (this.isShowingTargetUserAddToGroup) {
+        this.selectedUserToAddToGroup = null
+      }
+      this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
+    },
+    toggleShowingTargetUserCreateGroupWithUser() {
+      if (this.isShowingTargetUserCreateGroupWithUser) {
+        this.selectedUserToCreateGroupWith = null
+      }
+      this.isShowingTargetUserCreateGroupWithUser = !this.isShowingTargetUserCreateGroupWithUser
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
@@ -643,7 +753,7 @@ export default {
               (item) => item.resourceId === selectedUser.resourceId
             )
           ) {
-            this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
+            this?.$refs?.refPeopleTable?.$refs?.elTableRef?.toggleRowSelection(selectedUser, false)
             this.$refs.refPeopleTable.serverSideSelectionCount -= 1
           }
           if (selections?.[selections.length - 1]?.resourceId === selectedUser?.resourceId) {
@@ -743,7 +853,6 @@ export default {
           })
       }
     },
-
     exportTargetUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -765,6 +874,24 @@ export default {
           link.click()
         })
       })
+    },
+    closeAddToAnExistingGroupModalWithUpdate() {
+      this.toggleShowingTargetUserAddToGroup()
+      const refTable = this.$refs.refPeopleTable
+      if (refTable) {
+        refTable.$refs.elTableRef.clearSelection()
+        refTable.serverSideSelectionCount = 0
+        refTable.excludedResourceIdList = []
+        refTable.isSelectedAllEver = false
+      }
+      this.callForGetTargetUserCustomFieldsByCompanyId(true)
+    },
+    handleSelectionChange(selection = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+      this.selection = selection
+    },
+    handleAddUsersSelectionClick() {
+      this.selectedUserToAddToGroup = this.selection
+      this.toggleShowingTargetUserAddToGroup()
     }
   }
 }

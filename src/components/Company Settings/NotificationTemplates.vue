@@ -28,6 +28,12 @@
       :templateName="selectedItem.name"
       @closeOverlay="toggleDeleteDefaultTemplateWarningModal"
     />
+    <NotificationTemplatesPreviewDialog
+      v-if="showNotificationTemplatePreviewDialog"
+      :status="showNotificationTemplatePreviewDialog"
+      :selected-row="selectedItem"
+      @on-close="toggleNotificationPreviewDialog"
+    />
     <div class="notification-templates__container">
       <DataTable
         v-if="getNotificationTemplatesSearchPermissions"
@@ -40,7 +46,7 @@
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
-        :loading="loading"
+        :loading="isLoading"
         :axios-payload.sync="axiosPayload"
         :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
         :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
@@ -54,25 +60,16 @@
         @downloadEvent="exportNotificationTemplate"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
-        @refreshAction="callForDatas"
+        @refreshAction="callForData"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @handlePreview="handlePreview"
       >
-        <template v-slot:datatable-custom-column="{ scope }">
-          <div class="notification-templates__name-column">
-            <span>{{ scope.row.name }}</span>
-            <v-tooltip v-if="scope.row.isDefault" bottom>
-              <template v-slot:activator="{ on }">
-                <v-icon v-on="on" size="20" color="#1173C1" class="pl-2">mdi-star-circle</v-icon>
-              </template>
-              <span>{{ `Default option for  “${scope.row.typeName}"  template type` }}</span>
-            </v-tooltip>
-          </div>
-        </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
+            :id="tableOptions.rowActions[0].id"
             :scope="scope"
             :icon="tableOptions.rowActions[0].icon"
             :text="tableOptions.rowActions[0].name"
@@ -81,25 +78,36 @@
           />
           <RowActionsMenu>
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[1].id"
               :scope="scope"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
               :checkIsOwnerProperty="false"
-              @on-click="handleDuplicate(scope.row)"
+              @on-click="handlePreview(scope.row)"
             />
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[2].id"
               :scope="scope"
               :disabled="tableOptions.rowActions[2].disabled"
               :icon="tableOptions.rowActions[2].icon"
               :text="tableOptions.rowActions[2].name"
               :checkIsOwnerProperty="false"
-              @on-click="handleMakeDefault(scope.row)"
+              @on-click="handleDuplicate(scope.row)"
             />
             <DefaultMenuRowAction
+              :id="tableOptions.rowActions[3].id"
               :scope="scope"
               :disabled="tableOptions.rowActions[3].disabled"
               :icon="tableOptions.rowActions[3].icon"
               :text="tableOptions.rowActions[3].name"
+              @on-click="handleMakeDefault(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :id="tableOptions.rowActions[4].id"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[4].disabled"
+              :icon="tableOptions.rowActions[4].icon"
+              :text="tableOptions.rowActions[4].name"
               @on-click="handleDelete(scope.row)"
             />
           </RowActionsMenu>
@@ -131,15 +139,18 @@ import {
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/DefaultTemplateDeleteWarningModal'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog'
 export default {
   name: 'NotificationTemplates',
   components: {
+    NotificationTemplatesPreviewDialog,
     RowActionsMenu,
     DefaultMenuRowAction,
     DefaultButtonRowAction,
@@ -149,12 +160,13 @@ export default {
     CompanySettingsHeader,
     DefaultTemplateDeleteWarningModal
   },
+  mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
       showDeleteDefaultNotificationTemplateWarningModal: false,
+      showNotificationTemplatePreviewDialog: false,
       isDuplicate: false,
       categories: [],
-      loading: false,
       tableData: [],
       editItemsDisabled: false,
       tableOptions: {
@@ -166,8 +178,7 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            // type: 'text',
-            type: 'slot',
+            type: 'defaultTemplate',
             width: 280,
             filterableType: 'text'
           },
@@ -243,18 +254,6 @@ export default {
             isEditable: true,
             filterableType: 'date'
           },
-          // {
-          //   property: PROPERTY_STORE.TYPE,
-          //   align: 'left',
-          //   label: labels.Type,
-          //   fixed: false,
-          //   sortable: true,
-          //   show: true,
-          //   type: 'text',
-          //   width: 125,
-          //   isEditable: true,
-          //   filterableType: 'text'
-          // },
           {
             property: PROPERTY_STORE.CREATEDBY,
             align: 'left',
@@ -274,7 +273,6 @@ export default {
             fixed: false,
             sortable: false,
             hideSort: true,
-            filtarable: false,
             show: true,
             type: 'number',
             width: 100,
@@ -307,11 +305,16 @@ export default {
             disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           },
           {
+            name: labels.Preview,
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            id: 'btn-preview--notification-template-row-actions'
+          },
+          {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
             id: 'btn-duplicate--notification-template-row-actions',
             action: 'handleDuplicate'
-            // disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
             name: 'Make Default',
@@ -352,50 +355,13 @@ export default {
         'permissions/getNotificationTemplatesSearchPermissions'
     })
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.callForDatas()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForDatas()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop
-      this.callForDatas()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForDatas()
-    },
     closeNotificationTemplateWithUpdate() {
-      this.callForDatas()
+      this.callForData()
       this.toggleNewNotificationTemplate()
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForDatas()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForDatas()
     },
     exportNotificationTemplate(downloadTypes) {
       downloadTypes.exportTypes.map((exportType) => {
@@ -419,8 +385,9 @@ export default {
         })
       })
     },
-    getDisabledStatusOfAction(row) {
-      return !row.isOwner
+    handlePreview(row) {
+      this.selectedItem = row
+      this.toggleNotificationPreviewDialog()
     },
     handleDelete(row) {
       this.selectedItem = row
@@ -437,7 +404,7 @@ export default {
     },
     handleMakeDefault(row) {
       makeDefaultTemplate(row.resourceId).then(() => {
-        this.callForDatas()
+        this.callForData()
       })
     },
     handleDeleteNotificationTemplate(resourceId) {
@@ -445,7 +412,7 @@ export default {
       deleteEmailTemplate(resourceId)
         .then(() => {
           this.$refs.refNotificationList.unSelectRow(this.selectedItem)
-          this.callForDatas()
+          this.callForData()
         })
         .finally(() => {
           this.toggleDeleteNotificationTemplate()
@@ -472,6 +439,12 @@ export default {
         }
       }
     },
+    toggleNotificationPreviewDialog() {
+      if (this.showNotificationTemplatePreviewDialog) {
+        this.selectedItem = null
+      }
+      this.showNotificationTemplatePreviewDialog = !this.showNotificationTemplatePreviewDialog
+    },
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {
         this.selectedItem = null
@@ -489,8 +462,8 @@ export default {
     callForTemplateTypes() {
       return getTemplateTypes()
     },
-    callForDatas() {
-      this.loading = true
+    callForData() {
+      this.setLoading(true)
       Promise.all([
         this.callForCategories(),
         this.callForSearchEmailTemplate(),
@@ -532,9 +505,7 @@ export default {
           })
           this?.$refs?.refNotificationList?.reRenderFilters()
         })
-        .finally(() => {
-          this.loading = false
-        })
+        .finally(this.setLoading)
     },
     handleEdit(row) {
       if (!row.isOwner) {
@@ -544,9 +515,6 @@ export default {
       this.isDuplicate = false
       this.toggleNewNotificationTemplate()
     }
-  },
-  created() {
-    this.callForDatas()
   }
 }
 </script>

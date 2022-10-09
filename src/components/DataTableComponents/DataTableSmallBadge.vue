@@ -9,23 +9,15 @@
       ]"
       ref="refSmallBadgeContainer"
     >
-      <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
-        <template v-slot:activator="{ on }">
-          <badge
-            :color="'#2196f3'"
-            :listeners="on"
-            :full-width="col.fullWidth"
-            v-bind="col.props"
-            size="small"
-            :text="badges[index - 1]"
-          />
-        </template>
-        <span class="tooltip-span">
-          <slot name="status-tooltip-text" :scope="scope" :col="col">
-            {{ badges[index - 1] }}
-          </slot>
-        </span>
-      </v-tooltip>
+      <badge
+        v-for="index in (maximumRenderedBadgeCount)"
+        v-bind="col.props"
+        :key="getKey(index)"
+        :color="'#2196f3'"
+        :full-width="col.fullWidth"
+        size="small"
+        :text="badges[index - 1]"
+      />
       <v-tooltip bottom v-if="unRenderedBadgeCount > 0" :key="getKey(Math.random())">
         <template v-slot:activator="{ on }">
           <badge
@@ -75,7 +67,9 @@ export default {
   },
   computed: {
     getTooltipText() {
-      const unRenderedBadges = this.badges.slice(this.maximumRenderedBadgeCount, this.badges.length)
+      const unRenderedBadges = this.badges
+        .slice(this.maximumRenderedBadgeCount, this.badges.length)
+        .filter(Boolean)
       return unRenderedBadges.join(',')
     }
   },
@@ -99,7 +93,7 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-      const badges = this.scope.row[this.col.property]
+      const badges = this.scope.row[this.col.property].filter(Boolean) || []
       const width = this.scope.column.width
       if (
         badges &&
@@ -112,7 +106,8 @@ export default {
 
         let maximumRenderedBadgeCount = 0
         for (let text of this.badges) {
-          let multiplyBy = text.length > 15 ? 7.5 : text.length > 5 ? 8.6 : 11
+          let multiplyBy =
+            text.length > 15 ? 7.5 : text.length > 5 ? 8.6 : text.length < 3 ? 15 : 11.5
           const itemWidth = Math.floor(text.length * multiplyBy) + 5
           if (itemWidth > totalWidth) {
             break

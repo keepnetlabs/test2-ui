@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete DNS?"
     subtitle="The DNS will deleted permanently"
@@ -14,8 +15,8 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
-        cancel-button-id="btn-cancel--integrations-popup"
-        confirm-button-id="btn-delete--integrations-popup"
+        cancel-button-id="btn-cancel--dns-service-popup"
+        confirm-button-id="btn-delete--dns-service-popup"
         type="delete"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"

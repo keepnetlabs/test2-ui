@@ -54,7 +54,12 @@
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
+        <v-btn
+          id="btn--close-campaign-manager-preview-popup"
+          class="pa-0 k-dialog__button"
+          text
+          color="#2196f3"
+          @click="handleClose"
           >CLOSE
         </v-btn>
       </div>
@@ -99,7 +104,7 @@ export default {
       return 'Campaign Template Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name
+      return this.selectedRow.name || ''
     }
   },
   created() {
@@ -114,8 +119,9 @@ export default {
       getCampaignManagerPreview(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-          const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
-          this.isAttachmentBasedScenario = methodTypeId === 3 ? true : false
+          const { landingPageTemplate: landingPage, methodTypeId } =
+            phishingScenarioPreviewDto || {}
+          this.isAttachmentBasedScenario = methodTypeId === 3
           this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
           this.emailTemplateParams = {
             name: phishingScenarioPreviewDto?.emailTemplate?.name || '',

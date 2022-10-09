@@ -59,6 +59,7 @@
           id="campaign-manager-info--landing-content"
         >
           <LandingPageTemplateModalPreview
+            :templateName="landingPageParams.name"
             :landingPageTemplates="landingPageTemplates"
             :phishingUrl="landingPageParams.urlTemplate"
           />
@@ -67,7 +68,12 @@
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
+        <v-btn
+          id="btn-close--scenario-preview"
+          class="pa-0 k-dialog__button"
+          text
+          color="#2196f3"
+          @click="handleClose"
           >CLOSE
         </v-btn>
       </div>

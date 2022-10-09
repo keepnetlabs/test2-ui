@@ -229,6 +229,20 @@
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
+            v-if="getEtsQuickScanPermissionSearch"
+            to="/email-threat-simulator"
+            id="btn--link-navigator-menu-email-threat-simulator"
+            :class="[
+              'menu-link-default',
+              (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') &&
+                'active-link'
+            ]"
+            @click.native="deleteTSVuexData"
+          >
+            <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />
+          </router-link>
+
+          <router-link
             v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
@@ -241,7 +255,7 @@
             v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
-            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
+            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorClasses]"
             :prepend-icon="iconPaths.mdiHook"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -285,6 +299,65 @@
                   to="/phishing-simulator/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   route-name="Settings"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
+            v-if="getAwarenessEducatorListGroupPermissions"
+            id="btn--link-navigator-menu-awareness-educator-list-group"
+            :class="[
+              'menu-with-item menu-link-default un-selected-list-item',
+              getAwarenessEducatorClasses
+            ]"
+            no-action
+            :prepend-icon="iconPaths.mdiBook"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Awareness Educator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getTrainingSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/training-list"
+                  id="btn--link-navigator-menu-training-list"
+                  route-name="Training List"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getEnrollmentsSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/enrollments"
+                  id="btn--link-navigator-menu-enrollments"
+                  route-name="Enrollments"
+                  :router-name="routerName"
+                  :active-class-comparator="
+                    () => routerName === 'Enrollments' || routerName === 'Training Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getCertificatesSearchPermission"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/awareness-educator/certificates"
+                  id="btn--link-navigator-menu-certificates"
+                  route-name="Certificates"
                   :router-name="routerName"
                 />
               </v-list-item-content>
@@ -462,20 +535,6 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <!--
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/reports/simple-reports"
-                  id="btn--link-navigator-menu-simple-reports"
-                  route-name="Simple Reports"
-                  :active-class-comparator="
-                    () => routerName === 'Simple Reports' || routerName === 'Simple Report Details'
-                  "
-                />
-              </v-list-item-content>
-            </v-list-item>
-            !-->
           </v-list-group>
           <v-list-group
             v-if="getCompanyLeftMenuPermissions"
@@ -609,6 +668,10 @@
             <h1 v-else-if="routerName === 'Campaign Report'">
               {{ getCampaignReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Training Report'">
+              {{ getTrainingReportName }}
+            </h1>
+
             <h1 v-else>{{ routerName }}</h1>
           </div>
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
@@ -684,6 +747,7 @@ import {
   mdiHome,
   mdiChevronRight,
   mdiFlag,
+  mdiShieldHalfFull,
   mdiFlash,
   mdiHook,
   mdiChevronDown,
@@ -692,7 +756,8 @@ import {
   mdiBriefcaseVariant,
   mdiMenu,
   mdiHelpCircle,
-  mdiPhoneInTalk
+  mdiPhoneInTalk,
+  mdiBook
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -740,6 +805,7 @@ export default {
         mdiHome,
         mdiChevronRight,
         mdiFlag,
+        mdiShieldHalfFull,
         mdiFlash,
         mdiHook,
         mdiChevronDown,
@@ -748,7 +814,8 @@ export default {
         mdiBriefcaseVariant,
         mdiMenu,
         mdiHelpCircle,
-        mdiPhoneInTalk
+        mdiPhoneInTalk,
+        mdiBook
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -903,6 +970,7 @@ export default {
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
       companyLicense: 'whitelabel/getCompanyLicense',
       getDashboardPermissions: 'permissions/getDashboardPermissions',
+      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch',
       getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',
@@ -930,7 +998,12 @@ export default {
       getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
       getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
       getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission',
-      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission'
+      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission',
+      getAwarenessEducatorListGroupPermissions:
+        'permissions/getAwarenessEducatorListGroupPermissions',
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getEnrollmentsSearchPermission: 'permissions/getEnrollmentsSearchPermission',
+      getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
@@ -947,10 +1020,7 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' ||
-        routerName === 'Simple Reports' ||
-        routerName === 'Campaign Report' ||
-        routerName === 'Simple Report Details'
+        routerName === 'Campaign Reports' || routerName === 'Campaign Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]
@@ -960,6 +1030,12 @@ export default {
         return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Campaign Report'
+    },
+    getTrainingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Training Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Training Report'
     },
     getRouterKey() {
       const { name } = this.$route
@@ -1012,7 +1088,7 @@ export default {
         'un-selected-list-item': !isSelected
       }
     },
-    getPhishingSimulatorPermissions() {
+    getPhishingSimulatorClasses() {
       const routerName = this.routerName
       return {
         'primary--text active-menu-parent':
@@ -1023,6 +1099,21 @@ export default {
           routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
+      }
+    },
+    getAwarenessEducatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Training List' ||
+          routerName === 'Enrollments' ||
+          routerName === 'Certificates' ||
+          routerName === 'Training Report',
+        'un-selected-list-item':
+          routerName !== 'Training List' ||
+          routerName !== 'Enrollments' ||
+          routerName !== 'Certificates' ||
+          routerName !== 'Training Report'
       }
     },
     getCommunityName() {

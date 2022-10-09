@@ -1,12 +1,13 @@
 <template>
   <app-dialog
     :status="status"
+    type="delete"
     icon="mdi-alert"
     title="Delete SAML Setting"
-    :subtitle="getSubtitle"
     id="saml-settings-delete-popup"
     title-id="text--saml-settings-delete-popup-title"
     subtitle-id="text--saml-settings-delete-popup-subtitle"
+    :subtitle="getSubtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
@@ -51,7 +52,7 @@ export default {
   },
   computed: {
     getSubtitle() {
-      return this.selectedRow.name
+      return this.selectedRow.name || ''
     }
   },
   methods: {

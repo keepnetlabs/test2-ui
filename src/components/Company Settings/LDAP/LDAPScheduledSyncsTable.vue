@@ -148,14 +148,14 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
-            id: 'btn-edit--smtp-settings-row-actions',
+            id: 'btn-edit--ldap-scheduled-syncs-row-actions',
             disabled: !this.$store.getters['permissions/getLDAPScheduleUpdatePermission']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
-            id: 'btn-delete--smtp-settings-row-actions',
+            id: 'btn-delete--ldap-scheduled-syncs-row-actions',
             disabled: !this.$store.getters['permissions/getLDAPScheduleDeletePermission']
           }
         ],

@@ -93,6 +93,7 @@
                       :on-upload-progress="onUploadProgress"
                       :is-loading="step1Loading"
                       :size="200"
+                      :is-backend-parsed="isBackendParsed"
                     />
                     <p
                       class="target-user-import-file__total-excel-score"
@@ -172,7 +173,6 @@
                           multiple
                           persistent-hint
                           hide-details
-                          prepend-inner-icon="mdi-magnify"
                           :menu-props="{
                             offsetY: true
                           }"
@@ -465,10 +465,9 @@ import {
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+} from '@/model/constants/commonConstants'
 import {
   createMapping,
-  createTargetUserCustomField,
   downloadExampleTargetUserFile,
   exportTargetUserBulk,
   getMappingStatus,
@@ -479,7 +478,7 @@ import {
   searchTmp,
   updateTransactionId,
   uploadExcelOrCsvForTargetUsers
-} from '../../api/targetUsers'
+} from '@/api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
@@ -559,9 +558,6 @@ export default {
 
       return false
     },
-    canAccessStepTwo() {
-      return this.activeStep === 1 && this.excelInfo.rowCount > 0
-    },
     canNext() {
       return this.activeStep < this.totalStep
     },
@@ -571,6 +567,7 @@ export default {
   },
   data() {
     return {
+      isBackendParsed: false,
       allCustomColumns: null,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
@@ -864,7 +861,6 @@ export default {
             .getSelectedMultipleValues()
             .map((item) => item.resourceId)
           return selectedValues.length
-          break
         case labels.ImportAll:
           return this.mappingStatus.newUserCount + this.mappingStatus.existingUserCount
         case 'onlyImportNewUsers':
@@ -884,38 +880,35 @@ export default {
       this.getDatatableList()
     },
     setTableOption() {
-      let val = !this.isShowInvalid
+      return !this.isShowInvalid
         ? `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
         : `SHOW ALL ${this.mappingStatus.totalRowCount}`
-      return val
     },
     onlyImportNewUsers() {},
     onlyUpdateExistingUsers() {},
     getMappingStatus() {
       let _this = this
-      getMappingStatus(this.mappindgId)
-        .then((response) => {
-          _this.mappingStatus = response.data.data
-          if (_this.mappingStatus.status === 'FinishedWithError' && _this.isExcelUploaded) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Something went wrong. Finished With Error',
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-            this.showDatatableErrorState = true
-          } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
-            this.showDatatableErrorState = false
-            if (this.activeStep === 3) {
-              setTimeout(() => {
-                this.getMappingStatus()
-              }, 2500)
-            }
-          } else {
-            this.showDatatableErrorState = false
-            this.getDatatableList()
+      getMappingStatus(this.mappindgId).then((response) => {
+        _this.mappingStatus = response.data.data
+        if (_this.mappingStatus.status === 'FinishedWithError' && _this.isExcelUploaded) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Something went wrong. Finished With Error',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+          this.showDatatableErrorState = true
+        } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
+          this.showDatatableErrorState = false
+          if (this.activeStep === 3) {
+            setTimeout(() => {
+              this.getMappingStatus()
+            }, 2500)
           }
-        })
-        .catch((response) => {})
+        } else {
+          this.showDatatableErrorState = false
+          this.getDatatableList()
+        }
+      })
     },
     getTargetUsers() {
       getTargetGroups().then((response) => {
@@ -940,7 +933,7 @@ export default {
         (acc, item) => {
           if (
             !customFields.includes(item.FieldName) &&
-            item.FieldName != PROPERTY_STORE.NONE_SELECTED
+            item.FieldName !== PROPERTY_STORE.NONE_SELECTED
           )
             acc.push(item)
           return acc
@@ -986,7 +979,7 @@ export default {
                 default:
                   break
               }
-              let itemObj = {
+              return {
                 property: item.name,
                 align: 'left',
                 editable: false,
@@ -1005,13 +998,12 @@ export default {
                 isCustomField: true,
                 ...filterableProps
               }
-              return itemObj
             })
           } else {
             customFields = this.mappingData.columns
               .filter((item) => item.isCustom)
               .map((item) => {
-                let itemObj = {
+                return {
                   property: item.name,
                   align: 'left',
                   editable: false,
@@ -1031,7 +1023,6 @@ export default {
                   isCustom: true,
                   isCustomField: true
                 }
-                return itemObj
               })
           }
           data = data.map((item) => {
@@ -1067,14 +1058,9 @@ export default {
           _this.loading = false
           _this.showDatatable = true
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
           this.loading = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Something went wrong',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
         .finally(() => {
           this.step3Loading = false
@@ -1084,7 +1070,7 @@ export default {
       this.step3Loading = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -1092,7 +1078,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -1114,7 +1100,7 @@ export default {
       let items = []
       let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
@@ -1133,7 +1119,7 @@ export default {
       }
       this.getDatatableList()
     },
-    searchChangedEvent(searchFilter = {}, filterActive = false) {
+    searchChangedEvent(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -1156,17 +1142,15 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportTargetUserBulk(this.excelInfo.transactionId, payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `target-users-import.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch((error) => {})
+        exportTargetUserBulk(this.excelInfo.transactionId, payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `target-users-import.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     downloadExampleFile() {
@@ -1181,11 +1165,11 @@ export default {
           document.body.appendChild(link)
           link.click()
         })
-        .finally((response) => {
+        .finally(() => {
           this.excelLoading = false
         })
     },
-    getMapTableData(data) {
+    getMapTableData() {
       return this.$refs.refMapTable.getMapTableData()
     },
     closeOverlay() {
@@ -1203,6 +1187,7 @@ export default {
       this.formData.file = file
       this.isExcelUploaded = true
       this.step1Loading = true
+      this.isBackendParsed = false
       uploadExcelOrCsvForTargetUsers(file, (e) => {
         this.onUploadProgress = e
       })
@@ -1215,7 +1200,9 @@ export default {
           this.step1Loading = false
           this.formData.file = null
         })
-        .finally(() => {})
+        .finally(() => {
+          this.isBackendParsed = true
+        })
     },
     getUploadedExcelData() {
       this.step2Loading = true
@@ -1247,7 +1234,6 @@ export default {
             }
             return aItem
           })
-          //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
           this.setExistItems()
         })
         .finally(() => {
@@ -1280,11 +1266,10 @@ export default {
             null
           if (fieldName === 'First Name') fieldName = 'FirstName'
           if (fieldName === 'Last Name') fieldName = 'LastName'
-          let val = {
+          return {
             excelColumnName: excelColumnName,
             fieldName: fieldName
           }
-          return val
         })
         .filter((item) => item.fieldName)
       let payload = {
@@ -1319,10 +1304,6 @@ export default {
         if (!isFormValid) {
           this.showRequiredAreaModal = true
         }
-        //this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
-        //if (!isFormValid) {
-        //this.$refs.refMapTable.showErrorSelect()
-        //}
       }
       if (isFormValid) {
         if (this.activeStep === 1) {
@@ -1363,7 +1344,7 @@ export default {
               this.excelInfo.transactionId = tempTransactionId
             }
           })
-          .catch((err) => {
+          .catch(() => {
             this.excelInfo.transactionId = tempTransactionId
           })
       }
@@ -1435,16 +1416,6 @@ export default {
       this.loading = true
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
-          /*const { data } = response
-          _this.customFields = data.data.filter((item) => {
-            return item.isActive
-          })
-          _this.unActiveCustomFields = data.data.filter((item) => {
-            return !item.isActive
-          })
-          //this.sortCustomFields(this.customFields)
-          this.sortCustomFields(this.unActiveCustomFields)
-          this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
           let allColumns = []
           let mainColumns = _this.columns.filter((item) => !item.isCustomField)
           let customColumns = _this.columns.filter((item) => item.isCustomField)

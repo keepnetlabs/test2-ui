@@ -558,7 +558,9 @@ export default {
   methods: {
     getKeyValue(item) {
       const { key = '' } = item || { key: '' }
-      return key.substring(0, 1).toUpperCase() + key.substring(1, key.length)
+      return typeof key === 'string'
+        ? key.substring(0, 1).toUpperCase() + key.substring(1, key.length)
+        : ''
     },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
@@ -586,9 +588,6 @@ export default {
       this.isCopiedMd5Clipboard.findIndex((item) => item === index) === -1 &&
         this.writeToNavigator(attachment.md5, index, 'md5')
     },
-    getTextOfType(list) {
-      return this.getResultOfAttachmentList(list)
-    },
     handleAttachmentClick(index, id) {
       this.tab = 'fifth'
       this.panel.push(index)
@@ -596,36 +595,6 @@ export default {
       this.$nextTick(() => {
         scrollToComponent(document.getElementById(id))
       })
-    },
-    getResultOfAttachmentList(list) {
-      let result = list.length
-        ? list.some((item) => item.result === 'Expired')
-          ? 'Undetected'
-          : 'Excluded'
-        : 'Undetected'
-      for (let item of list) {
-        if (item.result === 'Malicious') {
-          result = 'Malicious'
-          break
-        }
-        if (item.result === 'Phishing') {
-          result = 'Phishing'
-          continue
-        }
-        if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
-          result = 'Undetected'
-        }
-        if (
-          (item.result === 'Exclude' || item.result === 'Excluded') &&
-          result !== 'Undetected' &&
-          result !== 'Phishing' &&
-          result !== 'Malicious'
-        ) {
-          result = 'Excluded'
-        }
-      }
-
-      return result
     },
     writeToNavigator(value, index, type) {
       if (type === 'sha') {

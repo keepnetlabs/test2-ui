@@ -3,7 +3,12 @@
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <v-form v-show="!isLoading" v-model="isFormValid" ref="refForm">
       <FormGroup :title="labels.Path" has-hint>
-        <InputUrl v-model="formData.url" id="input--ldap-path" placeholder="Enter LDAP path" />
+        <InputUrl
+          v-model="formData.url"
+          id="input--ldap-path"
+          placeholder="Enter LDAP path"
+          :rules="pathRules"
+        />
       </FormGroup>
       <FormGroup :title="labels.UserName" has-hint>
         <v-text-field
@@ -43,6 +48,7 @@
       </FormGroup>
       <FormGroup :title="labels.Connection">
         <v-btn
+          id="btn-test-connection--ldap-settings"
           class="fw-600 no-box-shadow"
           color="#2196f3"
           rounded
@@ -63,7 +69,7 @@
             />
           </template>
           <v-icon
-            v-if="isTestConnectionValid"
+            v-if="isTestConnectionValid && !isTestingConnection"
             :id="`btn--siem-integration-api-key-check`"
             class="ml-1 mr-0"
             color="#43a047"
@@ -73,7 +79,12 @@
           </v-icon>
         </v-btn>
       </FormGroup>
-      <SaveChangesButton class="mt-8" :style="getButtonStyle" @click="handleSubmit" />
+      <SaveChangesButton
+        id="btn-save--ldap-settings"
+        class="mt-8"
+        :style="getButtonStyle"
+        @click="handleSubmit"
+      />
     </v-form>
   </div>
 </template>
@@ -115,7 +126,13 @@ export default {
       isTestingConnection: false,
       isTestConnectionValid: false,
       isFormValid: false,
-      disabledStyle: { pointerEvents: 'none', opacity: '.5' }
+      disabledStyle: { pointerEvents: 'none', opacity: '.5' },
+      pathRules: [
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.urlOrIpAddress(v, 'Invalid URL or IP address'),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+        (v) => Validations.noWhitespace(v, labels.InvalidURL)
+      ]
     }
   },
   computed: {

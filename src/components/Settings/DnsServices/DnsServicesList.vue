@@ -52,6 +52,7 @@
     >
       <template #datatable-row-actions="{scope}">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -59,6 +60,7 @@
           @on-click="handleEdit(scope.row)"
         />
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[1].id"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           :scope="scope"
@@ -181,13 +183,15 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions']
+            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions'],
+            id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDnsDeletePermissions']
+            disabled: !this.$store.getters['permissions/getDnsDeletePermissions'],
+            id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
@@ -356,8 +360,6 @@ export default {
             this.tableData = []
           })
           .finally(() => (this.loading = false))
-      } else {
-        this.$router.push('/')
       }
     },
     handleActionDelete(row) {

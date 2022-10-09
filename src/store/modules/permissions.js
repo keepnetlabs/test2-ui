@@ -45,7 +45,12 @@ const {
   LDAP_PERMISSIONS,
   VISHING_LEFT_MENU_PERMISSIONS,
   VISHING_TEMPLATES_PERMISSIONS,
-  VISHING_CAMPAIGN_MANAGER_PERMISSIONS
+  VISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  AWARENESS_EDUCATOR_PERMISSIONS,
+  ETS_QUICK_SCAN_PERMISSIONS,
+  ETS_ATTACK_VECTOR_PERMISSIONS,
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -94,7 +99,12 @@ const defaultState = {
   excludeIpAddressPermissions: EXCLUDE_IP_ADDRESS_PERMISSIONS,
   vishingLeftMenuPermissions: VISHING_LEFT_MENU_PERMISSIONS,
   vishingTemplatesPermissions: VISHING_TEMPLATES_PERMISSIONS,
-  vishingCampaignManagerPermissions: VISHING_CAMPAIGN_MANAGER_PERMISSIONS
+  vishingCampaignManagerPermissions: VISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  awarenessEducatorListGroupPermissions: AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
+  awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
+  etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
+  etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
+  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -715,6 +725,9 @@ const store = {
     getDashboardReportedEmailTrendsPermission(state) {
       return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission
     },
+    getDashboardPhishingCampaignTrendsPermission(state) {
+      return state?.dashboardPermissions?.PHISHING_CAMPAIGN_TRENDS?.hasPermission
+    },
     getIncidentResponderNotifiedEmailPermission(state) {
       return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission
     },
@@ -781,11 +794,110 @@ const store = {
         reportedEmailTrends: getters?.getDashboardReportedEmailTrendsPermission,
         notifiedEmail: getters?.getIncidentResponderNotifiedEmailPermission,
         widgets: getters?.getDashboardWidgetsPermission,
-        phishingReporterCard: getters?.getPhishingReporterSummaryPermissions,
-        roiSettingCard: getters?.getIncidentResponderROISettingGetPermission,
-        recentCampaignsCard: getters?.getCampaignReportsGetPermissions,
-        mostPhishedUsersCard: getters?.getCampaignReportsGetPermissions
+        phishingReporterCard: getters?.getPhishingReporterLeftMenuPermissions,
+        roiSettingCard: getters?.getIncidentResponderLeftMenuPermissions,
+        recentCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostPhishedUsersCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        phishingCampaignTrendsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        mostEngagedCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions
       }
+    },
+    getEtsQuickScanPermissionSearch(state) {
+      return state?.etsQuickScanPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanPermissionCreate(state) {
+      return state?.etsQuickScanPermissions?.CREATE?.hasPermission
+    },
+    getEtsQuickScanPermissionUpdate(state) {
+      return state?.etsQuickScanPermissions?.UPDATE?.hasPermission
+    },
+    getEtsQuickScanPermissionDelete(state) {
+      return state?.etsQuickScanPermissions?.DELETE?.hasPermission
+    },
+    getEtsQuickScanPermissionExport(state) {
+      return state?.etsQuickScanPermissions?.EXPORT?.hasPermission
+    },
+    getEtsAttackVectorPermissionSearch(state) {
+      return state?.etsAttackVectorPermissions?.SEARCH?.hasPermission
+    },
+    getEtsAttackVectorPermissionCreate(state) {
+      return state?.etsAttackVectorPermissions?.CREATE?.hasPermission
+    },
+    getEtsAttackVectorPermissionUpdate(state) {
+      return state?.etsAttackVectorPermissions?.UPDATE?.hasPermission
+    },
+    getEtsAttackVectorPermissionDelete(state) {
+      return state?.etsAttackVectorPermissions?.DELETE?.hasPermission
+    },
+    getEtsAttackVectorPermissionExport(state) {
+      return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
+    },
+    getEtsAttackVectorPermissionEnableDisable(state) {
+      if (state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE) {
+        return true
+      }
+      return false
+    },
+    getEtsQuickScanReportPermissionStat(state) {
+      return state?.etsQuickScanReportPermissions?.STATS?.hasPermission
+    },
+    getEtsQuickScanReportPermissionCount(state) {
+      return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission
+    },
+    getEtsQuickScanReportPermissionSearch(state) {
+      return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission
+    },
+    getEtsQuickScanReportPermissionExport(state) {
+      return state?.etsQuickScanReportPermissions?.EXPORT?.hasPermission
+    },
+    getAwarenessEducatorListGroupPermissions(state) {
+      return state?.awarenessEducatorListGroupPermissions?.isOneOfThemPermitted
+    },
+    getTrainingSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.TRAININGS?.hasPermission
+    },
+    getEnrollmentsSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.ENROLLMENTS?.hasPermission
+    },
+    getCertificatesSearchPermission(state) {
+      return state?.awarenessEducatorListGroupPermissions?.CERTIFICATES?.hasPermission
+    },
+    getSendTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.SEND_TRAINING?.hasPermission
+    },
+    getCreateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_TRAINING?.hasPermission
+    },
+    getUpdateTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_TRAINING?.hasPermission
+    },
+    getExportTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_TRAINING?.hasPermission
+    },
+    getDeleteTrainingPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_TRAINING?.hasPermission
+    },
+    getEnrollmentEditPermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_ENROLLMENT?.hasPermission
+    },
+    getDeleteEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_ENROLLMENT?.hasPermission
+    },
+    getExportEnrollmentPermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_ENROLLMENT?.hasPermission
+    },
+    getDeleteCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.DELETE_CERTIFICATE?.hasPermission
+    },
+    getEditCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EDIT_CERTIFICATE?.hasPermission
+    },
+    getCreateCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.CREATE_CERTIFICATE?.hasPermission
+    },
+    getExportCertificatePermission(state) {
+      return state?.awarenessEducatorPermissions?.EXPORT_CERTIFICATE?.hasPermission
     }
   },
   mutations: {
@@ -839,7 +951,12 @@ const store = {
         'excludeIpAddressPermissions',
         'vishingLeftMenuPermissions',
         'vishingTemplatesPermissions',
-        'vishingCampaignManagerPermissions'
+        'vishingCampaignManagerPermissions',
+        'awarenessEducatorListGroupPermissions',
+        'awarenessEducatorPermissions',
+        'etsQuickScanPermissions',
+        'etsAttackVectorPermissions',
+        'etsQuickScanReportPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

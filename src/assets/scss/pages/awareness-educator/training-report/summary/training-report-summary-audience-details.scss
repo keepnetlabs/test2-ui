@@ -1,0 +1,38 @@
+.training-report-summary-audience-details {
+    &__body-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    &__body-campaign-name {
+        color: #383B41;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    &__body-criteria-title {
+        color: #383B41;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px !important;
+        display: block; 
+    }
+
+    &__body-criteria-badges {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    &__body-criteria-badge {
+        color: #383B41;
+        padding: 4px 8px;
+        border: 1px solid #757575;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+}

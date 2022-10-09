@@ -6,17 +6,17 @@
     confirm-button-id="btn-save--permissions-modal"
     cancel-button-id="btn-cancel--permissions-modal"
     title-id="text--new-permission-modal-title"
+    icon-name="mdi-account-circle"
+    class-name="new-permissions"
+    :title="getTitle"
+    :saveDisable="saveDisable"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="getTitle"
-    icon-name="mdi-mailbox"
-    class-name="new-permissions"
-    :saveDisable="saveDisable"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <app-modal-body-header
         title="Define New Role"
-        sub-title="Create a user role by defining permissons. Expand module rows to set detailed authorizations. "
+        sub-title="Create a user role by defining permissions. Expand module rows to set detailed authorizations. "
       />
       <v-form ref="refForm">
         <form-group title="Role Title" has-hint>

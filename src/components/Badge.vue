@@ -14,7 +14,7 @@
             $options.getBadgeSize(props.size, props),
             props.className,
             { 'k-badge--default': !props.outline },
-            { 'k-badge--black': props.isBlackText }
+            { 'k-badge--text-black': props.textBlack }
           ]"
         >
           {{ props.text }}
@@ -35,7 +35,7 @@
         $options.getBadgeSize(props.size, props),
         props.className,
         { 'k-badge--default': !props.outline },
-        { 'k-badge--black': props.isBlackText }
+        { 'k-badge--text-black': props.textBlack }
       ]"
     >
       <slot name="content">
@@ -67,6 +67,9 @@ export default {
     },
     text: {
       type: String || Number
+    },
+    textBlack: {
+      type: Boolean
     },
     listeners: {},
     fullWidth: {

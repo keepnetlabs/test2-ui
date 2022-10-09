@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
+  <div style="margin-bottom: 110px !important;" id="threat-sharing-post-incident-grapesjs-modal">
     <DefaultErrorDialog
       v-if="showInvalidUrlMessage"
       :status="showInvalidUrlMessage"
@@ -37,14 +37,13 @@ import customMacroAttachment from './mergedTexts/customMacroAttachment'
 import trainingUrl from './mergedTexts/trainingUrl'
 import phishingUrl from './mergedTexts/phishingUrl'
 import macroUrl from './mergedTexts/macroUrl'
-import { uploadEmlOrMsg } from '../../../api/threatSharing'
-import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
+import { uploadEmlOrMsg } from '@/api/threatSharing'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import plugin from 'grapesjs-style-bg'
 import 'grapick/dist/grapick.min.css'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
-import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
@@ -300,7 +299,6 @@ export default {
 
               try {
                 //checking is valid url
-                const url = new URL(value)
                 if (!validations.isDomainUrl(value, '')) {
                   renderErrorMessage()
                 }
@@ -313,7 +311,7 @@ export default {
                 component.components(value)
               }
             },
-            handleClick(e) {
+            handleClick() {
               const { urlredirection } = this.model.getAttributes()
               if (urlredirection) {
                 //urlredirection
@@ -358,7 +356,7 @@ export default {
               el.parentElement.constructor.name !== 'HTMLinkElement' &&
               el.parentElement.constructor.name !== 'HTMLBodyElement'
             ) {
-              const result = {
+              return {
                 type: 'link',
                 tagName: 'a',
                 components: [
@@ -369,7 +367,6 @@ export default {
                   }
                 ]
               }
-              return result
             }
           },
           model: {
@@ -378,6 +375,7 @@ export default {
             },
             init() {
               this.on('change:attributes:URL', this.handleAttrChange)
+              this.on('change:attributes:src', this.srcChange)
             },
             handleAttrChange(component, value) {
               try {
@@ -397,13 +395,18 @@ export default {
                 styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]
               }
-              const coll = component.collection
+              const coll = component?.collection || []
               const at = coll.indexOf(component)
               el.setAttribute('href', value)
               coll.remove(component)
-              coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
-                at
-              })
+              if (at !== -1) {
+                coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
+                  at
+                })
+              }
+            },
+            srcChange(component, value) {
+              component.set('src', value)
             }
           },
           view: {
@@ -501,7 +504,6 @@ export default {
           }
         }
       })
-      const logoUrl = store.state.whitelabel.mainLogoUrl
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (
           droppedComponent &&
@@ -509,13 +511,12 @@ export default {
           droppedComponent.attributes.attributes &&
           droppedComponent.attributes.attributes['data-title'] === 'Company Logo'
         ) {
+          /*
           for (const img of document
             .getElementsByClassName('gjs-frame')[0]
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
-            droppedComponent.attributes.src = logoUrl
-            img.src = logoUrl
-            img.className = img.className.replace(new RegExp('gjs-plh-image', 'g'), '')
           }
+           */
         } else if (
           droppedComponent &&
           block.attributes &&
@@ -588,7 +589,7 @@ export default {
           },
           {
             isComponent: function (el) {
-              if (el.tagName == 'A') {
+              if (el.tagName === 'A') {
                 return { type: 'link' }
               }
             }
@@ -613,7 +614,10 @@ export default {
       document.querySelector('span[title="Preview"]').addEventListener('click', () => {
         const win = window.open('', 'Title')
         win.document.title = 'Mail Preview'
-        win.document.body.innerHTML = this.getGrapesEditorContent()
+        win.document.body.innerHTML = this.getGrapesEditorContent().replace(
+          new RegExp('{COMPANYLOGO}', 'g'),
+          this?.$store?.state?.whitelabel.mainLogoUrl || ''
+        )
       })
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
@@ -647,10 +651,25 @@ export default {
           block.attributes.category = {
             label: 'Basic'
           }
-          block.attributes.content = block.attributes.content.replace(
-            'button',
-            'button grapes-custom-button'
-          )
+          block.attributes.content = `<div>
+  <!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">
+        <w:anchorlock/>
+        <center>
+    <![endif]-->
+  <a href=""
+    style="background-color:#2196F3;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:34px;text-align:center;text-decoration:none;min-width:65px;-webkit-text-size-adjust:none;">
+    Button
+  </a>
+  <!--[if mso]>
+        </center>
+    </v:roundrect>
+    <![endif]-->
+</div>`
+          // block.attributes.content = block.attributes.content.replace(
+          //   'button',
+          //   'button grapes-custom-button'
+          // )
         } else if (block.attributes.id === 'divider') {
           block.attributes.category = {
             label: 'Layout'
@@ -776,8 +795,7 @@ export default {
       }
       for (const [key, value] of Object.entries(blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
-          const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          value.content.components[0].src = logoUrl
+          value.content.components[0].src = '{COMPANYLOGO}'
         }
         blockManager.add(key, value)
       }
@@ -817,20 +835,19 @@ export default {
         .then((response) => {
           this.getGrapesWebModalDraw(response.data.data.body)
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting details of uploaded file'
           })
         })
     },
-    cloneUrlButtonCLick() {
-      this.cloneUrlPage = this.cloneUrl
-    },
     getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
-      this.editor.setComponents(html)
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      this.editor.setComponents(doc.children[0].outerHTML)
+      this.editor.getWrapper().setStyle(doc.body.style.cssText)
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
@@ -881,9 +898,10 @@ export default {
           btnImp.onclick = () => {
             editor.DomComponents.getWrapper().set('content', '')
             const code = codeViewer.editor.getValue()
-
             const callback = (importedCode = code) => {
-              editor.setComponents(importedCode)
+              const doc = new DOMParser().parseFromString(importedCode, 'text/html')
+              editor.setComponents(doc.children[0].outerHTML)
+              editor.getWrapper().setStyle(doc.body.style.cssText)
               editor.Modal.close()
             }
             minifyHTML(code)
@@ -956,11 +974,16 @@ export default {
       let head = htmlDOM.querySelector('head')
       let style = document.createElement('style')
       style.innerHTML = css
+      const meta = document.createElement('meta')
+      meta.httpEquiv = 'Content-Security-Policy'
+      meta.content = 'upgrade-insecure-requests'
       if (head) {
         head.appendChild(style)
+        head.appendChild(meta)
       } else {
         head = document.createElement('head')
         head.appendChild(style)
+        head.appendChild(meta)
         const htmlElement = htmlDOM.querySelector('html')
         if (htmlElement) {
           let headOfHtmlElement = htmlElement.querySelector('head')

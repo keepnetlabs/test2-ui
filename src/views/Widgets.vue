@@ -30,7 +30,6 @@
         @handleOpenMenu="handleOpenMenu"
       />
     </div>
-
     <k-smart-grid
       ref="refGrid"
       :layout="layout"
@@ -70,7 +69,6 @@ import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/Re
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
-//import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
@@ -83,6 +81,9 @@ import { postWidgets } from '@/api/widgets'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPhishedUsers'
+import MostEngagedCampaigns from '@/components/Common/Widget/WidgetComponents/MostEngagedCampaigns'
+import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends'
+import TopPhishingSimulationReporters from '@/components/Common/Widget/WidgetComponents/TopPhishingSimulationReporters'
 export default {
   name: 'Widgets',
   components: {
@@ -103,6 +104,7 @@ export default {
     return {
       activeBreakpoint: 'lg',
       initialLayout: [],
+      initialAvailableWidgets: [],
       layout: [],
       showPlaybookModal: false,
       selectedPlaybookId: null,
@@ -286,6 +288,22 @@ export default {
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
         },
+        PhishingCampaignTrends: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'PhishingCampaignTrends',
+          title: 'Phishing Campaign Trends',
+          isAllowed: this?.permissions?.phishingCampaignTrendsCard
+        },
         RecentCampaigns: {
           x: 0,
           y: 0,
@@ -317,6 +335,38 @@ export default {
           key: 'MostPhishedUsers',
           title: 'Most Phished Users',
           isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
+        MostEngagedCampaigns: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 3,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostEngagedCampaigns',
+          title: 'Most Engaged Campaigns',
+          isAllowed: this?.permissions?.mostEngagedCampaignsCard
+        },
+        TopPhishingSimulationReporters: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 3,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'TopPhishingSimulationReporters',
+          title: 'Top Phishing Simulation Reporters',
+          isAllowed: this?.permissions?.topPhishingSimulationReportersCard
         }
       },
       availableWidgets: [
@@ -324,6 +374,11 @@ export default {
           name: 'Most Phished Users',
           key: 'MostPhishedUsers',
           isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
+        {
+          name: 'Most Engaged Campaigns',
+          key: 'MostEngagedCampaigns',
+          isAllowed: this?.permissions?.mostEngagedCampaignsCard
         },
         {
           name: 'Recent Campaigns',
@@ -366,6 +421,11 @@ export default {
           isAllowed: this?.permissions?.reportedEmailTrends
         },
         {
+          name: 'Phishing Campaign Trends',
+          key: 'PhishingCampaignTrends',
+          isAllowed: this?.permissions?.phishingCampaignTrendsCard
+        },
+        {
           name: 'Phishing Reporter Ir Header',
           key: 'PhishingReporterIrHeader',
           isAllowed: this?.permissions?.phishingReporterCard
@@ -384,6 +444,11 @@ export default {
           name: 'ROI Summary Ir Header',
           key: 'ROISummaryIrHeader',
           isAllowed: this?.permissions?.roiSettingCard
+        },
+        {
+          name: 'Top Phishing Simulation Reporters',
+          key: 'TopPhishingSimulationReporters',
+          isAllowed: this?.permissions?.topPhishingSimulationReportersCard
         }
       ],
       style:
@@ -442,7 +507,11 @@ export default {
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({ key: item.key, name: item.title, isAllowed: true })
+      this.availableWidgets.push({
+        key: item.key,
+        name: item.title,
+        isAllowed: item.isAllowed
+      })
     },
     handleOpenMenu() {
       this.editMode = true
@@ -471,11 +540,12 @@ export default {
         1
       )
     },
-    layoutResized() {},
     handleEditMode() {
+      this.initialAvailableWidgets = JSON.parse(JSON.stringify(this.availableWidgets))
       this.editMode = true
     },
     handleCancelEditMode() {
+      this.availableWidgets = JSON.parse(JSON.stringify(this.initialAvailableWidgets))
       this.editMode = false
       this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
@@ -509,6 +579,8 @@ export default {
           return RecentCampaigns
         case 'MostPhishedUsers':
           return MostPhishedUsers
+        case 'MostEngagedCampaigns':
+          return MostEngagedCampaigns
         case 'Reporters':
           return Reporters
         case 'TopRules':
@@ -526,6 +598,8 @@ export default {
           return RecentlyReportedIncidents
         case 'ReportedEmailTrends':
           return ReportedEmailTrends
+        case 'PhishingCampaignTrends':
+          return PhishingCampaignTrends
         case 'PhishingReporterIrHeader':
           return PhishingReporterIrHeader
         case 'IncidentAnalysisIrHeader':
@@ -534,6 +608,8 @@ export default {
           return InvestigationsIrHeader
         case 'ROISummaryIrHeader':
           return RoiSummaryIrHeader
+        case 'TopPhishingSimulationReporters':
+          return TopPhishingSimulationReporters
         default:
           break
       }
@@ -662,6 +738,22 @@ export default {
         },
         {
           x: 0,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.5602556581402199',
+          key: 'PhishingCampaignTrends',
+          title: 'Phishing Campaign Trends',
+          isAllowed: this?.permissions?.phishingCampaignTrendsCard
+        },
+        {
+          x: 0,
           y: 9,
           w: 6,
           minW: 3,
@@ -787,6 +879,38 @@ export default {
           key: 'MostPhishedUsers',
           title: 'Most Phished Users',
           isAllowed: this?.permissions?.mostPhishedUsersCard
+        },
+        {
+          x: 0,
+          y: 27,
+          w: 6,
+          minW: 3,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'MostEngagedCampaigns',
+          title: 'Most Engaged Campaigns',
+          isAllowed: this?.permissions?.mostEngagedCampaignsCard
+        },
+        {
+          x: 0,
+          y: 27,
+          w: 6,
+          minW: 3,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'TopPhishingSimulationReporters',
+          title: 'Top Phishing Simulation Reporters',
+          isAllowed: this?.permissions?.topPhishingSimulationReportersCard
         }
       ]
       widgets = widgets.reduce((acc, widget) => {

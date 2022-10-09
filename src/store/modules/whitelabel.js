@@ -90,7 +90,9 @@ const whitelabel = {
       for (const key of Object.keys(state)) {
         if (key === 'faviconUrl' && payload[key]) {
           const favIcon = document.querySelector('link[rel="icon"]')
-          favIcon.href = payload[key]
+          if (favIcon) {
+            favIcon.href = payload[key]
+          }
         } else if (key === 'brandName' && payload[key]) {
           document.title = payload[key]
         }
@@ -123,7 +125,7 @@ const whitelabel = {
       context.commit('TOGGLE_LOADING', true)
       resolveWhiteLabel()
         .then((response) => {
-          context.commit('SET_DATA', response.data.data)
+          context.commit('SET_DATA', response?.data?.data)
         })
         .finally(() => context.commit('TOGGLE_LOADING', false))
     },
@@ -151,7 +153,16 @@ const whitelabel = {
     },
     callForSystemInfoSummary(context = {}, payload = {}) {
       callForSystemInfoSummary().then((response) => {
-        const { versionInfo, companyLicense } = response.data
+        const { versionInfo, companyLicense } = response?.data || {
+          versionInfo: {
+            data: {
+              version: ''
+            }
+          },
+          companyLicense: {
+            data: ''
+          }
+        }
         context.commit('SET_SYSTEM_VERSION', versionInfo?.data?.version || '')
         if (payload.checkExceedDialog) {
           const { isLicenseExceeded, isLimited } = companyLicense.data

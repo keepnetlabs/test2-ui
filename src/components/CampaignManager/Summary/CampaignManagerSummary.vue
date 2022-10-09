@@ -75,11 +75,19 @@
                   :outline="false"
                 />
                 <Badge
-                  v-if="currentFormData.landingPageParams.method"
+                  v-if="
+                    currentFormData.landingPageParams.method ||
+                    currentFormData.emailTemplateParams.method
+                  "
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(currentFormData.landingPageParams.method)"
+                  :text="
+                    getBadgeText(
+                      currentFormData.landingPageParams.method ||
+                        currentFormData.emailTemplateParams.method
+                    )
+                  "
                   :outline="false"
                 />
                 <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -204,29 +212,34 @@ export default {
     }
   },
   watch: {
-    formData(val) {
-      this.currentFormData = {
-        ...val,
-        emailTemplateParams: {
-          fromName: val?.emailTemplateParams?.fromName || '',
-          fromAddress: val?.emailTemplateParams?.fromAddress || '',
-          name: val?.emailTemplateParams?.name || '',
-          difficulty: val?.emailTemplateParams?.difficulty || '',
-          attachments: val?.emailTemplateParams?.attachments || [],
-          languageShortCode: val?.emailTemplateParams?.languageShortCode,
-          phishingFileName: val?.emailTemplateParams?.phishingFileName || null
-        },
-        landingPageParams: {
-          landingPageTemplates: val?.landingPageTemplates || null,
-          name: val?.landingPageParams?.name || '',
-          description: val?.landingPageParams?.description || '',
-          urlTemplate: val?.landingPageParams?.urlTemplate || '',
-          difficulty: val?.landingPageParams?.difficulty || '',
-          method: val?.landingPageParams?.method || '',
-          languageShortCode: val?.landingPageParams?.languageShortCode
-        },
-        landingPageTemplate: val?.landingPageTemplate || ''
-      }
+    formData: {
+      handler(val) {
+        this.currentFormData = {
+          ...val,
+          emailTemplateParams: {
+            fromName: val?.emailTemplateParams?.fromName || '',
+            fromAddress: val?.emailTemplateParams?.fromAddress || '',
+            name: val?.emailTemplateParams?.name || '',
+            difficulty: val?.emailTemplateParams?.difficulty || '',
+            attachments: val?.emailTemplateParams?.attachments || [],
+            languageShortCode: val?.emailTemplateParams?.languageShortCode,
+            method: val?.emailTemplateParams?.method,
+            phishingFileName: val?.emailTemplateParams?.phishingFileName || null
+          },
+          landingPageParams: {
+            landingPageTemplates: val?.landingPageTemplates || null,
+            name: val?.landingPageParams?.name || '',
+            description: val?.landingPageParams?.description || '',
+            urlTemplate: val?.landingPageParams?.urlTemplate || '',
+            difficulty: val?.landingPageParams?.difficulty || '',
+            method: val?.landingPageParams?.method || '',
+            languageShortCode: val?.landingPageParams?.languageShortCode
+          },
+          landingPageTemplate: val?.landingPageTemplate || ''
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   computed: {
@@ -248,7 +261,14 @@ export default {
     },
     getScenarioInfoItems() {
       const { selectedPhishingScenario = {} } = this.formData
-      const { name = '', method = '', difficulty = '' } = selectedPhishingScenario
+      const { name = '', method = '', difficulty = '', extraDatas = {} } = selectedPhishingScenario
+      if (Object.keys(extraDatas).length > 0) {
+        return {
+          name: extraDatas?.name || '',
+          method: extraDatas?.method || '',
+          difficulty: extraDatas?.difficulty || ''
+        }
+      }
       return { name, method, difficulty }
     },
     getTotalRandomlySelectedUserCount() {

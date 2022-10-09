@@ -164,14 +164,20 @@ export default {
     },
     callForCreatePhishingReporter(updatedValues) {
       this.saveDisable = true
-      const addinSettings =
-        this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
+      let addinSettings = this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
       const emailSettings =
         this.$refs.refEmailSettings && this.$refs.refEmailSettings.getFormValues()
       const otherSettings =
         this.$refs.refOtherSettings && this.$refs.refOtherSettings.getFormValues()
       const diagnosticTool =
         this.$refs.refDiagnosticTool && this.$refs.refDiagnosticTool.getFormValues()
+
+      addinSettings = {
+        ...addinSettings,
+        analysisConfirmationMessage: addinSettings.analysisConfirmationMessage || '',
+        analysisEmailDeleteMessage: addinSettings.analysisEmailDeleteMessage || '',
+        simulationMailMessage: addinSettings.simulationMailMessage || ''
+      }
 
       const newFormData = {
         ...this.formData,
@@ -191,7 +197,7 @@ export default {
       Object.keys(newFormData).map((key) => {
         formData.append(
           key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
-          newFormData[key] === null ? '' : newFormData[key]
+          newFormData[key] === null || newFormData[key] === undefined ? '' : newFormData[key]
         )
       })
 

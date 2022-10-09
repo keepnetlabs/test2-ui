@@ -779,14 +779,17 @@
                 <v-checkbox
                   v-model="formValues.isHideUrlParameter"
                   id="input--integration-is-hide-url-parameter"
-                  class="black--text"
                   color="#2196f3"
                   :label="`Hide URL Parameters`"
                   :disabled="!formValues.isSendUrl || !selectedIntegrationType.isSendUrl"
                 ></v-checkbox>
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
-                    <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
+                    <v-icon
+                      v-on="{ ...tooltip }"
+                      :disabled="!formValues.isSendUrl || !selectedIntegrationType.isSendUrl"
+                      >mdi-help-circle</v-icon
+                    >
                   </template>
                   <span class="tooltip-span" style="max-width: 50px;">{{
                     'Send URLs without query string parameters'
@@ -807,6 +810,48 @@
                   isSpamHouse || (!selectedIntegrationType.isSendIp && !isCustomIntegration)
                 "
               ></v-checkbox>
+            </div>
+          </form-group>
+          <form-group
+            v-if="isVmrayOrVirusTotal"
+            title="Cache"
+            class-name="mt-4"
+            style="max-width: max-content;"
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="formValues.isCachingEnabled"
+                id="input--integration-caching"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Enable caching and enter duration (hours)</span>
+              <v-text-field
+                :value="formValues.cacheDuration"
+                v-mask="'###'"
+                ref="refInputCacheDuration"
+                id="input--integrations-cache-duration"
+                outlined
+                class="mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="formValues.isCachingEnabled ? numberValidation : []"
+                @input="handleCacheDurationChange"
+              ></v-text-field>
+              <span>and query count</span>
+              <v-text-field
+                :value="formValues.cacheQueryCount"
+                v-mask="'#######'"
+                ref="refInputCacheQueryCount"
+                id="input--integrations-cache-query-count"
+                outlined
+                class="ml-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!formValues.isCachingEnabled"
+                :rules="formValues.isCachingEnabled ? numberValidationQuery : []"
+                @input="handleCacheQueryCountChange"
+              ></v-text-field>
             </div>
           </form-group>
           <v-list-item class="px-0 mt-6 mb-6">
@@ -1003,10 +1048,13 @@ export default {
       loadingState: [],
       initialFormValues: null,
       formValues: {
+        isCachingEnabled: false,
         userName: '',
         password: '',
         description: null,
         analysisEngineTypeResourceId: null,
+        cacheDuration: 4,
+        cacheQueryCount: 4,
         tags: [],
         isActive: true,
         isSendUrl: false,
@@ -1035,6 +1083,16 @@ export default {
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
       showConfirmModal: false,
+      numberValidation: [
+        (v) => Validations.required(v, 'Enter a number higher than 0'),
+        (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+        (v) => v < 1000 || `${v} cannot exceed ${1000}`
+      ],
+      numberValidationQuery: [
+        (v) => Validations.required(v, 'Enter a number higher than 0'),
+        (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
+        (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+      ],
       nameValidation: {
         required: (v) => Validations.required(v),
         maxLength: (v) =>
@@ -1165,6 +1223,22 @@ export default {
     this.getFormOptions()
   },
   methods: {
+    handleCacheDurationChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.cacheDuration = Number(val)
+      } else {
+        this.$refs.refInputCacheDuration.initialValue = Number(this.formValues.cacheDuration)
+        this.$refs.refInputCacheDuration.lazyValue = Number(this.formValues.cacheDuration)
+      }
+    },
+    handleCacheQueryCountChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.cacheQueryCount = Number(val)
+      } else {
+        this.$refs.refInputCacheQueryCount.initialValue = Number(this.formValues.cacheQueryCount)
+        this.$refs.refInputCacheQueryCount.lazyValue = Number(this.formValues.cacheQueryCount)
+      }
+    },
     handleApiKeyDelete(index) {
       this.formValues.apiKeys.splice(index, 1)
       if (this.showPasswords.length && this.isIbmXForce) {
@@ -1320,6 +1394,11 @@ export default {
     },
     saveIntegration() {
       const data = { ...this.formValues }
+      if (!this.isVmrayOrVirusTotal) {
+        delete data.isCachingEnabled
+        delete data.cacheDuration
+        delete data.cacheQueryCount
+      }
       this.integrationTypeDisabled = true
       if (
         [
@@ -1743,7 +1822,7 @@ export default {
         this.loadingState.push('loading')
         this.customIntegrationTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.customIntegrationTestLoadingStatus = 'success'
           })
@@ -1772,7 +1851,7 @@ export default {
         this.loadingState.push('loading')
         this.spamHouseTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.spamHouseTestLoadingStatus = 'success'
           })
@@ -1791,9 +1870,17 @@ export default {
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-      const { name, isSendFile, isSendFileHash, isSendUrl, isSendIp } = this.selectedIntegrationType
+      const {
+        name,
+        isSendFile,
+        isSendFileHash,
+        isSendUrl,
+        isSendIp,
+        isHideUrlParameter
+      } = this.selectedIntegrationType
 
       this.formValues.isSendUrl = isSendUrl
+      this.formValues.isHideUrlParameter = isHideUrlParameter
       this.formValues.isSendFileHash = isSendFileHash
       this.formValues.isSendFile = isSendFile
       this.formValues.isSendIp = isSendIp

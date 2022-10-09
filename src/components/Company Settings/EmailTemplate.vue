@@ -69,6 +69,8 @@
         :value="attachmentFiles"
         :is-preview-visible="false"
         :size="size"
+        :hasError="!!isAttachmentError"
+        :errorText="isAttachmentError || ''"
         @inputFile="onFileChanged"
       />
       <div
@@ -123,7 +125,7 @@
       <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
     <div class="email-template-preview" style="pointer-events: none;">
-      <k-email-preview v-if="template" :key="template" ref="refPreview" :html="template" />
+      <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
       <template v-else>
         <landing-page-template-default
           v-if="templateType === 'landing'"
@@ -179,10 +181,12 @@ export default {
     'templateType',
     'extensions',
     'fileUploadHint',
-    'size'
+    'size',
+    'isAttachmentError'
   ],
   data() {
     return {
+      previewTemplate: null,
       initialTemplate: null,
       labels,
       showGrapesModal: false,
@@ -213,6 +217,16 @@ export default {
   watch: {
     activeBlockManagerComponents() {
       this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
+    },
+    template: {
+      handler(val) {
+        this.previewTemplate =
+          val?.replace(
+            new RegExp('{COMPANYLOGO}', 'g'),
+            this?.$store?.state?.whitelabel.mainLogoUrl || ''
+          ) || ''
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -243,17 +257,6 @@ export default {
     },
     editHtmlTemplate() {
       this.toggleShowGrapesModal()
-    },
-    getHeaderStyle() {
-      return {
-        maxWidth: '550px',
-        margin: '0 auto 14px auto',
-        fontSize: '34px',
-        fontWeight: 'normal',
-        lineHeight: 1.15,
-        letterSpacing: 'normal',
-        color: 'rgba(0, 0, 0, 0.87)'
-      }
     },
     setDefaultTemplate() {
       this.$emit('update:template', this.defaultTemplate)

@@ -482,7 +482,6 @@ export default {
         this.getRequestMembers()
       })
     },
-    listRequests() {},
     refuseRequest(reqId) {
       refuseCommunityMembershipRequest(reqId).then(() => {
         this.getMembers()
@@ -520,7 +519,6 @@ export default {
           this.isRemoveFromCommunityButtonDisabled = false
         })
     },
-    onRemoveMember() {},
     getMembers() {
       const payload = {
         pageNumber: 1,

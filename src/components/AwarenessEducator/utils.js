@@ -1,0 +1,252 @@
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
+
+export const EMITS = {
+  ON_ADD: 'on-add',
+  ON_PREVIEW: 'on-preview',
+  ON_ACTION_DELETE: 'on-action-delete',
+  ON_EDIT: 'on-edit',
+  ON_CLOSE: 'on-close',
+  ON_TRAINING: 'on-training',
+  ON_ITEM_CHANGE: 'on-item-change',
+  ON_DUPLICATE: 'on-duplicate'
+}
+
+export const ENROLLMENT_STATUSES = {
+  AUTO_ENROLL: 'Auto-Enroll',
+  SENDING: 'Sending',
+  FINISHED: 'Finished',
+  SCHEDULED: 'Scheduled',
+  ERROR: 'Error',
+  STOPPED: 'Stopped',
+  PAUSED: 'Paused',
+  ARCHIVED: 'Archived',
+  DELETED: 'Deleted'
+}
+
+export const ENROLLMENT_STATUSES_FILTER = [
+  ENROLLMENT_STATUSES.AUTO_ENROLL,
+  ENROLLMENT_STATUSES.SENDING,
+  ENROLLMENT_STATUSES.FINISHED,
+  ENROLLMENT_STATUSES.SCHEDULED,
+  ENROLLMENT_STATUSES.PAUSED,
+  ENROLLMENT_STATUSES.ERROR,
+  ENROLLMENT_STATUSES.DELETED
+]
+
+export const COLUMNS = {
+  NAME: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.TrainingName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  DISTRIBUTED: {
+    property: PROPERTY_STORE.DISTRIBUTED,
+    align: 'left',
+    label: labels.Distributed,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'select',
+    type: 'text',
+    filterableItems: ['Yes', 'No'],
+    width: 160
+  },
+  OWNER: {
+    property: PROPERTY_STORE.OWNER,
+    align: 'left',
+    label: labels.Owner,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 160
+  },
+  CERTIFICATE_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.CertificateTemplate,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'defaultTemplate',
+    width: 160
+  },
+  DESCRIPTION: {
+    property: PROPERTY_STORE.DESCRIPTION,
+    align: 'left',
+    editable: false,
+    label: labels.Description,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    filterableType: 'text'
+  },
+  CATEGORY: {
+    property: PROPERTY_STORE.CATEGORY,
+    align: 'left',
+    editable: false,
+    label: labels.Category,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  AUDIENCE: {
+    property: PROPERTY_STORE.TARGET_AUDIENCE,
+    align: 'left',
+    editable: false,
+    label: labels.TargetAudience,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  LANGUAGES: {
+    property: PROPERTY_STORE.LANGUAGES,
+    align: 'left',
+    editable: false,
+    label: labels.Languages,
+    sortable: true,
+    show: true,
+    width: 160,
+    type: 'smallBadge',
+    hasTooltip: true,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.Type,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: ['SCORM12']
+  },
+  CREATE_TIME: {
+    property: PROPERTY_STORE.CREATETIME,
+    align: 'left',
+    editable: false,
+    label: labels.DateCreated,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  CREATED_BY: {
+    property: PROPERTY_STORE.CREATEDBY,
+    align: 'left',
+    editable: false,
+    label: labels.CreatedBy,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  ENROLLED_BY: {
+    property: PROPERTY_STORE.ENROLLED_BY,
+    align: 'left',
+    editable: false,
+    label: labels.EnrolledBy,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  DELIVERY: {
+    property: PROPERTY_STORE.DELIVERY,
+    align: 'center',
+    editable: false,
+    label: labels.Delivery,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  START_DATE: {
+    property: PROPERTY_STORE.START_DATE,
+    align: 'left',
+    editable: false,
+    label: labels.JustStartDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  STATUS: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 150,
+    filterableType: 'select',
+    filterableItems: ENROLLMENT_STATUSES_FILTER
+  },
+  STATUS_TRASH: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 150,
+    filterableType: 'select',
+    filterableItems: ['Archived']
+  },
+  TARGET_USERS: {
+    property: PROPERTY_STORE.RECIPIENT_TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.TargetUsers,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
+    filterableType: 'select',
+    filterableItems: [{ text: 'User Group', value: 'UserGroup' }, 'Campaign']
+  },
+  TAGS: {
+    property: PROPERTY_STORE.TAGS,
+    align: 'left',
+    editable: false,
+    label: 'Tags',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'smallBadge',
+    width: 150,
+    hasTooltip: true,
+    filterableType: 'text'
+  }
+}

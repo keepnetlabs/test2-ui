@@ -16,7 +16,6 @@
     outlined
     :items="items"
     :rules="rules"
-    prepend-inner-icon="mdi-magnify"
     autocomplete="disabled"
     :placeholder="placeholder"
     :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"

@@ -3,6 +3,7 @@
     <div
       id="btn-test-connection--mail-configuration"
       :class="{
+        'd-flex': true,
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
       }"
@@ -13,8 +14,15 @@
         TESTING CONNECTION
         <v-icon class="ml-2 loading-spin" color="#2196f3" left medium>mdi-rotate-left </v-icon>
       </div>
-      <div :style="!isLoading && { maxWidth: '160px' }" class="test-connection__button" v-else>
+      <div
+        :style="!isLoading && { maxWidth: '200px', width: '160px' }"
+        class="test-connection__button"
+        v-else
+      >
         TEST CONNECTION
+        <v-icon v-if="isAllSuccess && !isLoading" class="ml-2 mr-0" color="#43a047" left medium
+          >mdi-check
+        </v-icon>
       </div>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
@@ -57,11 +65,14 @@ export default {
         this.$emit('loading', false)
       }
       return !isLoading
+    },
+    isAllSuccess() {
+      return this.checkApiConnectivity === 'success'
     }
   },
   methods: {
-    isAllSuccess() {
-      let isSuccess = this.checkApiConnectivity === 'success'
+    checkIfAllSuccess() {
+      const isSuccess = this.isAllSuccess
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
@@ -78,7 +89,7 @@ export default {
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
-          this.isAllSuccess(true)
+          this.checkIfAllSuccess(true)
           this.$emit('save-button-disabled', false)
         })
         .catch((error) => {
@@ -86,7 +97,7 @@ export default {
           this.checkApiConnectivityMessage =
             (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
             error.response.data.message
-          this.isAllSuccess(false)
+          this.checkIfAllSuccess(false)
           this.$emit('save-button-disabled', true)
         })
     },

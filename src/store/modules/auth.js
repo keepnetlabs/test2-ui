@@ -11,10 +11,20 @@ const auth = {
     userRoleName: '',
     logoUrl: '',
     selectedCompanyName: '',
-    selectedCompanyId: ''
+    selectedCompanyId: '',
+    dateFormat: null,
+    timeFormat: null
   },
   getters: {
-    userGetter: (state) => state.user
+    userGetter: (state) => state.user,
+    getTimeFormat: (state) => state.timeFormat,
+    getDateFormat: (state) => state.dateFormat,
+    getTimezoneFormat: (state) => {
+      return {
+        timeFormat: state.timeFormat,
+        dateFormat: state.dateFormat
+      }
+    }
   },
   mutations: {
     SET_CURRENTUSER(state, payload) {
@@ -39,6 +49,15 @@ const auth = {
         state.logoUrl = payload.currentUserData.userCompany.logoPath
         state.firstName = payload.currentUserData.firstName
         state.permissions = payload.permissions
+      }
+    },
+    SET_FORMATS(state, payload) {
+      if (payload.dateFormat) {
+        state.dateFormat = payload.dateFormat
+      }
+
+      if (payload.timeFormat) {
+        state.timeFormat = payload.timeFormat
       }
     }
   },

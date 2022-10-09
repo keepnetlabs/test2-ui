@@ -13,7 +13,12 @@
       :map-table-data="mappingData"
       @on-change="handleMapTableSelectChange"
     />
-    <SaveChangesButton class="mt-8" :style="getSubmitButtonStyle" @click="handleSubmit" />
+    <SaveChangesButton
+      id="btn-save--ldap-field-mappings"
+      class="mt-8"
+      :style="getSubmitButtonStyle"
+      @click="handleSubmit"
+    />
   </div>
 </template>
 

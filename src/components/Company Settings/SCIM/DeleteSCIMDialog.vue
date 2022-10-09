@@ -1,5 +1,6 @@
 <template>
   <AppDialog
+    type="delete"
     title-id="text--scim-settings-delete-popup-title"
     subtitle-id="text--scim-settings-delete-popup-subtitle"
     :icon="CONSTANTS.icon"
@@ -55,7 +56,7 @@ export default {
       deleteSCIMSetting(this.selectedRow.resourceId)
         .then(() => {
           this.handleClose()
-          this.$emit('on-close-with-update')
+          this.$emit('on-close-with-update', this.selectedRow)
         })
         .finally(() => (this.isActionButtonDisabled = false))
     }

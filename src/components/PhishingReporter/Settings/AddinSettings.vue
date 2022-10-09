@@ -254,10 +254,10 @@
               rows="2"
               height="80"
               :disabled="!formValues.isConfirmationBeforeAnalysis"
-              :initialRules="getAnalysisConfirmationMessageRules"
+              :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="true"
+              :required="getRequiredValue('isConfirmationBeforeAnalysis')"
             />
           </div>
           <div class="add-in-settings__body-item mb-4">
@@ -277,10 +277,33 @@
               rows="2"
               height="80"
               :disabled="!formValues.isDeleteEmailBeforeAnalysis"
-              :initialRules="getAnalysisConfirmationMessageRules"
+              :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
               :readonly="!showForm"
               :maxLength="256"
-              :required="true"
+              :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
+            />
+          </div>
+          <div class="add-in-settings__body-item mb-4">
+            <v-checkbox
+              color="#2196f3"
+              label="Turn off email forwarding for reported Phishing Simulation Emails"
+              class="k-checkbox add-in-settings__list-item-checkbox"
+              id="input--phishing-reporter-is-send-simulatiion-mails"
+              v-model="formValues.isSendSimulationMails"
+              :readonly="!showForm"
+            ></v-checkbox>
+            <InputDescription
+              v-model.trim="formValues.simulationMailMessage"
+              initialPlaceholder="Enter a simulation email message"
+              entityName="simulation mail message"
+              id="input--phishing-reporter-simulation-email-message"
+              rows="2"
+              height="80"
+              :disabled="!formValues.isSendSimulationMails"
+              :initialRules="getTextAreaRules('isSendSimulationMails')"
+              :readonly="!showForm"
+              :maxLength="256"
+              :required="getRequiredValue('isSendSimulationMails')"
             />
           </div>
         </v-list-item-content>
@@ -394,7 +417,9 @@ export default {
         msgBoxBtnNoText: '',
         msgBoxBtnOkText: '',
         emailSelectionErrorMessage: '',
-        badFormatEmailMessage: ''
+        badFormatEmailMessage: '',
+        isSendSimulationMails: false,
+        simulationMailMessage: ''
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -407,10 +432,19 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' }),
-    getAnalysisConfirmationMessageRules() {
+    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' })
+  },
+  methods: {
+    getRequiredValue(key) {
+      let required = false
+      if (this.formValues[key]) {
+        required = true
+      }
+      return required
+    },
+    getTextAreaRules(key) {
       const validations = []
-      if (this.formValues.isConfirmationBeforeAnalysis) {
+      if (this.formValues[key]) {
         validations.push((v) => this.validations.required(v, this.labels.Required))
         validations.push((v) =>
           this.validations.maxLength(
@@ -421,9 +455,7 @@ export default {
         )
       }
       return validations
-    }
-  },
-  methods: {
+    },
     getImagePreview() {
       try {
         return this.formValues.file && URL.createObjectURL(this.formValues.file)
@@ -444,6 +476,12 @@ export default {
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
+        this.formValues = {
+          ...this.formValues,
+          analysisConfirmationMessage: this.formValues.analysisConfirmationMessage || '',
+          analysisEmailDeleteMessage: this.formValues.analysisEmailDeleteMessage || '',
+          simulationMailMessage: this.formValues.simulationMailMessage || ''
+        }
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
@@ -498,7 +536,9 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage
+        badFormatEmailMessage,
+        isSendSimulationMails,
+        simulationMailMessage
       } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -517,6 +557,8 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
+      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         //this.$refs.refFileUpload.$refs.upload.add(response.data)
         this.formValues.file = response.data
@@ -547,6 +589,9 @@ export default {
       this.formValues.emailSelectionErrorMessage =
         'To report an email you must first select the email and then click the report button.'
       this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
+      this.formValues.isSendSimulationMails = true
+      this.formValues.simulationMailMessage =
+        'This was a phishing simulation sent to by your cyber-security team. Thank you for your awareness and cautiousness.'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
@@ -572,7 +617,9 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage
+        badFormatEmailMessage,
+        isSendSimulationMails,
+        simulationMailMessage
       } = val
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -591,6 +638,8 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
+      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })

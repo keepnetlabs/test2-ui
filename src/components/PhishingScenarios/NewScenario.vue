@@ -70,7 +70,7 @@
                   title="Method"
                   sub-title="Select the phishing technique for this scenario"
                 >
-                  <v-select
+                  <KSelect
                     v-bind="commonRules"
                     v-model="formValues.methodTypeId"
                     :items="scenarioDetailsLookup.methodTypes"
@@ -81,6 +81,7 @@
                     hint="*Required"
                     required
                     persistent-hint
+                    :slots="{ item: true }"
                   >
                     <template #item="{item}">
                       <div :class="['mail-configuration-select-sources__item-container']">
@@ -100,7 +101,7 @@
                         </div>
                       </div>
                     </template>
-                  </v-select>
+                  </KSelect>
                 </form-group>
                 <form-group
                   has-hint
@@ -129,7 +130,7 @@
                 <make-available-for
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
-                  v-model="formValues.availableForRequests"
+                  v-model="availableForRequests"
                   sub-title="Select companies that should see this scenario in their libraries"
                 />
               </v-form>
@@ -184,6 +185,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
+                    :method="getSelectedMethod"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -276,14 +278,18 @@
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
                           <div
-                            v-if="getPhishingFile"
+                            v-if="
+                              summaryData &&
+                              summaryData.emailTemplate &&
+                              summaryData.emailTemplate.phishingFileName
+                            "
                             class="attachment-wrapper mt-2 mb-0"
                             style="position: relative;"
                           >
                             <div class="attachment blue-attach mb-0">
                               <AttachmentsPreview
                                 :deletable="false"
-                                :att="getPhishingFile"
+                                :att="{ name: summaryData.emailTemplate.phishingFileName }"
                                 :isEmailTemplate="true"
                               />
                             </div>
@@ -345,30 +351,6 @@
                               summaryData.emailTemplate.languageShortCode
                             }}
                           </v-chip>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="hasEmailAttachments"
-                      class="summary-content"
-                      style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
-                    >
-                      <div
-                        v-for="(att, ind) of summaryData.emailTemplate.attachments"
-                        :key="ind + att.name"
-                        class="preview-attch-wrapper"
-                      >
-                        <div class="attachment-wrapper">
-                          <div
-                            class="attachment blue-attach"
-                            :id="'single-post-attachments-' + att.name"
-                          >
-                            <AttachmentsPreview
-                              :deletable="false"
-                              :att="att"
-                              :isEmailTemplate="true"
-                            />
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -597,6 +579,7 @@
         :max-step="isAttachmentBasedScenario ? 3 : 4"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
         @on-next="nextStep(+1)"
@@ -625,10 +608,12 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'NewScenarios',
   components: {
+    KSelect,
     StepperFooter,
     KEmailPreview,
     AppModal,
@@ -644,6 +629,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
+        backButton: 'btn-back--add-or-edit-scenario-modal',
+        nextButton: 'btn-next--add-or-edit-scenario-modal',
+        saveButton: 'btn-save--add-or-edit-scenario-modal'
+      },
       isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
@@ -653,7 +644,7 @@ export default {
       showTemplate2: false,
       languageOptions: [],
       methods: [
-        { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+        { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
         { text: 'Data Submission', value: 'DYC0gugxJMjT' },
         { text: 'Attachment', value: '7dLrW2kdBTDs' }
       ],
@@ -679,7 +670,6 @@ export default {
         difficultyTypeId: '1',
         emailTemplateId: null,
         landingPageTemplateId: null,
-        availableForRequests: [],
         languageTypeResourceId: '862249c19aad',
         tags: []
       },
@@ -793,7 +783,7 @@ export default {
       const currentStep = JSON.parse(JSON.stringify(this.step))
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
-        this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (currentStep === 1) {
@@ -828,10 +818,9 @@ export default {
                       (difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName
                     )
                     ?.value.toString() || ''
-                const difficultyColor = this.getDifficultyColor(
+                this.emailDifficultyChipColor = this.getDifficultyColor(
                   this.selectedEmailTemplate.difficultyName
                 )
-                this.emailDifficultyChipColor = difficultyColor
               }
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.step += 1
@@ -855,10 +844,9 @@ export default {
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
               )?.description
-              const difficultyColor = this.getDifficultyColor(
+              this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate.difficultyName
               )
-              this.emailDifficultyChipColor = difficultyColor
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.step += 1
@@ -878,11 +866,15 @@ export default {
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
+      const payload = {
+        ...this.formValues,
+        availableForRequests: this.availableForRequests
+      }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(this.formValues, this.scenarioId)
+        updateScenario(payload, this.scenarioId)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -890,7 +882,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(this.formValues)
+        createScenario(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -909,11 +901,17 @@ export default {
         this.formValues.emailTemplateId = null
         this.formValues.landingPageTemplateId = null
         this.landingPageTemplateId = null
+        this.landingPageTemplateResourceId = null
         this.emailTemplateResourceId = null
       }
     }
   },
   computed: {
+    getSelectedMethod() {
+      return this.formValues?.methodTypeId
+        ? this.methods[Number(this.formValues?.methodTypeId) - 1].text
+        : ''
+    },
     getStep2Subtitle() {
       const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
         (mType) => mType.value === this.formValues.methodTypeId
@@ -946,9 +944,6 @@ export default {
       }
 
       return false
-    },
-    hasEmailAttachments() {
-      return this.summaryData?.emailTemplate?.attachments?.length > 0
     },
     getModalTitle() {
       return !this.isEdit
@@ -994,6 +989,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--scenario-modal',
+        backButton: 'btn-duplicate-back--scenario-modal',
+        nextButton: 'btn-duplicate-next--scenario-modal',
+        saveButton: 'btn-duplicate-save--scenario-modal'
+      }
+    }
     this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -1019,7 +1022,7 @@ export default {
               availableForList
             )
             if (!availableForListFromBackend.length) {
-              this.formValues.availableForRequests = [
+              this.availableForRequests = [
                 {
                   id: 'MyCompanyOnly',
                   label: 'My company only',
@@ -1028,10 +1031,10 @@ export default {
                 }
               ]
             } else {
-              this.formValues.availableForRequests = availableForListFromBackend
+              this.availableForRequests = availableForListFromBackend
             }
           } else {
-            this.formValues.availableForRequests = [
+            this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
                 label: 'My company only',

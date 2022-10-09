@@ -155,6 +155,7 @@
     <app-dialog
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
+      type="delete"
       icon="mdi-delete"
       title="Delete Community?"
       title-id="text--threat-sharing-right-delete-community-popup-title"
@@ -204,7 +205,7 @@
               v-model.trim="emailarray"
               :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
               class="pop-up-card__invite-member"
-              hint="Press enter to separate email adresses"
+              hint="Press enter to separate email addresses"
               @change="comboboxChange"
             ></k-select>
           </v-form>
@@ -340,7 +341,7 @@
               class="about-community-statement"
               >{{ communityDetails.description }}</span
             >
-            <v-row>
+            <v-row class="mt-1 mb-8">
               <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                 <span
                   id="text--threat-sharing-right-column-community-owner"
@@ -379,7 +380,7 @@
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
-                    >+ Invite</a
+                    ><v-icon :size="24" color="#2196f3">mdi-plus</v-icon>Invite</a
                   >
                 </v-col>
               </v-row>
@@ -914,12 +915,15 @@ export default {
           })
         }
         if (this.$route.name === 'Community') {
-          this.$router.replace({ query: null, params: null })
-          this.$router.push({
-            name: 'Community',
+          this.$router.replace({
             query: { postId: post.communityPostResourceId },
             params: { communityName: post.communityName, id: post.communityResourceId }
           })
+          // this.$router.push({
+          //   name: 'Community',
+          //   query: { postId: post.communityPostResourceId },
+          //   params: { communityName: post.communityName, id: post.communityResourceId }
+          // })
           //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
           this.$router.replace({ query: null, params: null })
@@ -992,14 +996,11 @@ export default {
             communitiesData
           })
         }
-        //this.$router.replace({ query: null })
-        let previousRouteName = this.$route.name
-        this.$router.push({
-          name: 'Community',
-          params: { communityName: post.communityName, id: post.communityResourceId }
-        })
-        if (previousRouteName === 'Community') {
-          //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
+        if (this.$route.params.id !== post.communityResourceId) {
+          this.$router.push({
+            name: 'Community',
+            params: { communityName: post.communityName, id: post.communityResourceId }
+          })
         }
         this.getAllRightColumnData()
       }

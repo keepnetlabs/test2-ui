@@ -11,21 +11,30 @@
     />
     <DataContainerWithSearchInput
       ref="refSearchInput"
-      :labels="{ title: labels.ExcludeIPAddress, subtitle: labels.ExcludeIPAddressSubtitle }"
+      :labels="{
+        title: labels.ExcludeIPAddress,
+        subtitle: labels.ExcludeIPAddressSubtitle
+      }"
       @on-add-click="handleIpAddressesAdd"
     >
       <template #search-input>
-        <InputIpAddress id="input--settings-exclude-ip-address" v-model.trim="ipAddressSearch" />
+        <InputIpAddress
+          v-model.trim="ipAddressSearch"
+          id="input--settings-exclude-ip-address"
+          errorMessage="This is not a valid IP address"
+          :rules="rules"
+        />
       </template>
     </DataContainerWithSearchInput>
     <DataContainerWithSearch
       v-model.trim="dataContainerWithSearchItems"
       removeDuplicates
+      showValidationErrorMesssage
       ref="dataContainerWithSearch"
-      text-field-error-message="This is not a valid IP address"
+      text-field-error-message="Invalid IP address"
       text-field-placeholder="Enter IP address"
       invalid-message="There are invalid entries, please change them."
-      :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
+      :text-field-rules="[(v) => Validations.ipv4Oripv6(v), (v) => Validations.startsWithSpace(v)]"
       @input="handleInput"
     />
     <button
@@ -79,11 +88,25 @@ export default {
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
-      labels
+      labels,
+      ipRules: [
+        (v) => Validations.ipv4Oripv6(v, 'This is not a valid IP address'),
+        (v) => Validations.startsWithSpace(v)
+      ],
+      rules: []
     }
   },
   created() {
     this.getExcludedIPAddresses()
+  },
+  watch: {
+    ipAddressSearch(val) {
+      if (!!val) {
+        this.rules = this.ipRules
+      } else {
+        this.rules = []
+      }
+    }
   },
   methods: {
     getExcludedIPAddresses() {
@@ -109,8 +132,10 @@ export default {
       this.dataContainerWithSearchItems = newItems
     },
     handleIpAddressesAdd() {
-      this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
-      this.resetIpAddresses()
+      if (!!this.ipAddressSearch) {
+        this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
+        this.resetIpAddresses()
+      }
     },
     resetIpAddresses() {
       this.ipAddressSearch = ''

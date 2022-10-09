@@ -14,6 +14,7 @@
     <app-dialog
       v-if="deleteDialog"
       :status="deleteDialog"
+      type="delete"
       title-id="text--permissions-delete-popup-title"
       subtitle-id="text--permissions-delete-popup-subtitle"
       icon="mdi-delete"
@@ -21,8 +22,8 @@
       subtitle="The permission will deleted permanently"
       @changeStatus="closeDeleteDialog"
     >
-      <template v-slot:app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-body> {{ deletePermissionName }} will be deleted. </template>
+      <template #app-dialog-footer>
         <app-dialog-footer
           cancel-button-id="btn-cancel--delete-permission-popup"
           confirm-button-id="btn-delete--delete-permission-popup"
@@ -32,6 +33,12 @@
         />
       </template>
     </app-dialog>
+    <cannot-delete-role-dialog
+      v-if="isShowCannotDeleteDialog"
+      :status="isShowCannotDeleteDialog"
+      :system-user-count="systemUserCount"
+      @on-close="toggleShowCannotDeleteDialog"
+    />
     <div class="permission-logs__container">
       <div class="permission-logs__datatable">
         <data-table
@@ -68,6 +75,7 @@
         >
           <template #datatable-row-actions="{ scope }">
             <DefaultButtonRowAction
+              :id="tableOptions.rowActions[0].id"
               :icon="tableOptions.rowActions[0].icon"
               :text="tableOptions.rowActions[0].name"
               :scope="scope"
@@ -75,6 +83,7 @@
               @on-click="editPermissions(scope.row)"
             />
             <DefaultButtonRowAction
+              :id="tableOptions.rowActions[1].id"
               :icon="tableOptions.rowActions[1].icon"
               :text="tableOptions.rowActions[1].name"
               :scope="scope"
@@ -99,7 +108,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getErrorMessage } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
 import {
   deletePermission,
@@ -112,10 +121,12 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import CannotDeleteRoleDialog from '@/components/Permissions/CannotDeleteRoleDialog'
 
 export default {
   name: 'Permission',
   components: {
+    CannotDeleteRoleDialog,
     DefaultButtonRowAction,
     NewPermissions,
     DataTable,
@@ -124,6 +135,8 @@ export default {
   },
   data() {
     return {
+      systemUserCount: 0,
+      isShowCannotDeleteDialog: false,
       deleteDialog: false,
       deletePermissionName: null,
       deletePermissionId: null,
@@ -268,32 +281,34 @@ export default {
     },
     handleDeleteDialog() {
       deletePermission(this.deletePermissionId)
-        .then(() => {
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
           this.$refs.refPermissionList.unSelectRow(this.selectedItem)
           this.deleteDialog = false
           this.getDatatableList()
         })
-        .catch(() => {
-          this.$store.dispatch(
-            'common/createSnackBar',
-            {
+        .catch((e) => {
+          if (e?.response?.status === 400) {
+            this.deleteDialog = false
+            this.toggleShowCannotDeleteDialog()
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: getErrorMessage(e),
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message:
-                (error.response.data &&
-                  error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message ||
-                error.response.data.Message,
-              icon: 'mdi-alert'
-            },
-            { root: true }
-          )
+              icon: 'mdi-alert-circle'
+            })
+          }
         })
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName
       this.deletePermissionId = item?.resourceId
       this.selectedItem = item
+      this.systemUserCount = item.userCount
       this.deleteDialog = true
     },
     editPermissions(item) {
@@ -315,14 +330,20 @@ export default {
             case 'Phishing Simulation':
               sortedPermissions[1] = item
               break
-            case 'Incident Responder':
+            case 'Awareness Educator':
               sortedPermissions[2] = item
               break
-            case 'Phishing Reporter Add-In':
+            case 'Incident Responder':
               sortedPermissions[3] = item
               break
-            case 'Company':
+            case 'Phishing Reporter Add-In':
               sortedPermissions[4] = item
+              break
+            case 'Email Threat Simulator':
+              sortedPermissions[5] = item
+              break
+            case 'Company':
+              sortedPermissions[6] = item
               break
             default:
               break
@@ -345,6 +366,9 @@ export default {
           this.permissions[i] = search_and_delete(this.permissions[i], 'children')
         }
       })
+    },
+    toggleShowCannotDeleteDialog() {
+      this.isShowCannotDeleteDialog = !this.isShowCannotDeleteDialog
     },
     closeOverlayWithUpdate() {
       if (this.newPermissionsModalStatus) {

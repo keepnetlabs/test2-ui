@@ -15,7 +15,13 @@
     </template>
     <template #app-dialog-footer>
       <div class="d-flex justify-end">
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="$emit('on-close')">
+        <v-btn
+          id="btn-close--target-users-view-target-user-groups-popup"
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="$emit('on-close')"
+        >
           {{ labels.Close }}
         </v-btn>
       </div>

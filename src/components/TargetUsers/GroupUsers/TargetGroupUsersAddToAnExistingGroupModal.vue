@@ -39,6 +39,8 @@
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
+        cancel-button-id="btn-cancel--target-users-add-to-an-existing-group-dialog-popup"
+        confirm-button-id="btn-confirm--target-users-add-to-an-existing-group-dialog-popup"
         :confirmButtonDisabled="getConfirmButtonDisabled"
         @handleClose="closeOverlay"
         @handleConfirm="handleConfirm"
@@ -91,13 +93,21 @@ export default {
             align: 'left',
             label: 'Group Name',
             fixed: false,
-            sortable: true,
             show: true,
             type: 'text',
-            width: 240,
-            isEditable: true,
+            width: 200,
             filterableType: 'text'
           },
+          // {
+          //   property: 'userCount',
+          //   align: 'left',
+          //   label: 'Users',
+          //   sortable: true,
+          //   show: true,
+          //   width: 120,
+          //   type: 'text',
+          //   filterableType: 'number'
+          // },
           {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
@@ -105,8 +115,18 @@ export default {
             sortable: true,
             show: true,
             type: 'priority',
-            isEditable: true,
-            width: 170
+            width: 170,
+            filterableType: 'select',
+            filterableItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+          },
+          {
+            property: 'companyName',
+            align: 'left',
+            label: 'Company',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -117,7 +137,8 @@ export default {
             type: 'text',
             isEditable: true,
             width: 300,
-            overrideWidth: true
+            overrideWidth: true,
+            filterableType: 'date'
           }
         ],
         downloadButton: { show: false },
@@ -203,7 +224,7 @@ export default {
       this.callForTargetGroups()
     },
     sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop
       this.callForTargetGroups()
     },

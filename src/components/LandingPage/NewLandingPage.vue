@@ -1,16 +1,5 @@
 <template>
-  <app-modal
-    v-if="status"
-    icon-name="mdi-file"
-    :status="status"
-    :title="
-      !isEdit
-        ? 'New Landing Page Template'
-        : isDuplicate
-        ? 'Duplicate Landing Page Template'
-        : 'Edit Landing Page Template'
-    "
-  >
+  <app-modal v-if="status" icon-name="mdi-file" :status="status" :title="getTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -39,8 +28,8 @@
               <v-form ref="refFormStep1" lazy-validation>
                 <form-group title="Template Name" has-hint class-name="mt-8">
                   <v-text-field
-                    v-model.trim="formValues.name"
                     v-bind="commonRules"
+                    v-model.trim="formValues.name"
                     id="input--new-email-templates-template-name"
                     placeholder="Enter a name"
                     hint="*Required"
@@ -53,15 +42,15 @@
                 </form-group>
                 <form-group title="Description" sub-title="Describe the template briefly">
                   <v-textarea
+                    v-model.trim="formValues.description"
                     id="input--new-email-templates-description"
                     outlined
                     dense
-                    rows="2"
                     no-resize
+                    persistent-hint
+                    rows="2"
                     placeholder="Description"
                     height="100"
-                    v-model.trim="formValues.description"
-                    persistent-hint
                     :rules="[
                       (v) =>
                         Validations.maxLength(
@@ -77,18 +66,18 @@
                   title="Method"
                   sub-title="Select the phishing technique for this template"
                 >
-                  <v-select
-                    :items="landingPageData.methodTypes"
-                    item-disabled="disabled"
-                    item-text="text"
-                    v-model="formValues.methodTypeId"
-                    item-value="value"
-                    outlined
+                  <KSelect
                     v-bind="commonRules"
-                    hint="*Required"
+                    v-model="formValues.methodTypeId"
                     required
                     persistent-hint
-                    :menu-props="{ offsetY: true }"
+                    outlined
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    hint="*Required"
+                    :items="landingPageData.methodTypes"
+                    :slots="{ item: true }"
                   >
                     <template #item="{ item }">
                       <div :class="['mail-configuration-select-sources__item-container']">
@@ -108,7 +97,7 @@
                         </div>
                       </div>
                     </template>
-                  </v-select>
+                  </KSelect>
                 </form-group>
                 <form-group
                   has-hint
@@ -398,6 +387,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
@@ -484,10 +474,12 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
+    KSelect,
     StepperFooter,
     AppModal,
     FormGroup,
@@ -498,6 +490,12 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
+        backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
+        nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
+        saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
+      },
       languageOptions: [],
       disabledLabel: null,
       tab: 'page1',
@@ -534,65 +532,7 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
-      editItemsDisabled: false,
-      methodItems: [
-        {
-          resourceId: 'WNZt0sCVCWB3',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Click Only',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'DYC0gugxJMjT',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Data Submission',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: '7dLrW2kdBTDs',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Attachment',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
-      difficultyItems: [
-        {
-          resourceId: 'mT0CeYGgKsVb',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'Z5XeVlpw6Dps',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: 'c4LCGEB9MayB',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ]
+      editItemsDisabled: false
     }
   },
   props: {
@@ -931,6 +871,13 @@ export default {
   },
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    getTitle() {
+      return !this.isEdit
+        ? 'New Landing Page Template'
+        : this.isDuplicate
+        ? 'Duplicate Landing Page Template'
+        : 'Edit Landing Page Template'
+    },
     isRenderMakeAvailableFor() {
       if (this.editItemsDisabled) {
         return false
@@ -981,6 +928,14 @@ export default {
     )
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
+        backButton: 'btn-duplicate-back--landing-page-templates-modal',
+        nextButton: 'btn-duplicate-next--landing-page-templates-modal',
+        saveButton: 'btn-duplicate-save--landing-page-templates-modal'
+      }
+    }
     this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0]?.value || ''
     this.formValues.domainRecordId = this.landingPageData.domainRecords[0]?.value || ''
     this.formValues.pathTypeId = this.landingPageData.pathTypes[0]?.value || ''

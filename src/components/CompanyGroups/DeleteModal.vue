@@ -1,7 +1,8 @@
 <template>
   <app-dialog
-    v-if="!!selectedRow"
+    v-if="!!isShow"
     :status="isShow"
+    type="delete"
     icon="mdi-delete"
     title="Warning!"
     title-id="text--company-group-delete-popup-title"
@@ -9,10 +10,11 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedRow.name && selectedRow.name }} will be deleted and all data will be lost.
+      {{ getContent }}
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        :confirm-button-disabled="isActionButtonDisabled"
         cancel-button-id="btn-cancel--company-group-popup"
         confirm-button-id="btn-delete--company-group-popup"
         type="delete"
@@ -34,19 +36,42 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    isActionButtonDisabled: {
+      type: Boolean
+    },
+    isMultiple: {
+      type: Boolean,
+      default: false
+    },
+    groupCount: {
+      type: Number,
+      default: 0
     }
   },
   components: {
     AppDialogFooter,
     AppDialog
   },
-  computed: {},
+  computed: {
+    getContent() {
+      return this.isMultiple
+        ? `${this.groupCount} ${
+            this.groupCount > 1 ? 'company groups' : 'company group'
+          } will be deleted and all data will be lost.`
+        : `${this.selectedRow && this.selectedRow.name} will be deleted and all data will be lost.`
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('changeModalStatus', false)
     },
     confirmDelete() {
-      this.$emit('confirmDelete', this.selectedRow)
+      if (this.isMultiple) {
+        this.$emit('confirmMultipleDelete')
+      } else {
+        this.$emit('confirmDelete', this.selectedRow)
+      }
       this.$emit('changeModalStatus', false)
     }
   }

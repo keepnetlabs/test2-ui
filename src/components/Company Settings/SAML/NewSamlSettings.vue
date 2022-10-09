@@ -53,10 +53,20 @@
                 persistent-hint
                 hint="*Required"
                 :rules="[
-                  (v) => validations.required(v, labels.Required),
+                  (v) => {
+                    if (v.length) return true
+                    else if (!dataContainerWithSearchItems.length) {
+                      return labels.Required
+                    } else return true
+                  },
                   (v) =>
                     validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Domain, 256)),
-                  (v) => validations.domain(v, labels.InvalidDomainName)
+                  (v) => {
+                    if (v.length) return validations.domain(v, labels.InvalidDomainName)
+                    else if (!dataContainerWithSearchItems.length) {
+                      return labels.InvalidDomainName
+                    } else return true
+                  }
                 ]"
               ></v-text-field>
               <v-btn
@@ -280,8 +290,18 @@
         </div>
         <div class="form-group-horizontal-content">
           <div class="form-group-horizontal-content--left">
-            <label class="form-group-horizontal-content__label">Default Role</label>
-            <span>Assign this role to new synced users</span>
+            <v-checkbox v-model="formValues.isDefaultRole" class="saml-default-role__checkbox">
+              <template #label>
+                <div class="saml-default-role">
+                  <label class="form-group-horizontal-content__label saml-default-role__label">
+                    Default Role
+                  </label>
+                  <span class="saml-default-role__description">
+                    Assign this role to new synced users
+                  </span>
+                </div>
+              </template>
+            </v-checkbox>
           </div>
           <k-select
             v-model.trim="formValues.defaultRoleResourceId"
@@ -294,6 +314,7 @@
             persistent-hint
             :return-object="false"
             :items="roleItems"
+            :disabled="!formValues.isDefaultRole"
           />
         </div>
 
@@ -410,7 +431,8 @@ export default {
         enableSAMLSSO: true,
         domain: [],
         domainToAdd: '',
-        defaultRoleResourceId: ''
+        defaultRoleResourceId: '',
+        isDefaultRole: true
       }
     }
   },
@@ -467,7 +489,8 @@ export default {
           statusId,
           idPEntityID,
           idPCertificateFileContent,
-          defaultRoleResourceId
+          defaultRoleResourceId,
+          isDefaultRole
         } = data
         this.formValues.entityID = entityID
         this.formValues.idPEntityID = idPEntityID
@@ -478,6 +501,7 @@ export default {
         this.resourceId = resourceId
         this.formValues.enableSAMLSSO = !!statusId
         this.formValues.domain = domain
+        this.formValues.isDefaultRole = isDefaultRole
         this.formValues.defaultRoleResourceId = defaultRoleResourceId
         this.dataContainerWithSearchItems = domain.concat()
         this.certificateText = idPCertificateFileContent
@@ -485,6 +509,7 @@ export default {
           this.isCertificateTextDisabled = true
         }
         this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+        this.$refs.refDomainToAddForm.validate()
       })
     },
     callForRoles() {
@@ -621,7 +646,8 @@ export default {
           enableSAMLSSO,
           idPEntityID,
           file,
-          defaultRoleResourceId
+          defaultRoleResourceId,
+          isDefaultRole
         } = this.formValues
         const formData = {
           name,
@@ -632,8 +658,9 @@ export default {
           entityID,
           statusId: Number(enableSAMLSSO),
           file,
-          defaultRoleResourceId,
-          domain: this.dataContainerWithSearchItems
+          defaultRoleResourceId: isDefaultRole ? defaultRoleResourceId : null,
+          domain: this.dataContainerWithSearchItems,
+          isDefaultRole
         }
         this.saveDisable = true
         const payload = this.createFormDataPayload(formData)

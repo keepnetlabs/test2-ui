@@ -96,8 +96,8 @@ import {
 } from '@/api/phishingsimulator'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'PhishingScenariosFastLaunch',
@@ -126,7 +126,8 @@ export default {
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
-      isSubmitted: false
+      isSubmitted: false,
+      languageOptions: []
     }
   },
   computed: {
@@ -159,6 +160,11 @@ export default {
     }
   },
   created() {
+    LookupLocalStorage.getSingle(21).then((response) => {
+      this.languageOptions =
+        response?.map((language) => ({ text: language.description, value: language.resourceId })) ||
+        []
+    })
     this.callForDefaultSmtpSetting()
     this.callForFormDetails()
     this.callForGetPhishingScenario()
@@ -183,18 +189,34 @@ export default {
     callForGetPhishingScenario() {
       getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
         (response) => {
-          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-            this.selectedScenario.name
-          )
+          if (this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo) {
+            this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+              this.selectedScenario.name
+            )
+          }
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            categoryResourceId,
+            languageTypeResourceId,
+            phishingFileName
+          } = emailTemplate
 
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+            languageShortCode: this.languageOptions.find(
+              (language) => language.value === languageTypeResourceId
+            )?.text,
+            method: methods.find((item) => item.value === categoryResourceId)?.text,
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            phishingFileName
           }
           this.emailTemplate = template
           if (landingPageTemplate) {
@@ -204,14 +226,18 @@ export default {
               landingPages,
               urlTemplate,
               difficultyTypeId,
-              methodTypeId
+              methodTypeId,
+              languageTypeResourceId
             } = landingPageTemplate
             this.landingPageParams = {
               name: landingPageName,
               description,
               urlTemplate,
               difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text
+              method: methods[methodTypeId - 1].text,
+              languageShortCode: this.languageOptions.find(
+                (language) => language.value === languageTypeResourceId
+              )?.text
             }
             this.landingPageTemplate = landingPages
           }
@@ -252,36 +278,65 @@ export default {
       switch (this.step) {
         case 1:
           if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-            const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
-              (item) => item.value
-            )
-            searchTargetGroups({
-              pageNumber: 1,
-              pageSize: 2000000,
-              orderBy: 'CreateTime',
-              ascending: false,
-              filter: {
-                Condition: 'AND',
-                FilterGroups: [
-                  {
-                    Condition: 'AND',
-                    FilterItems: [],
-                    FilterGroups: []
-                  },
-                  {
-                    Condition: 'OR',
-                    FilterItems: [
-                      { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
-                    ],
-                    FilterGroups: []
-                  }
-                ]
-              }
-            }).then((response) => {
-              refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
-                response.data.data.results
+            // const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
+            //   (item) => item.value
+            // )
+            const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
+            const totalUserCount = targetGroups.reduce((acc, item) => {
+              acc += item?.userCount || 0
+              return acc
+            }, 0)
+
+            if (totalUserCount) {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
               this.changeStep()
-            })
+            } else {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            }
+            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+            // searchTargetGroups({
+            //   pageNumber: 1,
+            //   pageSize: 2000000,
+            //   orderBy: 'CreateTime',
+            //   ascending: false,
+            //   filter: {
+            //     Condition: 'AND',
+            //     FilterGroups: [
+            //       {
+            //         Condition: 'AND',
+            //         FilterItems: [],
+            //         FilterGroups: []
+            //       },
+            //       {
+            //         Condition: 'OR',
+            //         FilterItems: [
+            //           { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
+            //         ],
+            //         FilterGroups: []
+            //       }
+            //     ]
+            //   }
+            // }).then((response) => {
+            //   const { results } = response?.data?.data || []
+            //   const totalUserCount = results.reduce((acc, item) => {
+            //     acc += item.userCount
+            //     return acc
+            //   }, 0)
+            //   if (totalUserCount) {
+            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+            //     this.changeStep()
+            //   } else {
+            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+            //     this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            //   }
+            //   refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
+            //     response.data.data.results
+            // })
           } else {
             if (!formData?.targetGroupResourceIds?.length) {
               refCampaignManagerCampaignInfo.isTargetGroupsValid = false

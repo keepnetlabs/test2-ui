@@ -35,6 +35,15 @@ import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import VishingRoute from '@/views/VishingRoute'
 import VishingTemplates from '@/views/VishingTemplates'
 import VishingCampaignManager from '@/views/VishingCampaignManager'
+import TrainingReport from '@/views/TrainingReport'
+import AwarenessEducator from '@/views/AwarenessEducator'
+import TrainingList from '@/views/TrainingList'
+import Enrollments from '@/views/Enrollments'
+import Certificates from '@/views/Certificates'
+import Scorm from '@/views/Scorm'
+import EmailThreatSimulator from '@/views/EmailThreatSimulator'
+import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
+import JobLog from '@/views/JobLog'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -59,6 +68,14 @@ const router = new Router({
       }
     },
     {
+      path: '/training/scorm/watch',
+      name: 'scorm',
+      component: Scorm,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
       path: '/',
       component: Main,
       children: [
@@ -71,7 +88,7 @@ const router = new Router({
           component: DashBoard
         },
         {
-          path: '/',
+          path: '/company',
           name: 'Company',
           meta: {
             isAuthenticated: true,
@@ -146,9 +163,63 @@ const router = new Router({
           force: true
         },
         {
+          path: '/awareness-educator',
+          name: 'Awareness Educator',
+          component: AwarenessEducator,
+          meta: {
+            parentName: 'Dashboard',
+            isAuthenticated: true,
+            permissionStoreKey: 'permissions/getAwarenessEducatorListGroupPermissions'
+          },
+          children: [
+            {
+              path: 'training-list',
+              name: 'Training List',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getTrainingSearchPermission'
+              },
+              component: TrainingList
+            },
+            {
+              path: 'enrollments',
+              name: 'Enrollments',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getEnrollmentsSearchPermission'
+              },
+              component: Enrollments
+            },
+            {
+              path: 'certificates',
+              name: 'Certificates',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Awareness Educator',
+                permissionStoreKey: 'permissions/getCertificatesSearchPermission'
+              },
+              component: Certificates
+            },
+            {
+              path: 'enrollments/training-report/:id',
+              name: 'Training Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+              },
+              props: true,
+              params: true,
+              component: TrainingReport
+            }
+          ]
+        },
+        {
           path: '/company/job-log',
           name: 'Job Log',
-          component: ShowAllJobs,
+          component: JobLog,
           meta: {
             isAuthenticated: true,
             parentName: 'Company',
@@ -408,49 +479,31 @@ const router = new Router({
             parentName: 'Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
+        },
+        {
+          path: '/email-threat-simulator',
+          name: 'Email Threat Simulator',
+          component: EmailThreatSimulator,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true,
+          props: true
+        },
+        {
+          path: '/email-threat-simulator/report/:id',
+          name: 'Scan Report',
+          component: EmailThreatSimulatorReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Email Threat Simulator',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true,
+          props: true
         }
-        // {
-        //   path: '/reports',
-        //   name: 'Reports',
-        //   component: Reports,
-        //   meta: {
-        //     isAuthenticated: true,
-        //     permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //   },
-        //   children: [
-        //     {
-        //       path: '/campaign-reports',
-        //       name: 'Campaign Reports',
-        //       component: CampaignReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports',
-        //         permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
-        //       }
-        //     }
-        //     /*
-        //     {
-        //       path: '/simple-reports',
-        //       name: 'Simple Reports',
-        //       component: SimpleReports,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     },
-        //     {
-        //       path: `/simple-reports/:id`,
-        //       name: 'Simple Report Details',
-        //       component: SimpleReportDetails,
-        //       meta: {
-        //         isAuthenticated: true,
-        //         parentName: 'Reports'
-        //       }
-        //     }
-
-        //      */
-        //   ]
-        // }
       ]
     },
     {

@@ -3,6 +3,7 @@
     <template v-slot:activator="{ on }">
       <v-btn
         v-on="on"
+        :id="id"
         icon
         :ripple="!isDisabled"
         :class="{ 'default-button-row-action--disabled': isDisabled }"
@@ -34,6 +35,9 @@ export default {
     checkIsOwnerProperty: {
       type: Boolean,
       default: true
+    },
+    id: {
+      type: String
     }
   },
   computed: {

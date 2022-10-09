@@ -29,7 +29,7 @@
         rounded
         medium
         id="threat-sharing-members-refuse-request-button"
-        @click="refuseRequest(request.communityRequestResourceId)"
+        @click="onRefuseRequest(request.communityRequestResourceId)"
       >
         Refuse
       </v-btn>
@@ -39,7 +39,7 @@
         rounded
         medium
         id="threat-sharing-members-accept-request-button"
-        @click="acceptRequest(request.communityRequestResourceId)"
+        @click="onAcceptRequesst(request.communityRequestResourceId)"
       >
         Accept
       </v-btn>
@@ -66,9 +66,6 @@ export default {
     },
     onAcceptRequesst() {
       this.$emit('acceptRequest')
-    },
-    onTogglePanel() {
-      this.$emit('togglePanel')
     }
   }
 }

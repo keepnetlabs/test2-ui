@@ -1,3 +1,4 @@
+import { mdiConsoleNetworkOutline } from '@mdi/js'
 <template>
   <div class="campaign-manager-report-summary-header">
     <CampaignManagerReportSummaryResendDialog
@@ -19,6 +20,7 @@
     </div>
     <div class="campaign-manager-report-summary-header__right">
       <v-btn
+        id="btn-download-report--campaign-reports"
         class="campaign-manager-report-summary-header__btn-download-report"
         rounded
         outlined
@@ -28,6 +30,7 @@
         >{{ labels.DownloadReport }}</v-btn
       >
       <v-btn
+        id="btn-resend-campaign--campaign-reports"
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"
@@ -42,6 +45,8 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
 import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: { CampaignManagerReportSummaryResendDialog },
@@ -80,10 +85,23 @@ export default {
       exportPhishingCampaignJob(this.id)
         .then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Report.xlsx`
-          link.click()
+          if (response.status === 200) {
+            const blob = new Blob([data])
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = `Campaign-Manager-Report.xlsx`
+            link.click()
+          } else if (response.status === 201) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Campaign report will be generated',
+              ...COMMON_SNACKBAR
+            })
+          } else if (response.status === 202) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Campaign report is being generated',
+              ...COMMON_SNACKBAR
+            })
+          }
         })
         .finally(() => (this.isDownloadReportDisabled = false))
     }

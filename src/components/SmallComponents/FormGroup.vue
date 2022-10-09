@@ -6,8 +6,7 @@
           {{ title }}
         </label>
       </slot>
-      <v-list-item-subtitle class="k-form-group__sub-title" v-if="subTitle">
-        {{ subTitle }}
+      <v-list-item-subtitle class="k-form-group__sub-title" v-if="subTitle" v-html="subTitle">
       </v-list-item-subtitle>
       <div :class="['k-form-group__content', hasHint && 'k-form-group__content-hint']">
         <slot></slot>

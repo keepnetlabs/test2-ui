@@ -58,6 +58,7 @@
       >
         <template #datatable-row-actions="{scope}">
           <DefaultButtonRowAction
+            :id="tableOptions.rowActions[0].id"
             :icon="tableOptions.rowActions[0].icon"
             :text="tableOptions.rowActions[0].name"
             :scope="scope"
@@ -65,6 +66,7 @@
             @on-click="handleEdit(scope.row)"
           />
           <DefaultButtonRowAction
+            :id="tableOptions.rowActions[1].id"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
             :scope="scope"
@@ -412,8 +414,6 @@ export default {
             this.tableData = []
           })
           .finally(() => (this.loading = false))
-      } else {
-        this.$router.push('/')
       }
     },
     deleteMultipleItems() {

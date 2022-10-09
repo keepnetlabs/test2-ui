@@ -38,7 +38,6 @@
             :disabled="!!selectedItem || editItemsDisabled"
             outlined
             :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
-            @change="changeTemplateType"
           />
         </form-group>
         <form-group title="SMTP" has-hint>
@@ -69,7 +68,9 @@
           v-model="formValues.availableForRequests"
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
+          <DatatableLoading v-if="loading" :loading="loading" />
           <email-template
+            v-else
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
@@ -162,10 +163,26 @@ import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLog
 import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import trainingName from '@/components/GrapesJs/Newsletter/mergedTexts/trainingName'
+import trainingDescription from '@/components/GrapesJs/Newsletter/mergedTexts/trainingDescription'
+import trainingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingUrl'
+import trainingLanguageSelection from '@/components/GrapesJs/Newsletter/mergedTexts/trainingLanguageSelection'
+import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
+import trainingEnrollDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingEnrollDate'
+import trainingReminderCount from '@/components/GrapesJs/Newsletter/mergedTexts/trainingReminderCount'
+import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
+import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
+import email from '@/components/GrapesJs/Newsletter/mergedTexts/email'
+import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
+import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
+import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
+import trainingCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCoverImageUrl'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 
 export default {
   name: 'NewNotificationTemplate',
   components: {
+    DatatableLoading,
     InputTag,
     MakeAvailableFor,
     KSelect,
@@ -195,6 +212,7 @@ export default {
   data() {
     return {
       labels,
+      loading: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
@@ -288,17 +306,38 @@ export default {
     }
     this.callForDatas()
     if (this.selectedItem && this.selectedItem.resourceId) {
-      getEmailTemplate(this.selectedItem.resourceId).then((response) => {
-        const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        const {
-          data: { data }
-        } = response
-        for (let [key, value] of Object.entries(data)) {
-          if (key === 'availableForList') {
-            if (value.length) {
-              const availableForListFromBackend = getAvailableForListFromBackend(value)
-              if (!availableForListFromBackend.length) {
+      this.loading = true
+      getEmailTemplate(this.selectedItem.resourceId)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          for (let [key, value] of Object.entries(data)) {
+            if (key === 'availableForList') {
+              if (value.length) {
+                const availableForListFromBackend = getAvailableForListFromBackend(value)
+                if (!availableForListFromBackend.length) {
+                  this.formValues['availableForRequests'] = [
+                    {
+                      id: 'MyCompanyOnly',
+                      label: 'My company only',
+                      type: 'MyCompanyOnly',
+                      resourceId: null
+                    }
+                  ]
+                  this.nonEditableAvailableForRequests = [
+                    {
+                      id: 'MyCompanyOnly',
+                      label: 'My company only',
+                      type: 'MyCompanyOnly',
+                      resourceId: null
+                    }
+                  ]
+                } else {
+                  this.formValues['availableForRequests'] = availableForListFromBackend
+                  this.nonEditableAvailableForRequests = availableForListFromBackend
+                }
+              } else {
                 this.formValues['availableForRequests'] = [
                   {
                     id: 'MyCompanyOnly',
@@ -307,54 +346,25 @@ export default {
                     resourceId: null
                   }
                 ]
-                this.nonEditableAvailableForRequests = [
-                  {
-                    id: 'MyCompanyOnly',
-                    label: 'My company only',
-                    type: 'MyCompanyOnly',
-                    resourceId: null
-                  }
-                ]
-              } else {
-                this.formValues['availableForRequests'] = availableForListFromBackend
-                this.nonEditableAvailableForRequests = availableForListFromBackend
               }
-            } else {
-              this.formValues['availableForRequests'] = [
-                {
-                  id: 'MyCompanyOnly',
-                  label: 'My company only',
-                  type: 'MyCompanyOnly',
-                  resourceId: null
-                }
-              ]
+              continue
             }
-            continue
+            this.formValues[key] = value
           }
-          if (key === 'template') {
-            value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
+          if (this.isDuplicate) {
+            this.formValues.name = this.formValues.name + ' - COPY'
           }
-          this.formValues[key] = value
-        }
-        if (this.isDuplicate) {
-          this.formValues.name = this.formValues.name + ' - COPY'
-        }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      })
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
-    changeTemplateType(resId) {
-      let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
-      if (htmlTemplate) {
-        const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        this.formValues.template = htmlTemplate.replace(new RegExp(logoKey, 'g'), logoUrl)
-      }
-    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response
@@ -403,12 +413,18 @@ export default {
       switch (item) {
         case '{FULLNAME}':
           return fullName
+        case '{FIRSTNAME}':
+          return firstName
+        case '{LASTNAME}':
+          return lastName
         case '{USERNAME}':
           return userName
         case '{PASSWORDURL}':
           return passwordURL
         case '{POSTDATE}':
           return postDate
+        case '{EMAIL}':
+          return email
         case '{SHAREUSERNAME}':
           return shareUserName
         case '{COMPANYNAME}':
@@ -469,6 +485,10 @@ export default {
           return communityUrl
         case '{MEMBERCOUNT}':
           return memberCount
+        case '{FROMEMAIL}':
+          return fromEmail
+        case '{FROMNAME}':
+          return fromName
         case '{COMMUNITYINDUSTRY}':
           return communityIndustry
         case '{ANALYSISEMAIL}':
@@ -509,7 +529,24 @@ export default {
           return investigationUrl
         case '{COMPANYLOGO}':
           return companyLogo
-
+        case '{TRAININGNAME}':
+          return trainingName
+        case '{TRAININGDESCRIPTION}':
+          return trainingDescription
+        case '{TRAININGURL}':
+          return trainingUrl
+        case '{TRAININGLANGUAGESELECTION}':
+          return trainingLanguageSelection
+        case '{DATEEMAILSENT}':
+          return dateEmailSent
+        case '{TRAININGENROLLDATE}':
+          return trainingEnrollDate
+        case '{TRAININGREMINDERCOUNT}':
+          return trainingReminderCount
+        case '{TRAININGCOMPLETEDATE}':
+          return trainingCompleteDate
+        case '{TRAININGCOVERIMAGEURL}':
+          return trainingCoverImageUrl
         default:
           break
       }

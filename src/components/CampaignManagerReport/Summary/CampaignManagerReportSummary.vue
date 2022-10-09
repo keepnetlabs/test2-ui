@@ -6,7 +6,7 @@
       :id="id"
     />
     <CampaignManagerReportSummaryCards
-      :isAttachment="isAttachment"
+      :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
     />
@@ -81,21 +81,11 @@ export default {
     }
   },
   computed: {
+    getScenarioMethod() {
+      return this.campaignSummary?.scenarioInfo?.methodTypeId
+    },
     isAttachment() {
       return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
-    },
-    getPercents() {
-      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0, 0]
-      const cardsData = this.getCardsData
-      return [
-        cardsData.openedEmail.userPercent,
-        cardsData.clickedEmail.userPercent,
-        cardsData.submittedEmail.userPercent,
-        cardsData.noResponse.userPercent,
-        cardsData.notDelivered.userPercent,
-        cardsData.attachmentOpenedEmail.userPercent,
-        cardsData.phishingReporter.userPercent
-      ]
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
@@ -125,12 +115,12 @@ export default {
       }
     },
     isTestCampaign() {
-      const { settings = {} } = this.campaignSummary
-      const { excludeFromReports = false } = settings
+      const { settings = {} } = this.campaignSummary || {}
+      const { excludeFromReports = false } = settings || {}
       return excludeFromReports
     },
     getSettingsItems() {
-      const { settings = {} } = this.campaignSummary
+      const { settings = {} } = this.campaignSummary || {}
       const { duration, excludeFromReports, languages, smtpName = 0 } = settings
       return {
         Languages: languages || 'English',
@@ -139,12 +129,8 @@ export default {
         SMTP: smtpName
       }
     },
-    getRandomlySelectedUsersCount() {
-      const { targetUsers = {} } = this.campaignSummary
-      return targetUsers['randomlyUsersCount'] || 0
-    },
     getEmailDeliveryData() {
-      const { campaignInfo = {} } = this.campaignSummary
+      const { campaignInfo = {} } = this.campaignSummary || {}
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
@@ -157,7 +143,7 @@ export default {
       }
     },
     getEmailDeliveryHelperData() {
-      const { campaignInfo = {} } = this.campaignSummary
+      const { campaignInfo = {} } = this.campaignSummary || {}
       const {
         emailDeliveredUserCount,
         emailNotDeliveredUserCount,
@@ -197,7 +183,8 @@ export default {
           notDelivered: 0,
           openedEmail: 0,
           submittedEmail: 0,
-          attachmentOpenedEmail: 0
+          attachmentOpenedEmail: 0,
+          reportedEmail: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -209,7 +196,8 @@ export default {
         notDelivered = 0,
         openedEmail = 0,
         submittedEmail = 0,
-        attachmentOpenedEmail = 0
+        attachmentOpenedEmail = 0,
+        reportedEmail = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
@@ -217,7 +205,8 @@ export default {
         submittedEmail,
         noResponseEmail,
         notDelivered,
-        attachmentOpenedEmail
+        attachmentOpenedEmail,
+        reportedEmail
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },

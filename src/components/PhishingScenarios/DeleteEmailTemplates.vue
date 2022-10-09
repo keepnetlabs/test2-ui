@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Email Template?"
     subtitle="Email template will deleted permanently"
@@ -47,7 +48,7 @@ export default {
     },
     handleDelete() {
       deleteEmailTemplate(this.selectedEmailTemplate.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
+        this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
       })
       this.closeModal()
     }

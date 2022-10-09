@@ -10,7 +10,7 @@
     </template>
     <span>{{ disabledTooltipText }}</span>
   </v-tooltip>
-  <v-list-item v-else :class="className" :disabled="isDisabled" @click="onClick">
+  <v-list-item v-else :id="id" :class="className" :disabled="isDisabled" @click="onClick">
     <v-list-item-title>
       <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
       <span>{{ text }}</span>
@@ -46,6 +46,9 @@ export default {
       default: false
     },
     className: {
+      type: String
+    },
+    id: {
       type: String
     }
   },

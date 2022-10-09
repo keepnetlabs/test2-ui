@@ -119,12 +119,14 @@ export default {
         rowActions: [
           {
             name: labels.Edit,
+            id: 'btn-edit--siem-integrations-row-actions',
             icon: 'mdi-pencil',
             action: 'handleEdit',
             disabled: !this?.PERMISSIONS?.update
           },
           {
             name: labels.Delete,
+            id: 'btn-delete--siem-integrations-row-actions',
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this?.PERMISSIONS?.delete
@@ -152,7 +154,7 @@ export default {
           show: true,
           action: 'addAction',
           tooltip: 'Add an integration',
-          id: 'btn-add--integrations',
+          id: 'btn-add--siem-integrations',
           disabled: !this?.PERMISSIONS?.create
         }
       },
@@ -188,7 +190,7 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -214,10 +216,6 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.callForData()
-    },
-    handleSortChange({ prop, order }) {
-      this.axiosPayload = { ...this.axiosPayload, orderBy: prop, ascending: order === 'ascending' }
       this.callForData()
     },
     handlePaginationChange({ pageSize, pageNumber }) {

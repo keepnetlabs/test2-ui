@@ -17,12 +17,14 @@ const APP_CONFIG = (() => {
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
     VUE_APP_MIX_PANEL_TOKEN: '4b3fbde44fceac0674902099f5075dad',
     VUE_APP_ROOT_API: 'https://dev-api.devkeepnet.com/api',
+    VUE_APP_EMAIL_THREAT_SIMULATOR_API: 'https://dev-ets-api.devkeepnet.com/api',
     VUE_APP_WEB_API: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_WEB_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
     VUE_APP_AUTH_API_TEST: 'https://dev-api.devkeepnet.com',
     VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_RECAPTCHA_SITEKEY: '6LfSWikcAAAAAIU4AtHzGDkC_0g2uIOsijvBTKcC',
-    VUE_APP_PHISHING_REPORTER_URL: 'https://dev-addin-api.devkeepnet.com/api'
+    VUE_APP_PHISHING_REPORTER_URL: 'https://dev-addin-api.devkeepnet.com/api',
+    VUE_APP_AWARENESS_URL: 'https://dev-awareness-api.devkeepnet.com/api'
   }
 })()

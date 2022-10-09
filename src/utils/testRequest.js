@@ -34,7 +34,7 @@ testService.interceptors.request.use(
 testService.interceptors.response.use(
   (response) => {
     //if there is global loader param
-    response.config.loading &&
+    response?.config?.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
     //if there is snackbar obj
@@ -49,7 +49,12 @@ testService.interceptors.response.use(
   },
   (error) => {
     //if there is global loader param
-    error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    error?.config?.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+
+    if (error?.message && error?.message === 'canceled') {
+      return Promise.resolve({})
+    }
 
     if (error?.response?.status === 503) {
       return Promise.resolve({})
@@ -86,12 +91,13 @@ testService.interceptors.response.use(
               {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message:
-                  (error.response.data &&
-                    error.response.data.validationMessages &&
-                    error.response.data.validationMessages.length &&
-                    error.response.data.validationMessages[0]) ||
-                  error.response.data.message ||
-                  error.response.data.Message,
+                  (error?.response?.data &&
+                    error?.response?.data?.validationMessages &&
+                    error?.response?.data?.validationMessages?.length &&
+                    error?.response?.data?.validationMessages[0]) ||
+                  error?.response?.data?.message ||
+                  error?.response?.data?.Message ||
+                  error.message,
                 icon: 'mdi-alert'
               },
               { root: true }
@@ -111,12 +117,13 @@ testService.interceptors.response.use(
           {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message:
-              (error.response.data &&
-                error.response.data.validationMessages &&
-                error.response.data.validationMessages.length &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message ||
-              error.response.data.Message ||
+              (error?.response?.data &&
+                error?.response?.data?.validationMessages &&
+                error?.response?.data?.validationMessages?.length &&
+                error?.response?.data?.validationMessages[0]) ||
+              error?.response?.data?.message ||
+              error?.response?.data?.Message ||
+              error.message ||
               'Something Went Wrong',
             icon: 'mdi-alert'
           },

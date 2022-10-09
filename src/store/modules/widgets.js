@@ -13,7 +13,10 @@ const widgetsStore = {
     reportersCard: [],
     reportedEmailTrendsCard: [],
     recentCampaignsCard: [],
-    mostPhishedUsers: []
+    mostPhishedUsers: [],
+    phishingCampaignTrends: [],
+    mostEngagedCampaigns: [],
+    topPhishingSimulationReporters: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -28,9 +31,14 @@ const widgetsStore = {
     getRecentCampaignsCard: (state) =>
       state.recentCampaignsCard.map((row) => {
         const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
+        if (row.method === 'Click-Only') {
+          campaignStatus.push(row['totalClickedCount'])
+        }
         if (row.method === 'Attachment') {
           campaignStatus.push(row['totalAttachmentOpenedCount'])
-        } else {
+        }
+
+        if (row.method === 'Data Submission') {
           campaignStatus.push(row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
         }
@@ -39,7 +47,10 @@ const widgetsStore = {
           campaignStatus
         }
       }),
-    getMostPhishedUsersCard: (state) => state.mostPhishedUsers
+    getMostPhishedUsersCard: (state) => state.mostPhishedUsers,
+    getPhishingCampaignTrendsCard: (state) => state.phishingCampaignTrends,
+    getMostEngagedCampaignsCard: (state) => state.mostEngagedCampaigns,
+    getTopPhishingSimulationReportersCard: (state) => state.topPhishingSimulationReporters
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -74,12 +85,21 @@ const widgetsStore = {
     },
     SET_MOST_PHISHED_USERS(state, payload) {
       state.mostPhishedUsers = payload
+    },
+    SET_PHISHING_CAMPAIGN_TRENDS(state, payload) {
+      state.phishingCampaignTrends = payload
+    },
+    SET_MOST_ENGAGED_CAMPAIGNS(state, payload) {
+      state.mostEngagedCampaigns = payload
+    },
+    SET_TOP_PHISHING_SIMULATION_REPORTERS(state, payload) {
+      state.topPhishingSimulationReporters = payload
     }
   },
   actions: {
-    callForWidgets({ commit, dispatch }, payload) {
+    callForWidgets({ commit, dispatch }, payload = { isLoading: true }) {
       commit('SET_LOADING', true)
-      return getSummary(payload)
+      return getSummary({}, payload?.isLoading)
         .then((response) => {
           const {
             dashboardSummary,
@@ -88,7 +108,10 @@ const widgetsStore = {
             topReporters,
             reportedEmailTrends,
             recentPhishingCampaigns,
-            mostPhishedUsers
+            mostPhishedUsers,
+            phishingCampaignTrends,
+            mostEngagedCampaigns,
+            topPhishingSimulationReporters
           } = response.data
           const {
             investigationTypeCount,
@@ -102,6 +125,12 @@ const widgetsStore = {
           commit('SET_ROI_SUMMARY', roiSummary)
           commit('SET_RECENT_CAMPAIGNS', recentPhishingCampaigns?.data || [])
           commit('SET_MOST_PHISHED_USERS', mostPhishedUsers?.data || [])
+          commit('SET_PHISHING_CAMPAIGN_TRENDS', phishingCampaignTrends?.data || [])
+          commit('SET_MOST_ENGAGED_CAMPAIGNS', mostEngagedCampaigns?.data || [])
+          commit(
+            'SET_TOP_PHISHING_SIMULATION_REPORTERS',
+            topPhishingSimulationReporters?.data || []
+          )
 
           const { data: topRules } = dashboardTopRules
 

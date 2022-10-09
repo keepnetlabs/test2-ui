@@ -5,6 +5,8 @@ import DetailsIcon from '@/components/CustomIcons/Details'
 import CreateNewInstanceIcon from '@/components/CustomIcons/CreateNewInstance'
 import RadioChecked from '@/components/CustomIcons/RadioChecked'
 import RadioUnchecked from '@/components/CustomIcons/RadioUnchecked'
+import RefreshLeft from '@/components/CustomIcons/RefreshLeft'
+import Domain from '@/components/CustomIcons/Domain'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -27,6 +29,12 @@ export default new Vuetify({
       },
       'radio-unchecked': {
         component: RadioUnchecked
+      },
+      'refresh-left': {
+        component: RefreshLeft
+      },
+      domain: {
+        component: Domain
       }
     }
   }

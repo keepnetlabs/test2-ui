@@ -13,7 +13,7 @@
           close-button-id="btn-close--top-rules"
           :editMode="editMode"
           :title="getTitle"
-          :link="{ href: '/playbook', text: 'Playbook' }"
+          :link="{ href: '/incident-responder', text: 'Playbook' }"
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
@@ -127,7 +127,6 @@ export default {
       this.showMatchingModal = !this.showMatchingModal
     },
     getValue(value) {
-      //`${value} ${value === 1 ? 'Match' : 'Matches'}`
       return `${value} match(es)`
     }
   }

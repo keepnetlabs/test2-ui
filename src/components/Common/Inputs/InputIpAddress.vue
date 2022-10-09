@@ -13,7 +13,7 @@ export default {
       default: true
     },
     placeholder: {
-      default: 'Enter an IP adress'
+      default: 'Enter an IP address'
     },
     hint: {
       default: '*Required'

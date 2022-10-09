@@ -156,7 +156,10 @@
               ref="refPicker"
               placeholder="Select Date Select Time"
               style="width: 100%; max-width: 222px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
               :disabled="isScheduledTimeDisabled"
+              :picker-options="datePickerOptions"
             />
             <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
               <transition appear name="bounce">
@@ -230,6 +233,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { mapGetters } from 'vuex'
 import CustomError from '@/components/CustomError'
+import { getTimeZone } from '@/utils/functions'
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
   pageSize: 10,
@@ -289,6 +293,11 @@ export default {
   },
   data() {
     return {
+      parsedFormat: getTimeZone(false),
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
+      selectedTargetGroups: [],
       isAttachmentBasedScenario: false,
       axiosPayloadOfPhishingScenarios,
       initial: true,
@@ -364,7 +373,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone'
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupErrorMessage() {
       return this.formData.targetGroupResourceIds.length
@@ -382,6 +392,15 @@ export default {
     }
   },
   watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
     phishingScenarioSelectItems(newItems) {
       const selectedScenarioIndex = newItems.findIndex(
         (item) => item.value === this.formData?.phishingScenario?.value
@@ -449,6 +468,9 @@ export default {
     this.$emit('initialFormValues', initialFormValues)
   },
   methods: {
+    disabledEndDates(val) {
+      return new Date().setHours(0, 0, 0, 0) > val.getTime()
+    },
     setInitialName(value) {
       this.formData.name = value
       const initialFormValues = JSON.parse(JSON.stringify(this.formData))
@@ -496,12 +518,13 @@ export default {
       }
     },
     handleTableSelectionChange(items) {
+      this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,
-          extraDatas: null
+          extraDatas: item
         }))
     },
     handleScroll(
@@ -534,7 +557,7 @@ export default {
           this.targetGroupItems = results.map((item) => ({
             text: item.name,
             value: item.resourceId,
-            extraDatas: null
+            extraDatas: item
           }))
         })
         .finally(() => {
@@ -567,7 +590,7 @@ export default {
               text: item.name,
               value: item.resourceId,
               method: item.method,
-              extraDatas: null
+              extraDatas: item
             }))
 
             if (
@@ -601,14 +624,14 @@ export default {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
     },
     handleItemDetailsChange(item = {}) {
-      this.isAttachmentBasedScenario = item.methodTypeId === 3 ? true : false
+      this.isAttachmentBasedScenario = item.methodTypeId === 3
     },
     handleOnPhishingScenarioChange(item = {}) {
       this.formData.phishingScenario = {
         text: item.name,
         value: item.resourceId,
         method: item.method,
-        extraDatas: null
+        extraDatas: item
       }
       if (
         !this.phishingScenarioSelectItems.find((selectItem) => selectItem.value === item.resourceId)

@@ -1,5 +1,6 @@
 <template>
   <app-dialog
+    type="delete"
     icon="mdi-delete"
     title="Delete Scenario?"
     subtitle="Scenario will deleted permanently"
@@ -47,7 +48,7 @@ export default {
     },
     handleDelete() {
       deleteScenario(this.selectedScenario.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
+        this.$emit('handleSuccessDeleteAction', this.selectedScenario)
       })
       this.closeModal()
     }

@@ -100,7 +100,6 @@
                       hint="*Required"
                       no-data-text="No industry available"
                       :menu-props="{ offsetY: true }"
-                      prepend-inner-icon="mdi-magnify"
                       persistent-hint
                     ></k-select>
                   </v-list-item-content>
@@ -120,10 +119,21 @@
                       :rules="[(v) => validations.required(v)]"
                       hint="*Required"
                       no-data-text="No country available"
-                      prepend-inner-icon="mdi-magnify"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></k-select>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content>
+                    <label class="bottom-margin">Timezone</label>
+                    <InputTimezone
+                      v-model="formData.timeZoneId"
+                      hint="*Required"
+                      persistent-hint
+                      isBlock
+                      :rules="[(v) => validations.required(v)]"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -262,7 +272,7 @@
                           v-model="formData.LicenseStartDate"
                           id="input--company-license-start-date"
                           type="date"
-                          format="dd.MM.yyyy"
+                          :format="getDateFormat"
                           :disabled="stepLock"
                           :rules="[(v) => !!v || 'Required']"
                         />
@@ -314,7 +324,7 @@
                             v-model="formData.LicenseEndDate"
                             id="input--company-license-end-date"
                             type="date"
-                            format="dd.MM.yyyy"
+                            :format="getDateFormat"
                             :disabled="stepLock || isEndDateDisabled"
                             :picker-options="datePickerOptions"
                             :rules="[(v) => !!v || 'Required']"
@@ -469,7 +479,7 @@
                       no-data-text="No training content available"
                       :slots="{ item: true, selection: false }"
                     >
-                      <template v-slot:item="{ item }">
+                      <template #item="{ item }">
                         <v-list-item-content>
                           <v-list-item-title :id="item.titleId"> {{ item.name }}</v-list-item-title>
                           <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
@@ -509,6 +519,26 @@
                     </k-select>
                   </v-list-item-content>
                 </v-list-item>
+                <FormGroup
+                  title="Preferred Language"
+                  sub-title="Sort contents in this language first on lists and tables"
+                >
+                  <k-select
+                    v-model="formData.PreferredLanguageTypeResourceId"
+                    :items="languageItems"
+                    :return-object="false"
+                    position="top"
+                    class="tlp-select"
+                    id="input--company-preferred-language"
+                    outlined
+                    hint="*Required"
+                    persistent-hint
+                    placeholder="Select an option"
+                    item-text="name"
+                    item-value="resourceId"
+                  >
+                  </k-select>
+                </FormGroup>
               </v-form>
             </v-stepper-content>
           </v-stepper-items>
@@ -555,6 +585,8 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -563,6 +595,8 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    FormGroup,
+    InputTimezone,
     StepperFooter,
     InputAddress,
     InputDescription,
@@ -579,6 +613,9 @@ export default {
   },
   data() {
     return {
+      dateFormat: localStorage.getItem('selectedDateFormat'),
+      timeFormat: localStorage.getItem('selectedTimeFormat'),
+      languageItems: [],
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -595,6 +632,7 @@ export default {
         File: null,
         logoURL: null,
         Name: '',
+        PreferredLanguageTypeResourceId: '',
         Description: '',
         IndustryResourceId: '',
         CountryResourceId: '',
@@ -656,6 +694,20 @@ export default {
     }
   },
   computed: {
+    getDateFormat() {
+      if (this.dateFormat) {
+        return this.dateFormat.replaceAll('/', '.').replaceAll('Y', 'y').replaceAll('D', 'd')
+      }
+
+      return `dd.MM.yyyy`
+    },
+    getTimeFormat() {
+      if (this.timeFormat) {
+        if (this.timeFormat === '12h') return 'hh:mm a'
+        else return 'hh:mm'
+      }
+      return 'hh:mm'
+    },
     getImagePreview() {
       if (Array.isArray(this.getPreviewLogoUrl) && this.getPreviewLogoUrl.length > 0) {
         return this.getPreviewLogoUrl[0]
@@ -711,6 +763,7 @@ export default {
     this.getLookupContents()
     this.getCompanyGroups()
     if (this.edit) {
+      this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
       this.formData.logoURL = this.selectedExtend.logoUrl
       this.formData.Name = this.selectedExtend.name
@@ -736,6 +789,7 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
+      this.formData.timeZoneId = this.selectedExtend.timeZoneId
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
@@ -767,14 +821,7 @@ export default {
       }
     },
     isFormDataChanged() {
-      const isChanged = isDifferent(this.formData, this.defaultFormData)
-      return isChanged
-      // return Object.keys(this.formData).some((key) => {
-      //   if (Array.isArray(this.formData[key])) {
-      //     return this.formData[key].length !== this.defaultFormData[key].length
-      //   }
-      //   return this.formData[key] !== this.defaultFormData[key]
-      // })
+      return isDifferent(this.formData, this.defaultFormData)
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []
@@ -783,12 +830,16 @@ export default {
       this.$emit('closeFormConfigureNewCompanyModal', this.createdCompanyResourceId)
     },
     getLookupContents() {
-      Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7]), getLicences()]).then(
+      Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7, 21]), getLicences()]).then(
         (responses) => {
           const res = responses[0] || []
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+          this.languageItems = [
+            { name: 'All Languages', resourceId: '' },
+            ...res?.filter((item) => item.genericCodeTypeId === 21)
+          ]
           this.notificationTemplates = res
             .filter((item) => item.genericCodeTypeId === 5)
             .map((notificationTemplate, ind) => {
@@ -881,9 +932,34 @@ export default {
         this.formData.LicenseTypeName = this.licenceTypes.find((item) => {
           return item.resourceId === this.formData.LicenseTypeResourceId
         }).name
+        const [
+          startFirstPart,
+          startSecondPart,
+          startThirdPart
+        ] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        const [endFirstPart, endSecondPart, endThirdPart] = this.formData.LicenseEndDate.split(
+          ' '
+        )[0].split('/')
+
+        let LicenseStartDate, LicenseEndDate
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          LicenseStartDate = `${startFirstPart}-${startSecondPart}-${startThirdPart}`
+          LicenseEndDate = `${endFirstPart}-${endSecondPart}-${endThirdPart}`
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          LicenseStartDate = `${startThirdPart}-${startFirstPart}-${startSecondPart}`
+          LicenseEndDate = `${endThirdPart}-${endFirstPart}-${endSecondPart}`
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
+          LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`
+        } else {
+          LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
+          LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`
+        }
+
+        const payload = { ...this.formData, LicenseStartDate, LicenseEndDate }
 
         if (this.edit) {
-          updateCompany(this.selectedExtend.resourceId, { ...this.formData })
+          updateCompany(this.selectedExtend.resourceId, payload)
             .then(() => {
               this.saveDisable = false
               this.cancelForm()
@@ -892,7 +968,7 @@ export default {
               this.saveDisable = false
             })
         } else {
-          createCompany({ ...this.formData })
+          createCompany(payload)
             .then((response) => {
               const {
                 data: { data }
@@ -965,18 +1041,11 @@ export default {
       this.activeStep = 1
       this.$emit('cancelForm')
     },
-    datePickerValidation() {
-      return this.formData.LicenseStartDate && this.formData.LicenseEndDate
-        ? ''
-        : 'Start and end dates should be picked'
-    },
     expiryPeriodValidation(value) {
       let validation = true
-
       if (!value) {
         validation = 'Required'
       }
-
       return validation
     },
     expiryPeriodChange() {
@@ -984,18 +1053,44 @@ export default {
       let start = new Date()
       if (!!this.formData.LicenseStartDate) {
         const [datePart, timePart] = this.formData.LicenseStartDate.split(' ')
-        const [date, month, year] = datePart.split('/')
-        const [hours, minutes] = timePart.split(':')
-        start = new Date(year, month - 1, date, hours, minutes)
+        const [firstPart, secondPart, thirdPart] = datePart.split('/')
+        let minutes, hours
+        if (this.timeFormat && this.timeFormat === '12h') {
+          // remove PM - AM part
+          const [hoursPart, minutesPart] = timePart.split(' ')[0].split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        } else {
+          const [hoursPart, minutesPart] = timePart.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        }
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          start = new Date(firstPart, secondPart - 1, thirdPart, hours, minutes)
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          start = new Date(thirdPart, firstPart - 1, secondPart, hours, minutes)
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          start = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        } else {
+          start = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        }
       }
       if (this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
-        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
-        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseStartDate = this.$moment(start).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
+        this.formData.LicenseEndDate = this.$moment(end).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
       } else if (this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
-        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
-        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseStartDate = this.$moment(start).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
+        this.formData.LicenseEndDate = this.$moment(end).format(
+          `${this.dateFormat} ${this.getTimeFormat}`
+        )
       }
     },
     editStepLock() {

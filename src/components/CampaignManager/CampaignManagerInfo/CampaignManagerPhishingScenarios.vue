@@ -126,11 +126,11 @@
                   </div>
 
                   <div class="template-list--item">
-                    {{ item.description || '\xa0' }}
+                    {{ getItemDescription(item) }}
                   </div>
                   <div class="template-list--item mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                    <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
                   </div>
                 </div>
               </div>
@@ -476,6 +476,17 @@ export default {
     }
   },
   methods: {
+    getItemDescription(item = {}) {
+      if (!item?.description) {
+        return '\xa0'
+      }
+
+      if (item?.description === 'null' || item?.description === 'undefined') {
+        return '\xa0'
+      }
+
+      return item?.description || '\xa0'
+    },
     callForSelectedPhishingScenario() {
       getScenario(this.value).then((response) => {
         const {
@@ -490,7 +501,7 @@ export default {
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
           (response) => {
             const { data: { data = {} } = {} } = response
-            const { emailTemplate, landingPageTemplate } = data
+            const { emailTemplate, landingPageTemplate, methodTypeId } = data
             const {
               template,
               fromName,
@@ -519,7 +530,6 @@ export default {
               landingPages,
               urlTemplate,
               difficultyTypeId,
-              methodTypeId,
               languageTypeResourceId
             } = landingPageTemplate || {}
             this.landingPageParams = {

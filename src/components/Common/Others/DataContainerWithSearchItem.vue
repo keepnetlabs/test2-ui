@@ -37,7 +37,7 @@
         <template #activator="{ on }">
           <v-icon v-on="on" class="mr-2" color="#F56C6C">mdi-alert-circle</v-icon>
         </template>
-        {{ textFieldErrorMessage }}
+        {{ getErrorMessage }}
       </v-tooltip>
       <v-btn
         text
@@ -85,6 +85,10 @@ export default {
       type: String,
       default: 'This Domain is not valid!'
     },
+    showValidationErrorMesssage: {
+      type: Boolean,
+      default: false
+    },
     textFieldDefaultValue: {
       type: String
     },
@@ -105,6 +109,15 @@ export default {
     }
   },
   computed: {
+    getErrorMessage() {
+      const comparator = this.isEdit ? this.textFieldValue : this.value
+
+      if (this.showValidationErrorMesssage) {
+        return this.getValidationErrorMessage(comparator)
+      }
+
+      return this.textFieldErrorMessage
+    },
     isValid() {
       const comparator = this.isEdit ? this.textFieldValue : this.value
       return comparator && this.textFieldRules.every((func) => func(comparator) === true)
@@ -123,6 +136,19 @@ export default {
     }
   },
   methods: {
+    getValidationErrorMessage(comparator) {
+      let message = ''
+
+      for (let i = 0; i < this.textFieldRules.length; i++) {
+        const valid = this.textFieldRules[i](comparator)
+        if (valid === true) continue
+        else {
+          message = valid
+          break
+        }
+      }
+      return message
+    },
     handleActionButtonClick() {
       if (this.$refs.refForm.validate()) {
         this.$emit('input', this.textFieldValue, this.value, this.index)

@@ -664,6 +664,7 @@
                   <v-btn
                     id="threat-sharing-post-incident-edit-html-button"
                     class="create-btn v-btn v-btn--flat v-btn--text theme--dark v-size--default edit-html-template-button"
+                    style="z-index: 1;"
                     @click="editHtmlTemplate"
                   >
                     <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
@@ -2523,7 +2524,7 @@ export default {
       }
     },
     setVisibleBody() {
-      let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
+      let urls = this.uploadRespond.urls.filter((item) => item.isHidden)
       for (let url of urls) {
         let els = document
           .getElementById('last-preview-body-shadow-root-for-preview')
@@ -2549,7 +2550,7 @@ export default {
         'last-preview-body-shadow-root-for-preview'
       )?.shadowRoot?.innerHTML
     },
-    handleTagItemChange(value) {
+    handleTagItemChange() {
       this.querySelections(this.searchIncident || '')
       if (this.isFindIncidentLoading) return false
     },
@@ -3188,9 +3189,10 @@ export default {
     validateAffectArea() {
       const refThis = this
       setTimeout(function () {
-        refThis.uploadRespond.AffectArea = refThis.uploadRespond.AffectArea.map((item) => {
-          return item.slice(0, 20)
-        })
+        refThis.uploadRespond.AffectArea =
+          refThis?.uploadRespond?.AffectArea?.map((item) => {
+            return item.slice(0, 20)
+          }) || []
         if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
           let i = refThis.uploadRespond.AffectArea.length
           while (i--) {

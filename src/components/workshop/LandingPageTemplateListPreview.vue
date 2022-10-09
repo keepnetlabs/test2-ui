@@ -112,7 +112,7 @@
                 </div>
 
                 <div class="template-list--item">
-                  {{ item.description || '\xa0' }}
+                  {{ getItemDescription(item) }}
                 </div>
                 <div class="template-list--item mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
@@ -167,6 +167,10 @@
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!template.content">
                       <div>
+                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--body">{{ templateName }}</span>
+                      </div>
+                      <div>
                         <span class="template-preview__text--title">Phishing URL: </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
@@ -194,6 +198,10 @@
                     </v-icon>
                   </div>
                   <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
+                    <div>
+                      <span class="template-preview__text--title">Template Name: </span>
+                      <span class="template-preview__text--body">{{ templateName }}</span>
+                    </div>
                     <div>
                       <span class="template-preview__text--title">Phishing URL: </span>
                       <span class="template-preview__text--body">{{ templateURL }}</span>
@@ -227,7 +235,8 @@ export default {
   props: {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false },
-    categoryResourceId: { type: String, default: '' }
+    categoryResourceId: { type: String, default: '' },
+    method: { type: String, default: '' }
   },
   components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   directives: {
@@ -240,6 +249,7 @@ export default {
       { text: 'Attachment', value: '7dLrW2kdBTDs' }
     ]
     return {
+      templateName: '',
       selectedTab: '1',
       landingPageTemplates: [],
       search: null,
@@ -264,9 +274,9 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 {
-                  value: methods[Number(this.categoryResourceId) - 1].value,
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include'
+                  value: this.method,
+                  FieldName: 'Method',
+                  Operator: '='
                 },
                 { Value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
@@ -313,6 +323,17 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    getItemDescription(item = {}) {
+      if (!item?.description) {
+        return '\xa0'
+      }
+
+      if (item?.description === 'null' || item?.description === 'undefined') {
+        return '\xa0'
+      }
+
+      return item?.description || '\xa0'
+    },
     callForSearch() {
       this.debounce(() => {
         const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
@@ -404,6 +425,9 @@ export default {
                 if (index > -1) {
                   this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
+                } else {
+                  this.setSelectedTemplate(this.listData[0], 0, true)
+                  this.listData[0].selected = true
                 }
               } else {
                 if (!landingPageTemplateResourceId)
@@ -439,8 +463,12 @@ export default {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
-      this.listData[index].selected = true
-      this.selectedPreviousIndex = index
+      if (index !== undefined) {
+        if (this.listData[index]) {
+          this.listData[index].selected = true
+        }
+        this.selectedPreviousIndex = index
+      }
       this.loadingTemplatePreview = true
       this.$emit('selectedLandingPageChange', item.id)
       this.$emit('selectedLandingPageTemplateResourceId', item.resourceId)
@@ -450,6 +478,7 @@ export default {
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.landingPageTemplates = response?.data?.data?.landingPages || []
         })

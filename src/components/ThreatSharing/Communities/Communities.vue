@@ -19,6 +19,7 @@
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
       icon="mdi-delete"
+      type="delete"
       title="Delete Community?"
       :subtitle="deleteCommunityName"
       :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
@@ -563,12 +564,12 @@ export default {
   },
   watch: {
     communityLoading(newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal !== newVal) {
         this.$emit('setThreatSharingStepLoading', newVal)
       }
     },
     refresh(newVal, oldVal) {
-      if (oldVal != newVal && !this.isLoadState) {
+      if (oldVal !== newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
@@ -751,7 +752,7 @@ export default {
       }
       this.isNotificationSettingButtonDisabled = true
       updateNotifications(payload)
-        .then((response) => {
+        .then(() => {
           this.openNotificationModal = false
         })
         .finally(() => (this.isNotificationSettingButtonDisabled = false))
@@ -1120,7 +1121,7 @@ export default {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
       }
     },
-    updateCommunities(isSearch) {
+    updateCommunities() {
       this.$route.params.isCommunity = false
       if (!this.isLoadState) {
         switch (this.selectedTab) {
@@ -1207,11 +1208,11 @@ export default {
     },
     subTabSelected(name) {
       this.$route.params.isCommunity = false
-      if (name == 'Your Communities' && !this.isLoadState) {
+      if (name === 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.page = 1
         this.getMyCommunitiesListData()
-      } else if (name == 'All' && !this.isLoadState) {
+      } else if (name === 'All' && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.page = 1
         this.getAllCommunitiesListData()
@@ -1225,7 +1226,6 @@ export default {
           this.getInvitions()
           this.getInvitationCount()
         }
-        return
       }
     }
   }

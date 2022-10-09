@@ -35,7 +35,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
-import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
@@ -95,7 +95,6 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-phishing-reporter',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,

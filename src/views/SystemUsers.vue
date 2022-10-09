@@ -12,7 +12,7 @@
 
       <el-tab-pane
         v-if="getSystemRolesSearchPermission"
-        label="Roles"
+        label="User Roles"
         name="system-users--roles"
         id="system-users--roles-content"
       >

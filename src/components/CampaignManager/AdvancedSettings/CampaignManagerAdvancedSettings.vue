@@ -84,7 +84,6 @@
           v-model="formData.distributionSmtpDelayEvery"
           v-mask="'###'"
           id="input--campaign-manager-advanced-settings-time"
-          placeholder="Enter number"
           outlined
           class="edit-name-textfield edit-select standard-height ml-2"
           hide-details
@@ -386,11 +385,6 @@ export default {
           )?.text
         : ''
     },
-    getSelectedEmailTimeType() {
-      return this.formDetails['distributionEmailOverTimeTypes'].find(
-        (item) => item.value === this.formData.distributionEmailOverTimeTypeId
-      )?.text
-    },
     getDistributionTextRenderStatus() {
       return this.formData.distributionTypeId === '1'
         ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
@@ -531,6 +525,7 @@ export default {
     },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length) return
+      if (!this.formData.distributionSmtpDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
@@ -545,14 +540,16 @@ export default {
           sendRandomlyUsersCount: this.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.formData.sendRandomlyUsersCalculateTypeId
         }
-        calculateSendingInfo(payload).then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalSendSecond, batchEverySendSecond } = data
-          this.totalSendSecond = totalSendSecond
-          this.batchEverySendSecond = batchEverySendSecond
-        })
+        if (payload.distributionSmtpDelayEvery) {
+          calculateSendingInfo(payload).then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalSendSecond, batchEverySendSecond } = data
+            this.totalSendSecond = totalSendSecond
+            this.batchEverySendSecond = batchEverySendSecond
+          })
+        }
       }, 500)
     },
     handleTestConnectionChange() {
@@ -622,9 +619,12 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
-            .addEventListener('scroll', this.handleScroll)
+          const element = document.querySelector(
+            '#input--company-manager-advanced-settings-smtp .k-select__menu'
+          )
+          if (element) {
+            element.addEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },
@@ -634,9 +634,12 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
-            .removeEventListener('scroll', this.handleScroll)
+          const element = document.querySelector(
+            '#input--company-manager-advanced-settings-smtp .k-select__menu'
+          )
+          if (element) {
+            element.removeEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },

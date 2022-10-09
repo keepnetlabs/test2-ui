@@ -1,9 +1,9 @@
 <template>
   <app-modal
     :status="status"
-    iconName="mdi-magnify"
-    :title="`Start New Manual Investigation`"
     title-id="text--incident-responder-new-investigation-modal-title"
+    icon-name="mdi-magnify"
+    title="Start New Manual Investigation"
   >
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
@@ -97,7 +97,6 @@
                     small-chips
                     deletable-chips
                     :return-object="true"
-                    prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
                     :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
                   />
@@ -134,7 +133,6 @@
                     "
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-                    prepend-inner-icon="mdi-magnify"
                   />
                 </div>
               </v-list-item-content>
@@ -246,6 +244,8 @@
                     id="input--investigation-email-date-range"
                     type="datetimerange"
                     ref="refPicker"
+                    :format="parsedFormat"
+                    :valueFormat="parsedFormat"
                     :picker-options="pickerOptions"
                     :rules="[]"
                     :defaultTime="['00:00:00', '23:59:00']"
@@ -313,7 +313,7 @@
                   item-text="actionLabel"
                   item-value="actionValue"
                   position="top"
-                  placeholder="Delete Email"
+                  placeholder="Select an action"
                   @change="actionChanged"
                 ></k-select>
               </v-list-item-content>
@@ -366,14 +366,15 @@
 <script>
 import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
-import { getTargetUsers, searchTargetGroups } from '../../api/targetUsers'
+import { getTargetUsers, searchTargetGroups } from '@/api/targetUsers'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import {
   getDefaultAxiosPayload,
   getSelectSearchPayload,
   getTimeZoneForMoment,
   scrollToComponent,
-  isDifferent
+  isDifferent,
+  getTimeZone
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -384,6 +385,7 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     FormGroup,
@@ -400,14 +402,23 @@ export default {
     'select-search-handler': SelectSearchHandler
   },
   watch: {
-    date(val) {
-      if (val && val.length > 0) {
-        this.isDateValid = true
-      } else {
-        this.isDateValid = false
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+          const parsedFormatForMoment = getTimeZoneForMoment(val)
+          this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+            parsedFormatForMoment
+          )}`
+        }
       }
     },
-    targetUsersValue(newVal, oldVal) {
+    date(val) {
+      this.isDateValid = val && val.length > 0
+    },
+    targetUsersValue(newVal) {
       if (newVal[0] === '') {
         newVal.splice(0, 1)
       }
@@ -416,9 +427,14 @@ export default {
       this.checkAllSingularity()
     }
   },
-
+  computed: {
+    ...mapGetters({
+      timezoneFormat: 'auth/getTimezoneFormat'
+    })
+  },
   data() {
     return {
+      parsedFormat: getTimeZone(false),
       initialFormValues: null,
       warningMessage: null,
       saveDisable: false,
@@ -614,6 +630,7 @@ export default {
   },
   props: [
     'isEdit',
+    'ísDuplicate',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
     'investigationDetailsData',
@@ -677,7 +694,15 @@ export default {
     },
     setTargetUsers(response) {
       const { data: { data = [] } = [] } = response
-      this.specificUserItems = [...this.specificUserItems, ...data.results]
+      const newItems = data.results
+        .map((item) => {
+          if (this.targetUsersValue.includes(item.email)) return undefined
+          return {
+            email: item.email
+          }
+        })
+        .filter(Boolean)
+      this.specificUserItems = [...this.specificUserItems, ...newItems]
     },
     checkAllSingularity() {
       this.filterList.forEach((item, index) => this.checkSingularity(item, index))
@@ -716,12 +741,7 @@ export default {
       }
     },
     checkCheckboxValidation() {
-      let isCheckboxEmpty = this.scanTypes.length === 0
-      if (isCheckboxEmpty) {
-        this.checkboxError = true
-      } else {
-        this.checkboxError = false
-      }
+      this.checkboxError = this.scanTypes.length === 0
     },
     handleTargetUserTypeChange() {
       this.targetUsersValue = []
@@ -1197,12 +1217,14 @@ export default {
                   regex: this.filterList[index].text
                 })
               }
+              break
             default:
               break
           }
         }
 
         const [startDate, endDate] = this.date
+
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),
@@ -1246,11 +1268,6 @@ export default {
         })
       }
     },
-    checkInvestigationName() {
-      // investigaiton rule checking
-      if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threatSharing/checkName', this.name)
-    },
     checkIsEdit() {
       if (this.isEdit) {
         this.investigationName = this?.investigationDetailsData?.name || ''
@@ -1264,16 +1281,17 @@ export default {
         this.targetUserType = this.investigationDetailsData.targetUserType
         if (this.investigationDetailsData.targetUserType === 'Groups') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
-            let obj = {
+            return {
               name: item.targetUser,
               resourceId: item.targetGroupResourceId
             }
-            return obj
           })
         } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
             (item) => item.targetUser
           )
+          const newItems = this.targetUsersValue.map((email) => ({ email }))
+          this.specificUserItems = [...this.specificUserItems, ...newItems]
         }
         const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
@@ -1283,7 +1301,7 @@ export default {
           }
           return acc
         }, [])
-        const body = this.investigationDetailsData.bodies.reduce((acc, item) => {
+        const body = this?.investigationDetailsData?.bodies?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key !== 'resourceId') {
               acc.push({ option: key, text: value })
@@ -1291,7 +1309,7 @@ export default {
           }
           return acc
         }, [])
-        const attachments = this.investigationDetailsData.attachments.reduce((acc, item) => {
+        const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
               acc.push({ option: key, text: value })
@@ -1299,8 +1317,8 @@ export default {
           }
           return acc
         }, [])
+        this.selectedAction = 'NoAction'
         this.filterList = [...headers, ...body, ...attachments]
-        this.selectedAction = 'noAction'
       }
     }
   },

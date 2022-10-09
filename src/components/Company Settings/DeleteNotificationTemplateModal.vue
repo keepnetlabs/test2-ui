@@ -1,16 +1,17 @@
 <template>
   <app-dialog
     :status="status"
-    icon="mdi-alert"
-    :title="getTitle"
-    :subtitle="getSubtitle"
+    type="delete"
     id="notification-template-delete-popup"
     title-id="text--notification-template-delete-popup-title"
     subtitle-id="text--notification-template-delete-popup-subtitle"
+    icon="mdi-alert"
+    :title="getTitle"
+    :subtitle="getSubtitle"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body>{{ labels.DeleteNotificationTemplateBody }}</template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-body>{{ labels.DeleteNotificationTemplateBody }}</template>
+    <template #app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
         <v-btn
           class="users__button"

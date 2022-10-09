@@ -63,16 +63,30 @@
       </v-tooltip>
     </template>
     <template v-if="hasRowActions" #datatable-row-actions="{scope}">
-      <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
+      <TargetUserRowActionsEditButton
+        :id="tableOptions.rowActions[0].id"
+        :scope="scope"
+        @on-click="handleEditTargetUsers"
+      />
       <RowActionsMenu>
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[1].id"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
           @on-click="handleAddToAnExistingGroup(scope.row)"
         />
+        <!-- <DefaultMenuRowAction
+          :id="tableOptions.rowActions[2].id"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[2].disabled"
+          :icon="tableOptions.rowActions[2].icon"
+          :text="tableOptions.rowActions[2].name"
+          @on-click="handleCreateGroupWithUser(scope.row)"
+        /> -->
         <TargetUserRowActionsRemoveFromGroupButton
+          :id="tableOptions.rowActions[2].id"
           :scope="scope"
           @on-remove="handleRemoveToGroup"
         />
@@ -153,7 +167,8 @@ export default {
     'handleAddUsersSelectionClick',
     'handleRemoveToGroup',
     'handleRemoveUsersSelectionClick',
-    'handleRouteBackToTargetUsers'
+    'handleRouteBackToTargetUsers',
+    'handleCreateGroupWithUser'
   ],
   data() {
     return {
@@ -424,22 +439,34 @@ export default {
         ? [
             {
               name: 'Edit this row',
+              id: 'btn-edit--target-group-users-row-actions',
               icon: 'mdi-pencil',
               action: 'handleEditTargetUsers',
               isNotShow: true
             },
             {
               name: 'Add to an existing group',
+              id: 'btn-add-to-an-exiting-group--target-group-users-row-actions',
               icon: 'mdi-account-multiple-plus',
               action: 'handleAddToAnExistingGroup'
             },
+            // {
+            //   name: 'Create a group with user',
+            //   id: 'btn-create-group-with-user--target-group-users-row-actions',
+            //   icon: 'mdi-account-multiple',
+            //   action: 'handleCreateGroupWithUser'
+            // },
             {
               name: 'Remove from group',
+              id: 'btn-remove-from-group--target-group-users-row-actions',
               icon: 'mdi-minus-circle',
               action: 'handleRemoveToGroup'
             }
           ]
         : []
+    },
+    handleCreateGroupWithUser(selectedRow = {}) {
+      this.$emit('handleCreateGroupWithUser', selectedRow)
     },
     handleAddUsersSelectionClick() {
       this.$emit('handleAddUsersSelectionClick', this.selections)
@@ -484,9 +511,6 @@ export default {
           link.click()
         })
       })
-    },
-    toggleLoading() {
-      this.loading = !this.loading
     }
   }
 }

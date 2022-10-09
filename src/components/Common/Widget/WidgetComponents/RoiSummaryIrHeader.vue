@@ -76,57 +76,7 @@ export default {
       // get IR Reports data via vuex.
       roiSummary: 'widgets/getROISummaryCard',
       isLoading: 'widgets/getIsLoading'
-    }),
-    getRoiSummaryValue() {
-      if (this.roiSummary && this.roiSummary.revenue) {
-        let revenue = Number(this.roiSummary.revenue)
-        if (revenue < 1000) {
-          return `$${revenue}`
-        } else if (revenue >= 1000 && revenue < 1000000) {
-          const newRevenue = revenue / 1000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`
-          } else {
-            return `$${newRevenue}k`
-          }
-        } else if (revenue >= 1000000 && revenue < 1000000000) {
-          const newRevenu = revenue / 1000000
-          const stringRevenue = String(newRevenu)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2)
-            if (nextDecimalValue) {
-              return `$${beforeDecimal}.${stringRevenue.charAt(
-                indexOfNewRevenue + 1
-              )}${nextDecimalValue}M`
-            } else {
-              return `$${newRevenu}m`
-            }
-          } else {
-            if (stringRevenue.length === 7) {
-              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`
-            }
-            return `$${newRevenu}m`
-          }
-        } else if (revenue >= 1000000000) {
-          const newRevenue = revenue / 1000000000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1) {
-            return `$${newRevenue.toFixed(3)}b`
-          } else {
-            return `$${newRevenue}b`
-          }
-        }
-      } else {
-        return `$0`
-      }
-      return `$0`
-    }
+    })
   },
   props: {
     editMode: {
@@ -141,7 +91,7 @@ export default {
 
   methods: {
     isRoiSummaryEmpty() {
-      let { revenue = '0', time = '0' } = this.roiSummary
+      let { revenue = '0', time = '0' } = this.roiSummary || {}
       return revenue === '0' && time === '0'
     }
   }

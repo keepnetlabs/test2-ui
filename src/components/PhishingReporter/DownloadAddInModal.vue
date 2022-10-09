@@ -155,7 +155,7 @@
         <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
             @click="$emit('handleClose')"
-            id="btn-cancel--phishing-reporter-settings-add-in-modal"
+            id="btn-cancel--phishing-reporter-settings-download-add-in-modal"
             class="overlay__footer-text download-add-in__link"
           >
             Close
@@ -167,7 +167,6 @@
 </template>
 
 <script>
-import Logos from './Logos'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import {
   downloadDiagnosticTool,

@@ -1,15 +1,5 @@
 <template>
-  <app-modal
-    :status="status"
-    icon-name="mdi-email"
-    :title="
-      !isEdit
-        ? 'New Email Template'
-        : isDuplicate
-        ? 'Duplicate Email Template'
-        : 'Edit Email Template'
-    "
-  >
+  <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -206,11 +196,12 @@
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
+                        :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
-                        :extensions="['doc', 'docx', 'html', 'htm']"
-                        :size="2"
-                        fileUploadHint="Only word and html files. Max. file size 2MB"
+                        :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                        :size="5"
+                        fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
@@ -232,6 +223,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
@@ -341,6 +333,13 @@ export default {
   },
   data() {
     return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
+        backButton: 'btn-back--add-or-edit-email-templates-modal',
+        nextButton: 'btn-next--add-or-edit-email-templates-modal',
+        saveButton: 'btn-save--add-or-edit-email-templates-modal'
+      },
+      isAttachmentError: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -460,9 +459,6 @@ export default {
     }
   },
   methods: {
-    onCloseRenameModal() {
-      this.isRenameModalVisible = false
-    },
     handleDeleteAttachment() {
       this.formValues.attachmentFiles = []
       this.isAddedNewPhishingFile = false
@@ -520,17 +516,27 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        const fileExtension = file.name ? file.name.substring(file.name.length - 4) : ''
+        const fileExtension = file.name ? file.name.split('.').pop() : ''
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
           newFile = new File([file], file.name, {
             type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
           })
+        } else if (fileExtension === 'ppt') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.ms-powerpoint'
+          })
+        } else if (fileExtension === 'pptx') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+          })
         }
         this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.isAttachmentError = false
       } else {
         this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
+        this.isAttachmentError = false
       }
       this.isPhishingFileModified = true
       this.isAddedNewPhishingFile = true
@@ -569,6 +575,10 @@ export default {
       this.step -= 1
     },
     submit() {
+      if (this.isAttachmentBasedTemplate && this.formValues.attachmentFiles.length === 0) {
+        this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
+        return
+      }
       this.isSubmitDisabled = true
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
@@ -579,6 +589,9 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          isDuplicated: this.isDuplicate,
+          duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
+          description: this.formValues.description || '',
           attachmentFiles: [
             ...this.formValues.attachmentFiles,
             ...this.formValues.importedEmailAttachments
@@ -764,8 +777,18 @@ export default {
       }, {})
     }
   },
-
   computed: {
+    getTitle() {
+      if (this.isEdit && this.isDuplicate) {
+        return 'Duplicate Email Template'
+      }
+
+      if (this.isEdit) {
+        return 'Edit Email Template'
+      }
+
+      return 'New Email Template'
+    },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
     },
@@ -774,6 +797,14 @@ export default {
     }
   },
   created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
+        backButton: 'btn-duplicate-back--email-templates-modal',
+        nextButton: 'btn-duplicate-next--email-templates-modal',
+        saveButton: 'btn-duplicate-save--email-templates-modal'
+      }
+    }
     this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {
@@ -783,6 +814,7 @@ export default {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
+          description: response.data.data.description || '',
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`

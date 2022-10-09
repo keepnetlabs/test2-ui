@@ -1,6 +1,7 @@
 <template>
   <app-dialog
     :status="status"
+    type="delete"
     icon="mdi-alert"
     title="Delete Group"
     subtitle="Do you want to delete this group?"

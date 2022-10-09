@@ -61,11 +61,15 @@ export function createCompany(payload) {
     if (Array.isArray(payload[key])) {
       payload[key].forEach((x) => formData.append(key, x))
     } else {
-      payload[key] && formData.append(key, payload[key])
+      if (key === 'PreferredLanguageTypeResourceId') {
+        formData.append(key, payload[key] || '')
+      } else {
+        payload[key] && formData.append(key, payload[key])
+      }
     }
   }
 
-  return testRequest.post(`/companies`, formData, { loading: true, snackbar: COMMON_SNACKBAR })
+  return testRequest.post(`/companies`, formData, { snackbar: COMMON_SNACKBAR })
 }
 export function updateCompany(id, payload) {
   const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
@@ -81,7 +85,11 @@ export function updateCompany(id, payload) {
     if (Array.isArray(payload[key])) {
       payload[key].forEach((x) => formData.append(key, x))
     } else {
-      payload[key] && formData.append(key, payload[key])
+      if (key === 'PreferredLanguageTypeResourceId') {
+        formData.append(key, payload[key] || '')
+      } else {
+        payload[key] && formData.append(key, payload[key])
+      }
     }
   }
 
@@ -124,7 +132,9 @@ export function createEmailTemplate(payload = {}) {
 export function getEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}`)
 }
-
+export function getDefaultEmailTemplate(resourceId = '') {
+  return testRequest.get(`/companies/email-templates/${resourceId}/default`)
+}
 export function exportEmailTemplate(payload = {}) {
   return testRequest.post('/companies/email-templates/search/export', payload, {
     responseType: 'blob'
@@ -157,6 +167,20 @@ export function getTemplateTypes() {
 
 export function getCheckCompanyLicense(resourceId = '') {
   return testRequest.get(`/companies/${resourceId}/license-check`)
+}
+
+export function bulkDeleteCompanies(payload = {}) {
+  return testRequest.delete(`/companies/bulk-delete`, {
+    data: payload,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function bulkDeleteCompanyGroups(payload = {}) {
+  return testRequest.delete(`/company-groups/bulk-delete`, {
+    data: payload,
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function makeDefaultTemplate(resourceId = '', payload = {}) {

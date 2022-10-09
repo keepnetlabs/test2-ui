@@ -30,7 +30,7 @@
     @on-view-report="handleViewReport"
     @on-delete="handleDelete"
   >
-    <template v-slot:datatable-custom-column="{ scope, col }">
+    <template #datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === columns.USER_STATS.property">
         <DataTableChart
           :scope="scope"
@@ -56,12 +56,12 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { callForCampaignReports, exportCampaignReports } from '@/api/phishingsimulator'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'CampaignReportsTable',
   components: { DataTable, DataTableChart },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     justShowReportAction: {
       type: Boolean,
@@ -152,13 +152,22 @@ export default {
   },
   methods: {
     getChartOptionsForRow(row) {
+      if (row.method === 'Click-Only') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened],
+          showTooltipLine: true
+        }
+      }
       if (row.method === 'Attachment') {
         return {
           backgroundColor: ['#67C23A', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Opened, labels.OpenedAttachment],
           showTooltipLine: true
         }
-      } else {
+      }
+
+      if (row.method === 'Data Submission') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
@@ -179,11 +188,19 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => {
-            const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
-            if (row.method === 'Attachment') {
-              campaignStatus.push(row['totalAttachmentOpenedCount'])
-            } else {
+            const campaignStatus = [row['totalNoResponseCount']]
+            if (row.method === 'Click-Only') {
               campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.push(row['totalOpenedCount'])
+            }
+            if (row.method === 'Attachment') {
+              campaignStatus.push(row['totalOpenedCount'])
+              campaignStatus.push(row['totalAttachmentOpenedCount'])
+            }
+
+            if (row.method === 'Data Submission') {
+              campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.push(row['totalOpenedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
             }
             return {
@@ -196,51 +213,6 @@ export default {
           })
         })
         .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     exportCampaignManagerReportClickedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

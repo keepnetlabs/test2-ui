@@ -162,7 +162,7 @@ export default {
       return mailDetails && mailDetails.to && mailDetails.to.toString()
     },
     getResourceId() {
-      return this.$route.params.id
+      return this.$route.params.id || ''
     },
     getMailDetailsCc() {
       const mailDetails = this.mailDetails

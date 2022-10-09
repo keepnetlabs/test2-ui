@@ -34,6 +34,9 @@ export default {
     name: {
       type: String,
       default: 'Delete'
+    },
+    id: {
+      type: String
     }
   },
   computed: {

@@ -1,7 +1,8 @@
 <template>
   <v-menu
     v-if="filterableType"
-    v-model="menu"
+    ref="refMenu"
+    :value="menu"
     class="filter__container"
     bottom
     offset-y
@@ -10,6 +11,8 @@
     :min-width="getWidth"
     :max-width="getWidth"
     :close-on-content-click="false"
+    :close-on-click="isCloseOnClick"
+    @input="handleMenuVisibilityChange"
   >
     <app-dialog
       v-if="status"
@@ -128,6 +131,7 @@
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :key="`${getDateKey}1`"
+          @change="handlePickerChange"
         />
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
@@ -164,6 +168,7 @@
           :key="`${getDateKey}1`"
           :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
           :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
+          @change="handlePickerChange"
         />
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
@@ -309,6 +314,7 @@ export default {
   },
   data() {
     return {
+      isCloseOnClick: true,
       status: false,
       zIndex: '202',
       menu: null,
@@ -419,6 +425,27 @@ export default {
     }
   },
   methods: {
+    handleMenuVisibilityChange(val) {
+      const { refPicker, refPicker2, refPickerDateOnly, refMenu } = this.$refs
+      if (
+        (refPicker && refPicker.pickerVisible) ||
+        (refPicker2 && refPicker2.pickerVisible) ||
+        (refPickerDateOnly && refPickerDateOnly.pickerVisible)
+      ) {
+        this.isCloseOnClick = false
+        this.menu = true
+        refMenu.isActive = true
+        return
+      }
+      this.isCloseOnClick = true
+      this.menu = val
+    },
+    handlePickerChange() {
+      const { refMenu } = this.$refs
+      this.isCloseOnClick = true
+      this.menu = true
+      refMenu.isActive = true
+    },
     getTimeZone(isDate) {
       return getTimeZone(isDate)
     },
@@ -426,6 +453,7 @@ export default {
       this.status = false
     },
     handleChangeBetweenDatepicker(val) {
+      this.handlePickerChange()
       if (!val) {
         this.filteredDateRangeValue = [
           this.defaultDate
@@ -576,16 +604,6 @@ export default {
     isShowSearchTextField() {
       return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
     },
-    inBetweenDatesPickerOptions() {
-      return {
-        disabledDate: (time) => {
-          return !this.$moment(time.getTime()).isBetween(
-            this.$moment(Date.now()).subtract(15, 'days').format(getTimeZoneForMoment()),
-            this.$moment(Date.now()).format(getTimeZoneForMoment())
-          )
-        }
-      }
-    },
     getDateKey() {
       return this.$store?.state?.auth?.user?.userCompany?.timeZone
     },
@@ -611,10 +629,7 @@ export default {
       if (this.filterValueBetween[0] && this.filterValueBetween[1]) {
         return false
       }
-      if (this.filterValue) {
-        return false
-      }
-      return true
+      return !this.filterValue
     },
     getFilterButtonDisabled() {
       switch (this.filterableType) {

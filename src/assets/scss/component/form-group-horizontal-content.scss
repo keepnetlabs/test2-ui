@@ -15,6 +15,17 @@
             line-height: 12px;
             color: #383b41;
         }
+
+        
+        .saml-default-role {
+            display: flex;
+            flex-direction: column;
+            &__label {
+                margin-top: 8px;
+            }
+        }
+        
+
     }
 
     >*:first-child {
@@ -41,5 +52,7 @@
         font-size: 14px;
         line-height: 21px;
         color: #383b41;
+
+        
     }
 }

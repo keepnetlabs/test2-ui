@@ -94,7 +94,7 @@
                       label="Enter new password"
                       class="reset-pass-textfield mb-6"
                       data-recording-ignore="mask"
-                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      :rules="[rules.required, rules.minPassword, rules.maxPassword, rules.equal]"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
@@ -116,7 +116,7 @@
                     >
                     <v-text-field
                       v-model="reNewPassword"
-                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      :rules="[rules.required, rules.minPassword, rules.maxPassword, rules.equal]"
                       label="Enter new password again"
                       class="reset-pass-textfield"
                       data-recording-ignore="mask"
@@ -302,6 +302,13 @@ export default {
             'At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character'
           )
         },
+        maxPassword: (value) => {
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
+          return (
+            (value && value.length < 1000 && pattern.test(value)) ||
+            'Password must be at most 1000 characters 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
+          )
+        },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },
       mfaStatus: null,
@@ -316,9 +323,6 @@ export default {
     this.getMfaStatus()
   },
   computed: {
-    dynamicID() {
-      return 'dynamicID-' + Math.floor(Math.random() * Date.now().toString())
-    },
     getTitle() {
       let title = null
       switch (this.step) {

@@ -90,14 +90,22 @@ export default {
       ].includes(this.actionStatus)
     },
     getId() {
-      return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
+      const iconName = this.getIconName
+      let idStart = ''
+      if (iconName === 'mdi-text-box') idStart = 'view-report'
+      else if (iconName === 'mdi-stop') idStart = 'stop'
+      else idStart = 'send'
+      return `btn-${idStart}--row-action-${Math.random().toString().substring(2)}`
     },
     actionStatus() {
       return this.scope.row.status
     },
     getRowActions() {
       const rowActions = this.rowActions
-      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+      if (
+        this.actionStatus === ACTION_STATUSES.RUNNING ||
+        this.actionStatus === ACTION_STATUSES.ERROR
+      ) {
         const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
         copyOfRowActions.splice(0, 1)
         copyOfRowActions.splice(0, 0, {

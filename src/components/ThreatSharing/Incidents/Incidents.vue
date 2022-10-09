@@ -129,7 +129,7 @@
               </v-expansion-panels>
             </v-skeleton-loader>
           </template>
-          <template slot="no-data">
+          <template #no-data>
             <v-skeleton-loader :loading="incidentLoading" type="article, actions">
               <div class="empty-communities">
                 <div class="empty-communities-inline">
@@ -141,9 +141,7 @@
                     }}
                   </span>
                   <div
-                    v-if="!search && !companyValue && !threats && routerName === 'Community'"
-                    block
-                    rounded
+                    v-if="showPostFirstIncidentButton"
                     class="create-post-incident"
                     id="threat-sharing-post-incident-button"
                     @click="showPostIncident = true"
@@ -207,6 +205,15 @@ export default {
     SinglePost
   },
   computed: {
+    showPostFirstIncidentButton() {
+      return (
+        !this.search &&
+        !this.companyValue &&
+        this.threats.length === 0 &&
+        this.incidentList.length === 0 &&
+        this.routerName === 'Community'
+      )
+    },
     numberOfPages() {
       return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage)
     },
@@ -267,16 +274,16 @@ export default {
   }),
   watch: {
     incidentLoading: function (newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal !== newVal) {
         this.$emit('setThreatSharingStepLoading', newVal)
       }
     },
     openEditPopupItem: function (newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal !== newVal) {
         this.showPostIncident = true
       }
     },
-    refreshIncidents: function (newVal, oldVal) {
+    refreshIncidents: function (newVal) {
       if (newVal && !this.isLoadState) {
         this.getIncidentList()
       }
@@ -296,17 +303,16 @@ export default {
         }
       }
     },
-    '$route.query.postId'(val) {
+    '$route.query.postId'() {
       this.$forceUpdate()
     }
   },
   methods: {
-    callForIncidentList(v) {
+    callForIncidentList() {
       !this.isLoadState && this.getIncidentList('', '', true)
     },
     checkDatatableIsEmpty() {
-      let result = this.search || this.companyValue || this.threats.length
-      return result
+      return this.search || this.companyValue || this.threats.length
     },
     handleSizeChange(val) {
       this.itemsPerPage = val
@@ -537,15 +543,6 @@ export default {
           }
         }
       }
-    },
-    nextPage() {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1
-    },
-    formerPage() {
-      if (this.page - 1 >= 1) this.page -= 1
-    },
-    updateItemsPerPage(number) {
-      this.itemsPerPage = number
     }
   },
   created() {

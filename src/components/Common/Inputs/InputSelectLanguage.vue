@@ -1,6 +1,7 @@
 <template>
-  <v-select
+  <KSelect
     outlined
+    type="autocomplete"
     :required="required"
     :persistent-hint="persistentHint"
     :items="items"
@@ -9,6 +10,7 @@
     :item-value="itemValue"
     :value="value"
     :hint="hint"
+    :disabled="disabled"
     :menu-props="menuProps"
     :placeholder="placeholder"
     @input="handleLanguageChange"
@@ -16,8 +18,10 @@
 </template>
 
 <script>
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'InputSelectLanguage',
+  components: { KSelect },
   props: {
     items: {
       type: Array,
@@ -61,6 +65,10 @@ export default {
       default: false
     },
     outlined: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }
