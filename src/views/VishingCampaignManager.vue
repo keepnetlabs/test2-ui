@@ -10,6 +10,8 @@
     <DeleteVishingCampaignDialog
       :status="isDeleteModalVisible"
       :selectedRow="selectedRow"
+      :selectedRowCount="selectedRowCount"
+      :isMultiple="isMultipleDelete"
       @onCancel="handleCloseDeleteModal"
       @onConfirm="handleConfirmDelete"
     />
@@ -37,7 +39,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewVishingTemplateModalStatus(true)"
       @downloadEvent="exportVishingCampaigns"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -134,7 +136,7 @@
             :disabled="tableOptions.rowActions[4].disabled"
             :icon="tableOptions.rowActions[4].icon"
             :text="tableOptions.rowActions[4].name"
-            @on-click="handleActionDelete(scope.row)"
+            @on-click="handleDelete(scope.row)"
           />
         </RowActionsMenu>
       </template>
@@ -184,9 +186,11 @@ export default {
       isDeleteModalVisible: false,
       loading: true,
       isEdit: false,
+      isMultipleDelete: false,
       isDuplicate: false,
       tableData: [],
       selectedRow: null,
+      selectedRowCount: 0,
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_CAMPAIGN_MANAGER,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHING_CAMPAIGN_MANAGER,
@@ -330,7 +334,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -393,7 +397,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportVishingCampaigns(payload).then((response) => {
           const { data } = response
@@ -409,6 +413,13 @@ export default {
     onToggleShowPreviewModal() {
       if (this.isPreviewVisible) this.selectedRow = null
       this.isPreviewVisible = !this.isPreviewVisible
+    },
+    onToggleShowDeleteModal() {
+      if (this.isDeleteModalVisible) {
+        this.selectedRow = null
+        this.isMultipleDelete = false
+      }
+      this.isDeleteModalVisible = !this.isDeleteModalVisible
     },
     handleViewReport(row) {},
     handleTryAgain(row) {},
@@ -430,11 +441,23 @@ export default {
         .then(this.callForData)
         .finally(this.handleCloseDeleteModal)
     },
-    handleActionDelete(row) {
+    handleDelete(row) {
       this.selectedRow = row
       this.isDeleteModalVisible = true
     },
+    handleMultipleDelete(items, excludedItems, selectAll) {
+      this.multipleDeletePayload = {
+        items: selectAll ? [] : items.map((item) => item.companyResourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.selectedRowCount = selectAll ? this.serverSideProps.totalNumberOfRecords : items.length
+      this.isMultipleDelete = true
+      this.onToggleShowDeleteModal()
+    },
     handleCloseDeleteModal() {
+      this.isMultipleDelete = false
       this.selectedRow = null
       this.isDeleteModalVisible = false
     }

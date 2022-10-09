@@ -398,7 +398,8 @@
                 <app-router-link
                   to="/vishing/campaign-manager"
                   id="btn--link-navigator-menu-vishing-campaign-manager"
-                  route-name="Campaign Manager"
+                  route-name="Vishing Campaign Manager"
+                  route-text="Campaign Manager"
                   :router-name="routerName"
                 />
               </v-list-item-content>

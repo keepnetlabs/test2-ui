@@ -1,14 +1,15 @@
 <template>
   <AppDialog
+    type="delete"
     icon="mdi-delete"
-    title="Delete Vishing Campaign?"
+    :title="getTitle"
     title-id="text--vishing-campaign-delete-popup-title"
     subtitle-id="text--vishing-campaign-delete-popup-subtitle"
     :status="status"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedRow && selectedRow.name }} will be deleted.
+      {{ getContent }}
     </template>
     <template v-slot:app-dialog-footer>
       <AppDialogFooter
@@ -38,6 +39,28 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    selectedRowCount: {
+      type: Number,
+      default: 0
+    },
+    isMultiple: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.isMultiple
+        ? `Delete ${this.selectedRowCount} ${this.selectedRowCount > 1 ? 'campaigns' : 'campaign'}?`
+        : 'Delete Vishing Campaign?'
+    },
+    getContent() {
+      return this.isMultiple
+        ? `Are you sure you want to delete all ${this.selectedRowCount} of the selected ${
+            this.selectedRowCount > 1 ? 'campaigns' : 'campaign'
+          }?`
+        : `${this.selectedRow && this.selectedRow.name} will be deleted.`
     }
   },
   methods: {

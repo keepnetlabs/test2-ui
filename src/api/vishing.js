@@ -46,8 +46,8 @@ export function getVishingTemplateList(payload = {}) {
           data: {
             pageNumber: 1,
             pageSize: 10,
-            totalNumberOfPages: 3,
-            totalNumberOfRecords: 24,
+            totalNumberOfPages: 1,
+            totalNumberOfRecords: 3,
             results: [
               {
                 resourceId: '1',
@@ -142,8 +142,8 @@ export function getVishingCampaigns(payload = {}) {
           data: {
             pageNumber: 1,
             pageSize: 10,
-            totalNumberOfPages: 3,
-            totalNumberOfRecords: 24,
+            totalNumberOfPages: 1,
+            totalNumberOfRecords: 6,
             results: [
               {
                 resourceId: '1',
