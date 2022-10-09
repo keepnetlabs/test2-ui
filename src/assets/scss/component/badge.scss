@@ -56,24 +56,6 @@
           height: auto !important;
           padding: 4px 6px !important;
         }
-        &--medium {
-            &.v-btn {
-                border-radius: 4px;
-                margin: 0 auto;
-                max-width: 100px;
-                height: 24px !important;
-                box-shadow: none !important;
-            }
-
-    &__sizes {
-      &--auto {
-        &.v-btn {
-          border-radius: 4px !important;
-          box-shadow: none !important;
-          max-width: unset !important;
-          height: auto !important;
-          padding: 4px 6px !important;
-        }
       }
       &--medium {
         &.v-btn {
@@ -113,7 +95,7 @@
         }
       }
     }
-  }
   .full-width {
     width: 100%;
   }
+}
