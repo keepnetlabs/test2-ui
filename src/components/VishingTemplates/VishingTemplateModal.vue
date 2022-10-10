@@ -268,7 +268,6 @@ import VishingTemplateDialogStep from '@/components/VishingTemplates/VishingTemp
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
 
 const initialFormValues = {
@@ -306,9 +305,6 @@ export default {
     status: {
       type: Boolean,
       default: false
-    },
-    editableFormValues: {
-      required: false
     },
     isEdit: {
       type: Boolean

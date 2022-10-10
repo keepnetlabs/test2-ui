@@ -23,7 +23,7 @@ export function getStatusBadgeProps(status) {
   if (status === 'Scheduled') {
     return {
       color: '#757575',
-      text: 'Excluded'
+      text: 'Scheduled'
     }
   }
 

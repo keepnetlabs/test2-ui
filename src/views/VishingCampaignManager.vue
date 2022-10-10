@@ -15,6 +15,15 @@
       @onCancel="handleCloseDeleteModal"
       @onConfirm="handleConfirmDelete"
     />
+    <VishingCampaignModal
+      ref="refVishingCampaignModal"
+      v-if="isCampaignModalVisible"
+      :status="isCampaignModalVisible"
+      :selectedRow="selectedRow"
+      :isEdit="isEdit"
+      :isDuplicate="isDuplicate"
+      @cancel="handleCloseCampaignModal"
+    />
     <DataTable
       id="vishing-campaign-manager-data-table"
       ref="refTable"
@@ -37,7 +46,7 @@
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
-      @addAction="changeNewVishingTemplateModalStatus(true)"
+      @addAction="isCampaignModalVisible = true"
       @downloadEvent="exportVishingCampaigns"
       @handleMultipleDelete="handleMultipleDelete"
       @paginationChangedEvent="paginationChangedEvent($event)"
@@ -57,7 +66,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
-          v-if="scope.row.status === 'Scheduled'"
+          v-if="['Scheduled', 'Idle'].includes(scope.row.status)"
           :scope="scope"
           :icon="tableOptions.rowActions[0].icon"
           :disabled="tableOptions.rowActions[0].disabled"
@@ -103,7 +112,7 @@
             @on-click="handlePreview(scope.row)"
           />
           <DefaultMenuRowAction
-            v-if="scope.row.status === 'Scheduled'"
+            v-if="['Scheduled', 'Idle'].includes(scope.row.status)"
             :scope="scope"
             :icon="tableOptions.rowActions[2].icon"
             :disabled="tableOptions.rowActions[2].disabled"
@@ -120,7 +129,7 @@
             @on-click="handleViewReport(scope.row)"
           />
           <DefaultMenuRowAction
-            v-if="['Scheduled', 'Running'].includes(scope.row.status)"
+            v-if="['Scheduled', 'Running', 'Idle'].includes(scope.row.status)"
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
@@ -166,6 +175,7 @@ import { getStatusBadgeProps } from '@/components/VishingCampaignManager/utils'
 import Badge from '@/components/Badge'
 import VishingTemplatePreview from '@/components/VishingTemplates/VishingTemplatePreview'
 import DeleteVishingCampaignDialog from '@/components/VishingCampaignManager/DeleteVishingCampaignDialog'
+import VishingCampaignModal from '@/components/VishingCampaignManager/VishingCampaignModal'
 
 export default {
   name: 'VishingCampaignManager',
@@ -177,13 +187,15 @@ export default {
     DefaultMenuRowAction,
     Badge,
     VishingTemplatePreview,
-    DeleteVishingCampaignDialog
+    DeleteVishingCampaignDialog,
+    VishingCampaignModal
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
       isPreviewVisible: false,
       isDeleteModalVisible: false,
+      isCampaignModalVisible: false,
       loading: true,
       isEdit: false,
       isMultipleDelete: false,
@@ -434,7 +446,7 @@ export default {
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
-      this.vishingTemplateId = row.resourceId
+      this.isCampaignModalVisible = true
     },
     handleConfirmDelete() {
       deleteVishingCampaign(this.selectedRow.resourceId)
@@ -460,6 +472,12 @@ export default {
       this.isMultipleDelete = false
       this.selectedRow = null
       this.isDeleteModalVisible = false
+    },
+    handleCloseCampaignModal() {
+      this.selectedRow = null
+      this.isEdit = false
+      this.isDuplicate = false
+      this.isCampaignModalVisible = false
     }
   }
 }
