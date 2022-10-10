@@ -108,6 +108,9 @@ Vue.filter('formatSize', function (size) {
   }
   return size.toString() + ' B'
 })
+Vue.config.errorHandler = function (err, vm, info) {
+  window.newrelic.noticeError(err)
+}
 const vm = new Vue({
   router,
   store,
