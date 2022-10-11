@@ -228,6 +228,17 @@
           >
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
+
+          <router-link
+            v-if="getEtsQuickScanPermissionSearch"
+            to="/threat-intelligence"
+            id="btn--link-navigator-menu-threat-intelligence"
+            :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
+            @click.native="deleteTSVuexData"
+          >
+            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiShieldBug" />
+          </router-link>
+
           <router-link
             v-if="getEtsQuickScanPermissionSearch"
             to="/email-threat-simulator"
@@ -715,7 +726,8 @@ import {
   mdiBriefcaseVariant,
   mdiMenu,
   mdiHelpCircle,
-  mdiBook
+  mdiBook,
+  mdiShieldBug
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -772,7 +784,8 @@ export default {
         mdiBriefcaseVariant,
         mdiMenu,
         mdiHelpCircle,
-        mdiBook
+        mdiBook,
+        mdiShieldBug
       },
       switchDialogStatus: false,
       showNewPassword: false,
