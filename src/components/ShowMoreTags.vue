@@ -25,7 +25,7 @@
           <v-btn style="display: none;"></v-btn>
           <Badge
             :listeners="on"
-            size="mini"
+            size="small"
             :color="badgeColor"
             :text="`+${unRenderedBadgeCount}`"
           />

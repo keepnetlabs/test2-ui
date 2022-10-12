@@ -25,7 +25,8 @@ export function getVishingTemplatePreview(id) {
             isFailStep: true
           },
           {
-            type: 'Pause'
+            type: 'Pause',
+            pauseSeconds: 5
           }
         ]
       })
@@ -51,19 +52,27 @@ export function getVishingTemplateList(payload = {}) {
             results: [
               {
                 resourceId: '1',
-                name: 'Template Name',
+                name: 'Long Template Name that Creates Overflow Elipsis',
                 language: 'English - Female',
+                languageShortCode: 'EN',
+                narratorGender: 'Female',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
                 difficulty: 'Medium',
                 createdBy: 'System',
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: 'No',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2']
               },
               {
                 resourceId: '2',
                 name: 'Template Name',
                 language: 'English - Male',
+                languageShortCode: 'EN',
+                narratorGender: 'Male',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
                 difficulty: 'Hard',
                 createdBy: 'System',
                 createTime: '14/06/2022 06:49',
@@ -75,6 +84,55 @@ export function getVishingTemplateList(payload = {}) {
                 resourceId: '3',
                 name: 'Template Name',
                 language: 'German - Male',
+                languageShortCode: 'DE',
+                narratorGender: 'Male',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
+                difficulty: 'Easy',
+                createdBy: 'System',
+                createTime: '14/06/2022 06:49',
+                isOwner: false,
+                availableFor: '12',
+                tags: ['tag1', 'tag2']
+              },
+              {
+                resourceId: '4',
+                name: 'Template Name',
+                language: 'English - Female',
+                languageShortCode: 'EN',
+                narratorGender: 'Female',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
+                difficulty: 'Medium',
+                createdBy: 'System',
+                createTime: '14/06/2022 06:49',
+                isOwner: true,
+                availableFor: 'No',
+                tags: ['tag1', 'tag2']
+              },
+              {
+                resourceId: '5',
+                name: 'Template Name',
+                language: 'English - Male',
+                languageShortCode: 'EN',
+                narratorGender: 'Male',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
+                difficulty: 'Hard',
+                createdBy: 'System',
+                createTime: '14/06/2022 06:49',
+                isOwner: true,
+                availableFor: '12',
+                tags: ['tag1', 'tag2']
+              },
+              {
+                resourceId: '6',
+                name: 'Template Name',
+                language: 'German - Male',
+                languageShortCode: 'DE',
+                narratorGender: 'Male',
+                description:
+                  'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
                 difficulty: 'Easy',
                 createdBy: 'System',
                 createTime: '14/06/2022 06:49',

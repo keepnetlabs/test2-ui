@@ -118,6 +118,14 @@
               </FormGroup>
             </v-form>
           </v-stepper-content>
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="2">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Vishing Templates"
+              subtitle="Select a template to use in this campaign"
+            />
+            <VishingTemplateSelectList v-if="step === 2" ref="refVishingTemplateSelectList" />
+          </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
     </template>
@@ -144,6 +152,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import { mapGetters } from 'vuex'
 import { getTimeZone } from '@/utils/functions'
+import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 
 const initialFormValues = {
   name: '',
@@ -151,8 +160,6 @@ const initialFormValues = {
   scheduledDate: '',
   scheduledTimeZoneId: '',
   markedAsTest: false,
-  description: '',
-  tags: [],
   difficultyResourceId: 'mT0CeYGgKsVb',
   languageResourceId: 'WNZt0sCVCWB3',
   availableForRequests: [],
@@ -172,7 +179,8 @@ export default {
     InputEntityName,
     FormGroup,
     InputDate,
-    InputTimezone
+    InputTimezone,
+    VishingTemplateSelectList
   },
   props: {
     status: {
@@ -235,7 +243,6 @@ export default {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
     handleCancel() {
-      console.log('handleCancel executed')
       this.$emit('cancel')
     },
     backStep() {

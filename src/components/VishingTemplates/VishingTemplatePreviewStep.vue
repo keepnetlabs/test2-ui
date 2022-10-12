@@ -15,13 +15,16 @@
       <Badge
         v-if="hasRequiredDigitCount"
         color="#E0E0E0"
-        isBlackText
+        textBlack
         size="auto"
         :outline="false"
         :text="getRequiredDigitCountTagText"
       />
       <Badge v-if="step.isFailStep" color="#B6791D" text="Fail Step" :outline="false" />
     </div>
+    <span v-if="step.pauseSeconds" class="vishing-template-preview-step__text">
+      {{ `Pause for ${step.pauseSeconds} seconds` }}
+    </span>
   </div>
 </template>
 
@@ -69,5 +72,6 @@ export default {
 //     fileUrl?: string;
 //     requiredDigitCount?: number;
 //     isFailStep: boolean;
+//     pauseSeconds?: number
 // }
 </script>
