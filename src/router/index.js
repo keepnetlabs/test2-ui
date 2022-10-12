@@ -40,7 +40,11 @@ import Certificates from '@/views/Certificates'
 import Scorm from '@/views/Scorm'
 import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
+import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
+import RecentlyPostedThreats
+  from "@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats";
+import EmailThreatSimulatorRequest from "@/utils/emailThreatSimulatorRequest";
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -470,7 +474,19 @@ const router = new Router({
           },
           params: true,
           props: true
-        }
+        },
+        {
+          path: '/threat-intelligence',
+          name: 'Threat Intelligence',
+          component: ThreatIntelligence,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true,
+          props: true
+        },
       ]
     },
     {

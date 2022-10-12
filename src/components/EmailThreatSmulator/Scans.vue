@@ -130,7 +130,7 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 
 export default {
-  name: 'EmailTemplates',
+  name: 'Scans',
   components: {
     DefaultMenuRowAction,
     RowActionsMenu,
