@@ -109,7 +109,6 @@
               <FormGroup class="mt-6" title="Mark as Test">
                 <v-checkbox
                   v-model="formValues.markedAsTest"
-                  id="input--campaign-manager-advanced-settings-randomly-selected"
                   hide-details
                   color="#2196f3"
                   label="Exclude from reports (Test campaign)"
@@ -124,7 +123,96 @@
               title="Vishing Templates"
               subtitle="Select a template to use in this campaign"
             />
-            <VishingTemplateSelectList v-if="step === 2" ref="refVishingTemplateSelectList" />
+            <VishingTemplateSelectList ref="refVishingTemplateSelectList" />
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="3">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Target Audience"
+              subtitle="Select target users for your campaign"
+            />
+            <KSelect
+              v-show="false"
+              v-model.trim="formValues.targetGroupResourceIds"
+              type="combobox"
+              id="input--campaign-target-user-groups"
+              class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
+              outlined
+              multiple
+              dense
+              auto-select-first
+              small-chips
+              deletable-chips
+              persistent-hint
+              hint="*Required"
+              placeholder="Select groups"
+              :loading="isTargetGroupSearchLoading"
+              :items="targetGroupItems"
+              :rules="rules.select"
+              :slots="{ progress: true }"
+              @input="handleTargetGroupsResourceIdsChange"
+              @update:search-input="handleSearchInputChange"
+              @focus="handleFocusOfTargetGroupsInput"
+              @focusout="handleFocusOutOfTargetGroupsInput"
+            >
+              <template #progress>
+                <KSelectLoading v-show="isTargetGroupSearchLoading && isTargetGroupFocused" />
+              </template>
+            </KSelect>
+            <v-btn
+              v-show="false"
+              text
+              class="campaign-manager__close-advanced-search"
+              color="#2196F3"
+              @click="toggleShowAdvancedSearch"
+            >
+              {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
+            </v-btn>
+            <CampaignManagerTargetGroups
+              ref="refTargetAudience"
+              class="mt-2"
+              :selected-target-groups="formValues.targetGroupResourceIds"
+              :response-of-target-groups-items="responseOfTargetGroupsItems"
+              :is-valid="isTargetGroupsValid"
+              @handle-selection-change="handleTableSelectionChange"
+            />
+            <CustomError
+              class="mb-6 ml-2"
+              style="margin-top: 2px;"
+              :is-valid="isTargetGroupsValid"
+              :error-message="getTargetGroupErrorMessage"
+            />
+            <FormGroup class="mt-6" title="Limit Recipients" />
+            <div class="d-flex" style="align-items: center; gap: 8px;">
+              <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
+                <template #label> </template>
+              </v-checkbox>
+              <span class="form-group-horizontal-content__label">
+                Send this campaign to randomly selected
+              </span>
+              <v-text-field
+                ref="refRecipientValue"
+                :value="formValues.recipientValue"
+                style="max-width: 64px !important;"
+                outlined
+                hide-details
+                placeholder=""
+                :rules="[]"
+                :disabled="!formValues.isLimitRecipients"
+                @input="handleRecipientValueChange"
+              />
+              <KSelect
+                v-model="formValues.recipientType"
+                style="max-width: 120px !important;"
+                outlined
+                dense
+                hide-details
+                :return-object="false"
+                :items="recipientTypes"
+                :disabled="!formValues.isLimitRecipients"
+              />
+              <span class="form-group-horizontal-content__label"> of target users</span>
+            </div>
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -153,6 +241,13 @@ import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import { mapGetters } from 'vuex'
 import { getTimeZone } from '@/utils/functions'
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
+import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
+import CustomError from '@/components/CustomError'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import KSelectLoading from '@/components/KSelectLoading'
+import { searchTargetGroups } from '@/api/targetUsers'
+import * as validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
 
 const initialFormValues = {
   name: '',
@@ -160,8 +255,11 @@ const initialFormValues = {
   scheduledDate: '',
   scheduledTimeZoneId: '',
   markedAsTest: false,
-  difficultyResourceId: 'mT0CeYGgKsVb',
-  languageResourceId: 'WNZt0sCVCWB3',
+  templateResourceId: '',
+  targetGroupResourceIds: [],
+  isLimitRecipients: false,
+  recipientType: 1,
+  recipientValue: 0,
   availableForRequests: [],
   dialogNoticeType: 'textToSpeech',
   dialogNoticeTextToSpeech: '',
@@ -180,7 +278,11 @@ export default {
     FormGroup,
     InputDate,
     InputTimezone,
-    VishingTemplateSelectList
+    VishingTemplateSelectList,
+    CampaignManagerTargetGroups,
+    CustomError,
+    KSelect,
+    KSelectLoading
   },
   props: {
     status: {
@@ -201,14 +303,63 @@ export default {
   },
   data() {
     return {
+      labels,
       step: 1,
       parsedFormat: getTimeZone(false),
       isDateValid: true,
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
+      initial: true,
       initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
-      formValues: JSON.parse(JSON.stringify(initialFormValues))
+      formValues: JSON.parse(JSON.stringify(initialFormValues)),
+      selectedTargetGroups: [],
+      isTargetGroupsValid: true,
+      responseOfTargetGroupsItems: {},
+      isTargetGroupSearchLoading: false,
+      isTargetGroupLoading: false,
+      defaultTargetGroups: [],
+      targetGroupItems: [],
+      isShowAdvancedSearch: true,
+      isTargetGroupFocused: false,
+      isShowTargetGroupUsersError: false,
+      axiosPayloadOfTargetGroups: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      rules: {
+        select: [
+          (v) => !!v.length || labels.Required,
+          (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
+        ]
+      },
+      recipientTypes: [
+        {
+          text: 'percent',
+          value: 1
+        },
+        {
+          text: 'users',
+          value: 2
+        }
+      ]
     }
   },
   computed: {
@@ -225,6 +376,13 @@ export default {
     },
     isScheduledTimeDisabled() {
       return this.formValues.scheduleTypeId !== '3'
+    },
+    getTargetGroupErrorMessage() {
+      return this.formValues.targetGroupResourceIds.length
+        ? this.isShowTargetGroupUsersError
+          ? 'Target groups must have at least 1 user'
+          : 'Required'
+        : 'Required'
     }
   },
   watch: {
@@ -236,9 +394,147 @@ export default {
           this.parsedFormat = getTimeZone(false, val)
         }
       }
+    },
+    'formValues.targetGroupResourceIds'(val) {
+      this.isTargetGroupsValid = !!val.length
     }
   },
+  created() {
+    this.callForTargetGroups()
+  },
   methods: {
+    handleSearchInputChange(val) {
+      this.debounce(() => {
+        if (
+          (!this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
+            val === null) ||
+          (this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
+            this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0].Value === val)
+        )
+          return
+        this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems = [
+          { FieldName: 'Name', Operator: 'Contains', Value: val }
+        ]
+        this.callForTargetGroups()
+      }, 500)
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    callForTargetGroups() {
+      this.isTargetGroupSearchLoading = true
+      this.setTargetGroupLoading(true)
+      searchTargetGroups(this.axiosPayloadOfTargetGroups)
+        .then((response) => {
+          const { data: { data: { results = [] } = {} } = {} } = response
+          if (this.initial) {
+            this.responseOfTargetGroupsItems = response
+          }
+          this.initial = false
+          this.targetGroupItems = results.map((item) => ({
+            text: item.name,
+            value: item.resourceId,
+            extraDatas: item
+          }))
+        })
+        .finally(() => {
+          this.isTargetGroupSearchLoading = false
+          this.setTargetGroupLoading()
+          this.addDefaultTargetGroupItems(this.defaultTargetGroups)
+          this.targetGroupItems.push(...this.defaultTargetGroups)
+        })
+    },
+    setTargetGroupLoading(val = false) {
+      this.isTargetGroupLoading = val
+    },
+    addDefaultTargetGroupItems(targetGroups = []) {
+      if (this.formValues.targetGroupResourceIds.length || !targetGroups.length) return
+      this.$nextTick(() => {
+        this.handleTargetGroupsResourceIdsChange(targetGroups)
+      })
+    },
+    handleTargetGroupsResourceIdsChange(items) {
+      const selectedTableItems = items
+        .filter((item) => item)
+        .map((item) => ({ ...item, resourceId: item.value }))
+      if (this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.$refs.elTableRef) {
+        this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+          selectedTableItems
+        )
+      }
+    },
+    handleTableSelectionChange(items) {
+      this.selectedTargetGroups = items
+      this.formValues.targetGroupResourceIds = items
+        .filter((item) => item)
+        .map((item) => ({
+          text: item.text || item.name,
+          value: item.value || item.resourceId,
+          extraDatas: item
+        }))
+    },
+    handleScroll(
+      e,
+      callback = this.callForTargetGroups,
+      axiosPayload = this.axiosPayloadOfTargetGroups
+    ) {
+      const { scrollTop, scrollHeight, offsetHeight } = e.target
+      if (
+        scrollTop - (scrollHeight - offsetHeight) < 10 &&
+        scrollTop - (scrollHeight - offsetHeight) > -10
+      ) {
+        axiosPayload.pageSize += 10
+        this.debounce(() => {
+          callback()
+        }, 500)
+      }
+    },
+    handleFocusOfTargetGroupsInput() {
+      this.isTargetGroupFocused = true
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
+            document
+              .querySelector('#input--campaign-target-user-groups .k-select__menu')
+              .addEventListener('scroll', this.handleScroll)
+          }
+        })
+      }, 250)
+    },
+    handleFocusOutOfTargetGroupsInput() {
+      this.isTargetGroupFocused = false
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
+            document
+              .querySelector('#input--campaign-target-user-groups .k-select__menu')
+              .removeEventListener('scroll', this.handleScroll)
+          }
+        })
+      }, 250)
+    },
+    toggleShowAdvancedSearch() {
+      this.isShowAdvancedSearch = !this.isShowAdvancedSearch
+    },
+    handleRecipientValueChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.recipientValue = val
+      } else {
+        this.$refs.refRecipientValue.initialValue = this.formValues.recipientValue
+        this.$refs.refRecipientValue.lazyValue = this.formValues.recipientValue
+      }
+    },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
