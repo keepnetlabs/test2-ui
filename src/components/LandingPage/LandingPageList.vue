@@ -20,6 +20,7 @@
       />
     </v-overlay>
     <DeleteEmailTemplates
+      v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
@@ -78,7 +79,7 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
@@ -87,10 +88,9 @@
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportLandingPage"
       @handleMultipleDelete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -107,12 +107,11 @@
           @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
-          <DefaultMenuRowAction
+          <ScenariosRowActionsEditButton
             :id="tableOptions.rowActions[1].id"
             :scope="scope"
+            :name="tableOptions.rowActions[1].name"
             :disabled="tableOptions.rowActions[1].disabled"
-            :icon="tableOptions.rowActions[1].icon"
-            :text="tableOptions.rowActions[1].name"
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
@@ -125,12 +124,11 @@
             :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
-          <DefaultMenuRowAction
+          <ScenariosRowActionsDeleteButton
             :id="tableOptions.rowActions[3].id"
             :scope="scope"
+            :name="tableOptions.rowActions[3].name"
             :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -160,17 +158,21 @@ import {
   exportLandingPage
 } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
+import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    ScenariosRowActionsDeleteButton,
+    ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
@@ -181,7 +183,7 @@ export default {
     AppDialog,
     LandingPageTemplateModalPreview
   },
-  mixins: [useCallForLanguagesForTableFilter],
+  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
       landingPageData: null,
@@ -343,8 +345,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
@@ -373,7 +374,7 @@ export default {
   created() {
     this.callForLanguages('refLandingPageList')
     this.callForLookups()
-    this.getDatatableList()
+    this.callForData()
   },
   methods: {
     handlePreviousTemplate() {
@@ -382,57 +383,10 @@ export default {
     handleNextTemplate() {
       this.selectedLandingPageIndex++
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
     handleSuccessDeleteAction(row) {
       this.$refs.refLandingPageList.unSelectRow(row)
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handlePreview(row) {
       const id = row.resourceId
@@ -481,7 +435,7 @@ export default {
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportLandingPage({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -493,7 +447,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportLandingPage(payload).then((response) => {
           const { data } = response
@@ -506,10 +460,10 @@ export default {
         })
       })
     },
-    getDatatableList() {
+    callForData() {
       this.loading = true
       if (this.getLandingPageTemplatesSearchPermissions) {
-        getLandingPageList(this.bodyData)
+        getLandingPageList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -530,17 +484,6 @@ export default {
     handleActionDelete(row) {
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     },
     callForLookups() {
       getLandingPageFormDetails().then((response) => {
