@@ -24,7 +24,7 @@
       title="Rename The Attachment"
       @changeStatus="onCloseRenameAttachmentModal"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <v-form ref="refAttachmentNameForm" @submit.prevent>
           <v-text-field
             v-model.trim="attachmentName"
@@ -40,7 +40,7 @@
           />
         </v-form>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <AppDialogFooter
           @handleClose="onCloseRenameAttachmentModal"
           @handleConfirm="onConfirmRenameAttachment"
@@ -48,6 +48,7 @@
       </template>
     </AppDialog>
     <DeleteEmailTemplates
+      v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
@@ -100,7 +101,7 @@
           <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             id="btn-close--email-preview-popup"
@@ -132,7 +133,7 @@
       :download-button="tableOptions.downloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
@@ -141,10 +142,9 @@
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportEmailTemplates"
       @handleMultipleDelete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -161,12 +161,11 @@
           @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
-          <DefaultMenuRowAction
-            :scope="scope"
+          <ScenariosRowActionsEditButton
             :id="tableOptions.rowActions[1].id"
+            :scope="scope"
+            :name="tableOptions.rowActions[1].name"
             :disabled="tableOptions.rowActions[1].disabled"
-            :icon="tableOptions.rowActions[1].icon"
-            :text="tableOptions.rowActions[1].name"
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
@@ -179,12 +178,11 @@
             :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
-          <DefaultMenuRowAction
-            :scope="scope"
+          <ScenariosRowActionsDeleteButton
             :id="tableOptions.rowActions[3].id"
+            :scope="scope"
+            :name="tableOptions.rowActions[3].name"
             :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -213,7 +211,6 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import KEmailPreview from '@/components/KEmailPreview'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -225,9 +222,14 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
+import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'EmailTemplates',
   components: {
+    ScenariosRowActionsDeleteButton,
+    ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
@@ -240,7 +242,7 @@ export default {
     AppDialogFooter,
     AttachmentsPreview
   },
-  mixins: [useCallForLanguagesForTableFilter],
+  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
       attachmentName: '',
@@ -344,8 +346,6 @@ export default {
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
             filterableType: 'text'
-            // filterableType: 'select',
-            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -427,8 +427,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
@@ -442,9 +441,10 @@ export default {
   },
   created() {
     this.callForLanguages('refEmailTemplatesList')
+    this.callForData()
   },
-  mounted() {
-    this.getDatatableList()
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
   },
   methods: {
     onShowRenameAttachmentModal() {
@@ -487,56 +487,10 @@ export default {
         this.onCloseRenameAttachmentModal()
       }
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
     handleSuccessDeleteAction(row) {
       this.$refs.refEmailTemplatesList.unSelectRow(row)
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handlePreview(row) {
       this.isTemplateDetails = true
@@ -594,7 +548,7 @@ export default {
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportEmailTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -606,7 +560,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportEmailTemplates(payload).then((response) => {
           const { data } = response
@@ -619,10 +573,10 @@ export default {
         })
       })
     },
-    getDatatableList() {
+    callForData() {
       if (this.getEmailTemplatesSearchPermissions) {
         this.loading = true
-        getEmailTemplatesList(this.bodyData)
+        getEmailTemplatesList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -643,21 +597,7 @@ export default {
     handleActionDelete(row) {
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
   }
 }
 </script>

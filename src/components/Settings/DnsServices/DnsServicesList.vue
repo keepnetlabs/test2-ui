@@ -1,19 +1,25 @@
 <template>
   <div id="dnsServiceList">
     <NewEditDnsService
-      ref="newEditDnsServiceModal"
       v-if="modalStatus"
+      ref="newEditDnsServiceModal"
       :status="modalStatus"
+      :resource-id="resourceId"
+      :is-edit="isEdit"
       @changeStatus="changeStatus"
-      :resourceId="resourceId"
-      :isEdit="isEdit"
+    />
+    <CantDeleteDnsServiceDialog
+      v-if="isShowCantDeleteDialog"
+      :status="isShowCantDeleteDialog"
+      :selected-row="selectedDnsService"
+      @on-close="toggleCantDeleteDialog"
     />
     <DeleteServiceModal
       :status="showDeleteModal"
+      :selected-dns-service="selectedDnsService"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      :selectedDnsService="selectedDnsService"
     />
     <data-table
       id="dnsServiceList-data-table"
@@ -32,7 +38,7 @@
       :download-button="tableOptions.downloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="handleActionDelete"
@@ -40,10 +46,9 @@
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportDnsService"
       @delete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -86,23 +91,25 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
 import DeleteServiceModal from '@/components/Settings/DnsServices/DeleteServiceModal'
 import NewEditDnsService from '@/components/Settings/DnsServices/NewEditDnsService'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import CantDeleteDnsServiceDialog from '@/components/Settings/DnsServices/CantDeleteDnsServiceDialog'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'DnsServiceList',
   components: {
+    CantDeleteDnsServiceDialog,
     DefaultButtonRowAction,
     NewEditDnsService,
     DataTable,
     DeleteServiceModal
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
+      isShowCantDeleteDialog: false,
       resourceId: null,
-      methodItems: [],
-      difficultyItems: [],
       editableFormValues: {},
       loading: true,
       isEdit: false,
@@ -219,8 +226,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       templateHTML: null
@@ -234,9 +240,34 @@ export default {
     })
   },
   created() {
-    this.getDatatableList()
+    this.callForData()
   },
   methods: {
+    callForData() {
+      this.loading = true
+      if (this.getDnsSearchPermissions) {
+        getDnsServiceList(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      }
+    },
+    toggleCantDeleteDialog(isOpenNewServiceModal = false) {
+      if (isOpenNewServiceModal) this.handleAdd()
+      this.isShowCantDeleteDialog = !this.isShowCantDeleteDialog
+    },
     checkIfCanCloseDnsServiceModal() {
       if (this.$refs.newEditDnsServiceModal) {
         this.$refs.newEditDnsServiceModal.cancelDns()
@@ -246,68 +277,17 @@ export default {
       this.modalStatus = !this.modalStatus
       if (!value) this.resourceId = ''
       if (restart) {
-        this.getDatatableList()
+        this.callForData()
       }
-    },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
     },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleDelete(row) {
       deleteEmailTemplate(row.resourceId).then(() => {
         this.$refs.refDnsServiceListList.unSelectRow(row)
-        this.getDatatableList()
+        this.callForData()
       })
     },
     handleEdit(row) {
@@ -328,7 +308,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportDnsService(payload).then((response) => {
           const { data } = response
@@ -341,41 +321,10 @@ export default {
         })
       })
     },
-    getDatatableList() {
-      this.loading = true
-      if (this.getDnsSearchPermissions) {
-        getDnsServiceList(this.bodyData)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
-          })
-          .catch(() => {
-            this.tableData = []
-          })
-          .finally(() => (this.loading = false))
-      }
-    },
     handleActionDelete(row) {
       this.selectedDnsService = row
-      this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
+      if (this.serverSideProps.totalNumberOfRecords === 1) this.toggleCantDeleteDialog()
+      else this.showDeleteModal = true
     }
   }
 }

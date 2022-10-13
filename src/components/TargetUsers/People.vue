@@ -234,20 +234,20 @@
             :icon="tableOptions.rowActions[2].icon"
             @on-click="handleAddUserToGroup(scope.row)"
           />
+          <!-- <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :text="tableOptions.rowActions[4].name"
+            :icon="tableOptions.rowActions[4].icon"
+            @on-click="handleCreateGroupWithUser(scope.row)"
+          /> -->
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
             :text="tableOptions.rowActions[3].name"
             :icon="tableOptions.rowActions[3].icon"
-            @on-click="handleCreateGroupWithUser(scope.row)"
-          />
-          <!-- <DefaultMenuRowAction
-            :scope="scope"
-            :id="tableOptions.rowActions[3].id"
-            :text="tableOptions.rowActions[3].name"
-            :icon="tableOptions.rowActions[3].icon"
             @on-click="handleViewUserGroups(scope.row)"
-          /> -->
+          />
           <TargetUserRowActionsDeleteButton
             :scope="scope"
             :id="tableOptions.rowActions[1].id"
