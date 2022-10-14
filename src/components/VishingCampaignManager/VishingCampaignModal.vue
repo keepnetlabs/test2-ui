@@ -148,7 +148,7 @@
               placeholder="Select groups"
               :loading="isTargetGroupSearchLoading"
               :items="targetGroupItems"
-              :rules="rules.select"
+              :rules="rules.targetGroupSelect"
               :slots="{ progress: true }"
               @input="handleTargetGroupsResourceIdsChange"
               @update:search-input="handleSearchInputChange"
@@ -176,12 +176,6 @@
               :is-valid="isTargetGroupsValid"
               @handle-selection-change="handleTableSelectionChange"
             />
-            <CustomError
-              class="mb-6 ml-2"
-              style="margin-top: 2px;"
-              :is-valid="isTargetGroupsValid"
-              :error-message="getTargetGroupErrorMessage"
-            />
             <FormGroup class="mt-6" title="Limit Recipients" />
             <div class="d-flex" style="align-items: center; gap: 8px;">
               <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
@@ -190,23 +184,30 @@
               <span class="form-group-horizontal-content__label">
                 Send this campaign to randomly selected
               </span>
-              <v-text-field
-                ref="refRecipientValue"
-                :value="formValues.recipientValue"
-                style="max-width: 64px !important;"
-                outlined
-                hide-details
-                placeholder=""
-                :rules="[]"
-                :disabled="!formValues.isLimitRecipients"
-                @input="handleRecipientValueChange"
-              />
+              <div style="position: relative;">
+                <v-text-field
+                  ref="refRecipientValue"
+                  :value="formValues.recipientValue"
+                  :disabled="!formValues.isLimitRecipients"
+                  style="max-width: 64px !important;"
+                  outlined
+                  placeholder=""
+                  hide-details
+                  :error="!!getRecipientValueErrorMessage"
+                  @input="handleRecipientValueChange"
+                />
+                <CustomError
+                  style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                  :error-message="getRecipientValueErrorMessage"
+                />
+              </div>
               <KSelect
                 v-model="formValues.recipientType"
                 style="max-width: 120px !important;"
                 outlined
                 dense
                 hide-details
+                position="top"
                 :return-object="false"
                 :items="recipientTypes"
                 :disabled="!formValues.isLimitRecipients"
@@ -314,6 +315,7 @@ export default {
       initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
       formValues: JSON.parse(JSON.stringify(initialFormValues)),
       selectedTargetGroups: [],
+      totalTargetUserCount: 0,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: {},
       isTargetGroupSearchLoading: false,
@@ -345,10 +347,11 @@ export default {
         }
       },
       rules: {
-        select: [
+        targetGroupSelect: [
           (v) => !!v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
-        ]
+        ],
+        recipientValue: []
       },
       recipientTypes: [
         {
@@ -383,6 +386,27 @@ export default {
           ? 'Target groups must have at least 1 user'
           : 'Required'
         : 'Required'
+    },
+    getRecipientValueErrorMessage() {
+      if (this.formValues.isLimitRecipients) {
+        if (this.formValues.recipientType === 1) {
+          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
+            return 'Enter a number higher than 0'
+          }
+          if (this.formValues.recipientValue > 100) {
+            return 'This number cannot be higher than 100 percent'
+          }
+        } else {
+          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
+            return 'Enter a number higher than 0'
+          }
+          if (this.formValues.recipientValue > this.totalTargetUserCount) {
+            return 'This number cannot be higher than number of total target users'
+          }
+        }
+      }
+
+      return ''
     }
   },
   watch: {
@@ -397,6 +421,17 @@ export default {
     },
     'formValues.targetGroupResourceIds'(val) {
       this.isTargetGroupsValid = !!val.length
+    },
+    selectedTargetGroups: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        const userCount = val.reduce((acc, item) => {
+          acc += item?.userCount || 0
+          return acc
+        }, 0)
+        this.totalTargetUserCount = userCount
+      }
     }
   },
   created() {
