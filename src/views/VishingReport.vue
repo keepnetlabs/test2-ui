@@ -3,7 +3,6 @@
     <el-tabs v-model="tab">
       <el-tab-pane
         v-for="item in tabItems"
-        v-if="item.isVisible"
         :key="item.name"
         :id="item.id"
         :name="item.name"
@@ -18,7 +17,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
-          :training-name="getVishingNamae"
+          :vishing-name="getVishingName"
         />
       </el-tab-pane>
     </el-tabs>
@@ -39,68 +38,9 @@ export default {
       tabItems: [
         {
           name: labels.Summary,
-          id: 'training-report-summary-content',
+          id: 'vishing-report-summary-content',
           label: labels.Summary,
-          component: VishingReportSummary,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
-          isVisible: true
-        },
-        {
-          name: labels.Users,
-          id: 'training-report-users-content',
-          label: labels.Users,
-          component: TrainingReportUsers,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
-          isVisible: true
-        },
-        {
-          name: labels.OpenedTrainingEmail,
-          id: 'training-report-opened-content',
-          label: labels.OpenedTrainingEmail,
-          component: TrainingReportOpenedTrainingEmail,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
-          isVisible: true
-        },
-        {
-          name: labels.ClickedTrainingLink,
-          id: 'training-report-clicked-content',
-          label: labels.ClickedTrainingLink,
-          component: TrainingReportClickedTrainingLink,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
-          isVisible: true
-        },
-        {
-          name: labels.Progress,
-          id: 'training-report-progress-content',
-          label: labels.Progress,
-          component: TrainingReportProgress,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsNoResponsePermissions']
-          isVisible: true
-        },
-        {
-          name: labels.ExamResults,
-          id: 'training-report-exam-results-content',
-          label: labels.ExamResults,
-          component: TrainingReportExamResults,
-          isVisible: this.$store.getters[
-            'permissions/getCampaignReportsPhishingReporterPermissions'
-          ]
-        },
-        {
-          name: labels.NoResponse,
-          id: 'training-report-no-response-content',
-          label: labels.NoResponse,
-          component: TrainingReportNoResponse,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
-          isVisible: true
-        },
-        {
-          name: labels.SendingReport,
-          id: 'training-report-sending-report-content',
-          label: labels.SendingReport,
-          component: TrainingReportSendingReport,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
-          isVisible: true
+          component: VishingReportSummary
         }
       ]
     }
@@ -109,7 +49,7 @@ export default {
     id() {
       return this.$route?.params?.id
     },
-    getVishingNamae() {
+    getVishingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Vishing Name'
     }
   }

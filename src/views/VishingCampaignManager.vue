@@ -433,7 +433,14 @@ export default {
       }
       this.isDeleteModalVisible = !this.isDeleteModalVisible
     },
-    handleViewReport(row) {},
+    handleViewReport(row) {
+      this.$router.push({
+        name: 'Vishing Report',
+        params: {
+          id: row.resourceId
+        }
+      })
+    },
     handleTryAgain(row) {},
     handleStop(row) {},
     handleLaunch(row) {},

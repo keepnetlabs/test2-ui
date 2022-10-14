@@ -16,6 +16,7 @@ export const labels = {
   EmptyTrainingReportClicked: 'No one has clicked the training link, yet',
   EmptyTrainingReportProgress: 'No one has training progress, yet',
   Vished: 'Vished',
+  CampaignDelivery: 'Campaign Delivery',
   Restore: 'Restore',
   Answered: 'Answered',
   DeletePermanently: 'Delete Permanently',

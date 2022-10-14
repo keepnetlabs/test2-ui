@@ -5,7 +5,6 @@ import DashBoard from '@/views/DashBoard'
 import Main from '@/layout/Main'
 import ThreatSharing from '@/views/ThreatSharing'
 import Community from '@/views/Community'
-import ShowAllJobs from '@/views/ShowAllJobs'
 import TargetUsers from '@/views/TargetUsers'
 import IncidentResponder from '@/views/IncidentResponder'
 import EmailDetails from '@/components/IncidentResponder/emailDetails'
@@ -44,6 +43,7 @@ import Scorm from '@/views/Scorm'
 import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 import JobLog from '@/views/JobLog'
+import VishingReport from '@/views/VishingReport'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -503,6 +503,17 @@ const router = new Router({
           },
           params: true,
           props: true
+        },
+        {
+          path: 'vishing-report/:id',
+          name: 'Vishing Report',
+          component: VishingReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: '',
+            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+          },
+          params: true
         }
       ]
     },
