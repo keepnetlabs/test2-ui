@@ -1,0 +1,33 @@
+.vishing-campaign-modal {
+  &__send-calls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    & > span:first-child {
+      flex-basis: 160px;
+    }
+  }
+
+  &__send-calls-on {
+    display: flex;
+
+    & > div:first-child {
+      flex-basis: 160px;
+
+      div:first-child {
+        margin-top: 6px;
+      }
+    }
+  }
+
+  &__send-calls-text {
+    background-color: #f1f8fe;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 21px;
+    color: #383b41;
+    max-width: 554px;
+    padding: 8px;
+  }
+}

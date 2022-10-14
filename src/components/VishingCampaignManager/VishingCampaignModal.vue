@@ -215,6 +215,102 @@
               <span class="form-group-horizontal-content__label"> of target users</span>
             </div>
           </v-stepper-content>
+
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="4">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Call Settings"
+              subtitle="Set call options"
+            />
+            <FormGroup
+              class="mt-6"
+              title="Caller Phone Number"
+              subTitle="Select caller phone number for this campaign"
+            >
+              <KSelect
+                v-model="formValues.selectedPhoneNumber"
+                outlined
+                dense
+                placeholder="Select a phone number"
+                :items="phoneNumbers"
+              />
+            </FormGroup>
+            <FormGroup
+              class="mt-6"
+              title="Distribution"
+              subTitle="Call target users with over a specified time period. Set days and hours of calls."
+            >
+              <div class="vishing-campaign-modal__send-calls">
+                <span>Send calls over</span>
+                <div style="position: relative;">
+                  <v-text-field
+                    ref="refSendCallsOver"
+                    :value="formValues.sendCallsOverValue"
+                    style="max-width: 100px !important; margin-right: 8px;"
+                    outlined
+                    placeholder=""
+                    hide-details
+                    :error="!!getSendCallsOverValueErrorMessage"
+                    @input="handleSendOverCallsValueChange"
+                  />
+                  <CustomError
+                    style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                    :error-message="getSendCallsOverValueErrorMessage"
+                  />
+                </div>
+                <KSelect
+                  v-model="formValues.sendCallsOverType"
+                  style="max-width: 137px !important;"
+                  outlined
+                  dense
+                  hide-details
+                  position="top"
+                  :return-object="false"
+                  :items="sendCallsOverTypes"
+                />
+              </div>
+              <div class="vishing-campaign-modal__send-calls">
+                <span>Send calls between</span>
+                <el-time-select
+                  style="max-width: 100px;"
+                  placeholder="Start time"
+                  v-model="formValues.sendCallsBetweenStartTime"
+                  :picker-options="{
+                    start: '09:00',
+                    end: '17:00'
+                  }"
+                />
+                <span class="mx-2">and</span>
+                <el-time-select
+                  style="max-width: 100px;"
+                  placeholder="End time"
+                  v-model="formValues.sendCallsBetweenEndTime"
+                  :picker-options="{
+                    start: '09:00',
+                    end: '17:00',
+                    minTime: formValues.sendCallsBetweenStartTime
+                  }"
+                />
+              </div>
+              <div class="vishing-campaign-modal__send-calls-on">
+                <div>
+                  <div>Send calls on</div>
+                </div>
+                <div class="vishing-campaign-modal__send-calls-on__days">
+                  <v-checkbox
+                    v-for="day in sendCallsOnDaysOptions"
+                    v-model="formValues.sendCallsOnDays"
+                    :label="day.text"
+                    :value="day.value"
+                    :key="day.value"
+                  />
+                </div>
+              </div>
+            </FormGroup>
+            <div class="vishing-campaign-modal__send-calls-text">
+              {{ getSendCallsText }}
+            </div>
+          </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
     </template>
@@ -261,12 +357,12 @@ const initialFormValues = {
   isLimitRecipients: false,
   recipientType: 1,
   recipientValue: 0,
-  availableForRequests: [],
-  dialogNoticeType: 'textToSpeech',
-  dialogNoticeTextToSpeech: '',
-  dialogNoticeFile: null,
-  dialogNoticeFileUrl: '',
-  steps: []
+  selectedPhoneNumber: '',
+  sendCallsOverValue: 2,
+  sendCallsOverType: 'days',
+  sendCallsBetweenStartTime: '09:00',
+  sendCallsBetweenEndTime: '17:00',
+  sendCallsOnDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 }
 
 export default {
@@ -350,8 +446,7 @@ export default {
         targetGroupSelect: [
           (v) => !!v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
-        ],
-        recipientValue: []
+        ]
       },
       recipientTypes: [
         {
@@ -362,6 +457,60 @@ export default {
           text: 'users',
           value: 2
         }
+      ],
+      phoneNumbers: [
+        {
+          text: '+90 531 567 78 90',
+          value: '+90 531 567 78 90'
+        },
+        {
+          text: '+90 531 567 78 91',
+          value: '+90 531 567 78 91'
+        },
+        {
+          text: '+90 531 567 78 92',
+          value: '+90 531 567 78 92'
+        }
+      ],
+      sendCallsOverTypes: [
+        {
+          text: 'days',
+          value: 'days'
+        },
+        {
+          text: 'weeks',
+          value: 'weeks'
+        }
+      ],
+      sendCallsOnDaysOptions: [
+        {
+          text: 'Monday',
+          value: 'Monday'
+        },
+        {
+          text: 'Tuesday',
+          value: 'Tuesday'
+        },
+        {
+          text: 'Wednesday',
+          value: 'Wednesday'
+        },
+        {
+          text: 'Thursday',
+          value: 'Thursday'
+        },
+        {
+          text: 'Friday',
+          value: 'Friday'
+        },
+        {
+          text: 'Saturday',
+          value: 'Saturday'
+        },
+        {
+          text: 'Sunday',
+          value: 'Sunday'
+        }
       ]
     }
   },
@@ -370,6 +519,9 @@ export default {
       selectedTimeZone: 'common/getSelectedTimeZone',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getSendCallsText() {
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.sendCallsBetweenStartTime} and ${this.formValues.sendCallsBetweenEndTime} and each user will receive a call every 19 minutes.`
+    },
     getTitle() {
       return !this.isEdit
         ? 'New Vishing Campaign'
@@ -406,6 +558,12 @@ export default {
         }
       }
 
+      return ''
+    },
+    getSendCallsOverValueErrorMessage() {
+      if (this.formValues.sendCallsOverValue === '' || this.formValues.sendCallsOverValue <= 0) {
+        return 'Enter a number higher than 0'
+      }
       return ''
     }
   },
@@ -569,6 +727,17 @@ export default {
         this.$refs.refRecipientValue.initialValue = this.formValues.recipientValue
         this.$refs.refRecipientValue.lazyValue = this.formValues.recipientValue
       }
+    },
+    handleSendOverCallsValueChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.sendCallsOverValue = val
+      } else {
+        this.$refs.refSendCallsOver.initialValue = this.formValues.sendCallsOverValue
+        this.$refs.refSendCallsOver.lazyValue = this.formValues.sendCallsOverValue
+      }
+    },
+    handleSendCallsOnDaysChange(event, day) {
+      console.log(event, day)
     },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
