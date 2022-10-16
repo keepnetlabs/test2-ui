@@ -289,6 +289,7 @@ export const labels = {
   CampaignName: 'Campaign Name',
   Duplicate: 'Duplicate',
   CampaignInfo: 'Campaign Info',
+  CampaignDelivery: 'Campaign Delivery',
   Schedule: 'Schedule',
   CampaignSummary: 'Campaign Summary',
   Launch: 'Launch',
@@ -686,7 +687,8 @@ export const labels = {
   LANGUAGE: 'Language',
   Type: 'Type',
   NoVishingCampaigns: 'You do not have any vishing campaigns',
-  TryAgain: 'Try Again'
+  TryAgain: 'Try Again',
+  VishingTemplate: 'Vishing Template'
 }
 
 export default labels

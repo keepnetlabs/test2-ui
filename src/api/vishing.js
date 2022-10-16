@@ -63,7 +63,42 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: 'No',
-                tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2']
+                tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  },
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  }
+                ]
               },
               {
                 resourceId: '2',
@@ -78,7 +113,49 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: '12',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ]
               },
               {
                 resourceId: '3',
@@ -93,7 +170,28 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: false,
                 availableFor: '12',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ]
               },
               {
                 resourceId: '4',
@@ -108,7 +206,28 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: 'No',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ]
               },
               {
                 resourceId: '5',
@@ -123,7 +242,28 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: '12',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ]
               },
               {
                 resourceId: '6',
@@ -138,7 +278,28 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: false,
                 availableFor: '12',
-                tags: ['tag1', 'tag2']
+                tags: ['tag1', 'tag2'],
+                steps: [
+                  {
+                    type: 'Text to Speech',
+                    textToSpeech:
+                      'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+                  },
+                  {
+                    type: 'Upload Audio',
+                    fileName: 'Randomfilename.mp3',
+                    fileUrl:
+                      'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+                    requiredDigitCount: 4,
+                    isFailStep: true
+                  },
+                  {
+                    type: 'Pause',
+                    pauseSeconds: 5
+                  }
+                ]
               }
             ]
           },

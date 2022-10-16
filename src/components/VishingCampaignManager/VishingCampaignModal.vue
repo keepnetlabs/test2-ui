@@ -123,7 +123,13 @@
               title="Vishing Templates"
               subtitle="Select a template to use in this campaign"
             />
-            <VishingTemplateSelectList ref="refVishingTemplateSelectList" />
+            <VishingTemplateSelectList
+              ref="refVishingTemplateSelectList"
+              :templateResourceId="formValues.templateResourceId"
+              @initialTemplateId="handleInitialTemplate"
+              @selectedTemplateChange="handleSelectedTemplateChange"
+              @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="3">
             <ConfigureCompanyStepHeader
@@ -215,7 +221,6 @@
               <span class="form-group-horizontal-content__label"> of target users</span>
             </div>
           </v-stepper-content>
-
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="4">
             <ConfigureCompanyStepHeader
               class="mb-8"
@@ -311,6 +316,31 @@
               {{ getSendCallsText }}
             </div>
           </v-stepper-content>
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="5">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Summary of the campaign"
+              subtitle="Preview what this campaign will look like"
+            />
+            <div class="vishing-campaign-modal__general-info">
+              <CampaignManagerSummaryCard
+                icon="mdi-alert-circle"
+                :title="labels.CampaignInfo"
+                :items="getCampaignInfoItems"
+              />
+              <CampaignManagerSummaryCard
+                class="ml-4"
+                icon="mdi-alert-circle"
+                :title="labels.CampaignDelivery"
+                :items="getCampaignDeliveryItems"
+              />
+            </div>
+            <VishingCampaignModalSummaryVishingTemplate
+              v-if="!!formValues.template"
+              class="mt-4"
+              :formValues="formValues"
+            />
+          </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
     </template>
@@ -345,6 +375,8 @@ import KSelectLoading from '@/components/KSelectLoading'
 import { searchTargetGroups } from '@/api/targetUsers'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
 
 const initialFormValues = {
   name: '',
@@ -352,7 +384,9 @@ const initialFormValues = {
   scheduledDate: '',
   scheduledTimeZoneId: '',
   markedAsTest: false,
+  templateId: '',
   templateResourceId: '',
+  template: null,
   targetGroupResourceIds: [],
   isLimitRecipients: false,
   recipientType: 1,
@@ -379,7 +413,9 @@ export default {
     CampaignManagerTargetGroups,
     CustomError,
     KSelect,
-    KSelectLoading
+    KSelectLoading,
+    CampaignManagerSummaryCard,
+    VishingCampaignModalSummaryVishingTemplate
   },
   props: {
     status: {
@@ -402,6 +438,7 @@ export default {
     return {
       labels,
       step: 1,
+      selectedTemplateStepIndex: 0,
       parsedFormat: getTimeZone(false),
       isDateValid: true,
       datePickerOptions: {
@@ -565,6 +602,19 @@ export default {
         return 'Enter a number higher than 0'
       }
       return ''
+    },
+    getCampaignInfoItems() {
+      return {
+        'Campaign Name': this.formValues.name,
+        'Target Users': this.totalTargetUserCount
+      }
+    },
+    getCampaignDeliveryItems() {
+      // TODO: Insert calculated delivery start-end info here
+      return {
+        'Delivery Start- End': '28.05.2021 16:29:00 - 29.05.2021 16:29:90',
+        'Caller Phone Number': this.formValues.selectedPhoneNumber
+      }
     }
   },
   watch: {
@@ -736,8 +786,30 @@ export default {
         this.$refs.refSendCallsOver.lazyValue = this.formValues.sendCallsOverValue
       }
     },
-    handleSendCallsOnDaysChange(event, day) {
-      console.log(event, day)
+    getBadgeColor(text = '') {
+      switch (text.toLowerCase()) {
+        case 'easy':
+          return '#217124'
+        case 'medium':
+          return '#2196f3'
+        case 'hard':
+          return '#f56c6c'
+        default:
+          return '#2196f3'
+      }
+    },
+    getBadgeText(text = '') {
+      return text
+    },
+    handleInitialTemplate(id) {
+      this.initialFormValues.templateId = id
+    },
+    handleSelectedTemplateChange(id, item) {
+      this.formValues.templateId = id
+      this.formValues.template = item
+    },
+    handleSelectedTemplateResourceIdChange(id) {
+      this.formValues.templateResourceId = id
     },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
