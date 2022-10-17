@@ -558,6 +558,10 @@ export default {
       }, {})
     },
     handleCategoryChange(resourceId = '') {
+      const categoryIndex = this.categoryItems.findIndex((item) => item.value === resourceId)
+      if (categoryIndex !== -1) {
+        this.formValues.template = this.categoryItems[categoryIndex].template
+      }
       if (!this.blockManagerComponents.hasOwnProperty(resourceId)) {
         this.callForMergedTags(resourceId)
       } else {

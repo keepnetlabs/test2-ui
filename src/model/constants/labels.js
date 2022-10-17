@@ -685,7 +685,7 @@ export const labels = {
   dnsServiceProviderName: 'Service Provider',
   LANGUAGE: 'Language',
   Type: 'Type',
-  EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
+  EmptyTIGridMsg: 'You do not have any Thereat Intelligence'
 }
 
 export default labels
