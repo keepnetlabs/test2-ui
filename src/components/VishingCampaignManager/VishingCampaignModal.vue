@@ -123,7 +123,13 @@
               title="Vishing Templates"
               subtitle="Select a template to use in this campaign"
             />
-            <VishingTemplateSelectList ref="refVishingTemplateSelectList" />
+            <VishingTemplateSelectList
+              ref="refVishingTemplateSelectList"
+              :templateResourceId="formValues.templateResourceId"
+              @initialTemplateId="handleInitialTemplate"
+              @selectedTemplateChange="handleSelectedTemplateChange"
+              @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="3">
             <ConfigureCompanyStepHeader
@@ -148,7 +154,7 @@
               placeholder="Select groups"
               :loading="isTargetGroupSearchLoading"
               :items="targetGroupItems"
-              :rules="rules.select"
+              :rules="rules.targetGroupSelect"
               :slots="{ progress: true }"
               @input="handleTargetGroupsResourceIdsChange"
               @update:search-input="handleSearchInputChange"
@@ -176,12 +182,6 @@
               :is-valid="isTargetGroupsValid"
               @handle-selection-change="handleTableSelectionChange"
             />
-            <CustomError
-              class="mb-6 ml-2"
-              style="margin-top: 2px;"
-              :is-valid="isTargetGroupsValid"
-              :error-message="getTargetGroupErrorMessage"
-            />
             <FormGroup class="mt-6" title="Limit Recipients" />
             <div class="d-flex" style="align-items: center; gap: 8px;">
               <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
@@ -190,29 +190,156 @@
               <span class="form-group-horizontal-content__label">
                 Send this campaign to randomly selected
               </span>
-              <v-text-field
-                ref="refRecipientValue"
-                :value="formValues.recipientValue"
-                style="max-width: 64px !important;"
-                outlined
-                hide-details
-                placeholder=""
-                :rules="[]"
-                :disabled="!formValues.isLimitRecipients"
-                @input="handleRecipientValueChange"
-              />
+              <div style="position: relative;">
+                <v-text-field
+                  ref="refRecipientValue"
+                  :value="formValues.recipientValue"
+                  :disabled="!formValues.isLimitRecipients"
+                  style="max-width: 64px !important;"
+                  outlined
+                  placeholder=""
+                  hide-details
+                  :error="!!getRecipientValueErrorMessage"
+                  @input="handleRecipientValueChange"
+                />
+                <CustomError
+                  style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                  :error-message="getRecipientValueErrorMessage"
+                />
+              </div>
               <KSelect
                 v-model="formValues.recipientType"
                 style="max-width: 120px !important;"
                 outlined
                 dense
                 hide-details
+                position="top"
                 :return-object="false"
                 :items="recipientTypes"
                 :disabled="!formValues.isLimitRecipients"
               />
               <span class="form-group-horizontal-content__label"> of target users</span>
             </div>
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="4">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Call Settings"
+              subtitle="Set call options"
+            />
+            <FormGroup
+              class="mt-6"
+              title="Caller Phone Number"
+              subTitle="Select caller phone number for this campaign"
+            >
+              <KSelect
+                v-model="formValues.selectedPhoneNumber"
+                outlined
+                dense
+                placeholder="Select a phone number"
+                :items="phoneNumbers"
+              />
+            </FormGroup>
+            <FormGroup
+              class="mt-6"
+              title="Distribution"
+              subTitle="Call target users with over a specified time period. Set days and hours of calls."
+            >
+              <div class="vishing-campaign-modal__send-calls">
+                <span>Send calls over</span>
+                <div style="position: relative;">
+                  <v-text-field
+                    ref="refSendCallsOver"
+                    :value="formValues.sendCallsOverValue"
+                    style="max-width: 100px !important; margin-right: 8px;"
+                    outlined
+                    placeholder=""
+                    hide-details
+                    :error="!!getSendCallsOverValueErrorMessage"
+                    @input="handleSendOverCallsValueChange"
+                  />
+                  <CustomError
+                    style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                    :error-message="getSendCallsOverValueErrorMessage"
+                  />
+                </div>
+                <KSelect
+                  v-model="formValues.sendCallsOverType"
+                  style="max-width: 137px !important;"
+                  outlined
+                  dense
+                  hide-details
+                  position="top"
+                  :return-object="false"
+                  :items="sendCallsOverTypes"
+                />
+              </div>
+              <div class="vishing-campaign-modal__send-calls">
+                <span>Send calls between</span>
+                <el-time-select
+                  style="max-width: 100px;"
+                  placeholder="Start time"
+                  v-model="formValues.sendCallsBetweenStartTime"
+                  :picker-options="{
+                    start: '09:00',
+                    end: '17:00'
+                  }"
+                />
+                <span class="mx-2">and</span>
+                <el-time-select
+                  style="max-width: 100px;"
+                  placeholder="End time"
+                  v-model="formValues.sendCallsBetweenEndTime"
+                  :picker-options="{
+                    start: '09:00',
+                    end: '17:00',
+                    minTime: formValues.sendCallsBetweenStartTime
+                  }"
+                />
+              </div>
+              <div class="vishing-campaign-modal__send-calls-on">
+                <div>
+                  <div>Send calls on</div>
+                </div>
+                <div class="vishing-campaign-modal__send-calls-on__days">
+                  <v-checkbox
+                    v-for="day in sendCallsOnDaysOptions"
+                    v-model="formValues.sendCallsOnDays"
+                    :label="day.text"
+                    :value="day.value"
+                    :key="day.value"
+                  />
+                </div>
+              </div>
+            </FormGroup>
+            <div class="vishing-campaign-modal__send-calls-text">
+              {{ getSendCallsText }}
+            </div>
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content vishing-campaign" :step="5">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              title="Summary of the campaign"
+              subtitle="Preview what this campaign will look like"
+            />
+            <div class="vishing-campaign-modal__general-info">
+              <CampaignManagerSummaryCard
+                icon="mdi-alert-circle"
+                :title="labels.CampaignInfo"
+                :items="getCampaignInfoItems"
+              />
+              <CampaignManagerSummaryCard
+                class="ml-4"
+                icon="mdi-alert-circle"
+                :title="labels.CampaignDelivery"
+                :items="getCampaignDeliveryItems"
+              />
+            </div>
+            <VishingCampaignModalSummaryVishingTemplate
+              v-if="!!formValues.template"
+              class="mt-4"
+              :formValues="formValues"
+            />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -248,6 +375,8 @@ import KSelectLoading from '@/components/KSelectLoading'
 import { searchTargetGroups } from '@/api/targetUsers'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
 
 const initialFormValues = {
   name: '',
@@ -255,17 +384,19 @@ const initialFormValues = {
   scheduledDate: '',
   scheduledTimeZoneId: '',
   markedAsTest: false,
+  templateId: '',
   templateResourceId: '',
+  template: null,
   targetGroupResourceIds: [],
   isLimitRecipients: false,
   recipientType: 1,
   recipientValue: 0,
-  availableForRequests: [],
-  dialogNoticeType: 'textToSpeech',
-  dialogNoticeTextToSpeech: '',
-  dialogNoticeFile: null,
-  dialogNoticeFileUrl: '',
-  steps: []
+  selectedPhoneNumber: '',
+  sendCallsOverValue: 2,
+  sendCallsOverType: 'days',
+  sendCallsBetweenStartTime: '09:00',
+  sendCallsBetweenEndTime: '17:00',
+  sendCallsOnDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 }
 
 export default {
@@ -282,7 +413,9 @@ export default {
     CampaignManagerTargetGroups,
     CustomError,
     KSelect,
-    KSelectLoading
+    KSelectLoading,
+    CampaignManagerSummaryCard,
+    VishingCampaignModalSummaryVishingTemplate
   },
   props: {
     status: {
@@ -305,6 +438,7 @@ export default {
     return {
       labels,
       step: 1,
+      selectedTemplateStepIndex: 0,
       parsedFormat: getTimeZone(false),
       isDateValid: true,
       datePickerOptions: {
@@ -314,6 +448,7 @@ export default {
       initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
       formValues: JSON.parse(JSON.stringify(initialFormValues)),
       selectedTargetGroups: [],
+      totalTargetUserCount: 0,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: {},
       isTargetGroupSearchLoading: false,
@@ -345,7 +480,7 @@ export default {
         }
       },
       rules: {
-        select: [
+        targetGroupSelect: [
           (v) => !!v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
         ]
@@ -359,6 +494,60 @@ export default {
           text: 'users',
           value: 2
         }
+      ],
+      phoneNumbers: [
+        {
+          text: '+90 531 567 78 90',
+          value: '+90 531 567 78 90'
+        },
+        {
+          text: '+90 531 567 78 91',
+          value: '+90 531 567 78 91'
+        },
+        {
+          text: '+90 531 567 78 92',
+          value: '+90 531 567 78 92'
+        }
+      ],
+      sendCallsOverTypes: [
+        {
+          text: 'days',
+          value: 'days'
+        },
+        {
+          text: 'weeks',
+          value: 'weeks'
+        }
+      ],
+      sendCallsOnDaysOptions: [
+        {
+          text: 'Monday',
+          value: 'Monday'
+        },
+        {
+          text: 'Tuesday',
+          value: 'Tuesday'
+        },
+        {
+          text: 'Wednesday',
+          value: 'Wednesday'
+        },
+        {
+          text: 'Thursday',
+          value: 'Thursday'
+        },
+        {
+          text: 'Friday',
+          value: 'Friday'
+        },
+        {
+          text: 'Saturday',
+          value: 'Saturday'
+        },
+        {
+          text: 'Sunday',
+          value: 'Sunday'
+        }
       ]
     }
   },
@@ -367,6 +556,9 @@ export default {
       selectedTimeZone: 'common/getSelectedTimeZone',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getSendCallsText() {
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.sendCallsBetweenStartTime} and ${this.formValues.sendCallsBetweenEndTime} and each user will receive a call every 19 minutes.`
+    },
     getTitle() {
       return !this.isEdit
         ? 'New Vishing Campaign'
@@ -383,6 +575,46 @@ export default {
           ? 'Target groups must have at least 1 user'
           : 'Required'
         : 'Required'
+    },
+    getRecipientValueErrorMessage() {
+      if (this.formValues.isLimitRecipients) {
+        if (this.formValues.recipientType === 1) {
+          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
+            return 'Enter a number higher than 0'
+          }
+          if (this.formValues.recipientValue > 100) {
+            return 'This number cannot be higher than 100 percent'
+          }
+        } else {
+          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
+            return 'Enter a number higher than 0'
+          }
+          if (this.formValues.recipientValue > this.totalTargetUserCount) {
+            return 'This number cannot be higher than number of total target users'
+          }
+        }
+      }
+
+      return ''
+    },
+    getSendCallsOverValueErrorMessage() {
+      if (this.formValues.sendCallsOverValue === '' || this.formValues.sendCallsOverValue <= 0) {
+        return 'Enter a number higher than 0'
+      }
+      return ''
+    },
+    getCampaignInfoItems() {
+      return {
+        'Campaign Name': this.formValues.name,
+        'Target Users': this.totalTargetUserCount
+      }
+    },
+    getCampaignDeliveryItems() {
+      // TODO: Insert calculated delivery start-end info here
+      return {
+        'Delivery Start- End': '28.05.2021 16:29:00 - 29.05.2021 16:29:90',
+        'Caller Phone Number': this.formValues.selectedPhoneNumber
+      }
     }
   },
   watch: {
@@ -397,6 +629,17 @@ export default {
     },
     'formValues.targetGroupResourceIds'(val) {
       this.isTargetGroupsValid = !!val.length
+    },
+    selectedTargetGroups: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        const userCount = val.reduce((acc, item) => {
+          acc += item?.userCount || 0
+          return acc
+        }, 0)
+        this.totalTargetUserCount = userCount
+      }
     }
   },
   created() {
@@ -534,6 +777,39 @@ export default {
         this.$refs.refRecipientValue.initialValue = this.formValues.recipientValue
         this.$refs.refRecipientValue.lazyValue = this.formValues.recipientValue
       }
+    },
+    handleSendOverCallsValueChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formValues.sendCallsOverValue = val
+      } else {
+        this.$refs.refSendCallsOver.initialValue = this.formValues.sendCallsOverValue
+        this.$refs.refSendCallsOver.lazyValue = this.formValues.sendCallsOverValue
+      }
+    },
+    getBadgeColor(text = '') {
+      switch (text.toLowerCase()) {
+        case 'easy':
+          return '#217124'
+        case 'medium':
+          return '#2196f3'
+        case 'hard':
+          return '#f56c6c'
+        default:
+          return '#2196f3'
+      }
+    },
+    getBadgeText(text = '') {
+      return text
+    },
+    handleInitialTemplate(id) {
+      this.initialFormValues.templateId = id
+    },
+    handleSelectedTemplateChange(id, item) {
+      this.formValues.templateId = id
+      this.formValues.template = item
+    },
+    handleSelectedTemplateResourceIdChange(id) {
+      this.formValues.templateResourceId = id
     },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
