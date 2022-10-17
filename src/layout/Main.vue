@@ -230,13 +230,13 @@
           </router-link>
 
           <router-link
-            v-if="getEtsQuickScanPermissionSearch"
+            v-if="getThreatIntelligencePermissionsSearch"
             to="/threat-intelligence"
             id="btn--link-navigator-menu-threat-intelligence"
             :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
             @click.native="deleteTSVuexData"
           >
-            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiShieldBug" />
+            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiMagnifyExpand" />
           </router-link>
 
           <router-link
@@ -727,7 +727,7 @@ import {
   mdiMenu,
   mdiHelpCircle,
   mdiBook,
-  mdiShieldBug
+  mdiMagnifyExpand
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -785,7 +785,7 @@ export default {
         mdiMenu,
         mdiHelpCircle,
         mdiBook,
-        mdiShieldBug
+        mdiMagnifyExpand
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -969,7 +969,8 @@ export default {
         'permissions/getAwarenessEducatorListGroupPermissions',
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getEnrollmentsSearchPermission: 'permissions/getEnrollmentsSearchPermission',
-      getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission'
+      getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
+      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
