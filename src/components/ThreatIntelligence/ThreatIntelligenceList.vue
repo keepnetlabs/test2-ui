@@ -22,6 +22,7 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :download-button="tableOptions.downloadButton"
+    row-key="email"
     @columnFilterChanged="columnFilterChanged"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
@@ -64,7 +65,6 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload({}, 'leakdate'),
       serverSideProps: new ServerSideProps(),
-      serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
@@ -120,10 +120,13 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyJobLog
+          message: labels.EmptyTIGridMsg
         },
         selectEvent: {
-          clipboard: true
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
         },
         downloadButton: {
           show: true,
