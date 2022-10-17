@@ -10,6 +10,7 @@
       <VishingReportCampaignInfo :items="getVishingInfoData" :is-test-training="isTestTraining" />
       <VishingReportDelivery class="ml-4" :items="getTrainingVishingDeliveryData" />
     </div>
+    <VishingReportTemplate :form-data="getVishingTemplateData" />
   </div>
 </template>
 
@@ -18,9 +19,11 @@ import VishingReportSummaryHeader from '@/components/VishingReport/VishingReport
 import VishingReportSummaryCards from '@/components/VishingReport/VishingReportSummaryCards'
 import VishingReportCampaignInfo from '@/components/VishingReport/VishingReportCampaignInfo'
 import VishingReportDelivery from '@/components/VishingReport/VishingReportDelivery'
+import VishingReportTemplate from '@/components/VishingReport/VishingReportTemplate'
 export default {
   name: 'VishingReportSummary',
   components: {
+    VishingReportTemplate,
     VishingReportDelivery,
     VishingReportCampaignInfo,
     VishingReportSummaryCards,
@@ -108,6 +111,17 @@ export default {
     isTestTraining() {
       const { isTest = false } = this.trainingSummary || {}
       return isTest
+    },
+    getVishingTemplateData() {
+      const { trainingDetails = {} } = this.trainingSummary || {}
+      const { companyName = '', description: trainingDescription = '' } = trainingDetails
+      const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
+      return {
+        name,
+        createdBy: companyName,
+        description: description || trainingDescription,
+        template
+      }
     }
   },
   methods: {
