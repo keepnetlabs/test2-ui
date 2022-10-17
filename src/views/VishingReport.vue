@@ -28,6 +28,7 @@
 import KContainer from '@/components/KContainer/KContainer'
 import labels from '@/model/constants/labels'
 import VishingReportSummary from '@/components/VishingReport/VishingReportSummary'
+import VishingReportUsers from '@/components/VishingReport/VishingReportUsers'
 export default {
   name: 'VishingReport',
   components: { KContainer },
@@ -41,6 +42,12 @@ export default {
           id: 'vishing-report-summary-content',
           label: labels.Summary,
           component: VishingReportSummary
+        },
+        {
+          name: labels.Users,
+          id: 'vishing-report-users-content',
+          label: labels.Users,
+          component: VishingReportUsers
         }
       ]
     }
