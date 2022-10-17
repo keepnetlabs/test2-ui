@@ -1,5 +1,6 @@
 <template>
   <DataTable
+    v-if="getThreatIntelligencePermissionsSearch"
     ref="refThreatIntelligence"
     :showPagination="true"
     :options="true"
@@ -21,6 +22,7 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :download-button="tableOptions.downloadButton"
+    row-key="email"
     @columnFilterChanged="columnFilterChanged"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
@@ -42,7 +44,8 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { getAllJobs } from '@/api/targetUsers'
+import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
+import {mapGetters} from "vuex";
 
 export default {
   name: 'ThreatIntelligenceList',
@@ -60,9 +63,8 @@ export default {
         id: 'ThreatIntelligenceList',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({}, 'leakdate'),
       serverSideProps: new ServerSideProps(),
-      serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
@@ -70,7 +72,7 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
-            property: 'name',
+            property: 'source',
             align: 'left',
             editable: false,
             label: 'Source',
@@ -81,7 +83,7 @@ export default {
             filterableType: false
           },
           {
-            property: 'name',
+            property: 'leakdate',
             align: 'left',
             editable: false,
             label: 'Leak Date',
@@ -92,7 +94,7 @@ export default {
             filterableType: false
           },
           {
-            property: 'name',
+            property: 'email',
             align: 'left',
             editable: false,
             label: 'Branched Account',
@@ -103,7 +105,7 @@ export default {
             filterableType: false
           },
           {
-            property: 'status',
+            property: 'hashtype',
             align: 'left',
             editable: false,
             label: 'Password Type',
@@ -118,36 +120,54 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyJobLog
+          message: labels.EmptyTIGridMsg
         },
-
         selectEvent: {
-          clipboard: true
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
         },
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionExport']
+          disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
         }
       },
-      rowActions: []
+      rowActions: [],
     }
   },
   created() {
     this.callForData()
   },
+  computed: {
+    ...mapGetters({
+      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
+    })
+  },
   methods: {
     callForData() {
-      this.setLoading(true)
-      getAllJobs(this.axiosPayload)
+      this.loading = true;
+      getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
+          console.log(response)
           const {
             data: { data }
           } = response
-          this.tableData = data.map((item) => ({
-            ...item
-          }))
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          for (let i = 0; i < results.length; i++) {
+            const data = results[i]
+            data.isActive = data.isActive ? 'Active' : 'Passive'
+          }
+          this.tableData = results
         })
-        .finally(this.setLoading)
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
     },
     exportData(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -160,7 +180,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignReports(payload).then((response) => {
+        exportThreatIntelligence(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
