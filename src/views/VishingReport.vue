@@ -30,6 +30,7 @@ import labels from '@/model/constants/labels'
 import VishingReportSummary from '@/components/VishingReport/VishingReportSummary'
 import VishingReportUsers from '@/components/VishingReport/VishingReportUsers'
 import VishingReportAnswered from '@/components/VishingReport/VishingReportAnswered'
+import VishingReportDialedNumber from '@/components/VishingReport/VishingReportDialedNumber'
 export default {
   name: 'VishingReport',
   components: { KContainer },
@@ -55,6 +56,12 @@ export default {
           id: 'vishing-report-users-content',
           label: labels.Answered,
           component: VishingReportAnswered
+        },
+        {
+          name: labels.DialedNumber,
+          id: 'vishing-report-users-content',
+          label: labels.DialedNumber,
+          component: VishingReportDialedNumber
         }
       ]
     }
