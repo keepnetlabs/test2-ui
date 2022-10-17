@@ -45,7 +45,7 @@ import {
 } from '@/model/constants/commonConstants'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
-import {mapGetters} from "vuex";
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ThreatIntelligenceList',
@@ -133,7 +133,7 @@ export default {
           disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
         }
       },
-      rowActions: [],
+      rowActions: []
     }
   },
   created() {
@@ -146,10 +146,9 @@ export default {
   },
   methods: {
     callForData() {
-      this.loading = true;
+      this.loading = true
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
-          console.log(response)
           const {
             data: { data }
           } = response
