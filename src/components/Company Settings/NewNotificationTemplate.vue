@@ -559,9 +559,9 @@ export default {
     },
     handleCategoryChange(resourceId = '') {
       const categoryIndex = this.categoryItems.findIndex((item) => item.value === resourceId)
-      console.log('categoryIndex',categoryIndex)
-      console.log('item',this.categoryItems[categoryIndex])
-      this.formValues.template = this.categoryItems[categoryIndex].template
+      if (categoryIndex !== -1) {
+        this.formValues.template = this.categoryItems[categoryIndex].template
+      }
       if (!this.blockManagerComponents.hasOwnProperty(resourceId)) {
         this.callForMergedTags(resourceId)
       } else {
