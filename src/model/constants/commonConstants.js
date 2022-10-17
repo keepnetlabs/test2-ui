@@ -317,6 +317,7 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTableSettings',
   TRASH_LIST: 'TrashListTableSettings',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTableSettings',
@@ -482,6 +483,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTable',
+  VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
   TRASH_LIST: 'TrashListTable',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTable',
   TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTable',

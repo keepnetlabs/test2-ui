@@ -2,8 +2,8 @@
   <div>
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Target Users"
-      subtitle="List of target users of this campaign"
+      title="Users who answered the call"
+      subtitle="List of users who answered the call but didn't submitted any of data"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -45,13 +47,11 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import DataTable from '@/components/DataTable'
-import { useLoading } from '@/hooks/useLoading'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 
 export default {
-  name: 'VishingReportUsers',
+  name: 'VishingReportAnswered',
   components: { DataTable, CampaignManagerReportHeader },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -65,13 +65,13 @@ export default {
   data() {
     return {
       CONSTANTS: {
-        id: 'vishing-report-users-data-table'
+        id: 'vishing-report-answered-data-table'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_REPORT_USERS_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHING_REPORT_USERS_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_REPORT_ANSWERED_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHING_REPORT_ANSWERED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: false,
