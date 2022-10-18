@@ -112,6 +112,8 @@ export default {
             editable: false,
             label: 'Score',
             fixed: false,
+            hideSort: true,
+            sortable: false,
             show: true,
             type: 'text',
             width: 140
