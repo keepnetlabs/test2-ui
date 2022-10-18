@@ -1,29 +1,16 @@
 <template>
-  <CampaignManagerSummaryCard
-    class="mt-4"
-    icon="$domain"
-    :isLoading="isFetchingSummary"
-    :title="labels.VishingTemplate"
-  >
-    <template #body>
-      <div v-if="isFormData" class="training-report-enrollment-template__body pb-4">
-        <div class="training-report-enrollment-template__template-name">
-          {{ formData.name }}
-        </div>
-      </div>
-    </template>
-  </CampaignManagerSummaryCard>
+  <VishingCampaignModalSummaryVishingTemplate class="mt-4" :form-values="formData" />
 </template>
 
 <script>
-import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
+import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
 
 export default {
   name: 'VishingReportTemplate',
   components: {
-    CampaignManagerSummaryCard
+    VishingCampaignModalSummaryVishingTemplate
   },
   mixins: [useLoading],
   props: {

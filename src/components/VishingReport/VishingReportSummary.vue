@@ -117,10 +117,56 @@ export default {
       const { companyName = '', description: trainingDescription = '' } = trainingDetails
       const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
       return {
-        name,
-        createdBy: companyName,
-        description: description || trainingDescription,
-        template
+        template: {
+          resourceId: '1',
+          name: 'Long Template Name that Creates Overflow Elipsis',
+          language: 'English - Female',
+          languageShortCode: 'EN',
+          narratorGender: 'Female',
+          description:
+            'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
+          difficulty: 'Medium',
+          createdBy: 'System',
+          createTime: '14/06/2022 06:49',
+          isOwner: true,
+          availableFor: 'No',
+          tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2'],
+          steps: [
+            {
+              type: 'Text to Speech',
+              textToSpeech:
+                'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+              fileUrl:
+                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+            },
+            {
+              type: 'Upload Audio',
+              fileName: 'Randomfilename.mp3',
+              fileUrl:
+                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+              requiredDigitCount: 4
+            },
+            {
+              type: 'Pause',
+              pauseSeconds: 5
+            },
+            {
+              type: 'Text to Speech',
+              textToSpeech:
+                'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
+              fileUrl:
+                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
+            },
+            {
+              type: 'Upload Audio',
+              fileName: 'Randomfilename.mp3',
+              fileUrl:
+                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
+              requiredDigitCount: 4,
+              isFailStep: true
+            }
+          ]
+        }
       }
     }
   },
