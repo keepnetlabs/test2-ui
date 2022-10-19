@@ -33,7 +33,14 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportVishingReportUsers"
       @refreshAction="callForData"
-    />
+    >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="vishing-report-users__status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" size="medium" :col="col" />
+        </div>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -49,17 +56,17 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { getVishingReportUsers } from '@/api/vishing'
+import { getStatusBadgeProps } from '@/components/VishingReport/utils'
+import Badge from '@/components/Badge'
 
 export default {
   name: 'VishingReportUsers',
-  components: { DataTable, CampaignManagerReportHeader },
+  components: { DataTable, CampaignManagerReportHeader, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
-    },
-    formDetails: {
-      type: Object
     }
   },
   data() {
@@ -88,31 +95,34 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            minWidth: 200,
+            overrideWidth: true
           },
           {
             property: 'lastName',
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: false,
+            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            minWidth: 200,
+            overrideWidth: true
           },
           {
-            property: 'email',
+            property: 'phoneNumber',
             align: 'left',
             editable: false,
-            label: 'Email',
+            label: 'Phone Number',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 180
+            minWidth: 200,
+            overrideWidth: true
           },
           {
             property: 'department',
@@ -124,35 +134,47 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 180
+            minWidth: 200,
+            overrideWidth: true
+          },
+          {
+            property: 'callDate',
+            align: 'right',
+            editable: false,
+            label: 'Call Date',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            minWidth: 200,
+            overrideWidth: true,
+            filterableType: 'date'
           },
           {
             property: 'status',
             align: 'center',
+            fixed: 'right',
             editable: false,
             label: 'Status',
             sortable: true,
             show: true,
             type: 'slot',
-            width: 200,
+            minWidth: 150,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            },
+            overrideWidth: true,
             filterableType: 'select',
-            filterableItems:
-              this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })) || []
-          },
-          {
-            property: 'lastInteractionDate',
-            align: 'left',
-            editable: false,
-            label: 'Last Interaction',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'date'
+            filterableItems: [
+              'Not Responded',
+              'Answered',
+              'Vished',
+              'In Queue',
+              'Calling Error',
+              'Cancelled'
+            ]
           }
         ],
         addButton: {
@@ -166,9 +188,28 @@ export default {
       tableData: []
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    callForData() {},
-    exportVishingReportUsers() {}
+    callForData() {
+      this.isLoading = true
+      getVishingReportUsers(this.id)
+        .then((response) => {
+          this.tableData = response.data.data.results
+          this.serverSideProps.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = response.data.data.totalNumberOfPages
+          this.serverSideProps.pageNumber = response.data.data.pageNumber
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(this.setLoading)
+    },
+    exportVishingReportUsers() {},
+    getStatusBadgeProps(status) {
+      return getStatusBadgeProps(status)
+    }
   }
 }
 </script>

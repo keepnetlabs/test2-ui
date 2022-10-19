@@ -49,6 +49,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { getVishingReportDialedNumber } from '@/api/vishing'
 
 export default {
   name: 'VishingReportDialedNumber',
@@ -88,31 +89,34 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            minWidth: 200,
+            overrideWidth: true
           },
           {
             property: 'lastName',
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: false,
+            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            minWidth: 200,
+            overrideWidth: true
           },
           {
-            property: 'email',
+            property: 'phoneNumber',
             align: 'left',
             editable: false,
-            label: 'Email',
+            label: 'Phone Number',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 180
+            minWidth: 200,
+            overrideWidth: true
           },
           {
             property: 'department',
@@ -124,35 +128,34 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 180
+            minWidth: 200,
+            overrideWidth: true
           },
           {
-            property: 'status',
-            align: 'center',
+            property: 'callDate',
+            align: 'right',
             editable: false,
-            label: 'Status',
-            sortable: true,
-            show: true,
-            type: 'slot',
-            width: 200,
-            filterableType: 'select',
-            filterableItems:
-              this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })) || []
-          },
-          {
-            property: 'lastInteractionDate',
-            align: 'left',
-            editable: false,
-            label: 'Last Interaction',
+            label: 'Call Date',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 180,
+            minWidth: 200,
+            overrideWidth: true,
             filterableType: 'date'
+          },
+          {
+            property: 'callDuration',
+            align: 'right',
+            editable: false,
+            label: 'Call Duration',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            minWidth: 200,
+            overrideWidth: true,
+            filterableType: 'text'
           }
         ],
         addButton: {
@@ -166,8 +169,24 @@ export default {
       tableData: []
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    callForData() {},
+    callForData() {
+      this.isLoading = true
+      getVishingReportDialedNumber(this.id)
+        .then((response) => {
+          this.tableData = response.data.data.results
+          this.serverSideProps.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = response.data.data.totalNumberOfPages
+          this.serverSideProps.pageNumber = response.data.data.pageNumber
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(this.setLoading)
+    },
     exportVishingReportUsers() {}
   }
 }

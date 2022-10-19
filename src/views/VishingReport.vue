@@ -31,6 +31,7 @@ import VishingReportSummary from '@/components/VishingReport/VishingReportSummar
 import VishingReportUsers from '@/components/VishingReport/VishingReportUsers'
 import VishingReportAnswered from '@/components/VishingReport/VishingReportAnswered'
 import VishingReportDialedNumber from '@/components/VishingReport/VishingReportDialedNumber'
+import VishingReportNoResponse from '@/components/VishingReport/VishingReportNoResponse'
 export default {
   name: 'VishingReport',
   components: { KContainer },
@@ -53,15 +54,21 @@ export default {
         },
         {
           name: labels.Answered,
-          id: 'vishing-report-users-content',
+          id: 'vishing-report-answered-content',
           label: labels.Answered,
           component: VishingReportAnswered
         },
         {
           name: labels.DialedNumber,
-          id: 'vishing-report-users-content',
+          id: 'vishing-report-dialed-number-content',
           label: labels.DialedNumber,
           component: VishingReportDialedNumber
+        },
+        {
+          name: labels.NoResponse,
+          id: 'vishing-report-no-response-content',
+          label: labels.NoResponse,
+          component: VishingReportNoResponse
         }
       ]
     }

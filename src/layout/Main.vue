@@ -1067,7 +1067,8 @@ export default {
       const isSelected =
         routerName === 'Vishing' ||
         routerName === 'Vishing Templates' ||
-        routerName === 'Vishing Campaign Manager'
+        routerName === 'Vishing Campaign Manager' ||
+        routerName === 'Vishing Report'
       return {
         'primary--text active-menu-parent': isSelected,
         'un-selected-list-item': !isSelected

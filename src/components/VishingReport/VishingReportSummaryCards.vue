@@ -2,7 +2,7 @@
   <div id="vishing-report-summary-cards" class="vishing-report-summary-cards mt-6">
     <VishingReportSummaryInfoCard
       v-bind="getAnsweredData"
-      background-color="#B6791D"
+      background-color="#E6A23C"
       :title="labels.Answered"
       :is-loading="isLoading"
       :icon-src="answeredIcon"
@@ -42,9 +42,9 @@ export default {
   data() {
     return {
       labels,
-      vishedIcon: require('../../assets/img/ic-check-box.svg'),
-      answeredIcon: require('../../assets/img/ic-opened-email.svg'),
-      noResponseIcon: require('../../assets/img/ic-check-box.svg')
+      vishedIcon: require('../../assets/img/ic-dialed.svg'),
+      answeredIcon: require('../../assets/img/ic-answered.svg'),
+      noResponseIcon: require('../../assets/img/ic-vishing-no-response.svg')
     }
   },
   computed: {
