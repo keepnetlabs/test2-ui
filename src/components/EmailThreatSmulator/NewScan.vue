@@ -24,7 +24,7 @@
         </div>
       </template>
     </app-dialog>
-    <app-modal :status="status" icon-name="mdi-shield-half-full" :title="pageTitle">
+    <app-modal :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-stepper light v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
