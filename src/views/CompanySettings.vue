@@ -78,6 +78,14 @@
       >
         <LDAP v-if="tab === 'ldap-settings'" />
       </el-tab-pane>
+      <el-tab-pane
+        v-if="getLDAPDetailPermission"
+        name="allowed-list"
+        :label="labels.AllowedList"
+        :id="`${labels.AllowedList.toLowerCase()}-content`"
+      >
+        <AllowList v-if="tab === 'allowed-list'" />
+      </el-tab-pane>
     </el-tabs>
   </KContainer>
 </template>
@@ -95,6 +103,8 @@ import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
+import AllowList from '@/components/Company Settings/AllowedList/List'
+
 export default {
   name: 'CompanySettings',
   components: {
@@ -107,7 +117,8 @@ export default {
     NotificationTemplates,
     CustomApi,
     WhiteLabeling,
-    ProxySettings
+    ProxySettings,
+    AllowList
   },
   data() {
     return {
@@ -161,6 +172,10 @@ export default {
       {
         permission: this.getLDAPDetailPermission,
         name: 'ldap-settings'
+      },
+      {
+        permission: this.getLDAPDetailPermission,
+        name: 'allowed-list'
       }
     ].find((item) => item.permission)?.name
     this.changeTabByRoute()

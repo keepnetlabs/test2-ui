@@ -684,7 +684,8 @@ export const labels = {
   CreatedBy: 'Created By',
   dnsServiceProviderName: 'Service Provider',
   LANGUAGE: 'Language',
-  Type: 'Type'
+  Type: 'Type',
+  AllowedList: 'Allowed List'
 }
 
 export default labels
