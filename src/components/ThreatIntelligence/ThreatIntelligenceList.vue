@@ -22,6 +22,7 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :download-button="tableOptions.downloadButton"
+    row-key="email"
     @columnFilterChanged="columnFilterChanged"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
@@ -44,7 +45,7 @@ import {
 } from '@/model/constants/commonConstants'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
-import {mapGetters} from "vuex";
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ThreatIntelligenceList',
@@ -64,7 +65,6 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload({}, 'leakdate'),
       serverSideProps: new ServerSideProps(),
-      serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
@@ -120,17 +120,20 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyJobLog
+          message: labels.EmptyTIGridMsg
         },
         selectEvent: {
-          clipboard: true
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
         },
         downloadButton: {
           show: true,
           disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
         }
       },
-      rowActions: [],
+      rowActions: []
     }
   },
   created() {
@@ -143,10 +146,9 @@ export default {
   },
   methods: {
     callForData() {
-      this.loading = true;
+      this.loading = true
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
-          console.log(response)
           const {
             data: { data }
           } = response
