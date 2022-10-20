@@ -79,12 +79,12 @@
         <LDAP v-if="tab === 'ldap-settings'" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getLDAPDetailPermission"
+        v-if="getAllowListPermissionsSearch"
         name="allowed-list"
         :label="labels.AllowedList"
         :id="`${labels.AllowedList.toLowerCase()}-content`"
       >
-        <AllowList v-if="tab === 'allowed-list'" />
+        <AllowedList v-if="tab === 'allowed-list'" />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -103,7 +103,7 @@ import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
-import AllowList from '@/components/Company Settings/AllowedList/List'
+import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 
 export default {
   name: 'CompanySettings',
@@ -118,7 +118,7 @@ export default {
     CustomApi,
     WhiteLabeling,
     ProxySettings,
-    AllowList
+    AllowedList
   },
   data() {
     return {
@@ -140,7 +140,8 @@ export default {
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
-      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
     })
   },
   methods: {
@@ -174,7 +175,7 @@ export default {
         name: 'ldap-settings'
       },
       {
-        permission: this.getLDAPDetailPermission,
+        permission: this.getAllowListPermissionsSearch,
         name: 'allowed-list'
       }
     ].find((item) => item.permission)?.name

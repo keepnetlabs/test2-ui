@@ -12,104 +12,91 @@
       color="white"
       v-if="modalStatus"
     >
-      <NewScan
+      <new-domaim
         ref="newScanModal"
         :status="modalStatus"
-        :isDuplicate="isDuplicate"
-        :scanDetails="scanDetails"
-        @changeNewScanModalStatus="changeNewScanModalStatus"
+        @changeNewScanModalStatus="changeNewDomaimModalStatus"
       />
     </v-overlay>
-    <!--    <DeleteScans-->
-    <!--      :status="showDeleteModal"-->
-    <!--      @handleSuccessDeleteAction="handleSuccessDeleteAction"-->
-    <!--      @handleCloseModal="showDeleteModal = false"-->
-    <!--      @handleDelete="handleDelete($event)"-->
-    <!--      :selectedItem="selectedScan"-->
-    <!--    />-->
-    <div style="display: none;">
-      <data-table
-        v-if="getEtsQuickScanPermissionSearch"
-        id="quick-scan-data-table"
-        class="quick-scan"
-        ref="refQuickScanList"
-        is-server-side
-        selectable
-        filterable
-        options
-        :loading="loading"
-        :table="tableData"
-        :columns="tableOptions.columns"
-        :empty="tableOptions.empty"
-        :select-event="tableOptions.selectEvent"
-        :row-actions="tableOptions.rowActions"
-        :addButton="tableOptions.addButton"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
-        :download-button="tableOptions.downloadButton"
-        :axios-payload.sync="bodyData"
-        :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-        :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-        row-key="quickScanResourceId"
-        @deleteAction="showDeleteModal = true"
-        @onEmptyBtnClicked="modalStatus = true"
-        @addAction="changeNewScanModalStatus(true)"
-        @downloadEvent="exportTableData"
-        @paginationChangedEvent="paginationChangedEvent($event)"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-        @refreshAction="getDatatableList"
-        @server-side-page-number-changed="serverSidePageNumberChanged"
-        @server-side-size-changed="serverSideSizeChanged"
-        @sortChangedEvent="sortChanged"
-        @searchChangedEvent="handleSearchChange"
-      >
-        <template v-slot:datatable-custom-column="{ scope }">
-          <span
-            v-if="scope.column.property === 'status'"
-            :id="`text--send-attack-result-${scope.$index}`"
-            class="datatable-link"
-          >
-            <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
-              {{ scope.row.status.replace('InProgress', 'In Progress') }}
-            </div>
-          </span>
-        </template>
-        <template #datatable-row-actions="{ scope }">
-          <DefaultButtonRowAction
-            :icon="tableOptions.rowActions[0].icon"
-            :text="tableOptions.rowActions[0].name"
-            :scope="scope"
-            :disabled="tableOptions.rowActions[0].disabled"
-            :checkIsOwnerProperty="false"
-            @on-click="
-              $router.push({
-                path: `/email-threat-simulator/report/${scope.row.quickScanResourceId}`
-              })
-            "
-          />
-          <RowActionsMenu>
-            <DefaultMenuRowAction
-              :scope="scope"
-              :disabled="tableOptions.rowActions[1].disabled"
-              :icon="tableOptions.rowActions[1].icon"
-              :text="tableOptions.rowActions[1].name"
-              :checkIsOwnerProperty="false"
-              @on-click="handleActionDelete(scope.row, true)"
-            />
-            <DefaultMenuRowAction
-              :scope="scope"
-              :check-is-owner-property="false"
-              :disabled="tableOptions.rowActions[2].disabled"
-              :icon="tableOptions.rowActions[2].icon"
-              :text="tableOptions.rowActions[2].name"
-              :checkIsOwnerProperty="false"
-              @on-click="handleDuplicateScan(scope.row)"
-            />
-          </RowActionsMenu>
-        </template>
-      </data-table>
-    </div>
+    <delete-domain
+      v-if="showDeleteModal"
+      :status="showDeleteModal"
+      @handleSuccessDeleteAction="handleSuccessDeleteAction"
+      @handleCloseModal=";(showDeleteModal = false), (selectedDeleteItems = [])"
+      @handleDelete="handleDelete($event)"
+      :selectedItems="selectedDeleteItems"
+    />
+    <data-table
+      v-if="getAllowListPermissionsSearch"
+      id="quick-scan-data-table"
+      class="allow-list-table"
+      ref="refAllowList"
+      is-server-side
+      selectable
+      filterable
+      options
+      :loading="loading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :row-actions="tableOptions.rowActions"
+      :addButton="tableOptions.addButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="bodyData"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      row-key="allowListResourceId"
+      @deleteAction="showDeleteModal = true"
+      @onEmptyBtnClicked="modalStatus = true"
+      @addAction="changeNewDomaimModalStatus(true)"
+      @downloadEvent="exportTableData"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="getDatatableList"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @handleMultipleDelete="handleMultipleDelete"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span
+          v-if="scope.column.property === 'status'"
+          :id="`text-allow-list-status-${scope.$index}`"
+          class="datatable-link"
+        >
+          <div class="allow-list-status py-1" :style="setStatusColor(scope.row.riskFactor)">
+            {{ scope.row.status }}
+          </div>
+        </span>
+      </template>
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
+          @on-click="
+            $router.push({
+              path: `/email-threat-simulator/report/${scope.row.allowListResourceId}`
+            })
+          "
+        />
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          :checkIsOwnerProperty="false"
+          @on-click="handleDelete(scope.row)"
+        />
+      </template>
+    </data-table>
   </div>
 </template>
 
@@ -125,23 +112,23 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getQuickScanList, getQuickScanById, exportQuickScan } from '@/api/emailThreatSimlator'
+import { getAllowListList, exportAllowList } from '@/api/allowList'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
-import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import DeleteDomain from './DeleteDomain'
+import NewDomaim from './DeleteDomain'
 
 export default {
   name: 'List',
   components: {
-    DefaultMenuRowAction,
-    RowActionsMenu,
     DefaultButtonRowAction,
     DataTable,
-    CompanySettingsHeader
+    CompanySettingsHeader,
+    DeleteDomain,
+    NewDomaim
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -154,37 +141,21 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      selectedScan: {},
+      selectedDeleteItems: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_QUICK_SCAN_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_QUICK_SCAN_TABLE,
         columns: [
           {
-            property: 'Allowed List',
+            property: 'domain',
             align: 'left',
             editable: false,
-            label: 'Status',
-            sortable: true,
-            show: true,
-            type: 'slot',
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'In Progress', value: 'InProgress' },
-              'Completed',
-              'Continuous'
-            ],
-            width: 180
-          },
-          {
-            property: PROPERTY_STORE.STATUS,
-            align: 'left',
-            editable: false,
-            label: 'Date Create',
-            fixed: false,
+            label: 'Domain',
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date'
+            filterableType: 'text',
+            width: 220
           },
           {
             property: 'status',
@@ -195,68 +166,86 @@ export default {
             show: true,
             type: 'slot',
             filterableType: 'select',
-            filterableItems: [
-              { text: 'In Progress', value: 'InProgress' },
-              'Completed',
-              'Continuous'
-            ],
-            width: 180
+            filterableItems: ['Unverified', 'Verified'],
+            width: 150
           },
           {
-            property: 'domain',
+            property: 'createTime',
             align: 'left',
             editable: false,
-            label: 'Domain',
+            label: 'Date Created',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 240,
-            filterableType: 'text'
+            filterableType: 'date',
+            width: 160
+          },
+          {
+            property: 'lastCheckTime',
+            align: 'left',
+            editable: false,
+            label: 'Last Check',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'date',
+            width: 160
+          },
+          {
+            property: 'verifyTime',
+            align: 'left',
+            editable: false,
+            label: 'Date Verified',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'date',
+            width: 160
           }
         ],
         rowActions: [
           {
-            name: 'View Report',
-            icon: 'mdi mdi-text-box',
-            action: 'View Report',
-            disabled: !this.$store.getters['permissions/getEtsQuickScanReportPermissionStat']
+            name: 'Verify Domain',
+            icon: 'mdi-checkbox-marked-circle',
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getAllowListPermissionsVerify']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionDelete']
-          },
-          {
-            name: 'Duplicate',
-            icon: 'mdi-content-copy',
-            action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionUpdate']
+            disabled: !this.$store.getters['permissions/getAllowListPermissionsDelete']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionExport']
+          disabled: !this.$store.getters['permissions/getAllowListPermissionsExport']
         },
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
-          download: false
+          delete: this.$store.getters['permissions/getSMTPSettingsDeletePermissions'],
+          download: false,
+          disabledStatuses: {
+            delete: false
+          }
         },
         empty: {
-          message: LABEL_STORE.NO_SCAN,
+          message: LABEL_STORE.NO_ALLOW_LIST,
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--scan',
-          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionCreate']
+          disabled: !this.$store.getters['permissions/getAllowListPermissionsCreate']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Scan',
           id: 'btn-add--scan',
-          disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionCreate']
+          disabled: !this.$store.getters['permissions/getAllowListPermissionsCreate']
         }
       },
       modalStatus: false,
@@ -267,13 +256,26 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch'
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
     })
   },
   methods: {
-    toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedScan = {}
-      this.isShowPreviewDialog = !this.isShowPreviewDialog
+    setStatusColor(status) {
+      let color = '#B6791D'
+      if (status == 'Unverified') {
+        color = '#217124'
+      }
+      return `border-color: ${color};color: ${color};`
+    },
+    handleMultipleDelete(selections) {
+      this.selectedDeleteItems = selections
+      console.log(this.selectedDeleteItems)
+      this.showDeleteModal = true
+    },
+    handleDelete(row) {
+      this.selectedDeleteItems.push(row)
+      console.log(this.selectedDeleteItems)
+      this.showDeleteModal = true
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
@@ -324,33 +326,24 @@ export default {
     },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
+      this.selectedDeleteItems = []
       this.getDatatableList()
-    },
-    handleDelete(row) {
-      this?.$refs?.refQuickScanList?.$refs?.elTableRef?.toggleRowSelection(row, false)
-    },
-    handleDuplicateScan(row) {
-      getQuickScanById(row.quickScanResourceId).then((response) => {
-        this.isDuplicate = true
-        this.scanDetails = response.data.data
-        this.modalStatus = true
-      })
-      this.selectedScan = row
-      //quickScanResourceId
     },
     checkIfCanCLoseNewModal() {
       if (this.$refs.newScanModal) {
         this.$refs.newScanModal.closeNewScanPopup()
       }
     },
-    changeNewScanModalStatus(status, restart) {
-      this.modalStatus = status
-      this.isDuplicate = false
-      this.scanDetails = {}
-      if (restart) {
-        this.selectedScan = {}
-        this.getDatatableList()
-      }
+    changeNewDomaimModalStatus(status) {
+      this.modalStatus = true
+      console.log(status)
+      // this.modalStatus = status
+      // this.isDuplicate = false
+      // this.scanDetails = {}
+      // if (restart) {
+      //   this.selectedDeleteItems = {}
+      //   this.getDatatableList()
+      // }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -363,7 +356,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportQuickScan(payload).then((response) => {
+        exportAllowList(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -376,8 +369,8 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.getEtsQuickScanPermissionSearch) {
-        getQuickScanList(this.bodyData)
+      if (this.getAllowListPermissionsSearch) {
+        getAllowListList(this.bodyData)
           .then((response) => {
             const {
               data: { data }
@@ -398,7 +391,7 @@ export default {
       }
     },
     handleActionDelete(row) {
-      this.selectedScan = row
+      this.selectedDeleteItems = row
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
@@ -420,4 +413,20 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.allow-list-table {
+  .allow-list-status {
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: white;
+    width: 77px;
+    text-align: center;
+    margin: auto;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+  }
+}
+</style>
