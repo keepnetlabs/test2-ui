@@ -88,6 +88,7 @@
           nextButton: isActionButtonDisabled,
           submitButton: isActionButtonDisabled
         }"
+        saveButtonText="Launch"
         @on-cancel="handleClose"
         @on-back="changeStep(-1)"
         @on-next="changeStep()"
