@@ -304,13 +304,13 @@ export default {
         })
     },
     handleDelete(item) {
+      this.systemUserCount = item.userCount
       if (item.userCount) {
         return this.toggleShowCannotDeleteDialog()
       }
       this.deletePermissionName = item.roleName
       this.deletePermissionId = item?.resourceId
       this.selectedItem = item
-      this.systemUserCount = item.userCount
       this.deleteDialog = true
     },
     editPermissions(item) {
