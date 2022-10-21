@@ -217,6 +217,7 @@ export default {
     },
     handleSearchText() {
       this.debounce(() => {
+        const defaultOrderedItems = JSON.parse(JSON.stringify(this.defaultOrderedItems))
         const excluded = new Set()
         this.isOpenAllMenuItems = !!this.searchedCompanyText
         function getObjectValueByPath(obj, path, fallback) {
@@ -271,10 +272,10 @@ export default {
           excluded.add(getObjectValueByPath(item, idKey))
           return false
         }
-        for (let i = 0; i < this.defaultOrderedItems.length; i++) {
+        for (let i = 0; i < defaultOrderedItems.length; i++) {
           filterTreeItems(
             filterTreeItem,
-            this.defaultOrderedItems[i],
+            defaultOrderedItems[i],
             this.searchedCompanyText,
             'resourceId',
             'name',
@@ -297,8 +298,7 @@ export default {
             return acc
           }, [])
         }
-
-        this.orderedAccounts = this.defaultOrderedItems
+        this.orderedAccounts = defaultOrderedItems
           .filter((item) => {
             return !isExcluded(getObjectValueByPath(item, 'resourceId'))
           })
