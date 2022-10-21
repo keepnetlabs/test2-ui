@@ -597,6 +597,12 @@ export default {
         ),
         view: dView
       })
+      const videoIndex = this.editor.Blocks.all.models.findIndex(
+        (model) => model.attributes.label === 'Video'
+      )
+      if (videoIndex !== -1) {
+        this.editor.Blocks.all.models.splice(videoIndex, 1)
+      }
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
