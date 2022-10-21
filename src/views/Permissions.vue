@@ -294,7 +294,6 @@ export default {
         .catch((e) => {
           if (e?.response?.status === 400) {
             this.deleteDialog = false
-            this.toggleShowCannotDeleteDialog()
           } else {
             this.$store.dispatch('common/createSnackBar', {
               message: getErrorMessage(e),
@@ -305,6 +304,9 @@ export default {
         })
     },
     handleDelete(item) {
+      if (item.userCount) {
+        return this.toggleShowCannotDeleteDialog()
+      }
       this.deletePermissionName = item.roleName
       this.deletePermissionId = item?.resourceId
       this.selectedItem = item
