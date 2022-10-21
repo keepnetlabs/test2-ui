@@ -46,7 +46,7 @@
             <v-icon class="selection-icons" color="white">mdi-account-plus</v-icon>
           </v-btn>
         </template>
-        <span class="tooltip-span">Add Users</span>
+        <span class="tooltip-span">Add users to group</span>
       </v-tooltip>
       <v-tooltip bottom opacity="1">
         <template v-slot:activator="{ on }">
