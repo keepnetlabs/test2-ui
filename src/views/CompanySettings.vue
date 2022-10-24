@@ -84,7 +84,7 @@
         :label="labels.AllowedList"
         :id="`${labels.AllowedList.toLowerCase()}-content`"
       >
-        <AllowedList v-if="tab === 'allowed-list'" />
+        <allowed-list v-if="tab === 'allowed-list'" ref="refAllowedList"/>
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -188,7 +188,8 @@ export default {
       refCustomApi,
       refProxySettings,
       refSamlSettings,
-      refScimSettings
+      refScimSettings,
+      refAllowedList
     } = this.$refs
     if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
       refSmtpSettings.checkIfCanCloseSmtpModal()
@@ -215,6 +216,8 @@ export default {
       next(false)
     } else if (refScimSettings && refScimSettings.isShowAddOrEditModal) {
       refScimSettings.checkIfCanCloseScimAddOrEditModal()
+    } else if(refAllowedList && refAllowedList.modalStatus) {
+      refAllowedList.checkIfCanCLoseNewModal()
     } else {
       next()
     }

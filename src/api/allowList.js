@@ -9,7 +9,7 @@ export function getAllowListList(payload) {
   })
 }
 
-export function CreateAllowListList(payload) {
+export function createAllowListList(payload) {
   return testRequest.post(`/allow-list`, payload, {
     headers: {
       'Content-Type': 'multipart/form-data',

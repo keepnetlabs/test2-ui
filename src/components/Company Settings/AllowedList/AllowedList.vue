@@ -13,9 +13,9 @@
       v-if="modalStatus"
     >
       <new-domaim
-        ref="newScanModal"
+        ref="NewDomainModal"
         :status="modalStatus"
-        @changeNewScanModalStatus="changeNewDomaimModalStatus"
+        :changeNewDomainModalStatus="changeNewDomaimModalStatus"
       />
     </v-overlay>
     <delete-domain
@@ -119,7 +119,7 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DeleteDomain from './DeleteDomain'
-import NewDomaim from './DeleteDomain'
+import NewDomaim from './NewDomain'
 
 export default {
   name: 'List',
@@ -136,8 +136,6 @@ export default {
       scanDetails: {},
       selectedRow: null,
       loading: true,
-      isEdit: false,
-      isDuplicate: false,
       labels,
       tableData: [],
       showDeleteModal: false,
@@ -269,13 +267,14 @@ export default {
     },
     handleMultipleDelete(selections) {
       this.selectedDeleteItems = selections
-      console.log(this.selectedDeleteItems)
       this.showDeleteModal = true
+      console.log('1')
     },
     handleDelete(row) {
       this.selectedDeleteItems.push(row)
       console.log(this.selectedDeleteItems)
       this.showDeleteModal = true
+      console.log('2')
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
@@ -330,20 +329,16 @@ export default {
       this.getDatatableList()
     },
     checkIfCanCLoseNewModal() {
-      if (this.$refs.newScanModal) {
-        this.$refs.newScanModal.closeNewScanPopup()
+      if (this.$refs.NewDomainModal) {
+        this.$refs.NewDomainModal.closeDomainPopup()
       }
     },
-    changeNewDomaimModalStatus(status) {
-      this.modalStatus = true
+    changeNewDomaimModalStatus(status, isSave = false) {
       console.log(status)
-      // this.modalStatus = status
-      // this.isDuplicate = false
-      // this.scanDetails = {}
-      // if (restart) {
-      //   this.selectedDeleteItems = {}
-      //   this.getDatatableList()
-      // }
+      this.modalStatus = status
+      if (isSave) {
+        this.getDatatableList()
+      }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {

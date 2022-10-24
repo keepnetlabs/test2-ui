@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="status">
     <app-dialog
       type="delete"
       icon="mdi-delete"
