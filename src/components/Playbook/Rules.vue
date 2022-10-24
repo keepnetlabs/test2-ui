@@ -1,5 +1,5 @@
 <template>
-  <div class="playbook-rules">
+  <div class="playbook-rules mt-0">
     <app-dialog
       v-if="getDeleteModalPermission"
       type="delete"
