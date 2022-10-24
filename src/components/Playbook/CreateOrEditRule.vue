@@ -24,100 +24,73 @@
           </v-stepper-header>
 
           <v-stepper-items>
-            <!-- STEP 1 -->
             <v-stepper-content step="1">
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="v-card-form-title">
-                    {{ labels.RuleInformation }}
-                  </v-list-item-title>
-                  <v-list-item-title class="v-card-sub-header">
-                    {{ labels.EnterRuleInformation }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.RuleInformation"
+                :subtitle="labels.EnterRuleInformation"
+              />
               <v-form ref="refStep1Form" lazy-validation>
-                <v-list-item class="mt-6" style="margin-bottom: 17px;">
-                  <v-list-item-content>
-                    <label class="bottom-margin">{{ labels.RuleName }}</label>
-                    <InputEntityName
-                      v-model.trim="name"
-                      id="input--playbook-rule-name"
-                      initialPlaceholder="Enter rule name"
-                      :entityName="labels.RuleName"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item class="margin-top">
-                  <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">{{ labels.Description }}</label>
-                    <InputDescription
-                      v-model.trim="description"
-                      initialPlaceholder="Enter description"
-                      entityName="Description"
-                      id="input--playbook-description"
-                      :maxLength="300"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item class="margin-top">
-                  <v-list-item-content>
-                    <label>{{ labels.Priority }}</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Rules with higher priority override lower priority rules
-                    </v-list-item-title>
-                    <div class="playbook-rule-form__radio-group mb-6">
-                      <v-radio-group
-                        v-model.trim="priority"
-                        id="input--playbook-priority"
-                        row
-                        hide-details
-                        dense
-                      >
-                        <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
-                        <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
-                        <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
-                        <v-radio :ripple="false" color="#2196f3" value="High" label="High" />
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="VeryHigh"
-                          label="Very High"
-                        />
-                      </v-radio-group>
-                    </div>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label>{{ labels.Tags }}</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      {{ labels.DefineTags }}
-                    </v-list-item-title>
-                    <k-select
-                      v-model.trim="tags"
-                      id="input--playbook-tags"
-                      type="combobox"
-                      :items="[]"
-                      chips
-                      deletable-chips
-                      :search-input.sync="tagsearch"
-                      @keyup.tab="updateTags"
-                      @paste="updateTags"
-                      outlined
-                      class="hide-caret playbook_tag-select"
-                      multiple
+                <FormGroup :title="labels.RuleName" has-hint>
+                  <InputEntityName
+                    v-model.trim="name"
+                    id="input--playbook-rule-name"
+                    initial-placeholder="Enter a name for the rule"
+                    :entityName="labels.RuleName"
+                  />
+                </FormGroup>
+                <FormGroup :title="labels.Description">
+                  <InputDescription
+                    v-model.trim="description"
+                    id="input--playbook-description"
+                    initial-placeholder="Describe the rule"
+                    entity-name="Description"
+                    :maxLength="300"
+                  />
+                </FormGroup>
+                <FormGroup
+                  :title="labels.Priority"
+                  sub-title="Rules with higher priority override lower priority rules"
+                >
+                  <div class="playbook-rule-form__radio-group mb-6 mt-4">
+                    <v-radio-group
+                      v-model.trim="priority"
+                      id="input--playbook-priority"
+                      row
+                      hide-details
                       dense
-                      placeholder="Enter tag and press enter key"
-                      persistent-hint
-                      small-chips
-                      :return-object="false"
-                      @input="handleTagItemChange"
-                      hide-details="auto"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
+                    >
+                      <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
+                      <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
+                      <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
+                      <v-radio :ripple="false" color="#2196f3" value="High" label="High" />
+                      <v-radio :ripple="false" color="#2196f3" value="VeryHigh" label="Very High" />
+                    </v-radio-group>
+                  </div>
+                </FormGroup>
+                <FormGroup :title="labels.Tags" :sub-title="labels.DefineTags">
+                  <k-select
+                    v-model.trim="tags"
+                    id="input--playbook-tags"
+                    type="combobox"
+                    :items="[]"
+                    chips
+                    deletable-chips
+                    :search-input.sync="tagsearch"
+                    @keyup.tab="updateTags"
+                    @paste="updateTags"
+                    outlined
+                    class="hide-caret playbook_tag-select"
+                    multiple
+                    dense
+                    placeholder="Enter tag and press enter key"
+                    persistent-hint
+                    small-chips
+                    :return-object="false"
+                    @input="handleTagItemChange"
+                    hide-details="auto"
+                  />
+                </FormGroup>
                 <v-list-item class="mt-5">
                   <v-list-item-content>
                     <v-switch
@@ -224,10 +197,14 @@ import { isDifferent } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 
 export default {
   name: 'CreateOrEditRule',
   components: {
+    FormGroup,
+    ConfigureCompanyStepHeader,
     StepperFooter,
     KSelect,
     ActionItem,
