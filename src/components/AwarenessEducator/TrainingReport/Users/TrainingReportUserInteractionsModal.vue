@@ -11,7 +11,9 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
+      <p v-if="isShowMessage">{{ getMessage }}</p>
       <DataTable
+        v-if="!isShowMessage"
         :id="CONSTANTS.id"
         ref="refTable"
         selectable
@@ -47,8 +49,8 @@
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
+        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose">
+          CLOSE
         </v-btn>
       </div>
     </template>
@@ -185,6 +187,35 @@ export default {
   computed: {
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
+    },
+    getMessage() {
+      if (['In Queue', 'InQueue'].includes(this.item.status)) {
+        return 'The email for this user is in the queue to send. Please check again after a while.'
+      }
+      if (['Not Delivered', 'NotDelivered'].includes(this.item.status)) {
+        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
+      }
+      if (['Error'].includes(this.item.status)) {
+        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
+      }
+      if (['Cancelled'].includes(this.item.status)) {
+        return 'The training enrollment was cancelled while sending emails. For this reason the email could not be delivered to this user. Therefore there isn’t any action by the user.'
+      }
+      if (['Processing'].includes(this.item.status)) {
+        return 'This user hasn’t interacted with the enrollment email or the training, yet. Please check again after a while.'
+      }
+      return ''
+    },
+    isShowMessage() {
+      return [
+        'In Queue',
+        'InQueue',
+        'Not Delivered',
+        'NotDelivered',
+        'Error',
+        'Processing',
+        'Cancelled'
+      ].includes(this.item.status)
     }
   },
   created() {
