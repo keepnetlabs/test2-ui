@@ -50,7 +50,7 @@
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
         <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose">
-          CLOSE
+          {{ isShowMessage ? 'OKAY' : 'CLOSE' }}
         </v-btn>
       </div>
     </template>
