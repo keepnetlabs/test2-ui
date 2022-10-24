@@ -3,13 +3,6 @@
     background-color: white;
     display: flex;
     flex-direction: column;
-    //overflow-y: auto;
-
-
-    .v-text-field.v-text-field--enclosed .v-text-field__details {
-        margin-bottom: 6px;
-    }
-
     .margin-top {
         margin-top: 3px;
     }
@@ -123,8 +116,7 @@
 
 .wizard {
     align-self: stretch;
-    box-shadow: none;
-  box-shadow: none !important;
+    box-shadow: none !important;
     &__header.v-stepper__header {
         justify-content: flex-start;
         padding: 0 6rem;
@@ -157,8 +149,8 @@
 
         .v-stepper__step--active {
             .v-stepper__step__step {
-                background-color: transparent !important;
-                color: #2196f3 !important;
+                background-color: #2196f3 !important;
+                color: #fff !important;
                 border: 1px solid #2196f3 !important;
             }
         }
@@ -166,8 +158,9 @@
         .v-stepper__step--inactive {
             .v-stepper__step__step {
                 background-color: transparent !important;
-                color: #909399 !important;
-                border: 1.5px solid #909399 !important;
+                color: #757575 !important;
+                font-weight: 600;
+                border: 1px solid #757575 !important;
             }
 
             .v-stepper__label {
