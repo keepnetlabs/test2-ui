@@ -27,6 +27,10 @@
         }
     }
 
+  &--super{
+    min-width: 450px !important;
+  }
+
     &--ultra {
         min-width: 400px !important;
     }
