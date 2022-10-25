@@ -27,52 +27,9 @@
       v-if="getMatchingModalRenderStatus"
       subtitle-prop="name"
       :status="showMatchingModal"
-      :selectedMatch="selectedMatch"
+      :selected-match="selectedMatch"
       @closeOverlay="toggleMatchingModal"
     />
-    <datatable
-      id="playbook-data-table"
-      ref="refRulesList"
-      selectable
-      filterable
-      options
-      is-server-side
-      :loading="loading"
-      :table="tableData"
-      :columns="tableOptions.columns"
-      :row-actions="tableOptions.rowActions"
-      :empty="tableOptions.empty"
-      :addButton="tableOptions.addButton"
-      :selectEvent="tableOptions.selectEvent"
-      :download-button="getDownloadButton"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="tableCredientials"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-      @addAction="toggleRuleModal"
-      @onEmptyBtnClicked="toggleRuleModal"
-      @downloadEvent="exportRules"
-      @deleteAction="deleteRule"
-      @handleMultipleDelete="deleteRule"
-      @editAction="handleEdit"
-      @columnFilterChanged="columnFilterChanged"
-      @columnFilterCleared="columnFilterCleared"
-      @refreshAction="callForSearchPlaybook"
-      @server-side-page-number-changed="serverSidePageNumberChanged"
-      @server-side-size-changed="serverSideSizeChanged"
-      @searchChangedEvent="handleSearchChange"
-      @sortChangedEvent="sortChanged"
-    >
-      <template v-slot:datatable-column-popup="{ scope, col }">
-        <span v-if="scope.row[col.property] === 0">
-          {{ labels.NoMatchEmptyText }}
-        </span>
-        <span v-else :class="getMatchingPlaybookPermission" @click="matchingPopupClick(scope.row)">
-          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} {{ labels.Matches }}
-        </span>
-      </template>
-    </datatable>
     <app-modal
       v-if="getModalRenderStatus"
       title-id="text--create-playbook-modal-title"
@@ -92,6 +49,49 @@
         />
       </template>
     </app-modal>
+    <datatable
+      id="playbook-data-table"
+      ref="refRulesList"
+      selectable
+      filterable
+      options
+      is-server-side
+      :loading="loading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :row-actions="tableOptions.rowActions"
+      :empty="tableOptions.empty"
+      :addButton="tableOptions.addButton"
+      :selectEvent="tableOptions.selectEvent"
+      :download-button="getDownloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @addAction="toggleRuleModal"
+      @onEmptyBtnClicked="toggleRuleModal"
+      @downloadEvent="exportRules"
+      @deleteAction="deleteRule"
+      @handleMultipleDelete="deleteRule"
+      @editAction="handleEdit"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForData"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
+    >
+      <template #datatable-column-popup="{ scope, col }">
+        <span v-if="scope.row[col.property] === 0">
+          {{ labels.NoMatchEmptyText }}
+        </span>
+        <span v-else :class="getMatchingPlaybookPermission" @click="matchingPopupClick(scope.row)">
+          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} {{ labels.Matches }}
+        </span>
+      </template>
+    </datatable>
   </div>
 </template>
 
@@ -114,7 +114,7 @@ import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'Rules',
   components: {
@@ -125,6 +125,7 @@ export default {
     CreateOrEditRule,
     AppDialog
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     playbookId: {
       type: String
@@ -244,96 +245,20 @@ export default {
           delete: this.PERMISSIONS.DELETE.hasPermission
         }
       },
-      tableCredientials: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
-      matchingInvestigationPlaybookRules: {
-        table: [],
-        columns: [
-          {
-            property: 'subject',
-            align: 'left',
-            editable: false,
-            label: 'Subject',
-            fixed: false,
-            sortable: false,
-            show: true,
-            type: 'text',
-            minWidth: '33'
-          },
-          {
-            property: 'createDate',
-            align: 'left',
-            editable: false,
-            label: getStoreValue('createDate'),
-            fixed: false,
-            sortable: false,
-            show: true,
-            type: 'text',
-            minWidth: '33'
-          },
-          {
-            property: 'reportedBy',
-            align: 'left',
-            editable: false,
-            label: getStoreValue('reportedBy'),
-            fixed: false,
-            sortable: false,
-            show: true,
-            type: 'text',
-            minWidth: '34'
-          }
-        ],
-        addUsers: {
-          show: false,
-          popUp: false
-        },
-        addMenu: {
-          show: false,
-          popUp: false
-        },
-        iEmpty: {
-          message: labels.EmptyMatchingIncidents,
-          btn: '',
-          icon: 'mdi-plus'
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
+    }
+  },
+  created() {
+    this.controlGetAndUpdatePermission(this?.$route?.params?.playbookId || this.playbookId)
+    if (this.PERMISSIONS.SEARCH.hasPermission) {
+      this.callForData()
     }
   },
   methods: {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.tableCredientials.pageNumber = pageNumber
-      this.callForSearchPlaybook()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.tableCredientials.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearchPlaybook()
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.tableCredientials.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForSearchPlaybook()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.tableCredientials.ascending = order === 'ascending'
-      this.tableCredientials.orderBy = prop
-      this.callForSearchPlaybook()
-    },
-    resetPageNumber() {
-      this.tableCredientials.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
     getTableEmptyStatus() {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
@@ -398,7 +323,7 @@ export default {
     updateTable() {
       this.toggleRuleModal()
       this.loading = true
-      this.callForSearchPlaybook()
+      this.callForData()
     },
     matchingPopupClick(match, toggleModal = true) {
       if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {
@@ -413,11 +338,11 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: this.tableCredientials.orderBy,
-          ascending: this.tableCredientials.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages: reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.tableCredientials.filter
+          filter: this.axiosPayload.filter
         }
         exportPlaybookRules(payload)
           .then((response) => {
@@ -463,28 +388,14 @@ export default {
             })
             .finally(() => {
               this.deleteButtonDisabled = false
-              this.callForSearchPlaybook()
+              this.callForData()
             })
         })
       }
     },
-    columnFilterChanged(filter) {
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.tableCredientials
-      )
-      this.callForSearchPlaybook()
-    },
-    columnFilterCleared(fieldName) {
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.tableCredientials
-      )
-      this.callForSearchPlaybook()
-    },
-    callForSearchPlaybook() {
+    callForData() {
       this.loading = true
-      this.getPlaybookList(this.tableCredientials)
+      this.getPlaybookList(this.axiosPayload)
         .then((response) => {
           const {
             data: {
@@ -506,12 +417,6 @@ export default {
           this.showRuleModal = true
         }
       }
-    }
-  },
-  created() {
-    this.controlGetAndUpdatePermission(this?.$route?.params?.playbookId || this.playbookId)
-    if (this.PERMISSIONS.SEARCH.hasPermission) {
-      this.callForSearchPlaybook()
     }
   },
   computed: {
