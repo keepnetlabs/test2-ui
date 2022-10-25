@@ -302,6 +302,12 @@ export default {
       }
     }
   },
+  created() {
+    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
+    if (!this.query.format) {
+      this.query.format = 'Email'
+    }
+  },
   methods: {
     getRules() {
       if (this.query) {
@@ -422,12 +428,6 @@ export default {
         }
       })
       return ruleCount > 1
-    }
-  },
-  created() {
-    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
-    if (!this.query.format) {
-      this.query.format = 'Email'
     }
   }
 }

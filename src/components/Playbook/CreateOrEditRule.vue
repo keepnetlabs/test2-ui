@@ -69,29 +69,15 @@
                   </div>
                 </FormGroup>
                 <FormGroup :title="labels.Tags" :sub-title="labels.DefineTags">
-                  <k-select
+                  <InputTag
                     v-model.trim="tags"
+                    ref="refTags"
                     id="input--playbook-tags"
-                    type="combobox"
+                    class="hide-caret"
                     :items="[]"
-                    chips
-                    deletable-chips
-                    :search-input.sync="tagsearch"
-                    @keyup.tab="updateTags"
-                    @paste="updateTags"
-                    outlined
-                    class="hide-caret playbook_tag-select"
-                    multiple
-                    dense
-                    placeholder="Enter tag and press enter key"
-                    persistent-hint
-                    small-chips
-                    :return-object="false"
-                    @input="handleTagItemChange"
-                    hide-details="auto"
                   />
                 </FormGroup>
-                <v-list-item class="mt-5">
+                <v-list-item>
                   <v-list-item-content>
                     <v-switch
                       v-model="isActive"
@@ -106,14 +92,11 @@
             </v-stepper-content>
             <!-- STEP 2 -->
             <v-stepper-content step="2">
-              <v-list-item-content>
-                <v-list-item-title class="v-card-form-title">
-                  {{ labels.Conditions }}
-                </v-list-item-title>
-                <v-list-item-title class="v-card-sub-header" style="white-space: normal;">
-                  {{ labels.ConditionsSubHeader }}
-                </v-list-item-title>
-              </v-list-item-content>
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.Conditions"
+                :subtitle="labels.ConditionsSubHeader"
+              />
               <vue-query-builder
                 v-model="query"
                 id="playbook-query-builder"
@@ -147,7 +130,6 @@
                 <ActionItem
                   ref="refActionItem"
                   :playbookId="playbookId"
-                  :actionData.sync="actionData"
                   :editedActions="playbookAction"
                   :has-keyword="hasKeyword"
                   :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
@@ -191,7 +173,6 @@ import ActionItem from './ActionItem'
 import { maxLength, required } from '@/utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
 import { scrollToComponent } from '@/utils/functions'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { isDifferent } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
@@ -199,14 +180,15 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputTag from '@/components/Common/Inputs/InputTag'
 
 export default {
   name: 'CreateOrEditRule',
   components: {
+    InputTag,
     FormGroup,
     ConfigureCompanyStepHeader,
     StepperFooter,
-    KSelect,
     ActionItem,
     VueQueryBuilder,
     QueryBuilderGroup,
@@ -243,13 +225,10 @@ export default {
       },
       saveDisable: false,
       labels,
-      actionData: {},
-      actionList: [{ id: 0 }],
       isValid: true,
       playbookAction: {},
       totalStep: 3,
       activeStep: 1,
-      tagsearch: '',
       name: '',
       description: '',
       priority: 'Medium',
@@ -350,6 +329,11 @@ export default {
       }
     }
   },
+  created() {
+    if (this.playbookId) {
+      this.callForGetPlaybook()
+    }
+  },
   methods: {
     findHasKeyword(arr, retArr = []) {
       if (arr.children) {
@@ -361,20 +345,6 @@ export default {
         }
       })
       return !!retArr.length
-    },
-    handleTagItemChange(value) {
-      const lastValue = value[value.length - 1].trim()
-      if (!lastValue) {
-        value.splice(value.length - 1, 1)
-      } else {
-        value[value.length - 1] = value[value.length - 1]
-          ? value[value.length - 1].substring(0, 20)
-          : ''
-      }
-    },
-    addAction() {
-      this.actionList.push({ id: this.idCounter })
-      this.idCounter = this.idCounter + 1
     },
     handleSave() {
       if (this.playbookId) {
@@ -718,16 +688,6 @@ export default {
         }
       })
     },
-    updateTags() {
-      this.$nextTick(() => {
-        if (this.tagsearch) {
-          this.tags.push(...this.tagsearch.split(','))
-        }
-        this.$nextTick(() => {
-          this.tagsearch = ''
-        })
-      })
-    },
     callForGetPlaybook() {
       getPlaybook(this.playbookId).then((response) => {
         const { data } = response.data
@@ -796,11 +756,6 @@ export default {
           actions: [...this.$refs.refActionItem.getCurrentActions()]
         }
       })
-    }
-  },
-  created() {
-    if (this.playbookId) {
-      this.callForGetPlaybook()
     }
   }
 }

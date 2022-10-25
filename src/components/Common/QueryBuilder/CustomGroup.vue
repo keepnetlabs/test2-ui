@@ -104,7 +104,7 @@
     <v-btn
       :id="`playbook-query-builder-group-add-group-${index}`"
       class="query__button"
-      style="margin-left: 104px; margin-top: 6px;"
+      style="margin-left: 104px; margin-top: -8px;"
       v-if="depth < maxDepth && depth === 1"
       color="#00bcd4"
       rounded
@@ -122,6 +122,7 @@ import QueryBuilderRule from './CustomRule'
 import deepClone from 'vue-query-builder/src/utilities'
 export default {
   name: 'QueryBuilderGroup',
+  extends: QueryBuilderGroup,
   components: {
     // eslint-disable-next-line vue/no-unused-components
     QueryBuilderRule: QueryBuilderRule
@@ -132,15 +133,13 @@ export default {
       default: false
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      if (this.query && this.query.children.length === 0) {
-        this.addRule()
-        this.getCustomBadgeRender = false
-      }
-    })
+  data() {
+    return {
+      blockAnimation: true,
+      attachId: Math.random(),
+      getCustomBadgeRender: this.depth !== 1
+    }
   },
-  extends: QueryBuilderGroup,
   computed: {
     isRenderFirstGroupHeader() {
       return this.hideFirstGroupHeader
@@ -160,10 +159,15 @@ export default {
       })
     }
   },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.query && this.query.children.length === 0) {
+        this.addRule()
+        this.getCustomBadgeRender = false
+      }
+    })
+  },
   methods: {
-    addNewGroup() {
-      this.addGroup()
-    },
     handleLogicalOperatorChange(value) {
       if (value !== this.query.logicalOperator) {
         this.blockAnimation = false
@@ -208,13 +212,6 @@ export default {
         })
         this.$emit('update:query', updated_query)
       }
-    }
-  },
-  data() {
-    return {
-      blockAnimation: true,
-      attachId: Math.random(),
-      getCustomBadgeRender: this.depth !== 1
     }
   }
 }
