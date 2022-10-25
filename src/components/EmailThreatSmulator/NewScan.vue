@@ -101,6 +101,7 @@
                         hide-details
                       >
                         <v-radio
+                          class="pb-2"
                           v-for="(item, index) in scanOptions"
                           :key="index"
                           :value="item.value"
@@ -123,10 +124,10 @@
                     title="Password"
                     sub-title="Use your account password"
                     has-hint
-                    class-name="mt-8"
+                    class-name="mt-5"
                   >
                     <v-text-field
-                      v-bind="commonRules(emailSettingsValues.scanType == 'Manual' ? false : true)"
+                      v-bind="commonRules(emailSettingsValues.scanType === 'Manual' ? false : true)"
                       v-model="emailSettingsValues.password"
                       outlined
                       dense
@@ -134,13 +135,37 @@
                       hint=""
                       type="password"
                       place
-                      :disabled="emailSettingsValues.scanType == 'Manual' ? true : false"
+                      :disabled="emailSettingsValues.scanType === 'Manual' ? true : false"
                     />
+                    <div>
+                      <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
+                        <label>Client Id</label>
+                        <v-text-field
+                          class="ml-2"
+                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                          v-model="emailSettingsValues.clientId"
+                          outlined
+                          hint=""
+                          placeholder="Client IdL"
+                        />
+                      </div>
+                      <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
+                        <label>Tenant Id</label>
+                        <v-text-field
+                          class="ml-2"
+                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                          v-model="emailSettingsValues.tenantId"
+                          outlined
+                          hint=""
+                          placeholder="Tenant Id"
+                        />
+                      </div>
+                    </div>
                     <v-checkbox
                       v-model="emailSettingsValues.owa"
                       color="#2196f3"
                       label="OWA"
-                      :disabled="emailSettingsValues.scanType == 'Manual' ? true : false"
+                      :disabled="emailSettingsValues.scanType !== 'Automate' ? true : false"
                     />
                     <div v-if="emailSettingsValues.owa" class="label-left-form">
                       <label>OWA URL</label>
@@ -747,6 +772,10 @@ export default {
         {
           value: 'Manual',
           label: 'Manual (no password is required)'
+        },
+        {
+          value: 'OAUTH',
+          label: 'Continue with Microsoft'
         }
       ],
       labels,
@@ -759,7 +788,9 @@ export default {
         owa: false,
         owaUrl: '',
         username: '',
-        methodTypeId: '1'
+        methodTypeId: '1',
+        clientId: '',
+        tenantId: ''
       },
       scanAndDeliveryValues: {
         continuousScan: false,
@@ -894,14 +925,19 @@ export default {
           isContinuousScan: false,
           delaySeconds: 0,
           sendingLimit: 0,
-          distributeEmailOverMinutes: 0
+          distributeEmailOverMinutes: 0,
+          clientId: '',
+          tenantId: ''
         }
+
         requestBody.email = this.emailSettingsValues.email
         requestBody.password = this.emailSettingsValues.password
         if (this.emailSettingsValues.scanType === 'Manual') {
           requestBody.mailTestType = '0'
-        } else {
+        } else if (this.emailSettingsValues.scanType === 'Automate') {
           requestBody.mailTestType = this.emailSettingsValues.owa ? '1' : '2'
+        } else {
+          requestBody.mailTestType = '1'
         }
         requestBody.owaUrl = this.emailSettingsValues.owaUrl
         requestBody.owaUsername = this.emailSettingsValues.username
@@ -924,6 +960,8 @@ export default {
             false
           )
         }
+        requestBody.clientId = this.emailSettingsValues.clientId
+        requestBody.tenantId = this.emailSettingsValues.tenantId
         this.disableStartButtonStatus = false
         getQuickScanCreate(requestBody)
           .then((response) => {
@@ -982,8 +1020,12 @@ export default {
         this.emailSettingsValues.owa = true
         this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl
         this.emailSettingsValues.username = this.scanDetails.owaUsername
-      } else {
+      } else if (this.scanDetails.clientId === null && this.scanDetails.tenantId === null) {
         this.emailSettingsValues.scanType = 'Manual'
+      } else {
+        this.emailSettingsValues.scanType = 'OAUTH'
+        this.emailSettingsValues.clientId = this.scanDetails.clientId
+        this.emailSettingsValues.tenantId = this.scanDetails.tenantId
       }
       this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan
       this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit
