@@ -199,7 +199,7 @@
                           dense
                           persistent-hint
                           class="same-width"
-                          :rules="[(v) => validations.required(v, labels.Required)]"
+                          :rules="subdomainRules"
                           @input="changeDisabledLabel"
                         />
                         <v-select
@@ -532,6 +532,15 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
+      subdomainRules: [],
+      httpRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.subdomainDashDot(v)
+      ],
+      httpsRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.subdomainDash(v)
+      ],
       editItemsDisabled: false
     }
   },
@@ -889,6 +898,15 @@ export default {
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    }
+  },
+  watch: {
+    'formValues.urlSchemaTypeId'(val) {
+      if (val === '1') {
+        this.subdomainRules = this.httpRules
+      } else {
+        this.subdomainRules = this.httpsRules
+      }
     }
   },
   mounted() {
