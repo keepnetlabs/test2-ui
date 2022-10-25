@@ -223,6 +223,11 @@
     z-index: 9999;
   }
 
+  button.error--text {
+    color: rgba(0, 0, 0, 0.54) !important;
+    caret-color: rgba(0, 0, 0, 0.54) !important;
+  }
+
   .v-text-field--outlined.error--text fieldset {
     border: 1px solid #ff5252 !important;
   }
