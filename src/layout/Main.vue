@@ -789,11 +789,6 @@ export default {
       },
       switchDialogStatus: false,
       showNewPassword: false,
-      currentPassword: null,
-      newPasswordError: null,
-      newPasswordErrorText: null,
-      newPassword: null,
-      reNewPassword: null,
       openPasswordChange: false,
       communityId: null,
       baseUrl: null,
@@ -1323,9 +1318,6 @@ export default {
           this.logoutUser()
           break
         case 'changePassword':
-          this.currentPassword = null
-          this.newPassword = null
-          this.reNewPassword = null
           this.openPasswordChange = true
           break
         case 'switchCompany':
