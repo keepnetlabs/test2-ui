@@ -1,10 +1,6 @@
 <template>
-  <KContainer id="integrations">
-    <el-tabs v-model="tab">
-      <el-tab-pane label="Rules" name="rules" id="playbook--rules-content">
-        <rules :PERMISSIONS="permissions" ref="refRules" />
-      </el-tab-pane>
-    </el-tabs>
+  <KContainer id="integrations" tabless>
+    <rules :PERMISSIONS="permissions" ref="refRules" />
   </KContainer>
 </template>
 
@@ -23,22 +19,11 @@ export default {
       type: String
     }
   },
-  data() {
-    return {
-      tab: 'rules'
-    }
-  },
   computed: {
     ...mapGetters({
       permissions: 'permissions/getPlaybookPermissions'
     })
   },
-  methods: {
-    changeTabStatus(status) {
-      this.tab = status
-    }
-  },
-
   beforeRouteLeave(to, from, next) {
     const { refRules } = this.$refs
     if (refRules && refRules.showRuleModal) {

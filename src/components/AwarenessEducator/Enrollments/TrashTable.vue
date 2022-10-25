@@ -77,7 +77,6 @@ export default {
           COLUMNS.TYPE,
           COLUMNS.ENROLLED_BY,
           COLUMNS.START_DATE,
-          COLUMNS.STATUS_TRASH,
           COLUMNS.DELIVERY,
           COLUMNS.TARGET_USERS,
           COLUMNS.TAGS
