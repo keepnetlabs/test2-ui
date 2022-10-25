@@ -118,8 +118,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'select',
-            filterableItems: [],
+            filterableType: 'text',
             width: 180
           },
           {
