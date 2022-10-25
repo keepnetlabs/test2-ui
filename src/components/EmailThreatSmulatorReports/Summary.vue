@@ -382,16 +382,16 @@ export default {
     color: white;
     position: relative;
     &.blue {
-      background: #1173c1;
+      background: #1173c1 !important;
     }
     &.green {
-      background: #217124;
+      background: #217124 !important;
     }
     &.red {
-      background: #b83a3a;
+      background: #b83a3a !important;
     }
     &.gray {
-      background: rgba(56, 59, 65, 0.72);
+      background: rgba(56, 59, 65, 0.72) !important;
     }
     .score-title {
       font-weight: 600;
