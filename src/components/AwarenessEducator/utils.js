@@ -133,12 +133,11 @@ export const COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Type,
-    sortable: true,
+    sortable: false,
+    hideSort: true,
     show: true,
     type: 'text',
-    width: 160,
-    filterableType: 'select',
-    filterableItems: ['SCORM12']
+    width: 160
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
