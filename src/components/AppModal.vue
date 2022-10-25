@@ -15,7 +15,7 @@
           <v-list-item class="k-overlay__list-item k-overlay__header">
             <div class="v-btn v-cart-icon-wrapper">
               <v-icon v-if="iconName" class="ml-2" color="blue" left medium>{{ iconName }}</v-icon>
-              <img v-if="customIcon" alt="" :src="require('@/assets/img/' + customIcon + '')">
+              <img v-if="customIcon" alt="" :src="require('@/assets/img/' + customIcon + '')" />
             </div>
             <v-list-item-content>
               <v-list-item-title class="k-overlay__title" :id="titleId">{{
