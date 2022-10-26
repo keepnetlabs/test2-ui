@@ -23,7 +23,7 @@
     <target-users-check-license-dialog
       v-if="showLicenseExceededDialog"
       :status="showLicenseExceededDialog"
-      :dialogBody="getDialogBody"
+      :dialog-body="getLicenseDialogBody"
       @close-overlay="handleCloseLicenseExceededDialog"
     />
     <v-row justify="center">
@@ -789,11 +789,6 @@ export default {
       },
       switchDialogStatus: false,
       showNewPassword: false,
-      currentPassword: null,
-      newPasswordError: null,
-      newPasswordErrorText: null,
-      newPassword: null,
-      reNewPassword: null,
       openPasswordChange: false,
       communityId: null,
       baseUrl: null,
@@ -977,6 +972,9 @@ export default {
         ? localStorage.getItem('companyGroupName')
         : ''
     },
+    isShowSwitchCompany() {
+      return ['Root', 'Reseller'].includes(this.$store.state.auth.userRoleName)
+    },
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName
     },
@@ -1072,24 +1070,13 @@ export default {
           routerName !== 'Training Report'
       }
     },
-    getCommunityName() {
-      let _this = this
-      _this.communityId = localStorage.getItem('communityResourceIdForRedirect')
-      _this.communityName =
-        _this.$route.params.communityName || localStorage.getItem('communityName')
-      return this.communityName
-    },
-    getDialogBody() {
+    getLicenseDialogBody() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
         : ''
     },
     isReturnMainAccountVisible() {
-      if (
-        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
-        this.$store.state.auth.userRoleName === 'Company Admin'
-      )
-        return false
+      if (!this.isShowSwitchCompany) return false
       return (
         localStorage.getItem('companyResourceId') !==
         localStorage.getItem('selectedCompanyRequestId')
@@ -1101,7 +1088,7 @@ export default {
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
     routerName() {
-      return this.$route.name
+      return this.$route.name || ''
     },
     getDrawer: {
       get() {
@@ -1280,10 +1267,7 @@ export default {
     },
     setDropdownDivider(item) {
       if (item.value === 'switchCompany') {
-        return (
-          this.$store.state.auth.userRoleName !== 'Company Admin' &&
-          !this.isReturnMainAccountVisible
-        )
+        return this.isShowSwitchCompany && !this.isReturnMainAccountVisible
       } else if (item.value === 'returnToMainAccount') {
         return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
       } else {
@@ -1292,7 +1276,7 @@ export default {
     },
     setDropdownVisibility(item) {
       if (item.value === 'switchCompany') {
-        return this.$store.state.auth.userRoleName !== 'Company Admin'
+        return this.isShowSwitchCompany
       } else if (item.value === 'returnToMainAccount') {
         return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
       } else {
@@ -1334,9 +1318,6 @@ export default {
           this.logoutUser()
           break
         case 'changePassword':
-          this.currentPassword = null
-          this.newPassword = null
-          this.reNewPassword = null
           this.openPasswordChange = true
           break
         case 'switchCompany':
