@@ -236,3 +236,13 @@ export function numberRangeRule(value, min = 0, max = 999) {
   if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
   return `Value has to be between ${min} and ${max}`
 }
+
+export function subdomainDash(value, message = 'Invalid Subdomain') {
+  value = getValue(value)
+  return /^[a-zA-Z0-9-]*$/gi.test(value) || message
+}
+
+export function subdomainDashDot(value, message = 'Invalid Subdomain') {
+  value = getValue(value)
+  return /^[a-zA-Z0-9.-]*$/gi.test(value) || message
+}
