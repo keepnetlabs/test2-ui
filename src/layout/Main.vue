@@ -647,42 +647,6 @@
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
-      <div class="page-header__actions">
-        <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
-              <v-icon>{{ iconPaths.mdiHelpCircle }}</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <template v-for="(item, index) in rightDropdownData">
-              <v-list-item
-                v-if="getRightDropdownDataItemRender(item)"
-                :key="index"
-                :id="item.id"
-                :disabled="item.disabled"
-                @click="handleClickRightDropdown(item)"
-              >
-                <v-list-item-icon>
-                  <v-icon v-text="item.icon"></v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title
-                    v-text="item.text"
-                    :data-content="
-                      item.text === 'Get Help'
-                        ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
-                        : item.text === 'Documentation'
-                        ? 'https://doc.keepnetlabs.com'
-                        : ''
-                    "
-                  ></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </template>
-          </v-list>
-        </v-menu>
-      </div>
     </v-app-bar>
     <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'">
       <v-container
@@ -694,21 +658,6 @@
       </v-container>
       <app-footer :brand-name="getBreadCrumbBaseName" />
     </v-content>
-    <v-tour
-      class="main-v-tour"
-      name="tourDashboard"
-      :steps="tourSteps"
-      :options="{
-        highlight: true,
-        debug: false,
-        labels: {
-          buttonSkip: 'END TOUR',
-          buttonPrevious: 'BACK',
-          buttonNext: 'NEXT',
-          buttonStop: 'FINISH'
-        }
-      }"
-    />
   </v-app>
 </template>
 <script>
@@ -797,36 +746,6 @@ export default {
       drawer: null,
       mini: null,
       isDisconnected: true,
-      rightDropdownData: [
-        {
-          text: 'Tour',
-          icon: 'mdi-reminder',
-          url: '',
-          id: 'btn--dashboard-header-menu-tour',
-          disabled: false
-        },
-        {
-          text: 'Documentation',
-          icon: 'mdi-file-document',
-          url: '',
-          id: 'btn--dashboard-header-menu-documentation',
-          disabled: false
-        },
-        {
-          text: 'Get Help',
-          icon: 'mdi-help-circle',
-          id: 'btn--dashboard-header-menu-get-help',
-          url: '',
-          disabled: false
-        },
-        {
-          text: 'Feedback',
-          icon: 'mdi-message-alert',
-          id: 'btn--dashboard-header-menu-feedback',
-          url: '',
-          disabled: false
-        }
-      ],
       dropdownData: [
         {
           text: 'Switch Company',
@@ -862,64 +781,6 @@ export default {
           icon: 'mdi-login-variant',
           url: '',
           value: 'logout'
-        }
-      ],
-      tourSteps: [
-        {
-          target: '#available-widgets', // We're using document.querySelector() under the hood
-          content: `Available Widgets`
-        },
-        {
-          target: '#PhishingReporterIrHeader',
-          content:
-            'Number of online Phishing Reporter users by total number of phishing reporter users'
-        },
-        {
-          target: '#IncidentAnalysisIrHeader',
-          content: 'Number of detected harmful emails by total number of reported email'
-        },
-        {
-          target: '#InvestigationsIrHeader',
-          content: 'Number of auto and manually executed investigations'
-        },
-        {
-          target: '#ROISummaryIrHeader',
-          content: 'Return of investment states how much time and money you saved '
-        },
-        {
-          target: '#RecentlyPostedThreats',
-          content: 'Most recent incidents shared in your communities'
-        },
-        {
-          target: '#TopPosts',
-          content: 'Most engaged incidents shared in your communities'
-        },
-
-        {
-          target: '#TopRules',
-          content: 'Most activated playbook rules'
-        },
-
-        {
-          target: '#IncidentClusters',
-          content: "Reported emails clustered by reporters' avarage reliability score over time"
-        },
-        {
-          target: '#ReportedEmailTrends',
-          content: 'Numbers of reported emails by category over time'
-        },
-        {
-          target: '#RecentlyReportedIncidents',
-          content: 'Numbers of reported emails by category'
-        },
-        {
-          target: '#Reporters',
-          content:
-            "Top reporters sorted by reliability score. Reliability score measures a user's credibility calculated by accuracy of their reported emails that are detected harmful"
-        },
-        {
-          target: '#RecentInvestigations',
-          content: 'Most recent investigations'
         }
       ]
     }
@@ -1214,12 +1075,6 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
-    getRightDropdownDataItemRender({ text }) {
-      if (text === 'Tour') {
-        return this.$route.name === 'Dashboard'
-      }
-      return true
-    },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },
@@ -1282,35 +1137,6 @@ export default {
       } else {
         return true
       }
-    },
-    handleClickRightDropdown(item = { text: '' }) {
-      const { text } = item
-      const domElem = document.createElement('a')
-      switch (text) {
-        case 'Tour':
-          this.tourSafeStarter('tourDashboard')
-          break
-        case 'Feedback':
-          this.feedbackDialog = true
-          break
-        case 'Get Help':
-          domElem.href = `mailto:${this.supportEmailAddress || 'support@keepnetlabs.com'}`
-          domElem.click()
-          break
-        case 'Documentation':
-          domElem.href = 'https://doc.keepnetlabs.com'
-          domElem.target = '_blank'
-          domElem.click()
-          break
-        default:
-          break
-      }
-    },
-    tourSafeStarter(tourName) {
-      const arr = []
-      this.tourSteps.forEach((x) => document.querySelector(x.target) && arr.push(x))
-      this.tourSteps = arr
-      this.$tours[tourName].start()
     },
     changeDropdownItem(item) {
       switch (item) {

@@ -1,7 +1,6 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import VueBrowserUpdate from '@sum.cumo/vue-browserupdate'
-import VueTour from 'vue-tour'
 import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
@@ -16,7 +15,6 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
-require('vue-tour/dist/vue-tour.css')
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 //dynamic kullanımda bindingi gelmiyodu
@@ -91,7 +89,6 @@ Vue.use(VueBrowserUpdate, {
   }
 })
 
-Vue.use(VueTour)
 Vue.use(require('vue-moment'))
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
