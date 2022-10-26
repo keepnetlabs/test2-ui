@@ -15,10 +15,6 @@ export default {
     ...mapGetters({
       permissions: 'permissions/getWidgetsPermissions'
     })
-  },
-  beforeRouteLeave(to, from, next) {
-    this.$tours['tourDashboard'].finish()
-    next()
   }
 }
 </script>
