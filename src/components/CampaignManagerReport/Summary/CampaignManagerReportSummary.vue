@@ -257,7 +257,14 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.campaignSummary
+      const { emailTemplateInfo = {} } = this.campaignSummary || {
+        emailTemplateInfo: {}
+      }
+
+      if (!Object.keys(emailTemplateInfo).length) {
+        return {}
+      }
+
       const {
         name,
         difficultyResourceId,
