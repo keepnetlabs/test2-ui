@@ -60,6 +60,14 @@
 }
 
 .absolute-text-input-error {
+  &--max-width{
+    .v-messages {
+      min-width: 320px !important;
+      &__wrapper {
+        width: 320px !important;
+      }
+    }
+  }
     .v-text-field__details {
         position: absolute;
         bottom: -24px;

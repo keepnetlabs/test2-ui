@@ -1500,5 +1500,17 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  THREAT_INTELLIGENCE_PERMISSIONS: {
+    SEARCH: {
+      url: `leak/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT: {
+      url: `leak/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }

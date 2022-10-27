@@ -691,7 +691,8 @@ export const labels = {
   Type: 'Type',
   NoVishingCampaigns: 'You do not have any vishing campaigns',
   TryAgain: 'Try Again',
-  VishingTemplate: 'Vishing Template'
+  VishingTemplate: 'Vishing Template',
+  EmptyTIGridMsg: 'You do not have any Thereat Intelligence'
 }
 
 export default labels

@@ -1035,11 +1035,11 @@ export function getDefaultFilter() {
   })
 }
 
-export function getDefaultAxiosPayload(props) {
+export function getDefaultAxiosPayload(props, defaultOrderBy = null) {
   return deepCopyArray({
     pageNumber: 1,
     pageSize: 10,
-    orderBy: 'CreateTime',
+    orderBy: defaultOrderBy !== null ? defaultOrderBy : 'CreateTime',
     ascending: false,
     filter: getDefaultFilter().filter,
     ...props

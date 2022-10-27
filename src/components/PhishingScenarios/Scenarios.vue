@@ -8,12 +8,12 @@
       @on-close="toggleShowFastLaunch"
     />
     <v-overlay
+      v-if="modalStatus"
       id="add-new-community-overlay"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
       color="white"
-      v-if="modalStatus"
     >
       <NewScenario
         ref="newScenarioModal"
@@ -28,6 +28,7 @@
       />
     </v-overlay>
     <DeleteScenario
+      v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
@@ -58,7 +59,7 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
@@ -67,10 +68,9 @@
       @addAction="changeNewScenarioModalStatus(true)"
       @downloadEvent="exportScenario"
       @handleMultipleDelete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -88,12 +88,11 @@
           @on-click="handleFastLaunch(scope.row)"
         />
         <RowActionsMenu>
-          <DefaultMenuRowAction
+          <ScenariosRowActionsEditButton
             :id="tableOptions.rowActions[1].id"
             :scope="scope"
+            :name="tableOptions.rowActions[1].name"
             :disabled="tableOptions.rowActions[1].disabled"
-            :icon="tableOptions.rowActions[1].icon"
-            :text="tableOptions.rowActions[1].name"
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
@@ -103,7 +102,6 @@
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
-            :checkIsOwnerProperty="false"
             @on-click="handlePreview(scope.row)"
           />
           <DefaultMenuRowAction
@@ -112,15 +110,14 @@
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
             :text="tableOptions.rowActions[3].name"
-            :checkIsOwnerProperty="false"
+            :check-is-owner-property="false"
             @on-click="handleEdit(scope.row, true)"
           />
-          <DefaultMenuRowAction
+          <ScenariosRowActionsDeleteButton
             :id="tableOptions.rowActions[4].id"
             :scope="scope"
+            :name="tableOptions.rowActions[4].name"
             :disabled="tableOptions.rowActions[4].disabled"
-            :icon="tableOptions.rowActions[4].icon"
-            :text="tableOptions.rowActions[4].name"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -144,7 +141,6 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 import { mapGetters } from 'vuex'
@@ -152,10 +148,15 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
+import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    ScenariosRowActionsEditButton,
+    ScenariosRowActionsDeleteButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
@@ -165,7 +166,7 @@ export default {
     DeleteScenario,
     NewScenario
   },
-  mixins: [useCallForLanguagesForTableFilter],
+  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
       languageFilterOptions: [],
@@ -173,8 +174,6 @@ export default {
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       selectedRow: null,
-      methodItems: [],
-      difficultyItems: [],
       editableFormValues: {},
       loading: true,
       isEdit: false,
@@ -341,11 +340,8 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
-      selectedScenarioHeader: null,
-      templateHTML: null,
       selectedPhishingScenario: {}
     }
   },
@@ -357,62 +353,45 @@ export default {
       return this.selectedRow?.method === 'Attachment' || undefined
     }
   },
+  created() {
+    this.callForLanguages('refScenariosList')
+    this.callForScenarioDetails()
+  },
   methods: {
+    callForScenarioDetails() {
+      getScenarioDataDetails()
+        .then((response) => {
+          this.scenarioDetailsLookup = response?.data?.data || {
+            methodTypes: [],
+            difficultyTypes: []
+          }
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            this.scenarioDetailsLookup.methodTypes.map((item) => {
+              return { text: item.text, value: item.text }
+            })
+          )
+          this.$set(
+            this.tableOptions.columns[3],
+            'filterableItems',
+            this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+              return { text: item.text, value: item.text }
+            })
+          )
+        })
+        .finally(() => {
+          this.callForData()
+        })
+    },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
     handleSuccessDeleteAction(row) {
       this.$refs.refScenariosList.unSelectRow(row)
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleFastLaunch(row = {}) {
       this.selectedRow = row
@@ -457,7 +436,7 @@ export default {
         this.scenarioId = null
         this.isEdit = false
         this.isDuplicate = false
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportScenario({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -469,7 +448,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportScenarios(payload).then((response) => {
           const { data } = response
@@ -482,10 +461,10 @@ export default {
         })
       })
     },
-    getDatatableList() {
+    callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
-        getScenariosList(this.bodyData)
+        getScenariosList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -506,45 +485,7 @@ export default {
     handleActionDelete(row) {
       this.selectedScenario = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
-  },
-  created() {
-    this.callForLanguages('refScenariosList')
-    getScenarioDataDetails()
-      .then((response) => {
-        this.scenarioDetailsLookup = response?.data?.data || {
-          methodTypes: [],
-          difficultyTypes: []
-        }
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          this.scenarioDetailsLookup.methodTypes.map((item) => {
-            return { text: item.text, value: item.text }
-          })
-        )
-        this.$set(
-          this.tableOptions.columns[3],
-          'filterableItems',
-          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-            return { text: item.text, value: item.text }
-          })
-        )
-      })
-      .finally(() => {
-        this.getDatatableList()
-      })
   }
 }
 </script>

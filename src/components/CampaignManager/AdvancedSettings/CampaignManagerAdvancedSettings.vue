@@ -234,10 +234,10 @@
             id="input--campaign-manager-advanced-settings-other-settings-number"
             placeholder="Enter number"
             outlined
-            class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+            class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error absolute-text-input-error--max-width"
             style="max-width: 64px;"
             :disabled="getDisabledStatusOfRandomlySelected"
-            :rules="[...rules.number, userCountValidation]"
+            :rules="formData.sendRandomlyUsers ? [...rules.number, userCountValidation] : []"
           ></v-text-field>
           <KSelect
             v-model.trim="formData.sendRandomlyUsersCalculateTypeId"

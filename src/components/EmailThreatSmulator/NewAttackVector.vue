@@ -19,7 +19,7 @@
         />
       </template>
     </app-dialog>
-    <app-modal :status="status" icon-name="mdi-shield-half-full" :title="pageTitle">
+    <app-modal :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-form ref="refAttackVectorForm">
           <app-modal-body-header

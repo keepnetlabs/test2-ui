@@ -9,14 +9,15 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ selectedScenario && selectedScenario.name }} will be deleted.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
         type="delete"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />
@@ -42,15 +43,25 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteScenario(this.selectedScenario.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction', this.selectedScenario)
-      })
-      this.closeModal()
+      this.isActionButtonDisabled = true
+      deleteScenario(this.selectedScenario.resourceId)
+        .then(() => {
+          this.$emit('handleSuccessDeleteAction', this.selectedScenario)
+          this.closeModal()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

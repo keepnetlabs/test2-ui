@@ -406,7 +406,6 @@ export default {
   props: {
     id: Number,
     hasKeyword: Boolean,
-    actionData: Object,
     resourceId: String,
     editedActions: Object,
     playbookId: String,

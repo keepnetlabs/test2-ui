@@ -129,8 +129,8 @@
               dense
               hide-details
               placeholder="Select a item"
-              min-width-type="small"
-              nudge-width="170"
+              min-width-type="super"
+              nudge-width="200"
               :items="scheduledTimeItems"
               :disabled="isScheduledTimeDisabled"
             />

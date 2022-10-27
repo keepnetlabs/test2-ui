@@ -113,7 +113,7 @@ const dashboard = {
     getDropdownCompanies({ commit }, payload) {
       if (payload !== 'CompanyAdmin') {
         getCompanyList().then((response) => {
-          const result = response.data.data && response.data.data
+          const result = response?.data?.data ? response.data.data : []
           commit('SET_DROPDOWN_COMPANIES', result)
         })
       }

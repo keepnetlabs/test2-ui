@@ -120,7 +120,7 @@
               <v-icon class="selection-icons" color="white">mdi-account-plus</v-icon>
             </v-btn>
           </template>
-          <span class="tooltip-span">Add Users</span>
+          <span class="tooltip-span">Add users to a group</span>
         </v-tooltip>
       </template>
       <template v-slot:addUsers>
@@ -234,20 +234,20 @@
             :icon="tableOptions.rowActions[2].icon"
             @on-click="handleAddUserToGroup(scope.row)"
           />
+          <!-- <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :text="tableOptions.rowActions[4].name"
+            :icon="tableOptions.rowActions[4].icon"
+            @on-click="handleCreateGroupWithUser(scope.row)"
+          /> -->
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
             :text="tableOptions.rowActions[3].name"
             :icon="tableOptions.rowActions[3].icon"
-            @on-click="handleCreateGroupWithUser(scope.row)"
-          />
-          <!-- <DefaultMenuRowAction
-            :scope="scope"
-            :id="tableOptions.rowActions[3].id"
-            :text="tableOptions.rowActions[3].name"
-            :icon="tableOptions.rowActions[3].icon"
             @on-click="handleViewUserGroups(scope.row)"
-          /> -->
+          />
           <TargetUserRowActionsDeleteButton
             :scope="scope"
             :id="tableOptions.rowActions[1].id"
@@ -301,7 +301,6 @@ import {
   defaultFieldMappings,
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
-import TargetUserToAddToGroupDialog from '@/components/TargetUsers/TargetUserToAddToGroupDialog'
 import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 
@@ -497,7 +496,7 @@ export default {
             disabled: !this.$store.getters['permissions/getTargetUsersDeletePermissions']
           },
           {
-            name: 'Add users to group',
+            name: 'Add user to group',
             id: 'btn-add-users-to-group--target-users-people-row-actions',
             icon: 'mdi-account-multiple-plus',
             action: 'add-user-to-group'

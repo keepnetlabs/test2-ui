@@ -12,11 +12,12 @@
     <template v-slot:app-dialog-body>
       {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         cancel-button-id="btn-cancel--email-landing-page-popup"
         confirm-button-id="btn-delete--email-landing-page-popup"
         type="delete"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />
@@ -42,15 +43,25 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteLandingPage(this.selectedEmailTemplate.resourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
-      })
-      this.closeModal()
+      this.isActionButtonDisabled = true
+      deleteLandingPage(this.selectedEmailTemplate.resourceId)
+        .then(() => {
+          this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
+          this.closeModal()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

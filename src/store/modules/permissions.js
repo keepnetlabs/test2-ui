@@ -50,7 +50,8 @@ const {
   AWARENESS_EDUCATOR_PERMISSIONS,
   ETS_QUICK_SCAN_PERMISSIONS,
   ETS_ATTACK_VECTOR_PERMISSIONS,
-  ETS_QUICK_SCAN_REPORT_PERMISSIONS
+  ETS_QUICK_SCAN_REPORT_PERMISSIONS,
+  THREAT_INTELLIGENCE_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -104,7 +105,8 @@ const defaultState = {
   awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
   etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
-  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS
+  etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
+  threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -898,6 +900,12 @@ const store = {
     },
     getExportCertificatePermission(state) {
       return state?.awarenessEducatorPermissions?.EXPORT_CERTIFICATE?.hasPermission
+    },
+    getThreatIntelligencePermissionsSearch(state) {
+      return state?.threatIntelligencePermissions?.SEARCH?.hasPermission
+    },
+    getThreatIntelligencePermissionsExport(state) {
+      return state?.threatIntelligencePermissions?.EXPORT?.hasPermission
     }
   },
   mutations: {
@@ -956,7 +964,8 @@ const store = {
         'awarenessEducatorPermissions',
         'etsQuickScanPermissions',
         'etsAttackVectorPermissions',
-        'etsQuickScanReportPermissions'
+        'etsQuickScanReportPermissions',
+        'threatIntelligencePermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

@@ -29,7 +29,6 @@ import labels from '@/model/constants/labels'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { mapGetters, mapActions } from 'vuex'
-
 export default {
   name: 'LeavingDialog',
   components: { AppDialogFooter, AppDialog },

@@ -79,7 +79,7 @@
                     <InputDescription
                       v-model.trim="formData.Description"
                       id="input--company-description"
-                      required
+                      :required="false"
                       :max-length="300"
                     />
                   </v-list-item-content>
