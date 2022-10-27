@@ -139,7 +139,7 @@
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Client Id</label>
+                        <label>Application (Client) ID</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
@@ -150,14 +150,14 @@
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Tenant Id</label>
+                        <label>Directory (Tenant) ID</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.tenantId"
                           outlined
                           hint=""
-                          placeholder="Tenant Id"
+                          placeholder="Directory (Tenant) ID"
                         />
                       </div>
                     </div>
