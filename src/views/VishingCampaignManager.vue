@@ -49,7 +49,6 @@
       @addAction="isCampaignModalVisible = true"
       @downloadEvent="exportVishingCampaigns"
       @handleMultipleDelete="handleMultipleDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -286,6 +285,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
+            width: 160,
             type: 'text',
             filterableType: 'date',
             filterableCustomFieldName: 'createTime'
