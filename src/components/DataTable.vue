@@ -358,7 +358,7 @@
                   icon
                   @click="handleResend(multipleSelection)"
                 >
-                  <v-icon class="selection-icons" color="white">mdi-refresh</v-icon>
+                  <v-icon class="selection-icons" color="white">$white-resend</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">Resend</span>
