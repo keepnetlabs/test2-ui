@@ -27,7 +27,7 @@ export function createTxtRecord() {
 }
 
 export function getAllowListListVerify(resourceId) {
-  return testRequest.post(`/ `, {
+  return testRequest.post(`/allow-list/verify/${resourceId}`, {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
@@ -35,14 +35,14 @@ export function getAllowListListVerify(resourceId) {
   })
 }
 
-export function deleteAllowListItems(ResourceIdList) {
+export function deleteAllowListItems(resourceIds) {
   return testRequest.delete('/allow-list', {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
     },
     data: {
-      ResourceIdList
+      resourceIds
     }
   })
 }

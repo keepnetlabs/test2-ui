@@ -77,14 +77,16 @@ export default {
       this.confirmText = ''
     },
     handleDelete() {
-      const ids = { resourceIds: [] }
+      const ids = []
       this.selectedItems.forEach((item) => {
-        ids.resourceIds.push(item.allowListResourceId)
+        ids.push(item.allowListResourceId)
       })
-      deleteAllowListItems(ids).then(() => {
-        this.$emit('handleSuccessDeleteAction')
+
+      deleteAllowListItems(ids).then((res) => {
+        setTimeout(() => {
+          this.$emit('handleSuccessDeleteAction')
+        }, 1000)
       })
-      this.closeModal()
     }
   },
   watch: {

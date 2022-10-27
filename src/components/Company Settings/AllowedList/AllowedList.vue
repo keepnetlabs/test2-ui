@@ -15,7 +15,7 @@
       <new-domaim
         ref="NewDomainModal"
         :status="modalStatus"
-        :changeNewDomainModalStatus="changeNewDomaimModalStatus"
+        :changeNewDomainPopupStatus="changeNewDomainPopupStatus"
       />
     </v-overlay>
     <delete-domain
@@ -25,6 +25,20 @@
       @handleCloseModal=";(showDeleteModal = false), (selectedDeleteItems = [])"
       @handleDelete="handleDelete($event)"
       :selectedItems="selectedDeleteItems"
+    />
+    <verify-domain
+      v-if="verifyPopupStatus"
+      :selectedDomain="selectedDomain"
+      :status="verifyPopupStatus"
+      @handleCloseModal="verifyPopupStatus = false"
+      @handleVerifyDomainPopup="handleVerifyDomainPopup"
+      @getDatatableList="getDatatableList"
+    />
+    <domain-verified
+      v-if="verifiedDomainStatus"
+      :status="verifiedDomainStatus"
+      @handleCloseModal="verifiedDomainStatus = false"
+      :selectedDomain="selectedDomain.domain"
     />
     <data-table
       v-if="getAllowListPermissionsSearch"
@@ -51,7 +65,7 @@
       row-key="allowListResourceId"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
-      @addAction="changeNewDomaimModalStatus(true)"
+      @addAction="changeNewDomainPopupStatus(true)"
       @downloadEvent="exportTableData"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
@@ -81,11 +95,7 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
-          @on-click="
-            $router.push({
-              path: `/email-threat-simulator/report/${scope.row.allowListResourceId}`
-            })
-          "
+          @on-click=";(selectedDomain = scope.row), (verifyPopupStatus = true)"
         />
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[1].icon"
@@ -103,8 +113,6 @@
 <script>
 import DataTable from '../../DataTable'
 import {
-  getStoreValue,
-  PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -118,8 +126,10 @@ import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import DeleteDomain from './DeleteDomain'
-import NewDomaim from './NewDomain'
+import DeleteDomain from '@/components/Company Settings/AllowedList/DeleteDomain'
+import NewDomaim from '@/components/Company Settings/AllowedList/NewDomain'
+import VerifyDomain from '@/components/Company Settings/AllowedList/VerifyDomain'
+import DomainVerified from '@/components/Company Settings/AllowedList/DomainVerified'
 
 export default {
   name: 'List',
@@ -128,7 +138,9 @@ export default {
     DataTable,
     CompanySettingsHeader,
     DeleteDomain,
-    NewDomaim
+    NewDomaim,
+    VerifyDomain,
+    DomainVerified
   },
   mixins: [useCallForLanguagesForTableFilter],
   data() {
@@ -249,7 +261,10 @@ export default {
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      verifyPopupStatus: false,
+      selectedDomain: {},
+      verifiedDomainStatus: false
     }
   },
   computed: {
@@ -268,13 +283,14 @@ export default {
     handleMultipleDelete(selections) {
       this.selectedDeleteItems = selections
       this.showDeleteModal = true
-      console.log('1')
     },
     handleDelete(row) {
       this.selectedDeleteItems.push(row)
-      console.log(this.selectedDeleteItems)
       this.showDeleteModal = true
-      console.log('2')
+    },
+    handleVerifyDomainPopup() {
+      this.verifyPopupStatus = false
+      this.verifiedDomainStatus = true
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
@@ -333,8 +349,7 @@ export default {
         this.$refs.NewDomainModal.closeDomainPopup()
       }
     },
-    changeNewDomaimModalStatus(status, isSave = false) {
-      console.log(status)
+    changeNewDomainPopupStatus(status, isSave = false) {
       this.modalStatus = status
       if (isSave) {
         this.getDatatableList()

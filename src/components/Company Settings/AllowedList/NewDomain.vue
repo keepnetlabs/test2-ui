@@ -75,7 +75,7 @@
           </v-form>
         </template>
         <template v-slot:overlay-footer>
-          <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closedomainPopup">
+          <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeDomainPopup">
             {{ labels.Cancel }}
           </v-btn>
           <v-btn
@@ -98,7 +98,7 @@ import AppModal from '../../AppModal'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
-import { createtxtRecord, createAllowListList } from '@/api/allowList'
+import { createTxtRecord, createAllowListList } from '@/api/allowList'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
@@ -133,7 +133,7 @@ export default {
       type: Boolean,
       default: false
     },
-    changeNewdomainModalStatus: {
+    changeNewDomainPopupStatus: {
       type: Function
     }
   },
@@ -151,19 +151,20 @@ export default {
         return this.numberRangeRule
       }
     },
-    closedomainPopup() {
+    closeDomainPopup() {
+      console.log(this.formValues.domain.length);
       if (this.formValues.domain.length === 0) {
-        return this.changeNewdomainModalStatus(false)
+        this.changeNewDomainPopupStatus(false)
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.changeNewdomainModalStatus(false)
+          this.changeNewDomainPopupStatus(false)
         }
       })
     },
     gettxtRecord() {
-      createtxtRecord().then((record) => {
+      createTxtRecord().then((record) => {
         this.formValues.txtRecord = record.data.data
       })
     },
@@ -174,7 +175,7 @@ export default {
         bodyFormData.append('TxtRecord', this.formValues.txtRecord)
         createAllowListList(bodyFormData)
           .then((returnValue) => {
-            this.changeNewdomainModalStatus(false, true)
+            this.changeNewDomainPopupStatus(false, true)
           })
           .catch((error) => {
             const errorResponse = error.response.data
@@ -193,7 +194,6 @@ export default {
               icon: 'mdi-alert-circle'
             })
           })
-        console.log(payload)
       }
     }
   },
