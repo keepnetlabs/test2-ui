@@ -261,7 +261,7 @@ export default {
         emailTemplateInfo: {}
       }
 
-      if (!Object.keys(emailTemplateInfo).length) {
+      if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
 
@@ -274,9 +274,9 @@ export default {
         resourceId,
         languageShortCode,
         phishingFileName
-      } = emailTemplateInfo
+      } = emailTemplateInfo || {}
 
-      return Object.keys(emailTemplateInfo).length
+      return Object.keys(emailTemplateInfo)?.length
         ? {
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             method: methods.find((item) => item.value === categoryResourceId)?.text,
