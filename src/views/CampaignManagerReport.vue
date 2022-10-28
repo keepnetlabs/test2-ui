@@ -127,7 +127,7 @@ export default {
   methods: {
     callForFormDetails() {
       getCampaignManagerJobFormDetails().then((response) => {
-        this.formDetails = response.data.data
+        this.formDetails = response?.data?.data
       })
     },
     setSubmittedDataTabLabel() {
