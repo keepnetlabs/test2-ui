@@ -539,7 +539,7 @@ export default {
       this.deleteButtonDisabled = true
       bulkDeletePhishingUsers(this.multipleSystemUserPayload)
         .then(() => {
-          this.$refs.refUsersList.resetSelectableParams()
+          this?.$refs?.refUsersList?.resetSelectableParams()
           this.callForPhishingReporterUser()
           this.isWantToDelete = false
         })

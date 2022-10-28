@@ -326,7 +326,7 @@ export default {
       this.deleteButtonDisabled = true
       bulkDeleteSystemUsers(this.multipleSystemUserPayload)
         .then(() => {
-          this.$refs.refSystemUsersList.resetSelectableParams()
+          this?.$refs?.refSystemUsersList?.resetSelectableParams()
           this.callForListSystemUsers()
           this.toggleShowDeleteSystemUserModal()
         })
