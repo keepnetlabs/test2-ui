@@ -2923,25 +2923,27 @@ export default {
           }
         })
       } else {
-        getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
-          const { data } = response
-          this.uploadRespond = data.data
-          this.uploadRespond.initialBody = data.data.initialBody
-          this.uploadRespond.visibleBody = data.data.initialBody
-          this.uploadRespond.editableBody = response.data.data.initialBody
-          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-          // this.setShadowRootMalicousLink('incident-preview-1')
-          // this.listData = data.data.results
-          if (isInitial) {
-            this.initialFormValues = {
-              ...this.initialFormValues,
-              uploadRespond: {
-                ...this.initialFormValues.uploadRespond,
-                ...this.uploadRespond
+        if (selectedItem?.resourceId) {
+          getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
+            const { data } = response
+            this.uploadRespond = data.data
+            this.uploadRespond.initialBody = data.data.initialBody
+            this.uploadRespond.visibleBody = data.data.initialBody
+            this.uploadRespond.editableBody = response.data.data.initialBody
+            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            // this.setShadowRootMalicousLink('incident-preview-1')
+            // this.listData = data.data.results
+            if (isInitial) {
+              this.initialFormValues = {
+                ...this.initialFormValues,
+                uploadRespond: {
+                  ...this.initialFormValues.uploadRespond,
+                  ...this.uploadRespond
+                }
               }
             }
-          }
-        })
+          })
+        }
       }
     },
     onCancelClicked() {
