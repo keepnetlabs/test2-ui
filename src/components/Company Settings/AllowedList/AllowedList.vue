@@ -5,7 +5,7 @@
       sub-title="Manage and verify your allowed list domain to use with our platform"
     />
     <v-overlay
-      id="add-new-quick-scan-overlay"
+      id="add-new-quick-domain-overlay"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
@@ -42,7 +42,7 @@
     />
     <data-table
       v-if="getAllowListPermissionsSearch"
-      id="quick-scan-data-table"
+      id="allow-list-data-table"
       class="allow-list-table"
       ref="refAllowList"
       is-server-side
@@ -145,7 +145,6 @@ export default {
   mixins: [useCallForLanguagesForTableFilter],
   data() {
     return {
-      scanDetails: {},
       selectedRow: null,
       loading: true,
       labels,
@@ -153,8 +152,8 @@ export default {
       showDeleteModal: false,
       selectedDeleteItems: [],
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ETS_QUICK_SCAN_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ETS_QUICK_SCAN_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ALLOW_LIST_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ALLOW_LIST_TABLE,
         columns: [
           {
             property: 'domain',
@@ -247,14 +246,14 @@ export default {
           message: LABEL_STORE.NO_ALLOW_LIST,
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--scan',
+          id: 'btn-empty--domain',
           disabled: !this.$store.getters['permissions/getAllowListPermissionsCreate']
         },
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add a Scan',
-          id: 'btn-add--scan',
+          tooltip: 'Add a Domain',
+          id: 'btn-add--domain',
           disabled: !this.$store.getters['permissions/getAllowListPermissionsCreate']
         }
       },
@@ -370,7 +369,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Scans.${
+          link.download = `Allow-List.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
@@ -417,7 +416,7 @@ export default {
     }
   },
   created() {
-    this.callForLanguages('refQuickScanList')
+    this.callForLanguages('refAllowList')
     this.getDatatableList()
   }
 }
