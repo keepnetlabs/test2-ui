@@ -428,7 +428,7 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableOptions.table =
-            results.map((item) => {
+            results?.map((item) => {
               const { diagnosticToolStatus } = item
               return {
                 ...item,
@@ -463,7 +463,7 @@ export default {
           payload.filter.FilterGroups[0].FilterItems.push({
             FieldName: 'ResourceId',
             Operator: 'Include',
-            Value: this.tableOptions.table.map((row) => row.resourceId).join(',')
+            Value: this?.tableOptions?.table?.map((row) => row.resourceId).join(',')
           })
           payload.pageNumber = 1
         }
