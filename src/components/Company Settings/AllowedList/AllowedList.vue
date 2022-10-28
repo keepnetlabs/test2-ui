@@ -83,7 +83,7 @@
           :id="`text-allow-list-status-${scope.$index}`"
           class="datatable-link"
         >
-          <div class="allow-list-status py-1" :style="setStatusColor(scope.row.riskFactor)">
+          <div class="allow-list-status py-1" :style="setStatusColor(scope.row.status)">
             {{ scope.row.status }}
           </div>
         </span>
@@ -274,7 +274,7 @@ export default {
   methods: {
     setStatusColor(status) {
       let color = '#B6791D'
-      if (status == 'Unverified') {
+      if (status == 'Verified') {
         color = '#217124'
       }
       return `border-color: ${color};color: ${color};`
