@@ -375,7 +375,8 @@ export const TABLE_SETTINGS_KEYS = {
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorSettings',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackSettings',
-  THREATS_INTELLIGENCE_TABLE: 'ThreatIntelligenceSettings'
+  THREATS_INTELLIGENCE_TABLE: 'ThreatIntelligenceSettings',
+  ALLOW_LIST_TABLE: 'AllowListSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -538,7 +539,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackKeys',
-  THREATS_INTELLIGENCE: 'ThreatIntelligenceList'
+  THREATS_INTELLIGENCE: 'ThreatIntelligenceList',
+  ALLOW_LIST_TABLE: 'AllowListKeys',
 }
 
 export const INTEGRATION_TYPES = {

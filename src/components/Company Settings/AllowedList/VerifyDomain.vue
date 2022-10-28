@@ -2,7 +2,7 @@
   <div v-if="status">
     <app-dialog
       :type="!isVerified ? 'delete' : ''"
-      :title="!isVerified ? 'Verify domain' : 'Cannot verify domain'"
+      :title="isVerified ? 'Verify domain' : 'Cannot verify domain'"
       :icon="!isVerified ? 'mdi-alert-circle' : ''"
       :subtitle="selectedDomain.domain"
       title-id="verify--domain-popup-title"
@@ -17,7 +17,7 @@
           <div class="verify-desc">
             If you have created the TXT Record, you can try to verify now. Or, you can come back
             later to verify your domain.<br /><br />
-            Use values below to create a TXT record from your DNS
+            Use values below to create a TXT record from your DNS {{ isVerified }}
           </div>
           <div class="name-value-container">
             <div class="text-title-container">
@@ -84,12 +84,13 @@
         <div>
           <v-card class="d-flex justify-end verify-button-container" flat>
             <v-card v-if="!verifyStartStatus" class="pa-2 later" @click="closeModal" flat>
-              VERIFY LATER
+              <span v-if="selectedDomain.status !== 'Verified'">VERIFY LATER</span>
+              <span v-else class="btn-blue">CLOSE</span>
             </v-card>
-            <v-card class="pa-2 now" flat>
+            <v-card v-if="selectedDomain.status !== 'Verified'" class="pa-2 now" flat>
               <div v-if="!verifyStartStatus" @click="verifyDomain()">VERIFY NOW</div>
               <div v-else class="verifying">
-                VERIFYYING<img alt="" src="../../../assets/img/verify-loading-icon.svg" />
+                VERIFYING<img alt="" src="../../../assets/img/verify-loading-icon.svg" />
               </div>
             </v-card>
           </v-card>
@@ -147,7 +148,7 @@ export default {
       })
     }
   },
-  watch: {}
+  mounted() {}
 }
 </script>
 
@@ -196,8 +197,11 @@ export default {
   font-size: 14px;
   line-height: 24px;
   color: #383b41;
-  .now {
+  .btn-blue{
     color: #2196f3;
+  }
+  .now {
+    @extend .btn-blue;
     cursor: pointer;
     .verifying {
       cursor: inherit;
