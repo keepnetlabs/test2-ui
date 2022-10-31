@@ -139,7 +139,12 @@ export default {
   },
   methods: {
     copyClipboard(value) {
-      navigator.clipboard.writeText(value)
+      navigator.clipboard.writeText(value);
+      this.$store.dispatch('common/createSnackBar', {
+        message: labels.CopyToClipboard,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-checkbox-marked-circle '
+      })
     },
     commonRules(isNeed) {
       if (isNeed) {
