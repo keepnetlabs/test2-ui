@@ -731,7 +731,7 @@ export default {
       this.loading = true
       bulkDeleteTargetUsers(this.multipleTargetUserPayload)
         .then(() => {
-          this.$refs.refPeopleTable.resetSelectableParams()
+          this?.$refs?.refPeopleTable?.resetSelectableParams()
           this.callForTargetUsers()
           this.changeDeleteModalStatus(false)
         })
