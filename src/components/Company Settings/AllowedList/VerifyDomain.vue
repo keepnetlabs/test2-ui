@@ -14,10 +14,19 @@
     >
       <template v-slot:app-dialog-body>
         <div class="verify-domain-container">
-          <div class="verify-desc">
+          <div v-if="isVerified" class="verify-desc">
             If you have created the TXT Record, you can try to verify now. Or, you can come back
             later to verify your domain.<br /><br />
             Use values below to create a TXT record from your DNS {{ isVerified }}
+          </div>
+          <div v-else class="verify-desc">
+            This domain cannot be verified at the moment.<br />
+            {{selectedDomain.domain}}<br /><br />
+
+            <strong>Error: Verification code not found, you can check again later.</strong> <br /><br />
+
+            Use values below to create a TXT record from your DNS management panel. If you already
+            created the DNS record, wait for a while and try again.
           </div>
           <div class="name-value-container">
             <div class="text-title-container">
@@ -104,6 +113,8 @@
 import AppDialog from '../../AppDialog'
 import { getAllowListListVerify } from '@/api/allowList'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import labels from '@/model/constants/labels'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'VerifyDomain',
   components: {
@@ -122,12 +133,17 @@ export default {
   data() {
     return {
       verifyStartStatus: false,
-      isVerified: true
+      isVerified: true,
     }
   },
   methods: {
     copyClipboard(value) {
       navigator.clipboard.writeText(value)
+      this.$store.dispatch('common/createSnackBar', {
+        message: labels.CopyToClipboard,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-checkbox-marked-circle '
+      })
     },
     closeModal() {
       this.$emit('handleCloseModal')
@@ -197,7 +213,7 @@ export default {
   font-size: 14px;
   line-height: 24px;
   color: #383b41;
-  .btn-blue{
+  .btn-blue {
     color: #2196f3;
   }
   .now {
