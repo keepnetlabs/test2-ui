@@ -83,6 +83,10 @@
                 emailTemplateParams.fromAddress
               }}</span>
             </div>
+            <div>
+              <span class="template-preview__text--title">Subject: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.subject }}</span>
+            </div>
           </div>
           <div
             v-if="emailTemplateParams.attachment"
@@ -500,11 +504,19 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.selectedTemplateHeader = data.subject
-          const { fromName, fromAddress, name, difficultyResourceId, phishingFileName } = data
+          const {
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            phishingFileName,
+            subject
+          } = data
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
+            subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {
