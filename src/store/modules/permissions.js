@@ -48,7 +48,8 @@ const {
   ETS_QUICK_SCAN_PERMISSIONS,
   ETS_ATTACK_VECTOR_PERMISSIONS,
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
-  THREAT_INTELLIGENCE_PERMISSIONS
+  THREAT_INTELLIGENCE_PERMISSIONS,
+  ALLOW_LIST_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -100,7 +101,8 @@ const defaultState = {
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
   etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
   etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
-  threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS
+  threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS,
+  allowListPermissions: ALLOW_LIST_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -890,6 +892,24 @@ const store = {
     },
     getThreatIntelligencePermissionsExport(state) {
       return state?.threatIntelligencePermissions?.EXPORT?.hasPermission
+    },
+    getAllowListPermissionsSearch(state) {
+      return state?.allowListPermissions?.SEARCH?.hasPermission
+    },
+    getAllowListPermissionsCreate(state) {
+      return state?.allowListPermissions?.CREATE?.hasPermission
+    },
+    getAllowListPermissionsCreateTxt(state) {
+      return state?.allowListPermissions?.CREATE_TXT?.hasPermission
+    },
+    getAllowListPermissionsVerify(state) {
+      return state?.allowListPermissions?.VERIFY?.hasPermission
+    },
+    getAllowListPermissionsDelete(state) {
+      return state?.allowListPermissions?.DELETE?.hasPermission
+    },
+    getAllowListPermissionsExport(state) {
+      return state?.allowListPermissions?.EXPORT?.hasPermission
     }
   },
   mutations: {
@@ -945,7 +965,8 @@ const store = {
         'etsQuickScanPermissions',
         'etsAttackVectorPermissions',
         'etsQuickScanReportPermissions',
-        'threatIntelligencePermissions'
+        'threatIntelligencePermissions',
+        'allowListPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

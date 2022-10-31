@@ -169,7 +169,10 @@ export default {
       }
     },
     getTrainingDeliveryData() {
-      const { reminderDescription = 'No', startDate = '' } = this.trainingSummary
+      const { reminderDescription = 'No', startDate = '' } = this.trainingSummary || {
+        reminderDescription: 'No',
+        startDate: ''
+      }
       return {
         'Start Date': {
           show: true,

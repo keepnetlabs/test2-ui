@@ -384,7 +384,8 @@ export default {
       this.loading = true
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+            response?.data?.data || {}
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -410,7 +411,7 @@ export default {
           })
         })
         .catch((err) => {
-          if (err.response.status === 404) {
+          if (err?.response?.status === 404) {
             this.$emit('handleRouteBackToTargetUsers')
           }
         })

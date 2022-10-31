@@ -481,17 +481,16 @@ export default {
           }
         })
         .then((response) => {
-          const {
-            data: {}
-          } = response
-          const {
-            data: {
-              data: { totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
+          if (response?.data?.data) {
+            const {
+              data: {
+                data: { totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              }
+            } = response
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+          }
         })
     }
   },

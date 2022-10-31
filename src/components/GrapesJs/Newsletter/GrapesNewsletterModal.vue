@@ -946,16 +946,17 @@ export default {
           viewer.refresh()
         })
         this.editor.on('asset:upload:end', (images) => {
-          const [image] = images.data
-          const url = image.src
-          fetch(url)
-            .then((res) => res.blob())
-            .then((blob) => {
-              const file = new File([blob], image.name, { type: blob.type })
-              const formData = new FormData()
-              formData.append('Files', file)
-              uploadFiles(formData)
-            })
+          if (images?.data?.[0]) {
+            const url = images.data[0]
+            fetch(url)
+              .then((res) => res.blob())
+              .then((blob) => {
+                const file = new File([blob], image.name, { type: blob.type })
+                const formData = new FormData()
+                formData.append('Files', file)
+                uploadFiles(formData)
+              })
+          }
         })
         this.editor.on('asset:remove', (props) => {
           const { attributes } = props

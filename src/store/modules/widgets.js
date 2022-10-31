@@ -112,13 +112,13 @@ const widgetsStore = {
             phishingCampaignTrends,
             mostEngagedCampaigns,
             topPhishingSimulationReporters
-          } = response.data
+          } = response?.data || {}
           const {
             investigationTypeCount,
             notifiedEmailResultCount,
             phishingReporterUserStatusCount,
             roiSummary
-          } = dashboardSummary.data
+          } = dashboardSummary?.data || {}
           commit('SET_INVESTIGATION_CARD', investigationTypeCount)
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
