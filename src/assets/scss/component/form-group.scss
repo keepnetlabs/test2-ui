@@ -15,6 +15,7 @@
   .v-list-item__subtitle.k-form-group__sub-title {
     text-overflow: initial;
     white-space: initial;
+    line-height: 21px !important;
   }
 
   .v-list-item__content > *:not(:last-child) {
@@ -36,6 +37,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
     margin-left: 0 !important;
+    line-height: 21px !important;
 
     & #text {
       max-width: 554px;
