@@ -341,7 +341,7 @@ export default {
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
       this.selectedDeleteItems = []
-      this.$refs.refAllowList.resetSelectableParams();
+      this.$refs.refAllowList.resetSelectableParams()
       this.getDatatableList()
     },
     checkIfCanCLoseNewModal() {
