@@ -84,7 +84,7 @@
         :label="labels.AllowedList"
         :id="`${labels.AllowedList.toLowerCase()}-content`"
       >
-        <allowed-list v-if="tab === 'allowed-list'" ref="refAllowedList"/>
+        <allowed-list v-if="tab === 'allowed-list'" ref="refAllowedList" />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -216,7 +216,7 @@ export default {
       next(false)
     } else if (refScimSettings && refScimSettings.isShowAddOrEditModal) {
       refScimSettings.checkIfCanCloseScimAddOrEditModal()
-    } else if(refAllowedList && refAllowedList.modalStatus) {
+    } else if (refAllowedList && refAllowedList.modalStatus) {
       refAllowedList.checkIfCanCLoseNewModal()
     } else {
       next()

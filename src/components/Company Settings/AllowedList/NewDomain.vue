@@ -139,7 +139,7 @@ export default {
   },
   methods: {
     copyClipboard(value) {
-      navigator.clipboard.writeText(value);
+      navigator.clipboard.writeText(value)
       this.$store.dispatch('common/createSnackBar', {
         message: labels.CopyToClipboard,
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -157,7 +157,7 @@ export default {
       }
     },
     closeDomainPopup() {
-      console.log(this.formValues.domain.length);
+      console.log(this.formValues.domain.length)
       if (this.formValues.domain.length === 0) {
         this.changeNewDomainPopupStatus(false)
       }
