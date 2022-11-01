@@ -540,7 +540,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackKeys',
   THREATS_INTELLIGENCE: 'ThreatIntelligenceList',
-  ALLOW_LIST_TABLE: 'AllowListKeys',
+  ALLOW_LIST_TABLE: 'AllowListKeys'
 }
 
 export const INTEGRATION_TYPES = {

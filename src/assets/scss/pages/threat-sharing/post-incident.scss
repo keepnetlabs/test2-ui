@@ -2184,23 +2184,55 @@
   }
 
   .btn-pending {
-    background-color: #00bcd4;
+    background-color: #fff;
+    border: 1px solid #757575;
+    color: #757575;
   }
 
   .btn-active {
-    background-color: #2196f3;
+    background-color: #fff;
+    border: 1px solid #2196f3;
+    color: #2196f3;
   }
 
   .btn-inactive {
-    background-color: #757575;
+    background-color: #fff;
+    border: 1px solid #757575;
+    color: #757575;
   }
 
-  .btn-warning {
-    background-color: #e6a23c;
+  .btn-phishing {
+    background-color: #fff;
+    border: 1px solid #b83a3a;
+    color: #b83a3a;
   }
 
   .btn-cancelled {
     background-color: #f56c6c;
+  }
+
+  .btn-malicious {
+    background-color: #fff;
+    border: 1px solid #b83a3a;
+    color: #b83a3a;
+  }
+
+  .btn-undetected {
+    background-color: #fff;
+    border: 1px solid #1173c1;
+    color: #1173c1;
+  }
+
+  .btn-simulation {
+    background-color: #fff;
+    border: 1px solid #0198ac;
+    color: #0198ac;
+  }
+
+  .btn-error {
+    background-color: #fff;
+    border: 1px solid #b6791d;
+    color: #b6791d;
   }
 
   .email-time {

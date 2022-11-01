@@ -21,9 +21,10 @@
           </div>
           <div v-else class="verify-desc">
             This domain cannot be verified at the moment.<br />
-            {{selectedDomain.domain}}<br /><br />
+            {{ selectedDomain.domain }}<br /><br />
 
-            <strong>Error: Verification code not found, you can check again later.</strong> <br /><br />
+            <strong>Error: Verification code not found, you can check again later.</strong>
+            <br /><br />
 
             Use values below to create a TXT record from your DNS management panel. If you already
             created the DNS record, wait for a while and try again.
@@ -133,7 +134,7 @@ export default {
   data() {
     return {
       verifyStartStatus: false,
-      isVerified: true,
+      isVerified: true
     }
   },
   methods: {
