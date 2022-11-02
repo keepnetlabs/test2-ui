@@ -349,10 +349,10 @@ export default {
         this.$refs.NewDomainModal.closeDomainPopup()
       }
     },
-    changeNewDomainPopupStatus(status, isSave = false) {
+    changeNewDomainPopupStatus(status, isSave = false, resourceId = null) {
       this.modalStatus = status
-      if (isSave) {
-        this.getDatatableList()
+      if (isSave && resourceId !== null) {
+        this.getDatatableList(resourceId)
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -377,7 +377,7 @@ export default {
         })
       })
     },
-    getDatatableList() {
+    getDatatableList(resourceId = null) {
       this.loading = true
       if (this.getAllowListPermissionsSearch) {
         getAllowListList(this.bodyData)
@@ -391,6 +391,10 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
+            if (resourceId !== null) {
+              this.selectedDomain = results.find((x) => x.allowListResourceId === resourceId)
+              this.verifyPopupStatus = true
+            }
           })
           .catch(() => {
             this.tableData = []
