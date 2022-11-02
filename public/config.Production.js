@@ -26,6 +26,6 @@ const APP_CONFIG = (() => {
     VUE_APP_PHISHING_REPORTER_URL:'#{knl_phishing_reporter_url}#',
     VUE_APP_EMAIL_THREAT_SIMULATOR_API: '#{knl_ets_url}#',
     VUE_APP_AWARENESS_URL:'#{knl_awareness_url}#',
-    VUE_APP_THREATS_INTELLIGENCE_URL: '#{knl_ti_url}#'
+    VUE_APP_THREAT_INTELLIGENCE_API: '#{knl_ti_url}#'
   }
 })()
