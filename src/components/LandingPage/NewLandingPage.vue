@@ -192,6 +192,7 @@
                         ></v-select>
                         <v-text-field
                           v-model.trim="formValues.subDomain"
+                          ref="refSubdomain"
                           required
                           placeholder="Enter subdomain"
                           hint="*Required"
@@ -907,6 +908,11 @@ export default {
       } else {
         this.subdomainRules = this.httpsRules
       }
+      this.$nextTick(() => {
+        if (this.$refs.refSubdomain) {
+          this.$refs.refSubdomain.validate()
+        }
+      })
     }
   },
   mounted() {

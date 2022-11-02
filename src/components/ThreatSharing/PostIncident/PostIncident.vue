@@ -161,12 +161,15 @@
                               </v-icon>
                               <div
                                 class="email-type"
-                                :class="[
-                                  item.result === 'BeingAnalyzed' ? 'btn-pending' : '',
-                                  item.result === 'Malicious' ? 'btn-cancelled' : '',
-                                  item.result === 'non-malicious' ? 'btn-active' : '',
-                                  item.result === 'Phishing' ? 'btn-warning' : ''
-                                ]"
+                                :class="{
+                                  'btn-pending': item.result === 'BeingAnalyzed',
+                                  'btn-malicious': item.result === 'Malicious',
+                                  'btn-active': item.result === 'non-malicious',
+                                  'btn-phishing': item.result === 'Phishing',
+                                  'btn-undetected': item.result === 'Undetected',
+                                  'btn-simulation': item.result === 'Simulation',
+                                  'btn-error': item.result === 'Error'
+                                }"
                               >
                                 <span>{{ item.result }}</span>
                               </div>
@@ -2923,25 +2926,27 @@ export default {
           }
         })
       } else {
-        getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
-          const { data } = response
-          this.uploadRespond = data.data
-          this.uploadRespond.initialBody = data.data.initialBody
-          this.uploadRespond.visibleBody = data.data.initialBody
-          this.uploadRespond.editableBody = response.data.data.initialBody
-          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-          // this.setShadowRootMalicousLink('incident-preview-1')
-          // this.listData = data.data.results
-          if (isInitial) {
-            this.initialFormValues = {
-              ...this.initialFormValues,
-              uploadRespond: {
-                ...this.initialFormValues.uploadRespond,
-                ...this.uploadRespond
+        if (selectedItem?.resourceId) {
+          getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
+            const { data } = response
+            this.uploadRespond = data.data
+            this.uploadRespond.initialBody = data.data.initialBody
+            this.uploadRespond.visibleBody = data.data.initialBody
+            this.uploadRespond.editableBody = response.data.data.initialBody
+            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            // this.setShadowRootMalicousLink('incident-preview-1')
+            // this.listData = data.data.results
+            if (isInitial) {
+              this.initialFormValues = {
+                ...this.initialFormValues,
+                uploadRespond: {
+                  ...this.initialFormValues.uploadRespond,
+                  ...this.uploadRespond
+                }
               }
             }
-          }
-        })
+          })
+        }
       }
     },
     onCancelClicked() {
