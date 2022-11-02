@@ -193,6 +193,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 #threat-intelligence-table {
   .table-header {
