@@ -97,7 +97,7 @@ export default {
             property: 'email',
             align: 'left',
             editable: false,
-            label: 'Branched Account',
+            label: 'Breached Account',
             fixed: false,
             show: true,
             type: 'text',
@@ -193,3 +193,10 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+#threat-intelligence-table {
+  .table-header {
+    justify-content: right !important;
+  }
+}
+</style>
