@@ -484,13 +484,13 @@ export default {
         height: 164px;
         margin: auto;
         text-align: center;
+        background: url('../../assets/img/report-chart-background.svg') no-repeat center center;
         span {
           font-weight: 600;
           font-size: 18px;
           line-height: 25px;
           color: #091e42;
         }
-        background: url('../../assets/img/report-chart-background.svg') no-repeat center center;
         .v-progress-circular__underlay {
           stroke: transparent !important;
         }
