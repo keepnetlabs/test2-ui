@@ -72,9 +72,8 @@
                 </button>
                 <button
                   v-if="canDeleteOrEditComment('delete')"
-                  @click="deleteComment(com)"
                   :disabled="!com.canDelete"
-                  icon
+                  @click="deleteComment(com)"
                 >
                   <v-icon class="close-icon" :disabled="!com.canDelete">mdi-delete</v-icon>
                 </button>
@@ -88,14 +87,14 @@
                   v-model.trim="com.commentValue"
                   :id="'single-post-comment-' + com.resourceId"
                   class="comment-input"
-                  initialPlaceholder="Write your comment here"
-                  :initialRules="commentRules"
+                  initial-placeholder="Write your comment here"
+                  :initial-rules="commentRules"
                   hideDetails
                 />
                 <v-btn
-                  @click="updateComments(com)"
                   class="send-btn"
                   :disabled="!com.canEdit || isEditCommentButtonDisabled"
+                  @click="updateComments(com)"
                 >
                   <v-icon :disabled="!com.canEdit">mdi-send</v-icon>
                   Edit

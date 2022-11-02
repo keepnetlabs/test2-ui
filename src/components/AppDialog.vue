@@ -5,10 +5,10 @@
     :value="status"
     :id="id"
     :width="dialogWidth"
-    @click:outside="changeStatus(false)"
-    @input="changeStatus"
     class="k-dialog"
     :hide-overlay="hideOverlay"
+    @click:outside="changeStatus(false)"
+    @input="changeStatus"
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm" onSubmit="return false;">

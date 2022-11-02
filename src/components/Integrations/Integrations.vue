@@ -277,6 +277,9 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  created() {
+    this.getDatatableList()
+  },
   methods: {
     resetPageNumber() {
       this.bodyData.pageNumber = 1
@@ -422,9 +425,6 @@ export default {
       )
       this.getDatatableList()
     }
-  },
-  created() {
-    this.getDatatableList()
   }
 }
 </script>

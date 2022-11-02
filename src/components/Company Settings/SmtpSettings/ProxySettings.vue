@@ -76,49 +76,6 @@
             :disabled="tableOptions.rowActions[1].disabled"
             @on-click="handleDeleteAction(scope.row)"
           />
-          <!-- <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index"
-                  >mdi-dots-vertical</v-icon
-                >
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleDeleteAction(scope.row)"
-              >
-                <v-list-item-title class="sub-menu-el__title">
-                  <v-icon
-                    class="proxy-settings__row-actions__overflow-menu__icon"
-                    >{{ tableOptions.rowActions[1].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfEdit(scope.row)"
-                :id="`${tableOptions.rowActions[2].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleMakeDefault(scope.row)"
-              >
-                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
-                  <v-icon
-                    class="proxy-settings__row-actions__overflow-menu__icon"
-                    >{{ tableOptions.rowActions[2].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu> -->
         </template>
       </data-table>
     </div>
@@ -169,7 +126,6 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            // type: "slot",
             filterableType: 'text',
             width: 150
           },
@@ -297,7 +253,6 @@ export default {
       newProxyModalStatus: false,
       deleteProxyModalStatus: false,
       bodyOptions: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -305,6 +260,9 @@ export default {
     ...mapGetters({
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions'
     })
+  },
+  created() {
+    this.callForSearchProxySettings()
   },
   methods: {
     handleSearchChange(searchFilter = {}) {
@@ -444,9 +402,6 @@ export default {
       this.selectedDeleteProxySettings = selections
       this.toggleDeleteProxyModalStatus()
     }
-  },
-  created() {
-    this.callForSearchProxySettings()
   }
 }
 </script>

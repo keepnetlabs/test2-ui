@@ -686,7 +686,7 @@ export const labels = {
   LANGUAGE: 'Language',
   Type: 'Type',
   AllowedList: 'Allowed List',
-  EmptyTIGridMsg: 'You do not have any Thereat Intelligence'
+  EmptyTIGridMsg: 'You do not have any Threat  Intelligence'
 }
 
 export default labels

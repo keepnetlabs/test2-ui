@@ -1243,7 +1243,7 @@ export default {
           scanTypes: this.scanTypes,
           autoAction: {
             type: this.selectedAction,
-            isPermanentDelete: false,
+            isPermanentDelete: this.selectedAction === 'Delete' ? true : false,
             warningMessage: this.warningMessage
           }
         }
