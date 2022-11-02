@@ -2,7 +2,7 @@
   <app-modal
     v-if="status"
     :status="status"
-    :icon-name="'mdi-book-search'"
+    icon-name="$domain"
     :title="getTitle"
     className="mail-configuration__modal"
     ref="mail-configuration__modal"
