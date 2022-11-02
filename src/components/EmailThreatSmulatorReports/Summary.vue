@@ -44,7 +44,9 @@
                       <button
                         v-if="!scoresLoading"
                         type="button"
-                        :class="scanData.status ? scanData.status.toLowerCase() : ''"
+                        :class="
+                          scanData.status ? scanData.status.toLowerCase().replace(/\s/g, '') : ''
+                        "
                       >
                         {{ scanData.status }}
                       </button>
