@@ -139,25 +139,25 @@
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Client Id</label>
+                        <label>Application (Client) ID</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.clientId"
                           outlined
                           hint=""
-                          placeholder="Client IdL"
+                          placeholder="Client Id"
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Tenant Id</label>
+                        <label>Directory (Tenant) ID</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.tenantId"
                           outlined
                           hint=""
-                          placeholder="Tenant Id"
+                          placeholder="Directory (Tenant) ID"
                         />
                       </div>
                     </div>
@@ -167,7 +167,10 @@
                       label="OWA"
                       :disabled="emailSettingsValues.scanType !== 'Automate' ? true : false"
                     />
-                    <div v-if="emailSettingsValues.owa" class="label-left-form">
+                    <div
+                      v-if="emailSettingsValues.owa && emailSettingsValues.scanType === 'Automate'"
+                      class="label-left-form"
+                    >
                       <label>OWA URL</label>
                       <v-text-field
                         class="ml-2"
@@ -178,7 +181,10 @@
                         placeholder="OWA URL"
                       />
                     </div>
-                    <div v-if="emailSettingsValues.owa" class="label-left-form">
+                    <div
+                      v-if="emailSettingsValues.owa && emailSettingsValues.scanType === 'Automate'"
+                      class="label-left-form"
+                    >
                       <label>Username</label>
                       <v-text-field
                         class="ml-2"

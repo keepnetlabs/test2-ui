@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import ResendIcon from '@/components/CustomIcons/Resend'
+import WhiteResendIcon from '@/components/CustomIcons/WhiteResend'
 import DetailsIcon from '@/components/CustomIcons/Details'
 import CreateNewInstanceIcon from '@/components/CustomIcons/CreateNewInstance'
 import RadioChecked from '@/components/CustomIcons/RadioChecked'
 import RadioUnchecked from '@/components/CustomIcons/RadioUnchecked'
 import RefreshLeft from '@/components/CustomIcons/RefreshLeft'
 import Domain from '@/components/CustomIcons/Domain'
+
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -17,6 +19,9 @@ export default new Vuetify({
     values: {
       'custom-resend': {
         component: ResendIcon
+      },
+      'white-resend': {
+        component: WhiteResendIcon
       },
       'custom-details': {
         component: DetailsIcon
