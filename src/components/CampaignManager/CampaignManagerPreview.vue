@@ -35,8 +35,28 @@
                 }}</span>
               </div>
               <div>
-                <span class="template-preview__text--title">Subject: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.subject }}</span>
+                <span
+                  class="template-preview__text--title"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >Subject:
+                </span>
+                <span
+                  class="template-preview__text--body"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >{{ emailTemplateParams.subject }}</span
+                >
               </div>
             </div>
             <div
