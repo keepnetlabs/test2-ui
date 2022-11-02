@@ -43,7 +43,7 @@
         </form-group>
         <form-group title="Email Address" has-hint>
           <InputEmail
-            placeholder="Enter email address"
+            placeholder="Your Cloudflare login email address"
             v-model.trim="formValues.username"
             :required="true"
           />
