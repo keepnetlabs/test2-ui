@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="new-domain-vector">
-      <app-modal :status="status" icon-name="mdi-plus" title="domain Verification">
+      <app-modal :status="status" icon-name="mdi-plus" title="Domain Verification">
         <template v-slot:overlay-body>
           <v-form class="mt-8" ref="refdomainForm">
-            <form-group title="domain" sub-title="Enter a domain you want to use" hint>
+            <form-group title="Domain" sub-title="Enter a domain you want to use" hint>
               <v-text-field
                 v-model="formValues.domain"
                 outlined
@@ -83,7 +83,7 @@
             color="#2196f3"
             rounded
             @click="submit"
-            :disabled="formValues.domain.length === 0"
+            :disabled="saveButtonStatus"
           >
             {{ labels.Save }}
           </v-btn>
@@ -121,7 +121,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Vector Name', 160))
+          (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Domain Name', 160))
         ]
       },
       isSubmitDisabled: false,
@@ -137,9 +137,17 @@ export default {
       type: Function
     }
   },
+  computed: {
+    saveButtonStatus() {
+      if (this.formValues.domain.length === 0 || this.formValues.domain.length > 160) {
+        return true
+      }
+      return false
+    }
+  },
   methods: {
     copyClipboard(value) {
-      navigator.clipboard.writeText(value);
+      navigator.clipboard.writeText(value)
       this.$store.dispatch('common/createSnackBar', {
         message: labels.CopyToClipboard,
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -157,7 +165,6 @@ export default {
       }
     },
     closeDomainPopup() {
-      console.log(this.formValues.domain.length);
       if (this.formValues.domain.length === 0) {
         this.changeNewDomainPopupStatus(false)
       }
@@ -180,7 +187,7 @@ export default {
         bodyFormData.append('TxtRecord', this.formValues.txtRecord)
         createAllowListList(bodyFormData)
           .then((returnValue) => {
-            this.changeNewDomainPopupStatus(false, true)
+            this.changeNewDomainPopupStatus(false, true, returnValue.data.data.resourceId);
           })
           .catch((error) => {
             const errorResponse = error.response.data
@@ -203,7 +210,6 @@ export default {
     }
   },
   watch: {},
-  computed: {},
   created() {
     this.gettxtRecord()
   }
