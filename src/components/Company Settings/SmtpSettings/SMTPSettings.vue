@@ -5,11 +5,11 @@
       v-if="newSmtpModalStatus && getSMTPSettingsCreatePermissions"
       ref="newSmtpSettings"
       :status="newSmtpModalStatus"
+      :resourceId="selectedEditSmtpSettings"
+      :is-edit="isEdit"
       @closeOverlay="toggleSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
       @closeOverlayWithUpdate="closeOverlayWithUpdate"
-      :resourceId="selectedEditSmtpSettings"
-      :isEdit="isEdit"
     />
     <delete-smtp-settings
       v-if="deleteSmtpModalStatus && getSMTPSettingsDeletePermissions"
@@ -29,7 +29,7 @@
         selectable
         :loading="loading"
         :table="tableData"
-        :axios-payload.sync="bodyOptions"
+        :axios-payload.sync="axiosPayload"
         :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
         :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         :columns="tableOptions.columns"
@@ -53,17 +53,6 @@
         @searchChangedEvent="handleSearchChange"
         @handleSelectionChange="handleTableSelectionChange"
       >
-        <!-- <template v-slot:datatable-custom-column="{ scope }">
-          <div>
-            <span
-              >{{ scope.row.name }}
-              <v-icon v-if="scope.row.isDefault" color="#1173C1"
-              class="pl-2"
-                >mdi-star-circle</v-icon
-              >
-            </span>
-          </div>
-        </template> -->
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
@@ -81,49 +70,6 @@
             :disabled="tableOptions.rowActions[1].disabled"
             @on-click="handleDeleteAction(scope.row)"
           />
-          <!-- <v-menu bottom left offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-btn class="btn-hover" icon v-on="on">
-                <v-icon @click.native="selectedMenuIndex = scope.$index"
-                  >mdi-dots-vertical</v-icon
-                >
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                :id="`${tableOptions.rowActions[1].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleDeleteAction(scope.row)"
-              >
-                <v-list-item-title class="sub-menu-el__title">
-                  <v-icon
-                    class="smtp-settings__row-actions__overflow-menu__icon"
-                    >{{ tableOptions.rowActions[1].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[1].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                class="sub-menu-el"
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                :id="`${tableOptions.rowActions[2].id}-${
-                  scope.$index
-                }-${Math.random().toString().substring(2)}`"
-                @click="handleMakeDefault(scope.row)"
-              >
-                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
-                  <v-icon
-                    class="smtp-settings__row-actions__overflow-menu__icon"
-                    >{{ tableOptions.rowActions[2].icon }}</v-icon
-                  >
-                  <span>{{ tableOptions.rowActions[2].name }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu> -->
         </template>
       </data-table>
     </div>
@@ -176,7 +122,6 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            // type: "slot",
             filterableType: 'text',
             width: 150
           },
@@ -263,13 +208,6 @@ export default {
             id: 'btn-delete--smtp-settings-row-actions',
             disabled: !this.$store.getters['permissions/getSMTPSettingsDeletePermissions']
           }
-          // {
-          //   name: "Make Default",
-          //   icon: "mdi-star-circle",
-          //   action: "makeDefaultAction",
-          //   id: "btn-make-default--smtp-settings-row-actions",
-          //   disabled: !this.$store.getters['permissions/getSMTPSettingsUpdatePermissions']
-          // },
         ],
         empty: {
           message: labels.EmptySmtpSettings,
@@ -288,8 +226,7 @@ export default {
       },
       newSmtpModalStatus: false,
       deleteSmtpModalStatus: false,
-      bodyOptions: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -303,16 +240,19 @@ export default {
       getSMTPSettingsExportPermissions: 'permissions/getSMTPSettingsExportPermissions'
     })
   },
+  created() {
+    this.callForSearchSmtpSettings()
+  },
   methods: {
     handleTableSelectionChange(items) {
       this.selectedTableItems = items
       this.changeMultipleDeleteDisability()
     },
     handleSearchChange(searchFilter = {}) {
-      this.bodyOptions.filter.FilterGroups[1].FilterItems = [
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.bodyOptions.filter.FilterGroups[1].FilterItems = this.bodyOptions.filter.FilterGroups[1].FilterItems.map(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {
           if (item.FieldName === 'StatusName') {
             item.FieldName = 'Status'
@@ -324,20 +264,20 @@ export default {
       this.callForSearchSmtpSettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyOptions.pageNumber = pageNumber
+      this.axiosPayload.pageNumber = pageNumber
       this.callForSearchSmtpSettings()
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyOptions.ascending = order === 'ascending'
-      this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop === 'statusName' ? 'Status' : prop
       this.callForSearchSmtpSettings()
     },
     resetPageNumber() {
-      this.bodyOptions.pageNumber = 1
+      this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyOptions.pageSize = pageSize
+      this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForSearchSmtpSettings()
@@ -357,11 +297,11 @@ export default {
         const payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
-          orderBy: this.bodyOptions.orderBy,
-          ascending: this.bodyOptions.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyOptions.filter
+          filter: this.axiosPayload.filter
         }
         exportSmtpSettings(payload).then((response) => {
           const { data } = response
@@ -380,7 +320,7 @@ export default {
     callForSearchSmtpSettings() {
       if (this.getSMTPSettingsSearchPermissions) {
         this.loading = true
-        searchSmtpSettings(this.bodyOptions)
+        searchSmtpSettings(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -445,18 +385,17 @@ export default {
         this.toggleDeleteSmtpModalStatus()
       }
     },
-    handleMakeDefault(selectedRow) {},
     columnFilterChanged(filter) {
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
-        this.bodyOptions
+        this.axiosPayload
       )
       this.callForSearchSmtpSettings()
     },
     columnFilterCleared(fieldName) {
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
-        this.bodyOptions
+        this.axiosPayload
       )
       this.callForSearchSmtpSettings()
     },
@@ -473,9 +412,6 @@ export default {
         })
       }
     }
-  },
-  created() {
-    this.callForSearchSmtpSettings()
   }
 }
 </script>

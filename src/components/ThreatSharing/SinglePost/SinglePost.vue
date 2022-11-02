@@ -139,7 +139,6 @@
               <template v-slot:actions mandatory="true">
                 <v-btn
                   v-if="post.isToggle"
-                  @click.native="getPostDetails(post.communityPostResourceId, postIndex, false)"
                   :id="'threat-sharing-single-post' + post.communityPostResourceId"
                   :key="'single-post-collapse' + post.communityPostResourceId"
                   outlined
@@ -147,6 +146,7 @@
                   medium
                   color="blue"
                   :disabled="!getPostPermission"
+                  @click.native="getPostDetails(post.communityPostResourceId, postIndex, false)"
                   >COLLAPSE
                 </v-btn>
                 <v-btn
@@ -260,18 +260,13 @@
         <div class="ts-user-comp">
           <div :id="'post-details' + post.communityPostResourceId" class="ts-user-comp-detail">
             by
+            <b v-if="post.postedUserFullName" :id="post.postedUserFullName" class="pl-1 pr-1">{{
+              post.postedUserFullName
+            }}</b>
+            <b v-else class="pl-1 pr-1">User Name</b> from
             <b
-              :id="post.postedUserFullName"
-              v-if="post.postedUserFullName"
-              href="#"
-              class="pl-1 pr-1"
-              >{{ post.postedUserFullName }}</b
-            >
-            <b v-else href="#" class="pl-1 pr-1">User Name</b> from
-            <b
-              :id="post.postedUserCompanyName"
               v-if="post.postedUserCompanyName"
-              href="#"
+              :id="post.postedUserCompanyName"
               class="pl-1 pr-1"
               >{{ post.postedUserCompanyName }}</b
             >
@@ -1348,9 +1343,6 @@ export default {
             for (let url of response.data.data.communityPostEmail.urls) {
               let recrusiveFunctionForDom = () => document.getElementById(`sframe${comId}`)
               if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
-              let els = document
-                .getElementById(`sframe${comId}`)
-                ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
               incidenPostReviewElementBind(url, null, `sframe${comId}`, true)
               const el = document.getElementById(`post-content${postId}`)
               scrollToComponent(el)
@@ -1362,7 +1354,7 @@ export default {
     },
     userLikePost(postId) {
       let _this = this
-      likePost(postId).then((response) => {
+      likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
@@ -1379,7 +1371,7 @@ export default {
     },
     userUnlikePost(postId) {
       let _this = this
-      likePost(postId).then((response) => {
+      likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
@@ -1413,7 +1405,7 @@ export default {
         })
         .finally(() => (this.isEditCommentButtonDisabled = false))
     },
-    editIncident(post, communityName) {
+    editIncident(post) {
       this.$emit('openEditPopupItem', post)
     },
     deleteIncident(post) {

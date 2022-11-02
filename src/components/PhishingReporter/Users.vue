@@ -40,14 +40,14 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :row-actions="tableOptions.rowActions"
-      :axios-payload.sync="requestBody"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="callForPhishingReporterUser"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
@@ -116,7 +116,7 @@ import {
 } from '@/utils/functions'
 import Badge from '@/components/Badge'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'Users',
   components: {
@@ -125,6 +125,7 @@ export default {
     AppDialog,
     Badge
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       PROPERTY_STORE,
@@ -274,7 +275,6 @@ export default {
             editComponent: 'textfield',
             width: 150,
             filterableType: 'text'
-            //minWidth: 80
           }
         ],
         empty: {
@@ -299,8 +299,7 @@ export default {
         delete: true,
         download: false
       },
-      requestBody: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
-      defaultRequestBody: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -324,8 +323,16 @@ export default {
       } will be deleted permanently`
     }
   },
+  watch: {
+    isWantToDelete(val) {
+      if (!val) {
+        this.selectedRow = null
+        this.isMultipleDelete = false
+      }
+    }
+  },
   created() {
-    this.callForPhishingReporterUser()
+    this.callForData()
   },
   methods: {
     getBtnStatusColor(type) {
@@ -412,12 +419,12 @@ export default {
       value = typeof value == 'string' ? value : value.toString()
       return value.length === 1 ? `0${value}` : `${value}`
     },
-    callForPhishingReporterUser() {
+    callForData() {
       this.isLoading = true
       if (!this.isInit) {
         this.$emit('callForPhishingReporterSummary')
       }
-      searchPhishingReporterUser(this.requestBody)
+      searchPhishingReporterUser(this.axiosPayload)
         .then((response) => {
           const {
             data: {
@@ -449,10 +456,10 @@ export default {
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
-        const filter = JSON.parse(JSON.stringify(this.requestBody.filter))
+        const filter = JSON.parse(JSON.stringify(this.axiosPayload.filter))
         const payload = {
-          orderBy: this.requestBody.orderBy,
-          ascending: this.requestBody.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
@@ -485,7 +492,7 @@ export default {
         .then(() => {
           this.$refs.refUsersList.unSelectRow(this.selectedRow)
           this.$refs.refUsersList.changeServerSideSelectionCount(-1)
-          this.callForPhishingReporterUser()
+          this.callForData()
         })
         .catch(() => {})
     },
@@ -497,31 +504,6 @@ export default {
       this.callForDeletePhishingReporterUser()
       this.isWantToDelete = false
     },
-    columnFilterChanged(filter) {
-      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.requestBody
-      )
-      this.resetPageNumber()
-      this.callForPhishingReporterUser()
-    },
-    columnFilterCleared(fieldName) {
-      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.requestBody
-      )
-      this.callForPhishingReporterUser()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.requestBody.pageNumber = pageNumber
-      this.callForPhishingReporterUser()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.requestBody.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForPhishingReporterUser()
-    },
     handleMultipleDeleteOfPhishingUsers(items, excludedItems, selectAll) {
       this.isMultipleDelete = true
       this.multipleDeletedUserCount = selectAll
@@ -531,7 +513,7 @@ export default {
         items: selectAll ? [] : items.map((item) => item.resourceId),
         excludedItems,
         selectAll,
-        filter: this.requestBody.filter
+        filter: this.axiosPayload.filter
       }
       this.isWantToDelete = true
     },
@@ -540,40 +522,12 @@ export default {
       bulkDeletePhishingUsers(this.multipleSystemUserPayload)
         .then(() => {
           this?.$refs?.refUsersList?.resetSelectableParams()
-          this.callForPhishingReporterUser()
+          this.callForData()
           this.isWantToDelete = false
         })
         .finally(() => {
           this.deleteButtonDisabled = false
         })
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForPhishingReporterUser()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.requestBody.ascending = order === 'ascending'
-      this.requestBody.orderBy = prop
-      this.callForPhishingReporterUser()
-    },
-    resetPageNumber() {
-      this.requestBody.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    }
-  },
-  watch: {
-    isWantToDelete(val) {
-      if (!val) {
-        this.selectedRow = null
-        this.isMultipleDelete = false
-      }
     }
   }
 }

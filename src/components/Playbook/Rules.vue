@@ -249,6 +249,58 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  computed: {
+    ...mapGetters({
+      playbookList: 'playbook/playbookListGetter'
+    }),
+    getDeleteDialogSubtitle() {
+      const item = this.deleteValues
+      const nameValues =
+        this.totalSelectedItemsCount > 1
+          ? `${this.totalSelectedItemsCount} rules`
+          : item && item.name
+      return `${nameValues} will be deleted!`
+    },
+    getMatchingPlaybookPermission() {
+      return this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission && 'popup-link'
+    },
+    getDeleteModalPermission() {
+      return this.isWantToDelete && this.PERMISSIONS.DELETE.hasPermission
+    },
+    getDownloadButton() {
+      const { EXPORT } = this.PERMISSIONS
+      const obj = {
+        show: true
+      }
+      if (!EXPORT.hasPermission) {
+        obj['disabled'] = true
+      }
+      return obj
+    },
+    getModalRenderStatus() {
+      const { CREATE, UPDATE } = this.PERMISSIONS
+      return this.showRuleModal && (CREATE.hasPermission || UPDATE.hasPermission)
+    },
+    getMatchingModalRenderStatus() {
+      const { MATCHING_PLAYBOOKS_SEARCH, MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
+      return (
+        this.showMatchingModal &&
+        (MATCHING_PLAYBOOKS_SEARCH.hasPermission || MATCHING_PLAYBOOKS_EXPORT.hasPermission)
+      )
+    },
+    ...mapState({
+      playbookList: (state) => state.playbook.playbookList
+    }),
+    getTitle() {
+      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+    },
+    getIconName() {
+      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+    },
+    getSelectedMatchingIncidentsSubtitle() {
+      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.name}`
+    }
+  },
   created() {
     this.controlGetAndUpdatePermission(this?.$route?.params?.playbookId || this.playbookId)
     if (this.PERMISSIONS.SEARCH.hasPermission) {
@@ -417,58 +469,6 @@ export default {
           this.showRuleModal = true
         }
       }
-    }
-  },
-  computed: {
-    ...mapGetters({
-      playbookList: 'playbook/playbookListGetter'
-    }),
-    getDeleteDialogSubtitle() {
-      const item = this.deleteValues
-      const nameValues =
-        this.totalSelectedItemsCount > 1
-          ? `${this.totalSelectedItemsCount} rules`
-          : item && item.name
-      return `${nameValues} will be deleted!`
-    },
-    getMatchingPlaybookPermission() {
-      return this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission && 'popup-link'
-    },
-    getDeleteModalPermission() {
-      return this.isWantToDelete && this.PERMISSIONS.DELETE.hasPermission
-    },
-    getDownloadButton() {
-      const { EXPORT } = this.PERMISSIONS
-      const obj = {
-        show: true
-      }
-      if (!EXPORT.hasPermission) {
-        obj['disabled'] = true
-      }
-      return obj
-    },
-    getModalRenderStatus() {
-      const { CREATE, UPDATE } = this.PERMISSIONS
-      return this.showRuleModal && (CREATE.hasPermission || UPDATE.hasPermission)
-    },
-    getMatchingModalRenderStatus() {
-      const { MATCHING_PLAYBOOKS_SEARCH, MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
-      return (
-        this.showMatchingModal &&
-        (MATCHING_PLAYBOOKS_SEARCH.hasPermission || MATCHING_PLAYBOOKS_EXPORT.hasPermission)
-      )
-    },
-    ...mapState({
-      playbookList: (state) => state.playbook.playbookList
-    }),
-    getTitle() {
-      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
-    },
-    getIconName() {
-      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
-    },
-    getSelectedMatchingIncidentsSubtitle() {
-      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.name}`
     }
   }
 }
