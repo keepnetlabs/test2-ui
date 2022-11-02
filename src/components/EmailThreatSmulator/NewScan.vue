@@ -150,7 +150,7 @@
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Directory (Tenant) ID</label>
+                        <label>Directory (Tenant) ID&nbsp;</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
@@ -781,7 +781,7 @@ export default {
         },
         {
           value: 'OAUTH',
-          label: 'Continue with Microsoft'
+          label: 'Continue with Microsoft Office 365'
         }
       ],
       labels,
