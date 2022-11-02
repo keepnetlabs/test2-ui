@@ -72,41 +72,6 @@
       title="Community Notification Settings"
     >
       <template v-slot:app-dialog-body>
-        <!--<v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Notifications
-            </div>
-            <div>
-              <v-switch
-                id="general-notif-switch"
-                v-model="notifications.isNotifications"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="setAllNotification"
-              />
-            </div>
-          </div>
-        </v-list-item>-->
-
-        <!--<v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Dashboard notifications
-            </div>
-            <div>
-              <v-switch
-                id="dashboard-notif-switch"
-                v-model="notifications.isDashboardEnabled"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="checkAllNotificationsAreSelected"
-              />
-            </div>
-          </div>
-        </v-list-item>-->
         <v-list-item class="pa-0">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
@@ -124,23 +89,6 @@
             </div>
           </div>
         </v-list-item>
-        <!--<v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              SMS notifications
-            </div>
-            <div>
-              <v-switch
-                id="whatsapp-notif-switch"
-                v-model="notifications.isSMSEnabled"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="checkAllNotificationsAreSelected"
-              />
-            </div>
-          </div>
-        </v-list-item> -->
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -236,7 +184,7 @@
         </template>
       </app-dialog>
       <v-btn
-        v-if="$route.path == '/threat-sharing'"
+        v-if="$route.path === '/threat-sharing'"
         :disabled="!getCreateCommunityPermission"
         class="create-com-btn"
         @click="createNewCommunity"
@@ -246,7 +194,7 @@
         >CREATE A NEW COMMUNITY
       </v-btn>
       <v-btn
-        v-if="$route.name == 'Community'"
+        v-if="$route.name === 'Community'"
         class="create-com-btn"
         @click="postIncident"
         block
@@ -256,7 +204,7 @@
         >POST INCIDENT
       </v-btn>
       <div class="right-side-content wrapper pt-8 pb-4">
-        <div v-if="$route.name == 'Community'">
+        <div v-if="$route.name === 'Community'">
           <div class="about-community right-side-title">
             About Community
             <v-menu
@@ -636,7 +584,7 @@ export default {
       (state) => {
         return state.rightColumn.reloadRightColumnData // could also put a Getter here
       },
-      (newValue, oldValue) => {
+      (newValue) => {
         if (newValue) {
           this.getAllRightColumnData()
           setTimeout(() => {
@@ -666,20 +614,9 @@ export default {
     }),
     communityDescription() {
       return this.selectedCommunity.description || localStorage.getItem('communityDesc')
-    },
-    communityIndustry() {
-      return this.selectedCommunity.industry || localStorage.getItem('communityCat')
     }
   },
   methods: {
-    setAllNotification(val) {
-      this.notifications = {
-        isNotifications: val,
-        isSMSEnabled: val,
-        isEmailEnabled: val,
-        isDashboardEnabled: val
-      }
-    },
     checkAllNotificationsAreSelected() {
       this.notifications.isNotifications =
         this.notifications.isSMSEnabled &&
@@ -713,9 +650,6 @@ export default {
       this.getMyLastPosts()
       this.getMyTopPosts()
       this.getsuggestedCommunities()
-    },
-    isInviteMemberDisabled() {
-      return this.$refs.inviteModal && !this.$refs.inviteModal.validate()
     },
     comboboxChange(val) {
       let newVal = val.map((item) => item.trim())
@@ -1038,7 +972,7 @@ export default {
     },
     getCommunityDetails() {
       let _this = this
-      if (this.$route.name == 'Community') {
+      if (this.$route.name === 'Community') {
         this.ownerDetails = this.$route.params.item
         _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.id)
@@ -1187,10 +1121,6 @@ export default {
       this.$emit('createCommunityAction')
       this.closeCommunityInfo()
     },
-    isWantToAddMembers() {
-      this.$emit('addMembers')
-      this.closeCommunityInfo()
-    },
     editCommunity() {
       this.communityItem = this.communityDetails
       this.communityItem.resourceId = this.communityDetails.resourceId
@@ -1204,7 +1134,6 @@ export default {
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
-      let _this = this
       joinCommunity(resourceId)
         .then(() => {
           this.getsuggestedCommunities()
@@ -1268,7 +1197,7 @@ export default {
             incidentsData
           })
           if (privacyStatusName !== 'Private') {
-            if (this.$route.name == 'Community') {
+            if (this.$route.name === 'Community') {
               this.$router.push({
                 name: 'Community',
                 params: { communityName: communityName, id: resourceId }
@@ -1293,7 +1222,6 @@ export default {
         return isOwner(this.communityDetails.myMembershipStatusId)
       }
     },
-    openNotifications() {},
     isJoined(id) {
       /*if (id && id != null && this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId == id)
@@ -1306,12 +1234,6 @@ export default {
     deleteCommunity() {
       this.$emit('deleteCommunity')
       this.closeCommunityInfo()
-    },
-    refreshCommunities() {
-      this.$store.dispatch('threatSharing/getCommunities')
-    },
-    refreshRequests() {
-      this.$store.dispatch('threatSharing/getRequestsCompany', localStorage.getItem('companyId'))
     }
   }
 }

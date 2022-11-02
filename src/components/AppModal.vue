@@ -126,6 +126,12 @@ export default {
   data() {
     return { labels }
   },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    if (this.shouldRemoveOverflow) document.querySelector('html').style.overflowY = ''
+  },
   methods: {
     closeOverlay() {
       this.$emit('closeOverlay')
@@ -133,12 +139,6 @@ export default {
     submit() {
       this.$emit('submit')
     }
-  },
-  created() {
-    document.querySelector('html').style.overflowY = 'hidden'
-  },
-  beforeDestroy() {
-    if (this.shouldRemoveOverflow) document.querySelector('html').style.overflowY = ''
   }
 }
 </script>

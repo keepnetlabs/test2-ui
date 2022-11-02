@@ -193,12 +193,12 @@
         >{{ labels.Cancel }}
       </v-btn>
       <v-btn
+        id="threat-sharing-new-community-update-or-create-modal-button"
         :disabled="saveDisable"
         class="create-btn"
         color="#2196f3"
         text
         @click="onCreateClicked"
-        id="threat-sharing-new-community-update-or-create-modal-button"
         >{{ resourceId ? 'Save' : 'Create' }}
       </v-btn>
     </div>
@@ -289,6 +289,15 @@ export default {
         return 'Category required for creating a community'
       }
     }
+  },
+  mounted() {
+    this.getBusinessCategories()
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = ''
   },
   methods: {
     checkCheckboxValidation() {
@@ -390,15 +399,6 @@ export default {
         }
       })
     }
-  },
-  mounted() {
-    this.getBusinessCategories()
-  },
-  created() {
-    document.querySelector('html').style.overflowY = 'hidden'
-  },
-  beforeDestroy() {
-    document.querySelector('html').style.overflowY = ''
   }
 }
 </script>
