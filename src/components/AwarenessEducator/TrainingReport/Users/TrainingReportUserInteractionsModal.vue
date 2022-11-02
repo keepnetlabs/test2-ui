@@ -195,7 +195,7 @@ export default {
       if (['Not Delivered', 'NotDelivered'].includes(this.item.status)) {
         return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
       }
-      if (['Error'].includes(this.item.status)) {
+      if (['Sending Error', 'SendingError', 'Error'].includes(this.item.status)) {
         return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
       }
       if (['Cancelled'].includes(this.item.status)) {
@@ -213,6 +213,8 @@ export default {
         'Not Delivered',
         'NotDelivered',
         'Error',
+        'SendingError',
+        'Sending Error',
         'Processing',
         'Cancelled'
       ].includes(this.item.status)

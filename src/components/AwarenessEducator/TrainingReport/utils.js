@@ -41,7 +41,7 @@ export function getStatusBadgeProps(status) {
     }
   }
 
-  if (status === 'Sending Error' || status === 'SendingError') {
+  if (status === 'Sending Error' || status === 'SendingError' || status === 'Error') {
     return {
       color: '#F56C6C',
       text: 'Sending Error',
