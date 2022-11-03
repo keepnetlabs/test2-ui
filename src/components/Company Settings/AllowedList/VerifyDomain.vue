@@ -2,8 +2,8 @@
   <div v-if="status">
     <app-dialog
       :type="!isVerified ? 'delete' : ''"
-      :title="isVerified ? 'Verify domain' : 'Cannot verify domain'"
-      :icon="!isVerified ? 'mdi-alert-circle' : ''"
+      :title="title"
+      :icon="titleIcon"
       :subtitle="selectedDomain.domain"
       title-id="verify--domain-popup-title"
       subtitle-id="verify--domain-popup-popup-subtitle"
@@ -142,6 +142,28 @@ export default {
     return {
       verifyStartStatus: false,
       isVerified: true
+    }
+  },
+  computed: {
+    title() {
+      let popupTitle = 'Cannot verify domain'
+      if (this.isVerified) {
+        popupTitle = 'Verify domain'
+      }
+      if (this.selectedDomain.status === 'Verified') {
+        popupTitle = 'Verified domain'
+      }
+      return popupTitle
+    },
+    titleIcon() {
+      let icon = ''
+      if (!this.isVerified) {
+        icon = 'mdi-alert-circle'
+      }
+      if (this.selectedDomain.status === 'Verified') {
+        icon = 'mdi-check-circle '
+      }
+      return icon
     }
   },
   methods: {
