@@ -41,9 +41,9 @@
             persistent-hint
           ></k-select>
         </form-group>
-        <form-group title="Email Address" has-hint>
+        <form-group title="Email Address" sub-title="Your Cloudflare login email address" has-hint>
           <InputEmail
-            placeholder="Your Cloudflare login email address"
+            placeholder="Enter email address"
             v-model.trim="formValues.username"
             :required="true"
           />
