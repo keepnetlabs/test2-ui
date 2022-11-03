@@ -168,9 +168,12 @@ export default {
             component.getTrait('href').props().value === '' ||
             !mergedTextsNames.includes(component.getTrait('href').props().value)
           ) {
-            document.querySelector(
+            const element = document.querySelector(
               '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-            ).selectedIndex = 0
+            )
+            if (element) {
+              element.selectedIndex = 0
+            }
           }
         }, 10)
       }
@@ -488,9 +491,12 @@ export default {
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
             ) {
-              document.querySelector(
+              const element = document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-              ).selectedIndex = 0
+              )
+              if (element) {
+                element.selectedIndex = 0
+              }
             }
           }, 250)
         } else if (selected) {
