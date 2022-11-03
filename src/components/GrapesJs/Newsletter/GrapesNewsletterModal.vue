@@ -160,11 +160,10 @@ export default {
       this.editor.destroy()
     },
     setMergeTextNames() {
-      let _this = this
-      const component = this.editor.getSelected()
+      const component = this?.editor?.getSelected()
       if (component) {
         setTimeout(() => {
-          let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+          let mergedTextsNames = this.urlMergedTexts.map((item) => item.value)
           if (
             component.getTrait('href').props().value === '' ||
             !mergedTextsNames.includes(component.getTrait('href').props().value)
@@ -456,7 +455,7 @@ export default {
         }
       })(this.editor.setComponents)
       this.editor.on('component:selected', () => {
-        const selected = this.editor.getSelected()
+        const selected = this?.editor?.getSelected()
         if (selected && selected.is('link')) {
           document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
           setTimeout(() => {
@@ -819,7 +818,7 @@ export default {
       const rte = this.editor.RichTextEditor
       rte.get('link').result = (rte) => {
         rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
-        const sel = this.editor.getSelected()
+        const sel = this?.editor?.getSelected()
         if (sel) {
           sel.trigger('disable')
           const toSel = sel.find('[data-selectme]')[0]
