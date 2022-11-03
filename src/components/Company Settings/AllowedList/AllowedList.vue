@@ -1,7 +1,7 @@
 <template>
   <div id="allow-list-list">
     <CompanySettingsHeader
-      title="Allowed List"
+      title="Domains"
       sub-title="Manage and verify your allowed list domain to use with our platform"
     />
     <v-overlay
