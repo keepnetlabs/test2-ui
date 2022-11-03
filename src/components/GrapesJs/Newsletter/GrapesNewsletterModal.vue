@@ -861,10 +861,19 @@ export default {
       this.editor.getWrapper().setStyle(doc.body.style.cssText)
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
-        document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
-          'none'
-        document.querySelector('span[title="Fullscreen"]').style.display = 'none'
-        document.querySelector('span[title="View code"]').style.display = 'none'
+        let el
+        el = document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child')
+        if (el) {
+          el.style.display = 'none'
+        }
+        el = document.querySelector('span[title="Fullscreen"]')
+        if (el) {
+          el.style.display = 'none'
+        }
+        el = document.querySelector('span[title="View code"]')
+        if (el) {
+          el.style.display = 'none'
+        }
         document.querySelectorAll('.gjs-sm-sector-title').forEach((item) => item.click())
         try {
           document
