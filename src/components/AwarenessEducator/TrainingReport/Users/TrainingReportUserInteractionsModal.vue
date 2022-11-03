@@ -195,10 +195,10 @@ export default {
         return 'The email for this user is in the queue to send. Please check again after a while.'
       }
       if (['Not Delivered', 'NotDelivered'].includes(this.item.status)) {
-        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
+        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on the “Sending Report” tab.'
       }
       if (['Sending Error', 'SendingError', 'Error'].includes(this.item.status)) {
-        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on ‘Sending Report’ tab.'
+        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on the “Sending Report” tab.'
       }
       if (['Cancelled'].includes(this.item.status)) {
         return 'The training enrollment was cancelled while sending emails. For this reason the email could not be delivered to this user. Therefore there isn’t any action by the user.'
