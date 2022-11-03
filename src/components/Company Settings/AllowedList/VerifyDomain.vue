@@ -14,20 +14,27 @@
     >
       <template v-slot:app-dialog-body>
         <div class="verify-domain-container">
-          <div v-if="isVerified" class="verify-desc">
-            If you have created the TXT Record, you can try to verify now. Or, you can come back
-            later to verify your domain.<br /><br />
-            Use values below to create a TXT record from your DNS {{ isVerified }}
+          <div v-if="selectedDomain.status === 'Verified'" class="verify-desc">
+            This domain is already verified.<br />
+            Here are the DNS record details.
           </div>
-          <div v-else class="verify-desc">
-            This domain cannot be verified at the moment.<br />
-            {{ selectedDomain.domain }}<br /><br />
+          <div v-else>
+            <div v-if="isVerified" class="verify-desc">
+              If you have created the TXT Record, you can try to verify now. Or, you can come back
+              later to verify your domain.
+              <br /><br />
+              Use values below to create a TXT record from your DNS management panel.
+            </div>
+            <div v-else class="verify-desc">
+              This domain cannot be verified at the moment.<br />
+              {{ selectedDomain.domain }}<br /><br />
 
-            <strong>Error: Verification code not found, you can check again later.</strong>
-            <br /><br />
+              <strong>Error: Verification code not found, you can check again later.</strong>
+              <br /><br />
 
-            Use values below to create a TXT record from your DNS management panel. If you already
-            created the DNS record, wait for a while and try again.
+              Use values below to create a TXT record from your DNS management panel. If you already
+              created the DNS record, wait for a while and try again.
+            </div>
           </div>
           <div class="name-value-container">
             <div class="text-title-container">
