@@ -2714,7 +2714,11 @@ export default {
         attachment['Attachment Size'] = size
       })
 
-      this.criteriaChips = [...headers, ...this.investigationDetailsData.bodies, ...attachments]
+      this.criteriaChips = [
+        ...headers,
+        ...(this.investigationDetailsData?.bodies || []),
+        ...attachments
+      ]
       this.leftMenuLoading = false
       this.contentMenuLoading = false
     },
