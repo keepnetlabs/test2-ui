@@ -81,8 +81,8 @@
       <el-tab-pane
         v-if="getAllowListPermissionsSearch"
         name="allowed-list"
-        :label="labels.AllowedList"
-        :id="`${labels.AllowedList.toLowerCase()}-content`"
+        :label="labels.AllowedDomain"
+        :id="`${labels.AllowedDomain.toLowerCase()}-content`"
       >
         <allowed-list v-if="tab === 'allowed-list'" ref="refAllowedList" />
       </el-tab-pane>
