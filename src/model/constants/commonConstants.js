@@ -114,7 +114,7 @@ export const LABEL_STORE = {
   NO_SCAN: 'You do not have any scan',
   NO_ATTACK_VECTOR: 'You do not have any attack vector',
   NO_SENT_ATTACK: 'You do not have any Sent Attacks',
-  NO_ALLOW_LIST: 'You do not have any allow list item',
+  NO_ALLOW_LIST: 'You do not have any domain',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
