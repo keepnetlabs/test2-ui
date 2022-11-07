@@ -15,7 +15,7 @@
         <v-icon class="ml-2 loading-spin" color="#2196f3" left medium>mdi-rotate-left </v-icon>
       </div>
       <div
-        :style="!isLoading && { maxWidth: '200px', width: '160px' }"
+        :style="!isLoading && { maxWidth: '200px', width: isAllSuccess ? '200px' : '160px' }"
         class="test-connection__button"
         v-else
       >
