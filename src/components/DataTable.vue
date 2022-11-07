@@ -788,9 +788,11 @@
         <div v-else class="empty-table">
           <div class="empty-inline">
             <slot name="empty-table-inline">
-              <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
-                {{ empty.message }}
-              </h2>
+              <h2
+                :id="`text--empty-message-${Math.random().toString().substring(2)}`"
+                class="text-center"
+                v-html="empty.message"
+              ></h2>
               <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
                 {{ empty.subMes }}
               </p>
