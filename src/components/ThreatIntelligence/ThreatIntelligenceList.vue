@@ -120,7 +120,8 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTIGridMsg
+          message:
+            'We could not detect any breached and exposed accounts <br/> with email addresses of your domain names'
         },
         selectEvent: {
           clipboard: true,

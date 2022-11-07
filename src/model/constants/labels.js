@@ -685,8 +685,7 @@ export const labels = {
   dnsServiceProviderName: 'Service Provider',
   LANGUAGE: 'Language',
   Type: 'Type',
-  AllowedDomain: 'Allowed Domains',
-  EmptyTIGridMsg: 'You do not have any Threat  Intelligence'
+  AllowedDomain: 'Allowed Domains'
 }
 
 export default labels
