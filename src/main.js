@@ -88,7 +88,6 @@ Vue.use(VueBrowserUpdate, {
     unsupported: true
   }
 })
-
 Vue.use(require('vue-moment'))
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
@@ -105,9 +104,6 @@ Vue.filter('formatSize', function (size) {
   }
   return size.toString() + ' B'
 })
-Vue.config.errorHandler = function (err, vm, info) {
-  window.newrelic.noticeError(err)
-}
 const vm = new Vue({
   router,
   store,
