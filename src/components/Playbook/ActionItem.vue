@@ -958,6 +958,7 @@ export default {
       if (oldValue.val === 'markAs') {
         this.playbookAction.markType = ''
       }
+      if (value.val === 'markAs') this.playbookAction.markType = 'Undetected'
 
       if (value.val === 'status') {
         this.playbookActionStatus.actionStatusType = 'Open'
@@ -1012,6 +1013,8 @@ export default {
           nextAvailableAction.disabled = true
         }
       })
+
+      if (nextAvailableAction.val === 'markAs') this.playbookAction.markType = 'Undetected'
 
       if (nextAvailableAction.val === 'investigate') {
         this.playbookActionInvestigations[this.actions.length] = {
