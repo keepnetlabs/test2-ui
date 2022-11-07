@@ -72,28 +72,6 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
-            property: 'source',
-            align: 'left',
-            editable: false,
-            label: 'Source',
-            fixed: 'left',
-            show: true,
-            type: 'text',
-            width: 240,
-            filterableType: false
-          },
-          {
-            property: 'leakdate',
-            align: 'left',
-            editable: false,
-            label: 'Leak Date',
-            fixed: false,
-            show: true,
-            type: 'text',
-            width: 150,
-            filterableType: false
-          },
-          {
             property: 'email',
             align: 'left',
             editable: false,
@@ -111,6 +89,28 @@ export default {
             label: 'Password Type',
             fixed: false,
             hideSort: false,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: false
+          },
+          {
+            property: 'source',
+            align: 'left',
+            editable: false,
+            label: 'Source',
+            fixed: 'left',
+            show: true,
+            type: 'text',
+            width: 240,
+            filterableType: false
+          },
+          {
+            property: 'leakdate',
+            align: 'left',
+            editable: false,
+            label: 'Leak Date',
+            fixed: false,
             show: true,
             type: 'text',
             filterableType: false
