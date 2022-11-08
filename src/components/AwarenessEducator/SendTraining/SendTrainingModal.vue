@@ -319,7 +319,10 @@ export default {
           ]
           if (selections.every((selection) => !selection)) {
             refSendTrainingSelectUsers.targetUserCheckboxSelectionError = true
-          } else this.step += flag
+          }
+          if (refSendTrainingSelectUsers.totalTargetUserCount) {
+            this.step += flag
+          }
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
