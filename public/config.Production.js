@@ -5,8 +5,6 @@ const APP_CONFIG = (() => {
     VUE_APP_SENTRY_STATUS: #{knl_sentry_dsn_status}#,
     VUE_APP_FULLSTORY_STATUS: #{knl_fullstory_status}#,
     VUE_APP_HOTJAR_STATUS: #{knl_hotjar_status}#,
-    VUE_APP_NEW_RELIC_STATUS: #{knl_new_relic_status}#,
-    VUE_APP_NEW_RELIC_VALUE: #{knl_new_relic_value}#,
     VUE_APP_MIX_PANEL_STATUS: #{knl_mix_panel_status}#,
     VUE_APP_GTM_ID: '#{knl_google_tag_manager}#',
     VUE_APP_GTM_ENV: '#{knl_google_tag_manager_env}#',
