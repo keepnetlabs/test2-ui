@@ -18,8 +18,9 @@
               <div class="text-title-container">
                 <p>How to verify</p>
                 Use values below to create a TXT record from your DNS management panel before
-                verifying. You can verify the domain right after clicking <strong>‘SAVE’</strong> button or later
-                from the <strong>‘domain Verification’</strong> list.
+                verifying. You can verify the domain right after clicking
+                <strong>‘SAVE’</strong> button or later from the
+                <strong>‘domain Verification’</strong> list.
               </div>
               <form-group class="mt-6" title="Name" hint>
                 <v-container>
@@ -187,7 +188,7 @@ export default {
         bodyFormData.append('TxtRecord', this.formValues.txtRecord)
         createAllowListList(bodyFormData)
           .then((returnValue) => {
-            this.changeNewDomainPopupStatus(false, true, returnValue.data.data.resourceId);
+            this.changeNewDomainPopupStatus(false, true, returnValue.data.data.resourceId)
           })
           .catch((error) => {
             const errorResponse = error.response.data

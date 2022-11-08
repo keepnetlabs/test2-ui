@@ -501,10 +501,35 @@ export default {
           name: landingPage?.name || '',
           urlTemplate: landingPage?.urlTemplate || ''
         }
-        this.$emit(EMITS.ON_ITEM_CHANGE, {
-          ...row,
-          methodTypeId: response?.data?.data?.phishingScenarioPreviewDto?.methodTypeId
-        })
+        this.isCampaignLoading = true
+        searchCampaignPhishingJob(this.searchCampaignReportAxiosPayload, row.resourceId)
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [] } = data
+            this.phishingCampaignReportItems = results.map((result) => ({
+              text: `${result.startDate}(${result.status})`,
+              value: result.resourceId
+            }))
+            if (this.phishingCampaignReportItems.length) {
+              this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
+              getCampaignJobSummary(this.phishingCampaignResourceId).then((response) => {
+                const { data: { data = {} } = {} } = response
+                this.$emit(EMITS.ON_ITEM_CHANGE, {
+                  ...row,
+                  ...data,
+                  emailTemplateParams: this.emailTemplateParams,
+                  landingPageParams: this.landingPageParams,
+                  methodTypeId
+                })
+                this.callForCampaignSummary()
+              })
+            }
+          })
+          .catch(() => {
+            this.isCampaignLoading = false
+          })
       })
     },
     debounce(fn, delay) {

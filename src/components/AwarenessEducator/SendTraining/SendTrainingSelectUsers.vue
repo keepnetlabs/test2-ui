@@ -68,7 +68,7 @@
             color="#2196f3"
             @click="checkboxSelectionChange"
           >
-            <template #label>{{ labels.UserWhoDownloadedAttachment }}</template>
+            <template #label>{{ labels.UserWhoOpenedAttachment }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="formData.userWhoReportedAsSuspicious"
@@ -81,8 +81,8 @@
           <CustomError
             class="mb-6"
             style="margin-top: 2px;"
-            :is-valid="!targetUserCheckboxSelectionError"
-            error-message="At least one of the options must be selected"
+            :is-valid="!getErrorText"
+            :error-message="getErrorText"
           />
         </div>
       </FormGroup>
@@ -119,6 +119,7 @@ export default {
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: null,
       methodTypeId: '',
+      selectedCampaign: null,
       formData: {
         targetGroupResourceIds: [],
         campaignResourceId: '',
@@ -146,10 +147,68 @@ export default {
           ? 'Target groups must have at least 1 user'
           : 'Required'
         : 'Required'
+    },
+    getErrorText() {
+      if (this.targetUserCheckboxSelectionError) {
+        return 'At least one of the options must be selected'
+      }
+
+      if (!this.getTotalTargetUserCount) {
+        return 'At least one target user must be selected'
+      }
+
+      return ''
+    },
+    getTotalTargetUserCount() {
+      let total = 0
+
+      if (this.selectedCampaign) {
+        if (this.formData.userWhoOpenedEmail) {
+          total += this.selectedCampaign.scenarioStats.openedEmail
+        }
+
+        if (this.formData.userWhoClickedEmail) {
+          total += this.selectedCampaign.scenarioStats.clickedEmail
+        }
+
+        if (this.formData.userWhoSubmittedData) {
+          total += this.selectedCampaign.scenarioStats.submittedEmail
+        }
+
+        if (this.formData.userWhoDownloadedAttachment) {
+          total += this.selectedCampaign.scenarioStats.attachmentOpenedEmail
+        }
+        if (this.formData.userWhoReportedAsSuspicious) {
+          total += this.selectedCampaign.scenarioStats.reportedEmail
+        }
+      }
+
+      return total
     }
   },
   created() {
     this.callForTargetGroups()
+  },
+  watch: {
+    selectedRadioGroupIndex(val) {
+      if (val === 0) {
+        this.totalTargetUserCount = 0
+        this.formData.userWhoOpenedEmail = false
+        this.formData.userWhoClickedEmail = false
+        this.formData.userWhoSubmittedData = false
+        this.formData.userWhoDownloadedAttachment = false
+        this.formData.userWhoReportedAsSuspicious = false
+        this.formData.campaignResourceId = ''
+        this.methodTypeId = ''
+        this.selectedCampaign = null
+      } else {
+        this.formData.targetGroupResourceIds = []
+        this.$refs?.refTargetGroups?.$refs?.refGroupTable?.$refs?.refTable?.resetSelectableParams?.()
+      }
+    },
+    getTotalTargetUserCount(val) {
+      this.totalTargetUserCount = val
+    }
   },
   methods: {
     handleTableSelectionChange(items) {
@@ -171,7 +230,7 @@ export default {
       })
     },
     handleCampaignChange(item) {
-      this.totalTargetUserCount = item.targetUsers
+      this.selectedCampaign = item
       this.methodTypeId = item.methodTypeId
       if (this.methodTypeId === 3) {
         this.formData.userWhoClickedEmail = false
