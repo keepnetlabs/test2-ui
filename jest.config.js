@@ -11,7 +11,6 @@ module.exports = {
       VUE_APP_SENTRY_STATUS: true,
       VUE_APP_FULLSTORY_STATUS: true,
       VUE_APP_HOTJAR_STATUS: true,
-      VUE_APP_NEW_RELIC_STATUS: false,
       VUE_APP_MIX_PANEL_STATUS: true,
       VUE_APP_NEW_RELIC_VALUE: {},
       VUE_APP_GTM_ID: 'GTM-5DXK5QR',
