@@ -160,18 +160,18 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="3">
+      <v-col md="3" style="margin-bottom: -16px;">
         <k-select
           v-model="investigateData.filters"
           :id="`input--action-investigate-filters-${getParentIndex}`"
           :items="act.investigateFilters"
           placeholder="Select Filters"
           outlined
-          hide-details
           multiple
           small-chips
-          :menu-props="{ offsetY: true }"
           deletable-chips
+          :menu-props="{ offsetY: true }"
+          :rules="[(v) => v.length || labels.Required]"
         />
       </v-col>
     </v-row>
@@ -432,6 +432,13 @@ export default {
       })
     }
   },
+  created() {
+    this.callForTargetGroups()
+    this.callForTargetUsers()
+    this.scanTypes = this.investigateData.scanTypes.length
+      ? JSON.parse(JSON.stringify(this.investigateData.scanTypes))
+      : this.scanTypes
+  },
   methods: {
     callForTargetGroups(addPage) {
       if (addPage) {
@@ -501,11 +508,6 @@ export default {
       this.investigateData.targetUsers = []
       this.$forceUpdate()
     }
-  },
-  created() {
-    this.callForTargetGroups()
-    this.callForTargetUsers()
-    this.scanTypes = JSON.parse(JSON.stringify(this.investigateData.scanTypes))
   }
 }
 </script>

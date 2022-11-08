@@ -571,13 +571,7 @@ export default {
       },
       playbookActionInvestigationAnalyzeData: {
         isCreatedByAnalyzer: true,
-        scanTypes: [
-          {
-            type: 'Outlook',
-            mailConfigurationResourceId: null,
-            mailConfigurationName: 'Outlook'
-          }
-        ],
+        scanTypes: [],
         filters: [],
         targetUserType: 'AllUsers',
         targetUsers: [],
@@ -966,13 +960,7 @@ export default {
       if (value.val === 'investigate') {
         this.playbookActionInvestigations[index] = {
           isCreatedByAnalyzer: false,
-          scanTypes: [
-            {
-              type: 'Outlook',
-              mailConfigurationResourceId: null,
-              mailConfigurationName: 'Outlook'
-            }
-          ],
+          scanTypes: [],
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -1019,13 +1007,7 @@ export default {
       if (nextAvailableAction.val === 'investigate') {
         this.playbookActionInvestigations[this.actions.length] = {
           isCreatedByAnalyzer: false,
-          scanTypes: [
-            {
-              type: 'Outlook',
-              mailConfigurationResourceId: null,
-              mailConfigurationName: 'Outlook'
-            }
-          ],
+          scanTypes: [],
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -1117,13 +1099,7 @@ export default {
       if (actionVal === 'analyze') {
         this.playbookActionInvestigationAnalyzeData = {
           isCreatedByAnalyzer: true,
-          scanTypes: [
-            {
-              type: 'Outlook',
-              mailConfigurationResourceId: null,
-              mailConfigurationName: 'Outlook'
-            }
-          ],
+          scanTypes: [],
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
