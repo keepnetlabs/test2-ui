@@ -81,7 +81,8 @@
         :ids="{
           cancelButton: 'btn-cancel--send-training-modal',
           backButton: 'btn-back--send-training-modal',
-          saveButton: 'btn-next--send-training-modal'
+          nextButton: 'btn-next--send-training-modal',
+          saveButton: 'btn-save--send-training-modal'
         }"
         :step="step"
         :disabled-statuses="{

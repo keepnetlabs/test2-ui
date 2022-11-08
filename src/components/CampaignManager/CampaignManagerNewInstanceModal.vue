@@ -4,8 +4,14 @@
     icon-name="$custom-new-instance"
     title="Create New Instance"
     class-name="add-in-configuration"
-    title-id="create-new-instance__title"
+    title-id="text--create-new-instance__title"
+    confirm-button-id="btn-save--campaign-manager-new-instance-modal"
+    cancel-button-id="btn-cancel--campaign-manager-new-instance-modal"
+    confirm-button-text="CREATE"
+    :confirm-button-style="{ width: '80px' }"
+    :save-disable="isActionButtonDisabled"
     @closeOverlay="closeOverlay"
+    @submit="handleSubmit"
   >
     <template #overlay-body>
       <AppModalBodyHeader
@@ -148,28 +154,6 @@
           </v-checkbox>
         </div>
       </FormGroup>
-    </template>
-    <template #overlay-footer>
-      <v-btn
-        @click="closeOverlay"
-        id="create-new-instance__cancel-button"
-        class="add-in-configuration__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="add-in-configuration__footer__right-col">
-        <v-btn
-          id="create-new-instance__create-button"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isActionButtonDisabled"
-          @click="handleSubmit"
-        >
-          {{ labels.Create }}
-        </v-btn>
-      </div>
     </template>
   </AppModal>
 </template>
@@ -330,6 +314,12 @@ export default {
     'formValues.targetGroupResourceIds'(val) {
       this.isTargetGroupsValid = !!val.length
     }
+  },
+  created() {
+    this.callForTargetGroups()
+    this.callForGetTimeZones()
+    this.getSelectedTimeZone()
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   methods: {
     disabledEndDates(val) {
@@ -517,12 +507,6 @@ export default {
         this.$store.dispatch('common/getTimezone')
       }
     }
-  },
-  created() {
-    this.callForTargetGroups()
-    this.callForGetTimeZones()
-    this.getSelectedTimeZone()
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   }
 }
 </script>

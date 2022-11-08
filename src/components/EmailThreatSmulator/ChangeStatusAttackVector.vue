@@ -1,12 +1,14 @@
 <template>
   <app-dialog
     icon="mdi-power-standby"
-    :title="selectedItem.status == 'Enabled' ? 'Disable Attack Vectors?' : 'Enable Attack Vectors?'"
+    :title="
+      selectedItem.status === 'Enabled' ? 'Disable Attack Vectors?' : 'Enable Attack Vectors?'
+    "
     :status="status"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      <span v-if="selectedItem.status == 'Enabled'">
+      <span v-if="selectedItem.status === 'Enabled'">
         Are you sure you want to disable these attack vectors?
       </span>
       <span v-else>
@@ -14,7 +16,13 @@
       </span>
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer type="confirm" @handleClose="closeModal" @handleConfirm="handleStatus" />
+      <app-dialog-footer
+        type="confirm"
+        cancel-button-id="btn-cancel--attack-vector-dialog-popup"
+        confirm-button-id="btn-confirm-attack-vector-dialog-popup"
+        @handleClose="closeModal"
+        @handleConfirm="handleStatus"
+      />
     </template>
   </app-dialog>
 </template>

@@ -7,11 +7,11 @@
     confirm-button-id="btn-save--certificates-template-modal"
     cancel-button-id="btn-cancel--certificates-template-modal"
     title-id="text--certificates-template-modal-title"
-    :saveDisable="saveDisable"
+    :save-disable="saveDisable"
     @closeOverlay="handleClose"
     @submit="submit"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <AppModalBodyHeader :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
         <FormGroup has-hint :title="labels.CertificateName">

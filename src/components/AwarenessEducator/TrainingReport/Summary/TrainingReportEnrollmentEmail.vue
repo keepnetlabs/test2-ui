@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-email"
+    detailable-button-id="btn--preview-training-report-enrollment"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowEmailTemplate"
     :title="labels.EnrollmentEmailTemplate"

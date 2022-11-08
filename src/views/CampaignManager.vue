@@ -25,8 +25,8 @@
       @on-close="toggleShowPreviewDialog"
     />
     <CampaignManagerAddOrEditModal
-      ref="refCampaignModal"
       v-if="isShowAddOrEditCampaignManagerModal"
+      ref="refCampaignModal"
       :status="isShowAddOrEditCampaignManagerModal"
       :is-edit="isEdit"
       :selected-row="selectedRow"

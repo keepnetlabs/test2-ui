@@ -1,8 +1,8 @@
 <template>
   <div id="scenarios">
     <PhishingScenariosFastLaunch
-      ref="fastLaunch"
       v-if="isShowFastLaunch"
+      ref="fastLaunch"
       :status="isShowFastLaunch"
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
