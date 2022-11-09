@@ -5,6 +5,7 @@
       v-if="isPreviewVisible"
       :status="isPreviewVisible"
       :selectedRow="selectedTemplate"
+      :showTemplateInfo="false"
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteVishingTemplateDialog
@@ -82,6 +83,13 @@
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
+            @on-click="handleFastLaunch(scope.row, false)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :disabled="tableOptions.rowActions[3].disabled"
+            :icon="tableOptions.rowActions[3].icon"
+            :text="tableOptions.rowActions[3].name"
             :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
@@ -90,9 +98,9 @@
             className="vishing-templates__menu-row-action-tooltip"
             showTooltip
             :scope="scope"
-            :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
+            :disabled="tableOptions.rowActions[4].disabled"
+            :icon="tableOptions.rowActions[4].icon"
+            :text="tableOptions.rowActions[4].name"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -227,6 +235,19 @@ export default {
             filterableCustomFieldName: 'createTime'
           },
           {
+            property: 'availableFor',
+            align: 'right',
+            label: labels.AvailalbeFor,
+            fixed: false,
+            sortable: false,
+            hideSort: true,
+            filtarable: false,
+            show: true,
+            type: 'number',
+            width: 100,
+            isEditable: true
+          },
+          {
             property: PROPERTY_STORE.TAGS,
             align: 'left',
             editable: false,
@@ -239,19 +260,6 @@ export default {
             hasTooltip: true,
             filterableType: 'text',
             filterableCustomFieldName: PROPERTY_STORE.TAGS
-          },
-          {
-            property: 'availableFor',
-            align: 'right',
-            label: labels.AvailalbeFor,
-            fixed: false,
-            sortable: false,
-            hideSort: true,
-            filtarable: false,
-            show: true,
-            type: 'number',
-            width: 100,
-            isEditable: true
           }
         ],
         rowActions: [
@@ -267,6 +275,12 @@ export default {
             action: 'handleEdit'
             // TODO: Add permissions
             // disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
+          },
+          {
+            name: labels.FastLaunch,
+            icon: 'mdi-send',
+            action: 'handleFastLaunch'
+            // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Duplicate,
@@ -458,6 +472,10 @@ export default {
     handleActionDelete(row) {
       this.selectedTemplate = row
       this.isDeleteModalVisible = true
+    },
+    handleFastLaunch(row) {
+      this.selectedTemplate = row
+      // TODO: Add Fast Launch logic here
     },
     columnFilterChanged(filter) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)

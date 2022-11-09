@@ -13,7 +13,7 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <div v-else class="template-preview pt-3">
-        <div class="template-preview__text">
+        <div v-if="showTemplateInfo" class="template-preview__text">
           <div>
             <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
           </div>
@@ -23,6 +23,7 @@
             >
           </div>
         </div>
+        <h3 class="template-preview__steps__header">Steps</h3>
         <div class="template-preview__steps">
           <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
             <VishingTemplatePreviewStep :step="step" :index="index" />
@@ -63,6 +64,10 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    showTemplateInfo: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
