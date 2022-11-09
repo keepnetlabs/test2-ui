@@ -22,7 +22,6 @@
         />
       </template>
     </app-dialog>
-
     <data-table
       id="phishing-reporter-data-table"
       ref="refUsersList"
@@ -146,39 +145,39 @@ export default {
           download: false
         },
         columns: [
-          {
-            property: PROPERTY_STORE.FIRSTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
-            sortable: true,
-            show: true,
-            fixed: 'left',
-            type: 'text',
-            width: 150,
-            isEditable: true,
-            filterableType: 'text',
-            editComponent: 'textfield'
-          },
-          {
-            property: PROPERTY_STORE.LASTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.LASTNAME),
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150,
-            isEditable: true,
-            editComponent: 'textfield'
-          },
+          // {
+          //   property: PROPERTY_STORE.FIRSTNAME,
+          //   align: 'left',
+          //   editable: false,
+          //   label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+          //   sortable: true,
+          //   show: true,
+          //   fixed: 'left',
+          //   type: 'text',
+          //   width: 150,
+          //   isEditable: true,
+          //   filterableType: 'text',
+          //   editComponent: 'textfield'
+          // },
+          // {
+          //   property: PROPERTY_STORE.LASTNAME,
+          //   align: 'left',
+          //   editable: false,
+          //   label: getStoreValue(PROPERTY_STORE.LASTNAME),
+          //   sortable: true,
+          //   show: true,
+          //   type: 'text',
+          //   filterableType: 'text',
+          //   width: 150,
+          //   isEditable: true,
+          //   editComponent: 'textfield'
+          // },
           {
             property: PROPERTY_STORE.EMAIL,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.EMAIL),
-            fixed: false,
+            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
