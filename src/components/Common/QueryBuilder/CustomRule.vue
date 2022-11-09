@@ -347,7 +347,7 @@ export default {
           case 'Regex':
             return [
               (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Regex'))
+              (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
             ]
           case 'Group':
             return [
