@@ -24,7 +24,8 @@ const uploadTrainingContent = (payload, resourceId, abortSignal, onUploadProgres
   return testRequest.post(`/trainings/${resourceId}/upload-content`, payload, {
     snackbar: COMMON_SNACKBAR,
     onUploadProgress: onUploadProgressCallback,
-    signal: abortSignal
+    signal: abortSignal,
+    timeout: Infinity
   })
 }
 
