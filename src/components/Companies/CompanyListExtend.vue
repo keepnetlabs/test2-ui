@@ -267,6 +267,25 @@ export default {
       isLoading: true
     }
   },
+  computed: {
+    shouldRenderStatusBadge() {
+      return ['0', '1'].includes(this.getStatusId)
+    },
+    getStatusId() {
+      return this.selectedExtend?.statusId?.toString()
+    }
+  },
+  watch: {
+    selectedExtend() {
+      if (!!this.selectedExtend && !!this.selectedExtend.companyGroups) {
+        this.groupCount = this.selectedExtend.companyGroups.length
+        this.isLoading = false
+      }
+    }
+  },
+  updated() {
+    this.setPosition()
+  },
   methods: {
     setPosition() {
       let p = this.top
@@ -296,27 +315,6 @@ export default {
         name: 'Company Group Details',
         params: { groupId: resourceId }
       })
-    }
-  },
-
-  computed: {
-    shouldRenderStatusBadge() {
-      return ['0', '1'].includes(this.getStatusId)
-    },
-    getStatusId() {
-      return this.selectedExtend?.statusId?.toString()
-    }
-  },
-
-  updated() {
-    this.setPosition()
-  },
-  watch: {
-    selectedExtend() {
-      if (!!this.selectedExtend && !!this.selectedExtend.companyGroups) {
-        this.groupCount = this.selectedExtend.companyGroups.length
-        this.isLoading = false
-      }
     }
   }
 }

@@ -97,7 +97,6 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-opened-attachment',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,

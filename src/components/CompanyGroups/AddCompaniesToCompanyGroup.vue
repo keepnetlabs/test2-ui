@@ -1,17 +1,17 @@
 <template>
   <app-dialog
     :status="status"
+    title-id="text--company-group-details-add-company-to-company-group-popup-title"
+    subtitle-id="text--company-group-details-add-company-to-company-group-popup-subtitle"
     icon="mdi-account-multiple-plus"
     :title="getTitle"
     :subtitle="labels.AddCompaniesToCompanyGroupSubtitle"
-    @changeStatus="closeOverlay"
     :custom-size="dialogWidth"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
-    title-id="text--company-group-details-add-company-to-company-group-popup-title"
-    subtitle-id="text--company-group-details-add-company-to-company-group-popup-subtitle"
+    @changeStatus="closeOverlay"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <DataTable
         id="companies-data-table"
         ref="refDataList"
@@ -31,37 +31,25 @@
         :selectEvent="tableOptions.selectEvent"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        :axios-payload.sync="payload"
+        :axios-payload.sync="axiosPayload"
         @handleSelectionChange="handleSelectionChange"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSearch"
+        @refreshAction="callForData"
         @searchChangedEvent="handleSearchChange"
         @sortChangedEvent="sortChanged"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
       />
     </template>
-    <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn
-          @click="closeOverlay"
-          id="btn-cancel--add-companies-to-company-group-modal"
-          color="#f56c6c"
-          class="delete-user__footer-button"
-          text
-          >{{ labels.Cancel }}</v-btn
-        >
-        <v-btn
-          id="btn-save--add-companies-to-company-group-modal"
-          @click="confirm"
-          :disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          text
-          >{{ labels.Confirm }}</v-btn
-        >
-      </div>
+    <template #app-dialog-footer>
+      <app-dialog-footer
+        cancel-button-id="btn-cancel--add-companies-to-company-group-modal"
+        confirm-button-id="btn-save--add-companies-to-company-group-modal"
+        :confirm-button-disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
+        @handleClose="closeOverlay"
+        @handleConfirm="confirm"
+      />
     </template>
   </app-dialog>
 </template>
@@ -74,9 +62,13 @@ import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'AddCompaniesToCompanyGroup',
   components: {
+    AppDialogFooter,
     AppDialog,
     DataTable
   },
@@ -88,6 +80,7 @@ export default {
       type: Object
     }
   },
+  mixins: [useDefaultTableFunctions],
   emits: ['close-overlay-with-update', 'close-overlay'],
   data() {
     return {
@@ -215,48 +208,7 @@ export default {
           }
         ]
       },
-      payload: {
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultPayload: {
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -266,61 +218,10 @@ export default {
     }
   },
   created() {
-    this.callForSearch()
+    this.callForData()
   },
   methods: {
-    toggleConfigureNewCompanyModal() {
-      if (this.isShowConfigureCompanyModal) {
-        this.callForSearch()
-      }
-      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
-      if (!this.isShowConfigureCompanyModal) {
-        this.createdCompanyResourceIdForConfigureCompany = ''
-      }
-    },
-    handleSwitchCompany(account = {}) {
-      this.$router.go(0)
-      localStorage.setItem('isSelectCompany', true)
-      localStorage.setItem('companyId', account.companyResourceId)
-      localStorage.setItem('companyRequestId', account.companyResourceId)
-      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
-      localStorage.setItem('selectedCompanyName', account.companyName)
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.payload.pageNumber = pageNumber
-      this.callForSearch()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.payload.ascending = order === 'ascending'
-      this.payload.orderBy = prop
-      this.callForSearch()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.payload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearch()
-    },
-    resetPageNumber() {
-      this.payload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
-      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
-    },
-    handleChangeIsSettingsOpen(val) {
-      if (val) {
-        this.isShowExtended = false
-      }
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.payload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.callForSearch()
-    },
-    callForSearch() {
+    callForData() {
       this.loading = true
       LookupLocalStorage.getMultiple([2, 3])
         .then((response) => {
@@ -344,7 +245,7 @@ export default {
           this.loading = false
         })
         .finally(() => {
-          searchCompanies(this.payload)
+          searchCompanies(this.axiosPayload)
             .then((response) => {
               const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
               this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -363,44 +264,30 @@ export default {
             .finally(() => (this.loading = false))
         })
     },
-    columnFilterChanged(filter) {
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+    toggleConfigureNewCompanyModal() {
+      if (this.isShowConfigureCompanyModal) {
+        this.callForData()
       }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForSearch()
+      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
+      if (!this.isShowConfigureCompanyModal) {
+        this.createdCompanyResourceIdForConfigureCompany = ''
+      }
     },
-    columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForSearch()
+    handleSwitchCompany(account = {}) {
+      this.$router.go(0)
+      localStorage.setItem('isSelectCompany', true)
+      localStorage.setItem('companyId', account.companyResourceId)
+      localStorage.setItem('companyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyName', account.companyName)
+    },
+    isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
+      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
+    },
+    handleChangeIsSettingsOpen(val) {
+      if (val) {
+        this.isShowExtended = false
+      }
     },
     closeOverlay() {
       this.$emit('close-overlay')

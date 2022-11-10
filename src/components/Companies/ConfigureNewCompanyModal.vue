@@ -7,7 +7,7 @@
     title-id="text--configure-new-company-modal-title"
     @closeOverlay="closeOverlay"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -18,15 +18,6 @@
             >{{ labels.WhiteLabeling }}</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-          <!--  <v-stepper-step
-            id="step--configure-new-company-white-listing"
-            class="k-stepper__step"
-            :complete="step > 2"
-            :step="2"
-            >{{ labels.WhiteListing }}</v-stepper-step
-          >
-          <v-divider class="k-stepper__divider" /> -->
-
           <v-stepper-step
             id="step--configure-new-company-first-system-user"
             class="k-stepper__step"
@@ -79,33 +70,33 @@
         </v-stepper-items>
       </v-stepper>
     </template>
-    <template v-slot:overlay-footer>
+    <template #overlay-footer>
       <v-btn
-        @click="closeOverlay"
         id="btn-cancel--configure-new-company-modal"
         class="add-in-configuration__footer-btn-cancel"
         rounded
+        @click="closeOverlay"
       >
         {{ labels.Cancel }}
       </v-btn>
       <div class="add-in-configuration__footer__right-col">
         <v-btn
-          @click="changeStep(-1)"
+          v-if="step > 1"
           id="btn-back--configure-new-company-modal"
           class="add-in-configuration__footer-btn-back mr-4"
           rounded
-          v-if="step > 1"
+          @click="changeStep(-1)"
         >
           {{ labels.Back }}
         </v-btn>
 
         <v-btn
-          @click="changeStep()"
+          v-if="step === 2"
           id="btn-skip--configure-new-company-modal"
           class="add-in-configuration__footer-btn-next mr-4"
           color="#00BCD4"
           rounded
-          v-if="step === 2"
+          @click="changeStep()"
         >
           {{ labels.Skip }}
         </v-btn>
@@ -133,7 +124,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
-import { scrollToComponent } from '@/utils/functions'
+import { getDefaultAxiosPayload, scrollToComponent } from '@/utils/functions'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
@@ -174,6 +165,16 @@ export default {
     this.getRoles()
   },
   methods: {
+    callForCreateSystemUser(payload) {
+      if (this.createdCompanyResourceId) {
+        payload.CompanyResourceId = this.createdCompanyResourceId
+      }
+      createSystemUser(payload)
+        .then(() => {
+          this.changeStep()
+        })
+        .finally(() => (this.isSaveDisabled = false))
+    },
     closeOverlay() {
       this.$emit('on-close')
     },
@@ -181,34 +182,13 @@ export default {
       this.step += flag
     },
     getRoles() {
-      let payload = {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'RoleName',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
+      let payload = getDefaultAxiosPayload({ pageSize: 1000 }, 'RoleName')
       let allRoles = []
       let availableRoles = []
       getSystemUsersRole(payload).then((response) => {
         allRoles = response.data.data
         availableRoles = []
         availableRoles = allRoles
-
         this.roleItems = availableRoles.map((item) => {
           return {
             name: item.name,
@@ -284,17 +264,6 @@ export default {
         case 3:
           this.closeOverlay()
       }
-    },
-    callForCreateSystemUser(payload) {
-      if (this.createdCompanyResourceId) {
-        payload.CompanyResourceId = this.createdCompanyResourceId
-      }
-
-      createSystemUser(payload)
-        .then(() => {
-          this.changeStep()
-        })
-        .finally(() => (this.isSaveDisabled = false))
     }
   }
 }

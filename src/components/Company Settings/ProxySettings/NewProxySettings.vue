@@ -13,7 +13,7 @@
     class-name="new-proxy-setting"
     :saveDisable="saveDisable"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <app-modal-body-header
         title="Proxy Server Settings"
         sub-title="Fill information and credentials"
@@ -250,6 +250,18 @@ export default {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
+  created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    if (this.isEdit && this.resourceId) {
+      this.callForGetProxySettings()
+      this.saveDisable = false
+    }
+  },
+  beforeDestroy() {
+    this.clearTimeoutIfHasTimeout()
+  },
   methods: {
     submit() {
       const { refForm } = this.$refs
@@ -388,18 +400,6 @@ export default {
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
-  },
-  created() {
-    if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
-    if (this.isEdit && this.resourceId) {
-      this.callForGetProxySettings()
-      this.saveDisable = false
-    }
-  },
-  beforeDestroy() {
-    this.clearTimeoutIfHasTimeout()
   }
 }
 </script>

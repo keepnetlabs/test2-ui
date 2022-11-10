@@ -10,7 +10,7 @@
     :title="getTitle"
     @closeOverlay="handleClose"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
