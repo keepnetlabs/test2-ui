@@ -65,7 +65,7 @@
       :selectEvent="tableOptions.selectEvent"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="payload"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @addButton="addButton"
@@ -109,8 +109,8 @@ import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'CompanyGroupDetails',
   components: {
@@ -122,6 +122,7 @@ export default {
     Datatable,
     RemoveModal
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     groupId: {
       type: String,
@@ -267,8 +268,7 @@ export default {
         }
       ]
     },
-    payload: getDefaultAxiosPayload(),
-    defaultPayload: getDefaultAxiosPayload(),
+    axiosPayload: getDefaultAxiosPayload(),
     industries: [],
     licenceTypes: [],
     serverSideProps: new ServerSideProps()
@@ -278,49 +278,53 @@ export default {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
     },
     groupId() {
-      this.initMethods()
+      this.callForData()
     }
   },
   created() {
-    this.initMethods()
+    this.callForData()
   },
   methods: {
-    resetPageNumber() {
-      this.payload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+    callForData() {
+      this.getIndustries().then(() => {
+        this.getLicenceTypes().then(() => {
+          this?.$refs?.refDataList?.reRenderFilters()
+          this.getTableData()
+        })
+      })
     },
-    handleSearchChange(searchFilter = {}) {
-      this.payload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.initMethods()
+    async getIndustries() {
+      await LookupLocalStorage.getSingle(2).then((data) => {
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          data.map((x) => {
+            return { text: x.name, value: x.resourceId }
+          })
+        )
+      })
     },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.payload.pageNumber = pageNumber
-      this.initMethods()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.payload.ascending = order === 'ascending'
-      this.payload.orderBy = prop
-      this.initMethods()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.payload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.initMethods()
+    async getLicenceTypes() {
+      await LookupLocalStorage.getSingle(3).then((data) => {
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          data.map((x) => {
+            return { text: x.name, value: x.resourceId }
+          })
+        )
+      })
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
-          orderBy: this.payload.orderBy,
-          ascending: this.payload.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.payload.filter
+          filter: this.axiosPayload.filter
         }
 
         exportCompanyGroupDetails(payload, this.$route.params.groupId)
@@ -336,14 +340,6 @@ export default {
           .catch(() => {})
       })
     },
-    initMethods() {
-      this.getIndustries().then(() => {
-        this.getLicenceTypes().then(() => {
-          this?.$refs?.refDataList?.reRenderFilters()
-          this.getTableData()
-        })
-      })
-    },
     toggleShowAddCompanyModal() {
       this.showAddCompanyModal = !this.showAddCompanyModal
     },
@@ -353,7 +349,7 @@ export default {
     },
     getTableData() {
       this.loading = true
-      searchGroupCompanies(this.groupId, this.payload)
+      searchGroupCompanies(this.groupId, this.axiosPayload)
         .then((response) => {
           const {
             data: { data }
@@ -462,36 +458,6 @@ export default {
       localStorage.setItem('companyGroupResourceId', resourceId)
       localStorage.setItem('companyGroupName', groupName)
       this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
-    },
-    columnFilterChanged(filter) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
-      this.getTableData()
-    },
-    columnFilterCleared(fieldName) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.getTableData()
-    },
-    async getIndustries() {
-      await LookupLocalStorage.getSingle(2).then((data) => {
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          data.map((x) => {
-            return { text: x.name, value: x.resourceId }
-          })
-        )
-      })
-    },
-    async getLicenceTypes() {
-      await LookupLocalStorage.getSingle(3).then((data) => {
-        this.$set(
-          this.tableOptions.columns[2],
-          'filterableItems',
-          data.map((x) => {
-            return { text: x.name, value: x.resourceId }
-          })
-        )
-      })
     }
   }
 }

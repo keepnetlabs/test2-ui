@@ -10,14 +10,14 @@
     subtitle-id="text--smtp-settings-delete-popup-subtitle"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       This smtp setting will be deleted. All data will be lost.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
+        type="delete"
         cancel-button-id="btn-cancel--smtp-settings-popup"
         confirm-button-id="btn-delete--smtp-settings-popup"
-        type="delete"
         @handleClose="handleCloseDialog"
         @handleConfirm="handleDelete"
       />

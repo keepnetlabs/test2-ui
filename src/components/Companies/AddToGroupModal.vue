@@ -43,26 +43,14 @@
         />
       </v-form>
     </template>
-    <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn
-          id="btn-cancel--company-add-to-group-modal"
-          @click="changeStatus(false)"
-          color="#f56c6c"
-          class="delete-user__footer-button"
-          text
-          >{{ labels.Cancel }}</v-btn
-        >
-        <v-btn
-          id="btn-save--company-add-to-group-modal"
-          @click="confirm"
-          :disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          text
-          >{{ labels.Confirm }}</v-btn
-        >
-      </div>
+    <template #app-dialog-footer>
+      <AppDialogFooter
+        cancel-button-id="btn-cancel--company-add-to-group-modal"
+        confirm-button-id="btn-save--company-add-to-group-modal"
+        :confirm-button-disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
+        @handleClose="changeStatus(false)"
+        @handleConfirm="confirm"
+      />
     </template>
   </app-dialog>
 </template>
@@ -72,10 +60,10 @@ import AppDialog from '../AppDialog'
 import { addCompanyToCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '@/api/company'
 import Datatable from '../../components/DataTable'
 import labels from '@/model/constants/labels'
-
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   name: 'AddGroupToModal',
@@ -88,6 +76,7 @@ export default {
     }
   },
   components: {
+    AppDialogFooter,
     AppDialog,
     Datatable
   },

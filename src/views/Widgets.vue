@@ -458,6 +458,45 @@ export default {
       callbackOfPlaybook: null
     }
   },
+  watch: {
+    editMode(val) {
+      if (val) {
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
+        this.handleAddShadows()
+      }
+    }
+  },
+  async created() {
+    if (this?.permissions?.widgets) {
+      try {
+        const response = await this.$store.dispatch('widgets/callForWidgets')
+        const settings = response.data['dashboardWidgetsOrdering'].data.settings
+        if (settings.length) {
+          this.layout = settings.reduce((acc, item) => {
+            const widget = { ...this.allWidgets[item.key], ...item }
+            this.removeAvailableWidget(item)
+            //availableWidgets.splice()
+            if (widget.isAllowed) acc.push(widget)
+            return acc
+          }, [])
+
+          this.newItemY = this.layout.reduce((acc, item) => {
+            return (acc += item.h)
+          }, 0)
+          setTimeout(() => {
+            this.handleDeleteShadows()
+            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+          }, 20)
+        }
+      } catch (e) {
+        this.layout = this.getDefaultLayoutObject()
+        setTimeout(() => {
+          this.handleDeleteShadows()
+          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+        }, 20)
+      }
+    }
+  },
   methods: {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
@@ -550,14 +589,6 @@ export default {
       this.layout = JSON.parse(JSON.stringify(this.initialLayout))
     },
     layoutMounted() {
-      /*
-      newLayout.map((item, index) => {
-        if (newLayout[index].h === 1) {
-          this.$refs[`ref${item.i}`][0].$el.querySelector('.widget-body').style.display = 'none'
-        }
-        this.newItemY += item.h
-      })
-       */
       this.handleDeleteShadows()
     },
     collapse(item, index, ref) {
@@ -940,46 +971,6 @@ export default {
     handleSaveChanges() {
       this.handleDeleteShadows()
       this.callForPostWidgets()
-    }
-  },
-  async created() {
-    if (this?.permissions?.widgets) {
-      try {
-        const response = await this.$store.dispatch('widgets/callForWidgets')
-        const settings = response.data['dashboardWidgetsOrdering'].data.settings
-        if (settings.length) {
-          this.layout = settings.reduce((acc, item) => {
-            const widget = { ...this.allWidgets[item.key], ...item }
-            this.removeAvailableWidget(item)
-            //availableWidgets.splice()
-            if (widget.isAllowed) acc.push(widget)
-            return acc
-          }, [])
-
-          this.newItemY = this.layout.reduce((acc, item) => {
-            return (acc += item.h)
-          }, 0)
-          setTimeout(() => {
-            this.handleDeleteShadows()
-            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-          }, 20)
-        }
-      } catch (e) {
-        this.layout = this.getDefaultLayoutObject()
-        setTimeout(() => {
-          this.handleDeleteShadows()
-          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-        }, 20)
-      }
-    }
-  },
-  mounted() {},
-  watch: {
-    editMode(val) {
-      if (val) {
-        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
-        this.handleAddShadows()
-      }
     }
   }
 }

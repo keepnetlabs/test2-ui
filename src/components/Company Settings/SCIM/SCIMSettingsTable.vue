@@ -49,10 +49,11 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 import { exportSCIMSettings, searchSCIMSettings } from '@/api/scimSettings'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'SCIMSettingsTable',
   components: { DataTable },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
       tableData: [],
@@ -160,7 +161,6 @@ export default {
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
-      defaultAxiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -202,50 +202,6 @@ export default {
     },
     handleAddNewSCIM() {
       this.$emit('on-add')
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     exportSCIMSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       if (!this.getSCIMSettingsExportPermissions) return

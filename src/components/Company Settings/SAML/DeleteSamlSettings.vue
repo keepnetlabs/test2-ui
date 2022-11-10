@@ -10,15 +10,15 @@
     :subtitle="getSubtitle"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ labels.SAMLDeletePopupBody }}
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
+        type="delete"
         cancel-button-id="btn-cancel--saml-settings-popup"
         confirm-button-id="btn-delete--saml-settings-popup"
-        type="delete"
-        :confirmButtonDisabled="saveDisable"
+        :confirm-button-disabled="saveDisable"
         @handleClose="handleCloseDialog"
         @handleConfirm="handleDelete"
       />
