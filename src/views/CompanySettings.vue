@@ -144,19 +144,6 @@ export default {
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
     })
   },
-  methods: {
-    changeTabStatus(status) {
-      this.tab = status
-    },
-    changeTabByRoute() {
-      const { $route: { query } = {} } = this
-      if (!query || !query.tab) return
-      this.tab = query.tab
-      this.$nextTick(() => {
-        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
-      })
-    }
-  },
   created() {
     this.tab = [
       { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
@@ -220,6 +207,19 @@ export default {
       refAllowedList.checkIfCanCLoseNewModal()
     } else {
       next()
+    }
+  },
+  methods: {
+    changeTabStatus(status) {
+      this.tab = status
+    },
+    changeTabByRoute() {
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
+      })
     }
   }
 }

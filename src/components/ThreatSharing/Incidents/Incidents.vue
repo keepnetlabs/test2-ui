@@ -38,7 +38,6 @@
                   hide-details
                   prepend-inner-icon="mdi-magnify"
                   :disabled="incidentLoading"
-                  @mouseover.native="hover = true"
                 ></v-text-field>
               </div>
               <div>
@@ -204,23 +203,6 @@ export default {
     PostIncident,
     SinglePost
   },
-  computed: {
-    showPostFirstIncidentButton() {
-      return (
-        !this.search &&
-        !this.companyValue &&
-        this.threats.length === 0 &&
-        this.incidentList.length === 0 &&
-        this.routerName === 'Community'
-      )
-    },
-    numberOfPages() {
-      return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage)
-    },
-    routerName() {
-      return this.$route.name
-    }
-  },
   props: {
     posts: {
       type: Array,
@@ -272,6 +254,23 @@ export default {
     incidentList: [],
     incidentLoading: true
   }),
+  computed: {
+    showPostFirstIncidentButton() {
+      return (
+        !this.search &&
+        !this.companyValue &&
+        this.threats.length === 0 &&
+        this.incidentList.length === 0 &&
+        this.routerName === 'Community'
+      )
+    },
+    numberOfPages() {
+      return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage)
+    },
+    routerName() {
+      return this.$route.name
+    }
+  },
   watch: {
     incidentLoading: function (newVal, oldVal) {
       if (oldVal !== newVal) {
@@ -305,6 +304,50 @@ export default {
     },
     '$route.query.postId'() {
       this.$forceUpdate()
+    }
+  },
+  created() {
+    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
+    this.getThreats()
+    let _this = this
+    if (this.$route.query && this.$route.query.postId) {
+      this.isSharedPost = true
+      this.getSharedPost()
+    } else {
+      if (this.isLoadState) {
+        const incidentsData = this.$store.state['incidents'].incidents.incidentsData
+        if (incidentsData) {
+          this.incidentList = incidentsData.tableData
+          this.incidentList = this.incidentList.map((item) => {
+            return { ...item, isToggle: false }
+          })
+          this.page = incidentsData.searchValues.page
+          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
+          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
+          this.itemsPerPage = incidentsData.searchValues.itemsPerPage
+          this.search = incidentsData.searchValues.search
+          this.companyValue = incidentsData.searchValues.companyValue
+          this.threats = incidentsData.searchValues.threats
+          this.incidentLoading = false
+          setTimeout(() => {
+            _this.$emit('setLoadState')
+          }, 100)
+        } else {
+          this.getIncidentList()
+        }
+        if (this.isTableReload) {
+          this.page = 1
+          this.search = null
+          this.companyValue = []
+          this.threats = []
+          this.getIncidentList()
+          this.$store.dispatch('tableReload/setTableReload', false)
+        }
+      } else {
+        if (!this.isLoadState) {
+          this.getIncidentList()
+        }
+      }
     }
   },
   methods: {
@@ -541,50 +584,6 @@ export default {
                 }
               })
           }
-        }
-      }
-    }
-  },
-  created() {
-    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
-    this.getThreats()
-    let _this = this
-    if (this.$route.query && this.$route.query.postId) {
-      this.isSharedPost = true
-      this.getSharedPost()
-    } else {
-      if (this.isLoadState) {
-        const incidentsData = this.$store.state['incidents'].incidents.incidentsData
-        if (incidentsData) {
-          this.incidentList = incidentsData.tableData
-          this.incidentList = this.incidentList.map((item) => {
-            return { ...item, isToggle: false }
-          })
-          this.page = incidentsData.searchValues.page
-          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
-          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
-          this.itemsPerPage = incidentsData.searchValues.itemsPerPage
-          this.search = incidentsData.searchValues.search
-          this.companyValue = incidentsData.searchValues.companyValue
-          this.threats = incidentsData.searchValues.threats
-          this.incidentLoading = false
-          setTimeout(() => {
-            _this.$emit('setLoadState')
-          }, 100)
-        } else {
-          this.getIncidentList()
-        }
-        if (this.isTableReload) {
-          this.page = 1
-          this.search = null
-          this.companyValue = []
-          this.threats = []
-          this.getIncidentList()
-          this.$store.dispatch('tableReload/setTableReload', false)
-        }
-      } else {
-        if (!this.isLoadState) {
-          this.getIncidentList()
         }
       }
     }

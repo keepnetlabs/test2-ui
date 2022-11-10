@@ -56,11 +56,6 @@ export default {
       )
     }
   },
-  methods: {
-    changeTabStatus(tabStatus) {
-      this.tab = tabStatus
-    }
-  },
   beforeRouteLeave(to, from, next) {
     const { refIntegrations } = this.$refs
     if (refIntegrations && refIntegrations.modalStatus) {
@@ -68,6 +63,11 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  methods: {
+    changeTabStatus(tabStatus) {
+      this.tab = tabStatus
     }
   }
 }

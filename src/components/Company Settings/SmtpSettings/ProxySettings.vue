@@ -35,7 +35,7 @@
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        :axios-payload.sync="bodyOptions"
+        :axios-payload.sync="axiosPayload"
         :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
         :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         @addNewProxySetting="toggleProxyModalStatus"
@@ -43,7 +43,7 @@
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSearchProxySettings"
+        @refreshAction="callForData"
         @downloadEvent="exportProxySettingsList"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
@@ -99,6 +99,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'PROXYSettings',
   components: {
@@ -108,6 +109,7 @@ export default {
     NewProxySettings,
     DeleteProxySettings
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       tableData: [],
@@ -252,7 +254,7 @@ export default {
       },
       newProxyModalStatus: false,
       deleteProxyModalStatus: false,
-      bodyOptions: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -262,18 +264,34 @@ export default {
     })
   },
   created() {
-    this.callForSearchProxySettings()
+    this.callForData()
   },
   methods: {
+    callForData() {
+      if (!this.getProxySettingsSearchPermissions) return
+      this.loading = true
+      searchProxySettings(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     handleSearchChange(searchFilter = {}) {
-      this.bodyOptions.filter.FilterGroups[1].FilterItems = [
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.bodyOptions.filter.FilterGroups[1].FilterItems = this.bodyOptions.filter.FilterGroups[1].FilterItems.map(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === 'StatusName') {
-            item.FieldName = 'Status'
-          }
           if (item.FieldName === 'AuthenticationTypeName') {
             item.FieldName = 'AuthenticationType'
           }
@@ -281,26 +299,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.callForSearchProxySettings()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyOptions.pageNumber = pageNumber
-      this.callForSearchProxySettings()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyOptions.ascending = order === 'ascending'
-      this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
-      this.callForSearchProxySettings()
-    },
-    resetPageNumber() {
-      this.bodyOptions.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyOptions.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearchProxySettings()
+      this.callForData()
     },
     checkIfCanCloseProxyModal() {
       if (this.$refs.newProxySettings) this.$refs.newProxySettings.closeOverlay()
@@ -317,11 +316,11 @@ export default {
         const payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
-          orderBy: this.bodyOptions.orderBy,
-          ascending: this.bodyOptions.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyOptions.filter
+          filter: this.axiosPayload.filter
         }
         exportProxySettings(payload).then((response) => {
           const { data } = response
@@ -337,25 +336,6 @@ export default {
     toggleDeleteProxyModalStatus() {
       this.deleteProxyModalStatus = !this.deleteProxyModalStatus
     },
-    callForSearchProxySettings() {
-      if (!this.getProxySettingsSearchPermissions) return
-      this.loading = true
-      searchProxySettings(this.bodyOptions)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
-          this.tableData = results
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
     handleEditAction({ resourceId } = {}) {
       this.isEdit = true
       this.selectedEditProxySettings = resourceId
@@ -363,18 +343,17 @@ export default {
     },
     closeOverlayWithUpdate() {
       this.toggleProxyModalStatus()
-      this.callForSearchProxySettings()
+      this.callForData()
     },
     callForDeleteProxySettings(resourceId) {
       deleteProxySettings(resourceId)
         .then(() => {
-          this.callForSearchProxySettings()
+          this.callForData()
         })
         .finally(() => {
           this.selectedDeleteProxySettings = null
         })
     },
-    handleMakeDefault(row) {},
     handleDeleteProxySettings(row) {
       const { resourceId } = row
       this.$refs.refProxySettingsList.unSelectRow(row)
@@ -383,20 +362,6 @@ export default {
     handleDeleteAction(selectedRow) {
       this.selectedDeleteProxySettings = selectedRow
       this.toggleDeleteProxyModalStatus()
-    },
-    columnFilterChanged(filter) {
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.bodyOptions
-      )
-      this.callForSearchProxySettings()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyOptions
-      )
-      this.callForSearchProxySettings()
     },
     handleMultipleDelete(selections) {
       this.selectedDeleteProxySettings = selections

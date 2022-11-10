@@ -138,6 +138,15 @@ export default {
   created() {
     this.callForFormDetails()
   },
+  beforeRouteLeave(to, from, next) {
+    const { refCampaignModal } = this.$refs
+    if (refCampaignModal && refCampaignModal.status) {
+      refCampaignModal.closeOverlay()
+      next(false)
+    } else {
+      next()
+    }
+  },
   methods: {
     toggleShowLaunchDialog() {
       if (this.isShowLaunchDialog) this.launchResourceId = ''
@@ -280,15 +289,6 @@ export default {
             this.setDeleteDialogActionButtonDisabled()
           })
       }
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    const { refCampaignModal } = this.$refs
-    if (refCampaignModal && refCampaignModal.status) {
-      refCampaignModal.closeOverlay()
-      next(false)
-    } else {
-      next()
     }
   }
 }

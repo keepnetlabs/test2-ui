@@ -45,11 +45,6 @@ export default {
       getEtsQuickScanReportPermissionSearch: 'permissions/getEtsQuickScanReportPermissionSearch'
     })
   },
-  methods: {
-    changeTabStatus(tabStatus) {
-      this.tab = tabStatus
-    }
-  },
   created() {
     if (!this.getEtsQuickScanReportPermissionStat && this.getEtsQuickScanReportPermissionSearch) {
       this.tab = 'sentAttacks'
@@ -58,6 +53,11 @@ export default {
       !this.getEtsQuickScanReportPermissionSearch
     ) {
       this.tab = 'summary'
+    }
+  },
+  methods: {
+    changeTabStatus(tabStatus) {
+      this.tab = tabStatus
     }
   }
 }

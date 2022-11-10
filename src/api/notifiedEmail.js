@@ -9,10 +9,6 @@ export function downloadAttachment(attachmentId) {
   })
 }
 
-export function getAnalysisEngineTypes() {
-  return testRequest.get(`analysis-engines/types`)
-}
-
 export function exportNotifiedEmails(payload) {
   return testRequest.post(`/notified-emails/search/export`, payload, {
     responseType: 'blob'

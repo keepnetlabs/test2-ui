@@ -231,27 +231,6 @@ export default {
           ]
         }
       }),
-      defaultRequestBody: getDefaultAxiosPayload({
-        orderBy: 'LogDate',
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '<=' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -259,15 +238,9 @@ export default {
     this.bodyData.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
       .subtract(2, 'weeks')
       .format(getTimeZoneForMoment())
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
-      .subtract(2, 'weeks')
-      .format(getTimeZoneForMoment())
     this.bodyData.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(Date.now()).format(
       getTimeZoneForMoment()
     )
-    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(
-      Date.now()
-    ).format(getTimeZoneForMoment())
     this.getDatatableList()
   },
   methods: {

@@ -193,7 +193,12 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from '@/api/restApi'
-import { scrollToComponent, isDifferent, copyToClipboard } from '@/utils/functions'
+import {
+  scrollToComponent,
+  isDifferent,
+  copyToClipboard,
+  getDefaultAxiosPayload
+} from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -282,30 +287,9 @@ export default {
   methods: {
     getRoles() {
       return new Promise((res, rej) => {
-        let payload = {
-          pageNumber: 1,
-          pageSize: 1000,
-          orderBy: 'RoleName',
-          ascending: true,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: [],
-                FilterGroups: []
-              },
-              {
-                Condition: 'AND',
-                FilterItems: [],
-                FilterGroups: []
-              }
-            ]
-          }
-        }
+        let payload = getDefaultAxiosPayload({ pageSize: 1000 }, 'RoleName')
         let allRoles = []
         let availableRoles = []
-
         getSystemUsersRole(payload)
           .then((response) => {
             allRoles = response.data.data

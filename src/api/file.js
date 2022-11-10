@@ -1,8 +1,5 @@
 import testRequest from '@/utils/testRequest'
 
-export function getAllFiles() {
-  return testRequest.get('/file/all')
-}
 export function getUploadedFiles() {
   return testRequest.get('/file/uploaded')
 }

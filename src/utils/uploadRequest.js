@@ -49,15 +49,6 @@ uploadRequest.interceptors.response.use(
     //if there is global loader param
     error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (error.code === 'ECONNABORTED') {
-      /*store.dispatch(
-              'common/createSnackBar',
-              {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: error.message,
-                icon: 'mdi-alert'
-              },
-              { root: true }
-            )*/
       return Promise.reject(error)
     } else if (!error.response) {
       return Promise.reject(error)

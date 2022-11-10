@@ -234,7 +234,6 @@
             to="/threat-intelligence"
             id="btn--link-navigator-menu-threat-intelligence"
             :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
-            @click.native="deleteTSVuexData"
           >
             <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiMagnifyExpand" />
           </router-link>
@@ -248,7 +247,6 @@
               (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') &&
                 'active-link'
             ]"
-            @click.native="deleteTSVuexData"
           >
             <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />
           </router-link>

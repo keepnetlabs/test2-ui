@@ -5,22 +5,10 @@ export function getIntegrationList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
 }
 
-export function getProxyItems(payload) {
-  return testRequest.post(`/companies/proxy-settings/search`, payload)
-}
-
 export function exportReportedEmails(payload) {
   return testRequest.post(`${API_URL}/search/export`, payload, {
     responseType: 'blob'
   })
-}
-
-export function getIntegrationTypes() {
-  return testRequest.get(`analysis-engines/types`)
-}
-
-export function getFileTypes() {
-  return testRequest.get('lookups/8')
 }
 
 export function createIntegration(payload) {
@@ -59,10 +47,6 @@ export function updateIntegration(id, payload) {
 
 export function testAnalysis(id, payload) {
   return testRequest.put(`/analysis-engines-types/${id}/test-connection`, payload)
-}
-
-export function searchNotifiedMail(payload) {
-  return testRequest.post(`notified-emails/search`, payload)
 }
 
 export function getAnalysisExclusions() {
