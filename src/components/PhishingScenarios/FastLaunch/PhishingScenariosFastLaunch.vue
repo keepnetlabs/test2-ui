@@ -179,7 +179,7 @@ export default {
     callForGetPhishingScenario() {
       getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
         (response) => {
-          if (this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo) {
+          if (this.$refs?.refFastLaunch?.$refs?.refCampaignManagerCampaignInfo) {
             this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
               this.selectedScenario.name
             )
