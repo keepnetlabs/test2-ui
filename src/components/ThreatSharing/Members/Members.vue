@@ -7,7 +7,7 @@
       :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community.`"
       @changeStatus="showAppointANewOwnerModal = false"
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
@@ -102,13 +102,12 @@
             <template v-slot:header>
               <div class="search-wrapper">
                 <v-text-field
-                  @mouseover.native="hover = true"
+                  v-model="search"
                   id="input--threat-sharing-members-search"
                   placeholder="Filter by attributes or keywords"
                   outlined
                   dense
                   class="filter-field pt-6"
-                  v-model="search"
                 ></v-text-field>
                 <v-icon class="filter-icon">mdi-filter-variant</v-icon>
               </div>
@@ -164,18 +163,18 @@
             </template>
             <template v-slot:footer>
               <v-row
+                v-if="members && members.length"
                 class="mt-2"
                 justify="end"
                 style="margin: 5px !important;"
-                v-if="members && members.length"
               >
                 <el-pagination
                   layout="sizes, prev, pager, next,slot"
                   :current-page.sync="page"
                   :page-sizes="itemsPerPageOptions"
                   :page-size="itemsPerPage"
-                  @size-change="handleSizeChange"
                   :total="members && members.length"
+                  @size-change="handleSizeChange"
                 >
                   <template>
                     <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
@@ -201,7 +200,6 @@
             <template v-slot:header>
               <div class="search-wrapper">
                 <v-text-field
-                  @mouseover.native="hover = true"
                   placeholder="Filter by attributes or keywords"
                   outlined
                   dense
@@ -252,18 +250,18 @@
             </template>
             <template v-slot:footer>
               <v-row
+                v-if="requestMembers && requestMembers.length"
                 class="mt-2"
                 justify="end"
                 style="margin: 5px !important;"
-                v-if="requestMembers && requestMembers.length"
               >
                 <el-pagination
                   layout="sizes, prev, pager, next,slot"
                   :current-page.sync="page"
                   :page-sizes="itemsPerPageOptions"
                   :page-size="itemsPerPage"
-                  @size-change="handleSizeChange"
                   :total="requestMembers && requestMembers.length"
+                  @size-change="handleSizeChange"
                 >
                   <template>
                     <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
@@ -316,9 +314,6 @@ export default {
     removeFromCommunityUserName: null,
     removeCommunityId: null,
     showRemoveFromCommunityModal: false,
-    newOwnerRule: {
-      limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
-    },
     AppointedCompanyResourceId: null,
     openNewOwnerModal: false,
     communityDetails: null,
@@ -329,66 +324,7 @@ export default {
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
     toggle: false,
-    toggles: [],
     series: [44, 80],
-    chartOptions: {
-      labels: ['Phishing', 'Malicious'],
-      fill: {
-        colors: ['#f56c6c', '#e6a23c']
-      },
-      colors: ['#f56c6c', '#e6a23c'],
-      legend: {
-        verticalAlign: 'right',
-        fontSize: '16px',
-        fontFamily: undefined,
-        position: 'right',
-        offsetX: 0,
-        markers: {
-          width: 16,
-          height: 16,
-          strokeWidth: 16,
-          shape: 'square',
-          radius: 0,
-          offsetX: 20
-        },
-        itemMargin: {
-          horizontal: 6,
-          vertical: 15
-        },
-        onItemClick: {
-          toggleDataSeries: true
-        },
-        onItemHover: {
-          highlightDataSeries: true
-        },
-        labels: {
-          colors: ['#f56c6c', '#e6a23c']
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 300,
-              offsetX: -30,
-              offsetY: 10
-            },
-            itemMargin: {
-              horizontal: 100,
-              vertical: 0
-            },
-            legend: {
-              position: 'bottom',
-              offsetY: -10
-            }
-          }
-        }
-      ]
-    },
     isWantToRemoveMember: false,
     memberCompId: null
   }),
@@ -408,15 +344,32 @@ export default {
     numberOfPagesForRequest() {
       return Math.ceil(this.requestMembers && this.requestMembers.length / this.itemsPerPage)
     },
-    communityPrivacy() {
-      return (
-        this.$store.state.threatSharing.selectedCommunity.privacy ||
-        JSON.parse(localStorage.getItem('communityPrivacy'))
-      )
-    },
     userCompany() {
-      //return this.$store.state.auth.user.currentCompany.id @todo iceman delete
       return localStorage.getItem('companyName')
+    }
+  },
+  watch: {
+    getSelectedCompany(val) {
+      if (val) this.getMembers()
+    },
+    search: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        if (newVal) {
+          this.debounce(() => {
+            if (this.tab === 0) {
+              this.getMembers()
+            } else {
+              this.getRequestMembers()
+            }
+          }, 1000)
+        } else {
+          if (this.tab === 0) {
+            this.getMembers()
+          } else {
+            this.getRequestMembers()
+          }
+        }
+      }
     }
   },
   methods: {
@@ -497,7 +450,6 @@ export default {
         }, 500)
       })
     },
-    isOwnerOfTheCommunity() {},
     removeFromCommunity(item) {
       this.removeCommunityId = item.companyResourceId
       this.removeFromCommunityUserName = item.companyName
@@ -608,30 +560,6 @@ export default {
           .finally(() => {
             this.membersLoading = false
           })
-      }
-    }
-  },
-  watch: {
-    getSelectedCompany(val) {
-      if (val) this.getMembers()
-    },
-    search: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        if (newVal) {
-          this.debounce(() => {
-            if (this.tab === 0) {
-              this.getMembers()
-            } else {
-              this.getRequestMembers()
-            }
-          }, 1000)
-        } else {
-          if (this.tab === 0) {
-            this.getMembers()
-          } else {
-            this.getRequestMembers()
-          }
-        }
       }
     }
   }

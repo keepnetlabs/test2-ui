@@ -3,7 +3,6 @@ import router from '../router'
 import AuthenticationService from '../services/authentication'
 import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
-import testService from './testRequest'
 
 const service = axios.create({
   baseURL: APP_CONFIG.VUE_APP_ROOT_API,

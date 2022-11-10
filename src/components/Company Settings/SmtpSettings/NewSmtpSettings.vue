@@ -329,6 +329,15 @@ export default {
       return rules
     }
   },
+  created() {
+    if (this.isEdit && this.resourceId) {
+      this.callForGetSmtpSettings().finally(() => {
+        this.callForServiceProviderItems()
+      })
+    } else {
+      this.callForServiceProviderItems()
+    }
+  },
   methods: {
     submit() {
       const { refForm, refMakeAvailableFor } = this.$refs
@@ -568,15 +577,6 @@ export default {
         this.isTestMailSend = true
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
-    }
-  },
-  created() {
-    if (this.isEdit && this.resourceId) {
-      this.callForGetSmtpSettings().finally(() => {
-        this.callForServiceProviderItems()
-      })
-    } else {
-      this.callForServiceProviderItems()
     }
   }
 }

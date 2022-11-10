@@ -47,7 +47,7 @@
         @handleAddNewCustomApi="toggleNewCustomApiStatus"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSearch"
+        @refreshAction="callForData"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
@@ -71,13 +71,19 @@ import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'CustomApi',
+  components: {
+    DeleteCustomApi,
+    CompanySettingsHeader,
+    DataTable,
+    NewCustomApi
+  },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       axiosPayload: getDefaultAxiosPayload(),
-      defaultAxiosPayload: getDefaultAxiosPayload(),
       loading: false,
       selectedRow: null,
       saveDisableDelete: false,
@@ -179,51 +185,11 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
-  components: {
-    DeleteCustomApi,
-    CompanySettingsHeader,
-    DataTable,
-    NewCustomApi
-  },
   created() {
-    this.callForSearch()
+    this.callForData()
   },
   methods: {
-    handleSearchChange(searchFilter = {}) {
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'StatusName') {
-            item.FieldName = 'StatusId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.callForSearch()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForSearch()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop === 'statusName' ? 'StatusId' : prop
-      this.callForSearch()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearch()
-    },
-    callForSearch() {
+    callForData() {
       this.loading = true
       searchRestApi(this.axiosPayload)
         .then((response) => {
@@ -240,6 +206,26 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'StatusId'
+          }
+          return item
+        }
+      )
+      this.resetPageNumber()
+      this.callForData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop === 'statusName' ? 'StatusId' : prop
+      this.callForData()
     },
     exportRestApi(downloadTypes) {
       downloadTypes.exportTypes.map((exportType) => {
@@ -264,22 +250,8 @@ export default {
       })
     },
     closeNewCustomApiWithUpdate() {
-      this.callForSearch()
+      this.callForData()
       this.toggleNewCustomApiStatus()
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForSearch()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForSearch()
     },
     handleEdit(row = {}) {
       this.selectedRow = row
@@ -295,7 +267,7 @@ export default {
         .then(() => {
           this.$refs.refCustomApiList.unSelectRow(this.selectedRow)
           this.toggleShowDeleteCustomApi()
-          this.callForSearch()
+          this.callForData()
         })
         .finally(() => {
           this.saveDisableDelete = false

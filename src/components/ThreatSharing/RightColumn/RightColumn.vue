@@ -16,13 +16,13 @@
     </v-overlay>
     <app-dialog
       :status="showNeedPermissionModal"
-      @changeStatus="showNeedPermissionModal = false"
       icon="mdi-exit-to-app"
       title="Cannot Leave Community"
       title-id="text--threat-sharing-right-column-permission-popup-title"
       subtitle-id="text--threat-sharing-right-column-permission-popup-subtitle"
       :subtitle="communityDetails && communityDetails.name"
       :body="`You have to give admin privileges to at least 1 other person`"
+      @changeStatus="showNeedPermissionModal = false"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -56,20 +56,20 @@
           :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
           cancel-button-id="btn-cancel--threat-sharing-right-column-leave-community-popup"
           confirm-button-id="btn-leave--threat-sharing-right-column-leave-community-popup"
+          actionButtonText="LEAVE"
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
-          actionButtonText="LEAVE"
         />
       </template>
     </app-dialog>
     <app-dialog
-      @changeStatus="openNotificationModal = false"
-      :status="openNotificationModal"
       v-if="openNotificationModal"
+      :status="openNotificationModal"
       title-id="text--threat-sharing-right-column-notification-popup-title"
       subtitle-id="text--threat-sharing-right-column-notification-popup-subtitle"
       icon="mdi-bell"
       title="Community Notification Settings"
+      @changeStatus="openNotificationModal = false"
     >
       <template v-slot:app-dialog-body>
         <v-list-item class="pa-0">
@@ -102,7 +102,6 @@
     </app-dialog>
     <app-dialog
       :status="isWantToDelete"
-      @changeStatus="isWantToDelete = false"
       type="delete"
       icon="mdi-delete"
       title="Delete Community?"
@@ -112,20 +111,22 @@
       :body="`${
         communityDetails && communityDetails.name
       } will be deleted. All posts and data will be lost`"
+      @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          type="delete"
           cancel-button-id="btn-cancel--threat-sharing-right-column-community"
           confirm-button-id="btn-delete--threat-sharing-right-column-community"
+          actionButtonText="DELETE"
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm"
-          actionButtonText="DELETE"
-          type="delete"
         />
       </template>
     </app-dialog>
     <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
       <app-dialog
+        v-if="openInviteModal"
         :status="openInviteModal"
         icon="mdi-account-multiple-plus"
         title="Invite Members"
@@ -133,13 +134,13 @@
         size="big"
         title-id="text--threat-sharing-right-invite-members-popup-title"
         subtitle-id="text--threat-sharing-right-invite-members-popup-subtitle"
-        v-if="openInviteModal"
         @changeStatus="openInviteModal = false"
       >
         <template v-slot:app-dialog-body>
           <v-form ref="inviteModal">
             <k-select
               type="combobox"
+              v-model.trim="emailarray"
               :items="[]"
               custom-menu-class="menu--threat-sharing-right-menu-invite-members"
               placeholder="Enter email addresses of the companies to be invited (max. 5)"
@@ -150,7 +151,6 @@
               small-chips
               outlined
               :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
-              v-model.trim="emailarray"
               :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
               class="pop-up-card__invite-member"
               hint="Press enter to separate email addresses"
@@ -496,6 +496,25 @@ export default {
     Post,
     SuggestedCommunity
   },
+  props: {
+    pageView: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    incidentsRef: {
+      required: false
+    },
+    communitiesRef: {
+      required: false
+    },
+    selectedTab: {
+      required: false
+    },
+    subTabSelected: {
+      required: false
+    }
+  },
   data() {
     return {
       isEmailNotificationsDisabled: false,
@@ -554,25 +573,6 @@ export default {
           }
         }
       }
-    }
-  },
-  props: {
-    pageView: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    incidentsRef: {
-      required: false
-    },
-    communitiesRef: {
-      required: false
-    },
-    selectedTab: {
-      required: false
-    },
-    subTabSelected: {
-      required: false
     }
   },
   created() {
@@ -853,12 +853,6 @@ export default {
             query: { postId: post.communityPostResourceId },
             params: { communityName: post.communityName, id: post.communityResourceId }
           })
-          // this.$router.push({
-          //   name: 'Community',
-          //   query: { postId: post.communityPostResourceId },
-          //   params: { communityName: post.communityName, id: post.communityResourceId }
-          // })
-          //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
           this.$router.replace({ query: null, params: null })
           this.$router.push({
@@ -1063,9 +1057,6 @@ export default {
         })
         .finally(() => (this.postsLoading = false))
     },
-    closeCommunityInfo() {
-      // this.$emit('closeCommunity')
-    },
     createNewCommunity() {
       if (this.selectedTab === 1) {
         let communitiesData = {
@@ -1119,7 +1110,6 @@ export default {
         })
       }
       this.$emit('createCommunityAction')
-      this.closeCommunityInfo()
     },
     editCommunity() {
       this.communityItem = this.communityDetails
@@ -1130,7 +1120,6 @@ export default {
     },
     postIncident() {
       this.$emit('postIncident')
-      this.closeCommunityInfo()
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
@@ -1229,11 +1218,9 @@ export default {
     },
     leaveCommunity() {
       this.$emit('leaveCommunity')
-      this.closeCommunityInfo()
     },
     deleteCommunity() {
       this.$emit('deleteCommunity')
-      this.closeCommunityInfo()
     }
   }
 }

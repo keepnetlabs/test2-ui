@@ -48,6 +48,11 @@ export default {
       getCompanyGroupsSearchPermissions: 'permissions/getCompanyGroupsSearchPermissions'
     })
   },
+  watch: {
+    tab(val) {
+      if (val === 'company-companies') this.isLoadState = false
+    }
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'Company Group Details') {
@@ -57,6 +62,19 @@ export default {
         vm.tab = 'company-companies'
       }
     })
+  },
+  created() {
+    if (!this.getCompaniesSearchPermissions && this.getCompanyGroupsSearchPermissions) {
+      this.tab = 'company-company-groups'
+    }
+  },
+  updated() {
+    if (this.$route.params && this.$route.params.tab && !this.$route.params.force) {
+      this.tab = this.$route.params.tab
+    }
+    if (!this.getCompaniesSearchPermissions) {
+      this.tab = 'company-company-groups'
+    }
   },
   beforeRouteLeave(to, from, next) {
     const { refCompanyList } = this.$refs
@@ -76,24 +94,6 @@ export default {
       }
     } else {
       next()
-    }
-  },
-  watch: {
-    tab(val) {
-      if (val === 'company-companies') this.isLoadState = false
-    }
-  },
-  created() {
-    if (!this.getCompaniesSearchPermissions && this.getCompanyGroupsSearchPermissions) {
-      this.tab = 'company-company-groups'
-    }
-  },
-  updated() {
-    if (this.$route.params && this.$route.params.tab && !this.$route.params.force) {
-      this.tab = this.$route.params.tab
-    }
-    if (!this.getCompaniesSearchPermissions) {
-      this.tab = 'company-company-groups'
     }
   },
   methods: {

@@ -45,7 +45,7 @@
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSearchSmtpSettings"
+        @refreshAction="callForData"
         @downloadEvent="exportSmtpSettingsList"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
@@ -91,9 +91,9 @@ import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/Delet
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -103,6 +103,7 @@ export default {
     DataTable,
     NewSmtpSettings
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       tableData: [],
@@ -241,7 +242,7 @@ export default {
     })
   },
   created() {
-    this.callForSearchSmtpSettings()
+    this.callForData()
   },
   methods: {
     handleTableSelectionChange(items) {
@@ -261,26 +262,12 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.callForSearchSmtpSettings()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForSearchSmtpSettings()
+      this.callForData()
     },
     sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop === 'statusName' ? 'Status' : prop
-      this.callForSearchSmtpSettings()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearchSmtpSettings()
+      this.callForData()
     },
     checkIfCanCloseSmtpModal() {
       this.$refs.newSmtpSettings.closeOverlay()
@@ -317,7 +304,7 @@ export default {
     toggleDeleteSmtpModalStatus() {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
     },
-    callForSearchSmtpSettings() {
+    callForData() {
       if (this.getSMTPSettingsSearchPermissions) {
         this.loading = true
         searchSmtpSettings(this.axiosPayload)
@@ -359,13 +346,13 @@ export default {
     },
     closeOverlayWithUpdate() {
       this.toggleSmtpModalStatus()
-      this.callForSearchSmtpSettings()
+      this.callForData()
     },
     callForDeleteSmtpSettings(resourceId) {
       if (this.getSMTPSettingsDeletePermissions) {
         deleteSmtpSettings(resourceId)
           .then(() => {
-            this.callForSearchSmtpSettings()
+            this.callForData()
           })
           .finally(() => {
             this.selectedDeleteSmtpSettings = null
@@ -384,20 +371,6 @@ export default {
         this.selectedDeleteSmtpSettings = selectedRow
         this.toggleDeleteSmtpModalStatus()
       }
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForSearchSmtpSettings()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForSearchSmtpSettings()
     },
     handleMultipleDelete(selections) {
       if (this.getSMTPSettingsDeletePermissions) {

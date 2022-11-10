@@ -57,9 +57,6 @@ export function createLDAPConfig(payload) {
   })
 }
 
-export function getLDAPConfigJobs(id) {
-  return testRequest.get(`ldap-schedule/jobs/${id}`)
-}
 export function updateLDAPSchedule(payload, resourceId) {
   return testRequest.put(`/ldap-schedule/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -89,7 +86,6 @@ export default {
   checkLDAPMappingStatus,
   searchTmpTargetUsersForLdap,
   createLDAPConfig,
-  getLDAPConfigJobs,
   updateLDAPSchedule,
   deleteLDAPSchedule,
   getLDAPConfigDetail
