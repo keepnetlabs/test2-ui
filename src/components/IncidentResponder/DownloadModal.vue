@@ -83,11 +83,13 @@ export default {
     handleDownload() {
       downloadMsgFiles(this.id, this.zipPassword).then((response) => {
         const { data } = response
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(data)
-        link.download = `mail-${this.id}.zip`
-        link.click()
-        this.$emit('changeDownloadModalStatus', false)
+        if (response?.data) {
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `mail-${this.id}.zip`
+          link.click()
+          this.$emit('changeDownloadModalStatus', false)
+        }
       })
     }
   }
