@@ -81,6 +81,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -90,15 +91,19 @@
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
             :scope="scope"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[1].disabled"
-            :icon="scope.row.status == 'Enabled' ? 'mdi-minus-circle-outline' : 'mdi-power-standby'"
-            :text="scope.row.status == 'Enabled' ? 'Disable' : 'Enable'"
+            :icon="
+              scope.row.status === 'Enabled' ? 'mdi-minus-circle-outline' : 'mdi-power-standby'
+            "
+            :text="scope.row.status === 'Enabled' ? 'Disable' : 'Enable'"
             :checkIsOwnerProperty="false"
             @on-click="handleActionStatus(scope.row, true)"
           />
           <DefaultMenuRowAction
+            :id="tableOptions.rowActions[2].id"
             :scope="scope"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
@@ -235,18 +240,21 @@ export default {
         ],
         rowActions: [
           {
+            id: 'btn-edit--row-actions-attack-vectors-list',
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'handleEdit',
             disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionUpdate']
           },
           {
+            id: 'btn-disable--row-actions-attack-vectors-list',
             name: 'Disable',
             icon: 'mdi-delete',
             action: 'handleStatus',
             disabled: !this.$store.getters['permissions/getEtsAttackVectorPermissionEnableDisable']
           },
           {
+            id: 'btn-delete--row-actions-attack-vectors-list',
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',

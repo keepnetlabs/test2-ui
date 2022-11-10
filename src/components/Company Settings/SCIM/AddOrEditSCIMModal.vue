@@ -60,7 +60,7 @@
           <v-stepper-content class="k-stepper__content" :step="2">
             <AppModalBodyHeader class="mt-0" :title="getTitle" :sub-title="getBodySubtitle" />
             <v-form ref="refStep2Form">
-              <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub" has-hint>
+              <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub">
                 <InputTargetGroup
                   v-model.trim="formData.groupResourceId"
                   ref="inputTargetGroup"
@@ -88,36 +88,24 @@
       </v-stepper>
     </template>
     <template #overlay-footer>
-      <v-btn
-        id="btn-cancel--add-or-edit-scim-settings-modal"
-        class="add-in-configuration__footer-btn-cancel"
-        rounded
-        @click="handleClose"
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="add-in-configuration__footer__right-col">
-        <v-btn
-          v-if="step > 1"
-          id="btn-back--add-or-edit-scim-settings-modal"
-          class="add-in-configuration__footer-btn-back mr-4"
-          rounded
-          @click="changeStep(-1)"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          id="btn-next--add-or-edit-scim-settings-modal"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isActionButtonDisabled"
-          @click="handleSubmit"
-        >
-          {{ [1].includes(step) ? labels.Next : labels.Save }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="2"
+        :ids="{
+          cancelButton: 'btn-cancel--add-or-edit-scim-settings-modal',
+          backButton: 'btn-back--add-or-edit-scim-settings-modal',
+          nextButton: 'btn-next--add-or-edit-training-modal',
+          saveButton: 'btn-save--add-or-edit-training-modal'
+        }"
+        :step="step"
+        :disabled-statuses="{
+          nextButton: isActionButtonDisabled,
+          submitButton: isActionButtonDisabled
+        }"
+        @on-cancel="handleClose"
+        @on-back="changeStep(-1)"
+        @on-next="handleSubmit()"
+        @on-submit="handleSubmit"
+      />
     </template>
   </AppModal>
 </template>
@@ -142,12 +130,14 @@ import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { isDifferent, copyToClipboard } from '@/utils/functions'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
 export default {
   name: 'AddOrEditSCIMModal',
   components: {
+    StepperFooter,
     DatatableLoading,
     KSelect,
     InputTargetGroup,

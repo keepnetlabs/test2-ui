@@ -40,11 +40,6 @@ export default {
       getEtsAttackVectorPermissionSearch: 'permissions/getEtsAttackVectorPermissionSearch'
     })
   },
-  methods: {
-    changeTabStatus(tabStatus) {
-      this.tab = tabStatus
-    }
-  },
   created() {
     if (!this.getEtsQuickScanPermissionSearch && this.getEtsAttackVectorPermissionSearch) {
       this.tab = 'attacksVectors'
@@ -62,6 +57,11 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  methods: {
+    changeTabStatus(tabStatus) {
+      this.tab = tabStatus
     }
   }
 }

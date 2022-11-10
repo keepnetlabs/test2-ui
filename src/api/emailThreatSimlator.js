@@ -3,6 +3,7 @@ import testRequest from '@/utils/testRequest'
 
 export function getQuickScanList(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/search`, payload, {
+    loading: false,
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')

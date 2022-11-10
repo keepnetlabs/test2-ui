@@ -25,8 +25,8 @@
       @on-close="toggleShowPreviewDialog"
     />
     <CampaignManagerAddOrEditModal
-      ref="refCampaignModal"
       v-if="isShowAddOrEditCampaignManagerModal"
+      ref="refCampaignModal"
       :status="isShowAddOrEditCampaignManagerModal"
       :is-edit="isEdit"
       :selected-row="selectedRow"
@@ -137,6 +137,15 @@ export default {
   },
   created() {
     this.callForFormDetails()
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refCampaignModal } = this.$refs
+    if (refCampaignModal && refCampaignModal.status) {
+      refCampaignModal.closeOverlay()
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     toggleShowLaunchDialog() {
@@ -280,15 +289,6 @@ export default {
             this.setDeleteDialogActionButtonDisabled()
           })
       }
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    const { refCampaignModal } = this.$refs
-    if (refCampaignModal && refCampaignModal.status) {
-      refCampaignModal.closeOverlay()
-      next(false)
-    } else {
-      next()
     }
   }
 }

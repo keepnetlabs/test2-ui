@@ -35,6 +35,7 @@
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[0].disabled || !scope.row.isEditable"
@@ -44,6 +45,7 @@
         <DefaultMenuRowAction
           :scope="scope"
           :check-is-owner-property="false"
+          :id="tableOptions.rowActions[1].id"
           :disabled="tableOptions.rowActions[1].disabled || scope.row.isDefault"
           :icon="tableOptions.rowActions[1].icon"
           :text="tableOptions.rowActions[1].name"
@@ -52,6 +54,7 @@
         <DefaultMenuRowAction
           :scope="scope"
           :check-is-owner-property="false"
+          :id="tableOptions.rowActions[3].id"
           :disabled="tableOptions.rowActions[3].disabled"
           :icon="tableOptions.rowActions[3].icon"
           :text="tableOptions.rowActions[3].name"
@@ -61,6 +64,7 @@
         <DefaultMenuRowAction
           :scope="scope"
           :check-is-owner-property="false"
+          :id="tableOptions.rowActions[4].id"
           :disabled="tableOptions.rowActions[4].disabled"
           :icon="tableOptions.rowActions[4].icon"
           :text="tableOptions.rowActions[4].name"
@@ -69,6 +73,7 @@
         />
         <DefaultMenuRowAction
           :scope="scope"
+          :id="tableOptions.rowActions[2].id"
           :disabled="tableOptions.rowActions[2].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[2].icon"
           :text="tableOptions.rowActions[2].name"
@@ -154,7 +159,7 @@ export default {
           },
           {
             name: labels.MakeDefault,
-            id: 'btn-delete--row-actions-certificate-list',
+            id: 'btn-make-default--row-actions-certificate-list',
             icon: 'mdi-star-circle'
           },
           {

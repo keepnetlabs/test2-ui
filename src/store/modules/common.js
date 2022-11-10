@@ -96,12 +96,6 @@ const common = {
       commit('SET_IS_SHOW_LEAVING_DIALOG', payload.show)
       commit('SET_LEAVING_DIALOG_CALLBACK', payload.callback)
     },
-    changeSessionExpiredStatus({ commit }, payload) {
-      commit('CHANGE_SESSION_CHECK', payload)
-    },
-    changeMenuStatus({ commit }, payload) {
-      commit('CHANGE_MENU_STATUS', payload)
-    },
     setSnackStatus({ commit }, payload) {
       commit('SET_SNACK_STATUS', payload)
     },

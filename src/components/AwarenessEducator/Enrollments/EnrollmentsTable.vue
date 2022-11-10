@@ -117,19 +117,23 @@ export default {
         },
         rowActions: [
           {
+            id: 'btn-send--row-actions-enrollments-list',
             name: labels.SendTraining,
             icon: 'mdi-send'
           },
           {
+            id: 'btn-edit--row-actions-enrollments-list',
             name: labels.Edit,
             icon: 'mdi-pencil',
             disabled: !this.$store.getters['permissions/getEnrollmentEditPermission']
           },
           {
+            id: 'btn-preview--row-actions-enrollments-list',
             name: labels.Preview,
             icon: 'mdi-eye'
           },
           {
+            id: 'btn-delete--row-actions-enrollments-list',
             name: labels.Delete,
             icon: 'mdi-delete',
             disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']

@@ -1,10 +1,4 @@
-import {
-  selectCompany,
-  getMenus,
-  logoutUser,
-  getNotifications,
-  notificationSeen
-} from '@/api/dashboard'
+import { selectCompany, logoutUser, getNotifications, notificationSeen } from '@/api/dashboard'
 import AuthenticationService from '../../services/authentication'
 import router from '../../router'
 import { getCompanyList } from '@/api/company'
@@ -24,7 +18,6 @@ const dashboard = {
   },
   getters: {
     isPopupOpened: (state) => state.popupFeedback,
-    getNotificationList: (state) => state.notificationList,
     getIsSwitchDialogOpen: (state) => state.isSwitchDialogOpen,
     getSelectedCompany: (state) => state.selectedCompany,
     getCompanyDropdowns: (state) => state.dropdownCompanies
@@ -88,12 +81,6 @@ const dashboard = {
         .finally(() => {
           commit('common/RESET_SNACKBARS', undefined, { root: true })
         })
-    },
-    getMenus({ commit }) {
-      getMenus().then((response) => {
-        const result = response.data
-        commit('SET_MENUS', result)
-      })
     },
     setSwitchDialog({ commit }, payload) {
       commit('SET_SWITCH_DIALOG', payload)

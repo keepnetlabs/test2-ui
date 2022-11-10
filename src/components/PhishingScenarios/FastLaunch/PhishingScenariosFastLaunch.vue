@@ -49,36 +49,24 @@
       </v-stepper>
     </template>
     <template #overlay-footer>
-      <v-btn
-        @click="closeOverlay"
-        id="btn-cancel--add-or-edit-company-manager-modal"
-        class="add-in-configuration__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="add-in-configuration__footer__right-col">
-        <v-btn
-          @click="changeStep(-1)"
-          id="btn-back--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-back mr-4"
-          rounded
-          v-if="step > 1"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          id="btn-next--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isActionButtonDisabled"
-          @click="handleSubmit"
-        >
-          {{ [1].includes(step) ? labels.Next : labels.Start }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="2"
+        :ids="{
+          cancelButton: 'btn-cancel--scenarios-fast-launch-modal',
+          backButton: 'btn-back--scenarios-fast-launch-modal',
+          nextButton: 'btn-next--scenarios-fast-launch-modal',
+          saveButton: 'btn-save--scenarios-fast-launch-modal'
+        }"
+        :step="step"
+        :disabled-statuses="{
+          nextButton: isActionButtonDisabled,
+          submitButton: isActionButtonDisabled
+        }"
+        @on-cancel="closeOverlay"
+        @on-back="changeStep(-1)"
+        @on-next="handleSubmit"
+        @on-submit="handleSubmit"
+      />
     </template>
   </AppModal>
 </template>
@@ -98,10 +86,12 @@ import CampaignManagerSummary from '@/components/CampaignManager/Summary/Campaig
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 
 export default {
   name: 'PhishingScenariosFastLaunch',
   components: {
+    StepperFooter,
     CampaignManagerSummary,
     PhishingScenariosFastLaunchStep1,
     ConfigureCompanyStepHeader,
@@ -278,9 +268,6 @@ export default {
       switch (this.step) {
         case 1:
           if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-            // const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
-            //   (item) => item.value
-            // )
             const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
             const totalUserCount = targetGroups.reduce((acc, item) => {
               acc += item?.userCount || 0
