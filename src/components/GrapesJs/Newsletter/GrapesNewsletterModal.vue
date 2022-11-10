@@ -965,7 +965,7 @@ export default {
             fetch(url)
               .then((res) => res.blob())
               .then((blob) => {
-                const file = new File([blob], image.name, { type: blob.type })
+                const file = new File([blob], images.data[0].name, { type: blob.type })
                 const formData = new FormData()
                 formData.append('Files', file)
                 uploadFiles(formData)
