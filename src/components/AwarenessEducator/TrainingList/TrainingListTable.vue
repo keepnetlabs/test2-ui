@@ -33,6 +33,7 @@
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
+        :id="tableOptions.rowActions[0].id"
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
@@ -42,6 +43,7 @@
       />
       <RowActionsMenu>
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[1].id"
           :scope="scope"
           :disabled="tableOptions.rowActions[1].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[1].icon"
@@ -49,6 +51,7 @@
           @on-click="handleEdit(scope.row)"
         />
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[2].id"
           :scope="scope"
           :check-is-owner-property="false"
           :disabled="tableOptions.rowActions[2].disabled"
@@ -58,6 +61,7 @@
           @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[3].id"
           :scope="scope"
           :check-is-owner-property="false"
           :disabled="tableOptions.rowActions[3].disabled"
@@ -66,6 +70,7 @@
           @on-click="handleDuplicate(scope.row)"
         />
         <DefaultMenuRowAction
+          :id="tableOptions.rowActions[4].id"
           :scope="scope"
           :disabled="tableOptions.rowActions[4].disabled || !scope.row.isEditable"
           :icon="tableOptions.rowActions[4].icon"
@@ -150,27 +155,30 @@ export default {
         },
         rowActions: [
           {
+            id: 'btn-send--row-actions-training-list',
             name: labels.SendTraining,
             icon: 'mdi-send',
             disabled: !this.$store.getters['permissions/getSendTrainingPermission']
           },
           {
+            id: 'btn-edit--row-actions-training-list',
             name: labels.Edit,
             icon: 'mdi-pencil',
             disabled: !this.$store.getters['permissions/getUpdateTrainingPermission']
           },
           {
+            id: 'btn-preview--row-actions-training-list',
             name: labels.Preview,
             icon: 'mdi-eye'
           },
           {
-            name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-training-list',
+            name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'on-duplicate'
-            // disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
           },
           {
+            id: 'btn-delete--row-actions-training-list',
             name: labels.Delete,
             icon: 'mdi-delete',
             disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']

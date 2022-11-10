@@ -729,6 +729,12 @@
             nextButton: isSubmitDisabled,
             submitButton: !disableStartButtonStatus
           }"
+          :ids="{
+            cancelButton: 'btn-cancel--add-or-edit-new-scan-modal',
+            backButton: 'btn-back--add-or-edit-new-scan-modal',
+            nextButton: 'btn-next--add-or-edit-new-scan-modal',
+            saveButton: 'btn-save--add-or-edit-new-scan-modal'
+          }"
           @on-cancel="closeNewScanPopup"
           @on-back="backStep"
           @on-next="nextStep(+1)"

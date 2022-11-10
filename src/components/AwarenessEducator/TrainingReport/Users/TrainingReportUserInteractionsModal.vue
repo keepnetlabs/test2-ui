@@ -1,11 +1,11 @@
 <template>
   <AppDialog
     title-id="text--training-report-user-interactions-popup-title"
+    title="Details"
     subtitle-id="text--training-report-user-interactions-popup-subtitle"
     maxHeightSize="665"
     :custom-size="'1000'"
     :icon="CONSTANTS.icon"
-    title="Details"
     :subtitle="getSubtitle"
     :status="status"
     @changeStatus="handleClose"
@@ -51,7 +51,13 @@
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose">
+        <v-btn
+          id="btn--action-training-report-user-intractions-modal"
+          class="pa-0 k-dialog__button"
+          text
+          color="#2196f3"
+          @click="handleClose"
+        >
           {{ isShowMessage ? 'OKAY' : 'CLOSE' }}
         </v-btn>
       </div>

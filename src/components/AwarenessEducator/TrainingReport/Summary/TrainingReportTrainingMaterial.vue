@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-email"
+    detailable-button-id="btn--preview-training-report-training-material"
     :isLoading="isFetchingSummary"
     :show-body-detail="false"
     :title="labels.TrainingMaterial"

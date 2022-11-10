@@ -4,14 +4,14 @@
     :status="status"
     :id="isEdit ? 'edit-smtp-settings-modal' : 'new-smtp-settings-modal'"
     :title="getTitle"
-    :saveDisable="saveDisable"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
+    :save-disable="saveDisable"
     confirm-button-id="btn-save--smtp-settings-modal"
     cancel-button-id="btn-cancel--smtp-settings-modal"
     title-id="text--create-smtp-settings-modal-title"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
   >
     <template v-slot:overlay-body>
       <test-email-dialog

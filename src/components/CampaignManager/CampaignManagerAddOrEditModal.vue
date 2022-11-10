@@ -82,7 +82,8 @@
         :ids="{
           cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
           backButton: 'btn-back--add-or-edit-company-manager-modal',
-          saveButton: 'btn-next--add-or-edit-company-manager-modal'
+          nextButton: 'btn-next--add-or-edit-company-manager-modal',
+          saveButton: 'btn-save--add-or-edit-company-manager-modal'
         }"
         :step="step"
         :disabled-statuses="{
@@ -307,6 +308,9 @@ export default {
       this.callForData()
     }
   },
+  mounted() {
+    this.initialFormValues = this.getFormValues()
+  },
   methods: {
     getInitialCampaignManagerCampaignInfo(values) {
       this.initialFormValues = { ...this.initialFormValues, ...values }
@@ -495,7 +499,6 @@ export default {
               (item) => item.value
             ),
             scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
-            scheduledDate: campaignManagerFormData.scheduledDate,
             scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
             scheduledDate:
               parseInt(campaignManagerFormData.scheduleTypeId) !== 3
@@ -533,9 +536,6 @@ export default {
           }
       }
     }
-  },
-  mounted() {
-    this.initialFormValues = this.getFormValues()
   }
 }
 </script>

@@ -97,15 +97,21 @@
         </v-form>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeAttackVectorPopup">
+        <v-btn
+          id="btn-cancel--add-or-edit-attack-vector-modal"
+          class="add-user-overlay__footer-btn-cancel"
+          rounded
+          @click="closeAttackVectorPopup"
+        >
           {{ labels.Cancel }}
         </v-btn>
         <v-btn
+          id="btn-save--add-or-edit-attack-vector-modal"
           class="add-user-overlay__footer-btn-save white--text"
           color="#2196f3"
           rounded
-          @click="submit"
           :disabled="saveDisable"
+          @click="submit"
         >
           {{ labels.Save }}
         </v-btn>

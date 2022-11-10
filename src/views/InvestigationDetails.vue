@@ -834,7 +834,7 @@
                           </v-btn>
                         </template>
                         <v-list>
-                          <v-list-item @click="setAutoRefresh">
+                          <v-list-item id="btn-auto-refresh--investigation" @click="setAutoRefresh">
                             <v-list-item-title>
                               <div class="menu-item__content">
                                 Auto-Refresh every 15 seconds
@@ -937,6 +937,7 @@
               >
                 <template #datatable-row-actions="{scope}">
                   <DefaultButtonRowAction
+                    :id="rowActions[0].id"
                     :icon="rowActions[0].icon"
                     :text="rowActions[0].name"
                     :scope="scope"
@@ -944,6 +945,7 @@
                     @on-click="deleteInvestigationDetails(scope.row)"
                   />
                   <DefaultButtonRowAction
+                    :id="rowActions[1].id"
                     :icon="rowActions[1].icon"
                     :text="rowActions[1].name"
                     :scope="scope"
@@ -1464,12 +1466,6 @@ export default {
         icon: 'mdi-alert',
         action: 'sendInvestigationDetailsWarningMessage'
       }
-      // {
-      //   id: 'btn-delete-and-notify--investigation-details-row-actions',
-      //   name: 'Delete email and notify user',
-      //   icon: 'mdi-delete',
-      //   action: 'deleteAndSendNotification'
-      // }
     ],
     addUsers: {
       show: true,
@@ -2259,20 +2255,6 @@ export default {
       this.isWantToDelete = true
       this.deleteValue = value
     },
-    // getDeleteEmailDisableStatus(row) {
-    //   if (!row.emailLastAction) {
-    //     return false
-    //   }
-
-    //   if (
-    //     row.emailLastAction.actionType === 'Delete' &&
-    //     row.emailLastAction.status !== 'CompletedWithError'
-    //   ) {
-    //     return true
-    //   }
-
-    //   return false
-    // },
     getWarningEmailDisableStatus(row) {
       if (!row.emailLastAction) {
         return false
