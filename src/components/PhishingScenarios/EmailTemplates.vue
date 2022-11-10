@@ -487,9 +487,7 @@ export default {
             fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
               '.'
             )[1]
-            const file = {
-              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            }
+            const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
             this.$refs.newEmailTemplate.formValues.attachmentFiles = [
               new File([file], `${this.attachmentName}.${fileExtension}`, {
                 type
