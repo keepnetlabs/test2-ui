@@ -10,10 +10,10 @@
     :subtitle="getSubtitle"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       This proxy setting will be deleted. All data will be lost.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         cancel-button-id="btn-cancel--proxy-settings-popup"
         confirm-button-id="btn-delete--proxy-settings-popup"

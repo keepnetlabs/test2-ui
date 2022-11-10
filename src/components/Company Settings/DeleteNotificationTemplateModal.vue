@@ -12,25 +12,13 @@
   >
     <template #app-dialog-body>{{ labels.DeleteNotificationTemplateBody }}</template>
     <template #app-dialog-footer>
-      <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-        <v-btn
-          class="users__button"
-          id="btn-cancel--notification-template-delete-popup"
-          text
-          color="#383b41"
-          @click="handleCloseDialog"
-          >{{ labels.Cancel }}</v-btn
-        >
-        <v-btn
-          :disabled="isDeleteButtonDisabled"
-          id="btn-delete--notification-template-delete-popup"
-          class="users__button"
-          text
-          color="#f56c6c"
-          @click="handleDelete"
-          >{{ labels.Delete }}</v-btn
-        >
-      </div>
+      <app-dialog-footer
+        type="delete"
+        cancel-button-id="btn-cancel--notification-template-delete-popup"
+        confirm-button-id="btn-delete--notification-template-delete-popup"
+        @handleClose="handleCloseDialog"
+        @handleConfirm="handleDelete"
+      />
     </template>
   </app-dialog>
 </template>
@@ -38,10 +26,11 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
-
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteNotificationTemplateModal',
   components: {
+    AppDialogFooter,
     AppDialog
   },
   props: {
