@@ -71,61 +71,6 @@ export default {
       default: false
     }
   },
-  methods: {
-    exportDownloadHistoryList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.payload.filter)),
-        this.$refs.refPhishingReporterDownloadHistory,
-        'CreateTime'
-      )
-      if (this.$refs.refPhishingReporterDownloadHistory.search) {
-        clientTableExportHelper.addSearchItems(this.table.columns)
-      }
-      if (
-        this.$refs.refPhishingReporterDownloadHistory.sortProps &&
-        this.$refs.refPhishingReporterDownloadHistory.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-
-      exportTypes.map((exportType) => {
-        const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
-        }
-        exportPhishingReporterDownloadHistory(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Phishing Reporter Download History.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    },
-    handleDetails(row) {
-      this.$emit('handleHistoryRow', row)
-    },
-    handleDownload(row) {},
-    callForTableData() {
-      this.isLoading = true
-      searchGeneratedApplicationHistory(this.payload)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.tableData = data.results
-        })
-        .finally(() => (this.isLoading = false))
-    }
-  },
   data() {
     return {
       tableData: [],
@@ -205,6 +150,61 @@ export default {
   },
   created() {
     this.callForTableData()
+  },
+  methods: {
+    exportDownloadHistoryList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.payload.filter)),
+        this.$refs.refPhishingReporterDownloadHistory,
+        'CreateTime'
+      )
+      if (this.$refs.refPhishingReporterDownloadHistory.search) {
+        clientTableExportHelper.addSearchItems(this.table.columns)
+      }
+      if (
+        this.$refs.refPhishingReporterDownloadHistory.sortProps &&
+        this.$refs.refPhishingReporterDownloadHistory.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportPhishingReporterDownloadHistory(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Phishing Reporter Download History.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    handleDetails(row) {
+      this.$emit('handleHistoryRow', row)
+    },
+    handleDownload(row) {},
+    callForTableData() {
+      this.isLoading = true
+      searchGeneratedApplicationHistory(this.payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.tableData = data.results
+        })
+        .finally(() => (this.isLoading = false))
+    }
   }
 }
 </script>

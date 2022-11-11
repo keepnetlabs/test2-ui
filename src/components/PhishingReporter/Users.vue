@@ -145,33 +145,6 @@ export default {
           download: false
         },
         columns: [
-          // {
-          //   property: PROPERTY_STORE.FIRSTNAME,
-          //   align: 'left',
-          //   editable: false,
-          //   label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
-          //   sortable: true,
-          //   show: true,
-          //   fixed: 'left',
-          //   type: 'text',
-          //   width: 150,
-          //   isEditable: true,
-          //   filterableType: 'text',
-          //   editComponent: 'textfield'
-          // },
-          // {
-          //   property: PROPERTY_STORE.LASTNAME,
-          //   align: 'left',
-          //   editable: false,
-          //   label: getStoreValue(PROPERTY_STORE.LASTNAME),
-          //   sortable: true,
-          //   show: true,
-          //   type: 'text',
-          //   filterableType: 'text',
-          //   width: 150,
-          //   isEditable: true,
-          //   editComponent: 'textfield'
-          // },
           {
             property: PROPERTY_STORE.EMAIL,
             align: 'left',
@@ -226,7 +199,6 @@ export default {
             width: 220,
             filterableType: 'date',
             filterableCustomFieldName: 'LastSeen'
-            //minWidth: 80
           },
           {
             property: PROPERTY_STORE.DIAGNOSTICTOOL,

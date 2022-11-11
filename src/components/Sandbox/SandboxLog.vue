@@ -170,7 +170,6 @@ export default {
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -279,7 +278,6 @@ export default {
           FieldName: 'CreateTime',
           Operator: date[1].Operator
         })
-      this.defaultRequestBody = JSON.parse(JSON.stringify(this.bodyData))
       this.loading = true
 
       getSandboxLog(this.bodyData)

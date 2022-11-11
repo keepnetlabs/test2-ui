@@ -549,7 +549,6 @@
         :addButton="tableOptions.addButton"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
-        :pageSizes="tableOptions.pageSizes"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
         :server-side-props="serverSideProps"
@@ -896,10 +895,6 @@ export default {
             filterableType: 'date'
           }
         ],
-        defaultColumns: [
-          // Should be defined to show the table
-        ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -937,7 +932,6 @@ export default {
       mailConfigurationTypes: ['Google Workspace', 'Microsoft 365', 'EWS'],
       validations: validations,
       requestBody: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },

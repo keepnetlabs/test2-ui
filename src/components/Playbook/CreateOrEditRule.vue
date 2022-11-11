@@ -170,7 +170,6 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
-import { maxLength, required } from '@/utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
 import { scrollToComponent } from '@/utils/functions'
 import labels from '@/model/constants/labels'
@@ -238,10 +237,6 @@ export default {
       playbookActionAnalyzers: null,
       editedNotifications: [],
       editedPlaybookActionInvestigations: [],
-      validations: {
-        required,
-        maxLength
-      },
       condition: {},
       label: {
         matchType: 'Match Type',

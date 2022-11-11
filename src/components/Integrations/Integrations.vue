@@ -41,7 +41,7 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
@@ -51,16 +51,15 @@
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
       @handleMultipleDelete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
-      <template v-slot:datatable-row-actions="{ scope }">
+      <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
@@ -117,10 +116,10 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'Integrations',
   components: {
@@ -131,6 +130,7 @@ export default {
     NewIntegration,
     DeleteIntegrationModal
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     permissions: {
       type: Object,
@@ -272,127 +272,18 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
   created() {
-    this.getDatatableList()
+    this.callForData()
   },
   methods: {
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      this.getDatatableList()
-    },
-    handleDeleteMultiple(selections) {
-      selections.forEach((item) => {
-        this.handleDelete(item)
-      })
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
-    handleDelete(row) {
-      this.$refs.refIntegrationsList.unSelectRow(row)
-      deleteIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
-    },
-    handleEdit(row) {
-      this.modalStatus = true
-      this.integrationId = row.resourceId
-    },
-    handleDisable(row) {
-      disableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
-    },
-    handleEnable(row) {
-      enableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
-    },
-    checkIfCanCloseNewIntegrationModal() {
-      if (this.$refs.newIntegration) {
-        this.$refs.newIntegration.closeOverlay()
-      }
-    },
-    changeModalStatus(status, restart) {
-      this.integrationId = null
-      this.modalStatus = status
-      if (restart) this.getDatatableList()
-    },
-    exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      exportTypes.map((exportType) => {
-        const payload = {
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
-        }
-        exportReportedEmails(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Integrations.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    },
-    getDatatableList() {
+    callForData() {
       this.loading = true
       if (this.permissions.SEARCH.hasPermission) {
-        getIntegrationList(this.bodyData)
+        getIntegrationList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -410,20 +301,76 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'AnalysisEngineName') {
+            item.FieldName = 'analysisEngineTypeId'
+          }
+          return item
+        }
+      )
+      this.resetPageNumber()
+      this.callForData()
+    },
+    handleDeleteMultiple(selections) {
+      selections.forEach((item) => {
+        this.handleDelete(item)
+      })
+    },
+    handleDelete(row) {
+      this.$refs.refIntegrationsList.unSelectRow(row)
+      deleteIntegration(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    handleEdit(row) {
+      this.modalStatus = true
+      this.integrationId = row.resourceId
+    },
+    handleDisable(row) {
+      disableIntegration(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    handleEnable(row) {
+      enableIntegration(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    changeModalStatus(status, restart) {
+      this.integrationId = null
+      this.modalStatus = status
+      if (restart) this.callForData()
+    },
+    exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.axiosPayload.filter
+        }
+        exportReportedEmails(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Integrations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleActionDelete(row) {
       this.selectedIntegration = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
   }
 }

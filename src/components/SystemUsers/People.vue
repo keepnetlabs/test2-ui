@@ -286,6 +286,9 @@ export default {
     })
   },
   methods: {
+    created() {
+      this.callForListSystemUsers()
+    },
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
@@ -468,9 +471,6 @@ export default {
         this.$refs.systemUserModal.closeOverlay()
       }
     }
-  },
-  created() {
-    this.callForListSystemUsers()
   }
 }
 </script>

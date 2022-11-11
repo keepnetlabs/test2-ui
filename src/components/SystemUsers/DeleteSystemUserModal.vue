@@ -10,10 +10,10 @@
     subtitle-id="text--system-user-delete-popup-subtitle"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ getSystemUserEmail }} will be deleted and removed from system users.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         :confirm-button-disabled="confirmButtonDisabled"
         cancel-button-id="btn-cancel--system-users-people-popup"

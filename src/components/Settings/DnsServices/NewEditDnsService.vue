@@ -125,6 +125,36 @@ export default {
       required: false
     }
   },
+  data() {
+    return {
+      isValidate: null,
+      providerTypes: [{ text: 'Cloudflare', value: 1 }],
+      availableForRequests: [],
+      initialFormValues: {},
+      formValues: {
+        dnsServiceProviderTypeId: 1,
+        dnsServiceProviderName: null,
+        username: null,
+        password: null,
+        resourceId: null
+      },
+      nonEditableAvailableForRequests: [],
+      labels,
+      validations: Validations,
+      saveButtonDisabled: false,
+      apiKeyRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+      ]
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.status && this.resourceId
+        ? 'Edit DNS Provider Integration'
+        : 'Create New DNS Provider Integration'
+    }
+  },
   created() {
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -165,36 +195,6 @@ export default {
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
-    }
-  },
-  data() {
-    return {
-      isValidate: null,
-      providerTypes: [{ text: 'Cloudflare', value: 1 }],
-      availableForRequests: [],
-      initialFormValues: {},
-      formValues: {
-        dnsServiceProviderTypeId: 1,
-        dnsServiceProviderName: null,
-        username: null,
-        password: null,
-        resourceId: null
-      },
-      nonEditableAvailableForRequests: [],
-      labels,
-      validations: Validations,
-      saveButtonDisabled: false,
-      apiKeyRules: [
-        (v) => Validations.required(v, labels.Required),
-        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-      ]
-    }
-  },
-  computed: {
-    getTitle() {
-      return this.status && this.resourceId
-        ? 'Edit DNS Provider Integration'
-        : 'Create New DNS Provider Integration'
     }
   },
   methods: {
