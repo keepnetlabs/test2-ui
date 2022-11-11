@@ -1,7 +1,7 @@
 <template>
   <AppModal :status="status" icon-name="mdi-phone-in-talk" :title="getTitle">
     <template #overlay-body>
-      <v-stepper light v-model="step" class="k-stepper">
+      <v-stepper light v-model="step" class="k-stepper vishing-template">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
             >Template Info</v-stepper-step
@@ -12,7 +12,7 @@
           >
         </v-stepper-header>
         <v-stepper-items class="k-stepper__items">
-          <v-stepper-content class="k-stepper__content vishing-template" :step="1">
+          <v-stepper-content class="k-stepper__content" :step="1">
             <ConfigureCompanyStepHeader
               class="mb-8"
               title="Template Info"
@@ -72,6 +72,7 @@
                 ref="refMakeAvailableFor"
                 v-model="formValues.availableForRequests"
                 open-direction="above"
+                subTitle="Select companies that should see this template in their libraries"
               />
             </v-form>
           </v-stepper-content>
@@ -102,8 +103,7 @@
               <FormGroup title="Steps" sub-title="Define your vishing template step by step">
                 <div
                   :class="{
-                    'vishing-template__steps': true,
-                    'vishing-template__steps--error': !isFailStepSelected
+                    'vishing-template__steps': true
                   }"
                 >
                   <draggable
@@ -115,6 +115,7 @@
                     <VishingTemplateDialogStep
                       v-for="(step, index) in formValues.steps"
                       v-model="formValues.steps[index]"
+                      :isDefaultExpanded="index === 0 ? true : false"
                       :index="index"
                       :key="index"
                       @removeStep="onRemoveStep(index)"
@@ -122,9 +123,6 @@
                     />
                   </draggable>
                 </div>
-                <span v-if="!isFailStepSelected" class="vishing-template__steps-error-text mt-2">
-                  One step must be selected as fail step
-                </span>
                 <div class="mb-6">
                   <v-menu :offset-y="true" bottom right>
                     <template v-slot:activator="{ on: menu }">
@@ -133,9 +131,15 @@
                           <div v-on="tooltip" style="display: inline-block;">
                             <v-btn
                               v-on="{ ...menu }"
-                              class="add-step-button button-new mt-3"
                               rounded
                               color="#2196f3"
+                              :id="'vishing-template-add-step-button'"
+                              :class="[
+                                'add-step-button',
+                                'button-new',
+                                'mt-3',
+                                isAddStepDisabled ? 'add-step-button--disabled' : ''
+                              ]"
                               :disabled="isAddStepDisabled"
                             >
                               <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;"
@@ -173,7 +177,7 @@
                 title="Invalid Dialing Notice"
                 subTitle="This notice will be played when the user fails to enter a number correctly"
               >
-                <v-card class="px-4 pt-3 mt-2">
+                <v-card class="px-4 pt-3 mt-2 vishing-template__invalid-dialing-notice-card">
                   <span class="vishing-template__invalid-dialing-notice-title">Notice</span>
                   <FormGroup
                     title="Method"
@@ -269,6 +273,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
 import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 const initialFormValues = {
   name: '',
@@ -281,7 +286,17 @@ const initialFormValues = {
   dialogNoticeTextToSpeech: '',
   dialogNoticeFile: null,
   dialogNoticeFileUrl: '',
-  steps: []
+  steps: [
+    {
+      type: 'textToSpeech',
+      textToSpeech: '',
+      requiredDigitCount: 0,
+      pauseDuration: 0,
+      isFailStep: false,
+      fileName: '',
+      fileUrl: ''
+    }
+  ]
 }
 
 export default {
@@ -556,8 +571,12 @@ export default {
       this.isSubmitDisabled = true
       this.isFailStepSelected = this.validateFailStep()
       if (!this.isFailStepSelected) {
-        const el = this.$refs.refFormStep2.$el.querySelector('.v-messages__message')
-        scrollToComponent(el)
+        // TODO: Show snackbar
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'One step should be chosen as fail step.',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert'
+        })
         this.isSubmitDisabled = false
         return
       }

@@ -15,7 +15,7 @@
           customStyle="text-transform: none;"
           @input="onFailStepChange"
         />
-        <v-btn icon outlined @click="onRemoveStep">
+        <v-btn color="#000000" icon outlined @click="onRemoveStep">
           <v-icon small>mdi-delete</v-icon>
         </v-btn>
       </div>
@@ -118,6 +118,10 @@ export default {
     },
     index: {
       type: Number
+    },
+    isDefaultExpanded: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -136,7 +140,7 @@ export default {
   },
   data() {
     return {
-      isExpanded: false,
+      isExpanded: this.isDefaultExpanded || false,
       durationRules: [
         (v) => validations.required(v, labels.Required),
         (v) => validations.startsWith(v, 'Cannot start with 0', 0)
