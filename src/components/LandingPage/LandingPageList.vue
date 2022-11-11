@@ -423,7 +423,7 @@ export default {
           this.landingPageParams.name = data.name
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
-          this.templateHTML = data.landingPages[0].content
+          this.templateHTML = data.landingPages[0] ? data.landingPages[0].content : null
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

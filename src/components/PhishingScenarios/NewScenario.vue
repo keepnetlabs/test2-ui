@@ -679,14 +679,12 @@ export default {
         { text: 'Hard', value: 'c4LCGEB9MayB' }
       ],
       isSubmitDisabled: false,
-      activeBlockManagerComponents: {},
-      blockManagerComponents: {},
       availableForRequests: [],
       tagSearch: '',
       generalDifficultyTypeId: '',
       labels,
       step: 1,
-      Validations: Validations,
+      Validations,
       initialFormValues: {},
       formValues: {
         name: '',
@@ -707,8 +705,6 @@ export default {
         ]
       },
       editItemsDisabled: false,
-      methodItems: [],
-      difficultyItems: [],
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null
     }
@@ -1000,17 +996,15 @@ export default {
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-    let _this = this
     if (this.isEdit) {
       this.isSubmitDisabled = true
       getScenario(this.scenarioId)
         .then((response) => {
-          _this.formValues = response.data.data
-          _this.formValues.name = `${this.formValues.name}`
-          _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-          _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          this.formValues = response.data.data
+          this.formValues.name = `${this.formValues.name}`
+          this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
+          this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
           this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          // this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
