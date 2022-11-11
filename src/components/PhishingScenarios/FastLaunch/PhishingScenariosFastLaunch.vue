@@ -87,7 +87,6 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { isDifferent, scrollToComponent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-
 export default {
   name: 'PhishingScenariosFastLaunch',
   components: {
@@ -284,46 +283,6 @@ export default {
               this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
             }
             refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
-            // searchTargetGroups({
-            //   pageNumber: 1,
-            //   pageSize: 2000000,
-            //   orderBy: 'CreateTime',
-            //   ascending: false,
-            //   filter: {
-            //     Condition: 'AND',
-            //     FilterGroups: [
-            //       {
-            //         Condition: 'AND',
-            //         FilterItems: [],
-            //         FilterGroups: []
-            //       },
-            //       {
-            //         Condition: 'OR',
-            //         FilterItems: [
-            //           { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
-            //         ],
-            //         FilterGroups: []
-            //       }
-            //     ]
-            //   }
-            // }).then((response) => {
-            //   const { results } = response?.data?.data || []
-            //   const totalUserCount = results.reduce((acc, item) => {
-            //     acc += item.userCount
-            //     return acc
-            //   }, 0)
-            //   if (totalUserCount) {
-            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-            //     this.changeStep()
-            //   } else {
-            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-            //     this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-            //   }
-            //   refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
-            //     response.data.data.results
-            // })
           } else {
             if (!formData?.targetGroupResourceIds?.length) {
               refCampaignManagerCampaignInfo.isTargetGroupsValid = false

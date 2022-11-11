@@ -22,7 +22,6 @@
             >Landing Page</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-
           <v-stepper-step
             class="k-stepper__step"
             :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
@@ -420,6 +419,7 @@
                             </div>
                             <div class="d-flex" v-if="!!summaryData">
                               <v-chip
+                                v-if="!!summaryData"
                                 class="template-list--item template-list--item__chip p mr-2"
                                 style="
                                   color: white;
@@ -429,7 +429,6 @@
                                   font-size: 12px;
                                 "
                                 :color="getLandingPageDifficultyColor"
-                                v-if="!!summaryData"
                               >
                                 {{
                                   scenarioDetailsLookup.difficultyTypes.find(
@@ -440,6 +439,7 @@
                                 }}
                               </v-chip>
                               <v-chip
+                                v-if="!!summaryData"
                                 class="template-list--item template-list--item__chip p"
                                 style="
                                   border-radius: 6px;
@@ -447,7 +447,6 @@
                                   font-weight: 600;
                                   font-size: 12px;
                                 "
-                                v-if="!!summaryData"
                               >
                                 {{
                                   scenarioDetailsLookup.methodTypes.find(
@@ -514,6 +513,7 @@
                             }}
                           </v-chip>
                           <v-chip
+                            v-if="!!summaryData"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -521,7 +521,6 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!summaryData"
                           >
                             {{
                               scenarioDetailsLookup.methodTypes.find(
@@ -627,6 +626,32 @@ export default {
     InputDescription,
     AttachmentsPreview
   },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    },
+    editableFormValues: {
+      required: false
+    },
+    isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isAttachmentBased: {
+      type: Boolean,
+      default: false
+    },
+    scenarioId: {
+      type: String
+    },
+    scenarioDetailsLookup: {
+      required: true
+    }
+  },
   data() {
     return {
       footerButtonsIds: {
@@ -686,32 +711,6 @@ export default {
       difficultyItems: [],
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null
-    }
-  },
-  props: {
-    status: {
-      type: Boolean,
-      default: false
-    },
-    editableFormValues: {
-      required: false
-    },
-    isEdit: {
-      type: Boolean
-    },
-    isDuplicate: {
-      type: Boolean,
-      default: false
-    },
-    isAttachmentBased: {
-      type: Boolean,
-      default: false
-    },
-    scenarioId: {
-      type: String
-    },
-    scenarioDetailsLookup: {
-      required: true
     }
   },
   methods: {

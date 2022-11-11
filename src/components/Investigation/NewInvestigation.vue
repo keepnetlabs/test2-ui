@@ -5,7 +5,7 @@
     icon-name="mdi-magnify"
     title="Start New Manual Investigation"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">
           <app-modal-body-header
@@ -319,8 +319,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              class="edit-industry-area mt-2 pa-0"
               v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
+              class="edit-industry-area mt-2 pa-0"
             >
               <v-list-item-content class>
                 <label id="label--investigation-message" class="edit-labels">Message</label>
@@ -339,7 +339,7 @@
         </v-card>
       </div>
     </template>
-    <template v-slot:overlay-footer>
+    <template #overlay-footer>
       <div class="new-investigation-footer">
         <v-btn
           class="k-overlay__btn-cancel"
@@ -579,32 +579,7 @@ export default {
           ]
         }
       ],
-      // fileSizeOptions: [
-      //   {
-      //     label: 'Equal',
-      //     value: 'equal'
-      //   },
-      //   {
-      //     label: 'Greater than',
-      //     value: 'greaterThan'
-      //   },
-      //   {
-      //     label: 'Greater than or equal',
-      //     value: 'greaterThanOrEqual'
-      //   },
-      //   {
-      //     label: 'Less than',
-      //     value: 'lessThan'
-      //   },
-      //   {
-      //     label: 'Less than or equal',
-      //     value: 'lessThanOrEqual'
-      //   }
-      // ],
-      selectedFileSize: null,
       valid: false,
-      menu1: '',
-      menu2: '',
       investigationNameRules: {
         required: (v) => Validations.required(v),
         empty: (v) => Validations.startsWithSpace(v),
@@ -639,6 +614,130 @@ export default {
     'isTs',
     'isIr'
   ],
+  created() {
+    this.callForTargetUsers()
+    this.callForTargetGroups()
+    this.checkIsEdit()
+    if (this.selectedMail) {
+      this.filterList = []
+      const isTs = this.isTs
+      const isIR = this.isIr
+      if (isIR) {
+        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
+        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
+      }
+      this.selectedMail.attachments &&
+        this.selectedMail.attachments.map((item) => {
+          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
+          if (attachmentCase)
+            this.filterList.push({
+              option: 'md5',
+              text: item.md5,
+              isFlagged: item.isFlagged,
+              label: 'Malicious'
+            })
+          if (attachmentCase)
+            this.filterList.push({
+              option: 'sha512',
+              text: item.sha512,
+              isFlagged: item.isFlagged,
+              label: 'Malicious'
+            })
+        })
+      const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
+      this.selectedMail.bcc &&
+        bccCase &&
+        this.selectedMail.bcc.map((item) => {
+          this.filterList.push({
+            option: 'bcc',
+            text: item,
+            isFlagged: this.selectedMail.isBccFlagged,
+            label: 'Harmful sender'
+          })
+        })
+      const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
+      this.selectedMail.cc &&
+        ccCase &&
+        this.selectedMail.cc.map((item) => {
+          this.filterList.push({
+            option: 'cc',
+            text: item,
+            isFlagged: this.selectedMail.isCcFlagged,
+            label: 'Harmful sender'
+          })
+        })
+      const fromCase = isTs
+        ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
+        : true
+      this.selectedMail.from &&
+        fromCase &&
+        this.filterList.push({
+          option: 'from',
+          text: this.selectedMail.from,
+          isFlagged: this.selectedMail.isFromFlagged,
+          label: 'Harmful sender'
+        })
+      const subjectCase = isTs
+        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
+        : true
+      this.selectedMail.subject &&
+        subjectCase &&
+        this.filterList.push({
+          option: 'subject',
+          text: this.selectedMail.subject,
+          isFlagged: this.selectedMail.isSubjectFlagged,
+          label: 'Harmful sender'
+        })
+      const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
+      this.selectedMail.to &&
+        toCase &&
+        !isIR &&
+        this.selectedMail.to.map((item) => {
+          this.filterList.push({
+            option: 'to',
+            text: item,
+            isFlagged: this.selectedMail.isToFlagged,
+            label: 'Harmful sender'
+          })
+        })
+      this.selectedMail.urls &&
+        this.selectedMail.urls.map((item) => {
+          const urlCase = isTs ? !item.isHidden && item.isFlagged : true
+          if (urlCase)
+            this.filterList.push({
+              option: 'url',
+              text: item.url,
+              isFlagged: item.isFlagged,
+              label: 'Phishing'
+            })
+        })
+      if (!this.filterList.length) {
+        this.filterList.push({})
+      }
+      this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+        getTimeZoneForMoment()
+      )}`
+    }
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 8
+    }
+    this.initialFormValues = {
+      investigationName: this.investigationName,
+      targetUsers: this.targetUsers,
+      filterList: this.filterList,
+      date: this.date,
+      scanTypes: this.scanTypes,
+      duration: this.duration,
+      selectedAction: this.selectedAction
+    }
+  },
+  beforeDestroy() {
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 19
+    }
+  },
   methods: {
     callForTargetGroups(addPage) {
       if (addPage) {
@@ -851,14 +950,6 @@ export default {
         )
       }
       return rules
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     addNewFilterListOption() {
       this.filterList.push({
@@ -1239,11 +1330,10 @@ export default {
             this.targetUserType === 'Groups'
               ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
-          //targetUsersValue: this.targetUsersValue,
           scanTypes: this.scanTypes,
           autoAction: {
             type: this.selectedAction,
-            isPermanentDelete: this.selectedAction === 'Delete' ? true : false,
+            isPermanentDelete: this.selectedAction === 'Delete',
             warningMessage: this.warningMessage
           }
         }
@@ -1320,130 +1410,6 @@ export default {
         this.selectedAction = 'NoAction'
         this.filterList = [...headers, ...body, ...attachments]
       }
-    }
-  },
-  created() {
-    this.callForTargetUsers()
-    this.callForTargetGroups()
-    this.checkIsEdit()
-    if (this.selectedMail) {
-      this.filterList = []
-      const isTs = this.isTs
-      const isIR = this.isIr
-      if (isIR) {
-        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
-        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
-      }
-      this.selectedMail.attachments &&
-        this.selectedMail.attachments.map((item) => {
-          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (attachmentCase)
-            this.filterList.push({
-              option: 'md5',
-              text: item.md5,
-              isFlagged: item.isFlagged,
-              label: 'Malicious'
-            })
-          if (attachmentCase)
-            this.filterList.push({
-              option: 'sha512',
-              text: item.sha512,
-              isFlagged: item.isFlagged,
-              label: 'Malicious'
-            })
-        })
-      const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
-      this.selectedMail.bcc &&
-        bccCase &&
-        this.selectedMail.bcc.map((item) => {
-          this.filterList.push({
-            option: 'bcc',
-            text: item,
-            isFlagged: this.selectedMail.isBccFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
-      this.selectedMail.cc &&
-        ccCase &&
-        this.selectedMail.cc.map((item) => {
-          this.filterList.push({
-            option: 'cc',
-            text: item,
-            isFlagged: this.selectedMail.isCcFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      const fromCase = isTs
-        ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
-        : true
-      this.selectedMail.from &&
-        fromCase &&
-        this.filterList.push({
-          option: 'from',
-          text: this.selectedMail.from,
-          isFlagged: this.selectedMail.isFromFlagged,
-          label: 'Harmful sender'
-        })
-      const subjectCase = isTs
-        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
-        : true
-      this.selectedMail.subject &&
-        subjectCase &&
-        this.filterList.push({
-          option: 'subject',
-          text: this.selectedMail.subject,
-          isFlagged: this.selectedMail.isSubjectFlagged,
-          label: 'Harmful sender'
-        })
-      const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
-      this.selectedMail.to &&
-        toCase &&
-        !isIR &&
-        this.selectedMail.to.map((item) => {
-          this.filterList.push({
-            option: 'to',
-            text: item,
-            isFlagged: this.selectedMail.isToFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      this.selectedMail.urls &&
-        this.selectedMail.urls.map((item) => {
-          const urlCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (urlCase)
-            this.filterList.push({
-              option: 'url',
-              text: item.url,
-              isFlagged: item.isFlagged,
-              label: 'Phishing'
-            })
-        })
-      if (!this.filterList.length) {
-        this.filterList.push({})
-      }
-      this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
-        getTimeZoneForMoment()
-      )}`
-    }
-    const pageNav = document.querySelector('.page-nav')
-    if (pageNav) {
-      pageNav.style.zIndex = 8
-    }
-    this.initialFormValues = {
-      investigationName: this.investigationName,
-      targetUsers: this.targetUsers,
-      filterList: this.filterList,
-      date: this.date,
-      scanTypes: this.scanTypes,
-      duration: this.duration,
-      selectedAction: this.selectedAction
-    }
-  },
-  beforeDestroy() {
-    const pageNav = document.querySelector('.page-nav')
-    if (pageNav) {
-      pageNav.style.zIndex = 19
     }
   }
 }

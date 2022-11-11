@@ -16,15 +16,14 @@
         <div class="bg-white">
           <div class="">
             <v-text-field
-              @mouseover.native="hover = true"
+              v-model="searchEnginesModelInput"
               id="input--playbook-search-engines"
               class="filter-field"
               placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
-              v-model="searchEnginesModelInput"
-              @keyup="searchEnginesModel()"
               hide-details
+              @keyup="searchEnginesModel()"
             />
             <div class="analyze__main__select-row-wrap check-all">
               <div class="checkbox-and-text">
@@ -443,14 +442,12 @@ export default {
       timerId: null,
       isLoading: false,
       search: [],
-      targetUsersData: false,
       timeout: null,
       systemUsersItems: [],
       validations: {
         required
       },
       userGroupsItems: [],
-      analyzeModel: false,
       analyzeCheckbox: false,
       openEnginesModal: false,
       acceptAllAnalysisEngines: false,
@@ -462,7 +459,6 @@ export default {
       acceptCheckbox: false,
       targetUserType: [],
       notifyTemplates: [],
-      targets: [],
       targetUsers: [],
       tarUsers: [],
       investigationFilter: ['URLs', 'Attachments'],
