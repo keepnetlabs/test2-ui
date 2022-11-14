@@ -306,6 +306,7 @@
                   <v-checkbox
                     v-for="day in sendCallsOnDaysOptions"
                     v-model="formValues.sendCallsOnDays"
+                    color="#2196F3"
                     :label="day.text"
                     :value="day.value"
                     :key="day.value"
