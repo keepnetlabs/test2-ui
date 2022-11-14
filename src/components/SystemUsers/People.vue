@@ -285,10 +285,10 @@ export default {
       getUser: 'auth/userGetter'
     })
   },
+  created() {
+    this.callForListSystemUsers()
+  },
   methods: {
-    created() {
-      this.callForListSystemUsers()
-    },
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
