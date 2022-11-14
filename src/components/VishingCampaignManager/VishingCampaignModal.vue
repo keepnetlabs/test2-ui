@@ -189,7 +189,7 @@
               <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
                 <template #label> </template>
               </v-checkbox>
-              <span class="form-group-horizontal-content__label">
+              <span class="form-group-horizontal-content__label" style="margin-top: 2px;">
                 Send this campaign to randomly selected
               </span>
               <div style="position: relative;">
@@ -392,7 +392,7 @@ const initialFormValues = {
   targetGroupResourceIds: [],
   isLimitRecipients: false,
   recipientType: 1,
-  recipientValue: 0,
+  recipientValue: 20,
   selectedPhoneNumber: '',
   sendCallsOverValue: 2,
   sendCallsOverType: 'days',
@@ -628,6 +628,9 @@ export default {
           this.parsedFormat = getTimeZone(false, val)
         }
       }
+    },
+    'formValues.isLimitRecipients'(val) {
+      if (!val && !parseInt(this.formValues.recipientValue)) this.formValues.recipientValue = 20
     },
     'formValues.targetGroupResourceIds'(val) {
       this.isTargetGroupsValid = !!val.length
