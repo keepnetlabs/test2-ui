@@ -177,9 +177,11 @@
             <CampaignManagerTargetGroups
               ref="refTargetAudience"
               class="mt-2"
+              last-column-name="phoneNumber"
               :selected-target-groups="formValues.targetGroupResourceIds"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"
+              :is-show-company-column="false"
               @handle-selection-change="handleTableSelectionChange"
             />
             <FormGroup class="mt-6" title="Limit Recipients" />

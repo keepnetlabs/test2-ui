@@ -30,27 +30,7 @@ import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
 import { searchTargetGroupUsers } from '@/api/targetUsers'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-const axiosPayload = {
-  pageNumber: 1,
-  pageSize: 10,
-  orderBy: 'CreateTime',
-  ascending: false,
-  filter: {
-    Condition: 'AND',
-    FilterGroups: [
-      {
-        Condition: 'AND',
-        FilterItems: [],
-        FilterGroups: []
-      },
-      {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-    ]
-  }
-}
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
   components: { DataTable },
@@ -66,11 +46,15 @@ export default {
     },
     isTargetGroupLoading: {
       type: Boolean
+    },
+    lastColumnName: {
+      type: String,
+      default: 'email'
     }
   },
   data() {
     return {
-      axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
+      axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -106,10 +90,10 @@ export default {
             hideSort: true
           },
           {
-            property: PROPERTY_STORE.EMAIL,
+            property: this.lastColumnName,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            label: this.lastColumnName === 'email' ? 'Email' : 'Phone Number',
             sortable: true,
             show: true,
             type: 'text',
@@ -120,14 +104,14 @@ export default {
       }
     }
   },
-  watch: {
-    resourceId() {
-      this.callForData()
-    }
-  },
   computed: {
     getLoadingStatus() {
       return this.isTargetGroupLoading || this.isLoading
+    }
+  },
+  watch: {
+    resourceId() {
+      this.callForData()
     }
   },
   created() {
