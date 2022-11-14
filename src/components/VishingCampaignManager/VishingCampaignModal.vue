@@ -271,7 +271,6 @@
                   outlined
                   dense
                   hide-details
-                  position="top"
                   :return-object="false"
                   :items="sendCallsOverTypes"
                 />
