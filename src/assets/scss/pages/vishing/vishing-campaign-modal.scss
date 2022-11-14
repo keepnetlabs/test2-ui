@@ -29,6 +29,7 @@
     color: #383b41;
     max-width: 554px;
     padding: 8px;
+    border-radius:8px;
   }
 
   &__general-info {
@@ -100,7 +101,7 @@
 
   &__summary__template-steps {
     display: grid;
-    grid-template-columns: 30% 70%;
+    grid-template-columns: 40% 60%;
     min-height: 270px;
     border-top: 1px solid #e0e0e0;
     border-bottom: 1px solid #e0e0e0;

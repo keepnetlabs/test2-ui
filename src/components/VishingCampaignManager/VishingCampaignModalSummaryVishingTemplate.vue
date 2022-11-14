@@ -1,6 +1,6 @@
 <template>
   <div class="vishing-campaign-modal__summary__template">
-    <CampaignManagerSummaryCard icon="mdi-table" :title="labels.VishingTemplate">
+    <CampaignManagerSummaryCard icon="$domain" :title="labels.VishingTemplate">
       <template #body>
         <div class="vishing-campaign-modal__summary__template-body pb-4">
           <div class="vishing-campaign-modal__summary__template-body-header">

@@ -213,7 +213,6 @@
                 outlined
                 dense
                 hide-details
-                position="top"
                 :return-object="false"
                 :items="recipientTypes"
                 :disabled="!formValues.isLimitRecipients"
@@ -324,7 +323,7 @@
             />
             <div class="vishing-campaign-modal__general-info">
               <CampaignManagerSummaryCard
-                icon="mdi-alert-circle"
+                icon="mdi-information"
                 :title="labels.CampaignInfo"
                 :items="getCampaignInfoItems"
               />
