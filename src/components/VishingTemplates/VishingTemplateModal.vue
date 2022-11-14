@@ -115,7 +115,6 @@
                     <VishingTemplateDialogStep
                       v-for="(step, index) in formValues.steps"
                       v-model="formValues.steps[index]"
-                      :isDefaultExpanded="index === 0 ? true : false"
                       :index="index"
                       :key="index"
                       @removeStep="onRemoveStep(index)"
@@ -283,7 +282,8 @@ const initialFormValues = {
   languageResourceId: 'WNZt0sCVCWB3',
   availableForRequests: [],
   dialogNoticeType: 'textToSpeech',
-  dialogNoticeTextToSpeech: '',
+  dialogNoticeTextToSpeech:
+    'I am sorry, I cannot recognize your request. Please enter your request again.',
   dialogNoticeFile: null,
   dialogNoticeFileUrl: '',
   steps: [
@@ -294,7 +294,8 @@ const initialFormValues = {
       pauseDuration: 0,
       isFailStep: false,
       fileName: '',
-      fileUrl: ''
+      fileUrl: '',
+      isExpanded: true
     }
   ]
 }
@@ -479,6 +480,9 @@ export default {
       this.formValues.steps.splice(index, 1)
     },
     onAddStep(type) {
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        this.formValues.steps[i].isExpanded = false
+      }
       let newItem
       switch (type) {
         case 'textToSpeech':
@@ -489,7 +493,8 @@ export default {
             pauseDuration: 0,
             isFailStep: false,
             fileName: '',
-            fileUrl: ''
+            fileUrl: '',
+            isExpanded: true
           }
           break
         case 'uploadAudio':
@@ -500,7 +505,8 @@ export default {
             pauseDuration: 0,
             isFailStep: false,
             fileName: '',
-            fileUrl: ''
+            fileUrl: '',
+            isExpanded: true
           }
           break
         case 'pause':
@@ -511,7 +517,8 @@ export default {
             pauseDuration: 0,
             isFailStep: false,
             fileName: '',
-            fileUrl: ''
+            fileUrl: '',
+            isExpanded: true
           }
         default:
           break

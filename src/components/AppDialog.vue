@@ -12,11 +12,7 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm" onSubmit="return false;">
-        <v-list-item
-          v-if="icon || title"
-          class="k-dialog__header"
-          :class="[maxHeight && 'k-dialog__header-max-height']"
-        >
+        <v-list-item v-if="icon || title" class="k-dialog__header">
           <div :class="getIconWrapperClass" v-if="icon">
             <v-icon :color="getIconColor" class="ml-2" left medium>
               {{ icon }}
@@ -42,10 +38,7 @@
             {{ body }}
           </slot>
         </div>
-        <v-card-actions
-          class="k-dialog__footer"
-          :class="[maxHeight && maxHeightSize && 'k-dialog__footer-max-height']"
-        >
+        <v-card-actions class="k-dialog__footer">
           <slot name="app-dialog-footer"></slot>
         </v-card-actions>
       </v-form>

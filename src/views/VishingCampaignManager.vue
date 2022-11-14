@@ -250,7 +250,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            overrideWidth: true,
+            width: 175,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
             filterableType: 'text'
           },
@@ -258,7 +259,7 @@ export default {
             property: 'templateName',
             align: 'left',
             editable: false,
-            label: 'Template Name',
+            label: 'Template',
             sortable: true,
             show: true,
             type: 'text',
@@ -274,6 +275,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            overrideWidth: true,
+            width: 200,
             filterableType: 'date',
             filterableCustomFieldName: 'createTime'
           },
@@ -285,7 +288,8 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            width: 160,
+            overrideWidth: true,
+            width: 200,
             type: 'text',
             filterableType: 'date',
             filterableCustomFieldName: 'createTime'

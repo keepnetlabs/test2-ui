@@ -104,7 +104,7 @@
                   {{ getItemDescription(item) }}
                 </div>
                 <div class="template-list--item__tags mt-2">
-                  <ShowMoreTags :default-badges="item.tags" />
+                  <ShowMoreTags :showMaximumBadgeCount="1" :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   <div class="template-list--item__narrator">
                     <v-icon color="#757575">mdi-web</v-icon>

@@ -216,7 +216,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 180,
+            overrideWidth: true,
+            width: 175,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
             filterableType: 'text'
             // filterableType: 'select',

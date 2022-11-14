@@ -63,7 +63,14 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: 'No',
-                tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2'],
+                tags: [
+                  'asdkjasdjasdjlas jd asj djasd jasdjasd jasd jsa',
+                  'tag2',
+                  'tag1',
+                  'tag2',
+                  'tag1',
+                  'tag2'
+                ],
                 steps: [
                   {
                     type: 'Text to Speech',
@@ -113,7 +120,7 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: '12',
-                tags: ['tag1', 'tag2'],
+                tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2'],
                 steps: [
                   {
                     type: 'Text to Speech',
@@ -170,7 +177,7 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: false,
                 availableFor: '12',
-                tags: ['tag1', 'tag2'],
+                tags: ['tag1'],
                 steps: [
                   {
                     type: 'Text to Speech',
@@ -206,7 +213,7 @@ export function getVishingTemplateList(payload = {}) {
                 createTime: '14/06/2022 06:49',
                 isOwner: true,
                 availableFor: 'No',
-                tags: ['tag1', 'tag2'],
+                tags: ['tag1'],
                 steps: [
                   {
                     type: 'Text to Speech',

@@ -3,7 +3,7 @@
     <div class="vishing-template-dialog-step__header">
       <div class="vishing-template-dialog-step__header-left">
         <v-btn small icon @click="onToggleExpansion">
-          <v-icon>{{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+          <v-icon>{{ value.isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
         </v-btn>
         <span class="vishing-template-dialog-step__header-text"> {{ getTitle }} </span>
       </div>
@@ -21,10 +21,10 @@
       </div>
     </div>
     <v-expand-transition>
-      <div v-if="isExpanded" class="vishing-template-dialog-step__body">
+      <div v-if="value.isExpanded" class="vishing-template-dialog-step__body">
         <FormGroup
           v-if="value.type === 'pause'"
-          className="mt-4"
+          className="mt-1"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Pause Duration (seconds)"
         >
@@ -32,7 +32,7 @@
             v-model.number="value.pauseDuration"
             placeholder="Enter pause duration"
             type="number"
-            style="max-width: 100px;"
+            style="max-width: 205px;"
             outlined
             :rules="durationRules"
             @input="onPauseDurationChange"
@@ -61,7 +61,7 @@
         </div>
         <FormGroup
           v-if="value.type === 'textToSpeech'"
-          className="mt-4"
+          className="mt-1"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Text"
           subTitle="Enter your text to be voiced by AI"
@@ -83,7 +83,7 @@
             v-model.number="value.requiredDigitCount"
             placeholder="Enter pause duration"
             type="number"
-            style="max-width: 100px;"
+            style="max-width: 205px;"
             outlined
             :rules="durationRules"
             @input="onRequiredDigitCountChange"
@@ -118,10 +118,6 @@ export default {
     },
     index: {
       type: Number
-    },
-    isDefaultExpanded: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -140,7 +136,6 @@ export default {
   },
   data() {
     return {
-      isExpanded: this.isDefaultExpanded || false,
       durationRules: [
         (v) => validations.required(v, labels.Required),
         (v) => validations.startsWith(v, 'Cannot start with 0', 0)
@@ -149,7 +144,7 @@ export default {
   },
   methods: {
     onToggleExpansion() {
-      this.isExpanded = !this.isExpanded
+      this.$emit('input', { ...this.value, isExpanded: !this.value.isExpanded })
     },
     onRemoveStep() {
       this.$emit('removeStep')

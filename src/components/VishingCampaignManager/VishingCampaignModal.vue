@@ -43,7 +43,7 @@
               <FormGroup
                 style="max-width: 600px;"
                 title="Schedule"
-                subtitle="Start time of this campaign"
+                subTitle="Start time of this campaign"
               >
                 <v-radio-group
                   v-model="formValues.scheduleTypeId"
@@ -557,7 +557,7 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.sendCallsBetweenStartTime} and ${this.formValues.sendCallsBetweenEndTime} and each user will receive a call every 19 minutes.`
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.sendCallsBetweenStartTime} and ${this.formValues.sendCallsBetweenEndTime} and each user will receive a call approximately every 19 minutes.`
     },
     getTitle() {
       return !this.isEdit

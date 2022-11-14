@@ -12,7 +12,12 @@
       <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
         <template v-slot:activator="{ on }">
           <v-btn style="display: none;"></v-btn>
-          <Badge :listeners="on" size="small" :color="badgeColor" :text="`${badges[index - 1]}`" />
+          <Badge
+            :listeners="on"
+            size="small"
+            :color="badgeColor"
+            :text="`${getBadgeText(badges[index - 1])}`"
+          />
         </template>
         <span class="tooltip-span">
           <slot name="status-tooltip-text">
@@ -54,6 +59,9 @@ export default {
     },
     badgeColor: {
       default: '#1173C1'
+    },
+    showMaximumBadgeCount: {
+      type: Number
     }
   },
   data() {
@@ -80,6 +88,12 @@ export default {
     getKey(index) {
       return `${index}ab-${Math.random()}`
     },
+    getBadgeText(text = '') {
+      if (text.length > 25) {
+        return text.slice(0, 25) + '...'
+      }
+      return text
+    },
     getBadges() {
       if (this.badges.length > 0) {
         let renderedCount = 0
@@ -95,7 +109,9 @@ export default {
           }
         }
 
-        this.maximumRenderedBadgeCount = renderedCount
+        this.maximumRenderedBadgeCount = this.showMaximumBadgeCount
+          ? Math.min(this.showMaximumBadgeCount, renderedCount)
+          : renderedCount
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
         }
