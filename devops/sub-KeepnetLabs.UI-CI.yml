@@ -1,0 +1,42 @@
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.15.1'
+  displayName: 'Install Node.js'
+  
+- script: |
+    rm public/config.js
+    mv public/config.Production.js public/config.js
+  displayName: 'Copy config.js'
+
+- script: yarn install
+  displayName: 'yarn install'  
+
+- script: yarn run lint
+  displayName: 'yarn lint'
+
+- script: yarn test:unit
+  displayName: 'yarn test'
+  failOnStderr: true,
+  continueOnError: true
+  
+- script: yarn run build
+  displayName: 'yarn build'
+
+- script: mv Web.config dist
+  displayName: 'Move web.config'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/dist'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/dist'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
