@@ -78,6 +78,14 @@
       >
         <LDAP v-if="tab === 'ldap-settings'" />
       </el-tab-pane>
+      <el-tab-pane
+        v-if="getAllowListPermissionsSearch"
+        name="allowed-list"
+        :label="labels.AllowedDomain"
+        :id="`${labels.AllowedDomain.toLowerCase()}-content`"
+      >
+        <allowed-list v-if="tab === 'allowed-list'" ref="refAllowedList" />
+      </el-tab-pane>
     </el-tabs>
   </KContainer>
 </template>
@@ -95,6 +103,8 @@ import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
+import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
+
 export default {
   name: 'CompanySettings',
   components: {
@@ -107,7 +117,8 @@ export default {
     NotificationTemplates,
     CustomApi,
     WhiteLabeling,
-    ProxySettings
+    ProxySettings,
+    AllowedList
   },
   data() {
     return {
@@ -129,21 +140,9 @@ export default {
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
-      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
     })
-  },
-  methods: {
-    changeTabStatus(status) {
-      this.tab = status
-    },
-    changeTabByRoute() {
-      const { $route: { query } = {} } = this
-      if (!query || !query.tab) return
-      this.tab = query.tab
-      this.$nextTick(() => {
-        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
-      })
-    }
   },
   created() {
     this.tab = [
@@ -161,6 +160,10 @@ export default {
       {
         permission: this.getLDAPDetailPermission,
         name: 'ldap-settings'
+      },
+      {
+        permission: this.getAllowListPermissionsSearch,
+        name: 'allowed-list'
       }
     ].find((item) => item.permission)?.name
     this.changeTabByRoute()
@@ -172,7 +175,8 @@ export default {
       refCustomApi,
       refProxySettings,
       refSamlSettings,
-      refScimSettings
+      refScimSettings,
+      refAllowedList
     } = this.$refs
     if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
       refSmtpSettings.checkIfCanCloseSmtpModal()
@@ -199,8 +203,23 @@ export default {
       next(false)
     } else if (refScimSettings && refScimSettings.isShowAddOrEditModal) {
       refScimSettings.checkIfCanCloseScimAddOrEditModal()
+    } else if (refAllowedList && refAllowedList.modalStatus) {
+      refAllowedList.checkIfCanCLoseNewModal()
     } else {
       next()
+    }
+  },
+  methods: {
+    changeTabStatus(status) {
+      this.tab = status
+    },
+    changeTabByRoute() {
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
+      })
     }
   }
 }

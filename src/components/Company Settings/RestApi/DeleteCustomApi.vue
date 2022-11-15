@@ -10,7 +10,7 @@
     title-id="text--rest-api-delete-popup-title"
     subtitle-id="text--test-api-delete-popup-subtitle"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ labels.DeleteRestApiBody }}
     </template>
     <template v-slot:app-dialog-footer>

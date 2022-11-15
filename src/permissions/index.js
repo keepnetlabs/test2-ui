@@ -1512,5 +1512,37 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  ALLOW_LIST_PERMISSIONS: {
+    SEARCH: {
+      url: `allow-list/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `allow-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE_TXT: {
+      url: `allow-list/txt-record`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    VERIFY: {
+      url: `allow-list/verify/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `allow-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `allow-list/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }

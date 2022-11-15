@@ -299,7 +299,7 @@
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <community-invitation-card
                   :community="item"
-                  @communityNameClick="community(item)"
+                  @communityNameClick="communityDetails(item)"
                   @refuseRequest="refuseRequest(item)"
                   @acceptRequest="acceptRequest(item)"
                 />

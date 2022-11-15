@@ -251,7 +251,6 @@
                     :show-filter-options="false"
                     @downloadEvent="exportIntegrationList"
                     @sortChangedEvent="sortChangedEvent($event)"
-                    @paginationChangedEvent="paginationChangedEvent($event)"
                     @searchChangedEvent="searchChangedEvent($event)"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
@@ -1108,15 +1107,6 @@ export default {
 
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
       this.getDatatableList()
     },
     searchChangedEvent(searchFilter = {}) {

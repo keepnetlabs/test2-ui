@@ -83,6 +83,30 @@
                 emailTemplateParams.fromAddress
               }}</span>
             </div>
+            <div>
+              <span
+                class="template-preview__text--title"
+                style="
+                  font-style: normal;
+                  font-weight: 600;
+                  font-size: 20px;
+                  line-height: 24px;
+                  color: #383b41;
+                "
+                >Subject:
+              </span>
+              <span
+                class="template-preview__text--body--bold"
+                style="
+                  font-style: normal;
+                  font-weight: 600;
+                  font-size: 20px;
+                  line-height: 24px;
+                  color: #383b41;
+                "
+                >{{ emailTemplateParams.subject }}</span
+              >
+            </div>
           </div>
           <div
             v-if="emailTemplateParams.attachment"
@@ -463,9 +487,7 @@ export default {
             fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
               '.'
             )[1]
-            const file = {
-              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            }
+            const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
             this.$refs.newEmailTemplate.formValues.attachmentFiles = [
               new File([file], `${this.attachmentName}.${fileExtension}`, {
                 type
@@ -500,11 +522,19 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.selectedTemplateHeader = data.subject
-          const { fromName, fromAddress, name, difficultyResourceId, phishingFileName } = data
+          const {
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            phishingFileName,
+            subject
+          } = data
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
+            subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {

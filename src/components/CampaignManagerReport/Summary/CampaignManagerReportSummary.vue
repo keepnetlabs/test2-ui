@@ -257,7 +257,14 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.campaignSummary
+      const { emailTemplateInfo = {} } = this.campaignSummary || {
+        emailTemplateInfo: {}
+      }
+
+      if (!Object.keys(emailTemplateInfo)?.length) {
+        return {}
+      }
+
       const {
         name,
         difficultyResourceId,
@@ -267,9 +274,9 @@ export default {
         resourceId,
         languageShortCode,
         phishingFileName
-      } = emailTemplateInfo
+      } = emailTemplateInfo || {}
 
-      return Object.keys(emailTemplateInfo).length
+      return Object.keys(emailTemplateInfo)?.length
         ? {
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             method: methods.find((item) => item.value === categoryResourceId)?.text,
@@ -288,7 +295,7 @@ export default {
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.campaignSummary
+      const { landingPageTemplateInfo = {} } = this.campaignSummary || {}
       const {
         name,
         urlTemplate,

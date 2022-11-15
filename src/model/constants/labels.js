@@ -581,8 +581,8 @@ export const labels = {
   FalsePositive: 'False Positive',
   NonMalicious: 'Non Malicious',
   IncidentsResolved: 'Incident(s) resolved',
-  RoiSummarySavedTimeLabel: 'Average hours saved per reported email',
-  RoiSummaryHourlyLabel: 'Average total cost per hour',
+  RoiSummarySavedTimeLabel: 'Hourly Rate ($)',
+  RoiSummaryHourlyLabel: 'Saved Time Per Task (hours)',
   Engagement: 'Engagement',
   StartAnInvestigation: 'Start an Investigation',
   StopAction: 'Stop Action',
@@ -692,7 +692,8 @@ export const labels = {
   NoVishingCampaigns: 'You do not have any vishing campaigns',
   TryAgain: 'Try Again',
   VishingTemplate: 'Vishing Template',
-  EmptyTIGridMsg: 'You do not have any Thereat Intelligence'
+  EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
+  AllowedDomain: 'Allowed Domains'
 }
 
 export default labels

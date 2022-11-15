@@ -285,6 +285,9 @@ export default {
       getUser: 'auth/userGetter'
     })
   },
+  created() {
+    this.callForListSystemUsers()
+  },
   methods: {
     resetPageNumber() {
       this.requestBody.pageNumber = 1
@@ -326,7 +329,7 @@ export default {
       this.deleteButtonDisabled = true
       bulkDeleteSystemUsers(this.multipleSystemUserPayload)
         .then(() => {
-          this.$refs.refSystemUsersList.resetSelectableParams()
+          this?.$refs?.refSystemUsersList?.resetSelectableParams()
           this.callForListSystemUsers()
           this.toggleShowDeleteSystemUserModal()
         })
@@ -468,9 +471,6 @@ export default {
         this.$refs.systemUserModal.closeOverlay()
       }
     }
-  },
-  created() {
-    this.callForListSystemUsers()
   }
 }
 </script>

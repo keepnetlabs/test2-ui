@@ -4,12 +4,12 @@
     icon="mdi-email"
     title="Matching Incidents"
     :subtitle="getSelectedMatchingIncidentsSubtitle"
-    @changeStatus="closeOverlay"
     size="ultraMaximum"
     class-name="matching-modal"
     maxHeightSize="665"
+    @changeStatus="closeOverlay"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <v-card light>
         <v-list-item class="matching-modal__list-item">
           <v-list-item-content>

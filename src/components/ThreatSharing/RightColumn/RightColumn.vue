@@ -16,13 +16,13 @@
     </v-overlay>
     <app-dialog
       :status="showNeedPermissionModal"
-      @changeStatus="showNeedPermissionModal = false"
       icon="mdi-exit-to-app"
       title="Cannot Leave Community"
       title-id="text--threat-sharing-right-column-permission-popup-title"
       subtitle-id="text--threat-sharing-right-column-permission-popup-subtitle"
       :subtitle="communityDetails && communityDetails.name"
       :body="`You have to give admin privileges to at least 1 other person`"
+      @changeStatus="showNeedPermissionModal = false"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -56,57 +56,22 @@
           :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
           cancel-button-id="btn-cancel--threat-sharing-right-column-leave-community-popup"
           confirm-button-id="btn-leave--threat-sharing-right-column-leave-community-popup"
+          actionButtonText="LEAVE"
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
-          actionButtonText="LEAVE"
         />
       </template>
     </app-dialog>
     <app-dialog
-      @changeStatus="openNotificationModal = false"
-      :status="openNotificationModal"
       v-if="openNotificationModal"
+      :status="openNotificationModal"
       title-id="text--threat-sharing-right-column-notification-popup-title"
       subtitle-id="text--threat-sharing-right-column-notification-popup-subtitle"
       icon="mdi-bell"
       title="Community Notification Settings"
+      @changeStatus="openNotificationModal = false"
     >
       <template v-slot:app-dialog-body>
-        <!--<v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Notifications
-            </div>
-            <div>
-              <v-switch
-                id="general-notif-switch"
-                v-model="notifications.isNotifications"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="setAllNotification"
-              />
-            </div>
-          </div>
-        </v-list-item>-->
-
-        <!--<v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Dashboard notifications
-            </div>
-            <div>
-              <v-switch
-                id="dashboard-notif-switch"
-                v-model="notifications.isDashboardEnabled"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="checkAllNotificationsAreSelected"
-              />
-            </div>
-          </div>
-        </v-list-item>-->
         <v-list-item class="pa-0">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
@@ -124,23 +89,6 @@
             </div>
           </div>
         </v-list-item>
-        <!--<v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              SMS notifications
-            </div>
-            <div>
-              <v-switch
-                id="whatsapp-notif-switch"
-                v-model="notifications.isSMSEnabled"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-                @change="checkAllNotificationsAreSelected"
-              />
-            </div>
-          </div>
-        </v-list-item> -->
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -154,7 +102,6 @@
     </app-dialog>
     <app-dialog
       :status="isWantToDelete"
-      @changeStatus="isWantToDelete = false"
       type="delete"
       icon="mdi-delete"
       title="Delete Community?"
@@ -164,20 +111,22 @@
       :body="`${
         communityDetails && communityDetails.name
       } will be deleted. All posts and data will be lost`"
+      @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          type="delete"
           cancel-button-id="btn-cancel--threat-sharing-right-column-community"
           confirm-button-id="btn-delete--threat-sharing-right-column-community"
+          actionButtonText="DELETE"
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm"
-          actionButtonText="DELETE"
-          type="delete"
         />
       </template>
     </app-dialog>
     <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
       <app-dialog
+        v-if="openInviteModal"
         :status="openInviteModal"
         icon="mdi-account-multiple-plus"
         title="Invite Members"
@@ -185,13 +134,13 @@
         size="big"
         title-id="text--threat-sharing-right-invite-members-popup-title"
         subtitle-id="text--threat-sharing-right-invite-members-popup-subtitle"
-        v-if="openInviteModal"
         @changeStatus="openInviteModal = false"
       >
         <template v-slot:app-dialog-body>
           <v-form ref="inviteModal">
             <k-select
               type="combobox"
+              v-model.trim="emailarray"
               :items="[]"
               custom-menu-class="menu--threat-sharing-right-menu-invite-members"
               placeholder="Enter email addresses of the companies to be invited (max. 5)"
@@ -202,7 +151,6 @@
               small-chips
               outlined
               :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
-              v-model.trim="emailarray"
               :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
               class="pop-up-card__invite-member"
               hint="Press enter to separate email addresses"
@@ -236,7 +184,7 @@
         </template>
       </app-dialog>
       <v-btn
-        v-if="$route.path == '/threat-sharing'"
+        v-if="$route.path === '/threat-sharing'"
         :disabled="!getCreateCommunityPermission"
         class="create-com-btn"
         @click="createNewCommunity"
@@ -246,7 +194,7 @@
         >CREATE A NEW COMMUNITY
       </v-btn>
       <v-btn
-        v-if="$route.name == 'Community'"
+        v-if="$route.name === 'Community'"
         class="create-com-btn"
         @click="postIncident"
         block
@@ -256,7 +204,7 @@
         >POST INCIDENT
       </v-btn>
       <div class="right-side-content wrapper pt-8 pb-4">
-        <div v-if="$route.name == 'Community'">
+        <div v-if="$route.name === 'Community'">
           <div class="about-community right-side-title">
             About Community
             <v-menu
@@ -548,6 +496,25 @@ export default {
     Post,
     SuggestedCommunity
   },
+  props: {
+    pageView: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    incidentsRef: {
+      required: false
+    },
+    communitiesRef: {
+      required: false
+    },
+    selectedTab: {
+      required: false
+    },
+    subTabSelected: {
+      required: false
+    }
+  },
   data() {
     return {
       isEmailNotificationsDisabled: false,
@@ -608,25 +575,6 @@ export default {
       }
     }
   },
-  props: {
-    pageView: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    incidentsRef: {
-      required: false
-    },
-    communitiesRef: {
-      required: false
-    },
-    selectedTab: {
-      required: false
-    },
-    subTabSelected: {
-      required: false
-    }
-  },
   created() {
     this.getAllRightColumnData()
     if (this.$route.name === 'Community') {
@@ -636,7 +584,7 @@ export default {
       (state) => {
         return state.rightColumn.reloadRightColumnData // could also put a Getter here
       },
-      (newValue, oldValue) => {
+      (newValue) => {
         if (newValue) {
           this.getAllRightColumnData()
           setTimeout(() => {
@@ -666,20 +614,9 @@ export default {
     }),
     communityDescription() {
       return this.selectedCommunity.description || localStorage.getItem('communityDesc')
-    },
-    communityIndustry() {
-      return this.selectedCommunity.industry || localStorage.getItem('communityCat')
     }
   },
   methods: {
-    setAllNotification(val) {
-      this.notifications = {
-        isNotifications: val,
-        isSMSEnabled: val,
-        isEmailEnabled: val,
-        isDashboardEnabled: val
-      }
-    },
     checkAllNotificationsAreSelected() {
       this.notifications.isNotifications =
         this.notifications.isSMSEnabled &&
@@ -713,9 +650,6 @@ export default {
       this.getMyLastPosts()
       this.getMyTopPosts()
       this.getsuggestedCommunities()
-    },
-    isInviteMemberDisabled() {
-      return this.$refs.inviteModal && !this.$refs.inviteModal.validate()
     },
     comboboxChange(val) {
       let newVal = val.map((item) => item.trim())
@@ -919,12 +853,6 @@ export default {
             query: { postId: post.communityPostResourceId },
             params: { communityName: post.communityName, id: post.communityResourceId }
           })
-          // this.$router.push({
-          //   name: 'Community',
-          //   query: { postId: post.communityPostResourceId },
-          //   params: { communityName: post.communityName, id: post.communityResourceId }
-          // })
-          //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
           this.$router.replace({ query: null, params: null })
           this.$router.push({
@@ -1038,7 +966,7 @@ export default {
     },
     getCommunityDetails() {
       let _this = this
-      if (this.$route.name == 'Community') {
+      if (this.$route.name === 'Community') {
         this.ownerDetails = this.$route.params.item
         _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.id)
@@ -1129,9 +1057,6 @@ export default {
         })
         .finally(() => (this.postsLoading = false))
     },
-    closeCommunityInfo() {
-      // this.$emit('closeCommunity')
-    },
     createNewCommunity() {
       if (this.selectedTab === 1) {
         let communitiesData = {
@@ -1185,11 +1110,6 @@ export default {
         })
       }
       this.$emit('createCommunityAction')
-      this.closeCommunityInfo()
-    },
-    isWantToAddMembers() {
-      this.$emit('addMembers')
-      this.closeCommunityInfo()
     },
     editCommunity() {
       this.communityItem = this.communityDetails
@@ -1200,11 +1120,9 @@ export default {
     },
     postIncident() {
       this.$emit('postIncident')
-      this.closeCommunityInfo()
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
-      let _this = this
       joinCommunity(resourceId)
         .then(() => {
           this.getsuggestedCommunities()
@@ -1268,7 +1186,7 @@ export default {
             incidentsData
           })
           if (privacyStatusName !== 'Private') {
-            if (this.$route.name == 'Community') {
+            if (this.$route.name === 'Community') {
               this.$router.push({
                 name: 'Community',
                 params: { communityName: communityName, id: resourceId }
@@ -1293,7 +1211,6 @@ export default {
         return isOwner(this.communityDetails.myMembershipStatusId)
       }
     },
-    openNotifications() {},
     isJoined(id) {
       /*if (id && id != null && this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId == id)
@@ -1301,17 +1218,9 @@ export default {
     },
     leaveCommunity() {
       this.$emit('leaveCommunity')
-      this.closeCommunityInfo()
     },
     deleteCommunity() {
       this.$emit('deleteCommunity')
-      this.closeCommunityInfo()
-    },
-    refreshCommunities() {
-      this.$store.dispatch('threatSharing/getCommunities')
-    },
-    refreshRequests() {
-      this.$store.dispatch('threatSharing/getRequestsCompany', localStorage.getItem('companyId'))
     }
   }
 }

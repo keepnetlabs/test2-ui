@@ -160,18 +160,20 @@ export default {
       this.editor.destroy()
     },
     setMergeTextNames() {
-      let _this = this
-      const component = this.editor.getSelected()
+      const component = this?.editor?.getSelected()
       if (component) {
         setTimeout(() => {
-          let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+          let mergedTextsNames = this.urlMergedTexts.map((item) => item.value)
           if (
             component.getTrait('href').props().value === '' ||
             !mergedTextsNames.includes(component.getTrait('href').props().value)
           ) {
-            document.querySelector(
+            const element = document.querySelector(
               '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-            ).selectedIndex = 0
+            )
+            if (element) {
+              element.selectedIndex = 0
+            }
           }
         }, 10)
       }
@@ -456,7 +458,7 @@ export default {
         }
       })(this.editor.setComponents)
       this.editor.on('component:selected', () => {
-        const selected = this.editor.getSelected()
+        const selected = this?.editor?.getSelected()
         if (selected && selected.is('link')) {
           document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
           setTimeout(() => {
@@ -489,9 +491,12 @@ export default {
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
             ) {
-              document.querySelector(
+              const element = document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-              ).selectedIndex = 0
+              )
+              if (element) {
+                element.selectedIndex = 0
+              }
             }
           }, 250)
         } else if (selected) {
@@ -819,7 +824,7 @@ export default {
       const rte = this.editor.RichTextEditor
       rte.get('link').result = (rte) => {
         rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
-        const sel = this.editor.getSelected()
+        const sel = this?.editor?.getSelected()
         if (sel) {
           sel.trigger('disable')
           const toSel = sel.find('[data-selectme]')[0]
@@ -856,10 +861,19 @@ export default {
       this.editor.getWrapper().setStyle(doc.body.style.cssText)
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
-        document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
-          'none'
-        document.querySelector('span[title="Fullscreen"]').style.display = 'none'
-        document.querySelector('span[title="View code"]').style.display = 'none'
+        let el
+        el = document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child')
+        if (el) {
+          el.style.display = 'none'
+        }
+        el = document.querySelector('span[title="Fullscreen"]')
+        if (el) {
+          el.style.display = 'none'
+        }
+        el = document.querySelector('span[title="View code"]')
+        if (el) {
+          el.style.display = 'none'
+        }
         document.querySelectorAll('.gjs-sm-sector-title').forEach((item) => item.click())
         try {
           document
@@ -946,16 +960,17 @@ export default {
           viewer.refresh()
         })
         this.editor.on('asset:upload:end', (images) => {
-          const [image] = images.data
-          const url = image.src
-          fetch(url)
-            .then((res) => res.blob())
-            .then((blob) => {
-              const file = new File([blob], image.name, { type: blob.type })
-              const formData = new FormData()
-              formData.append('Files', file)
-              uploadFiles(formData)
-            })
+          if (images?.data?.[0]) {
+            const url = images.data[0]
+            fetch(url)
+              .then((res) => res.blob())
+              .then((blob) => {
+                const file = new File([blob], images.data[0].name, { type: blob.type })
+                const formData = new FormData()
+                formData.append('Files', file)
+                uploadFiles(formData)
+              })
+          }
         })
         this.editor.on('asset:remove', (props) => {
           const { attributes } = props

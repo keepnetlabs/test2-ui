@@ -33,7 +33,10 @@
               :title="labels.CampaignSettings"
               :subtitle="labels.CampaignSettingsSub"
             />
-            <PhishingScenariosFastLaunchStep1 ref="refFastLaunch" :form-details="formDetails" />
+            <PhishingScenariosFastLaunchStep1
+              ref="refFastLaunch"
+              :form-details="formDetails"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -49,71 +52,63 @@
       </v-stepper>
     </template>
     <template #overlay-footer>
-      <v-btn
-        @click="closeOverlay"
-        id="btn-cancel--add-or-edit-company-manager-modal"
-        class="add-in-configuration__footer-btn-cancel"
-        rounded
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <div class="add-in-configuration__footer__right-col">
-        <v-btn
-          @click="changeStep(-1)"
-          id="btn-back--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-back mr-4"
-          rounded
-          v-if="step > 1"
-        >
-          {{ labels.Back }}
-        </v-btn>
-
-        <v-btn
-          id="btn-next--add-or-edit-company-manager-modal"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          :disabled="isActionButtonDisabled"
-          @click="handleSubmit"
-        >
-          {{ [1].includes(step) ? labels.Next : labels.Start }}
-        </v-btn>
-      </div>
+      <StepperFooter
+        max-step="2"
+        :ids="{
+          cancelButton: 'btn-cancel--scenarios-fast-launch-modal',
+          backButton: 'btn-back--scenarios-fast-launch-modal',
+          nextButton: 'btn-next--scenarios-fast-launch-modal',
+          saveButton: 'btn-save--scenarios-fast-launch-modal',
+        }"
+        :step="step"
+        :disabled-statuses="{
+          nextButton: isActionButtonDisabled,
+          submitButton: isActionButtonDisabled,
+        }"
+        @on-cancel="closeOverlay"
+        @on-back="changeStep(-1)"
+        @on-next="handleSubmit"
+        @on-submit="handleSubmit"
+      />
     </template>
   </AppModal>
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
-import labels from '@/model/constants/labels'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import PhishingScenariosFastLaunchStep1 from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunchStep1'
+import AppModal from "@/components/AppModal";
+import labels from "@/model/constants/labels";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader";
+import PhishingScenariosFastLaunchStep1 from "@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunchStep1";
 import {
   createCampaignManager,
   getCampaignManagerFormDetails,
   getDefaultCompanySmtpSetting,
-  getPhishingScenarioLandingPageAndEmailTemplate
-} from '@/api/phishingsimulator'
-import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { isDifferent, scrollToComponent } from '@/utils/functions'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-
+  getPhishingScenarioLandingPageAndEmailTemplate,
+} from "@/api/phishingsimulator";
+import CampaignManagerSummary from "@/components/CampaignManager/Summary/CampaignManagerSummary";
+import {
+  difficulties,
+  methods,
+} from "@/components/CampaignManager/CampaignManagerInfo/utils";
+import { isDifferent, scrollToComponent } from "@/utils/functions";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+import StepperFooter from "@/components/Stepper/StepperFooter";
 export default {
-  name: 'PhishingScenariosFastLaunch',
+  name: "PhishingScenariosFastLaunch",
   components: {
+    StepperFooter,
     CampaignManagerSummary,
     PhishingScenariosFastLaunchStep1,
     ConfigureCompanyStepHeader,
-    AppModal
+    AppModal,
   },
   props: {
     status: {
-      type: Boolean
+      type: Boolean,
     },
     selectedScenario: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -121,24 +116,24 @@ export default {
       step: 1,
       isActionButtonDisabled: false,
       formDetails: {},
-      smtpSettingResourceId: '',
+      smtpSettingResourceId: "",
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
       isSubmitted: false,
-      languageOptions: []
-    }
+      languageOptions: [],
+    };
   },
   computed: {
     getTitle() {
-      return `Fast Launch - ${this.selectedScenario.name}`
+      return `Fast Launch - ${this.selectedScenario.name}`;
     },
     getFormDataForCampaignSummary() {
-      let formData = {}
+      let formData = {};
       if (this.step === 2) {
-        const { refFastLaunch } = this.$refs
-        const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
+        const { refFastLaunch } = this.$refs;
+        const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs;
         formData = {
           ...formData,
           ...refCampaignManagerCampaignInfo.formData,
@@ -148,235 +143,210 @@ export default {
           duration: 3,
           emailTemplateParams: this.emailTemplateParams,
           landingPageTemplates: this.landingPageTemplate,
-          landingPageParams: this.landingPageParams
-        }
+          landingPageParams: this.landingPageParams,
+        };
 
-        formData.selectedPhishingScenario = this.selectedScenario
+        formData.selectedPhishingScenario = this.selectedScenario;
 
-        formData.selectedSchedule = 'Now'
-        formData.selectedSmtpSetting = { resourceId: this.smtpSettingResourceId, name: 'Default' }
+        formData.selectedSchedule = "Now";
+        formData.selectedSmtpSetting = {
+          resourceId: this.smtpSettingResourceId,
+          name: "Default",
+        };
       }
-      return formData
-    }
+      return formData;
+    },
   },
   created() {
     LookupLocalStorage.getSingle(21).then((response) => {
       this.languageOptions =
-        response?.map((language) => ({ text: language.description, value: language.resourceId })) ||
-        []
-    })
-    this.callForDefaultSmtpSetting()
-    this.callForFormDetails()
-    this.callForGetPhishingScenario()
+        response?.map((language) => ({
+          text: language.description,
+          value: language.resourceId,
+        })) || [];
+    });
+    this.callForDefaultSmtpSetting();
+    this.callForFormDetails();
+    this.callForGetPhishingScenario();
   },
   methods: {
     callForDefaultSmtpSetting() {
       getDefaultCompanySmtpSetting().then((response) => {
         const {
-          data: { data }
-        } = response
-        this.smtpSettingResourceId = data.resourceId
-      })
+          data: { data },
+        } = response;
+        this.smtpSettingResourceId = data.resourceId;
+      });
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
         const {
-          data: { data }
-        } = response
-        this.formDetails = data
-      })
+          data: { data },
+        } = response;
+        this.formDetails = data;
+      });
     },
     callForGetPhishingScenario() {
-      getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
-        (response) => {
-          if (this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo) {
-            this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-              this.selectedScenario.name
-            )
-          }
-          const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
-          const {
-            template,
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            categoryResourceId,
-            languageTypeResourceId,
-            phishingFileName
-          } = emailTemplate
+      getPhishingScenarioLandingPageAndEmailTemplate(
+        this.selectedScenario.resourceId
+      ).then((response) => {
+        if (this?.$refs?.refFastLaunch?.$refs?.refCampaignManagerCampaignInfo) {
+          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+            this.selectedScenario.name
+          );
+        }
+        const { data: { data = {} } = {} } = response;
+        const { emailTemplate, landingPageTemplate } = data;
+        const {
+          template,
+          fromName,
+          fromAddress,
+          name,
+          difficultyResourceId,
+          categoryResourceId,
+          languageTypeResourceId,
+          phishingFileName,
+        } = emailTemplate;
 
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
-            name,
+        this.emailTemplateParams = {
+          fromName,
+          fromAddress,
+          name,
+          languageShortCode: this.languageOptions.find(
+            (language) => language.value === languageTypeResourceId
+          )?.text,
+          method: methods.find((item) => item.value === categoryResourceId)
+            ?.text,
+          difficulty: difficulties.find(
+            (item) => item.value === difficultyResourceId
+          )?.text,
+          phishingFileName,
+        };
+        this.emailTemplate = template;
+        if (landingPageTemplate) {
+          const {
+            name: landingPageName,
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            methodTypeId,
+            languageTypeResourceId,
+          } = landingPageTemplate;
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1].text,
+            method: methods[methodTypeId - 1].text,
             languageShortCode: this.languageOptions.find(
               (language) => language.value === languageTypeResourceId
             )?.text,
-            method: methods.find((item) => item.value === categoryResourceId)?.text,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            phishingFileName
-          }
-          this.emailTemplate = template
-          if (landingPageTemplate) {
-            const {
-              name: landingPageName,
-              description,
-              landingPages,
-              urlTemplate,
-              difficultyTypeId,
-              methodTypeId,
-              languageTypeResourceId
-            } = landingPageTemplate
-            this.landingPageParams = {
-              name: landingPageName,
-              description,
-              urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text,
-              languageShortCode: this.languageOptions.find(
-                (language) => language.value === languageTypeResourceId
-              )?.text
-            }
-            this.landingPageTemplate = landingPages
-          }
+          };
+          this.landingPageTemplate = landingPages;
         }
-      )
+      });
     },
     changeStep(flag = 1) {
-      this.step += flag
+      this.step += flag;
     },
     closeOverlay() {
-      const initialFormValues = { ...this.$refs.refFastLaunch.initialFormValues }
-      const currentFormValues = { ...this.$refs.refFastLaunch.getCurrentFormValues() }
-      const isChanged = isDifferent(currentFormValues, initialFormValues)
+      const initialFormValues = {
+        ...this.$refs.refFastLaunch.initialFormValues,
+      };
+      const currentFormValues = {
+        ...this.$refs.refFastLaunch.getCurrentFormValues(),
+      };
+      const isChanged = isDifferent(currentFormValues, initialFormValues);
       if (!isChanged) {
-        return this.$emit('on-close')
+        return this.$emit("on-close");
       }
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
         show: true,
         callback: () => {
-          this.$emit('on-close')
-        }
-      })
+          this.$emit("on-close");
+        },
+      });
     },
     setActionButtonDisability(flag = false) {
-      this.isActionButtonDisabled = flag
+      this.isActionButtonDisabled = flag;
     },
     showErrorMessage(ref) {
       this.$nextTick(() => {
-        const el = ref.$el.querySelector('.error--text')
-        scrollToComponent(el)
-      })
+        const el = ref.$el.querySelector(".error--text");
+        scrollToComponent(el);
+      });
     },
     handleSubmit() {
-      const { refFastLaunch } = this.$refs
-      const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
-      const { formData } = refCampaignManagerCampaignInfo
-      const { refForm } = refCampaignManagerCampaignInfo.$refs
+      const { refFastLaunch } = this.$refs;
+      const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs;
+      const { formData } = refCampaignManagerCampaignInfo;
+      const { refForm } = refCampaignManagerCampaignInfo.$refs;
       switch (this.step) {
         case 1:
           if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-            // const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
-            //   (item) => item.value
-            // )
-            const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
+            const targetGroups =
+              refCampaignManagerCampaignInfo?.selectedTargetGroups || [];
             const totalUserCount = targetGroups.reduce((acc, item) => {
-              acc += item?.userCount || 0
-              return acc
-            }, 0)
+              acc += item?.userCount || 0;
+              return acc;
+            }, 0);
 
             if (totalUserCount) {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-              this.changeStep()
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false;
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = true;
+              this.changeStep();
             } else {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true;
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false;
+              this.showErrorMessage(
+                refCampaignManagerCampaignInfo.$refs.refForm
+              );
             }
-            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
-            // searchTargetGroups({
-            //   pageNumber: 1,
-            //   pageSize: 2000000,
-            //   orderBy: 'CreateTime',
-            //   ascending: false,
-            //   filter: {
-            //     Condition: 'AND',
-            //     FilterGroups: [
-            //       {
-            //         Condition: 'AND',
-            //         FilterItems: [],
-            //         FilterGroups: []
-            //       },
-            //       {
-            //         Condition: 'OR',
-            //         FilterItems: [
-            //           { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
-            //         ],
-            //         FilterGroups: []
-            //       }
-            //     ]
-            //   }
-            // }).then((response) => {
-            //   const { results } = response?.data?.data || []
-            //   const totalUserCount = results.reduce((acc, item) => {
-            //     acc += item.userCount
-            //     return acc
-            //   }, 0)
-            //   if (totalUserCount) {
-            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-            //     this.changeStep()
-            //   } else {
-            //     refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-            //     refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-            //     this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-            //   }
-            //   refCampaignManagerCampaignInfo.formData.selectedTargetGroups =
-            //     response.data.data.results
-            // })
+            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups;
           } else {
             if (!formData?.targetGroupResourceIds?.length) {
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false;
             }
-            this.showErrorMessage(refForm)
+            this.showErrorMessage(refForm);
           }
-          break
+          break;
         case 2:
-          this.setActionButtonDisability(true)
+          this.setActionButtonDisability(true);
           const payload = {
             name: formData.name,
             phishingScenarioResourceId: this.selectedScenario.resourceId,
-            scheduleTypeId: '1',
+            scheduleTypeId: "1",
             duration: 365,
-            targetGroupResourceIds: formData.targetGroupResourceIds.map((item) => item.value),
-            distributionTypeId: '1',
+            targetGroupResourceIds: formData.targetGroupResourceIds.map(
+              (item) => item.value
+            ),
+            distributionTypeId: "1",
             distributionSmtpDelayEvery: 20,
-            distributionSmtpDelayTimeTypeId: '1',
+            distributionSmtpDelayTimeTypeId: "1",
             distributionEmailOver: 8,
-            distributionEmailOverTimeTypeId: '1',
+            distributionEmailOverTimeTypeId: "1",
             sendingLimit: 50,
             excludeFromReports: refFastLaunch.formData.excludeFromReports,
             sendOnlyActiveUsers: false,
             sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
-            sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
+            sendRandomlyUsersCount:
+              refFastLaunch.formData.sendRandomlyUsersCount,
             sendRandomlyUsersCalculateTypeId:
               refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
-            smtpSettingResourceId: this.smtpSettingResourceId
-          }
+            smtpSettingResourceId: this.smtpSettingResourceId,
+          };
           createCampaignManager(payload)
             .then(() => {
-              this.isSubmitted = true
-              this.$router.push({ name: 'Campaign Manager' })
+              this.isSubmitted = true;
+              this.$router.push({ name: "Campaign Manager" });
             })
-            .finally(this.setActionButtonDisability)
-          break
+            .finally(this.setActionButtonDisability);
+          break;
         default:
-          break
+          break;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

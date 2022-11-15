@@ -61,18 +61,17 @@
       :chartOptions="chartOptions"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
       @startNewInvestigation="startNewInvestigation"
       @stopInvestigationFunc="stopInvestigationFunc($event)"
       @investigationDetails="investigationDetails($event)"
       @downloadEvent="exportInvestigationList"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @onEmptyBtnClicked="isShowNewInvestigationModal = true"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getInvestigationList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
@@ -134,10 +133,9 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import KContainer from '@/components/KContainer/KContainer'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'Investigations',
   components: {
@@ -150,6 +148,7 @@ export default {
     AppModal,
     DefaultButtonRowAction
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     selectedEmail: {
       type: Object
@@ -308,191 +307,8 @@ export default {
       },
       savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
       savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.INVESTIGATIONS,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
-    }
-  },
-  methods: {
-    getDynamicScanStatusWidth(columnItems) {
-      if (!columnItems) {
-        return 250
-      }
-      const lengthMap = columnItems.map(
-        (item) => item[0].toString().length + item[1].toString().length
-      )
-      const maxLength = Math.max(...lengthMap)
-      if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
-        return 250
-      }
-      return 175 + maxLength * 10
-    },
-    setDynamicScanStatusWidth() {
-      const scanStatusItems = this.tableData.data.map((item) => item.userStatus)
-      const scanStatusColumnIndex = this.columns.findIndex(
-        (column) => column.property === 'userStatus'
-      )
-      if (scanStatusColumnIndex !== -1) {
-        this.columns[scanStatusColumnIndex].width = this.getDynamicScanStatusWidth(scanStatusItems)
-      }
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.getInvestigationList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getInvestigationList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getInvestigationList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getInvestigationList()
-    },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handeRuleNameClick(resourceId) {
-      this.selectedPlaybookId = resourceId
-      this.showPlaybookModal = true
-    },
-    closePlaybookWithUpdate() {
-      this.togglePlaybookModal()
-    },
-    togglePlaybookModal() {
-      this.selectedPlaybookId = null
-      return (this.showPlaybookModal = !this.showPlaybookModal)
-    },
-    togglePlaybookModalWithSelected(selectedPlaybookId) {
-      this.selectedPlaybookId = selectedPlaybookId
-      return (this.showPlaybookModal = !this.showPlaybookModal)
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getInvestigationList()
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getInvestigationList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      if (this.$route.name === 'Investigations') {
-        this.getInvestigationList()
-      }
-    },
-    refreshDatatable() {
-      this.loading = true
-      this.getInvestigationList()
-    },
-    onAddClose(resp) {
-      if (resp?.data?.data?.resourceId) {
-        this.$router.push(
-          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
-        )
-      }
-      this.isShowNewInvestigationModal = false
-    },
-    startNewInvestigation() {
-      this.isShowNewInvestigationModal = true
-    },
-    investigationDetails(value) {
-      this.$router.push({
-        name: 'Investigation Details',
-        params: { id: value.row.resourceId }
-      })
-    },
-    exportInvestigationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      exportTypes.map((exportType) => {
-        const payload = {
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          orderBy: this.bodyData.orderBy,
-          ascending: this.bodyData.ascending,
-          reportAllPages: reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
-        }
-
-        exportInvestigationList(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Investigations.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    },
-
-    stopInvestigationFunc(value) {
-      this.isWantToStopInvestigation = true
-      this.selectedRow = value
-    },
-    stopInvestigation() {
-      const value = this.selectedRow
-      let store = this.$store
-      this.stopInvestigateButtonDisabled = true
-      this.$store
-        .dispatch('investigations/cancelInvestigation', value.row.resourceId)
-        .catch(() => {})
-        .then(() => {
-          this.isWantToStopInvestigation = false
-          store.dispatch('investigations/SET_INVESTIGATIONLISTEMPY', [])
-        })
-        .finally(() => {
-          this.stopInvestigateButtonDisabled = false
-          this.refreshDatatable()
-        })
-    },
-    getInvestigationList() {
-      this.loading = true
-      this.$store
-        .dispatch('investigations/getInvestigationList', this.bodyData)
-        .finally(() => {
-          this.loading = false
-          this.tableData.data = this.tableData.data || []
-          this.setDynamicScanStatusWidth()
-          if (this.$refs && this.$refs.investigationTable) {
-            this.$refs.investigationTable.$forceUpdate()
-          }
-        })
-        .then((response) => {
-          const {
-            data: {}
-          } = response
-          const {
-            data: {
-              data: { totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-        })
     }
   },
   computed: {
@@ -520,7 +336,7 @@ export default {
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
     }
-    this.getInvestigationList()
+    this.callForData()
   },
   mounted() {
     if (this.$route.params && this.$route.params.selectedEmail) {
@@ -552,6 +368,145 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  methods: {
+    callForData() {
+      this.loading = true
+      this.$store
+        .dispatch('investigations/getInvestigationList', this.axiosPayload)
+        .finally(() => {
+          this.loading = false
+          this.tableData.data = this.tableData.data || []
+          this.setDynamicScanStatusWidth()
+          if (this.$refs && this.$refs.investigationTable) {
+            this.$refs.investigationTable.$forceUpdate()
+          }
+        })
+        .then((response) => {
+          if (response?.data?.data) {
+            const {
+              data: {
+                data: { totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              }
+            } = response
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+          }
+        })
+    },
+    handleSearchChange(searchFilter = {}) {
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.callForData()
+    },
+    getDynamicScanStatusWidth(columnItems) {
+      if (!columnItems) {
+        return 250
+      }
+      const lengthMap = columnItems.map(
+        (item) => item[0].toString().length + item[1].toString().length
+      )
+      const maxLength = Math.max(...lengthMap)
+      if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
+        return 250
+      }
+      return 175 + maxLength * 10
+    },
+    setDynamicScanStatusWidth() {
+      const scanStatusItems = this.tableData.data.map((item) => item.userStatus)
+      const scanStatusColumnIndex = this.columns.findIndex(
+        (column) => column.property === 'userStatus'
+      )
+      if (scanStatusColumnIndex !== -1) {
+        this.columns[scanStatusColumnIndex].width = this.getDynamicScanStatusWidth(scanStatusItems)
+      }
+    },
+    handeRuleNameClick(resourceId) {
+      this.selectedPlaybookId = resourceId
+      this.showPlaybookModal = true
+    },
+    closePlaybookWithUpdate() {
+      this.togglePlaybookModal()
+    },
+    togglePlaybookModal() {
+      this.selectedPlaybookId = null
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
+    togglePlaybookModalWithSelected(selectedPlaybookId) {
+      this.selectedPlaybookId = selectedPlaybookId
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
+    refreshDatatable() {
+      this.loading = true
+      this.callForData()
+    },
+    onAddClose(resp) {
+      if (resp?.data?.data?.resourceId) {
+        this.$router.push(
+          `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
+        )
+      }
+      this.isShowNewInvestigationModal = false
+    },
+    startNewInvestigation() {
+      this.isShowNewInvestigationModal = true
+    },
+    investigationDetails(value) {
+      this.$router.push({
+        name: 'Investigation Details',
+        params: { id: value.row.resourceId }
+      })
+    },
+    exportInvestigationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.axiosPayload.filter
+        }
+        exportInvestigationList(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Investigations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+
+    stopInvestigationFunc(value) {
+      this.isWantToStopInvestigation = true
+      this.selectedRow = value
+    },
+    stopInvestigation() {
+      const value = this.selectedRow
+      let store = this.$store
+      this.stopInvestigateButtonDisabled = true
+      this.$store
+        .dispatch('investigations/cancelInvestigation', value.row.resourceId)
+        .catch(() => {})
+        .then(() => {
+          this.isWantToStopInvestigation = false
+          store.dispatch('investigations/SET_INVESTIGATIONLISTEMPY', [])
+        })
+        .finally(() => {
+          this.stopInvestigateButtonDisabled = false
+          this.refreshDatatable()
+        })
     }
   }
 }

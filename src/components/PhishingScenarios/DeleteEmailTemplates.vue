@@ -9,7 +9,7 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
     </template>
     <template #app-dialog-footer>

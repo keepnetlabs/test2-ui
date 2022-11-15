@@ -32,7 +32,7 @@
       :addButton="tableOptions.addButton"
       :server-side-props="serverSideProps"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -41,10 +41,9 @@
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportDomains"
       @delete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -87,10 +86,9 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
 import DeleteServiceModal from '@/components/Settings/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/Settings/Domains/NewEditDomain'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'DomainList',
   components: {
@@ -99,6 +97,7 @@ export default {
     DataTable,
     DeleteServiceModal
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     PERMISSIONS: {
       type: Object
@@ -239,8 +238,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       templateHTML: null
@@ -254,7 +252,35 @@ export default {
       getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
     })
   },
+  created() {
+    if (this.getDomainFormDetailsPermissions)
+      getDomainData().then((response) => {
+        this.domainData = response.data.data
+        this.callForData()
+      })
+  },
   methods: {
+    callForData() {
+      this.loading = true
+      if (this.getDomainSearchPermissions) {
+        getDomainsList(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      }
+    },
     checkIfCanCloseDomainModal() {
       if (this.$refs.newEditDomainModal) {
         this.$refs.newEditDomainModal.cancelDomain()
@@ -264,18 +290,14 @@ export default {
       this.modalStatus = !this.modalStatus
       if (!value) this.resourceId = ''
       if (restart) {
-        this.getDatatableList()
+        this.callForData()
       }
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
     handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {
           if (item.FieldName === 'AnalysisEngineName') {
             item.FieldName = 'analysisEngineTypeId'
@@ -284,48 +306,16 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
+      this.callForData()
     },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleDelete(row) {
       deleteEmailTemplate(row.resourceId).then(() => {
         this.$refs.refDomainsListList.unSelectRow(row)
-        this.getDatatableList()
+        this.callForData()
       })
     },
     handleEdit(row) {
@@ -346,7 +336,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportDnsService(payload).then((response) => {
           const { data } = response
@@ -359,49 +349,10 @@ export default {
         })
       })
     },
-    getDatatableList() {
-      this.loading = true
-      if (this.getDomainSearchPermissions) {
-        getDomainsList(this.bodyData)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
-          })
-          .catch(() => {
-            this.tableData = []
-          })
-          .finally(() => (this.loading = false))
-      }
-    },
     handleActionDelete(row) {
       this.selectedDomain = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
-  },
-  created() {
-    if (this.getDomainFormDetailsPermissions)
-      getDomainData().then((response) => {
-        this.domainData = response.data.data
-        this.getDatatableList()
-      })
   }
 }
 </script>

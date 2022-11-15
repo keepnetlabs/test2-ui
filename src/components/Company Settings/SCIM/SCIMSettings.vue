@@ -108,7 +108,6 @@ export default {
       this.successApiKey = ''
       this.isShowSuccessDialog = false
       if (this.isShowAddOrEditModal) {
-        //It is created table must be updated
         this.isShowAddOrEditModal = false
         this.handleCloseWithUpdate()
       }

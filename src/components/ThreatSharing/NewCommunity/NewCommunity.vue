@@ -32,7 +32,7 @@
     </app-dialog>
     <div class="new-community-inner">
       <v-card class="pa-0" flat light style="width: 600px;">
-        <v-list-item class="pl-0 pr-0 new-community-inner__title-section">
+        <v-list-item class="pl-0 pr-0 new-community-inner__title-section mb-8">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
           </div>
@@ -45,114 +45,86 @@
           </v-list-item-content>
         </v-list-item>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-list-item class="edit-name-area pt-10 pa-0">
-            <v-list-item-content class="pt-0 pb-0">
-              <label id="label--threat-sharing-new-community-name" class="pb-3 edit-labels"
-                >Community Name</label
+          <FormGroup has-hint title="Community Name">
+            <InputEntityName
+              v-model.trim="name"
+              id="input--threat-sharing-community-name"
+              entity-name="community name"
+              initial-placeholder="Community Name"
+              :initial-rules="communityNameRules"
+            />
+          </FormGroup>
+          <FormGroup
+            has-hint
+            title="Description"
+            sub-title="Describe the community’s goals and rules. (Max. 300 characters)"
+          >
+            <InputDescription
+              v-model.trim="description"
+              id="input--threat-sharing-community-description"
+              class="edit-description"
+              initial-placeholder="Description"
+              :initial-rules="communityDescriptionRules"
+              :required="true"
+            />
+          </FormGroup>
+          <FormGroup has-hint title="Industry" sub-title="Select an industry category">
+            <k-select
+              type="autocomplete"
+              v-model.trim="selectedCategory"
+              id="input--threat-sharing-community-industry-category"
+              custom-menu-class="menu--threat-sharing-community-industry-category"
+              class="edit-select"
+              item-text="name"
+              outlined
+              required
+              persistent-hint
+              return-object
+              hint="*Required"
+              placeholder="Select the industry category"
+              :items="categories"
+              :rules="[(v) => v || 'Required']"
+            ></k-select>
+          </FormGroup>
+          <FormGroup title="Privacy" sub-title="Select a privacy option">
+            <div class="new-community__radio-group">
+              <v-radio-group
+                v-model="privacystatusid"
+                :mandatory="false"
+                class="my-0 p-0"
+                id="input--threat-sharing-community-privacy-status"
+                row
               >
-              <InputEntityName
-                v-model.trim="name"
-                id="input--threat-sharing-community-name"
-                class="edit-name-textfield"
-                entityName="community name"
-                initialPlaceholder="Community Name"
-                :initialRules="communityNameRules"
-              />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-descrition-area pa-0">
-            <v-list-item-content class="pt-0 pb-0">
-              <label id="label--threat-sharing-new-community-description" class="edit-labels"
-                >Description</label
+                <v-radio
+                  id="input--threat-sharing-community-privacy-status-public"
+                  color="primary"
+                  label="Public"
+                  value="1"
+                ></v-radio>
+                <v-radio
+                  id="input--threat-sharing-community-privacy-status-privacy"
+                  color="primary"
+                  label="Private"
+                  value="2"
+                ></v-radio>
+                <v-radio
+                  id="input--threat-sharing-community-privacy-status-hidden"
+                  color="primary"
+                  label="Hidden"
+                  value="3"
+                ></v-radio>
+              </v-radio-group>
+              <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
+                >Anyone can find the community and see posted threats</label
               >
-              <label
-                id="label--threat-sharing-new-community-description-sub"
-                class="edit-sub-labels"
-                >Describe the community’s goals and rules. (Max. 300 characters)</label
+              <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
+                >Only members can see posted threats and community is listed</label
               >
-              <InputDescription
-                v-model.trim="description"
-                id="input--threat-sharing-community-description"
-                class="edit-description"
-                initialPlaceholder="Description"
-                :initialRules="communityDescriptionRules"
-                :required="true"
-              />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area-autocomplete pb-0 pa-0">
-            <v-list-item-content class="pt-0 pb-0">
-              <label id="label--threat-sharing-new-community-industry" class="edit-labels"
-                >Industry</label
+              <label v-else class="edit-privacy-bottom-label"
+                >Only members can see posted threats and the group in communities list</label
               >
-              <label id="label--threat-sharing-new-community-industry-sub" class="edit-sub-labels"
-                >Select an industry category</label
-              >
-              <k-select
-                v-model.trim="selectedCategory"
-                id="input--threat-sharing-community-industry-category"
-                custom-menu-class="menu--threat-sharing-community-industry-category"
-                :items="categories"
-                :rules="[categoryRule]"
-                class="edit-select"
-                item-text="name"
-                outlined
-                placeholder="Select the industry category"
-                required
-                return-object
-                type="autocomplete"
-              ></k-select>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area pa-0 target-users-select">
-            <v-list-item-content class>
-              <label id="label--threat-sharing-new-community-privacy" class="edit-labels"
-                >Privacy</label
-              >
-              <label
-                id="label--threat-sharing-new-community-privacy-sub"
-                class="edit-sub-labels pb-0"
-                >Select a privacy option</label
-              >
-              <div class="new-community__radio-group">
-                <v-radio-group
-                  v-model="privacystatusid"
-                  :mandatory="false"
-                  class="my-4 p-0"
-                  id="input--threat-sharing-community-privacy-status"
-                  row
-                >
-                  <v-radio
-                    id="input--threat-sharing-community-privacy-status-public"
-                    color="primary"
-                    label="Public"
-                    value="1"
-                  ></v-radio>
-                  <v-radio
-                    id="input--threat-sharing-community-privacy-status-privacy"
-                    color="primary"
-                    label="Private"
-                    value="2"
-                  ></v-radio>
-                  <v-radio
-                    id="input--threat-sharing-community-privacy-status-hidden"
-                    color="primary"
-                    label="Hidden"
-                    value="3"
-                  ></v-radio>
-                </v-radio-group>
-                <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
-                  >Anyone can find the community and see posted threats</label
-                >
-                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
-                  >Only members can see posted threats and community is listed</label
-                >
-                <label v-else class="edit-privacy-bottom-label"
-                  >Only members can see posted threats and the group in communities list</label
-                >
-              </div>
-            </v-list-item-content>
-          </v-list-item>
+            </div>
+          </FormGroup>
           <v-list-item class="p-0">
             <v-list-item-content class="pt-1 pb-0">
               <div class="d-flex" style="margin-bottom: 8px;">
@@ -184,23 +156,15 @@
       </v-card>
     </div>
     <div class="footer-actions">
-      <v-btn
+      <CancelButton
         id="threat-sharing-new-community-cancel-modal-button"
-        class="cancel-btn"
-        color="#f56c6c"
-        text
         @click="onCancelClicked"
-        >{{ labels.Cancel }}
-      </v-btn>
-      <v-btn
-        :disabled="saveDisable"
-        class="create-btn"
-        color="#2196f3"
-        text
-        @click="onCreateClicked"
+      />
+      <SaveButton
         id="threat-sharing-new-community-update-or-create-modal-button"
-        >{{ resourceId ? 'Save' : 'Create' }}
-      </v-btn>
+        :label="resourceId ? 'Save' : 'Create'"
+        @click="onCreateClicked"
+      />
     </div>
   </div>
 </template>
@@ -213,9 +177,15 @@ import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import CancelButton from '@/components/Common/Buttons/CancelButton'
+import SaveButton from '@/components/Common/Buttons/SaveButton'
 
 export default {
   components: {
+    SaveButton,
+    CancelButton,
+    FormGroup,
     KSelect,
     AppDialog,
     InputEntityName,
@@ -281,14 +251,18 @@ export default {
       }
     }
   },
-  computed: {
-    categoryRule() {
-      if (this.selectedCategory) {
-        return true
-      } else {
-        return 'Category required for creating a community'
-      }
+  mounted() {
+    this.getBusinessCategories()
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+    if (this.resourceId) {
+      this.isCheckboxChecked = true
+      this.acceptCheckbox = true
     }
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = ''
   },
   methods: {
     checkCheckboxValidation() {
@@ -390,15 +364,6 @@ export default {
         }
       })
     }
-  },
-  mounted() {
-    this.getBusinessCategories()
-  },
-  created() {
-    document.querySelector('html').style.overflowY = 'hidden'
-  },
-  beforeDestroy() {
-    document.querySelector('html').style.overflowY = ''
   }
 }
 </script>

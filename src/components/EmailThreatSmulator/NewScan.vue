@@ -139,7 +139,7 @@
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Client Id</label>
+                        <label>Application (Client) ID</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
@@ -150,14 +150,14 @@
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Tenant Id</label>
+                        <label>Directory (Tenant) ID&nbsp;</label>
                         <v-text-field
                           class="ml-2"
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.tenantId"
                           outlined
                           hint=""
-                          placeholder="Tenant Id"
+                          placeholder="Directory (Tenant) ID"
                         />
                       </div>
                     </div>
@@ -729,6 +729,12 @@
             nextButton: isSubmitDisabled,
             submitButton: !disableStartButtonStatus
           }"
+          :ids="{
+            cancelButton: 'btn-cancel--add-or-edit-new-scan-modal',
+            backButton: 'btn-back--add-or-edit-new-scan-modal',
+            nextButton: 'btn-next--add-or-edit-new-scan-modal',
+            saveButton: 'btn-save--add-or-edit-new-scan-modal'
+          }"
           @on-cancel="closeNewScanPopup"
           @on-back="backStep"
           @on-next="nextStep(+1)"
@@ -781,7 +787,7 @@ export default {
         },
         {
           value: 'OAUTH',
-          label: 'Continue with Microsoft'
+          label: 'Continue with Microsoft Office 365'
         }
       ],
       labels,

@@ -3,6 +3,7 @@
     class="mt-4"
     detailable
     icon="mdi-book-open"
+    detailable-button-id="btn--preview-training-report-certificate"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowEmailTemplate"
     :title="labels.CertificateTemplate"

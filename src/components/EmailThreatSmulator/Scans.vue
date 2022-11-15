@@ -72,6 +72,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
@@ -86,6 +87,7 @@
         <RowActionsMenu>
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[1].id"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
@@ -94,6 +96,7 @@
           />
           <DefaultMenuRowAction
             :scope="scope"
+            :id="tableOptions.rowActions[2].id"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
@@ -196,18 +199,21 @@ export default {
         ],
         rowActions: [
           {
+            id: 'btn-view-report--row-actions-scan-list',
             name: 'View Report',
             icon: 'mdi mdi-text-box',
             action: 'View Report',
             disabled: !this.$store.getters['permissions/getEtsQuickScanReportPermissionStat']
           },
           {
+            id: 'btn-delete--row-actions-scan-list',
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this.$store.getters['permissions/getEtsQuickScanPermissionDelete']
           },
           {
+            id: 'btn-duplicate--row-actions-scan-list',
             name: 'Duplicate',
             icon: 'mdi-content-copy',
             action: 'handleEdit',

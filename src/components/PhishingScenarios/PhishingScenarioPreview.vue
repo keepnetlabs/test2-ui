@@ -34,6 +34,30 @@
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
+              <div>
+                <span
+                  class="template-preview__text--title"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >Subject:
+                </span>
+                <span
+                  class="template-preview__text--body"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >{{ emailTemplateParams.subject }}</span
+                >
+              </div>
             </div>
             <div
               v-if="emailTemplateParams.attachment"
@@ -156,13 +180,21 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name, difficultyResourceId, phishingFileName } =
-            emailTemplate || {}
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            phishingFileName,
+            subject
+          } = emailTemplate || {}
 
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
+            subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {

@@ -72,6 +72,29 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
+            property: 'email',
+            align: 'left',
+            editable: false,
+            label: 'Breached Account',
+            fixed: false,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: false
+          },
+          {
+            property: 'hashtype',
+            align: 'left',
+            editable: false,
+            label: 'Password Type',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: false
+          },
+          {
             property: 'source',
             align: 'left',
             editable: false,
@@ -90,29 +113,6 @@ export default {
             fixed: false,
             show: true,
             type: 'text',
-            width: 150,
-            filterableType: false
-          },
-          {
-            property: 'email',
-            align: 'left',
-            editable: false,
-            label: 'Branched Account',
-            fixed: false,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: false
-          },
-          {
-            property: 'hashtype',
-            align: 'left',
-            editable: false,
-            label: 'Password Type',
-            fixed: false,
-            hideSort: false,
-            show: true,
-            type: 'text',
             filterableType: false
           }
         ],
@@ -120,7 +120,8 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTIGridMsg
+          message:
+            'We could not detect any breached and exposed accounts <br/> with email addresses of your domain names'
         },
         selectEvent: {
           clipboard: true,
@@ -193,3 +194,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+#threat-intelligence-table {
+  .table-header {
+    justify-content: right !important;
+  }
+}
+</style>

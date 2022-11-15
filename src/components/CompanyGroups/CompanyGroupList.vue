@@ -39,7 +39,7 @@
       :selectEvent="tableOptions.selectEvent"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="payload"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @addButton="addButton"
@@ -49,7 +49,7 @@
       @onEmptyBtnClicked="addButton"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getTableData"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
@@ -82,7 +82,7 @@ import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'CompanyGroupList',
@@ -91,6 +91,7 @@ export default {
     Datatable,
     DeleteModal
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     isLoadState: {
       type: Boolean
@@ -101,6 +102,7 @@ export default {
       isDeleting: false,
       tableKey: 'key-table-company-group',
       loading: false,
+      isMultipleDelete: false,
       tableData: [],
       isShowDeleteModal: false,
       isShowAddModal: false,
@@ -184,8 +186,7 @@ export default {
           }
         ]
       },
-      payload: getDefaultAxiosPayload(),
-      defaultPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       tableState: null,
       serverSideProps: new ServerSideProps()
     }
@@ -201,18 +202,18 @@ export default {
         if (Object.keys(filterValues).length) {
           for (const [key, value] of Object.entries(filterValues)) {
             if (value.selectValue === 'between') {
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue[0],
                 FieldName: key,
                 Operator: '>='
               })
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue[1],
                 FieldName: key,
                 Operator: '<='
               })
             } else {
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue,
                 FieldName: key,
                 Operator: value.selectValue
@@ -221,7 +222,7 @@ export default {
           }
         }
         this.loading = true
-        searchCompanyGroups(this.payload)
+        searchCompanyGroups(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -259,34 +260,52 @@ export default {
             this.tableKey = Math.random().toString().substring(0, 5)
           })
           .finally(() => (this.loading = false))
+      } else {
+        this.callForData()
       }
     } else {
-      this.getTableData()
+      this.callForData()
     }
   },
+  beforeDestroy() {
+    const tableState = {
+      ...this.$refs.refGroupDataList.getState(),
+      serverSideProps: this.serverSideProps
+    }
+    this.$store.dispatch('datatable/setTable', {
+      key: 'CompanyGroups',
+      tableState
+    })
+  },
   methods: {
+    callForData() {
+      this.loading = true
+      searchCompanyGroups(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(() => (this.loading = false))
+    },
     handleMultipleDeleteOfCompanyGroups(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.resourceId),
         excludedItems,
         selectAll,
-        filter: this.payload.filter
+        filter: this.axiosPayload.filter
       }
       this.multipleDeleteGroupCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
         : items.length
       this.isMultipleDelete = true
       this.changeDeleteModalStatus(true)
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.payload.pageNumber = pageNumber
-      this.getTableData()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.payload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getTableData()
     },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
@@ -295,41 +314,20 @@ export default {
         )
         return column.filterableType
       })
-      this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.getTableData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.payload.ascending = order === 'ascending'
-      this.payload.orderBy = prop
-      this.getTableData()
-    },
-    resetPageNumber() {
-      this.payload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.callForData()
     },
     handleTableDownload(downloadTypes) {
-      const searchFilter = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
-      if (this.$refs.refGroupDataList && this.$refs.refGroupDataList.search) {
-        searchFilter.FilterItems = this.$refs.refGroupDataList
-          .getSearchFilterItems()
-          .filter((item) => item.FieldName.toLowerCase() !== 'companycount')
-        copyOfFilter.FilterGroups.push(searchFilter)
-      }
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
-          orderBy: this.payload.orderBy,
-          ascending: this.payload.ascending,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: copyOfFilter
+          filter: this.axiosPayload.filter
         }
         exportCompanyGroup(payload)
           .then((response) => {
@@ -344,22 +342,6 @@ export default {
           .catch(() => {})
       })
     },
-    getTableData() {
-      this.loading = true
-      searchCompanyGroups(this.payload)
-        .then((response) => {
-          const {
-            data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-        })
-        .finally(() => (this.loading = false))
-    },
     handleTableItemDelete(selectedItem) {
       this.isMultipleDelete = false
       this.selectedRow = selectedItem
@@ -368,9 +350,9 @@ export default {
     deleteConfirmedItem(selectedItem) {
       deleteCompanyGroup(selectedItem.resourceId).then((response) => {
         this.$refs.refGroupDataList.unSelectRow(selectedItem)
-        this?.$refs?.refDataList?.changeServerSideSelectionCount(-1)
+        this?.$refs?.refGroupDataList?.changeServerSideSelectionCount(-1)
         if (response.data && response.data.message) {
-          this.getTableData()
+          this.callForData()
         }
       })
     },
@@ -381,7 +363,7 @@ export default {
           if (this.$refs?.refGroupDataList) {
             this?.$refs?.refGroupDataList?.resetSelectableParams()
           }
-          this.getTableData()
+          this.callForData()
         })
         .finally(() => {
           this.isDeleting = false
@@ -401,7 +383,7 @@ export default {
     companyGroupCreated() {
       this.selectedRow = null
       this.editAddModal = false
-      this.getTableData({ orderBy: 'createdTime', ascending: false })
+      this.callForData()
     },
     editAction(row) {
       this.changeAddModalStatus(true)
@@ -415,25 +397,7 @@ export default {
         name: 'Company Group Details',
         params: { groupId: selectedRow.resourceId }
       })
-    },
-    columnFilterChanged(filter) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
-      this.getTableData()
-    },
-    columnFilterCleared(fieldName) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.getTableData()
     }
-  },
-  beforeDestroy() {
-    const tableState = {
-      ...this.$refs.refGroupDataList.getState(),
-      serverSideProps: this.serverSideProps
-    }
-    this.$store.dispatch('datatable/setTable', {
-      key: 'CompanyGroups',
-      tableState
-    })
   }
 }
 </script>

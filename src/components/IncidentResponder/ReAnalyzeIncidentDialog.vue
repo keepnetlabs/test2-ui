@@ -8,10 +8,10 @@
     :subtitle="name"
     @changeStatus="closeDialog"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       Email will be analyzed again with integrated services
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <AppDialogFooter
         cancel-button-id="btn-cancel--re-analyze-incident-popup"
         confirm-button-id="btn-delete--re-analyze-incident-popup"

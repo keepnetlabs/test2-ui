@@ -12,6 +12,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
+    config &&
+      config.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`

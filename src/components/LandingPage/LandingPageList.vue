@@ -376,7 +376,31 @@ export default {
     this.callForLookups()
     this.callForData()
   },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
   methods: {
+    callForData() {
+      this.loading = true
+      if (this.getLandingPageTemplatesSearchPermissions) {
+        getLandingPageList(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      }
+    },
     handlePreviousTemplate() {
       this.selectedLandingPageIndex--
     },
@@ -399,7 +423,7 @@ export default {
           this.landingPageParams.name = data.name
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
-          this.templateHTML = data.landingPages[0].content
+          this.templateHTML = data.landingPages[0] ? data.landingPages[0].content : null
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -460,27 +484,6 @@ export default {
         })
       })
     },
-    callForData() {
-      this.loading = true
-      if (this.getLandingPageTemplatesSearchPermissions) {
-        getLandingPageList(this.axiosPayload)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
-          })
-          .catch(() => {
-            this.tableData = []
-          })
-          .finally(() => (this.loading = false))
-      }
-    },
     handleActionDelete(row) {
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
@@ -501,9 +504,6 @@ export default {
         this.landingPageData = response.data.data
       })
     }
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
   }
 }
 </script>

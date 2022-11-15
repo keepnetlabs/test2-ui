@@ -34,6 +34,43 @@
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
+              <div>
+                <span
+                  class="template-preview__text--title"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >Subject:
+                </span>
+                <span
+                  class="template-preview__text--body"
+                  style="
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 24px;
+                    color: #383b41;
+                  "
+                  >{{ emailTemplateParams.subject }}</span
+                >
+              </div>
+            </div>
+            <div
+              v-if="emailTemplateParams.attachment"
+              class="attachment-wrapper mt-2"
+              style="position: relative;"
+            >
+              <div class="attachment blue-attach mb-0">
+                <AttachmentsPreview
+                  :deletable="false"
+                  :att="emailTemplateParams.attachment"
+                  :isEmailTemplate="true"
+                />
+              </div>
             </div>
             <hr class="mt-2" v-if="!!emailTemplate" />
             <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
@@ -74,10 +111,17 @@ import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 
 export default {
   name: 'CampaignManagerPreview',
-  components: { KEmailPreview, DatatableLoading, AppDialog, LandingPageTemplateModalPreview },
+  components: {
+    AttachmentsPreview,
+    KEmailPreview,
+    DatatableLoading,
+    AppDialog,
+    LandingPageTemplateModalPreview
+  },
   props: {
     status: {
       type: Boolean
@@ -126,7 +170,13 @@ export default {
           this.emailTemplateParams = {
             name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
             fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
-            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
+            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || '',
+            subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
+            attachment: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+              ? {
+                  name: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+                }
+              : null
           }
           this.landingPageTemplates = landingPage?.landingPages || []
           this.landingPageParams = {

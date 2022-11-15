@@ -1,6 +1,6 @@
 <template>
   <div class="suggested-row">
-    <div class="suggested-com-name" cols="12">
+    <div class="suggested-com-name">
       <div
         :id="`text--threat-sharing-right-column-suggest-communities-item-community-name-${index}`"
         class="suggested-title`"
@@ -50,7 +50,7 @@
         <v-icon v-if="community.isJoined" class="mr-2" style="color: #fff !important;"
           >mdi-account-clock
         </v-icon>
-        <div v-if="community.privacyStatusName != 'Private'">
+        <div v-if="community.privacyStatusName !== 'Private'">
           JOIN
         </div>
         <div v-else-if="community.isJoined">

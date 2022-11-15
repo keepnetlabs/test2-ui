@@ -33,7 +33,7 @@
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
         style="width: 205px !important;"
-        :size="40"
+        :size="100"
         :hint="getHint"
         :isShowFileProgress="true"
         :is-stand-alone="true"
@@ -112,7 +112,7 @@ export default {
     getHint() {
       return `${
         this.typeWithDisplayName ? this.typeWithDisplayName : this.scormType
-      } .zip file. Max. file size 40MB`
+      } .zip file. Max. file size 100MB`
     }
   },
   methods: {

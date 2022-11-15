@@ -115,6 +115,7 @@ export const LABEL_STORE = {
   NO_SCAN: 'You do not have any scan',
   NO_ATTACK_VECTOR: 'You do not have any attack vector',
   NO_SENT_ATTACK: 'You do not have any Sent Attacks',
+  NO_ALLOW_LIST: 'You do not have any domain',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -381,7 +382,8 @@ export const TABLE_SETTINGS_KEYS = {
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorSettings',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackSettings',
-  THREATS_INTELLIGENCE_TABLE: 'ThreatIntelligenceSettings'
+  THREATS_INTELLIGENCE_TABLE: 'ThreatIntelligenceSettings',
+  ALLOW_LIST_TABLE: 'AllowListSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -398,42 +400,6 @@ export function getStoreValue(key, type) {
       break
   }
   return value
-}
-
-export function vuetifySkeletonTypes() {
-  return {
-    actions: 'button@2',
-    article: 'heading, paragraph',
-    avatar: 'avatar',
-    button: 'button',
-    card: 'image, card-heading',
-    'card-avatar': 'image, list-item-avatar',
-    'card-heading': 'heading',
-    chip: 'chip',
-    'date-picker':
-      'list-item, card-heading, divider, date-picker-options, date-picker-days, actions',
-    'date-picker-options': 'text, avatar@2',
-    'date-picker-days': 'avatar@28',
-    heading: 'heading',
-    image: 'image',
-    'list-item': 'text',
-    'list-item-avatar': 'avatar, text',
-    'list-item-two-line': 'sentences',
-    'list-item-avatar-two-line': 'avatar, sentences',
-    'list-item-three-line': 'paragraph',
-    'list-item-avatar-three-line': 'avatar, paragraph',
-    paragraph: 'text@3',
-    sentences: 'text@2',
-    table: 'table-heading, table-thead, table-tbody, table-tfoot',
-    'table-heading': 'heading, text',
-    'table-thead': 'heading@6',
-    'table-tbody': 'table-row-divider@6',
-    'table-row-divider': 'table-row, divider',
-    'table-row': 'table-cell@6',
-    'table-cell': 'text',
-    'table-tfoot': 'text@2, avatar@2',
-    text: 'text'
-  }
 }
 
 export const columnStandards = [
@@ -550,7 +516,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackKeys',
-  THREATS_INTELLIGENCE: 'ThreatIntelligenceList'
+  THREATS_INTELLIGENCE: 'ThreatIntelligenceList',
+  ALLOW_LIST_TABLE: 'AllowListKeys'
 }
 
 export const INTEGRATION_TYPES = {

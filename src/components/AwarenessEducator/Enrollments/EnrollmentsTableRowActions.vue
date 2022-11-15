@@ -2,6 +2,7 @@
   <div>
     <DefaultButtonRowAction
       v-bind="getFirstActionParams"
+      :id="rowActions[0].id"
       :scope="scope"
       :disabled="rowActions[0].disabled"
       :checkIsOwnerProperty="false"
@@ -10,6 +11,7 @@
     <RowActionsMenu>
       <DefaultMenuRowAction
         v-if="!isShowReport"
+        id="btn-view-report--row-actions-enrollments-list"
         :scope="scope"
         :disabled="false"
         icon="mdi-text-box"
@@ -18,6 +20,7 @@
       />
       <DefaultMenuRowAction
         v-if="isRenderEditButton"
+        :id="rowActions[1].id"
         :scope="scope"
         :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
@@ -25,6 +28,7 @@
         @on-click="$emit('on-edit', scope.row)"
       />
       <DefaultMenuRowAction
+        :id="rowActions[2].id"
         :scope="scope"
         :disabled="rowActions[2].disabled"
         :icon="rowActions[2].icon"
@@ -33,6 +37,7 @@
         @on-click="$emit('on-preview', scope.row)"
       />
       <DefaultMenuRowAction
+        :id="rowActions[3].id"
         :scope="scope"
         :disabled="rowActions[3].disabled"
         :icon="rowActions[3].icon"

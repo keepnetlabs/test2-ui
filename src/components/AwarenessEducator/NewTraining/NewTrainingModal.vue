@@ -57,7 +57,8 @@
         :ids="{
           cancelButton: 'btn-cancel--add-or-edit-training-modal',
           backButton: 'btn-back--add-or-edit-training-modal',
-          saveButton: 'btn-next--add-or-edit-training-modal'
+          nextButton: 'btn-next--add-or-edit-training-modal',
+          saveButton: 'btn-save--add-or-edit-training-modal'
         }"
         :step="step"
         :disabled-statuses="{

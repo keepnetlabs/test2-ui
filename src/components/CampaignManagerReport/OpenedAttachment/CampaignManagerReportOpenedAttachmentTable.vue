@@ -37,7 +37,6 @@ import DataTable from '@/components/DataTable'
 import { COLUMNS } from './utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -49,10 +48,11 @@ import {
 } from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'CampaignManagerReportOpenedAttachmentTable',
   components: { DataTable },
-  mixins: [useLoading],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -97,7 +97,6 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-opened-attachment',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,
@@ -131,50 +130,6 @@ export default {
           this.tableData = results
         })
         .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForData()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForData()
-    },
-    serverSideSizeChanged(pageSize = 5) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForData()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
-      this.axiosPayload.orderBy = prop
-      this.callForData()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForData()
     },
     exportCampaignManagerReportOpenedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

@@ -1,8 +1,8 @@
 <template>
   <div class="investigation-details-wrapper" style="margin-top: 6px;">
     <div
-      class="investigation-details"
       v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"
+      class="investigation-details"
     >
       <div class="investigation-details__container">
         <new-investigation
@@ -380,9 +380,10 @@
                     <div class="investigation-details__container__stats__cards__card-left">
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon bg-green"
-                        style="
-                          box-shadow: 0 2px 5px rgba(67, 160, 71, 0.3), 0 0 3px rgba(0, 0, 0, 0.1);
-                        "
+                        :style="{
+                          boxShadow:
+                            '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+                        }"
                       >
                         <v-icon medium left color="white">mdi-account-circle</v-icon>
                       </div>
@@ -833,7 +834,7 @@
                           </v-btn>
                         </template>
                         <v-list>
-                          <v-list-item @click="setAutoRefresh">
+                          <v-list-item id="btn-auto-refresh--investigation" @click="setAutoRefresh">
                             <v-list-item-title>
                               <div class="menu-item__content">
                                 Auto-Refresh every 15 seconds
@@ -936,6 +937,7 @@
               >
                 <template #datatable-row-actions="{scope}">
                   <DefaultButtonRowAction
+                    :id="rowActions[0].id"
                     :icon="rowActions[0].icon"
                     :text="rowActions[0].name"
                     :scope="scope"
@@ -943,6 +945,7 @@
                     @on-click="deleteInvestigationDetails(scope.row)"
                   />
                   <DefaultButtonRowAction
+                    :id="rowActions[1].id"
                     :icon="rowActions[1].icon"
                     :text="rowActions[1].name"
                     :scope="scope"
@@ -1463,12 +1466,6 @@ export default {
         icon: 'mdi-alert',
         action: 'sendInvestigationDetailsWarningMessage'
       }
-      // {
-      //   id: 'btn-delete-and-notify--investigation-details-row-actions',
-      //   name: 'Delete email and notify user',
-      //   icon: 'mdi-delete',
-      //   action: 'deleteAndSendNotification'
-      // }
     ],
     addUsers: {
       show: true,
@@ -2258,20 +2255,6 @@ export default {
       this.isWantToDelete = true
       this.deleteValue = value
     },
-    // getDeleteEmailDisableStatus(row) {
-    //   if (!row.emailLastAction) {
-    //     return false
-    //   }
-
-    //   if (
-    //     row.emailLastAction.actionType === 'Delete' &&
-    //     row.emailLastAction.status !== 'CompletedWithError'
-    //   ) {
-    //     return true
-    //   }
-
-    //   return false
-    // },
     getWarningEmailDisableStatus(row) {
       if (!row.emailLastAction) {
         return false
@@ -2518,7 +2501,9 @@ export default {
       const style = {}
       style.boxShadow = statsAndMenuData
         ? statsAndMenuData.status === 'Running'
-          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          ? statsAndMenuData['onlineUserCount']
+            ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+            : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : statsAndMenuData && statsAndMenuData.status === 'Finished'
           ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : statsAndMenuData && statsAndMenuData.status === 'Expired'
@@ -2714,7 +2699,11 @@ export default {
         attachment['Attachment Size'] = size
       })
 
-      this.criteriaChips = [...headers, ...this.investigationDetailsData.bodies, ...attachments]
+      this.criteriaChips = [
+        ...headers,
+        ...(this.investigationDetailsData?.bodies || []),
+        ...attachments
+      ]
       this.leftMenuLoading = false
       this.contentMenuLoading = false
     },

@@ -358,7 +358,7 @@
                   icon
                   @click="handleResend(multipleSelection)"
                 >
-                  <v-icon class="selection-icons" color="white">mdi-refresh</v-icon>
+                  <v-icon class="selection-icons" color="white">$white-resend</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">Resend</span>
@@ -788,9 +788,11 @@
         <div v-else class="empty-table">
           <div class="empty-inline">
             <slot name="empty-table-inline">
-              <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
-                {{ empty.message }}
-              </h2>
+              <h2
+                :id="`text--empty-message-${Math.random().toString().substring(2)}`"
+                class="text-center"
+                v-html="empty.message"
+              ></h2>
               <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
                 {{ empty.subMes }}
               </p>
@@ -2476,11 +2478,6 @@ export default {
       }
 
       return sortData
-    },
-
-    paginationChangedEvent(paginationProps) {
-      if (this.isServerSide && this.serverSideEvents.pagination)
-        this.$emit('paginationChangedEvent', paginationProps)
     },
     debounce(fn, delay) {
       if (this.timeout) {

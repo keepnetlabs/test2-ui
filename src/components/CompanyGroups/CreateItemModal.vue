@@ -9,6 +9,7 @@
     "
     title-id="text--create-company-group-popup-title"
     subtitle-id="text--create-company-group-popup-subtitle"
+    customSize="800"
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
@@ -49,7 +50,7 @@
               }"
               v-model.trim="selectedCompanies"
               id="input--company-group-add-members"
-              :menu-props="{ contentClass: 'input--company-group-add-members' }"
+              :menu-props="{ contentClass: 'input--company-group-add-members', auto: true }"
               :items="companies"
               :return-object="true"
               auto-select-first

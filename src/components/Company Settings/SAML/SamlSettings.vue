@@ -47,7 +47,7 @@
         @onEmptyBtnClicked="toggleNewSamlSettingsModalStatus(false)"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSamlSettings"
+        @refreshAction="callForData"
         @downloadEvent="exportSamlSettings"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
@@ -69,21 +69,18 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  columnFilterChanged,
-  columnFilterCleared,
-  downloadExportedFile
-} from '@/utils/helperFunctions'
+import { downloadExportedFile } from '@/utils/helperFunctions'
 import DeleteSamlSettings from '@/components/Company Settings/SAML/DeleteSamlSettings'
 import NewSamlSettings from '@/components/Company Settings/SAML/NewSamlSettings'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'SamlSettings',
   components: { NewSamlSettings, DeleteSamlSettings, CompanySettingsHeader, DataTable },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       axiosPayload: getDefaultAxiosPayload(),
-      defaultAxiosPayload: getDefaultAxiosPayload(),
       labels,
       isEditOrNewModalOpen: false,
       isEdit: false,
@@ -178,10 +175,10 @@ export default {
     }
   },
   created() {
-    this.callForSamlSettings()
+    this.callForData()
   },
   methods: {
-    callForSamlSettings() {
+    callForData() {
       this.loading = true
       searchSamlSettings(this.axiosPayload)
         .then((response) => {
@@ -197,34 +194,10 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    columnFilterChanged(filter = {}) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      this.callForSamlSettings()
-    },
-    columnFilterCleared(fieldName = '') {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.axiosPayload
-      )
-      this.callForSamlSettings()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForSamlSettings()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSamlSettings()
-    },
     sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop.toLowerCase() === 'statusname' ? 'StatusId' : prop
-      this.callForSamlSettings()
+      this.callForData()
     },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
@@ -240,16 +213,12 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.callForSamlSettings()
-    },
-    resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.callForData()
     },
     handleEditOrNewFormSuccess() {
       this.selectedRow = null
       this.isEdit = false
-      this.callForSamlSettings()
+      this.callForData()
       this.toggleNewSamlSettingsModalStatus()
     },
     handleEditAction(row = {}) {
@@ -287,7 +256,7 @@ export default {
     },
     handleOnDelete(selectedRow = {}) {
       this.$refs.refSamlSettings.unSelectRow(selectedRow)
-      this.callForSamlSettings()
+      this.callForData()
     }
   }
 }

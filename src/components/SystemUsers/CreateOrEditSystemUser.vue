@@ -143,8 +143,6 @@ export default {
           const { phoneNumber } = this.formValues
           const formData = {
             ...this.formValues,
-            //roleResourceIdList: this.role,
-            //companyResourceId: localStorage.getItem('companyResourceId')
             phoneNumber: phoneNumber.split(' ').join('')
           }
           formData.roleResourceIdList = [this.formValues.roleResourceIdList]
@@ -237,7 +235,6 @@ export default {
         ]
       }
     }
-    let _this = this
     let allRoles = []
     let availableRoles = []
     const response = await getSystemUsersRole(payload)
@@ -268,7 +265,7 @@ export default {
             return item.name === roles
           })?.resourceId
         if (resourceId) {
-          _this.formValues.roleResourceIdList = resourceId
+          this.formValues.roleResourceIdList = resourceId
         }
         availableRoles = allRoles
         this.roleItems = availableRoles.map((item) => {

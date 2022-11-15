@@ -1,9 +1,9 @@
 <template>
   <div class="fullscreen-form company-create-modal">
     <configure-new-company-dialog
-      v-if="isShowConfigurewNewCompany"
+      v-if="isShowConfigureNewCompany"
       :company-name="formData.Name"
-      :status="isShowConfigurewNewCompany"
+      :status="isShowConfigureNewCompany"
       @on-close="closeConfigureNewCompanyDialog"
       @on-confirm="confirmConfigureNewCompanyDialog"
     />
@@ -48,116 +48,87 @@
           <v-stepper-items>
             <!-- STEP 1 -->
             <v-stepper-content step="1">
-              <v-list-item>
-                <v-list-item-content class="mb-0">
-                  <v-list-item-title class="v-card-form-title">
-                    Company Information
-                  </v-list-item-title>
-                  <v-list-item-title class="v-card-sub-header">
-                    Enter company information
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <ConfigureCompanyStepHeader
+                class="mb-6"
+                title="Company Information"
+                subtitle="Enter company information"
+              />
               <v-form ref="refStep1Form" lazy-validation>
-                <v-list-item class="mt-6">
-                  <v-list-item-content>
-                    <label class="bottom-margin">{{ labels.CompanyName }}</label>
-                    <InputEntityName
-                      v-model.trim="formData.Name"
-                      entityName="company"
-                      initialPlaceholder="Enter a name for the company"
-                      id="input--company-name"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">{{ labels.Description }}</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Describe the company briefly
-                    </v-list-item-title>
-                    <InputDescription
-                      v-model.trim="formData.Description"
-                      id="input--company-description"
-                      :required="false"
-                      :max-length="300"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">{{ labels.Industry }}</label>
-                    <k-select
-                      type="autocomplete"
-                      :items="industries"
-                      id="input--company-industry"
-                      v-model="formData.IndustryResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
-                      placeholder="Select industry"
-                      :rules="[(v) => validations.required(v)]"
-                      hint="*Required"
-                      no-data-text="No industry available"
-                      :menu-props="{ offsetY: true }"
-                      persistent-hint
-                    ></k-select>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">Country</label>
-                    <k-select
-                      type="autocomplete"
-                      v-model="formData.CountryResourceId"
-                      id="input--company-country"
-                      :items="countries"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
-                      placeholder="Select country"
-                      :rules="[(v) => validations.required(v)]"
-                      hint="*Required"
-                      no-data-text="No country available"
-                      :menu-props="{ offsetY: true }"
-                      persistent-hint
-                    ></k-select>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">Timezone</label>
-                    <InputTimezone
-                      v-model="formData.timeZoneId"
-                      hint="*Required"
-                      persistent-hint
-                      isBlock
-                      :rules="[(v) => validations.required(v)]"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">{{ labels.Address }}</label>
-                    <InputAddress
-                      v-model="formData.Address"
-                      id="input--company-address"
-                      initial-placeholder="Enter company address"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">{{ labels.WebsiteUrl }}</label>
-                    <InputUrl
-                      v-model="formData.WebsiteUrl"
-                      :required="false"
-                      :persistent-hint="false"
-                      :hint="null"
-                      id="input--company-website-url"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
+                <FormGroup :title="labels.CompanyName" has-hint>
+                  <InputEntityName
+                    v-model.trim="formData.Name"
+                    id="input--company-name"
+                    entity-name="company"
+                    initial-placeholder="Enter a name for the company"
+                  />
+                </FormGroup>
+                <FormGroup :title="labels.Description" sub-title="Describe the company briefly">
+                  <InputDescription
+                    v-model.trim="formData.Description"
+                    id="input--company-description"
+                    :required="false"
+                    :max-length="300"
+                  />
+                </FormGroup>
+                <FormGroup :title="labels.Industry" has-hint>
+                  <k-select
+                    type="autocomplete"
+                    v-model="formData.IndustryResourceId"
+                    id="input--company-industry"
+                    :items="industries"
+                    persistent-hint
+                    item-text="name"
+                    item-value="resourceId"
+                    outlined
+                    placeholder="Select industry"
+                    hint="*Required"
+                    no-data-text="No industry available"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
+                <FormGroup title="Country" has-hint>
+                  <k-select
+                    type="autocomplete"
+                    v-model="formData.CountryResourceId"
+                    id="input--company-country"
+                    :items="countries"
+                    persistent-hint
+                    item-text="name"
+                    item-value="resourceId"
+                    outlined
+                    placeholder="Select country"
+                    hint="*Required"
+                    no-data-text="No country available"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
+                <FormGroup title="Timezone" has-hint>
+                  <InputTimezone
+                    v-model="formData.timeZoneId"
+                    hint="*Required"
+                    persistent-hint
+                    is-block
+                    :rules="[(v) => validations.required(v)]"
+                  />
+                </FormGroup>
+                <FormGroup :title="labels.Address">
+                  <InputAddress
+                    v-model="formData.Address"
+                    id="input-ip--company-address"
+                    initial-placeholder="Enter company address"
+                  />
+                </FormGroup>
+                <FormGroup :title="labels.WebsiteUrl">
+                  <InputUrl
+                    v-model="formData.WebsiteUrl"
+                    :required="false"
+                    :persistent-hint="false"
+                    :hint="null"
+                    id="input--company-website-url"
+                  />
+                </FormGroup>
                 <v-list-item>
                   <v-list-item-content :class="[getPreviewLogoUrl && 'mb-0']">
                     <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
@@ -218,8 +189,8 @@
                     <a
                       v-if="edit && stepLock"
                       id="btn-edit--company-form-step-2"
-                      @click.prevent="editStepLock"
                       class="company-create-modal__edit-link"
+                      @click.prevent="editStepLock"
                       >Click here to edit</a
                     >
                   </v-list-item-title>
@@ -375,16 +346,11 @@
             </v-stepper-content>
             <!-- STEP 3 -->
             <v-stepper-content step="3">
-              <v-list-item>
-                <v-list-item-content class="mb-0">
-                  <v-list-item-title class="v-card-form-title">
-                    Groups that this company belongs to
-                  </v-list-item-title>
-                  <v-list-item-title class="v-card-sub-header">
-                    Select company groups
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <ConfigureCompanyStepHeader
+                class="mb-6"
+                title="Groups that this company belongs to"
+                subtitle="Select company groups"
+              />
               <v-form ref="refStep3Form" lazy-validation onSubmit="return false;">
                 <v-list-item class="mt-6">
                   <v-list-item-content>
@@ -419,106 +385,92 @@
             </v-stepper-content>
             <!-- STEP 4 -->
             <v-stepper-content step="4">
-              <v-list-item>
-                <v-list-item-content class="mb-0">
-                  <v-list-item-title class="v-card-form-title">
-                    Content Management
-                  </v-list-item-title>
-                  <v-list-item-title class="v-card-sub-header">
-                    Select which content this company can access
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <ConfigureCompanyStepHeader
+                class="mb-6"
+                title=" Content Management"
+                subtitle="Select which content this company can access"
+              />
               <v-form ref="refStep4Form" lazy-validation>
-                <v-list-item class="mt-6">
-                  <v-list-item-content>
-                    <label class="bottom-margin">Notification Templates</label>
-                    <k-select
-                      v-model="formData.NotificationTemplateTypeResourceId"
-                      :items="notificationTemplates"
-                      :return-object="false"
-                      class="tlp-select"
-                      id="input--company-notification-templates"
-                      :rules="[(v) => !!v || 'Required']"
-                      outlined
-                      hint="*Required"
-                      persistent-hint
-                      placeholder="Select an option"
-                      item-text="name"
-                      item-value="resourceId"
-                      no-data-text="No notification template available"
-                      :slots="{ item: true, selection: false }"
-                    >
-                      <template v-slot:item="{ item }">
-                        <v-list-item-content>
-                          <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
-                            item.description
-                          }}</v-list-item-subtitle>
-                        </v-list-item-content>
-                      </template>
-                    </k-select>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">Training Content</label>
-                    <k-select
-                      v-model="formData.TrainingContentTypeResourceId"
-                      :items="trainingContents"
-                      :return-object="false"
-                      class="tlp-select"
-                      id="input--company-training-content"
-                      :rules="[(v) => !!v || 'Required']"
-                      outlined
-                      hint="*Required"
-                      persistent-hint
-                      placeholder="Select an option"
-                      item-text="name"
-                      item-value="resourceId"
-                      no-data-text="No training content available"
-                      :slots="{ item: true, selection: false }"
-                    >
-                      <template #item="{ item }">
-                        <v-list-item-content>
-                          <v-list-item-title :id="item.titleId"> {{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
-                            item.description
-                          }}</v-list-item-subtitle>
-                        </v-list-item-content>
-                      </template>
-                    </k-select>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="bottom-margin">SMTP Configurations</label>
-                    <k-select
-                      v-model="formData.SmtpConfigurationTypeResourceId"
-                      :items="smtpConfigurations"
-                      :return-object="false"
-                      class="tlp-select"
-                      id="input--company-smtp-configurations"
-                      :rules="[(v) => !!v || 'Required']"
-                      outlined
-                      hint="*Required"
-                      persistent-hint
-                      placeholder="Select an option"
-                      item-text="name"
-                      item-value="resourceId"
-                      :slots="{ item: true, selection: false }"
-                    >
-                      <template v-slot:item="{ item }">
-                        <v-list-item-content>
-                          <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
-                            item.description
-                          }}</v-list-item-subtitle>
-                        </v-list-item-content>
-                      </template>
-                    </k-select>
-                  </v-list-item-content>
-                </v-list-item>
+                <FormGroup has-hint title="Notification Templates">
+                  <k-select
+                    v-model="formData.NotificationTemplateTypeResourceId"
+                    :items="notificationTemplates"
+                    :return-object="false"
+                    class="tlp-select"
+                    id="input--company-notification-templates"
+                    :rules="[(v) => !!v || 'Required']"
+                    outlined
+                    hint="*Required"
+                    persistent-hint
+                    placeholder="Select an option"
+                    item-text="name"
+                    item-value="resourceId"
+                    no-data-text="No notification template available"
+                    :slots="{ item: true, selection: false }"
+                  >
+                    <template v-slot:item="{ item }">
+                      <v-list-item-content>
+                        <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
+                        <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
+                          item.description
+                        }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </k-select>
+                </FormGroup>
+                <FormGroup has-hint title="Training Content">
+                  <k-select
+                    v-model="formData.TrainingContentTypeResourceId"
+                    :items="trainingContents"
+                    :return-object="false"
+                    class="tlp-select"
+                    id="input--company-training-content"
+                    :rules="[(v) => !!v || 'Required']"
+                    outlined
+                    hint="*Required"
+                    persistent-hint
+                    placeholder="Select an option"
+                    item-text="name"
+                    item-value="resourceId"
+                    no-data-text="No training content available"
+                    :slots="{ item: true, selection: false }"
+                  >
+                    <template #item="{ item }">
+                      <v-list-item-content>
+                        <v-list-item-title :id="item.titleId"> {{ item.name }}</v-list-item-title>
+                        <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
+                          item.description
+                        }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </k-select>
+                </FormGroup>
+                <FormGroup has-hint title="SMTP Configurations">
+                  <k-select
+                    v-model="formData.SmtpConfigurationTypeResourceId"
+                    :items="smtpConfigurations"
+                    :return-object="false"
+                    class="tlp-select"
+                    id="input--company-smtp-configurations"
+                    :rules="[(v) => !!v || 'Required']"
+                    outlined
+                    hint="*Required"
+                    persistent-hint
+                    placeholder="Select an option"
+                    item-text="name"
+                    item-value="resourceId"
+                    :slots="{ item: true, selection: false }"
+                  >
+                    <template v-slot:item="{ item }">
+                      <v-list-item-content>
+                        <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
+                        <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
+                          item.description
+                        }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </k-select>
+                </FormGroup>
                 <FormGroup
                   title="Preferred Language"
                   sub-title="Sort contents in this language first on lists and tables"
@@ -571,7 +523,12 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { getSelectSearchPayload, scrollToComponent, isDifferent } from '@/utils/functions'
+import {
+  getSelectSearchPayload,
+  scrollToComponent,
+  isDifferent,
+  getDefaultAxiosPayload
+} from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
@@ -587,6 +544,7 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -595,6 +553,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    ConfigureCompanyStepHeader,
     FormGroup,
     InputTimezone,
     StepperFooter,
@@ -621,7 +580,7 @@ export default {
       saveDisable: false,
       totalNumberOfPagesOfCompanyGroups: 1,
       createdCompanyResourceId: null,
-      isShowConfigurewNewCompany: false,
+      isShowConfigureNewCompany: false,
       labels,
       isCompanyGroupsLoading: false,
       stepLock: false,
@@ -670,27 +629,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       validations: validations,
-      companyGroupPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
+      companyGroupPayload: getDefaultAxiosPayload()
     }
   },
   computed: {
@@ -758,6 +697,92 @@ export default {
       return this.activeStep > 1
     }
   },
+  watch: {
+    'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
+      if (oldVal && newVal === 'MaR9NJslgSGW' && this.edit) {
+        this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
+      }
+    },
+    'formData.LicenseStartDate'(newVal, oldVal) {
+      if (oldVal && !newVal) {
+        this.startDateValidation = 'Start date should be picked'
+      } else {
+        this.startDateValidation = ''
+      }
+      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+      if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
+        this.expiryPeriodChange()
+      }
+      if (
+        this.formData.LicensePeriodTypeResourceId &&
+        this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'
+      ) {
+        if (!newVal && oldVal && !this.edit) {
+          this.formData.LicenseEndDate = ''
+          return
+        }
+        if (newVal && oldVal) {
+          const newSelectedDate = newVal.split(' ')[0]
+          const oldSelectedDate = oldVal.split(' ')[0]
+          if (newSelectedDate !== oldSelectedDate && !this.edit) {
+            this.formData.LicenseEndDate = ''
+          }
+        }
+      }
+    },
+    'formData.LicenseEndDate'(newVal, oldVal) {
+      if (oldVal && !newVal) {
+        this.endDateValidation = 'End date should be picked'
+      } else {
+        this.endDateValidation = ''
+      }
+      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+    },
+    'formData.LicenseModuleResourceIdArray'(newVal) {
+      if (newVal.length) {
+        const findedLicense = this.licenceTypes.find((license) => {
+          const { licenseModules = [] } = license
+          if (licenseModules && licenseModules.length && licenseModules.length === newVal.length) {
+            return newVal.every((resourceId) => {
+              return licenseModules.some((item) => {
+                return item.resourceId === resourceId
+              })
+            })
+          }
+        })
+        let selectedLicenceTypeResourceId
+        if (!findedLicense) {
+          const customLicense = this.licenceTypes.find((item) => item.name === 'Custom')
+          if (customLicense) {
+            selectedLicenceTypeResourceId = customLicense.resourceId
+          }
+        } else {
+          selectedLicenceTypeResourceId = findedLicense.resourceId
+        }
+        if (selectedLicenceTypeResourceId) {
+          this.$nextTick(() => {
+            this.formData.LicenseTypeResourceId = selectedLicenceTypeResourceId
+          })
+        }
+      }
+    },
+    isActive(value) {
+      this.formData.statusId = value ? 1 : 0
+    },
+    search(val) {
+      if (val && val.length > 2) {
+        this.debounce(() => {
+          this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
+          searchCompanies(this.payload).then((response) => {
+            this.companies =
+              response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+                ? response.data.data.results
+                : []
+          })
+        }, 1000)
+      }
+    }
+  },
   mounted() {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
@@ -805,7 +830,6 @@ export default {
         const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
         selectedStartDate = new Date(year, month - 1, day)
       }
-      // Add a day and control
       return selectedStartDate.getTime() + 1000 * 60 * 60 * 24 > val.getTime()
     },
     handleCancel() {
@@ -922,7 +946,7 @@ export default {
         })
     },
     closeConfigureNewCompanyDialog() {
-      this.isShowConfigurewNewCompany = false
+      this.isShowConfigureNewCompany = false
       this.cancelForm()
     },
     handleSave() {
@@ -975,7 +999,7 @@ export default {
               } = response
               this.createdCompanyResourceId = data.resourceId
               this.saveDisable = false
-              this.isShowConfigurewNewCompany = true
+              this.isShowConfigureNewCompany = true
             })
             .catch(() => {
               this.saveDisable = false
@@ -1095,92 +1119,6 @@ export default {
     },
     editStepLock() {
       this.stepLock = false
-    }
-  },
-  watch: {
-    'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
-      if (oldVal && newVal === 'MaR9NJslgSGW' && this.edit) {
-        this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
-      }
-    },
-    'formData.LicenseStartDate'(newVal, oldVal) {
-      if (oldVal && !newVal) {
-        this.startDateValidation = 'Start date should be picked'
-      } else {
-        this.startDateValidation = ''
-      }
-      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
-      if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
-        this.expiryPeriodChange()
-      }
-      if (
-        this.formData.LicensePeriodTypeResourceId &&
-        this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'
-      ) {
-        if (!newVal && oldVal && !this.edit) {
-          this.formData.LicenseEndDate = ''
-          return
-        }
-        if (newVal && oldVal) {
-          const newSelectedDate = newVal.split(' ')[0]
-          const oldSelectedDate = oldVal.split(' ')[0]
-          if (newSelectedDate !== oldSelectedDate && !this.edit) {
-            this.formData.LicenseEndDate = ''
-          }
-        }
-      }
-    },
-    'formData.LicenseEndDate'(newVal, oldVal) {
-      if (oldVal && !newVal) {
-        this.endDateValidation = 'End date should be picked'
-      } else {
-        this.endDateValidation = ''
-      }
-      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
-    },
-    'formData.LicenseModuleResourceIdArray'(newVal) {
-      if (newVal.length) {
-        const findedLicense = this.licenceTypes.find((license) => {
-          const { licenseModules = [] } = license
-          if (licenseModules && licenseModules.length && licenseModules.length === newVal.length) {
-            return newVal.every((resourceId) => {
-              return licenseModules.some((item) => {
-                return item.resourceId === resourceId
-              })
-            })
-          }
-        })
-        let selectedLicenceTypeResourceId
-        if (!findedLicense) {
-          const customLicense = this.licenceTypes.find((item) => item.name === 'Custom')
-          if (customLicense) {
-            selectedLicenceTypeResourceId = customLicense.resourceId
-          }
-        } else {
-          selectedLicenceTypeResourceId = findedLicense.resourceId
-        }
-        if (selectedLicenceTypeResourceId) {
-          this.$nextTick(() => {
-            this.formData.LicenseTypeResourceId = selectedLicenceTypeResourceId
-          })
-        }
-      }
-    },
-    isActive(value) {
-      this.formData.statusId = value ? 1 : 0
-    },
-    search(val) {
-      if (val && val.length > 2) {
-        this.debounce(() => {
-          this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
-          searchCompanies(this.payload).then((response) => {
-            this.companies =
-              response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-                ? response.data.data.results
-                : []
-          })
-        }, 1000)
-      }
     }
   }
 }

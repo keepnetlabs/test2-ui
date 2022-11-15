@@ -3,10 +3,6 @@ import uploadRequest from '../utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'analysis-engines'
 
-export function deleteIntegration(id) {
-  return testRequest.delete(`${API_URL}/${id}`)
-}
-
 export function getAllCommunityList(payload) {
   return testRequest.post(`communities/search/all`, payload)
 }
@@ -250,9 +246,7 @@ export function shareAPost(id, payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
-export function getNotifications() {
-  return testRequest.get(`/system-users/notification-setting`, {})
-}
+
 export function updateNotifications(payload) {
   return testRequest.put(`/system-users/notification-setting`, payload, {
     snackbar: COMMON_SNACKBAR

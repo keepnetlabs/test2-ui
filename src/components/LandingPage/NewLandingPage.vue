@@ -192,6 +192,7 @@
                         ></v-select>
                         <v-text-field
                           v-model.trim="formValues.subDomain"
+                          ref="refSubdomain"
                           required
                           placeholder="Enter subdomain"
                           hint="*Required"
@@ -535,11 +536,12 @@ export default {
       subdomainRules: [],
       httpRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainDashDot(v)
+        (v) =>
+          Validations.subdomainDashDot(v, 'Only (-) and (.)  are allowed as special characters')
       ],
       httpsRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainDash(v)
+        (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character')
       ],
       editItemsDisabled: false
     }
@@ -907,6 +909,11 @@ export default {
       } else {
         this.subdomainRules = this.httpsRules
       }
+      this.$nextTick(() => {
+        if (this.$refs.refSubdomain) {
+          this.$refs.refSubdomain.validate()
+        }
+      })
     }
   },
   mounted() {

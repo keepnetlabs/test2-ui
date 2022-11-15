@@ -80,10 +80,6 @@ export function createTargetUserCustomField(payload) {
   return testRequest.post(`/custom-fields`, payload)
 }
 
-export function updateTargetUserCustomField(payload) {
-  return testRequest.put(`/custom-fields/${payload.resourceId}`, payload)
-}
-
 export function uploadExcelOrCsvForTargetUsers(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
