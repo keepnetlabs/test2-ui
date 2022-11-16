@@ -1,39 +1,52 @@
 <template>
-  <div id="sandbox">
-    <data-table
-      id="sandbox-data-table-log"
-      is-server-side
-      filterable
-      options
-      no-padding-bottom
-      :loading="loading"
-      :selectable="false"
-      :table="tableData"
-      :columns="tableOptions.columns"
-      :empty="tableOptions.empty"
-      :select-event="tableOptions.selectEvent"
-      :row-actions="tableOptions.rowActions"
-      :addButton="tableOptions.addButton"
-      :isShowDownloadModal="isSandboxLogDownloadModal"
-      :download-button="tableOptions.downloadButton"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="bodyData"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-      @deleteAction="showDeleteModal = true"
-      @onEmptyBtnClicked="modalStatus = true"
-      @downloadEvent="exportSandboxLog"
-      @paginationChangedEvent="paginationChangedEvent($event)"
-      @handleDownloadButtonClick="handleSandboxLogDownloadButtonClick"
-      @columnFilterChanged="columnFilterChanged"
-      @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
-      @server-side-page-number-changed="serverSidePageNumberChanged"
-      @server-side-size-changed="serverSideSizeChanged"
-      @sortChangedEvent="sortChanged"
-      @searchChangedEvent="handleSearchChange"
-    ></data-table>
+  <div class="mt-4 pa-2">
+    <v-card>
+      <div class="header">
+        <div class="title">
+          <h2>
+            Logs
+          </h2>
+          <p class="">
+            All actions and results from client requests
+          </p>
+        </div>
+      </div>
+      <div id="sandbox">
+        <data-table
+          id="sandbox-data-table-log"
+          is-server-side
+          filterable
+          options
+          no-padding-bottom
+          :loading="loading"
+          :selectable="false"
+          :table="tableData"
+          :columns="tableOptions.columns"
+          :empty="tableOptions.empty"
+          :select-event="tableOptions.selectEvent"
+          :row-actions="tableOptions.rowActions"
+          :addButton="tableOptions.addButton"
+          :isShowDownloadModal="isSandboxLogDownloadModal"
+          :download-button="tableOptions.downloadButton"
+          :server-side-props="serverSideProps"
+          :server-side-events="{ pagination: true, search: true, sort: true }"
+          :axios-payload.sync="bodyData"
+          :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+          :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+          @deleteAction="showDeleteModal = true"
+          @onEmptyBtnClicked="modalStatus = true"
+          @downloadEvent="exportSandboxLog"
+          @handleDownloadButtonClick="handleSandboxLogDownloadButtonClick"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
+          @refreshAction="getDatatableList"
+          @server-side-page-number-changed="serverSidePageNumberChanged"
+          @server-side-size-changed="serverSideSizeChanged"
+          @sortChangedEvent="sortChanged"
+          @searchChangedEvent="handleSearchChange"
+        ></data-table>
+      </div>
+    </v-card>
   </div>
 </template>
 
@@ -349,15 +362,6 @@ export default {
       selections.forEach((item) => {
         this.handleDelete(item)
       })
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
-      }
-      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
       this.bodyData = { ...this.bodyData, filter }

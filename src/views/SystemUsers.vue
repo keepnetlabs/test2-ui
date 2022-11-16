@@ -45,12 +45,6 @@ export default {
       getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
     })
   },
-  methods: {
-    changeTabStatus(index) {
-      this.tab = index
-    }
-  },
-
   beforeRouteLeave(to, from, next) {
     const { refPeople, refPermissions } = this.$refs
     if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
@@ -66,6 +60,11 @@ export default {
   created() {
     if (!this.getSystemUsersSearchPermission && this.getSystemRolesSearchPermission) {
       this.tab = 'system-users--roles'
+    }
+  },
+  methods: {
+    changeTabStatus(index) {
+      this.tab = index
     }
   }
 }

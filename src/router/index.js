@@ -5,7 +5,6 @@ import DashBoard from '@/views/DashBoard'
 import Main from '@/layout/Main'
 import ThreatSharing from '@/views/ThreatSharing'
 import Community from '@/views/Community'
-import ShowAllJobs from '@/views/ShowAllJobs'
 import TargetUsers from '@/views/TargetUsers'
 import IncidentResponder from '@/views/IncidentResponder'
 import EmailDetails from '@/components/IncidentResponder/emailDetails'
@@ -42,8 +41,6 @@ import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
-import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
-import EmailThreatSimulatorRequest from '@/utils/emailThreatSimulatorRequest'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',

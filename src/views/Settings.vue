@@ -67,11 +67,6 @@ export default {
       this.tab = 'ExcludeIpAddress'
     }
   },
-  methods: {
-    changeTabStatus(tabStatus) {
-      this.tab = tabStatus
-    }
-  },
   beforeRouteLeave(to, from, next) {
     const { refDomains, refDnsServiceList } = this.$refs
     if (refDomains && refDomains.modalStatus) {
@@ -82,6 +77,11 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  methods: {
+    changeTabStatus(tabStatus) {
+      this.tab = tabStatus
     }
   }
 }
