@@ -4,49 +4,24 @@
       v-if="isWantToAddNewCommunity"
       ref="newCommunityModal"
       :status="isWantToAddNewCommunity"
-      :communityItem="communityItem"
-      :resourceId="resourceId"
+      :community-item="communityItem"
+      :resource-id="resourceId"
       @closeAdd="onAddClose"
     />
-    <app-dialog
+    <delete-community-dialog
+      v-if="isWantToDelete"
       :status="isWantToDelete"
-      icon="mdi-delete"
-      type="delete"
-      title="Delete Community?"
-      :subtitle="deleteCommunityName"
-      :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
-      @changeStatus="isWantToDelete = false"
-    >
-      <template #app-dialog-footer>
-        <app-dialog-footer
-          actionButtonText="DELETE"
-          type="delete"
-          cancel-button-id="threat-sharing-communities-delete-modal-cancel-button"
-          confirm-button-id="threat-sharing-communities-delete-modal-confirm-button"
-          @handleClose="isWantToDelete = false"
-          @handleConfirm="deleteCommunityConfirm()"
-        />
-      </template>
-    </app-dialog>
-    <app-dialog
+      :delete-community-name="deleteCommunityName"
+      @on-close="isWantToDelete = false"
+      @on-confirm="deleteCommunityConfirm()"
+    />
+    <leave-community-dialog
+      v-if="isWantToToLeaveFromCommunity"
       :status="isWantToToLeaveFromCommunity"
-      icon="mdi-exit-to-app"
-      title="Leave Community?"
-      :subtitle="leaveCommunityName"
-      :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
-      @changeStatus="isWantToToLeaveFromCommunity = false"
-    >
-      <template #app-dialog-footer>
-        <app-dialog-footer
-          :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
-          actionButtonText="LEAVE"
-          cancel-button-id="threat-sharing-communities-leave-modal-cancel-button"
-          confirm-button-id="threat-sharing-communities-leave-modal-confirm-button"
-          @handleClose="isWantToToLeaveFromCommunity = false"
-          @handleConfirm="leaveFromCommunityConfirm"
-        />
-      </template>
-    </app-dialog>
+      :leave-community-name="leaveCommunityName"
+      @on-close="isWantToToLeaveFromCommunity = false"
+      @on-confirm="leaveFromCommunityConfirm"
+    />
     <app-dialog
       :status="showNeedPermissionModal"
       icon="mdi-exit-to-app"
@@ -149,12 +124,12 @@
     <v-card flat color="basil">
       <v-card-text class="pt-2">
         <v-data-iterator
+          hide-default-footer
           :items="selectedTab === 'tab-2' ? invitationData : listData"
           :page.sync="page"
           :items-per-page.sync="itemsPerPage"
-          hide-default-footer
-          @change="$forceUpdate()"
           :footer-props="{ itemsPerPageOptions }"
+          @change="$forceUpdate()"
         >
           <template v-slot:header>
             <v-tabs v-model="selectedTab" class="community-selector">
@@ -458,9 +433,13 @@ import { getNotifications } from '@/api/dashboard'
 import CommunityCard from '@/components/ThreatSharing/Communities/CommunityCard'
 import CommunityInvitationCard from '@/components/ThreatSharing/Communities/CommunityInvitationCard'
 import { mapGetters } from 'vuex'
+import DeleteCommunityDialog from '@/components/ThreatSharing/Communities/DeleteCommunityDialog'
+import LeaveCommunityDialog from '@/components/ThreatSharing/Communities/LeaveCommunityDialog'
 
 export default {
   components: {
+    LeaveCommunityDialog,
+    DeleteCommunityDialog,
     KSelect,
     AppDialogFooter,
     NewCommunity,
@@ -529,7 +508,7 @@ export default {
     isWantToAddNewCommunity: false,
     selectedTab: 'tab-1',
     tabOptions: ['Your Communities', 'All', 'Invitations'],
-    communities: ['keepnet'],
+    communities: [],
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     filter: '',
