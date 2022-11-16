@@ -45,7 +45,7 @@
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @handleEdit="handleEdit"
-      @onEmptyBtnClicked="modalStatus = true"
+      @onEmptyBtnClicked="isCampaignModalVisible = true"
       @addAction="isCampaignModalVisible = true"
       @downloadEvent="exportVishingCampaigns"
       @handleMultipleDelete="handleMultipleDelete"
@@ -76,29 +76,24 @@
         <DefaultButtonRowAction
           v-if="scope.row.status === 'Running'"
           :scope="scope"
-          :icon="tableOptions.rowActions[7].icon"
-          :disabled="tableOptions.rowActions[7].disabled"
-          :text="tableOptions.rowActions[7].name"
+          :icon="tableOptions.rowActions[6].icon"
+          :disabled="tableOptions.rowActions[6].disabled"
+          :text="tableOptions.rowActions[6].name"
           :checkIsOwnerProperty="false"
           @on-click="handleStop(scope.row)"
         />
         <DefaultButtonRowAction
-          v-if="scope.row.status === 'Completed' || scope.row.status === 'Cancelled'"
+          v-if="
+            scope.row.status === 'Completed' ||
+            scope.row.status === 'Cancelled' ||
+            scope.row.status === 'Error'
+          "
           :scope="scope"
           :icon="tableOptions.rowActions[1].icon"
           :disabled="tableOptions.rowActions[1].disabled"
           :text="tableOptions.rowActions[1].name"
           :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
-        />
-        <DefaultButtonRowAction
-          v-if="scope.row.status === 'Error'"
-          :scope="scope"
-          :icon="tableOptions.rowActions[6].icon"
-          :disabled="tableOptions.rowActions[6].disabled"
-          :text="tableOptions.rowActions[6].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleTryAgain(scope.row)"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
@@ -158,7 +153,6 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { useLoading } from '@/hooks/useLoading'
 import {
   PROPERTY_STORE,
-  LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -332,11 +326,6 @@ export default {
             action: 'handleViewReport'
           },
           {
-            name: labels.TryAgain,
-            icon: 'mdi-refresh',
-            action: 'handleTryAgain'
-          },
-          {
             name: labels.Stop,
             icon: 'mdi-stop',
             action: 'handleStop'
@@ -454,7 +443,6 @@ export default {
     },
     handleEdit(row, isDuplicate) {
       this.selectedRow = row
-      this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.isCampaignModalVisible = true
