@@ -7,7 +7,11 @@
     />
     <VishingReportSummaryCards :items="getCardsData" />
     <div class="campaign-manager-report-summary__general-info mt-6">
-      <VishingReportCampaignInfo :items="getVishingInfoData" :is-test-training="isTestTraining" />
+      <VishingReportCampaignInfo
+        class="vishing-report-campaign-info"
+        :items="getVishingInfoData"
+        :is-test-training="isTestTraining"
+      />
       <VishingReportDelivery class="ml-4" :items="getTrainingVishingDeliveryData" />
     </div>
     <VishingReportTemplate :form-data="getVishingTemplateData" />

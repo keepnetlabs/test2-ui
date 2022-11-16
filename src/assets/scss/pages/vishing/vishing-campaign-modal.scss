@@ -47,7 +47,7 @@
       border-radius: 12px;
 
       &-header {
-        padding: 16px 24px 24px 24px;
+        padding:24px;
         display: flex;
         justify-content: space-between;
         .k-badge {
@@ -134,5 +134,12 @@
       font-weight: 600;
       font-size: 14px;
     }
+  }
+}
+.vishing-report-campaign-info{
+  border-bottom: 1px solid #F2F2F2;
+  .campaign-manager-summary-card__body-item{
+    padding-bottom:16px;
+    border-bottom: 1px solid #F2F2F2;
   }
 }
