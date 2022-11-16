@@ -131,6 +131,7 @@ export default {
       isValidate: null,
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
       availableForRequests: [],
+      isSuccessfullyTested: false,
       testedFormValues: {},
       initialFormValues: {},
       formValues: {
@@ -201,6 +202,7 @@ export default {
   },
   methods: {
     testConnectionValues(isSuccess, isSave) {
+      this.isSuccessfullyTested = isSuccess
       if (!isSuccess) {
         this.saveButtonDisabled = false
         const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
@@ -280,7 +282,7 @@ export default {
         if (this.$refs.dnsForm.validate() && isValid) {
           if (this.$refs?.testConnection) {
             this.testedFormValues = JSON.parse(JSON.stringify(this.formValues))
-            this.$refs.testConnection.testConnection(isSave)
+            this.$refs.testConnection.testConnection(isSave, false)
           }
         } else {
           this.saveButtonDisabled = false
@@ -288,7 +290,7 @@ export default {
           scrollToComponent(el)
         }
       } else {
-        this.$refs.testConnection.testConnection(isSave)
+        this.$refs.testConnection.testConnection(isSave, this.isSuccessfullyTested)
       }
     }
   }
