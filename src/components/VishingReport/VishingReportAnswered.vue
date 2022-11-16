@@ -107,7 +107,7 @@ export default {
           },
           {
             property: 'phoneNumber',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Phone Number',
             fixed: false,

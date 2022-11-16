@@ -16,7 +16,7 @@
         Summary of this vishing campaign
       </div>
     </div>
-    <div v-if="false" class="training-report-summary-header__right">
+    <div class="training-report-summary-header__right">
       <v-btn
         class="training-report-summary-header__btn-download-report"
         rounded
@@ -31,7 +31,7 @@
         rounded
         color="#2196f3"
         @click="toggleShowResendDialog"
-        >{{ labels.ResendTraining }}</v-btn
+        >{{ labels.ResendCampaign }}</v-btn
       >
     </div>
   </div>
