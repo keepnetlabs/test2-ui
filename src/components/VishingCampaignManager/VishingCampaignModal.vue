@@ -329,7 +329,7 @@
               />
               <CampaignManagerSummaryCard
                 class="ml-4"
-                icon="mdi-alert-circle"
+                icon="mdi-send"
                 :title="labels.CampaignDelivery"
                 :items="getCampaignDeliveryItems"
               />
