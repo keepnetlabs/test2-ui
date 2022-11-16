@@ -8,7 +8,7 @@
         '': isAllSuccess
       }"
       class="new-integration__api-key__text"
-      @click="testConnection(false)"
+      @click="handleTestConnectionClick"
     >
       <div v-if="isLoading" class="test-connection__button">
         TESTING CONNECTION
@@ -74,6 +74,9 @@ export default {
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
+    handleTestConnectionClick() {
+      this.$emit('testConnectionClicked')
+    },
     testConnection(isSave) {
       this.isSave = isSave
       this.isLoadingStarted = true
@@ -84,7 +87,7 @@ export default {
         password: this.values.password,
         resourceId: this.values.resourceId
       }
-      testConnection(payload, this.values.resourceId)
+      return testConnection(payload, this.values.resourceId)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
