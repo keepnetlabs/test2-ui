@@ -20,7 +20,7 @@
         :outline="false"
         :text="getRequiredDigitCountTagText"
       />
-      <Badge v-if="step.isFailStep" color="#B6791D" text="Fail Step" :outline="false" />
+      <Badge v-if="step.isFailStep" color="#B83A3A" text="Vishing Step" :outline="false" />
     </div>
     <span v-if="step.pauseSeconds" class="vishing-template-preview-step__text">
       {{ `Pause for ${step.pauseSeconds} seconds` }}

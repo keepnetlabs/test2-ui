@@ -39,7 +39,7 @@
                 <span class="vishing-campaign-modal__summary__template-step-name">
                   {{ getStepName(step, index) }}
                 </span>
-                <Badge v-if="step.isFailStep" color="#B83A3A" text="Fail Step" />
+                <Badge v-if="step.isFailStep" color="#B83A3A" text="Vishing Step" />
                 <div v-else />
               </div>
             </div>
