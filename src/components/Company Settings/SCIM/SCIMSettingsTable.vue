@@ -45,7 +45,6 @@ import {
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { exportSCIMSettings, searchSCIMSettings } from '@/api/scimSettings'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'

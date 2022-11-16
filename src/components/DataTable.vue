@@ -2479,11 +2479,6 @@ export default {
 
       return sortData
     },
-
-    paginationChangedEvent(paginationProps) {
-      if (this.isServerSide && this.serverSideEvents.pagination)
-        this.$emit('paginationChangedEvent', paginationProps)
-    },
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)

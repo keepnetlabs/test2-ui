@@ -6,12 +6,12 @@
     confirm-button-id="btn-save--proxy-settings-modal"
     cancel-button-id="btn-cancel--proxy-settings-modal"
     title-id="text--create-proxy-settings-modal-title"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
     :title="getTitle"
     icon-name="mdi-mailbox"
     class-name="new-proxy-setting"
     :saveDisable="saveDisable"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
   >
     <template #overlay-body>
       <app-modal-body-header

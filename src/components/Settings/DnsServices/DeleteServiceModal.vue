@@ -9,11 +9,11 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ selectedDnsService && selectedDnsService.dnsServiceProviderName }} will be deleted and
       removed from all integrations.
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         cancel-button-id="btn-cancel--dns-service-popup"
         confirm-button-id="btn-delete--dns-service-popup"

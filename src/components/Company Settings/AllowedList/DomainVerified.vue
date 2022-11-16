@@ -9,12 +9,12 @@
       :status="status"
       @changeStatus="closeModal"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <div class="domain-verified-text-container">
           This domain has been verified.
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div @click="closeModal" class="domain-verified-close-btn">CLOSE</div>
       </template>
     </app-dialog>

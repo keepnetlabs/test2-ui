@@ -295,7 +295,7 @@ export default {
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.campaignSummary
+      const { landingPageTemplateInfo = {} } = this.campaignSummary || {}
       const {
         name,
         urlTemplate,

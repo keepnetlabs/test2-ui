@@ -1,35 +1,35 @@
 <template>
   <div class="w-100">
     <version-history-modal
+      v-if="versionHistoryModalStatus"
       :status="versionHistoryModalStatus"
       @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
       @handleHistoryRow="handleHistoryRow"
-      v-if="versionHistoryModalStatus"
     />
     <reporter-version-modal
+      v-if="reporterVersionModalStatus"
       :selected-version-row="selectedVersionRow"
       :status="reporterVersionModalStatus"
       @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
-      v-if="reporterVersionModalStatus"
     />
     <div class="add-in-settings__footer mr-2" :class="className">
       <v-btn
-        @click="submit"
         id="btn-save--phishing-reporter-settings"
         class="white--text btn-util btn-save-changes"
         color="#2196f3"
         rounded
         :disabled="getPhishingReporterSavePermissions && saveDisable"
+        @click="submit"
       >
         {{ labels.Save }} CHANGES
       </v-btn>
       <v-btn
-        @click="submitWithDownload"
         id="btn-save-download--phishing-reporter-settings"
         class="white--text btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
         :disabled="getPhishingReporterSavePermissions && saveDisable"
+        @click="submitWithDownload"
       >
         <v-icon left>mdi-download</v-icon>
         {{ labels.SaveAndDownload }}

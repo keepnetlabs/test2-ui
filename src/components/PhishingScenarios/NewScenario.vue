@@ -22,7 +22,6 @@
             >Landing Page</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-
           <v-stepper-step
             class="k-stepper__step"
             :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
@@ -420,6 +419,7 @@
                             </div>
                             <div class="d-flex" v-if="!!summaryData">
                               <v-chip
+                                v-if="!!summaryData"
                                 class="template-list--item template-list--item__chip p mr-2"
                                 style="
                                   color: white;
@@ -429,7 +429,6 @@
                                   font-size: 12px;
                                 "
                                 :color="getLandingPageDifficultyColor"
-                                v-if="!!summaryData"
                               >
                                 {{
                                   scenarioDetailsLookup.difficultyTypes.find(
@@ -440,6 +439,7 @@
                                 }}
                               </v-chip>
                               <v-chip
+                                v-if="!!summaryData"
                                 class="template-list--item template-list--item__chip p"
                                 style="
                                   border-radius: 6px;
@@ -447,7 +447,6 @@
                                   font-weight: 600;
                                   font-size: 12px;
                                 "
-                                v-if="!!summaryData"
                               >
                                 {{
                                   scenarioDetailsLookup.methodTypes.find(
@@ -514,6 +513,7 @@
                             }}
                           </v-chip>
                           <v-chip
+                            v-if="!!summaryData"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -521,7 +521,6 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!summaryData"
                           >
                             {{
                               scenarioDetailsLookup.methodTypes.find(
@@ -627,6 +626,32 @@ export default {
     InputDescription,
     AttachmentsPreview
   },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    },
+    editableFormValues: {
+      required: false
+    },
+    isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isAttachmentBased: {
+      type: Boolean,
+      default: false
+    },
+    scenarioId: {
+      type: String
+    },
+    scenarioDetailsLookup: {
+      required: true
+    }
+  },
   data() {
     return {
       footerButtonsIds: {
@@ -654,14 +679,12 @@ export default {
         { text: 'Hard', value: 'c4LCGEB9MayB' }
       ],
       isSubmitDisabled: false,
-      activeBlockManagerComponents: {},
-      blockManagerComponents: {},
       availableForRequests: [],
       tagSearch: '',
       generalDifficultyTypeId: '',
       labels,
       step: 1,
-      Validations: Validations,
+      Validations,
       initialFormValues: {},
       formValues: {
         name: '',
@@ -682,36 +705,8 @@ export default {
         ]
       },
       editItemsDisabled: false,
-      methodItems: [],
-      difficultyItems: [],
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null
-    }
-  },
-  props: {
-    status: {
-      type: Boolean,
-      default: false
-    },
-    editableFormValues: {
-      required: false
-    },
-    isEdit: {
-      type: Boolean
-    },
-    isDuplicate: {
-      type: Boolean,
-      default: false
-    },
-    isAttachmentBased: {
-      type: Boolean,
-      default: false
-    },
-    scenarioId: {
-      type: String
-    },
-    scenarioDetailsLookup: {
-      required: true
     }
   },
   methods: {
@@ -1001,17 +996,15 @@ export default {
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-    let _this = this
     if (this.isEdit) {
       this.isSubmitDisabled = true
       getScenario(this.scenarioId)
         .then((response) => {
-          _this.formValues = response.data.data
-          _this.formValues.name = `${this.formValues.name}`
-          _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-          _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          this.formValues = response.data.data
+          this.formValues.name = `${this.formValues.name}`
+          this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
+          this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
           this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          // this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []

@@ -19,12 +19,12 @@
             </v-card>
             <v-card class="pl-4 confirm-input" flat>
               <v-text-field
+                v-model="confirmText"
                 outlined
                 placeholder="DELETE"
-                @keyup="uppercase"
-                v-model="confirmText"
                 type="text"
                 class="p-0"
+                @keyup="uppercase"
               />
             </v-card>
           </v-card>

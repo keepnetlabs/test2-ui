@@ -170,7 +170,6 @@ export default {
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
-      defaultRequestBody: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -264,9 +263,7 @@ export default {
           FieldName: 'CreateTime',
           Operator: date[1].Operator
         })
-      this.defaultRequestBody = JSON.parse(JSON.stringify(this.bodyData))
       this.loading = true
-
       getSandboxStats(this.bodyData)
         .then((response) => {
           const {

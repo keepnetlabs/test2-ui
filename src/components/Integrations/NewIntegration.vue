@@ -1123,64 +1123,6 @@ export default {
         required: (v) => Validations.required(v),
         format: (v) => Validations.startsWithSpace(v),
         maxLength: (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage('Api key', 256))
-      },
-      proxyBodyData: {
-        pageNumber: 1,
-        pageSize: 100,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'IsDefault',
-                  Operator: 'Include',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'Name',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'Address',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'Port',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'AuthenticationType',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'CreateTime',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'IsDefault',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
       }
     }
   },
@@ -1214,6 +1156,14 @@ export default {
     isFortiNetConnectionDisabled() {
       const { userName, password, apiUrl } = this.formValues
       return !(userName && password && apiUrl)
+    }
+  },
+  watch: {
+    formValues(val) {
+      this.selectedIntegrationType =
+        this.integrationTypes.find(
+          (item) => item.resourceId === val.analysisEngineTypeResourceId
+        ) || {}
     }
   },
   created() {
@@ -1938,15 +1888,6 @@ export default {
           this.formValues.apiUrl = ''
         }
       }
-    }
-  },
-  destroyed() {},
-  watch: {
-    formValues(val) {
-      this.selectedIntegrationType =
-        this.integrationTypes.find(
-          (item) => item.resourceId === val.analysisEngineTypeResourceId
-        ) || {}
     }
   }
 }
