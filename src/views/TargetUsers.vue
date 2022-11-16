@@ -68,6 +68,11 @@ export default {
         : ''
     }
   },
+  watch: {
+    tab(val) {
+      if (val === 'target-users--people') this.isLoadState = false
+    }
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'Target Group Users') {
@@ -77,11 +82,6 @@ export default {
         }
       }
     })
-  },
-  watch: {
-    tab(val) {
-      if (val === 'target-users--people') this.isLoadState = false
-    }
   },
   created() {
     const {

@@ -16,6 +16,7 @@ const auth = {
     timeFormat: null
   },
   getters: {
+    getUserRole: (state) => state.userRoleName,
     userGetter: (state) => state.user,
     getTimeFormat: (state) => state.timeFormat,
     getDateFormat: (state) => state.dateFormat,

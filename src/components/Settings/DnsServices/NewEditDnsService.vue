@@ -66,8 +66,9 @@
 
         <form-group :title="labels.TestConnection" class="mt-2">
           <TestConnection
-            :values="formValues"
             ref="testConnection"
+            :values="formValues"
+            @testConnectionClicked="handleTestConnectionClick"
             @testConnectionValues="testConnectionValues"
             @loading="saveButtonDisabled = false"
           />
@@ -130,6 +131,8 @@ export default {
       isValidate: null,
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
       availableForRequests: [],
+      isSuccessfullyTested: false,
+      testedFormValues: {},
       initialFormValues: {},
       formValues: {
         dnsServiceProviderTypeId: 1,
@@ -198,7 +201,41 @@ export default {
     }
   },
   methods: {
-    testConnectionValues() {},
+    testConnectionValues(isSuccess, isSave) {
+      this.isSuccessfullyTested = isSuccess
+      if (!isSuccess) {
+        this.saveButtonDisabled = false
+        const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
+        scrollToComponent(el)
+      } else {
+        if (isSave) {
+          const { refMakeAvailableFor } = this.$refs
+          let payload = {
+            ...this.formValues,
+            availableForRequests: refMakeAvailableFor.getAvailableForValues(
+              this.availableForRequests
+            )
+          }
+          if (this.isEdit && !this.isDuplicate) {
+            updateDnsServiceList(payload, this.resourceId)
+              .then(() => {
+                this.$emit('changeStatus', false, true)
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
+          } else {
+            createDnsServiceList(payload)
+              .then(() => {
+                this.$emit('changeStatus', false, true)
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
+          }
+        }
+      }
+    },
     resetForm() {
       this.formValues = {
         dnsServiceProviderTypeId: null,
@@ -225,45 +262,36 @@ export default {
       })
     },
     submit() {
-      this.saveButtonDisabled = true
-      let isValid = true
-      const { refMakeAvailableFor } = this.$refs
-      if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
-      }
-      if (this.$refs.dnsForm.validate() && isValid) {
-        let payload = {
-          ...this.formValues,
-          availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
-        }
-        if (this.isEdit && !this.isDuplicate) {
-          updateDnsServiceList(payload, this.resourceId)
-            .then(() => {
-              this.$emit('changeStatus', false, true)
-            })
-            .finally(() => {
-              this.saveButtonDisabled = false
-            })
-        } else {
-          createDnsServiceList(payload)
-            .then(() => {
-              this.$emit('changeStatus', false, true)
-            })
-            .finally(() => {
-              this.saveButtonDisabled = false
-            })
-        }
-      } else {
-        this.saveButtonDisabled = false
-        const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
-        scrollToComponent(el)
-      }
+      this.handleTestConnectionClick(true)
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
+    },
+    handleTestConnectionClick(isSave = false) {
+      const isChanged = isDifferent(this.formValues, this.testedFormValues)
+      if (isChanged) {
+        this.saveButtonDisabled = true
+        let isValid = true
+        const { refMakeAvailableFor } = this.$refs
+        if (refMakeAvailableFor) {
+          refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+          isValid = refMakeAvailableFor.isAvailableForValid
+        }
+        if (this.$refs.dnsForm.validate() && isValid) {
+          if (this.$refs?.testConnection) {
+            this.testedFormValues = JSON.parse(JSON.stringify(this.formValues))
+            this.$refs.testConnection.testConnection(isSave, false)
+          }
+        } else {
+          this.saveButtonDisabled = false
+          const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
+          scrollToComponent(el)
+        }
+      } else {
+        this.$refs.testConnection.testConnection(isSave, this.isSuccessfullyTested)
+      }
     }
   }
 }

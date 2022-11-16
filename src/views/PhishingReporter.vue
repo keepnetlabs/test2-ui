@@ -226,6 +226,47 @@ export default {
       return this.phishingReportSummary ? this.phishingReportSummary['totalUsersCount'] : 0
     }
   },
+  created() {
+    if (!this.getPhishingReporterSearchPermissions && this.getPhishingReporterGetPermissions) {
+      this.tab = 'phishing-reporter-settings'
+    }
+    this.getPhishingReportSummary()
+    this.getPhishingReport()
+    if (this.$route.params && this.$route.params.tab) {
+      this.tab = this.$route.params.tab
+    }
+    if (this.$route.query && this.$route.query.tab) {
+      this.$nextTick(() => {
+        this.tab = this.$route.query.tab
+      })
+    }
+  },
+  mounted() {
+    this.getHash()
+  },
+  beforeRouteLeave(to, from, next) {
+    const refs = this.$refs
+    if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
+      refs.refFirstTime.checkIfCanCloseOverlay()
+      next(false)
+    } else if (refs && refs.refUsers && refs.refUsers.isWantToDelete) {
+      refs.refUsers.isWantToDelete = false
+      next(false)
+    } else {
+      next()
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (this.getHash(to.hash)) {
+      if (to.hash !== from.hash) {
+        next()
+      } else {
+        next(false)
+      }
+    } else {
+      next()
+    }
+  },
   methods: {
     handleTabClick({ label = '' }) {
       if (label === 'Settings') {
@@ -411,47 +452,6 @@ export default {
           this.tab = 'phishing-reporter-settings'
         })
         .finally(() => (this.isLoading = false))
-    }
-  },
-  created() {
-    if (!this.getPhishingReporterSearchPermissions && this.getPhishingReporterGetPermissions) {
-      this.tab = 'phishing-reporter-settings'
-    }
-    this.getPhishingReportSummary()
-    this.getPhishingReport()
-    if (this.$route.params && this.$route.params.tab) {
-      this.tab = this.$route.params.tab
-    }
-    if (this.$route.query && this.$route.query.tab) {
-      this.$nextTick(() => {
-        this.tab = this.$route.query.tab
-      })
-    }
-  },
-  mounted() {
-    this.getHash()
-  },
-  beforeRouteLeave(to, from, next) {
-    const refs = this.$refs
-    if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
-      refs.refFirstTime.checkIfCanCloseOverlay()
-      next(false)
-    } else if (refs && refs.refUsers && refs.refUsers.isWantToDelete) {
-      refs.refUsers.isWantToDelete = false
-      next(false)
-    } else {
-      next()
-    }
-  },
-  beforeRouteUpdate(to, from, next) {
-    if (this.getHash(to.hash)) {
-      if (to.hash !== from.hash) {
-        next()
-      } else {
-        next(false)
-      }
-    } else {
-      next()
     }
   }
 }

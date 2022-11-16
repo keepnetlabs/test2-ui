@@ -93,7 +93,6 @@
                   v-model="filteredDateValueRange"
                   ref="refPicker2"
                   type="datetimerange"
-                  @change="handleChangeBetweenDatepicker"
                 />
                 <InputDate
                   v-show="filteredSelectValueDate !== 'between'"
@@ -176,191 +175,17 @@
             </div>
           </div>
         </div>
-        <div class="columns-row">
-          <CardLoading
-            :loading="incidentLoading"
-            class="dashboard-cards__skeleton-loading"
-            :class="[incidentLoading && 'dashboard-cards-loading']"
-          >
-            <template v-slot:skeleton-content>
-              <div
-                id="card--incident-responder-phishing-reporter"
-                class="dashboard-cards phishing-reporter mr-2"
-              >
-                <div class="card-header">
-                  <span class="head">Total Analysis Request</span>
-                </div>
-                <div class="columns-row__body">
-                  <div class="card-body">
-                    <div
-                      class="biggest"
-                      id="card--incident-responder-phishing-reporter-online-users-count"
-                    >
-                      {{ summaryData.totalAnalysisRequest || 0 }}
-                    </div>
-                  </div>
-                  <div
-                    class="card-footer"
-                    id="card--incident-responder-phishing-reporter-total-users-count"
-                  >
-                    from
-                    {{ summaryData.clientCount || 0 }}
-                    clients
-                  </div>
-                </div>
-                <div class="bg-image" style="bottom: 10px; right: -11px;">
-                  <img src="../assets/img/book-glass.svg" />
-                </div>
-              </div>
-            </template>
-          </CardLoading>
-          <CardLoading
-            :loading="incidentLoading"
-            class="dashboard-cards__skeleton-loading"
-            :class="[incidentLoading && 'dashboard-cards-loading']"
-          >
-            <template v-slot:skeleton-content>
-              <div
-                id="card--incident-responder-incident-analysis"
-                class="dashboard-cards bg-image-incident-analysis mr-2"
-              >
-                <div class="card-header">
-                  <span class="head">Found Phishing</span>
-                </div>
-                <div class="columns-row__body">
-                  <div class="card-body">
-                    <div
-                      class="biggest"
-                      id="card--incident-responder-incident-analysis-notified-harmful-count"
-                    >
-                      {{ summaryData.totalHarmfulUrl || 0 }}
-                    </div>
-                  </div>
-                  <div
-                    class="card-footer"
-                    id="card--incident-responder-incident-analysis-reported-mail-count"
-                  >
-                    of
-                    {{ summaryData.totalAnalyzedUrl || 0 }}
-                    analysed URLs
-                  </div>
-                </div>
-                <div class="bg-image">
-                  <img src="../assets/img/hook.svg" />
-                </div>
-              </div>
-            </template>
-          </CardLoading>
-          <CardLoading
-            :loading="incidentLoading"
-            class="dashboard-cards__skeleton-loading"
-            :class="[incidentLoading && 'dashboard-cards-loading']"
-          >
-            <template v-slot:skeleton-content>
-              <div
-                id="card--incident-responder-investigations"
-                class="dashboard-cards investigations mr-2"
-              >
-                <div class="card-header">
-                  <span class="head">Found Malicious</span>
-                </div>
-                <div class="columns-row__body">
-                  <div class="card-body">
-                    <div
-                      class="biggest"
-                      id="card--incident-responder-incident-analysis-notified-harmful-count2"
-                    >
-                      {{ summaryData.totalHarmfulAttachment || 0 }}
-                    </div>
-                  </div>
-                  <div
-                    class="card-footer"
-                    id="card--incident-responder-incident-analysis-reported-mail-count3"
-                  >
-                    of
-                    {{ summaryData.totalAnalyzedAttachment || 0 }}
-                    analysed files
-                  </div>
-                </div>
-                <div class="bg-image">
-                  <img src="../assets/img/bug.svg" />
-                </div>
-              </div>
-            </template>
-          </CardLoading>
-          <CardLoading
-            :loading="incidentLoading"
-            class="dashboard-cards__skeleton-loading"
-            :class="[incidentLoading && 'dashboard-cards-loading']"
-          >
-            <template v-slot:skeleton-content>
-              <div id="card--incident-responder-roi-summary" class="dashboard-cards roi-summary">
-                <div class="card-header">
-                  <span class="head">Undetected</span>
-                </div>
-                <div class="columns-row__body">
-                  <div class="card-body">
-                    <div
-                      class="biggest"
-                      id="card--incident-responder-incident-analysis-notified-harmful-count11"
-                    >
-                      {{ summaryData.totalUndetected || 0 }}
-                    </div>
-                  </div>
-                  <div
-                    class="card-footer"
-                    id="card--incident-responder-incident-analysis-reported-mail-count12"
-                  >
-                    of
-                    {{ summaryData.totalAnalysisRequest || 0 }}
-                    analysed emails
-                  </div>
-                </div>
-                <div class="bg-image">
-                  <img src="../assets/img/circle.svg" />
-                </div>
-              </div>
-            </template>
-          </CardLoading>
-        </div>
+        <SandboxCards :incident-loading="incidentLoading" :summary-data="summaryData" />
         <v-tabs id="tab-sandbox" v-model="tab" background-color="white" color="basil">
           <v-tab v-if="isStatsRender" id="tab-stats">Stats</v-tab>
           <v-tab v-if="isLogsRender" id="tab-logs">Logs</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
           <v-tab-item v-if="isStatsRender">
-            <div class="mt-4 pa-2">
-              <v-card>
-                <div class="header">
-                  <div class="title">
-                    <h2>
-                      Stats
-                    </h2>
-                    <p class="">
-                      Generic statistics for client and service providers
-                    </p>
-                  </div>
-                </div>
-                <SandboxStats ref="sandboxStats" />
-              </v-card>
-            </div>
+            <SandboxStats ref="sandboxStats" />
           </v-tab-item>
           <v-tab-item v-if="isLogsRender">
-            <div class="mt-4 pa-2">
-              <v-card>
-                <div class="header">
-                  <div class="title">
-                    <h2>
-                      Logs
-                    </h2>
-                    <p class="">
-                      All actions and results from client requests
-                    </p>
-                  </div>
-                </div>
-                <SandboxLog ref="sandboxLog" />
-              </v-card>
-            </div>
+            <SandboxLog ref="sandboxLog" />
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -374,7 +199,6 @@ import {
   getSelectSearchPayload,
   getTimeZoneForMoment
 } from '@/utils/functions'
-import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import { getSandboxSummaryData } from '@/api/sandbox'
 import SandboxLog from '@/components/Sandbox/SandboxLog'
@@ -391,10 +215,11 @@ import { searchTargetGroups } from '@/api/targetUsers'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import { mapGetters } from 'vuex'
+import SandboxCards from '@/components/Sandbox/SandboxCards'
 export default {
   name: 'Sandbox',
   components: {
-    CardLoading,
+    SandboxCards,
     SandboxLog,
     SandboxStats,
     InputDate,
@@ -474,12 +299,6 @@ export default {
       menuModel: false,
       listItems: [...COMMON_CONSTANTS.FILTER_OPTIONS],
       isActive: false,
-
-      filterableOptions: {
-        default() {
-          return { exactDate: true, after: true, before: true, between: true, showSelect: true }
-        }
-      },
       dateFilterItems: [
         { text: 'After', value: '>=' },
         { text: 'Before', value: '<=' },
@@ -605,7 +424,6 @@ export default {
           if (localStorage.getItem('sandboxIntegration'))
             this.analysisEngineTypeResourceId =
               localStorage.getItem('sandboxIntegration').split(',') || ''
-          //this.filteredDateValueSelect = localStorage.getItem('sandboxDate') //select
           if (localStorage.getItem('sandboxDateValue'))
             this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
           if (localStorage.getItem('sandboxDateValue'))
@@ -614,7 +432,6 @@ export default {
               value: 'custom'
             }
           let dateValue = localStorage.getItem('sandboxDateOption')
-          //localStorage.setItem('sandboxFilteredSelectValueDate', this.filteredSelectValueDate) //between
           if (this.filteredSelectValueDate === 'between') {
             this.filteredDateValueRange = dateValue.split(',')
           } else {
@@ -755,7 +572,6 @@ export default {
           : '',
         dateFilterValueForTables
       )
-
       this.getSummaryData()
     },
     changeBlurValue(e) {
@@ -776,16 +592,13 @@ export default {
         this.filteredSelectValueDate = '>='
         this.filteredDateValueSelectValues[5].name = 'Custom'
       }
-
       this.$set(
         this.summaryOptions.filter.FilterGroups[0].FilterItems[2],
         'Value',
         this.filteredDateValueSelect.value || ''
       )
-
       this.handleFilter()
     },
-    handleChangeBetweenDatepicker() {},
     changeDateValue() {
       if (this.menuOpen) return false
       this.$set(
@@ -862,26 +675,6 @@ export default {
           : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
       )
       this.getSummaryData()
-    },
-    getFriendlyName(name) {
-      let label
-      switch (name) {
-        case INTEGRATION_TYPES.FORTINET:
-          label = INTEGRATION_LABELS.FORTINET
-          break
-        case INTEGRATION_TYPES.VIRUSTOTAL:
-          label = INTEGRATION_LABELS.VIRUSTOTAL
-          break
-        case INTEGRATION_TYPES.VMRAY:
-          label = INTEGRATION_LABELS.VMRAY
-          break
-        case INTEGRATION_TYPES.IBMXFORCE:
-          label = INTEGRATION_LABELS.IBMXFORCE
-          break
-        default:
-          return
-      }
-      return label
     },
     getSummaryData() {
       this.incidentLoading = true
