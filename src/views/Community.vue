@@ -1,15 +1,12 @@
 <template>
   <div id="community-page-wrapper" class="page-wrapper mt-1">
-    <div id="" class="component-threat-sharing page-wrapper">
-      <v-overlay
-        :value="isWantToAddNewCommunity"
-        :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
-        :opacity="1"
-        :z-index="9"
-        color="white"
-      >
-        <new-community ref="refNewCommunity" @closeAdd="onAddClose" />
-      </v-overlay>
+    <div class="component-threat-sharing page-wrapper">
+      <new-community
+        v-if="isWantToAddNewCommunity"
+        ref="refNewCommunity"
+        :status="isWantToAddNewCommunity"
+        @closeAdd="onAddClose"
+      />
       <v-overlay
         id="new-community-overlay"
         :value="showPostIncident"

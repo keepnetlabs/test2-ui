@@ -1,176 +1,138 @@
 <template>
-  <div class="new-community-container">
-    <app-dialog
-      :status="isWantToAccept"
-      body="You are changing the privacy settings for community from private to public. All member requests will be accepted?"
-      icon="mdi-account-plus"
-      subtitle=""
-      title="Accept all requests?"
-      title-id="text--threat-sharing-community-privacy-settings-popup-title"
-      subtitle-id="text--threat-sharing-community-privacy-settings-popup-subtitle"
-    >
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            class="k-dialog__button"
-            color="#f56c6c"
-            text
-            id="threat-sharing-new-community-accept-modal-cancel-button"
-            @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
-            >{{ labels.Cancel }}
-          </v-btn>
-          <v-btn
-            id="threat-sharing-new-community-accept-modal-accept-all-button"
-            class="k-dialog__button"
-            color="#2196f3"
-            text
-            @click="isWantToAccept = false"
-            >Accept All
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
-    <div class="new-community-inner">
-      <v-card class="pa-0" flat light style="width: 600px;">
-        <v-list-item class="pl-0 pr-0 new-community-inner__title-section mb-8">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
+  <AppModal
+    v-if="status"
+    :status="status"
+    :id="resourceId ? 'edit-community-modal' : 'new-community-modal'"
+    :title="resourceId ? 'Edit Community' : 'Create New Community'"
+    :save-disable="saveDisable"
+    confirm-button-id="btn-save--new-community-modal"
+    cancel-button-id="btn-cancel--new-community-modal"
+    title-id="text--new-community-modal-title"
+    icon-name="mdi-send"
+    @closeOverlay="onCancelClicked"
+    @submit="onCreateClicked"
+  >
+    <template #overlay-body>
+      <PrivacySettingsDialog
+        v-if="isShowPrivacySettingsDialog"
+        :status="isShowPrivacySettingsDialog"
+        @on-close="toggleShowPrivacyDialog"
+        @on-confirm="toggleShowPrivacyDialog(false)"
+      />
+      <v-form ref="form" class="mt-8">
+        <FormGroup has-hint title="Community Name">
+          <InputEntityName
+            v-model.trim="name"
+            id="input--threat-sharing-community-name"
+            entity-name="community name"
+            initial-placeholder="Community Name"
+            :initial-rules="communityNameRules"
+          />
+        </FormGroup>
+        <FormGroup
+          has-hint
+          title="Description"
+          sub-title="Describe the community’s goals and rules. (Max. 300 characters)"
+        >
+          <InputDescription
+            v-model.trim="description"
+            id="input--threat-sharing-community-description"
+            class="edit-description"
+            initial-placeholder="Description"
+            :initial-rules="communityDescriptionRules"
+            :required="true"
+          />
+        </FormGroup>
+        <FormGroup has-hint title="Industry" sub-title="Select an industry category">
+          <k-select
+            v-model.trim="selectedCategory"
+            type="autocomplete"
+            id="input--threat-sharing-community-industry-category"
+            custom-menu-class="menu--threat-sharing-community-industry-category"
+            class="edit-select"
+            item-text="name"
+            item-value="resourceId"
+            outlined
+            required
+            persistent-hint
+            return-object
+            hint="*Required"
+            placeholder="Select the industry category"
+            :items="categories"
+            :rules="[(v) => !!v || 'Required']"
+          ></k-select>
+        </FormGroup>
+        <FormGroup title="Privacy" sub-title="Select a privacy option">
+          <div class="new-community__radio-group">
+            <v-radio-group
+              v-model="privacyStatusId"
+              :mandatory="false"
+              class="my-0 p-0"
+              id="input--threat-sharing-community-privacy-status"
+              row
+            >
+              <v-radio
+                id="input--threat-sharing-community-privacy-status-public"
+                color="primary"
+                label="Public"
+                value="1"
+              ></v-radio>
+              <v-radio
+                id="input--threat-sharing-community-privacy-status-privacy"
+                color="primary"
+                label="Private"
+                value="2"
+              ></v-radio>
+              <v-radio
+                id="input--threat-sharing-community-privacy-status-hidden"
+                color="primary"
+                label="Hidden"
+                value="3"
+              ></v-radio>
+            </v-radio-group>
+            <label v-if="privacyStatusId === '1'" class="edit-privacy-bottom-label"
+              >Anyone can find the community and see posted threats</label
+            >
+            <label v-else-if="privacyStatusId === '2'" class="edit-privacy-bottom-label"
+              >Only members can see posted threats and community is listed</label
+            >
+            <label v-else class="edit-privacy-bottom-label"
+              >Only members can see posted threats and the group in communities list</label
+            >
           </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title
-              title-id="text--threat-sharing-new-community-modal-title"
-              class="k-overlay__title"
-              >{{ resourceId ? 'Edit' : 'Create New' }} Community
-            </v-list-item-title>
+        </FormGroup>
+        <v-list-item class="p-0">
+          <v-list-item-content class="pt-1 pb-0">
+            <div class="d-flex" style="margin-bottom: 8px;">
+              <v-checkbox
+                v-model="acceptCheckbox"
+                id="input--threat-sharing-community-is-accept"
+                :rules="[checkboxRule.required]"
+                class="k-checkbox accept-terms-and-conditions-checkbox"
+                color="#2196f3"
+              />
+              <div class="d-flex accept-terms-and-conditions-label-group">
+                <label :for="'input--threat-sharing-community-is-accept'" class="mr-1"
+                  >I accept
+                </label>
+                <a
+                  :href="termsAndConditionsUrl"
+                  class="mr-1"
+                  target="_blank"
+                  @click="(event) => event.stopPropagation()"
+                  >terms and conditions</a
+                >
+                <label :for="'input--threat-sharing-community-is-accept'"> for communities</label>
+              </div>
+            </div>
           </v-list-item-content>
         </v-list-item>
-        <v-form ref="form" v-model="valid" lazy-validation>
-          <FormGroup has-hint title="Community Name">
-            <InputEntityName
-              v-model.trim="name"
-              id="input--threat-sharing-community-name"
-              entity-name="community name"
-              initial-placeholder="Community Name"
-              :initial-rules="communityNameRules"
-            />
-          </FormGroup>
-          <FormGroup
-            has-hint
-            title="Description"
-            sub-title="Describe the community’s goals and rules. (Max. 300 characters)"
-          >
-            <InputDescription
-              v-model.trim="description"
-              id="input--threat-sharing-community-description"
-              class="edit-description"
-              initial-placeholder="Description"
-              :initial-rules="communityDescriptionRules"
-              :required="true"
-            />
-          </FormGroup>
-          <FormGroup has-hint title="Industry" sub-title="Select an industry category">
-            <k-select
-              type="autocomplete"
-              v-model.trim="selectedCategory"
-              id="input--threat-sharing-community-industry-category"
-              custom-menu-class="menu--threat-sharing-community-industry-category"
-              class="edit-select"
-              item-text="name"
-              outlined
-              required
-              persistent-hint
-              return-object
-              hint="*Required"
-              placeholder="Select the industry category"
-              :items="categories"
-              :rules="[(v) => v || 'Required']"
-            ></k-select>
-          </FormGroup>
-          <FormGroup title="Privacy" sub-title="Select a privacy option">
-            <div class="new-community__radio-group">
-              <v-radio-group
-                v-model="privacystatusid"
-                :mandatory="false"
-                class="my-0 p-0"
-                id="input--threat-sharing-community-privacy-status"
-                row
-              >
-                <v-radio
-                  id="input--threat-sharing-community-privacy-status-public"
-                  color="primary"
-                  label="Public"
-                  value="1"
-                ></v-radio>
-                <v-radio
-                  id="input--threat-sharing-community-privacy-status-privacy"
-                  color="primary"
-                  label="Private"
-                  value="2"
-                ></v-radio>
-                <v-radio
-                  id="input--threat-sharing-community-privacy-status-hidden"
-                  color="primary"
-                  label="Hidden"
-                  value="3"
-                ></v-radio>
-              </v-radio-group>
-              <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
-                >Anyone can find the community and see posted threats</label
-              >
-              <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
-                >Only members can see posted threats and community is listed</label
-              >
-              <label v-else class="edit-privacy-bottom-label"
-                >Only members can see posted threats and the group in communities list</label
-              >
-            </div>
-          </FormGroup>
-          <v-list-item class="p-0">
-            <v-list-item-content class="pt-1 pb-0">
-              <div class="d-flex" style="margin-bottom: 8px;">
-                <v-checkbox
-                  id="input--threat-sharing-community-is-accept"
-                  v-model="acceptCheckbox"
-                  :rules="[checkboxRule.required]"
-                  class="k-checkbox accept-terms-and-conditions-checkbox"
-                  color="#2196f3"
-                  @change="checkCheckboxValidation()"
-                />
-                <div class="d-flex accept-terms-and-conditions-label-group">
-                  <label :for="'input--threat-sharing-community-is-accept'" class="mr-1"
-                    >I accept
-                  </label>
-                  <a
-                    :href="termsAndConditionsUrl"
-                    class="mr-1"
-                    target="_blank"
-                    @click="(event) => event.stopPropagation()"
-                    >terms and conditions</a
-                  >
-                  <label :for="'input--threat-sharing-community-is-accept'"> for communities</label>
-                </div>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-        </v-form>
-      </v-card>
-    </div>
-    <div class="footer-actions">
-      <CancelButton
-        id="threat-sharing-new-community-cancel-modal-button"
-        @click="onCancelClicked"
-      />
-      <SaveButton
-        id="threat-sharing-new-community-update-or-create-modal-button"
-        :label="resourceId ? 'Save' : 'Create'"
-        @click="onCreateClicked"
-      />
-    </div>
-  </div>
+      </v-form>
+    </template>
+  </AppModal>
 </template>
 <script>
 import { createCommunity, listBusinessCategories, updateCommunity } from '@/api/threatSharing'
-import AppDialog from '@/components/AppDialog'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -178,20 +140,22 @@ import * as validations from '@/utils/validations'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import CancelButton from '@/components/Common/Buttons/CancelButton'
-import SaveButton from '@/components/Common/Buttons/SaveButton'
+import PrivacySettingsDialog from '@/components/ThreatSharing/NewCommunity/PrivacySettingsDialog'
+import AppModal from '@/components/AppModal'
 
 export default {
   components: {
-    SaveButton,
-    CancelButton,
+    AppModal,
+    PrivacySettingsDialog,
     FormGroup,
     KSelect,
-    AppDialog,
     InputEntityName,
     InputDescription
   },
   props: {
+    status: {
+      type: Boolean
+    },
     resourceId: {
       required: false
     },
@@ -201,31 +165,28 @@ export default {
   },
   data() {
     return {
-      saveDisable: false,
       isSubmitted: false,
+      saveDisable: false,
+      isShowPrivacySettingsDialog: false,
       labels,
       termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
-      isWantToAccept: false,
       oldPrivacyValue: null,
       initialFormValues: {},
       name: '',
       description: '',
-      privacy: false,
       categories: [],
-      selectedCategory: '',
-      valid: false,
-      privacystatusid: '1',
+      selectedCategory: null,
+      privacyStatusId: '1',
       acceptCheckbox: false,
-      isCheckboxChecked: false,
       communityNameRules: [
         (v) => validations.required(v, labels.Required),
-        (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space',
+        (v) => validations.startsWithSpace(v),
         (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
         (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64))
       ],
       communityDescriptionRules: [
         (v) => validations.required(v, labels.Required),
-        (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space',
+        (v) => validations.startsWithSpace(v),
         (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
         (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300))
       ],
@@ -233,47 +194,31 @@ export default {
         required: (v) => {
           return v || 'You must accept terms and conditions before creating the community'
         }
-      },
-      categoryRules: {
-        required: (v) => (!!v && v.length < 1) || 'Category required for creating a community'
       }
     }
   },
   watch: {
-    privacystatusid: function (newVal, oldVal) {
+    privacyStatusId: function (newVal, oldVal) {
       this.oldPrivacyValue = oldVal
       if (this.resourceId) {
-        if (newVal == 1 && oldVal == 2) {
-          this.isWantToAccept = true
-        } else {
-          this.isWantToAccept = false
-        }
+        this.isShowPrivacySettingsDialog = !!(newVal === '1' && oldVal === '2')
       }
     }
   },
-  mounted() {
+  created() {
     this.getBusinessCategories()
   },
-  created() {
-    document.querySelector('html').style.overflowY = 'hidden'
-    if (this.resourceId) {
-      this.isCheckboxChecked = true
-      this.acceptCheckbox = true
-    }
-  },
-  beforeDestroy() {
-    document.querySelector('html').style.overflowY = ''
-  },
   methods: {
-    checkCheckboxValidation() {
-      this.isCheckboxChecked = this.acceptCheckbox
+    toggleShowPrivacyDialog(isCancelled = true) {
+      if (isCancelled) this.privacyStatusId = this.oldPrivacyValue
+      this.isShowPrivacySettingsDialog = !this.isShowPrivacySettingsDialog
     },
     onCancelClicked() {
       const currentFormValues = {
         name: this.name,
         description: this.description,
         selectedCategory: this.selectedCategory,
-        privacystatusid: this.privacystatusid,
+        privacyStatusId: this.privacyStatusId,
         acceptCheckbox: this.acceptCheckbox
       }
       const isChanged = isDifferent(currentFormValues, this.initialFormValues)
@@ -288,31 +233,30 @@ export default {
       })
     },
     onCreateClicked() {
-      const refThis = this
       if (this.$refs.form.validate()) {
         this.saveDisable = true
         const payload = {
           name: this.name,
           description: this.description,
-          privacystatusid: this.privacystatusid,
-          industryresourceid: this.selectedCategory.resourceId,
-          istermsandconditionsaccepted: this.acceptCheckbox
+          privacyStatusId: this.privacyStatusId,
+          industryResourceId: this.selectedCategory.resourceId,
+          isTermsAndConditionsAccepted: this.acceptCheckbox
         }
         if (!!this.resourceId) {
           updateCommunity(this.resourceId, payload)
             .then(() => {
               this.isSubmitted = true
-              refThis.$emit('closeAdd')
-              this.isWantToAccept = false
+              this.$emit('closeAdd')
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
-              refThis.$router.replace({
+              const methodName = this.$route.name === 'Community' ? 'replace' : 'push'
+              this.$router[methodName]({
                 name: 'Community',
                 params: { communityName: this.name, rnd: Math.random(), id: this.resourceId }
-              })
+              }).catch(() => {})
               this.$store.dispatch('tableReload/setTableReload', true)
               setTimeout(() => {
-                refThis.$parent.$parent.$parent.$parent.$parent.$parent.communityName = this.name
+                this.$parent.$parent.$parent.$parent.$parent.$parent.communityName = this.name
               }, 200)
             })
             .finally(() => (this.saveDisable = false))
@@ -320,7 +264,6 @@ export default {
           createCommunity(payload)
             .then((response) => {
               this.isSubmitted = true
-              this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
               this.$store.dispatch('tableReload/setTableReload', true)
@@ -347,19 +290,21 @@ export default {
         if (!!this.resourceId) {
           this.name = this.communityItem.communityName
           this.description = this.communityItem.communityDescription
-          this.privacystatusid = this.communityItem.privacyStatusId.toString()
+          this.privacyStatusId = this.communityItem.privacyStatusId.toString()
           this.selectedCategory = {
             resourceId: this.communityItem.industryResourceId,
             name: this.categories.find(
-              (item) => item.resourceId == this.communityItem.industryResourceId
+              (item) => item.resourceId === this.communityItem.industryResourceId
             ).name
           }
+          this.acceptCheckbox = true
         }
+        console.log('this.com', this.communityItem)
         this.initialFormValues = {
           name: this.name,
           description: this.description,
           selectedCategory: this.selectedCategory,
-          privacystatusid: this.privacystatusid,
+          privacyStatusId: this.privacyStatusId,
           acceptCheckbox: this.acceptCheckbox
         }
       })

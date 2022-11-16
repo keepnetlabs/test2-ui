@@ -1,19 +1,12 @@
 <template>
   <div class="right-column" ref="rightCol">
-    <v-overlay
-      id="new-community-overlay"
-      :value="isWantToAddNewCommunity"
-      :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
-      :opacity="1"
-      :z-index="999"
-      color="white"
-    >
-      <new-community
-        :communityItem="communityItem"
-        :resourceId="communityItem && communityItem.resourceId"
-        @closeAdd="onAddClose"
-      />
-    </v-overlay>
+    <new-community
+      v-if="isWantToAddNewCommunity"
+      :status="isWantToAddNewCommunity"
+      :community-item="communityItem"
+      :resourceId="communityItem && communityItem.resourceId"
+      @closeAdd="onAddClose"
+    />
     <app-dialog
       :status="showNeedPermissionModal"
       icon="mdi-exit-to-app"
@@ -422,9 +415,9 @@
           </template>
         </PostCardLoading>
         <div
+          v-if="getSuggestedCommunitiesPermission"
           id="text--threat-sharing-right-column-suggested-communities"
           class="right-side-title pb-3 pt-8"
-          v-if="getSuggestedCommunitiesPermission"
         >
           Suggested Communities
         </div>
@@ -502,16 +495,7 @@ export default {
       required: false,
       default: false
     },
-    incidentsRef: {
-      required: false
-    },
-    communitiesRef: {
-      required: false
-    },
     selectedTab: {
-      required: false
-    },
-    subTabSelected: {
       required: false
     }
   },
@@ -596,8 +580,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getSelectedCompany: 'dashboard/getSelectedCompany',
-      userGetter: 'auth/userGetter',
       getCreateCommunityPermission: 'permissions/getThreatSharingCreateCommunityPermission',
       getEditCommunityPermission: 'permissions/getThreatSharingEditCommunityPermission',
       getLeaveCommunityPermission: 'permissions/getThreatSharingLeaveCommunityPermission',
@@ -657,14 +639,13 @@ export default {
       return newVal
     },
     deleteCommunityConfirm() {
-      let _this = this
       deleteCommunity(this.communityDetails.resourceId).then(() => {
         this.isWantToDelete = false
         if (
-          _this.$store.state['communities'].communities &&
-          _this.$store.state['communities'].communities.communitiesData
+          this.$store.state['communities'].communities &&
+          this.$store.state['communities'].communities.communitiesData
         ) {
-          _this.$store.state[
+          this.$store.state[
             'communities'
           ].communities.communitiesData.tableData = this.$store.state[
             'communities'
@@ -674,10 +655,10 @@ export default {
             }
             return acc
           }, [])
-          _this.$store.state[
+          this.$store.state[
             'communities'
           ].communities.communitiesData.searchValues.totalNumberOfRecords =
-            _this.$store.state['communities'].communities.communitiesData.searchValues
+            this.$store.state['communities'].communities.communitiesData.searchValues
               .totalNumberOfRecords - 1
         }
         this.$store.dispatch('tableReload/setTableReload', true)
@@ -703,13 +684,12 @@ export default {
     },
     leaveFromCommunityConfirm() {
       this.isLeaveFromCommunityButtonDisabled = true
-      let _this = this
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          if (_this.communityDetails.privacyStatusId === 1) {
-            if (_this.$store.state['communities'].communities.communitiesData) {
+          if (this.communityDetails.privacyStatusId === 1) {
+            if (this.$store.state['communities'].communities.communitiesData) {
               if (
-                _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
                   (item) => item.communityResourceId === this.communityDetails.resourceId
                 )
               ) {
@@ -747,12 +727,12 @@ export default {
           this.$store.dispatch('tableReload/setTableReload', true)
           this.isWantToToLeaveFromCommunity = false
           if (
-            _this.$store.state['communities'].communities &&
-            _this.$store.state['communities'].communities.communitiesData &&
-            _this.$store.state['communities'].communities.communitiesData.searchValues
+            this.$store.state['communities'].communities &&
+            this.$store.state['communities'].communities.communitiesData &&
+            this.$store.state['communities'].communities.communitiesData.searchValues
               .selectedTab === 'tab-0'
           ) {
-            _this.$store.state[
+            this.$store.state[
               'communities'
             ].communities.communitiesData.tableData = this.$store.state[
               'communities'
@@ -762,10 +742,10 @@ export default {
               }
               return acc
             }, [])
-            _this.$store.state[
+            this.$store.state[
               'communities'
             ].communities.communitiesData.searchValues.totalNumberOfRecords =
-              _this.$store.state['communities'].communities.communitiesData.searchValues
+              this.$store.state['communities'].communities.communitiesData.searchValues
                 .totalNumberOfRecords - 1
           }
           this.$router.push(`/threat-sharing`)
@@ -965,10 +945,9 @@ export default {
       }, 200)
     },
     getCommunityDetails() {
-      let _this = this
       if (this.$route.name === 'Community') {
         this.ownerDetails = this.$route.params.item
-        _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
+        this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.id)
           .then((response) => {
             this.communityDetails = response.data.data
@@ -976,7 +955,7 @@ export default {
               localStorage.setItem('communityName', response.data.data.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
             }
-            _this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
+            this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
             this.$forceUpdate()
           })
           .catch((error) => {
@@ -1210,11 +1189,6 @@ export default {
       if (this.communityDetails) {
         return isOwner(this.communityDetails.myMembershipStatusId)
       }
-    },
-    isJoined(id) {
-      /*if (id && id != null && this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some((cId) => cId.CommunityId == id)
-      }*/
     },
     leaveCommunity() {
       this.$emit('leaveCommunity')
