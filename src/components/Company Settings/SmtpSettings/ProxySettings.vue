@@ -96,7 +96,6 @@ import DeleteProxySettings from '@/components/Company Settings/ProxySettings/Del
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'

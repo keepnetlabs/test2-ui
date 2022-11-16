@@ -885,7 +885,7 @@ export default {
       }
       this.callForGetTargetUserCustomFieldsByCompanyId(true)
     },
-    handleSelectionChange(selection = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+    handleSelectionChange(selection = []) {
       this.selection = selection
     },
     handleAddUsersSelectionClick() {

@@ -41,7 +41,6 @@ import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import Line from '@/components/Common/Charts/Line'
-import { getDataTableFieldLabel } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 export default {

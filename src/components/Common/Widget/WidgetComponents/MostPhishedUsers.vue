@@ -44,7 +44,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
-import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 
