@@ -99,7 +99,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      sendFeedback: 'dashboard/sendFeedback',
       changeFeedbackPopup: 'dashboard/changeFeedbackPopup'
     }),
     onFeedbackSend() {

@@ -86,7 +86,6 @@ export default {
     isLoadState: false,
     isTableReload: false,
     page: 1,
-    subSelectedTab: null,
     isStepDisabled: false
   }),
   computed: {

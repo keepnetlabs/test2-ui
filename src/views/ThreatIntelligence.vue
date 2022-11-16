@@ -18,9 +18,6 @@ export default {
     return {
       tab: 'scans'
     }
-  },
-  computed: {},
-  methods: {},
-  created() {}
+  }
 }
 </script>
