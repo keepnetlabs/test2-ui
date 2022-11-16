@@ -9,7 +9,11 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <InputEntityName v-model.trim="groupName" initialPlaceholder="Enter name" :required="false" />
+      <InputEntityName
+        v-model.trim="groupName"
+        initial-placeholder="Enter name"
+        :required="false"
+      />
     </template>
     <template #app-dialog-footer>
       <app-dialog-footer

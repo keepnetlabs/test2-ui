@@ -50,7 +50,6 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewAttackVectorModalStatus(true)"
       @downloadEvent="exportTableData"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
@@ -288,7 +287,6 @@ export default {
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -344,15 +342,6 @@ export default {
         ...this.bodyData,
         orderBy: prop,
         ascending: order === 'ascending'
-      }
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
       this.getDatatableList()
     },

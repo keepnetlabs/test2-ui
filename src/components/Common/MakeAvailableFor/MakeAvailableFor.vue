@@ -91,7 +91,7 @@ export default {
       isAvailableForProps: COMMON_PROPS.AVAILABLEFOR,
       isAvailableForValid: true,
       isInfiniteLoading: false,
-      menuElement: 'null',
+      menuElement: '',
       isAvailableForValidated: false,
       maximumApiCount: 1,
       apiCount: 0,
@@ -119,6 +119,20 @@ export default {
       //this.$store.state?.auth?.userRoleName
       return this.$store.state?.auth?.userRoleName
     }
+  },
+  mounted() {
+    if (!this?.value?.length) {
+      this.handleInputChange([
+        {
+          id: 'MyCompanyOnly',
+          label: 'My company only',
+          type: 'MyCompanyOnly',
+          resourceId: null
+        }
+      ])
+    }
+
+    if (this.placeholder) this.isAvailableForProps.placeholder = this.placeholder
   },
   methods: {
     loadOptions({ action, searchQuery, callback }) {
@@ -162,29 +176,31 @@ export default {
       }, delay)
     },
     handleMenuOpen() {
+      //this element is removing from DOM after closing. Because of that event is removing by garbage collector
       this.$nextTick(() => {
         this.menuElement = document
           .getElementById('input--make-available-for')
           .querySelector('.vue-treeselect__menu')
         if (this.menuElement) {
-          this.menuElement.addEventListener('scroll', ({ target }) => {
-            if (this.$refs.refTreeSelect.rootOptionsStates.isLoading) return
-            const { scrollTop, scrollHeight, offsetHeight } = target
-            const { isInfiniteLoading, maximumApiCount, apiCount, disableScroll } = this
-            if (
-              scrollTop - (scrollHeight - offsetHeight) < 10 &&
-              scrollTop - (scrollHeight - offsetHeight) > -10 &&
-              !isInfiniteLoading &&
-              apiCount < maximumApiCount &&
-              !disableScroll &&
-              !this.$refs.refTreeSelect.trigger.searchQuery
-            ) {
-              this.isScrolling = true
-              this.handleInfiniteLoading()
-            }
-          })
+          this.menuElement.addEventListener('scroll', this.checkScrollAndActivateInfiniteLoading)
         }
       })
+    },
+    checkScrollAndActivateInfiniteLoading({ target }) {
+      if (this.$refs.refTreeSelect.rootOptionsStates.isLoading) return
+      const { scrollTop, scrollHeight, offsetHeight } = target
+      const { isInfiniteLoading, maximumApiCount, apiCount, disableScroll } = this
+      if (
+        scrollTop - (scrollHeight - offsetHeight) < 10 &&
+        scrollTop - (scrollHeight - offsetHeight) > -10 &&
+        !isInfiniteLoading &&
+        apiCount < maximumApiCount &&
+        !disableScroll &&
+        !this.$refs.refTreeSelect.trigger.searchQuery
+      ) {
+        this.isScrolling = true
+        this.handleInfiniteLoading()
+      }
     },
     callForSearchAvailableFor(search) {
       return searchAvailableFor(this.searchAvailableForPayload)
@@ -350,20 +366,6 @@ export default {
         ]
       return getAvailableForValues(data)
     }
-  },
-  mounted() {
-    if (!this?.value?.length) {
-      this.handleInputChange([
-        {
-          id: 'MyCompanyOnly',
-          label: 'My company only',
-          type: 'MyCompanyOnly',
-          resourceId: null
-        }
-      ])
-    }
-
-    if (this.placeholder) this.isAvailableForProps.placeholder = this.placeholder
   }
 }
 </script>

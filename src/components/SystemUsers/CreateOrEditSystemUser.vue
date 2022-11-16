@@ -30,11 +30,11 @@
       <form-group v-if="selectedRow">
         <v-btn
           id="btn-send-information-email--system-users-people-modal"
-          @click="callForSendInformationEmail(selectedRow.resourceId)"
+          class="white--text btn-util"
           color="#2196f3"
           rounded
           :disabled="sendInformationEmailDisabled"
-          class="white--text btn-util"
+          @click="callForSendInformationEmail(selectedRow.resourceId)"
         >
           <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
           Send Information Email
@@ -166,7 +166,6 @@ export default {
       if (this.createdCompanyResourceId) {
         payload.CompanyResourceId = this.createdCompanyResourceId
       }
-
       createSystemUser(payload)
         .then(() => {
           this.saveDisable = false
@@ -197,47 +196,9 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
 
-    let payload = {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'RoleName',
-      ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'OR',
-            FilterItems: [
-              {
-                FieldName: 'RoleName',
-                Operator: 'Contains',
-                Value: 'ro'
-              },
-              {
-                FieldName: 'CompanyName',
-                Operator: 'Contains',
-                Value: 'ro'
-              }
-            ],
-            FilterGroups: []
-          },
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'TypeId',
-                Operator: 'Include',
-                Value: '1,2'
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
-    }
     let allRoles = []
     let availableRoles = []
-    const response = await getSystemUsersRole(payload)
+    const response = await getSystemUsersRole()
     if (response) {
       allRoles = response.data.data
       availableRoles = []

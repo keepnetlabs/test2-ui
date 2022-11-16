@@ -39,7 +39,7 @@
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        :axios-payload.sync="requestBody"
+        :axios-payload.sync="axiosPayload"
         :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
         :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
@@ -49,7 +49,7 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForListSystemUsers"
+        @refreshAction="callForData"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
@@ -96,12 +96,11 @@ import {
 } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'People',
@@ -111,6 +110,7 @@ export default {
     DeleteSystemUserModal,
     DefaultButtonRowAction
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       deleteButtonDisabled: false,
@@ -270,8 +270,7 @@ export default {
           disabled: !this.$store.getters['permissions/getSystemUsersCreatePermission']
         }
       },
-      requestBody: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       showCreateOrEditSystemUserModal: false,
       selectedRow: null,
       showDeleteSystemUserModal: false,
@@ -286,123 +285,13 @@ export default {
     })
   },
   created() {
-    this.callForListSystemUsers()
+    this.callForData()
   },
   methods: {
-    resetPageNumber() {
-      this.requestBody.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.requestBody.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.requestBody.filter.FilterGroups[1].FilterItems = this.requestBody.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'StatusName') {
-            item.FieldName = 'StatusId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.callForListSystemUsers()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.requestBody.pageNumber = pageNumber
-      this.callForListSystemUsers()
-    },
-    handleMultipleDeleteOfSystemUsers(items, excludedItems, selectAll) {
-      this.isMultipleDelete = true
-      this.multipleDeletedUserCount = selectAll
-        ? this.serverSideProps.totalNumberOfRecords
-        : items.length
-      this.multipleSystemUserPayload = {
-        items: selectAll ? [] : items.map((item) => item.resourceId),
-        excludedItems,
-        selectAll,
-        filter: this.requestBody.filter
-      }
-      this.toggleShowDeleteSystemUserModal()
-    },
-    callForMultipleDelete() {
-      this.deleteButtonDisabled = true
-      bulkDeleteSystemUsers(this.multipleSystemUserPayload)
-        .then(() => {
-          this?.$refs?.refSystemUsersList?.resetSelectableParams()
-          this.callForListSystemUsers()
-          this.toggleShowDeleteSystemUserModal()
-        })
-        .finally(() => {
-          this.deleteButtonDisabled = false
-        })
-    },
-    sortChanged({ order, prop } = {}) {
-      this.requestBody.ascending = order === 'ascending'
-      this.requestBody.orderBy = prop
-      this.callForListSystemUsers()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.requestBody.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForListSystemUsers()
-    },
-    exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.requestBody.filter)),
-        this.$refs.refSystemUsersList,
-        'CreateTime'
-      )
-      if (this.$refs.refSystemUsersList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-          (item) => item.FieldName === 'StatusName'
-        ).FieldName = 'StatusId'
-      }
-      if (
-        this.$refs.refSystemUsersList.sortProps &&
-        this.$refs.refSystemUsersList.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-
-      exportTypes.map((exportType) => {
-        const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: filter
-        }
-        exportSystemUsers(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `System Users.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    },
-    toggleCreateOrEditSystemUser() {
-      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
-      if (!this.showCreateOrEditSystemUserModal) {
-        this.selectedRow = null
-      }
-    },
-    closeOverlayWithUpdate() {
-      this.toggleCreateOrEditSystemUser()
-      this.callForListSystemUsers()
-    },
-    callForListSystemUsers() {
+    callForData() {
       this.loading = true
       if (this.getSystemUsersSearchPermission) {
-        getSystemUsers(this.requestBody)
+        getSystemUsers(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -419,22 +308,80 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'StatusId'
+          }
+          return item
+        }
+      )
+      this.resetPageNumber()
+      this.callForData()
+    },
+    handleMultipleDeleteOfSystemUsers(items, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : items.length
+      this.multipleSystemUserPayload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleShowDeleteSystemUserModal()
+    },
+    callForMultipleDelete() {
+      this.deleteButtonDisabled = true
+      bulkDeleteSystemUsers(this.multipleSystemUserPayload)
+        .then(() => {
+          this?.$refs?.refSystemUsersList?.resetSelectableParams()
+          this.callForData()
+          this.toggleShowDeleteSystemUserModal()
+        })
+        .finally(() => {
+          this.deleteButtonDisabled = false
+        })
+    },
+    exportSystemUsers(downloadTypes) {
+      downloadTypes.exportTypes.map((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportSystemUsers(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `System Users.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    toggleCreateOrEditSystemUser() {
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      if (!this.showCreateOrEditSystemUserModal) {
+        this.selectedRow = null
+      }
+    },
+    closeOverlayWithUpdate() {
+      this.toggleCreateOrEditSystemUser()
+      this.callForData()
+    },
     deleteMultipleItems() {
       this.callForMultipleDelete()
-    },
-    columnFilterChanged(filter) {
-      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.requestBody
-      )
-      this.callForListSystemUsers()
-    },
-    columnFilterCleared(fieldName) {
-      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.requestBody
-      )
-      this.callForListSystemUsers()
     },
     handleEdit(row) {
       this.selectedRow = row
@@ -460,7 +407,7 @@ export default {
           this.$refs.refSystemUsersList.unSelectRow(row)
           this.$refs.refSystemUsersList.changeServerSideSelectionCount(-1)
           this.toggleShowDeleteSystemUserModal()
-          this.callForListSystemUsers()
+          this.callForData()
         })
         .finally(() => {
           this.deleteButtonDisabled = false
