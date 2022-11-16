@@ -1,0 +1,59 @@
+
+parameters:
+- name: environment
+  displayName: .NET Core Environment
+  type: string
+
+- name: jobName
+  displayName: Job Name
+  type: string
+
+- name: artifactName 
+  displayName: Artifact Name
+  type: string
+
+- name: websiteName 
+  displayName: Website Name
+  type: string
+
+# - name: projectName
+#   displayName: Project Name
+#   type: string
+
+# - name: runService
+#   displayName: Run Service
+#   type: string
+
+# - name: runAll
+#   displayName: Run Environment
+#   type: string
+
+# - name: serviceName
+#   displayName: Run Service
+#   type: string
+
+jobs:
+  - deployment: ${{ parameters.jobName }} 
+    workspace:
+      clean: all 
+    displayName: ${{ parameters.jobName }} 
+    environment:
+      name: '${{ parameters.environment }}'
+      resourceType: VirtualMachine 
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in config.js'
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)/drop'
+              targetFiles: config.js
+
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            displayName: 'IIS Web App Deploy'
+            inputs:
+              WebSiteName: '${{ parameters.websiteName }}'
+              Package: '$(Pipeline.Workspace)/drop'
+              TakeAppOfflineFlag: True
