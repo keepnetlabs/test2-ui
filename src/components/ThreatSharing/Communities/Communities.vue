@@ -1,68 +1,61 @@
 <template>
   <div class="communities-wrapper">
-    <v-overlay
-      id="new-community-overlay"
-      :value="isWantToAddNewCommunity"
-      :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
-      :opacity="1"
-      :z-index="9"
-      color="white"
-    >
-      <new-community
-        ref="newCommunityModal"
-        :communityItem="communityItem"
-        :resourceId="resourceId"
-        @closeAdd="onAddClose"
-      />
-    </v-overlay>
+    <new-community
+      v-if="isWantToAddNewCommunity"
+      ref="newCommunityModal"
+      :status="isWantToAddNewCommunity"
+      :communityItem="communityItem"
+      :resourceId="resourceId"
+      @closeAdd="onAddClose"
+    />
     <app-dialog
       :status="isWantToDelete"
-      @changeStatus="isWantToDelete = false"
       icon="mdi-delete"
       type="delete"
       title="Delete Community?"
       :subtitle="deleteCommunityName"
       :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
+      @changeStatus="isWantToDelete = false"
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <app-dialog-footer
-          @handleClose="isWantToDelete = false"
-          @handleConfirm="deleteCommunityConfirm()"
           actionButtonText="DELETE"
           type="delete"
           cancel-button-id="threat-sharing-communities-delete-modal-cancel-button"
           confirm-button-id="threat-sharing-communities-delete-modal-confirm-button"
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteCommunityConfirm()"
         />
       </template>
     </app-dialog>
     <app-dialog
       :status="isWantToToLeaveFromCommunity"
-      @changeStatus="isWantToToLeaveFromCommunity = false"
       icon="mdi-exit-to-app"
       title="Leave Community?"
       :subtitle="leaveCommunityName"
       :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
+      @changeStatus="isWantToToLeaveFromCommunity = false"
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <app-dialog-footer
           :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
-          @handleClose="isWantToToLeaveFromCommunity = false"
-          @handleConfirm="leaveFromCommunityConfirm"
           actionButtonText="LEAVE"
           cancel-button-id="threat-sharing-communities-leave-modal-cancel-button"
           confirm-button-id="threat-sharing-communities-leave-modal-confirm-button"
+          @handleClose="isWantToToLeaveFromCommunity = false"
+          @handleConfirm="leaveFromCommunityConfirm"
         />
       </template>
     </app-dialog>
     <app-dialog
       :status="showNeedPermissionModal"
-      @changeStatus="showNeedPermissionModal = false"
       icon="mdi-exit-to-app"
       title="Cannot Leave Community"
       :subtitle="leaveCommunityName"
       :body="`You have to give admin privileges to at least 1 other person`"
+      @changeStatus="showNeedPermissionModal = false"
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div class="d-flex flex-row flex-end">
             <v-btn
@@ -78,13 +71,13 @@
       </template>
     </app-dialog>
     <app-dialog
-      @changeStatus="openNotificationModal = false"
-      :status="openNotificationModal"
       v-if="openNotificationModal"
+      :status="openNotificationModal"
       icon="mdi-bell"
       title="Community Notification Settings"
+      @changeStatus="openNotificationModal = false"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <div v-if="notificationLoading">
           <v-skeleton-loader :loading="notificationLoading" type="article, list-item"
             ><slot name="skeleton-content"></slot
@@ -110,33 +103,33 @@
           </v-list-item>
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <app-dialog-footer
+          cancel-button-id="threat-sharing-communities-notification-setting-modal-cancel-button"
+          confirm-button-id="threat-sharing-communities-notification-setting-modal-confirm-button"
           :confirm-button-disabled="isNotificationSettingButtonDisabled"
           @handleClose="openNotificationModal = false"
           @handleConfirm="saveNotificationSetting"
-          cancel-button-id="threat-sharing-communities-notification-setting-modal-cancel-button"
-          confirm-button-id="threat-sharing-communities-notification-setting-modal-confirm-button"
         />
       </template>
     </app-dialog>
     <app-dialog
       :status="isCancelRequestModal"
-      @changeStatus="isCancelRequestModal = false"
       icon="mdi-exit-to-app"
       title="Cancel Request?"
       :subtitle="cancelRequestCommunityName"
       :body="`You are cancelling your join request to the ${cancelRequestCommunityName}`"
+      @changeStatus="isCancelRequestModal = false"
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
               class="pa-0 k-dialog__button"
               text
               color="#f56c6c"
-              @click="isCancelRequestModal = false"
               id="threat-sharing-communities-cancel-request-modal-cancel-button"
+              @click="isCancelRequestModal = false"
               >{{ labels.Cancel }}
             </v-btn>
           </div>
@@ -168,11 +161,11 @@
               <v-tab
                 v-for="(tab, ind) in tabOptions"
                 :key="ind"
-                @click="subTabSelected(tab)"
+                :id="`threat-sharing-communities-tab-${ind}`"
                 :href="`#tab-${ind}`"
                 class="text-decoration-none sub-tab__content"
                 :disabled="communityLoading"
-                :id="`threat-sharing-communities-tab-${ind}`"
+                @click="subTabSelected(tab)"
               >
                 <template v-if="ind === 2">
                   {{ tab }}
@@ -211,12 +204,12 @@
                   outlined
                   class="edit-select search-wrapper__combobox"
                   v-model.trim="industryValue"
-                  @change="updateCommunities(true)"
                   :placeholder="'Industry'"
                   hide-details
                   multiple
                   :disabled="selectedTab === 'tab-2' || communityLoading"
                   :slots="{ selection: true, item: false }"
+                  @change="updateCommunities(true)"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -246,12 +239,12 @@
                   hide-details
                   item-text="name"
                   item-value="id"
-                  @change="updateCommunities(true)"
                   :menu-props="{ offsetY: true }"
                   :disabled="selectedTab === 'tab-2' || communityLoading"
                   :slots="{ selection: true, item: false }"
+                  @change="updateCommunities(true)"
                 >
-                  <template v-slot:selection="{ item, index }">
+                  <template #selection="{ item, index }">
                     <span
                       v-if="index === 0"
                       style="
@@ -548,7 +541,6 @@ export default {
     refresh: {
       type: Boolean
     },
-    isCommunity: { required: false },
     isLoadState: {
       type: Boolean
     },
@@ -765,7 +757,6 @@ export default {
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         }, 500)
       })
-      //this.isCancelRequestModal = true
     },
     cancelRequestConfirm() {
       cancelRequest(this.cancelRequestCommunityId).then(() => {
