@@ -740,7 +740,7 @@ export default {
       return isOwner(community.membershipStatusId)
     },
     isOwnerOrMember(community) {
-      return community.membershipStatusId == 2 || community.membershipStatusId == 1
+      return community.membershipStatusId === 2 || community.membershipStatusId === 1
     },
     saveNotificationSetting() {
       let payload = {
@@ -1089,7 +1089,7 @@ export default {
       if (isOwnerOrMember(item.membershipStatusId)) {
         localStorage.setItem('communityName', item.communityName)
         localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
-        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId === 1 ? 'owner' : 'member')
         let communitiesData = {
           tableData: this.selectedTab === 'tab-2' ? this.invitationData : this.listData,
           searchValues: {
@@ -1118,7 +1118,7 @@ export default {
           params: { id: item.communityResourceId, item: item, communityName: item.communityName }
         })
       } else {
-        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId === 1 ? 'owner' : 'member')
       }
     },
     updateCommunities() {

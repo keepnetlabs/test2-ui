@@ -75,14 +75,23 @@ export default {
       }
     }
   },
+  watch: {
+    data(value) {
+      if (value.length > 0) {
+        this.produceData()
+        this.getChips()
+      }
+    }
+  },
   mounted() {
     this.getChips()
-    window.addEventListener('resize', () => {
-      this.getChips()
-    })
+    window.addEventListener('resize', this.getChips)
   },
   created() {
     this.produceData()
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.getChips)
   },
   methods: {
     getChips() {
@@ -150,14 +159,6 @@ export default {
     },
     getRenderStatusOfLeftContainer() {
       return true
-    }
-  },
-  watch: {
-    data(value) {
-      if (value.length > 0) {
-        this.produceData()
-        this.getChips()
-      }
     }
   }
 }
