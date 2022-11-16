@@ -77,8 +77,11 @@ export default {
     handleTestConnectionClick() {
       this.$emit('testConnectionClicked')
     },
-    testConnection(isSave) {
+    testConnection(isSave = false, isTested = false) {
       this.isSave = isSave
+      if (isTested) {
+        return this.checkIfAllSuccess(true)
+      }
       this.isLoadingStarted = true
       this.setLoadingStates()
       let payload = {
