@@ -115,14 +115,10 @@ export default {
       value: null,
       isMenuOpen: false,
       isOpenAllMenuItems: false,
-      keys: ['name'],
       searchCompanyIcon: 'mdi-menu-down',
-      itemsPerPageOptions: [4, 8, 12],
-      itemsPerPage: 4,
       search: '',
       companies: [],
       orderedAccounts: [],
-      companyLoading: false,
       treeViewModel: [],
       openedArrays: [],
       searchedCompanyText: '',
@@ -145,7 +141,6 @@ export default {
         }
       })
       .finally(() => {
-        this.companyLoading = false
         this.isCompaniesLoading = false
       })
   },

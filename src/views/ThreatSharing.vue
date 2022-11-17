@@ -1,16 +1,11 @@
 <template>
   <div id="container--threat-sharing" class="component-threat-sharing page-wrapper mt-1">
-    <v-overlay
-      id="new-community-overlay"
+    <new-community
+      v-if="isWantToAddNewCommunity"
       ref="refNewCommunity"
-      :value="isWantToAddNewCommunity"
-      :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
-      :opacity="1"
-      :z-index="9"
-      color="white"
-    >
-      <new-community @closeAdd="onAddClose" ref="refNewCommunity" />
-    </v-overlay>
+      :status="isWantToAddNewCommunity"
+      @closeAdd="onAddClose"
+    />
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">
       <v-col class="main-column pr-4 pl-4" cols="12" md="8">
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
@@ -42,7 +37,6 @@
               <communities
                 ref="tsCommunities"
                 :refresh="refreshMemberTable"
-                :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
                 :isTableReload="isTableReload"
                 :page="page"
@@ -56,10 +50,7 @@
       <v-col id="ts-right-column" class="right-column pl-2" cols="12" md="4">
         <right-column
           class="right-col-desktop"
-          :incidentsRef="this.$refs.tsIncidents"
-          :communitiesRef="this.$refs.tsCommunities"
           :selectedTab="tab"
-          :subTabSelected="this.$refs.tsCommunities && this.$refs.tsCommunities.subSelectedTab"
           @createCommunityAction="openCreateCommunityModal()"
           @joinRequestSuccess="joinRequestSuccess()"
         />
@@ -89,13 +80,12 @@ export default {
     }
   },
   data: () => ({
-    tab: null,
+    tab: 0,
     isWantToAddNewCommunity: false,
     refreshMemberTable: false,
     isLoadState: false,
     isTableReload: false,
     page: 1,
-    subSelectedTab: null,
     isStepDisabled: false
   }),
   computed: {
@@ -103,6 +93,33 @@ export default {
       getAllCommunitiesPermission: 'permissions/getThreatSharingAllCommunitiesPermission',
       getMyCommunitiesPermission: 'permissions/getThreatSharingMyCommunitiesPermission',
       getCommunityPostsPermission: 'permissions/getThreatSharingCommunityPostsPermission'
+    })
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (vm.$route.query.detailsId) {
+        vm.tab = 1
+      } else if (vm.$route.params.isCommunity) {
+        vm.tab = 1
+      } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
+        vm.tab = 1
+        setTimeout(() => {
+          vm.$refs.tsCommunities.subTabSelected('tab-2')
+        }, 1250)
+      }
+      if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) {
+        vm.$router.push('/')
+      }
+      if (from.name === 'Community') {
+        const incidentsData = vm.$store.state['incidents'].incidents
+        const communitiesData = vm.$store.state['communities'].communities
+        const isTableReload = vm.$store.state['tableReload'].tableReload
+        if (incidentsData.incidentsData || communitiesData.communitiesData) {
+          vm.tab = !incidentsData.incidentsData ? 1 : 0
+          vm.isLoadState = true
+          vm.isTableReload = isTableReload
+        }
+      }
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -119,9 +136,6 @@ export default {
     } else {
       next()
     }
-  },
-  beforeRouteUpdate(to, from, next) {
-    next(true)
   },
   created() {
     if (!this.getCommunityPostsPermission) {
@@ -140,7 +154,6 @@ export default {
       this.getSelectedTabData()
     },
     getSelectedTabData() {
-      let _this = this
       setTimeout(() => {
         if (this.tab === 0 && this.getCommunityPostsPermission) {
           if (!this.isLoadState) {
@@ -153,8 +166,8 @@ export default {
         } else {
           if (this.getAllCommunitiesPermission) {
             const communitiesDataGlobal =
-              _this.$store.state['communities'].communities &&
-              _this.$store.state['communities'].communities.communitiesData
+              this.$store.state['communities'].communities &&
+              this.$store.state['communities'].communities.communitiesData
             this.page =
               (communitiesDataGlobal &&
                 communitiesDataGlobal.searchValues &&
@@ -192,33 +205,6 @@ export default {
       this.isWantToAddNewCommunity = false
       this.refreshMemberTable = !this.refreshMemberTable
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      if (vm.$route.query.detailsId) {
-        vm.tab = 1
-      } else if (vm.$route.params.isCommunity) {
-        vm.tab = 1
-      } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
-        vm.tab = 1
-        setTimeout(() => {
-          vm.$refs.tsCommunities.subTabSelected('tab-2')
-        }, 1250)
-      }
-      if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) {
-        vm.$router.push('/')
-      }
-      if (from.name === 'Community') {
-        const incidentsData = vm.$store.state['incidents'].incidents
-        const communitiesData = vm.$store.state['communities'].communities
-        const isTableReload = vm.$store.state['tableReload'].tableReload
-        if (incidentsData.incidentsData || communitiesData.communitiesData) {
-          vm.tab = !incidentsData.incidentsData ? 1 : 0
-          vm.isLoadState = true
-          vm.isTableReload = isTableReload
-        }
-      }
-    })
   }
 }
 </script>

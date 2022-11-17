@@ -45,8 +45,6 @@ import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
 import VishingReport from '@/views/VishingReport'
-import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
-import EmailThreatSimulatorRequest from '@/utils/emailThreatSimulatorRequest'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',

@@ -1,7 +1,6 @@
 import testRequest from '../utils/testRequest'
 import uploadRequest from '../utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-const API_URL = 'analysis-engines'
 
 export function getAllCommunityList(payload) {
   return testRequest.post(`communities/search/all`, payload)
@@ -79,16 +78,6 @@ export function uploadEmlOrMsg(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
   return uploadRequest.post(`community-posts/message-file-preview`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    onUploadProgress
-  })
-}
-export function uploadEmlOrMsgCancel(file, onUploadProgress) {
-  const formData = new FormData()
-  formData.append('File', file)
-  return testRequest.post(`community-posts/message-file-preview`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
