@@ -32,9 +32,7 @@ const types = {
 }
 
 export default function imageToBlob(img, options, callback) {
-  debugger
   let src
-
   if (typeof options === 'function') {
     callback = options
     options = {}
