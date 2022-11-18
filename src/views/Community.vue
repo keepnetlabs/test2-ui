@@ -52,9 +52,9 @@
                 />
               </v-tab-item>
               <v-tab-item
+                v-if="getThreatSharingGetMembersPermission"
                 :transition="false"
                 :reverse-transition="false"
-                v-if="getThreatSharingGetMembersPermission"
               >
                 <members ref="refMembers" @selectedMemberPost="selectedMemberPostFunc" />
               </v-tab-item>
@@ -94,8 +94,6 @@ export default {
     routerCount: 0,
     refreshIncidentsData: false,
     showPostIncident: false,
-    communityDetails: {},
-    search: '',
     tab: 0,
     isWantToAddNewCommunity: false
   }),
@@ -119,7 +117,6 @@ export default {
             this.getMembers()
           }
           if (to.query.postId) {
-            this.$refs.refIncidents.isSharedPost = true
             this.$refs.refIncidents.incidentList = []
             this.$refs.refIncidents.getSharedPost()
           } else {

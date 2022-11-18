@@ -95,7 +95,13 @@
               </transition>
             </div>
           </div>
-          <template v-if="isReseller">
+          <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
+          <InputTimezone
+            v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            class="black-placeholder"
+            :disabled="isScheduledTimeDisabled"
+          />
+          <!-- <template v-if="isReseller">
             <span class="ml-2" style="font-size: 14px;">on every company’s own time zone</span>
           </template>
           <template v-else>
@@ -105,7 +111,7 @@
               class="black-placeholder"
               :disabled="isScheduledTimeDisabled"
             />
-          </template>
+          </template> -->
         </div>
       </v-radio-group>
     </FormGroup>
