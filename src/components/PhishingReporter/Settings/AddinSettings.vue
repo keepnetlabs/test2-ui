@@ -342,7 +342,6 @@ import { maxLength, required } from '@/utils/validations'
 import { getPhishingReporterImg } from '@/api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
-import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
@@ -351,6 +350,7 @@ import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import imageToBlob from '@/utils/image-to-blob'
 export default {
   name: 'AddinSettings',
   components: {

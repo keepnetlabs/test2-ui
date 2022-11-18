@@ -34,8 +34,6 @@
     "grapesjs-preset-webpage": "0.1.11",
     "grapesjs-style-bg": "^1.0.5",
     "grapesjs-tooltip": "0.1.5",
-    "image-to-blob": "0.2.0",
-    "image-to-data-uri": "0.0.1",
     "jszip": "^3.4.0",
     "jwt-decode": "^3.0.0-beta.2",
     "regenerator-runtime": "^0.13.7",
