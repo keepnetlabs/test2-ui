@@ -8,9 +8,6 @@
     <span v-if="step.fileName" class="vishing-template-preview-step__file-name">
       {{ step.fileName }}
     </span>
-    <div v-if="step.fileUrl" class="vishing-template-preview-step__audio">
-      <AudioPlayer :src="step.fileUrl" type="client" />
-    </div>
     <div v-if="hasTags" class="vishing-template-preview-step__tags">
       <Badge
         v-if="hasRequiredDigitCount"
@@ -29,12 +26,10 @@
 </template>
 
 <script>
-import AudioPlayer from '@/components/AudioPlayer'
 import Badge from '@/components/Badge'
 export default {
   name: 'VishingTemplatePreviewStep',
   components: {
-    AudioPlayer,
     Badge
   },
   props: {
