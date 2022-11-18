@@ -1898,12 +1898,11 @@
                   <v-form ref="accept_terms_and_conditions_checkbox">
                     <div class="d-flex" style="margin-bottom: 8px;">
                       <v-checkbox
+                        v-model="acceptCheckbox"
                         id="accept-terms-and-conditions-post-incident"
                         class="k-checkbox accept-terms-and-conditions-checkbox"
                         color="#2196f3"
-                        v-model="acceptCheckbox"
                         :rules="[checkboxRule.required]"
-                        @change="checkCheckboxValidation()"
                       />
                       <div class="d-flex accept-terms-and-conditions-label-group">
                         <label :for="'accept-terms-and-conditions-post-incident'" class="mr-1"
@@ -2436,6 +2435,7 @@ export default {
       acceptCheckbox: false
     }
     if (this.editItem) {
+      this.acceptCheckbox = true
       this.value = this.editItem.securityLabelResourceIdArray[0]
       this.selectedEmail = this.editItem.communityPostResourceId
       this.initialFormValues = {
@@ -2502,9 +2502,6 @@ export default {
     handleTagItemChange() {
       this.querySelections(this.searchIncident || '')
       if (this.isFindIncidentLoading) return false
-    },
-    checkCheckboxValidation() {
-      this.isCheckboxChecked = this.acceptCheckbox
     },
     closeGrapesJs() {
       this.showNewsletterPageGrapes = false
