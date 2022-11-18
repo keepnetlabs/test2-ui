@@ -1,17 +1,20 @@
 <template>
   <AppDialog
+    icon="mdi-account"
+    title="Remove user from community?"
+    title-id="text--threat-sharing-members-popup-title"
+    subtitle-id="text--threat-sharing-members-popup-subtitle"
     :status="status"
-    icon="mdi-exit-to-app"
-    title="Leave Community?"
-    :subtitle="leaveCommunityName"
-    :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
+    :subtitle="removeFromCommunityUserName"
+    :body="`${removeFromCommunityUserName} will be removed and won’t be able to access the community`"
     @changeStatus="$emit('on-close')"
   >
     <template #app-dialog-footer>
       <AppDialogFooter
-        actionButtonText="LEAVE"
-        cancel-button-id="threat-sharing-communities-leave-modal-cancel-button"
-        confirm-button-id="threat-sharing-communities-leave-modal-confirm-button"
+        type="delete"
+        cancel-button-id="threat-sharing-members-remove-community-cancel-button"
+        confirm-button-id="threat-sharing-members-remove-community-remove-button"
+        action-button-text="REMOVE"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="$emit('on-close')"
         @handleConfirm="$emit('on-confirm')"
@@ -24,17 +27,17 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
-  name: 'LeaveCommunityDialog',
+  name: 'RemoveUserFromCommunityDialog',
   components: { AppDialogFooter, AppDialog },
   props: {
     status: {
       type: Boolean
     },
-    leaveCommunityName: {
-      type: String
-    },
     isActionButtonDisabled: {
       type: Boolean
+    },
+    removeFromCommunityUserName: {
+      type: String
     }
   }
 }

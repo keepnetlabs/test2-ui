@@ -98,35 +98,12 @@
         </div>
       </v-menu>
     </div>
-    <v-expansion-panel-content class="expand-body member-company-body">
-      <div class="members-posts">
-        <div
-          :id="`item--threat-sharing-member-top-posts-in-community-${index}`"
-          class="members-posts-header"
-        >
-          Top posts in community
-        </div>
-        <div class="members-post-list">
-          <a href="#">Harmful xls file</a>
-          <a href="#">Whatsapp phishing attempt</a>
-          <a href="#">Win a prize</a>
-        </div>
-        <div class="members-post-see-all pt-1">
-          <a href="#">SEE ALL POSTS</a>
-        </div>
-      </div>
-      <div class="members-pie">
-        <pie :key="series[0]" :data="series" />
-      </div>
-    </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
 
 <script>
-import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'MemberCard',
-  components: { Pie },
   props: {
     member: {
       type: Object,
@@ -146,10 +123,6 @@ export default {
     },
     canRemoveFromCommunity: {
       type: Boolean,
-      required: true
-    },
-    series: {
-      type: Array,
       required: true
     }
   },
