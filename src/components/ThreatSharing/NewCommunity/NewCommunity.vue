@@ -299,7 +299,6 @@ export default {
           }
           this.acceptCheckbox = true
         }
-        console.log('this.com', this.communityItem)
         this.initialFormValues = {
           name: this.name,
           description: this.description,

@@ -196,6 +196,7 @@ import PostIncident from '@/components/ThreatSharing/PostIncident/PostIncident'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getCompanyListForThreatSharing } from '@/api/company'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   components: {
@@ -203,6 +204,7 @@ export default {
     PostIncident,
     SinglePost
   },
+  mixins: [useDebounce],
   props: {
     posts: {
       type: Array,
@@ -236,7 +238,6 @@ export default {
     itemsPerPageArray: [5, 10, 20],
     page: 1,
     itemsPerPage: 5,
-    isSharedPost: true,
     companyItem: [],
     companyValue: null,
     threatsList: [],
@@ -244,13 +245,6 @@ export default {
     editItem: null,
     openEditPopupItem: null,
     showPostIncident: false,
-    status: 'SUCCESS',
-    code: 'RESOURCE_RETRIEVED',
-    message: 'Resource retrieved',
-    itemsPerPageOptions: [5, 10, 20],
-    items2: ['Incidents', 'Communities', 'Members'],
-    toggle: false,
-    tab: null,
     incidentList: [],
     incidentLoading: true
   }),
@@ -297,7 +291,7 @@ export default {
           if (!this.isLoadState) {
             this.debounce(() => {
               this.getIncidentList('', '', true)
-            }, 1000)
+            }, 750)
           }
         }
       }
@@ -311,7 +305,6 @@ export default {
     this.getThreats()
     let _this = this
     if (this.$route.query && this.$route.query.postId) {
-      this.isSharedPost = true
       this.getSharedPost()
     } else {
       if (this.isLoadState) {
@@ -367,14 +360,6 @@ export default {
       if (!this.isLoadState) {
         this.getIncidentList()
       }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     openEditPopupItemFunc(post) {
       this.editItem = post
