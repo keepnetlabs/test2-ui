@@ -8,31 +8,6 @@
       @closeAdd="onAddClose"
     />
     <app-dialog
-      :status="showNeedPermissionModal"
-      icon="mdi-exit-to-app"
-      title="Cannot Leave Community"
-      title-id="text--threat-sharing-right-column-permission-popup-title"
-      subtitle-id="text--threat-sharing-right-column-permission-popup-subtitle"
-      :subtitle="communityDetails && communityDetails.name"
-      :body="`You have to give admin privileges to at least 1 other person`"
-      @changeStatus="showNeedPermissionModal = false"
-    >
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              id="threat-sharing-right-column-permission-modal-button"
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="showNeedPermissionModal = false"
-              >I UNDERSTAND
-            </v-btn>
-          </div>
-        </div>
-      </template>
-    </app-dialog>
-    <app-dialog
       :status="isWantToToLeaveFromCommunity"
       @changeStatus="isWantToToLeaveFromCommunity = false"
       icon="mdi-exit-to-app"
@@ -178,12 +153,12 @@
       </app-dialog>
       <v-btn
         v-if="$route.path === '/threat-sharing'"
+        id="threat-sharing-right-column-create-a-new-community-button"
         :disabled="!getCreateCommunityPermission"
         class="create-com-btn"
-        @click="createNewCommunity"
         block
         rounded
-        id="threat-sharing-right-column-create-a-new-community-button"
+        @click="createNewCommunity"
         >CREATE A NEW COMMUNITY
       </v-btn>
       <v-btn
@@ -518,7 +493,6 @@ export default {
         isEmailEnabled: false,
         isDashboardEnabled: false
       },
-      showNeedPermissionModal: false,
       isWantToToLeaveFromCommunity: false,
       leaveCommunityName: null,
       communityItem: null,
@@ -749,16 +723,6 @@ export default {
                 .totalNumberOfRecords - 1
           }
           this.$router.push(`/threat-sharing`)
-        })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'CANNOT_LEAVE_COMMUNITY'
-          ) {
-            this.isWantToToLeaveFromCommunity = false
-            this.showNeedPermissionModal = true
-          }
         })
         .finally(() => (this.isLeaveFromCommunityButtonDisabled = false))
     },

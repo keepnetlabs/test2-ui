@@ -6,10 +6,6 @@ export function postWidgets(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
-export function getWidgets() {
-  return testRequest.get(API_URL, { loading: true })
-}
-
 export function getSummary(payload = {}, isLoading = true) {
   const config = isLoading ? { loading: isLoading } : {}
   return testRequest.get('/dashboard/summary', config)

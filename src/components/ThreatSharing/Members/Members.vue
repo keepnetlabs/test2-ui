@@ -1,86 +1,33 @@
 <template>
   <v-card flat class="members-content" color="basil">
-    <app-dialog
-      icon="mdi-lock"
-      title="Give admin privileges?"
+    <GiveAdminAccessToMemberDialog
+      v-if="showAppointANewOwnerModal"
       :status="showAppointANewOwnerModal"
-      :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community.`"
-      @changeStatus="showAppointANewOwnerModal = false"
-    >
-      <template #app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="showAppointANewOwnerModal = false"
-              id="threat-sharing-members-new-owner-modal-cancel-button"
-              >{{ labels.Cancel }}
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              id="threat-sharing-members-new-owner-modal-accept-button"
-              :disabled="isAssignOwnerButtonDisabled"
-              @click="appointANewOwnerConfirm"
-              >ACCEPT
-            </v-btn>
-          </div>
-        </div>
-      </template>
-    </app-dialog>
-    <app-dialog
-      icon="mdi-account"
-      title="Remove user from community?"
-      title-id="text--threat-sharing-members-popup-title"
-      subtitle-id="text--threat-sharing-members-popup-subtitle"
-      :subtitle="removeFromCommunityUserName"
-      :body="`${removeFromCommunityUserName} will be removed and won’t be able to access the community`"
+      :appoint-user-name="appointUserName"
+      :is-action-button-disabled="isAssignOwnerButtonDisabled"
+      @on-close="showAppointANewOwnerModal = false"
+      @on-confirm="appointANewOwnerConfirm"
+    />
+    <RemoveUserFromCommunityDialog
+      v-if="showRemoveFromCommunityModal"
       :status="showRemoveFromCommunityModal"
-      @changeStatus="showRemoveFromCommunityModal = false"
-    >
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="showRemoveFromCommunityModal = false"
-              id="threat-sharing-members-remove-community-cancel-button"
-              >{{ labels.Cancel }}
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              :disabled="isRemoveFromCommunityButtonDisabled"
-              id="threat-sharing-members-remove-community-remove-button"
-              @click="removeFromCommunityConfirm"
-              >REMOVE
-            </v-btn>
-          </div>
-        </div>
-      </template>
-    </app-dialog>
+      :remove-from-community-user-name="removeFromCommunityUserName"
+      :is-action-button-disabled="isRemoveFromCommunityButtonDisabled"
+      @on-close="showRemoveFromCommunityModal = false"
+      @on-confirm="removeFromCommunityConfirm"
+    />
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
         <v-tab id="threat-sharing-members-tab-button" @click="getMembers()">Members</v-tab>
         <v-tab
-          @click="getRequestMembers()"
-          id="threat-sharing-requests-tab-button"
           v-if="showRequestMembersTab"
+          id="threat-sharing-requests-tab-button"
+          @click="getRequestMembers()"
         >
           Requests
           <span
-            id="text--threat-sharing-members-members-length"
             v-if="requestMembers.length"
+            id="text--threat-sharing-members-members-length"
             class="request-count"
           >
             {{ requestMembers.length }}
@@ -99,7 +46,7 @@
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
             @change="$forceUpdate()"
           >
-            <template v-slot:header>
+            <template #header>
               <div class="search-wrapper">
                 <v-text-field
                   v-model="search"
@@ -112,7 +59,7 @@
                 <v-icon class="filter-icon">mdi-filter-variant</v-icon>
               </div>
             </template>
-            <template v-slot:default="props">
+            <template #default="props">
               <div v-if="props.items && props.items.length">
                 <v-skeleton-loader :loading="membersLoading" type="article, actions">
                   <v-expansion-panels
@@ -127,7 +74,6 @@
                       :memberImage="memberImage(member)"
                       :canAppointNewOwner="!isOwnCompany(member) && isCommunityOwner()"
                       :canRemoveFromCommunity="!isOwnCompany(member) && isCommunityOwner()"
-                      :series="series"
                       @seePostedIncidents="seePostedIncidentsClick(member)"
                       @appointNewOwner="appointANewOwner(member)"
                       @removeFromCommunity="removeFromCommunity(member)"
@@ -161,7 +107,7 @@
                 </div>
               </v-skeleton-loader>
             </template>
-            <template v-slot:footer>
+            <template #footer>
               <v-row
                 v-if="members && members.length"
                 class="mt-2"
@@ -197,7 +143,7 @@
             :footer-props="{ itemsPerPageOptions }"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
-            <template v-slot:header>
+            <template #header>
               <div class="search-wrapper">
                 <v-text-field
                   placeholder="Filter by attributes or keywords"
@@ -209,7 +155,7 @@
                 <v-icon class="filter-icon">mdi-filter-variant</v-icon>
               </div>
             </template>
-            <template v-slot:default="props">
+            <template #default="props">
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
                 <v-expansion-panels
                   v-if="props.items && props.items.length > 0"
@@ -291,17 +237,21 @@ import {
   refuseCommunityMembershipRequest,
   removeFromCommunity
 } from '@/api/threatSharing'
-import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import MemberCard from '@/components/ThreatSharing/Members/MemberCard'
 import RequestCard from '@/components/ThreatSharing/Members/RequestCard'
+import GiveAdminAccessToMemberDialog from '@/components/ThreatSharing/Members/GiveAdminAccessToMemberDialog'
+import RemoveUserFromCommunityDialog from '@/components/ThreatSharing/Members/RemoveUserFromCommunityDialog'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   components: {
-    AppDialog,
+    RemoveUserFromCommunityDialog,
+    GiveAdminAccessToMemberDialog,
     MemberCard,
     RequestCard
   },
+  mixins: [useDebounce],
   data: () => ({
     page: 1,
     labels,
@@ -314,8 +264,6 @@ export default {
     removeFromCommunityUserName: null,
     removeCommunityId: null,
     showRemoveFromCommunityModal: false,
-    AppointedCompanyResourceId: null,
-    openNewOwnerModal: false,
     communityDetails: null,
     tab: null,
     members: [],
@@ -323,10 +271,7 @@ export default {
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
-    toggle: false,
-    series: [44, 80],
-    isWantToRemoveMember: false,
-    memberCompId: null
+    toggle: false
   }),
   computed: {
     showRequestMembersTab() {
@@ -343,9 +288,6 @@ export default {
     },
     numberOfPagesForRequest() {
       return Math.ceil(this.requestMembers && this.requestMembers.length / this.itemsPerPage)
-    },
-    userCompany() {
-      return localStorage.getItem('companyName')
     }
   },
   watch: {
@@ -356,23 +298,22 @@ export default {
       if (newVal !== oldVal) {
         if (newVal) {
           this.debounce(() => {
-            if (this.tab === 0) {
-              this.getMembers()
-            } else {
-              this.getRequestMembers()
-            }
-          }, 1000)
+            this.callForMembers()
+          })
         } else {
-          if (this.tab === 0) {
-            this.getMembers()
-          } else {
-            this.getRequestMembers()
-          }
+          this.callForMembers()
         }
       }
     }
   },
   methods: {
+    callForMembers() {
+      if (this.tab === 0) {
+        this.getMembers()
+      } else {
+        this.getRequestMembers()
+      }
+    },
     handleSizeChange(val) {
       this.itemsPerPage = val
     },
@@ -386,7 +327,7 @@ export default {
       return localStorage.getItem('isCommunityOwner') === 'owner'
     },
     isOwnCompany(item) {
-      return item.membershipStatusId == 1
+      return item?.membershipStatusId?.toString() === '1'
     },
     appointANewOwner(item) {
       this.appointNewOwnerId = item.companyResourceId
@@ -394,11 +335,10 @@ export default {
       this.showAppointANewOwnerModal = true
     },
     appointANewOwnerConfirm() {
-      const payload = {
-        AppointedCompanyResourceId: this.appointNewOwnerId
-      }
       this.isAssignOwnerButtonDisabled = true
-      appointNewOwner(this.$route.params.id, payload)
+      appointNewOwner(this.$route.params.id, {
+        AppointedCompanyResourceId: this.appointNewOwnerId
+      })
         .then(() => {
           this.getMembers()
           this.showAppointANewOwnerModal = false
@@ -412,25 +352,15 @@ export default {
           this.isAssignOwnerButtonDisabled = false
         })
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    },
     getCommunityDetails() {
       this.membersLoading = true
-      let _this = this
       getCommunityDetails(this.$route.params.id).then((response) => {
         localStorage.setItem(
           'isCommunityOwner',
           response.data.data.myMembershipStatusId == 1 ? 'owner' : 'member'
         )
         this.communityDetails = response.data.data
-        _this.$parent.$parent.$parent.$parent.$parent.$parent.communityName =
-          response.data.data.name
+        this.$parent.$parent.$parent.$parent.$parent.$parent.communityName = response.data.data.name
         this.getMembers()
         this.getRequestMembers()
       })

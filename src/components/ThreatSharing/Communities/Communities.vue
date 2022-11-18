@@ -19,32 +19,10 @@
       v-if="isWantToToLeaveFromCommunity"
       :status="isWantToToLeaveFromCommunity"
       :leave-community-name="leaveCommunityName"
+      :is-action-button-disabled="isLeaveFromCommunityButtonDisabled"
       @on-close="isWantToToLeaveFromCommunity = false"
       @on-confirm="leaveFromCommunityConfirm"
     />
-    <app-dialog
-      :status="showNeedPermissionModal"
-      icon="mdi-exit-to-app"
-      title="Cannot Leave Community"
-      :subtitle="leaveCommunityName"
-      :body="`You have to give admin privileges to at least 1 other person`"
-      @changeStatus="showNeedPermissionModal = false"
-    >
-      <template #app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="showNeedPermissionModal = false"
-              id="threat-sharing-communities-need-petmission-modal-i-undestand-button"
-              >I UNDERSTAND
-            </v-btn>
-          </div>
-        </div>
-      </template>
-    </app-dialog>
     <app-dialog
       v-if="openNotificationModal"
       :status="openNotificationModal"
@@ -496,7 +474,6 @@ export default {
       isDashboardEnabled: false
     },
     openNotificationModal: false,
-    showNeedPermissionModal: false,
     leaveCommunityName: null,
     isWantToToLeaveFromCommunity: false,
     isWantToDelete: false,
@@ -836,15 +813,7 @@ export default {
             })
           }, 500)
         })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'CANNOT_LEAVE_COMMUNITY'
-          ) {
-            this.isWantToToLeaveFromCommunity = false
-            this.showNeedPermissionModal = true
-          }
+        .catch(() => {
           this.isLeaveFromCommunityButtonDisabled = false
         })
     },
