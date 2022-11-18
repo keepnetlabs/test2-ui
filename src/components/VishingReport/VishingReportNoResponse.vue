@@ -149,7 +149,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyVishingReportNoResponse
         },
         rowActions: []
       },
@@ -160,20 +160,7 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {
-      this.isLoading = true
-      getVishingReportNoResponse(this.id)
-        .then((response) => {
-          this.tableData = response.data.data.results
-          this.serverSideProps.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = response.data.data.totalNumberOfPages
-          this.serverSideProps.pageNumber = response.data.data.pageNumber
-        })
-        .catch(() => {
-          this.tableData = []
-        })
-        .finally(this.setLoading)
-    },
+    callForData() {},
     exportVishingReportUsers() {}
   }
 }

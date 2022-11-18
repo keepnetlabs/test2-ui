@@ -162,7 +162,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: labels.EmptyVishingReportAnswered
         },
         rowActions: []
       },
