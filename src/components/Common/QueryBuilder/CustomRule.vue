@@ -98,6 +98,17 @@
             hide-details
           />
         </v-col>
+        <v-col md="2" v-if="query.operand === 'SenderIp'">
+          <!-- List of "From" operands-->
+          <k-select
+            v-model.trim="query.format"
+            min-width-type="small"
+            :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
+            :items="rule.operatorSenderIP"
+            outlined
+            hide-details
+          />
+        </v-col>
         <v-col md="2" v-if="query.operand === 'Analysis result'">
           <!-- List of "Analysis result" operands-->
           <k-select
@@ -139,12 +150,16 @@
           <InputIpAddress
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
-            placeholder="Enter IP address"
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-              (v) => validations.ip(v, 'Invalid ip address')
-            ]"
+            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter Regex'"
+            :rules="
+              query.format === 'Ip'
+                ? [
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+                    (v) => validations.ip(v, 'Invalid ip address')
+                  ]
+                : [(v) => validations.required(v, 'Required')]
+            "
             md=""
             sm="10"
           />
