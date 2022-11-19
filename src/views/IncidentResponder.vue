@@ -508,7 +508,6 @@ export default {
     defaultSelectedTemplateResourceId: '',
     labels,
     clusteredRow: null,
-    isConfirmButtonDisabled: false,
     isCustomMessageMultiple: false,
     reportedEmailsData: [],
     bindPropsIsSafari: {},
@@ -930,7 +929,6 @@ export default {
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: getDefaultAxiosPayload(),
-    defaultRequestBodyReportedEmails: getDefaultAxiosPayload(),
     isReportedEmailsClusteredLoading: false,
     clusteredTable: {
       savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
@@ -1217,12 +1215,10 @@ export default {
       ]
     },
     clusteredTableData: [],
-    clusteredTableAxios: getDefaultAxiosPayload(),
-    clusteredTableDefaultAxios: getDefaultAxiosPayload()
+    clusteredTableAxios: getDefaultAxiosPayload()
   }),
   computed: {
     ...mapGetters({
-      irSummary: 'investigations/irSummaryGetter',
       getIncidentResponderTopRulesPermission: 'permissions/getIncidentResponderTopRulesPermission',
       getIncidentResponderRunningInvestigationsPermission:
         'permissions/getIncidentResponderRunningInvestigationsPermission',
@@ -1995,12 +1991,6 @@ export default {
         this.selectedEmail = response.data.data
         this.isWantToAddNewInvestigation = true
       })
-    },
-    emptyPhishingButtonClick() {
-      this.$router.push('/phishing-reporter')
-    },
-    emptyInvestigationButtonClick() {
-      this.$router.push('/incident-responder/investigations')
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
