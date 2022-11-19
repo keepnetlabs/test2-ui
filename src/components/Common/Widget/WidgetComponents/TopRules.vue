@@ -13,7 +13,7 @@
           close-button-id="btn-close--top-rules"
           :editMode="editMode"
           :title="getTitle"
-          :link="{ href: '/incident-responder', text: 'Playbook' }"
+          :link="{ href: '/incident-responder/playbook', text: 'Playbook' }"
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
