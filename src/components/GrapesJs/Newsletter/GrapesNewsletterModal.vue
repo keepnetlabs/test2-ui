@@ -642,15 +642,18 @@ export default {
             /font-size\:\#?(\w|\s|-)+\;/g,
             `font-size:${buttonStyles['font-size']};`
           )
-          debugger
-          droppedComponent?.target?.components(
+          const children = droppedComponent.parent.components()
+          const newComponent = children.add(
             `<span>  ${arrangedComment}  ${
               droppedComponent.target.getInnerHTML().startsWith('<span') ||
               droppedComponent.target.getInnerHTML().startsWith('')
                 ? droppedComponent.target.toHTML()
                 : droppedComponent.target.getInnerHTML()
-            } <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>`
+            } <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>`,
+            { at: droppedComponent.index }
           )
+          newComponent.setStyle(droppedComponent.target.getStyle())
+          droppedComponent?.target.remove()
         }
       })
       const videoIndex = this.editor.Blocks.all.models.findIndex(
