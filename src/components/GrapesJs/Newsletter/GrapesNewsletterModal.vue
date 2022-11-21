@@ -50,6 +50,7 @@ import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import outlookButton from '@/components/GrapesJs/Newsletter/components/outlookButton'
 export default {
   name: 'GrapesNewsletterModal',
   components: { DefaultErrorDialog },
@@ -321,6 +322,13 @@ export default {
             }
           }
         })
+        editor.DomComponents.addType('outlook-button', {
+          model: {
+            defaults: {
+              droppable: true
+            }
+          }
+        })
         editor.DomComponents.addType('text', {
           model: {
             defaults: {
@@ -339,7 +347,8 @@ export default {
         editor.DomComponents.addType('span', {
           model: {
             defaults: {
-              editable: true
+              editable: true,
+              draggable: true
             }
           }
         })
@@ -586,21 +595,63 @@ export default {
       let dModel = dType.model
       let dView = dType.view
       this.editor.DomComponents.addType('link', {
-        model: dModel.extend(
-          {
-            defaults: Object.assign({}, dModel.prototype.defaults, {
-              traits: this.traits
-            })
-          },
-          {
-            isComponent: function (el) {
-              if (el.tagName === 'A') {
-                return { type: 'link' }
-              }
-            }
+        model: dModel.extend({
+          defaults: Object.assign({}, dModel.prototype.defaults, {
+            traits: this.traits
+          })
+        }),
+        isComponent: function (el) {
+          console.log('el', el.tagName)
+          if (
+            el.tagName === 'A' &&
+            el.parentElement.constructor.name !== 'HTMLSpanElement' &&
+            el.id === 'outlook-button-href-id'
+          ) {
+            return '<span>  <!--[if mso]>    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->  <a id="outlook-button-href-id" href=""    style="background-color:#2196F3;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:34px;text-align:center;text-decoration:none;min-width:65px;-webkit-text-size-adjust:none;">    Button  </a>  <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>'
           }
-        ),
+        },
         view: dView
+      })
+      this.editor.on('component:drag:end', (droppedComponent) => {
+        const el = droppedComponent?.target.getEl()
+        debugger
+        if (
+          el.id.includes('outlook-button-href-id') &&
+          el.parentElement.constructor.name !== 'HTMLSpanElement'
+        ) {
+          const buttonStyles = droppedComponent.target.getStyle()
+          let arrangedComment =
+            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
+          arrangedComment = arrangedComment.replace(
+            /href="([^\'\"]+)?"/g,
+            `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
+          )
+          arrangedComment = arrangedComment.replace(
+            /fillcolor="([^\'\"]+)?"/g,
+            `fillcolor="${buttonStyles['background-color'] || buttonStyles['background']}}"`
+          )
+          arrangedComment = arrangedComment.replace(
+            /color\:\#?(\w|\s|-)+\;/g,
+            `color:${buttonStyles.color};`
+          )
+          arrangedComment = arrangedComment.replace(
+            /font-family\:\#?(\w|\s|-|\,)+\;/g,
+            `font-family:${buttonStyles['font-family']};`
+          )
+          arrangedComment = arrangedComment.replace(
+            /font-size\:\#?(\w|\s|-)+\;/g,
+            `font-size:${buttonStyles['font-size']};`
+          )
+          debugger
+          droppedComponent?.target?.components(
+            `<span>  ${arrangedComment}  ${
+              droppedComponent.target.getInnerHTML().startsWith('<span') ||
+              droppedComponent.target.getInnerHTML().startsWith('')
+                ? droppedComponent.target.toHTML()
+                : droppedComponent.target.getInnerHTML()
+            } <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>`
+          )
+        }
       })
       const videoIndex = this.editor.Blocks.all.models.findIndex(
         (model) => model.attributes.label === 'Video'
@@ -637,6 +688,12 @@ export default {
       const blocks = blockManager.getAll()
       blocks.map((block) => {
         if (block.attributes.id === 'Submit Phishing Button') {
+          block.attributes.category = {
+            id: 'Basic',
+            label: 'Basic'
+          }
+        }
+        if (block.attributes.id === 'Outlook Button') {
           block.attributes.category = {
             id: 'Basic',
             label: 'Basic'
@@ -793,6 +850,7 @@ export default {
         }
       })
       blockManager.add('Submit Phishing Button', submitButton)
+      blockManager.add('Outlook Button', outlookButton)
       this.editor.Css.setRule('.grapes-custom-button', {
         color: 'white',
         'background-color': '#2196F3',
