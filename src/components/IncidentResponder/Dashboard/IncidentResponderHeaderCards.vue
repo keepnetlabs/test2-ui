@@ -122,7 +122,10 @@
         >
           <div class="card-header">
             <span class="head">Investigations</span>
-            <router-link id="btn-link--incident-responder-to-investigations" to="/investigations">
+            <router-link
+              id="btn-link--incident-responder-to-investigations"
+              to="/incident-responder/investigations"
+            >
               <v-icon style="opacity: 0.8;" color="white">mdi-open-in-new</v-icon>
             </router-link>
           </div>
