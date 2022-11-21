@@ -51,6 +51,11 @@ import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import outlookButton from '@/components/GrapesJs/Newsletter/components/outlookButton'
+import {
+  getComponentTypeDefaultParams,
+  getTraits,
+  setBlocksCategories
+} from '@/components/GrapesJs/Newsletter/utils'
 export default {
   name: 'GrapesNewsletterModal',
   components: { DefaultErrorDialog },
@@ -91,8 +96,6 @@ export default {
   data() {
     return {
       showInvalidUrlMessage: false,
-      cloneUrl: null,
-      cloneUrlPage: null,
       editor: null,
       url: {
         required: (v) => (v && v.length <= 256) || 'It must between 1 - 256 characters',
@@ -113,6 +116,156 @@ export default {
     this.setGrapesEditor()
   },
   methods: {
+    onSelectComponent() {
+      this.editor.on('component:selected', () => {
+        const selected = this?.editor?.getSelected()
+        if (selected && selected.is('link')) {
+          document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
+          setTimeout(() => {
+            document
+              .querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              )
+              ?.addEventListener('change', () => {
+                this.setMergeTextNames()
+              })
+            document
+              .querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              )
+              ?.addEventListener('change', () => {
+                this.setMergeTextNames()
+              })
+            if (selected.getTrait('href').props().value === '') {
+              const el = document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              )
+              if (el) {
+                el.value = ''
+              }
+            }
+            let mergedTextsNames = this.urlMergedTexts.map((item) => item.value)
+            if (
+              !mergedTextsNames.includes(selected.getTrait('href').props().value) &&
+              document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              )
+            ) {
+              const element = document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              )
+              if (element) {
+                element.selectedIndex = 0
+              }
+            }
+          }, 250)
+        } else if (selected) {
+          const name = selected.getName()
+          if (['Input', 'Textarea', 'Button', 'Checkbox'].includes(name)) {
+            const settingsTab = document.querySelector('.gjs-pn-buttons span[title="Settings"]')
+            if (settingsTab) {
+              settingsTab.click()
+            }
+          }
+        }
+      })
+    },
+    onDragStop() {
+      this.editor.on('block:drag:stop', (droppedComponent, block) => {
+        if (droppedComponent && block.attributes && block.attributes.customId === 'grapesForm') {
+          droppedComponent.components().forEach((inner) => {
+            if (
+              inner &&
+              inner.find('label') &&
+              inner.find('label')[0] &&
+              inner.find('label')[0].view
+            ) {
+              switch (inner.find('label')[0].view.el.textContent) {
+                case 'Name':
+                  inner.find('input')[0].addAttributes({ name: 'Name' })
+                  break
+                case 'Email':
+                  inner.find('input')[0].addAttributes({ name: 'Email' })
+                  break
+                case 'Gender':
+                  inner.find('input')[0].addAttributes({ name: 'Male' })
+                  inner.find('input')[1].addAttributes({ name: 'Female' })
+                  break
+                case 'Message':
+                  inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                  break
+                default:
+                  break
+              }
+            }
+          })
+        }
+      })
+    },
+    changeEditorComponentFunction() {
+      this.editor.setComponents = (function (originalFct) {
+        return function (components) {
+          try {
+            originalFct(components)
+          } catch (ex) {
+            window.alert('Parse error: ' + ex)
+          }
+        }
+      })(this.editor.setComponents)
+    },
+    removeVideoElement() {
+      const videoIndex = this.editor.Blocks.all.models.findIndex(
+        (model) => model.attributes.label === 'Video'
+      )
+      if (videoIndex !== -1) {
+        this.editor.Blocks.all.models.splice(videoIndex, 1)
+      }
+    },
+    setPanels() {
+      let pn = this.editor.Panels
+      pn.getButton('options', 'export-template').set('className', 'fa fa-import')
+      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-code')
+      document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
+      document.querySelector('span[title="Open Blocks"]').style.order = '-1'
+      pn.removeButton('options', 'preview')
+      pn.addButton('options', {
+        id: 'my-preview',
+        className: 'fa fa-eye',
+        attributes: { title: 'Preview' },
+        active: false
+      })
+      document.querySelector('span[title="Preview"]').addEventListener('click', () => {
+        const win = window.open('', 'Title')
+        win.document.title = 'Mail Preview'
+        win.document.body.innerHTML = this.getGrapesEditorContent().replace(
+          new RegExp('{COMPANYLOGO}', 'g'),
+          this?.$store?.state?.whitelabel.mainLogoUrl || ''
+        )
+      })
+      pn.getButton('options', 'sw-visibility').set('active', 0)
+    },
+    addCustomCSS() {
+      this.editor.Css.setRule('.grapes-custom-button', {
+        color: 'white',
+        'background-color': '#2196F3',
+        padding: '8px 12px',
+        'border-radius': '4px',
+        display: 'inline-block'
+      })
+    },
+    setLinkType() {
+      let dType = this.editor.DomComponents.getType('link')
+      let dModel = dType.model
+      let dView = dType.view
+      this.editor.DomComponents.addType('link', {
+        model: dModel.extend({
+          defaults: Object.assign({}, dModel.prototype.defaults, {
+            traits: this.traits
+          })
+        }),
+        view: dView
+      })
+    },
     addCustomProperties() {
       this.editor.StyleManager.removeProperty('decorations', 'background')
       this.editor.StyleManager.addProperty('dimension', {
@@ -198,33 +351,7 @@ export default {
       })
     },
     setTraits() {
-      this.traits = [
-        {
-          type: 'text',
-          label: 'Title',
-          name: 'title'
-        },
-        {
-          type: 'text',
-          label: 'Href',
-          name: 'href'
-        },
-        {
-          type: 'select',
-          label: 'Target',
-          name: 'target',
-          options: [
-            { value: '', name: 'This Window' },
-            { value: '_blank', name: 'New Window' }
-          ]
-        },
-        {
-          type: 'select',
-          label: 'Merge Tags',
-          name: 'href',
-          options: this.urlMergedTexts
-        }
-      ]
+      this.traits = getTraits(this.urlMergedTexts)
     },
     setGrapesEditor() {
       let _this = this
@@ -233,7 +360,6 @@ export default {
           isComponent(el) {
             let result = ''
             const tag = el.tagName
-
             if (tag === 'TD' || tag === 'TH') {
               result = {
                 type: 'cell',
@@ -322,44 +448,11 @@ export default {
             }
           }
         })
-        editor.DomComponents.addType('outlook-button', {
-          model: {
-            defaults: {
-              droppable: true,
-              editable: true
-            }
-          }
-        })
-        editor.DomComponents.addType('text', {
-          model: {
-            defaults: {
-              droppable: true
-            }
-          }
-        })
-        editor.DomComponents.addType('link', {
-          model: {
-            defaults: {
-              droppable: true,
-              editable: true
-            }
-          }
-        })
-        editor.DomComponents.addType('span', {
-          model: {
-            defaults: {
-              editable: true,
-              draggable: true
-            }
-          }
-        })
-        editor.DomComponents.addType('label', {
-          model: {
-            defaults: {
-              editable: true
-            }
-          }
-        })
+        editor.DomComponents.addType('outlook-button', getComponentTypeDefaultParams(true, true))
+        editor.DomComponents.addType('text', getComponentTypeDefaultParams(true, true))
+        editor.DomComponents.addType('link', getComponentTypeDefaultParams(true, true))
+        editor.DomComponents.addType('span', getComponentTypeDefaultParams(true, true))
+        editor.DomComponents.addType('label', getComponentTypeDefaultParams(false, true))
         editor.DomComponents.addType('image', {
           isComponent: (el) => {
             return el.tagName === 'IMG'
@@ -457,151 +550,10 @@ export default {
           ]
         }
       })
-      this.editor.setComponents = (function (originalFct) {
-        return function (components) {
-          try {
-            originalFct(components)
-          } catch (ex) {
-            window.alert('Parse error: ' + ex)
-          }
-        }
-      })(this.editor.setComponents)
-      this.editor.on('component:selected', () => {
-        const selected = this?.editor?.getSelected()
-        if (selected && selected.is('link')) {
-          document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
-          setTimeout(() => {
-            document
-              .querySelector(
-                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
-              )
-              ?.addEventListener('change', () => {
-                this.setMergeTextNames()
-              })
-            document
-              .querySelector(
-                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-              )
-              ?.addEventListener('change', () => {
-                this.setMergeTextNames()
-              })
-            if (selected.getTrait('href').props().value === '') {
-              const el = document.querySelector(
-                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
-              )
-              if (el) {
-                el.value = ''
-              }
-            }
-            let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
-            if (
-              !mergedTextsNames.includes(selected.getTrait('href').props().value) &&
-              document.querySelector(
-                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-              )
-            ) {
-              const element = document.querySelector(
-                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-              )
-              if (element) {
-                element.selectedIndex = 0
-              }
-            }
-          }, 250)
-        } else if (selected) {
-          const name = selected.getName()
-          if (['Input', 'Textarea', 'Button', 'Checkbox'].includes(name)) {
-            const settingsTab = document.querySelector('.gjs-pn-buttons span[title="Settings"]')
-            if (settingsTab) {
-              settingsTab.click()
-            }
-          }
-        }
-      })
-      this.editor.on('block:drag:stop', (droppedComponent, block) => {
-        if (
-          droppedComponent &&
-          droppedComponent.attributes &&
-          droppedComponent.attributes.attributes &&
-          droppedComponent.attributes.attributes['data-title'] === 'Company Logo'
-        ) {
-          /*
-          for (const img of document
-            .getElementsByClassName('gjs-frame')[0]
-            .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
-          }
-           */
-        } else if (
-          droppedComponent &&
-          block.attributes &&
-          block.attributes.customId === 'grapesForm'
-        ) {
-          droppedComponent.components().forEach((inner) => {
-            if (
-              inner &&
-              inner.find('label') &&
-              inner.find('label')[0] &&
-              inner.find('label')[0].view
-            ) {
-              switch (inner.find('label')[0].view.el.textContent) {
-                case 'Name':
-                  inner.find('input')[0].addAttributes({ name: 'Name' })
-                  break
-                case 'Email':
-                  inner.find('input')[0].addAttributes({ name: 'Email' })
-                  break
-                case 'Gender':
-                  inner.find('input')[0].addAttributes({ name: 'Male' })
-                  inner.find('input')[1].addAttributes({ name: 'Female' })
-                  break
-                case 'Message':
-                  inner.find('textarea')[0].addAttributes({ name: 'Message' })
-                  break
-                default:
-                  break
-              }
-            }
-          })
-        }
-      })
-      setTimeout(() => {
-        if (!!document.getElementsByClassName('fa-file-code-o').length) {
-          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
-            setTimeout(() => {
-              document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type', 'button')
-            }, 1000)
-          })
-        }
-      }, 1000)
-      setTimeout(() => {
-        if (!!document.getElementsByClassName('fa-file-code-o').length) {
-          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
-            setTimeout(() => {
-              document.getElementsByClassName('cp-apply-css')[0].setAttribute('type', 'button')
-            }, 1000)
-          })
-        }
-      }, 1000)
-      setTimeout(() => {
-        if (!!document.getElementsByClassName('fa-file-code-o').length) {
-          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
-            setTimeout(() => {
-              document.getElementsByClassName('cp-delete-css')[0].setAttribute('type', 'button')
-            }, 1000)
-          })
-        }
-      }, 1000)
-      let dType = this.editor.DomComponents.getType('link')
-      let dModel = dType.model
-      let dView = dType.view
-      this.editor.DomComponents.addType('link', {
-        model: dModel.extend({
-          defaults: Object.assign({}, dModel.prototype.defaults, {
-            traits: this.traits
-          })
-        }),
-        view: dView
-      })
+      this.changeEditorComponentFunction()
+      this.onSelectComponent()
+      this.onDragStop()
+      this.setLinkType()
       this.editor.on('component:drag:end', (droppedComponent) => {
         const el = droppedComponent?.target.getEl()
         if (
@@ -673,7 +625,6 @@ export default {
           const parent = updatedComponent?.parent()
           if (parent) {
             const children = parent.components()
-            debugger
             const commentElement = children?.models?.find(
               (el) => el?.attributes?.type === 'comment'
             )
@@ -726,192 +677,17 @@ export default {
           }
         }
       })
-      const videoIndex = this.editor.Blocks.all.models.findIndex(
-        (model) => model.attributes.label === 'Video'
-      )
-      if (videoIndex !== -1) {
-        this.editor.Blocks.all.models.splice(videoIndex, 1)
-      }
+      this.removeVideoElement()
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
-      let pn = this.editor.Panels
-      pn.getButton('options', 'export-template').set('className', 'fa fa-import')
-      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-code')
-      document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
-      document.querySelector('span[title="Open Blocks"]').style.order = '-1'
-      pn.removeButton('options', 'preview')
-      pn.addButton('options', {
-        id: 'my-preview',
-        className: 'fa fa-eye',
-        attributes: { title: 'Preview' },
-        active: false
-      })
-      document.querySelector('span[title="Preview"]').addEventListener('click', () => {
-        const win = window.open('', 'Title')
-        win.document.title = 'Mail Preview'
-        win.document.body.innerHTML = this.getGrapesEditorContent().replace(
-          new RegExp('{COMPANYLOGO}', 'g'),
-          this?.$store?.state?.whitelabel.mainLogoUrl || ''
-        )
-      })
-      pn.getButton('options', 'sw-visibility').set('active', 0)
+      this.setPanels()
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
-      const blocks = blockManager.getAll()
-      blocks.map((block) => {
-        if (block.attributes.id === 'Submit Phishing Button') {
-          block.attributes.category = {
-            id: 'Basic',
-            label: 'Basic'
-          }
-        }
-        if (block.attributes.id === 'Outlook Button') {
-          block.attributes.category = {
-            id: 'Basic',
-            label: 'Basic'
-          }
-        }
-        if (block.attributes.id === 'sect100') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'sect50') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'sect30') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'sect37') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'button') {
-          block.attributes.category = {
-            label: 'Basic'
-          }
-        } else if (block.attributes.id === 'divider') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'text') {
-          block.attributes.category = {
-            label: 'Typography'
-          }
-        } else if (block.attributes.id === 'text-sect') {
-          block.attributes.category = {
-            label: 'Typography'
-          }
-        } else if (block.attributes.id === 'image') {
-          block.attributes.category = {
-            label: 'Basic'
-          }
-        } else if (block.attributes.id === 'quote') {
-          block.attributes.category = {
-            label: 'Typography'
-          }
-        } else if (block.attributes.id === 'link') {
-          block.attributes.category = {
-            label: 'Typography'
-          }
-        } else if (block.attributes.id === 'link-block') {
-          block.attributes.category = {
-            label: 'Typography'
-          }
-        } else if (block.attributes.id === 'grid-items') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'list-items') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'column1') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'column2') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'column3') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'column3-7') {
-          block.attributes.category = {
-            label: 'Layout'
-          }
-        } else if (block.attributes.id === 'video') {
-          block.attributes.category = {
-            label: 'Basic'
-          }
-        } else if (block.attributes.id === 'form') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-          block.attributes.customId = 'grapesForm'
-        } else if (block.attributes.id === 'input') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'textarea') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'select') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'label') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'checkbox') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'radio') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'text-basic') {
-          block.attributes.category = {
-            label: 'Forms'
-          }
-        } else if (block.attributes.id === 'map') {
-          block.attributes.category = {
-            label: 'Components'
-          }
-        } else if (block.attributes.id === 'h-navbar') {
-          block.attributes.category = {
-            label: 'Components'
-          }
-        } else if (block.attributes.id === 'countdown') {
-          block.attributes.category = {
-            label: 'Components'
-          }
-        } else if (block.attributes.id === 'companyId') {
-          block.attributes.category = {
-            label: 'Components'
-          }
-        } else {
-          block.attributes.category = {
-            label: 'Components'
-          }
-        }
-      })
+      setBlocksCategories(blockManager.getAll())
       blockManager.add('Submit Phishing Button', submitButton)
       blockManager.add('Outlook Button', outlookButton)
-      this.editor.Css.setRule('.grapes-custom-button', {
-        color: 'white',
-        'background-color': '#2196F3',
-        padding: '8px 12px',
-        'border-radius': '4px',
-        display: 'inline-block'
-      })
+      this.addCustomCSS()
       const blockManagerComponents = JSON.parse(JSON.stringify(this.blockManagerComponents))
       if (this.isAttachmentBasedTemplate) {
         delete blockManagerComponents['{PHISHINGURL}']
@@ -933,6 +709,9 @@ export default {
             )
         }
       }, 1000)
+      this.setRichTextEditor()
+    },
+    setRichTextEditor() {
       const rte = this.editor.RichTextEditor
       rte.get('link').result = (rte) => {
         rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
@@ -966,8 +745,7 @@ export default {
         })
     },
     getGrapesWebModalDraw(html) {
-      const domComponents = this.editor.DomComponents
-      domComponents.clear()
+      this.editor.DomComponents.clear()
       const doc = new DOMParser().parseFromString(html, 'text/html')
       this.editor.setComponents(doc.children[0].outerHTML)
       this.editor.getWrapper().setStyle(doc.body.style.cssText)
