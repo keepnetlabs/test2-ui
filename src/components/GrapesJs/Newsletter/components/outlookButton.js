@@ -6,7 +6,7 @@ const outlookButton = {
     class: 'gjs-fonts gjs-f-button gjs-block gjs-one-bg gjs-four-color-h'
   },
   content:
-    '<span id="outlook-button-custom-id">\n' +
+    '<span class="outlook-button-span-id">\n' +
     '  <!--[if mso]>\n' +
     '    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">\n' +
     '        <w:anchorlock/>\n' +
