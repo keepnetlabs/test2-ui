@@ -961,7 +961,7 @@ export default {
         })
         this.editor.on('asset:upload:end', (images) => {
           if (images?.data?.[0]) {
-            const url = images.data[0]
+            const url = images.data[0].src
             fetch(url)
               .then((res) => res.blob())
               .then((blob) => {
