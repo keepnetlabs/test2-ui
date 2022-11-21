@@ -325,7 +325,8 @@ export default {
         editor.DomComponents.addType('outlook-button', {
           model: {
             defaults: {
-              droppable: true
+              droppable: true,
+              editable: true
             }
           }
         })
@@ -614,12 +615,11 @@ export default {
       })
       this.editor.on('component:drag:end', (droppedComponent) => {
         const el = droppedComponent?.target.getEl()
-        debugger
         if (
           el.id.includes('outlook-button-href-id') &&
           el.parentElement.constructor.name !== 'HTMLSpanElement'
         ) {
-          const buttonStyles = droppedComponent.target.getStyle()
+          const buttonStyles = { ...droppedComponent.target.getStyle() }
           let arrangedComment =
             '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
           arrangedComment = arrangedComment.replace(
@@ -643,17 +643,74 @@ export default {
             `font-size:${buttonStyles['font-size']};`
           )
           const children = droppedComponent.parent.components()
-          const newComponent = children.add(
-            `<span>  ${arrangedComment}  ${
-              droppedComponent.target.getInnerHTML().startsWith('<span') ||
-              droppedComponent.target.getInnerHTML().startsWith('')
-                ? droppedComponent.target.toHTML()
-                : droppedComponent.target.getInnerHTML()
-            } <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>`,
-            { at: droppedComponent.index }
-          )
-          newComponent.setStyle(droppedComponent.target.getStyle())
+          const at = droppedComponent?.index
+          const content =
+            droppedComponent.target.getInnerHTML().startsWith('<span') ||
+            droppedComponent.target.getInnerHTML().startsWith('')
+              ? droppedComponent.target.toHTML()
+              : droppedComponent.target.getInnerHTML()
           droppedComponent?.target.remove()
+          const newComponent = children.add(
+            `<span>  ${arrangedComment}  ${content} <!--[if mso]>        </center>    </v:roundrect>    <![endif]--></span>`,
+            { at }
+          )
+          const anchor = newComponent
+            .components()
+            .models.find((comp) => comp?.getEl()?.id?.includes('outlook'))
+          anchor.setStyle(buttonStyles)
+          newComponent.setStyle(buttonStyles)
+        }
+      })
+      this.editor.on('style:property:update', (styleChanges) => {
+        if (!styleChanges.to.value) {
+          return
+        }
+        if (
+          !['background-color', 'color', 'font-family', 'font-size', 'background'].includes(
+            styleChanges.property.attributes.property
+          )
+        ) {
+          return
+        }
+        const updatedComponent = this.editor.getSelected()
+        if (updatedComponent?.getEl()?.id?.includes('outlook')) {
+          const parent = updatedComponent?.parent()
+          if (parent) {
+            const children = parent.components()
+            debugger
+            const commentElement = children?.models?.find(
+              (el) => el?.attributes?.type === 'comment'
+            )
+            if (commentElement) {
+              if (
+                styleChanges.property.attributes.property === 'background-color' ||
+                styleChanges.property.attributes.property === 'background'
+              ) {
+                commentElement.attributes.content = commentElement.attributes.content.replace(
+                  /fillcolor="([^\'\"]+)"/g,
+                  `fillcolor="${styleChanges.value}"`
+                )
+              }
+              if (styleChanges.property.attributes.property === 'color') {
+                commentElement.attributes.content = commentElement.attributes.content.replace(
+                  /color\:\#?(\w|\s|-)+\;/g,
+                  `color:${styleChanges.value};`
+                )
+              }
+              if (styleChanges.property.attributes.property === 'font-family') {
+                commentElement.attributes.content = commentElement.attributes.content.replace(
+                  /font-family\:\#?(\w|\s|-|\,)+\;/g,
+                  `font-family:${styleChanges.value};`
+                )
+              }
+              if (styleChanges.property.attributes.property === 'font-size') {
+                commentElement.attributes.content = commentElement.attributes.content.replace(
+                  /font-size\:\#?(\w|\s|-)+\;/g,
+                  `font-size:${styleChanges.value};`
+                )
+              }
+            }
+          }
         }
       })
       const videoIndex = this.editor.Blocks.all.models.findIndex(
