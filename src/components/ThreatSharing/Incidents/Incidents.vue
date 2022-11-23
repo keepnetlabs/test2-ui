@@ -218,9 +218,6 @@ export default {
     },
     isTableReload: {
       required: false
-    },
-    setThreatSharingStepLoading: {
-      required: false
     }
   },
   data: () => ({
