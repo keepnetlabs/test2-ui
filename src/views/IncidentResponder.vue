@@ -1263,6 +1263,8 @@ export default {
   },
   created() {
     this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+  },
+  mounted() {
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
