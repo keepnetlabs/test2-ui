@@ -10,23 +10,6 @@
             background-color: rgba(230, 162, 60, 0.05) !important;
         }
     }
-
-    &__header {
-        font-size: 24px;
-        font-weight: normal;
-        line-height: 1.29;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-    }
-
-    &__sub-header {
-        font-size: 14px;
-        font-weight: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-    }
-
     .target-users-select {
         &__radio-group {
             padding: 0px !important;
@@ -40,8 +23,6 @@
             .v-input__slot {
                 margin-bottom: 0 !important;
             }
-
-            .v-messages.theme--light {}
 
             .v-input--selection-controls.v-input .v-label {
                 font-family: 'Open Sans', sans-serif;
@@ -63,16 +44,6 @@
             .v-chip {
                 margin: 3px !important;
             }
-        }
-    }
-
-    .investigation-name {
-        .v-list-item__content {
-            padding-bottom: 0 !important;
-        }
-
-        .v-text-field__details {
-            margin-bottom: 0px !important;
         }
     }
 
@@ -425,16 +396,6 @@
         }
     }
 
-    .date-col {
-        position: relative;
-
-        @media only screen and (max-width: 1025px) {
-            width: 35% !important;
-            max-width: 35% !important;
-            padding: 0 !important;
-        }
-    }
-
     .date-icon {
         top: 12px;
         left: 25px;
@@ -690,11 +651,6 @@
             display: none;
         }
     }
-
-    .date-col {
-        position: relative;
-    }
-
     .date-icon {
         top: 12px;
         left: 25px;
@@ -1872,11 +1828,6 @@
     }
 }
 
-.date-picker-container {
-    .el-date-editor {
-        border: 1px solid #ff5252 !important;
-    }
-}
 
 .select-specific-users {
     .v-chip {

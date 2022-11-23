@@ -3,39 +3,22 @@
     <app-modal
       v-if="showNewsletterPageGrapes"
       :status="showNewsletterPageGrapes"
-      :show-header="false"
+      id="threat-sharing-post-incident-create-edit-modal"
+      cancel-button-id="threat-sharing-grapesjs-modal-close-button"
+      confirm-button-id="threat-sharing-grapesjs-modal-save-button"
       icon-name="mdi-check"
       title="Edit Post Email"
-      id="threat-sharing-post-incident-create-edit-modal"
+      :show-header="false"
+      @closeOverlay="closeGrapesJs()"
+      @submit="saveGrapesJs()"
     >
-      <template v-slot:overlay-body>
+      <template #overlay-body>
         <GrapesNewsletterModal
           v-if="showNewsletterPageGrapes"
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
           :blockManagerComponents="{}"
         ></GrapesNewsletterModal>
-      </template>
-      <template v-slot:overlay-footer>
-        <v-btn
-          class="new-integration__footer-btn-cancel"
-          id="threat-sharing-grapesjs-modal-close-button"
-          rounded
-          @click="closeGrapesJs()"
-        >
-          {{ labels.Cancel }}
-        </v-btn>
-        <div class="new-integration__footer__right-col">
-          <v-btn
-            class="new-integration__footer-btn-save white--text"
-            color="#2196f3"
-            rounded
-            id="threat-sharing-grapesjs-modal-save-button"
-            @click="saveGrapesJs()"
-          >
-            {{ labels.Save }}
-          </v-btn>
-        </div>
       </template>
     </app-modal>
     <div class="incident-container">
@@ -81,104 +64,25 @@
                 >Preview</v-stepper-step
               >
             </v-stepper-header>
-
             <v-stepper-items class="k-stepper__items">
               <v-stepper-content class="k-stepper__content" :step="1">
                 <div id="post-step-one" v-if="step === 1">
                   <ConfigureCompanyStepHeader
-                    class="mb-2"
+                    class="mb-8"
                     title="Select Incident"
                     subtitle="Search for the reported incident or upload an email to post as an
                       incident"
                   />
-                  <div v-if="!selectedEmail" class="incident-content">
-                    <div
-                      id="text--threat-sharing-incident-step-one-find-incident"
-                      class="input-header"
+                  <div v-if="!selectedEmail" class="incident-content mt-0">
+                    <FormGroup
+                      title="Find Incident"
+                      sub-title="Search and find emails among reported incidents"
                     >
-                      Find Incident
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-one-search-and-find-emails"
-                      class="input-sub"
-                    >
-                      Search and find emails among reported incidents
-                    </div>
-                    <input style="display: none;" type="text" name="fakeusernameremembered" />
-                    <k-select
-                      type="autocomplete"
-                      id="threat-sharing-select-incident-autocomplete"
-                      v-model.trim="selectedEmail"
-                      chips
-                      clearable
-                      hide-selected
-                      no-filter
-                      label="Search for incident name or status"
-                      class="first-select input-select mb-6 no-action-on-click"
-                      solo
-                      required
-                      autocomplete="off"
-                      :search-input.sync="searchIncident"
-                      :items="listData"
-                      :rules="autocomplete"
-                      :loading="isFindIncidentLoading"
-                      :hide-no-data="isFindIncidentLoading"
-                      :slots="{ selection: true, item: true, progress: true }"
-                      @change="getSelectedEmailPreview"
-                      @focus="handleLoadingState"
-                      @input="handleTagItemChange"
-                      @click:append="handleTagItemChange"
-                      @click:append-outer="handleTagItemChange"
-                    >
-                      <template v-slot:selection="{ attrs, item }">
-                        <v-chip
-                          id="select-inc-chip"
-                          v-bind="attrs"
-                          color="#2196f3"
-                          :input-value="item.subject"
-                          label
-                          small
-                        >
-                          <span class="pr-2">{{ item.subject }}</span>
-                        </v-chip>
-                      </template>
-                      <template v-slot:item="{ item }">
-                        <div class="select-row-wrap">
-                          <div class="email-name">{{ item.subject }}</div>
-                          <div class="select-row-inline">
-                            <div class="file-type-wrap">
-                              <v-icon
-                                :style="{
-                                  visibility: item.attachmentCount != 0 ? 'visible' : 'hidden'
-                                }"
-                                class="email-icon"
-                                >mdi-paperclip
-                              </v-icon>
-                              <div
-                                class="email-type"
-                                :class="{
-                                  'btn-pending': item.result === 'BeingAnalyzed',
-                                  'btn-malicious': item.result === 'Malicious',
-                                  'btn-active': item.result === 'non-malicious',
-                                  'btn-phishing': item.result === 'Phishing',
-                                  'btn-undetected': item.result === 'Undetected',
-                                  'btn-simulation': item.result === 'Simulation',
-                                  'btn-error': item.result === 'Error'
-                                }"
-                              >
-                                <span>{{ item.result }}</span>
-                              </div>
-                            </div>
-                            <div id="email-time" class="email-time">
-                              {{ item.createTime }}
-                            </div>
-                          </div>
-                        </div>
-                      </template>
-                      <template v-slot:progress>
-                        <k-select-loading v-show="showLoader" />
-                      </template>
-                    </k-select>
+                      <PostIncidentInputEmail
+                        v-model.trim="selectedEmail"
+                        @on-change="getSelectedEmailPreview"
+                      />
+                    </FormGroup>
                     <div class="input-header mb-6">- or -</div>
                     <div class="input-header">Upload Email</div>
                     <div class="input-sub">Analyze an email file</div>
@@ -192,16 +96,20 @@
                         hint="Only eml and msg files. Max. file size 30MB"
                         :size="30"
                         @inputFile="uploadFile"
-                        @clear="clearUpload"
                       />
                     </div>
                     <span
+                      v-if="!isStep1Valid"
                       id="post-first-error"
-                      v-if="selectedEmail || msgEmlFile == null"
-                      class="select-error"
+                      style="font-size: 9px; color: #d0021b; margin-top: 17px;"
                       >Please select an incident or upload an email</span
                     >
                   </div>
+                  <DatatableLoading
+                    v-else-if="isIncidentPreviewLoading"
+                    style="max-width: 554px; margin-left: 0; padding-left: 0;"
+                    :loading="isIncidentPreviewLoading"
+                  />
                   <div id="post-first-preview-container" class="mt-2" v-else-if="selectedEmail">
                     <v-card
                       id="post-first-preview-card"
@@ -211,8 +119,8 @@
                     >
                       <div class="mail-preview">
                         <v-icon
-                          id="threat-sharing-post-first-preview-close"
                           v-if="!editItem"
+                          id="threat-sharing-post-first-preview-close"
                           class="close-incident"
                           @click="closePreview()"
                           >mdi-close-circle
@@ -225,9 +133,9 @@
                           />
                         </div>
                         <div
+                          v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                           id="preview-footer-container-att-preview"
                           class="preview-footer"
-                          v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                         >
                           <h2>Attachments</h2>
                           <div class="attachment-wrapper">
@@ -254,25 +162,19 @@
               <v-stepper-content class="k-stepper__content" :step="2">
                 <div id="post-step-two" class="step-container" v-if="step === 2">
                   <ConfigureCompanyStepHeader
-                    class="mb-2"
+                    class="mb-8"
                     title="General Info"
                     subtitle="Include title, description of incident and neccessary files(pics, documents,
                       or code)"
                   />
-                  <div class="incident-content">
-                    <div id="text--threat-sharing-incident-step-two-title" class="input-header">
-                      Incident Title
-                    </div>
-                    <v-form onSubmit="return false;" v-model="valid" ref="titleInput">
+                  <v-form ref="refStep2Form">
+                    <FormGroup has-hint title="Incident Title">
                       <v-text-field
                         v-model.trim="uploadRespond.Title"
                         id="input--threat-sharing-incident-title"
                         placeholder="Enter Title"
-                        label="Title"
                         outlined
                         dense
-                        class="title-field filter-field pt-4"
-                        solo
                         validate-on-blur
                         :rules="[
                           titleRule.default,
@@ -284,21 +186,14 @@
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
-                    </v-form>
-                    <div
-                      id="text--threat-sharing-incident-step-two-description"
-                      class="input-header pt-6"
+                    </FormGroup>
+                    <FormGroup
+                      has-hint
+                      title="Description"
+                      sub-title="Describe the incident briefly (Max. 300 characters)"
                     >
-                      Description
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-two-description-sub"
-                      class="input-sub pb-1"
-                    >
-                      Describe the incident briefly (Max. 300 characters)
-                    </div>
-                    <v-form onSubmit="return false;" v-model="valid" ref="descriptionInput">
                       <v-textarea
+                        v-model.trim="uploadRespond.Description"
                         id="input--threat-sharing-incident-description"
                         outlined
                         placeholder="Enter Description"
@@ -307,7 +202,6 @@
                         class="comment-input"
                         rows="5"
                         row-height="15"
-                        solo
                         validate-on-blur
                         :rules="[
                           descRule.required,
@@ -315,65 +209,33 @@
                           descRule.default,
                           descRule.minLength
                         ]"
-                        v-model.trim="uploadRespond.Description"
                         hint="*Required"
                         persistent-hint
                       ></v-textarea>
-                    </v-form>
-
-                    <div
-                      id="text--threat-sharing-incident-step-two-category"
-                      class="input-header pt-6"
-                    >
-                      Category
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-two-category-sub"
-                      class="input-sub pb-1"
-                    >
-                      Select threat categories
-                    </div>
-                    <v-form onSubmit="return false;" v-model="categoryValid" ref="categoryInput">
+                    </FormGroup>
+                    <FormGroup has-hint title="Category" sub-title="Select threat categories">
                       <k-select
-                        id="input--threat-sharing-incident-category"
-                        class="cat-select"
                         v-model.trim="uploadRespond.CategoryResourceIdArray"
+                        id="input--threat-sharing-incident-category"
                         :items="categories"
                         item-value="resourceId"
                         item-text="name"
                         placeholder="Select the category"
                         chips
                         deletable-chips
-                        requied
-                        solo
+                        small-chips
                         multiple
                         outlined
-                        required
-                        :rules="category"
                         custom-menu-class="menu--threat-sharing-incident-category"
-                        :class="{
-                          'errored-selectbox':
-                            uploadRespond &&
-                            uploadRespond.CategoryResourceIdArray &&
-                            uploadRespond.CategoryResourceIdArray.length < 1
-                        }"
                         hint="*Required"
                         persistent-hint
+                        :rules="[(v) => (!!v && v.length >= 1) || 'Required']"
                       >
-                        <template v-slot:append-item></template>
                       </k-select>
-                    </v-form>
-                    <div
-                      id="text--threat-sharing-incident-step-two-security-label"
-                      class="input-header pt-6"
-                    >
-                      Security Label (TLP)
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-two-security-label-sub"
-                      class="input-sub pb-1"
-                    >
-                      Use TLP labels to inform recipients about how to share sensitive information.
+                    </FormGroup>
+                    <FormGroup
+                      title="Security Label (TLP)"
+                      sub-title='Use TLP labels to inform recipients about how to share sensitive information.
                       Please visit
                       <a
                         href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)."
@@ -381,22 +243,21 @@
                         target="_blank"
                         >Traffic Light Protocol</a
                       >
-                      for more information.
-                    </div>
-                    <v-form>
+                      for more information.'
+                    >
                       <k-select
                         v-model="value"
                         id="input--threat-sharing-incident-tlp"
-                        :items="tlpItems"
-                        :return-object="false"
+                        persistent-hint
                         outlined
                         placeholder="Select an option"
                         class="tlp-select"
                         custom-menu-class="menu--threat-sharing-post-tlp"
                         position="top"
-                        :slots="{ selection: true, item: true }"
                         hint="*Required"
-                        persistent-hint
+                        :items="tlpItems"
+                        :return-object="false"
+                        :slots="{ selection: true, item: true }"
                       >
                         <template v-slot:selection="{ attrs, item, select }">
                           <v-chip @click="select" :class="item.cssClass">
@@ -422,36 +283,26 @@
                           </v-list-item-avatar>
                         </template>
                       </k-select>
-                    </v-form>
-                  </div>
+                    </FormGroup>
+                  </v-form>
                 </div>
               </v-stepper-content>
-
               <v-stepper-content class="k-stepper__content" :step="3">
                 <div id="post-step-three" class="step-container" v-if="step === 3">
                   <ConfigureCompanyStepHeader
-                    class="mb-2"
+                    class="mb-8"
                     title="Incident Details"
                     subtitle="Enter information on discovery of threat, how it affects and how to fight
                       against"
                   />
-                  <div class="incident-content">
-                    <div
-                      id="text--threat-sharing-incident-step-three-discovery-and-detection"
-                      class="input-header"
+                  <v-form ref="refStep3Form">
+                    <FormGroup
+                      title="Discovery and Detection"
+                      sub-title="Explain how the threat was detected and what tools were used?"
                     >
-                      Discovery and Detection
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-three-discovery-and-detection-sub"
-                      class="input-sub"
-                    >
-                      Explain how the threat was detected and what tools were used?
-                    </div>
-                    <v-form onSubmit="return false;" v-model="validDisc" ref="discoveryInput">
                       <v-textarea
-                        id="input--threat-sharing-incident-discovery-detection"
                         v-model.trim="uploadRespond.DiscoveryAndDetection"
+                        id="input--threat-sharing-incident-discovery-detection"
                         outlined
                         dense
                         placeholder="Enter discovery and detection"
@@ -459,103 +310,35 @@
                         class="comment-input"
                         rows="5"
                         row-height="15"
-                        solo
-                        @input="$forceUpdate()"
-                        :rules="
-                          uploadRespond.DiscoveryAndDetection
-                            ? [
-                                explanationRules.empty,
-                                explanationRules.minLength,
-                                explanationRules.required
-                              ]
-                            : []
-                        "
                       ></v-textarea>
-                    </v-form>
-
-                    <div
-                      id="text--threat-sharing-incident-step-three-impact-range"
-                      class="input-header pb-2 pt-3"
+                    </FormGroup>
+                    <FormGroup
+                      title="Impact Range"
+                      sub-title="Affect Area <div>Which systems and programs are affected by the threat?</div>"
                     >
-                      Impact Range
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-three-affect-area"
-                      class="input-sec-header"
-                    >
-                      Affect Area
-                    </div>
-                    <div
-                      id="text--threat-sharing-incident-step-three-affect-area-sub"
-                      class="input-sub"
-                    >
-                      Which systems and programs are affected by the threat?
-                    </div>
-                    <v-form onSubmit="return false;" v-model="validAffect" ref="affectInput">
-                      <k-select
-                        v-model.trim="uploadRespond.AffectArea"
-                        type="combobox"
-                        id="input--threat-sharing-incident-impact-range"
-                        label="Windows 10 etc."
-                        multiple
-                        :clearable="true"
-                        append-icon
-                        chips
-                        deletable-chips
-                        class="affect-combobox affect-input"
-                        custom-menu-class="menu--threat-sharing-affect-area"
-                        @keyup.tab="updateTags"
-                        solo
-                        outlined
-                        dense
-                        validate-on-blur
-                        @blur="validateAffectArea"
-                        @change="validateAffectArea"
-                        :rules="[affectRules.regex]"
-                        @input="handleTagItemChange"
-                      ></k-select>
-                    </v-form>
-
-                    <div
-                      id="text--threat-sharing-incident-step-three-scope"
-                      class="input-sec-header pt-3"
-                    >
-                      Scope
-                    </div>
-                    <div id="text--threat-sharing-incident-step-three-scope-sub" class="input-sub">
-                      How does it work and affect your systems?
-                    </div>
-                    <v-form onSubmit="return false;" v-model="validScope" ref="scopeInput">
+                      <InputTag
+                        v-model="uploadRespond.AffectArea"
+                        ref="refTags"
+                        id="input--action-tags-new-training-course-information"
+                        placeholder="Windows 10 etc."
+                      />
+                    </FormGroup>
+                    <FormGroup title="Scope" sub-title="How does it work and affect your systems?">
                       <v-text-field
+                        v-model.trim="uploadRespond.Scope"
                         id="input--threat-sharing-incident-scope"
-                        label="Explain"
+                        placeholder="Explain"
                         outlined
                         dense
-                        class="filter-field"
-                        v-model.trim="uploadRespond.Scope"
-                        solo
-                        validate-on-blur
-                        ref="scopeTextField"
-                        @input="$forceUpdate()"
-                        :rules="
-                          uploadRespond.Scope
-                            ? [
-                                scopeRules.regex,
-                                scopeRules.empty,
-                                scopeRules.minLength,
-                                scopeRules.required
-                              ]
-                            : []
-                        "
                       ></v-text-field>
-                    </v-form>
-                  </div>
+                    </FormGroup>
+                  </v-form>
                 </div>
               </v-stepper-content>
               <v-stepper-content class="k-stepper__content" :step="4">
                 <div id="post-step-four" v-if="step === 4">
                   <ConfigureCompanyStepHeader
-                    class="mb-2"
+                    class="mb-8"
                     title="Select Attributes To Share"
                     subtitle="Hide the information you want to exclude when sharing. You must share at least
                       1 attribute. Mark harmful attributes to let others know about them."
@@ -624,7 +407,6 @@
                         </div>
                       </div>
                     </div>
-
                     <div
                       id="post-filters"
                       :class="{ 'minify-filter': !filterOpened }"
@@ -656,9 +438,9 @@
                             <v-checkbox
                               v-model="allHeader"
                               id="input--threat-sharing-incident-is-header"
-                              @change="headerValChange"
                               hide-details
                               :indeterminate="checkHeaderSelected && !this.allHeader"
+                              @change="headerValChange"
                             ></v-checkbox>
                             <label v-if="filterOpened">All Header</label>
                           </div>
@@ -678,10 +460,10 @@
                             <v-checkbox
                               v-model="uploadRespond.isSubjectHidden"
                               id="input--threat-sharing-incident-is-subject-hidden"
-                              @change="subjectValChange"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="subjectValChange"
                             ></v-checkbox>
                             <label v-if="filterOpened">Subject</label>
                           </div>
@@ -693,8 +475,8 @@
                               <v-icon color="#f56c6c">mdi-text-short</v-icon>
                             </div>
                             <v-menu
-                              :disabled="uploadRespond.isSubjectHidden"
                               v-model="subSettings"
+                              :disabled="uploadRespond.isSubjectHidden"
                               right
                               offset-x
                               transition="scale-transition"
@@ -816,8 +598,8 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-space-between investigation-filters__area--filter"
                           v-if="uploadRespond.to && uploadRespond.to.length"
+                          class="d-flex justify-space-between investigation-filters__area--filter"
                         >
                           <div class="d-flex" v-if="uploadRespond.to && uploadRespond.to.length">
                             <v-checkbox
@@ -837,8 +619,8 @@
                               >
                             </div>
                             <v-menu
-                              :disabled="uploadRespond.isToHidden"
                               v-model="toSettings"
+                              :disabled="uploadRespond.isToHidden"
                               right
                               offset-x
                               transition="scale-transition"
@@ -1043,11 +825,11 @@
                             <v-checkbox
                               v-model="allLinks"
                               id="input--threat-sharing-incident-is-all-links"
-                              @change="allUrlsValChange"
                               :indeterminate="
                                 uploadRespond.urls.find((item) => item.isHidden) && !allLinks
                               "
                               hide-details
+                              @change="allUrlsValChange"
                             ></v-checkbox>
                             <label v-if="filterOpened">All Links</label>
                           </div>
@@ -1061,8 +843,8 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-space-between investigation-filters__area--filter"
                           v-for="(url, ind) of uploadRespond.urls"
+                          class="d-flex justify-space-between investigation-filters__area--filter"
                           :key="ind + url.url"
                           :id="ind + url.url"
                         >
@@ -1159,12 +941,12 @@
                             <v-checkbox
                               v-model="allAttachments"
                               id="input--threat-sharing-incident-is-all-attachments"
-                              @change="allAttachmentsValChange"
                               :indeterminate="
                                 uploadRespond.attachments.find((item) => item.isHidden) &&
                                 !allAttachments
                               "
                               hide-details
+                              @change="allAttachmentsValChange"
                             ></v-checkbox>
                             <label v-if="filterOpened">All Attachments</label>
                           </div>
@@ -1186,10 +968,10 @@
                             <v-checkbox
                               v-model="attachment.isHidden"
                               :id="`input--attachment-is-hidden-${ind}`"
-                              @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                             ></v-checkbox>
                             <v-tooltip bottom opacity="1" z-index="9999">
                               <template v-slot:activator="{ on }">
@@ -1277,7 +1059,7 @@
                     label="Post as anonymous"
                     color="#2196f3"
                   ></v-checkbox>
-                  <div id="last-preview-post" class="post-wrapper">
+                  <div id="last-preview-post" style="max-width: 696px;">
                     <v-expansion-panels :multiple="false" v-model="panel" class="mb-4">
                       <v-expansion-panel>
                         <div class="threat-sharing-content">
@@ -1292,14 +1074,14 @@
                                 id="last-preview-collapse-container"
                                 class="pa-0"
                                 style="min-height: 36px;"
-                                @click="toggle = !toggle"
                                 disable-icon-rotate
                                 ref="expandIncident"
+                                @click="toggle = !toggle"
                               >
-                                <template v-slot:actions mandatory="true">
+                                <template #actions>
                                   <v-btn
-                                    id="threat-sharing-post-incident-last-preview-collapse"
                                     v-if="!toggle"
+                                    id="threat-sharing-post-incident-last-preview-collapse"
                                     outlined
                                     rounded
                                     medium
@@ -1387,8 +1169,8 @@
                             </div>
                             <div class="ts-harmful mt-1">
                               <v-btn
-                                id="threat-sharing-post-incident-malicious-count"
                                 v-if="maliciousCount"
+                                id="threat-sharing-post-incident-malicious-count"
                                 text
                                 x-small
                                 icon
@@ -1591,26 +1373,6 @@
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div
-                                id="last-step-preview-buttons"
-                                class="preview-buttons"
-                                style="display: none;"
-                              >
-                                <v-btn id="last-step-useful-btn">
-                                  <v-icon>mdi-thumb-up</v-icon>
-                                  Useful 0
-                                </v-btn>
-                                <v-btn
-                                  id="last-step-comment-opened"
-                                  :class="{ 'active-act': commentOpened }"
-                                >
-                                  <!-- @click="commentOpened = !commentOpened" -->
-                                  <v-icon :class="{ 'active-act': commentOpened }"
-                                    >mdi-comment</v-icon
-                                  >
-                                  Comments (0)
-                                </v-btn>
                               </div>
                             </v-tab-item>
                             <v-tab-item>
@@ -1895,7 +1657,7 @@
                       </v-expansion-panel>
                     </v-expansion-panels>
                   </div>
-                  <v-form ref="accept_terms_and_conditions_checkbox">
+                  <v-form ref="acceptTermsAndConditionsCheckbox">
                     <div class="d-flex" style="margin-bottom: 8px;">
                       <v-checkbox
                         v-model="acceptCheckbox"
@@ -1948,10 +1710,6 @@
             <v-btn
               v-if="step === 1"
               id="threat-sharing-post-incident-next-button"
-              :disabled="!selectedEmail && !uploadRespond.IsActive"
-              :class="{
-                'disabled-cursor': !selectedEmail && !uploadRespond.IsActive
-              }"
               class="create-btn"
               text
               color="#2196f3"
@@ -1961,7 +1719,6 @@
             <v-btn
               v-if="step === 2"
               id="threat-sharing-post-incident-step-two-next-button"
-              :class="{ 'disabled-cursor': !stepTwoDisabled() }"
               class="create-btn"
               text
               color="#2196f3"
@@ -1987,8 +1744,8 @@
               >Next
             </v-btn>
             <v-btn
-              id="threat-sharing-post-incident-step-five-next-button"
               v-if="step === 5"
+              id="threat-sharing-post-incident-step-five-next-button"
               class="create-btn"
               text
               color="#2196f3"
@@ -2013,7 +1770,6 @@ import {
   getSelectedEmailPreview,
   listThreatCategories,
   parseEmail,
-  searchNotifiedMail,
   updateCommunityPost,
   uploadEmlOrMsg
 } from '@/api/threatSharing'
@@ -2030,12 +1786,14 @@ import {
   copyToClipboard
 } from '@/utils/functions'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
-import KSelectLoading from '@/components/KSelectLoading'
-import vueCustomElement from 'vue-custom-element'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-
+import PostIncidentInputEmail from '@/components/ThreatSharing/PostIncident/PostIncidentInputEmail'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import { tlpItems } from '@/components/ThreatSharing/PostIncident/utils'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import InputTag from '@/components/Common/Inputs/InputTag'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -2154,9 +1912,12 @@ a{position:relative}
 
 export default {
   components: {
-    ConfigureCompanyStepHeader,
-    KSelectLoading,
+    DatatableLoading,
+    InputTag,
+    FormGroup,
     KSelect,
+    PostIncidentInputEmail,
+    ConfigureCompanyStepHeader,
     KFileUpload,
     VClamp,
     PreviewHeader,
@@ -2170,15 +1931,6 @@ export default {
       type: Object,
       required: false
     },
-    updatePost: {
-      type: String,
-      required: false
-    },
-    isEditMode: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
     communityName: {
       type: String
     },
@@ -2186,19 +1938,102 @@ export default {
       required: false
     }
   },
+  data: () => ({
+    initialFormValues: {},
+    saveDisable: false,
+    labels,
+    termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
+    acceptCheckbox: false,
+    editHtmlData: null,
+    showNewsletterPageGrapes: false,
+    value: 'wFlYRDMW946M',
+    tlpItems,
+    fromSettings: false,
+    toSettings: false,
+    ccSettings: false,
+    bccSettings: false,
+    subSettings: false,
+    currentCompany: null,
+    step: 1,
+    items: [],
+    categories: ['Malicious', 'Non-malicious', 'Phishing'],
+    selectedEmail: null,
+    header: {
+      allHeader: true,
+      subject: true,
+      sender: true,
+      receiver: true
+    },
+    body: {
+      allLinks: true,
+      phishingLinks: true,
+      phishing1: true,
+      phishing2: false
+    },
+    footer: {
+      allAttachments: true,
+      attachment1: true,
+      attachment2: true
+    },
+    titleRule: {
+      required: (v) => Validations.required(v),
+      default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
+      regex: (v) =>
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        'Only use letters, digits, period, comma, underline and hyphen',
+      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
+      minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
+    },
+    descRule: {
+      default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
+      required: (v) => Validations.required(v),
+      regex: (v) =>
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        'Only use letters, digits, period, comma, underline and hyphen',
+      empty: (v) => {
+        if (!v) return true
+        return (v && !v.startsWith(' ')) || 'Cannot start with space'
+      },
+      minLength: (v) =>
+        Validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5))
+    },
+
+    checkboxRule: {
+      required: (v) => {
+        return v || 'You must accept terms and conditions before creating the community'
+      }
+    },
+    filterOpened: true,
+    attcChevron: [],
+    isIncidentPreviewLoading: false,
+    urls: [],
+    msgEmlFile: null,
+    toggle: false,
+    currentCommunityName: '',
+    panel: 0,
+    tab: 0,
+    hoverTool: false,
+    uploadRespond: {
+      DiscoveryAndDetection: ' '
+    },
+    allHeader: false,
+    allLinks: false,
+    allAttachments: false,
+    isAnonym: false,
+    onUploadProgress: null
+  }),
   computed: {
+    isStep1Valid() {
+      return this.selectedEmail || this.msgEmlFile
+    },
     checkHeaderSelected() {
-      if (
+      return !!(
         this.uploadRespond.isSubjectHidden ||
         this.uploadRespond.isFromHidden ||
         this.uploadRespond.isToHidden ||
         this.uploadRespond.isCcHidden ||
         this.uploadRespond.isBccHidden
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     maliciousCount() {
       let count = 0
@@ -2232,194 +2067,6 @@ export default {
       return count
     }
   },
-  data: () => ({
-    initialFormValues: {},
-    saveDisable: false,
-    labels,
-    visibleBodyForPreview: null,
-    termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
-    acceptCheckbox: false,
-    editHtmlData: null,
-    showNewsletterPageGrapes: false,
-    isFindIncidentLoading: true,
-    showLoader: false,
-    value: 'wFlYRDMW946M',
-    isInit: true,
-    tlpItems: [
-      {
-        text: 'TLP: WHITE',
-        value: 'wFlYRDMW946M',
-        color: '#ffffff',
-        cssClass: 'tlp-select__chip--white',
-        desc: 'Disclosure is not limited.'
-      },
-      {
-        text: 'TLP: GREEN',
-        value: 'wKBhLuFZ46y9',
-        color: '#2cde00',
-        cssClass: 'tlp-select__chip--green',
-        desc: 'Limited disclosure, restricted to the community.'
-      },
-      {
-        text: 'TLP: AMBER',
-        value: 'RhHwRcLlZxek',
-        color: '#ffc000',
-        cssClass: 'tlp-select__chip--amber',
-        desc: 'Limited disclosure, restricted to participants’ organizations.'
-      },
-      {
-        text: 'TLP: RED',
-        value: 'YpUZxVhYJlKg',
-        color: '#ff0033',
-        cssClass: 'tlp-select__chip--red',
-        desc: 'Not for disclosure, restricted to participants only.'
-      }
-    ],
-    fromSettings: false,
-    toSettings: false,
-    ccSettings: false,
-    bccSettings: false,
-    subSettings: false,
-    currentCompany: null,
-    listData: [],
-    step: 1,
-    search: '',
-    searchIncident: '',
-    items: [],
-    categories: ['Malicious', 'Non-malicious', 'Phishing'],
-    model: [],
-    colors: ['#e0e0e0'],
-    editing: null,
-    index: -1,
-    menu: false,
-    selectedEmail: '',
-    header: {
-      allHeader: true,
-      subject: true,
-      sender: true,
-      receiver: true
-    },
-    body: {
-      allLinks: true,
-      phishingLinks: true,
-      phishing1: true,
-      phishing2: false
-    },
-    footer: {
-      allAttachments: true,
-      attachment1: true,
-      attachment2: true
-    },
-    valid: false,
-    categoryValid: false,
-    validDisc: false,
-    validAffect: false,
-    validScope: false,
-    autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
-    title: [(v) => !!v || 'Title is required'],
-    category: [(v) => (!!v && v.length >= 1) || 'Required'],
-    titleRule: {
-      required: (v) => Validations.required(v),
-      default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
-      minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
-    },
-    descRule: {
-      default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
-      required: (v) => Validations.required(v),
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => {
-        if (!v) return true
-        return (v && !v.startsWith(' ')) || 'Cannot start with space'
-      },
-      minLength: (v) =>
-        Validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5))
-    },
-
-    checkboxRule: {
-      required: (v) => {
-        return v || 'You must accept terms and conditions before creating the community'
-      }
-    },
-    explanationRules: {
-      default: (v) => Validations.required(v),
-      required: (v) =>
-        Validations.maxLength(v, 300, labels.getMaxLengthMessage('Discovery and detection', 300)),
-      empty: (v) => (v && !v.startsWith(' ')) || 'Discovery and detection cannot start with space',
-      minLength: (v) =>
-        Validations.minLength(v, 5, labels.getMinLengthMessage('Discovery and detection', 5))
-    },
-    scopeRules: {
-      default: (v) => Validations.required(v),
-      required: (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage('Scope', 200)),
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Scope cannot start with space',
-      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Scope', 5))
-    },
-    affectRules: {
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
-    createInc: {
-      postId: '',
-      title: 'Subject: Subject comes here',
-      description: '',
-      category: '',
-      discovery: '',
-      affect: [],
-      scope: '',
-      select: ['add-tags-with', 'enter', 'tab', 'paste'],
-      items: [],
-      search: '',
-      createUser: '',
-      createCompany: '',
-      onPreview: true
-    },
-    filterOpened: true,
-    flagData: {
-      subject: false,
-      sender: false,
-      receiver: false,
-      phishing: false,
-      link: false,
-      attachment: false
-    },
-    attcChevron: [],
-    urls: [],
-    msgEmlFile: null,
-    toggle: false,
-    panel: 0,
-    expanded: false,
-    tab: 0,
-    commentOpened: false,
-    userComment: '',
-    comments: [],
-    hoverTool: false,
-    seeComments: false,
-    date: new Date().toISOString().slice(0, 10),
-    uploadRespond: {
-      DiscoveryAndDetection: ' '
-    },
-    shareSettings: {},
-    allHeader: false,
-    allLinks: false,
-    allAttachments: false,
-    isAnonym: false,
-    onUploadProgress: null
-  }),
-  watch: {
-    searchIncident(val) {
-      val !== this.select && this.querySelections(val)
-    }
-  },
   created() {
     document.querySelector('html').style.overflowY = 'hidden'
     const pageNav = document.querySelector('.page-nav')
@@ -2446,7 +2093,6 @@ export default {
       let val = { resourceId: this.editItem.communityPostResourceId }
       this.getSelectedEmailPreview(val, true)
     }
-    this.searchNotifiedMail()
     this.getListThreatCategories()
     this.currentCompany =
       (this.editItem && this.editItem.postedUserCompanyName) ||
@@ -2467,11 +2113,6 @@ export default {
     }
   },
   methods: {
-    handleLoadingState() {
-      if (this.isInit) {
-        this.showLoader = true
-      }
-    },
     setVisibleBody() {
       let urls = this.uploadRespond.urls.filter((item) => item.isHidden)
       for (let url of urls) {
@@ -2499,10 +2140,6 @@ export default {
         'last-preview-body-shadow-root-for-preview'
       )?.shadowRoot?.innerHTML
     },
-    handleTagItemChange() {
-      this.querySelections(this.searchIncident || '')
-      if (this.isFindIncidentLoading) return false
-    },
     closeGrapesJs() {
       this.showNewsletterPageGrapes = false
       setTimeout(() => {
@@ -2527,30 +2164,6 @@ export default {
     editHtmlTemplate() {
       this.editHtmlData = this.uploadRespond.editableBody || this.uploadRespond.initialBody
       this.showNewsletterPageGrapes = true
-    },
-    querySelections(val) {
-      let _this = this
-      setTimeout(() => {
-        if (!val) {
-          this.listData = this.backupListData
-        } else {
-          if (this.listData && this.backupListData) {
-            _this.listData = this.backupListData.reduce((acc, item) => {
-              Object.values(item).find((i) => {
-                if (
-                  typeof i === 'string' &&
-                  i.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-                )
-                  return acc.push(item)
-              })
-              return acc
-            }, [])
-          }
-          setTimeout(() => {
-            _this.$forceUpdate()
-          }, 50)
-        }
-      }, 500)
     },
     getByValue() {
       return this.uploadRespond.PostedUserFullName || localStorage.getItem('userName')
@@ -2756,7 +2369,6 @@ export default {
     },
     uploadFile(e) {
       this.msgEmlFile = e
-
       uploadEmlOrMsg(this.msgEmlFile, (e) => {
         this.onUploadProgress = e
       }).then((response) => {
@@ -2769,95 +2381,39 @@ export default {
         this.setShadowRootMalicousLink('incident-preview-1')
       })
     },
-    clearUpload() {
-      //this.uploadFile(null)
-    },
-    searchNotifiedMail() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 500000,
-        orderBy: 'createTime',
-        ascending: false,
-        clusteredBy: ''
-      }
-      searchNotifiedMail(payload)
-        .then((response) => {
-          const { data } = response
-          if (this.searchIncident) {
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-            this.$nextTick(() => {
-              this.listData = this.backupListData.reduce((acc, item) => {
-                Object.values(item).find((i) => {
-                  if (
-                    typeof i === 'string' &&
-                    i.toLocaleLowerCase().includes(this.searchIncident.toLocaleLowerCase())
-                  )
-                    return acc.push(item)
-                })
-                return acc
-              }, [])
-            })
-          } else {
-            this.listData = data.data.results
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-          }
-        })
-        .finally(() => {
-          this.isFindIncidentLoading = false
-          this.showLoader = false
-        })
-    },
     getSelectedEmailPreview(selectedItem, isInitial = false) {
       if (this.editItem) {
-        getCommunityPost(this.editItem.communityPostResourceId).then((response) => {
-          const { data } = response
-          this.uploadRespond = data.data.communityPostEmail
-          this.uploadRespond.visibleBodyForPreview =
-            data.data.communityPostEmail.editableBody ||
-            data.data.communityPostEmail.visibleBody ||
-            data.data.communityPostEmail.initialBody
-          if (this.editItem) {
-            this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
-            this.uploadRespond.Title = this.editItem.title
-            this.uploadRespond.Description = this.editItem.description
-            this.uploadRespond.DiscoveryAndDetection = this.editItem.discoveryAndDetection
-            this.uploadRespond.Scope = this.editItem.scope
-            this.uploadRespond.CategoryResourceIdArray = this.editItem.categoryResourceIdArray
-            this.uploadRespond.PostedUserFullName = this.editItem.postedUserFullName
-            this.uploadRespond.PostedUserCompanyName = this.editItem.postedUserCompanyName
-            this.uploadRespond.PostedTime = this.editItem.postedTime
-            this.uploadRespond.LikeCount = this.editItem.likeCount
-            this.uploadRespond.CommentCount = this.editItem.commentCount
-            this.uploadRespond.HarmfulItemCount = this.editItem.harmfulItemCount
-            this.uploadRespond.HasAttachment = this.editItem.hasAttachment
-            this.uploadRespond.CommunityResourceId = this.editItem.communityResourceId
-            this.uploadRespond.CommunityName = this.editItem.communityName
-            this.uploadRespond.AffectArea = data.data.affectArea || []
-          }
-          if (!this.uploadRespond.bcc) this.uploadRespond.bcc = []
-          if (!this.uploadRespond.cc) this.uploadRespond.cc = []
-          if (!this.uploadRespond.to) this.uploadRespond.to = []
-          this.setShadowRootMalicousLink('incident-preview-1')
-          //this.listData = data.data.results
-          if (isInitial) {
-            this.initialFormValues = {
-              ...this.initialFormValues,
-              uploadRespond: {
-                ...this.initialFormValues.uploadRespond,
-                ...this.uploadRespond
-              }
-            }
-          }
-        })
-      } else {
-        if (selectedItem?.resourceId) {
-          getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
+        this.isIncidentPreviewLoading = true
+        getCommunityPost(this.editItem.communityPostResourceId)
+          .then((response) => {
             const { data } = response
-            this.uploadRespond = data.data
-            this.uploadRespond.initialBody = data.data.initialBody
-            this.uploadRespond.visibleBody = data.data.initialBody
-            this.uploadRespond.editableBody = response.data.data.initialBody
-            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            this.uploadRespond = data.data.communityPostEmail
+            this.uploadRespond.visibleBodyForPreview =
+              data.data.communityPostEmail.editableBody ||
+              data.data.communityPostEmail.visibleBody ||
+              data.data.communityPostEmail.initialBody
+            if (this.editItem) {
+              this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
+              this.uploadRespond.Title = this.editItem.title
+              this.uploadRespond.Description = this.editItem.description
+              this.uploadRespond.DiscoveryAndDetection = this.editItem.discoveryAndDetection
+              this.uploadRespond.Scope = this.editItem.scope
+              this.uploadRespond.CategoryResourceIdArray = this.editItem.categoryResourceIdArray
+              this.uploadRespond.PostedUserFullName = this.editItem.postedUserFullName
+              this.uploadRespond.PostedUserCompanyName = this.editItem.postedUserCompanyName
+              this.uploadRespond.PostedTime = this.editItem.postedTime
+              this.uploadRespond.LikeCount = this.editItem.likeCount
+              this.uploadRespond.CommentCount = this.editItem.commentCount
+              this.uploadRespond.HarmfulItemCount = this.editItem.harmfulItemCount
+              this.uploadRespond.HasAttachment = this.editItem.hasAttachment
+              this.uploadRespond.CommunityResourceId = this.editItem.communityResourceId
+              this.uploadRespond.CommunityName = this.editItem.communityName
+              this.uploadRespond.AffectArea = data.data.affectArea || []
+            }
+            if (!this.uploadRespond.bcc) this.uploadRespond.bcc = []
+            if (!this.uploadRespond.cc) this.uploadRespond.cc = []
+            if (!this.uploadRespond.to) this.uploadRespond.to = []
+            this.setShadowRootMalicousLink('incident-preview-1')
             if (isInitial) {
               this.initialFormValues = {
                 ...this.initialFormValues,
@@ -2868,6 +2424,29 @@ export default {
               }
             }
           })
+          .finally(() => (this.isIncidentPreviewLoading = false))
+      } else {
+        if (selectedItem?.resourceId) {
+          this.isIncidentPreviewLoading = true
+          getSelectedEmailPreview(selectedItem.resourceId)
+            .then((response) => {
+              const { data } = response
+              this.uploadRespond = data.data
+              this.uploadRespond.initialBody = data.data.initialBody
+              this.uploadRespond.visibleBody = data.data.initialBody
+              this.uploadRespond.editableBody = response.data.data.initialBody
+              this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+              if (isInitial) {
+                this.initialFormValues = {
+                  ...this.initialFormValues,
+                  uploadRespond: {
+                    ...this.initialFormValues.uploadRespond,
+                    ...this.uploadRespond
+                  }
+                }
+              }
+            })
+            .finally(() => (this.isIncidentPreviewLoading = false))
         }
       }
     },
@@ -2896,48 +2475,16 @@ export default {
       })
     },
     onContinue() {
+      if (!this.isStep1Valid) return this.step
       return this.step++
     },
     onSecondStep() {
-      if (
-        !this.$refs.titleInput.validate() ||
-        !this.$refs.descriptionInput.validate() ||
-        !this.$refs.categoryInput.validate() ||
-        !this.stepTwoDisabled()
-      ) {
-        this.$refs.titleInput.validate()
-        this.$refs.descriptionInput.validate()
-        this.$refs.categoryInput.validate()
-        return false
-      } else {
-        this.step++
-      }
+      if (this?.$refs?.refStep2Form?.validate()) this.step++
     },
     onThirdStep() {
-      if (this.uploadRespond.AffectArea && !this.$refs.affectInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
-        return false
-      }
-      if (this.uploadRespond.DiscoveryAndDetection && !this.$refs.discoveryInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
-        return false
-      }
-      if (this.uploadRespond.Scope && !this.$refs.scopeInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
-        return false
-      } else {
-        if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
-        if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
-        if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
-        this.step++
-        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
-      }
+      if (!this?.$refs?.refStep3Form.validate()) return
+      this.step++
+      this.setShadowRootMalicousLink('last-preview-body-shadow-root')
     },
     onBeforeLastStep() {
       this.setVisibleBody()
@@ -2953,11 +2500,9 @@ export default {
       }
     },
     onFinish() {
-      if (!this.$refs.accept_terms_and_conditions_checkbox.validate()) {
+      if (!this.$refs.acceptTermsAndConditionsCheckbox.validate()) {
         return this.$nextTick(() => {
-          const el = this.$refs.accept_terms_and_conditions_checkbox.$el.querySelector(
-            '.error--text'
-          )
+          const el = this.$refs.acceptTermsAndConditionsCheckbox.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
       }
@@ -2999,7 +2544,6 @@ export default {
           },
           IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
-        //CommunityResourceId:this.$route.params.id ,
         updateCommunityPost(this.editItem.communityPostResourceId, payload)
           .then(() => {
             this.saveDisable = false
@@ -3063,63 +2607,10 @@ export default {
           .finally(() => (this.saveDisable = false))
       }
     },
-    updateTags() {
-      this.$nextTick(() => {
-        this.createInc.select.push(...this.createInc.search.split(','))
-        this.$nextTick(() => {
-          this.search = ''
-        })
-      })
-    },
     closePreview() {
-      this.selectedEmail = ''
+      this.selectedEmail = null
       this.uploadRespond = {}
       this.msgEmlFile = null
-      this.shareSettings = {}
-    },
-    stepTwoDisabled() {
-      if (
-        this.uploadRespond &&
-        this.uploadRespond.Title &&
-        this.regexChar(this.uploadRespond.Title) &&
-        this.uploadRespond.CategoryResourceIdArray &&
-        this.uploadRespond.CategoryResourceIdArray &&
-        this.uploadRespond.CategoryResourceIdArray.length > 0
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(val)
-    },
-    edit(index, item) {
-      if (!this.editing) {
-        this.editing = item
-        this.index = index
-      } else {
-        this.editing = null
-        this.index = -1
-      }
-    },
-    validateAffectArea() {
-      const refThis = this
-      setTimeout(function () {
-        refThis.uploadRespond.AffectArea = refThis?.uploadRespond?.AffectArea
-          ? refThis.uploadRespond.AffectArea.map((item) => {
-              return item.slice(0, 20)
-            })
-          : []
-        if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
-          let i = refThis.uploadRespond.AffectArea.length
-          while (i--) {
-            if (!refThis.regexChar(refThis.uploadRespond.AffectArea[i])) {
-              refThis.uploadRespond.AffectArea.splice(i, 1)
-            }
-          }
-        }
-      }, 300)
     }
   }
 }
