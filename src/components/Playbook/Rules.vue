@@ -303,6 +303,8 @@ export default {
   },
   created() {
     this.controlGetAndUpdatePermission(this?.$route?.params?.playbookId || this.playbookId)
+  },
+  mounted() {
     if (this.PERMISSIONS.SEARCH.hasPermission) {
       this.callForData()
     }

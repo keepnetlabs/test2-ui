@@ -284,7 +284,7 @@ export default {
       getUser: 'auth/userGetter'
     })
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {
