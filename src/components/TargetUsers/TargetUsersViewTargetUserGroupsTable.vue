@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    no-padding-bottom
     :loading="isLoading"
     :count-row="tableOptions.countRow"
     :table="tableData"

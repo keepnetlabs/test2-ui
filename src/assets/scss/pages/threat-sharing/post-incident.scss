@@ -600,12 +600,6 @@
     }
   }
 
-  .bodyExpanded {
-    height: 100% !important;
-    max-height: 100% !important;
-    padding-bottom: 56px;
-  }
-
   .preview-footer {
     display: flex;
     flex-direction: column;
@@ -781,12 +775,6 @@
     }
   }
 
-  .bodyExpanded {
-    height: 100% !important;
-    max-height: 100% !important;
-    padding-bottom: 56px;
-  }
-
   .preview-footer {
     display: flex;
     flex-direction: column;
@@ -859,55 +847,6 @@
       }
     }
   }
-
-  .preview-buttons {
-    margin-top: 24px;
-    padding-bottom: 13px;
-    display: flex;
-    flex-direction: row;
-    border-top: 1px solid #b3d4fc;
-    padding-top: 24px;
-
-    .v-btn {
-      border-radius: 18px !important;
-      border: solid 1px #909399;
-      box-shadow: unset !important;
-      background-color: #fff !important;
-      margin-right: 16px;
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(0, 0, 0, 0.87);
-      padding-left: 16px !important;
-
-      .v-icon {
-        color: #909399;
-        font-size: 19px !important;
-        margin-right: 8px;
-        margin-top: 1px;
-        border: unset !important;
-      }
-    }
-
-    .active-act {
-      color: #2196f3 !important;
-      border: solid 1px #2196f3 !important;
-    }
-  }
-
-  .preview-border {
-    border-top: 1px solid #b3d4fc;
-    padding-top: 24px;
-  }
-
-  // Details css
 
   .detail-discovery {
     margin-top: 24px;
@@ -1099,10 +1038,6 @@
     background-color: #fff !important;
     height: 60px;
     padding: 0 !important;
-  }
-
-  .display-none {
-    display: none !important;
   }
 
   .tooltip-wrapper {
@@ -1354,18 +1289,6 @@
     }
   }
 
-  .ts-success {
-    display: flex;
-    align-items: center;
-
-    span {
-      align-items: center;
-      font-size: inherit;
-      line-height: unset;
-      line-height: 2;
-    }
-  }
-
   .ts-body {
     margin-top: 10px;
     font-family: "Open Sans", sans-serif !important;
@@ -1458,11 +1381,6 @@
     padding: 0 !important;
   }
 
-  .title-field {
-    .v-text-field__details {
-      margin-bottom: 0 !important;
-    }
-  }
 
   .v-text-field.v-text-field--enclosed .v-text-field__details {
     margin-bottom: 8px;
@@ -1474,25 +1392,9 @@
     pointer-events: all !important;
   }
 
-  #upload-file-input {
-    opacity: 0;
-    position: absolute;
-  }
-
   input[type=file], /* FF, IE7+, chrome (except button) */
   input[type=file]::-webkit-file-upload-button {
-    /* chromes and blink button */
     cursor: pointer !important;
-  }
-
-  @media only screen and (max-width: 1025px) {
-    .hide-step {
-      display: none !important;
-    }
-  }
-
-  .display-none {
-    display: none !important;
   }
 
   #share-settings-links {
