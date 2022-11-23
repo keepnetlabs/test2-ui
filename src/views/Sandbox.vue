@@ -80,7 +80,6 @@
                   dense
                   height="40"
                   outlined
-                  required
                   v-model="filteredSelectValueDate"
                   :menu-props="{ offsetY: true }"
                   placeholder="Select an option"

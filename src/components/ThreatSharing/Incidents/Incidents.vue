@@ -151,7 +151,7 @@
               </div>
             </v-skeleton-loader>
           </template>
-          <template v-slot:footer>
+          <template #footer>
             <v-row
               v-if="incidentList && incidentList.length"
               class="mt-2"
@@ -295,7 +295,6 @@ export default {
   created() {
     getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
     this.getThreats()
-    let _this = this
     if (this.$route.query && this.$route.query.postId) {
       this.getSharedPost()
     } else {
@@ -315,7 +314,7 @@ export default {
           this.threats = incidentsData.searchValues.threats
           this.incidentLoading = false
           setTimeout(() => {
-            _this.$emit('setLoadState')
+            this.$emit('setLoadState')
           }, 100)
         } else {
           this.getIncidentList()
@@ -376,7 +375,6 @@ export default {
       })
     },
     getSharedPost() {
-      let _this = this
       getCommunityPost(this.$route.query.postId)
         .then((response) => {
           let item = response.data.data
@@ -394,8 +392,8 @@ export default {
                 name: 'Threat Sharing',
                 params: {
                   isCommunity: true,
-                  postId: _this.$route.query.postId,
-                  communityId: _this.$route.params['id'],
+                  postId: this.$route.query.postId,
+                  communityId: this.$route.params['id'],
                   communityName: localStorage.getItem('communityName')
                 }
               })
@@ -465,7 +463,6 @@ export default {
         }
       }
       this.incidentLoading = true
-      const _this = this
       this.incidentList = []
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
@@ -479,39 +476,22 @@ export default {
             this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
             this.totalNumberOfPages = response.data.data.totalNumberOfPages
           })
-          .catch((error) => {
-            if (
-              error.response &&
-              error.response.data &&
-              error.response.data.code === 'RESOURCE_NOT_FOUND'
-            ) {
-              this.incidentList = []
-              this.incidentLoading = false
-            }
-          })
+          .finally(() => (this.incidentLoading = false))
       } else {
         if (this.$router.currentRoute.name === 'Community') {
           getCOmmunityIncidentList(this.$route.params.id, payload)
             .then((response) => {
               if (isSearch) this.page = 1
               this.incidentList = response.data.data.results
-              _this.incidentList = _this.incidentList.map((item) => {
+              this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
-              this.incidentLoading = false
               this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
               this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              _this.incidentLoading = false
+              this.incidentLoading = false
             })
             .catch((error) => {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
-              ) {
-                this.incidentList = []
-                this.incidentLoading = false
-              }
+              this.incidentLoading = false
               if (
                 error.response &&
                 error.response.data &&
@@ -522,8 +502,8 @@ export default {
                     name: 'Threat Sharing',
                     params: {
                       isCommunity: true,
-                      postId: _this.$route.query.postId,
-                      communityId: _this.$route.params['id'],
+                      postId: this.$route.query.postId,
+                      communityId: this.$route.params['id'],
                       communityName: localStorage.getItem('communityName')
                     }
                   })
@@ -548,17 +528,9 @@ export default {
                 })
                 this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
                 this.totalNumberOfPages = response.data.data.totalNumberOfPages
-                this.incidentLoading = false
               })
-              .catch((error) => {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.code === 'RESOURCE_NOT_FOUND'
-                ) {
-                  this.incidentList = []
-                  this.incidentLoading = false
-                }
+              .finally(() => {
+                this.incidentLoading = false
               })
           }
         }

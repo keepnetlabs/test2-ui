@@ -103,24 +103,6 @@
             opacity: 0.5 !important;
         }
 
-        .clean-link {
-            padding: 0 2px !important;
-            border-radius: 1px !important;
-            border-bottom: 1px solid #2196f3 !important;
-            color: #2196f3 !important;
-        }
-
-        .selected-link {
-            background-color: #d1e9fc !important;
-        }
-
-        .phishing-link {
-            background-color: #f3e1e5 !important;
-            border-bottom: 1px solid #bb2a45 !important;
-            color: #bb2a45 !important;
-            width: max-content;
-        }
-
         &__container {
             &__stats {
                 @media (max-width: 768px) {

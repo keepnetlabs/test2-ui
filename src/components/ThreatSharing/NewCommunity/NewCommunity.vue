@@ -37,7 +37,6 @@
           <InputDescription
             v-model.trim="description"
             id="input--threat-sharing-community-description"
-            class="edit-description"
             initial-placeholder="Description"
             :initial-rules="communityDescriptionRules"
             :required="true"
