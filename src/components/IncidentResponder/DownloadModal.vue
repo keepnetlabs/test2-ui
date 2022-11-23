@@ -83,7 +83,7 @@ export default {
     handleDownload() {
       downloadMsgFiles(this.id, this.zipPassword).then((response) => {
         const { data } = response
-        if (response?.data) {
+        if (response?.data && response?.data instanceof Blob) {
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
           link.download = `mail-${this.id}.zip`
