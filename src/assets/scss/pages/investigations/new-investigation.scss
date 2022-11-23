@@ -316,42 +316,6 @@
         color: #383b41;
         padding-bottom: 8px;
     }
-
-    .edit-privacy-buttons {
-        align-items: center;
-        display: flex;
-        width: 168px;
-
-        button {
-            border-radius: 18px !important;
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 14px !important;
-            font-weight: 400 !important;
-            font-stretch: normal !important;
-            font-style: normal !important;
-            line-height: 1.71 !important;
-            letter-spacing: normal !important;
-            text-transform: none !important;
-            padding: 0 16px !important;
-        }
-
-        .public-btn {
-            border: 1px solid #757575;
-            border-top-right-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-            height: 36px;
-            margin-left: 4px;
-        }
-
-        .private-btn {
-            border: 1px solid #757575;
-            border-top-left-radius: 0 !important;
-            border-bottom-left-radius: 0 !important;
-            height: 36px;
-            margin-left: 9px;
-        }
-    }
-
     .edit-privacy-bottom-label {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
@@ -376,33 +340,6 @@
     .v-btn-toggle>.v-btn.v-btn--active,
     .v-btn-toggle>.v-btn.v-btn--active::before {
         color: #fff;
-    }
-
-    .btnActive {
-        height: 36px;
-        border-radius: 18px;
-        border: solid 1px #757575;
-    }
-
-    .btnActive,
-    .btnActive:active,
-    .btnActive:hover,
-    .btnActive:focus {
-        border: unset !important;
-        outline: 0 !important;
-    }
-
-    .btnActive,
-    .btnActive::before {
-        border: unset !important;
-        border-color: unset !important;
-        color: #fff;
-        background-color: #2196f3 !important;
-        box-shadow: 0 2px 5px 0 #2196f3 !important;
-    }
-
-    .private-btn.v-btn.v-btn--active {
-        border-left: transparent !important;
     }
 
     .v-btn-toggle--group>.v-btn.v-btn {
@@ -519,36 +456,6 @@
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.72);
         z-index: 13;
-    }
-
-    .underlined-warn {
-        border-bottom: 1px solid #f56c6c;
-        color: inherit;
-
-        .icon {
-            color: #f56c6c !important;
-            font-size: 24px !important;
-            text-decoration: none !important;
-            margin-left: 20px;
-            margin-bottom: 7px;
-        }
-    }
-
-    .post-wrapper {
-        max-width: 696px;
-    }
-
-    .select-error {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 9px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #d0021b;
-        margin-left: 8px;
-        margin-top: 17px;
     }
 
     .select-row-wrap {
@@ -1243,17 +1150,11 @@
             }
         }
     }
-
-    .opacityExpanded {
-        background-image: none !important;
-    }
-
     .preview-comments {
         height: 0;
         opacity: 0;
         transition: max-height 0.25s ease-in;
         overflow: hidden;
-
         .comment-row {
             display: flex;
             flex-direction: row;
