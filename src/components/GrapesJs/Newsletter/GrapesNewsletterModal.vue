@@ -500,14 +500,16 @@ export default {
                 styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]
               }
-              const coll = component?.collection || []
-              const at = coll.indexOf(component)
-              el.setAttribute('href', value)
-              coll.remove(component)
-              if (at !== -1) {
-                coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
-                  at
-                })
+              const coll = component?.collection || null
+              if (coll) {
+                const at = coll.indexOf(component)
+                el.setAttribute('href', value)
+                coll.remove(component)
+                if (at !== -1) {
+                  coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
+                    at
+                  })
+                }
               }
             },
             srcChange(component, value) {

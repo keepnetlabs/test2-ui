@@ -1045,13 +1045,12 @@ export default {
     findCategory,
     changeCommentsValue(comments, postId) {
       this.comments = comments
-      if (this.$store.state['incidents'].incidents.incidentsData) {
-        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
-          (item) => item.communityPostResourceId === postId
-        ).comments = comments
-        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
-          (item) => item.communityPostResourceId === postId
-        ).commentCount = comments.length
+      if (this.incidents.length) {
+        const post = this.incidents.find((item) => item.communityPostResourceId === postId)
+        if (post) {
+          post.comments = comments
+          post.commentCount = comments.length
+        }
       }
       this.$forceUpdate()
     },
