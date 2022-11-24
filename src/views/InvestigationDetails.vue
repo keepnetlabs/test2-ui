@@ -903,6 +903,7 @@
                 rowKey="resourceId"
                 just-compare-row-key
                 is-server-side-selection
+                :rowCount="investigationListBodyData.pageSize"
                 :show-filter-options="false"
                 :refName="'investigationDetailsListTable'"
                 :manage-column-filter-status-from-parent="emailsColumnFilterStatus"
@@ -1016,6 +1017,7 @@
                 is-server-side
                 filterable
                 options
+                :rowCount="investigationTargetUsersListBodyData.pageSize"
                 :columns="columnsTargetUsers"
                 :table="
                   investigationDetailsTargetUsersListData &&
@@ -1528,9 +1530,10 @@ export default {
       this.serverSidePropsForTargetUsers.pageNumber = 1
     },
     handleSearchChangeForTargetUsers(searchFilter = {}) {
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems =
+        Object.keys(searchFilter).length > 0
+          ? [...searchFilter?.filter?.FilterGroups?.[0]?.FilterItems]
+          : []
       this.resetPageNumberForTargetUsers()
       this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
@@ -1555,9 +1558,10 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      this.investigationListBodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
+      this.investigationListBodyData.filter.FilterGroups[1].FilterItems =
+        Object.keys(searchFilter).length > 0
+          ? [...searchFilter?.filter?.FilterGroups?.[0]?.FilterItems]
+          : []
       this.resetPageNumber()
       this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
@@ -2004,6 +2008,8 @@ export default {
           if (refTable) {
             if (refTable.$refs.elTableRef) {
               refTable.$refs.elTableRef.clearSelection()
+              refTable.search = ''
+              this.handleSearchChange()
             }
             refTable.serverSideSelectionCount = 0
             refTable.excludedResourceIdList = []
@@ -2016,9 +2022,8 @@ export default {
       this.showEmails = false
       if (menu !== 'targetUsers') {
         this.loading = true
-        let dataBody = this.investigationListBodyData
-        dataBody.pageNumber = 1
-        dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
+        this.investigationListBodyData.pageNumber = 1
+        this.investigationListBodyData.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.getDatatableByMenuClick()
       } else {
         this.leftMenuLoading = true
@@ -2101,9 +2106,9 @@ export default {
                   if (this.autoRefreshInterval) {
                     clearInterval(this.autoRefreshInterval)
                   }
-                  this.timeoutId = setTimeout(() => {
-                    this.handleClearFilters(this.isAutoRefreshActive)
-                  }, 15000)
+                  // this.timeoutId = setTimeout(() => {
+                  //   this.handleClearFilters(this.isAutoRefreshActive)
+                  // }, 15000)
                 })
             })
         })
@@ -2116,12 +2121,11 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable(isOnBackground = false, isInitial = false, isPageNumberChanged = false) {
+    refreshDatatable(isOnBackground = false, isInitial = false) {
       this.leftMenuLoading = !isOnBackground
       this.topMenuLoading = !isOnBackground
       this.loading = !isOnBackground
-      if (this.activeMenu !== 'targetUsers' && !isPageNumberChanged) {
-        this.investigationListBodyData.pageNumber = 1
+      if (this.activeMenu !== 'targetUsers') {
         this.investigationListBodyData.filter.FilterGroups[0].FilterItems[0].Value = this.activeMenu
       }
 
@@ -2169,9 +2173,9 @@ export default {
                     if (this.autoRefreshInterval) {
                       clearInterval(this.autoRefreshInterval)
                     }
-                    this.timeoutId = setTimeout(() => {
-                      this.handleClearFilters(this.isAutoRefreshActive)
-                    }, 15000)
+                    // this.timeoutId = setTimeout(() => {
+                    //   this.handleClearFilters(this.isAutoRefreshActive)
+                    // }, 15000)
                   }
                 })
             })
@@ -2650,11 +2654,14 @@ export default {
       deep: true,
       immediate: false
     },
-    isAutoRefreshActive(isActive) {
-      if (!this.autoRefreshInterval && isActive) {
-        this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
-      } else {
-        clearInterval(this.autoRefreshInterval)
+    isAutoRefreshActive: {
+      immediate: true,
+      handler(isActive) {
+        if (!this.autoRefreshInterval && isActive) {
+          this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
+        } else {
+          clearInterval(this.autoRefreshInterval)
+        }
       }
     },
     statsAndMenuData() {
