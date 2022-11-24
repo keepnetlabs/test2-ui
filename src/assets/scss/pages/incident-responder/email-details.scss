@@ -901,45 +901,12 @@
         }
     }
 
-    .border-padding {
-        padding-bottom: 8px;
-        border-bottom: 1px solid #b3d4fc;
-    }
-
     .member-company-body {
         .v-slide-group__content {
             border-bottom: unset !important;
         }
     }
 
-    .expand-contaniner {
-        width: 100%;
-        height: 50px;
-        position: absolute;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        bottom: 0;
-        background-image: linear-gradient(to bottom, transparent, #fff 50%);
-
-        button,
-        .v-btn:not(.v-btn--round).v-size--default {
-            width: auto !important;
-            height: 24px !important;
-            border-radius: 12px !important;
-            background-color: #409eff !important;
-            box-shadow: unset !important;
-            color: #fff;
-            text-transform: capitalize !important;
-            font-size: 12px !important;
-            font-weight: 500 !important;
-            padding-left: 13px !important;
-
-            i {
-                width: 18px !important;
-            }
-        }
-    }
     .preview-comments {
         height: 0;
         opacity: 0;
@@ -1081,18 +1048,6 @@
         background-color: #fff !important;
         height: 60px;
         padding: 0 !important;
-    }
-
-    .unselected-warn {
-        border-bottom: 1px solid #bb2a45;
-        color: #bb2a45;
-        padding: 0 2px !important;
-    }
-
-    .hide-buttons {
-        opacity: 0;
-        padding: 0 !important;
-        height: 20px !important;
     }
 
     .display-none {

@@ -28,23 +28,23 @@
     </div>
     <div class="suggested-right-action">
       <v-btn
+        v-if="community.isJoined"
         id="threat-sharing-right-column-is-joined"
         class="suggested-btn"
         rounded
-        v-if="community.isJoined"
       >
         <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
         <span class="pr-2">Member</span>
       </v-btn>
       <v-btn
-        @click="onJoinCommunity"
+        v-else
         class="suggested-btn"
         :id="`btn--threat-sharing-right-column-suggest-communities-item-${index}`"
         block
         rounded
-        v-else
         :disabled="community.isJoined"
         style="background-color: #2196f3 !important;"
+        @click="onJoinCommunity"
       >
         <v-icon v-if="!community.isJoined" class="mr-2">mdi-account-circle </v-icon>
         <v-icon v-if="community.isJoined" class="mr-2" style="color: #fff !important;"

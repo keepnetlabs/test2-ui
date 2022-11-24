@@ -179,27 +179,6 @@
     background-color: #e3f2fd;
   }
 
-  .delete-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-  }
-
-  .invite-sub-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
 
   .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
@@ -221,26 +200,6 @@
     line-height: 1.2;
     letter-spacing: normal;
     color: #000 !important;
-  }
-
-  .share-inline-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .share-combo-label {
-      width: 100%;
-      text-align: left;
-      margin-bottom: 8px;
-      font-family: Helvetica;
-      font-size: 16px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
   }
 
   .v-overlay__scrim {
