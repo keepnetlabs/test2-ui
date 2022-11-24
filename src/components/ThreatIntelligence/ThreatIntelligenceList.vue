@@ -69,22 +69,23 @@ export default {
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.THREATS_INTELLIGENCE_TABLE,
-        serverSideEvents: { pagination: true, search: true, sort: true },
+        serverSideEvents: { pagination: true, search: false, sort: true },
         columns: [
           {
             property: 'email',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Breached Account',
-            fixed: false,
+            fixed: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
+            width: 150,
             filterableType: false
           },
           {
             property: 'hashtype',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Password Type',
             fixed: false,
@@ -96,21 +97,23 @@ export default {
           },
           {
             property: 'source',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Source',
-            fixed: 'left',
+            fixed: false,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 240,
+            width: 150,
             filterableType: false
           },
           {
             property: 'leakdate',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Leak Date',
             fixed: false,
+            hideSort: false,
             show: true,
             type: 'text',
             filterableType: false
