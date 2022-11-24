@@ -1,3 +1,5 @@
+import blacklist from './subdomainBlacklist'
+
 export function hasValue(value) {
   return value && value
 }
@@ -245,4 +247,15 @@ export function subdomainDash(value, message = 'Invalid Subdomain') {
 export function subdomainDashDot(value, message = 'Invalid Subdomain') {
   value = getValue(value)
   return /^[a-zA-Z0-9.-]*$/gi.test(value) || message
+}
+
+export function subdomainBlacklist(value) {
+  value = getValue(value)
+  const subdomainIndex = blacklist.findIndex((domain) =>
+    value.toLowerCase().includes(domain.toLowerCase())
+  )
+  if (subdomainIndex !== -1) {
+    return `${blacklist[subdomainIndex]} cannot be used in subdomain`
+  }
+  return true
 }
