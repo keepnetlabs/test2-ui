@@ -20,7 +20,9 @@
     :select-event="tableOptions.selectEvent"
     :axios-payload.sync="axiosPayload"
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+    :saved-table-settings-local-storage-key="
+      tableOptions.savedTableSettingsLocalStorageKey
+    "
     :download-button="tableOptions.downloadButton"
     row-key="email"
     @columnFilterChanged="columnFilterChanged"
@@ -34,140 +36,153 @@
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
-import { useLoading } from '@/hooks/useLoading'
+import DataTable from "@/components/DataTable";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import labels from "@/model/constants/labels";
+import { useLoading } from "@/hooks/useLoading";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
-import { mapGetters } from 'vuex'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import {
+  getThreatIntelligenceList,
+  exportThreatIntelligence,
+} from "@/api/threatIntelligence";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ThreatIntelligenceList',
+  name: "ThreatIntelligenceList",
   components: { DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     justShowReportAction: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       CONSTANTS: {
-        id: 'ThreatIntelligenceList',
-        ascending: 'ascending'
+        id: "ThreatIntelligenceList",
+        ascending: "ascending",
       },
-      axiosPayload: getDefaultAxiosPayload({}, 'leakdate'),
+      axiosPayload: getDefaultAxiosPayload({}, "leakdate"),
       serverSideProps: new ServerSideProps(),
       tableData: [],
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.THREATS_INTELLIGENCE_TABLE,
-        serverSideEvents: { pagination: true, search: true, sort: true },
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.THREATS_INTELLIGENCE_TABLE,
+        serverSideEvents: { pagination: true, search: false, sort: true },
         columns: [
           {
-            property: 'email',
-            align: 'left',
+            property: "email",
+            //align: 'left',
             editable: false,
-            label: 'Breached Account',
-            fixed: false,
+            label: "Breached Account",
+            fixed: true,
+            hideSort: false,
             show: true,
-            type: 'text',
-            width: 180,
-            filterableType: false
+            type: "text",
+            width: 150,
+            filterableType: false,
           },
           {
-            property: 'hashtype',
-            align: 'left',
+            property: "hashtype",
+            //align: 'left',
             editable: false,
-            label: 'Password Type',
+            label: "Password Type",
             fixed: false,
             hideSort: false,
             show: true,
-            type: 'text',
+            type: "text",
             width: 150,
-            filterableType: false
+            filterableType: false,
           },
           {
-            property: 'source',
-            align: 'left',
+            property: "source",
+            //align: 'left',
             editable: false,
-            label: 'Source',
-            fixed: 'left',
-            show: true,
-            type: 'text',
-            width: 240,
-            filterableType: false
-          },
-          {
-            property: 'leakdate',
-            align: 'left',
-            editable: false,
-            label: 'Leak Date',
+            label: "Source",
             fixed: false,
+            hideSort: false,
             show: true,
-            type: 'text',
-            filterableType: false
-          }
+            type: "text",
+            width: 150,
+            filterableType: false,
+          },
+          {
+            property: "leakdate",
+            //align: 'left',
+            editable: false,
+            label: "Leak Date",
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: "text",
+            filterableType: false,
+          },
         ],
         addButton: {
-          show: false
+          show: false,
         },
         iEmpty: {
           message:
-            'We could not detect any breached and exposed accounts <br/> with email addresses of your domain names'
+            "We could not detect any breached and exposed accounts <br/> with email addresses of your domain names",
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
-        }
+          disabled:
+            !this.$store.getters[
+              "permissions/getThreatIntelligencePermissionsExport"
+            ],
+        },
       },
-      rowActions: []
-    }
+      rowActions: [],
+    };
   },
   created() {
-    this.callForData()
+    this.callForData();
   },
   computed: {
     ...mapGetters({
-      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
-    })
+      getThreatIntelligencePermissionsSearch:
+        "permissions/getThreatIntelligencePermissionsSearch",
+    }),
   },
   methods: {
     callForData() {
-      this.loading = true
+      this.loading = true;
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
           const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
+            data: { data },
+          } = response;
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+            response.data.data;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
+          const { results = [] } = data;
           for (let i = 0; i < results.length; i++) {
-            const data = results[i]
-            data.isActive = data.isActive ? 'Active' : 'Passive'
+            const data = results[i];
+            data.isActive = data.isActive ? "Active" : "Passive";
           }
-          this.tableData = results
+          this.tableData = results;
         })
         .catch(() => {
-          this.tableData = []
+          this.tableData = [];
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.loading = false));
     },
     exportData(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -177,22 +192,24 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
-        }
+          exportType: item === "XLS" ? "Excel" : item,
+          filter: this.axiosPayload.filter,
+        };
         exportThreatIntelligence(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `Campaign-Manager-Report.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    }
-  }
-}
+            item.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : item.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss">
