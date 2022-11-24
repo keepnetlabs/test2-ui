@@ -42,3 +42,18 @@ export const getTlcName = (item) => {
       break
   }
 }
+
+export const findCategory = (id) => {
+  switch (id) {
+    case 'Ps0SSyl7rVNe':
+      return 'Malicious'
+    case 'bEuAD1pdbRXF':
+      return 'Non-Malicious'
+    case 'NGLCc9UCxJvw':
+      return 'Phishing'
+    case 'Gwt67E1ftYtr':
+      return 'Spam'
+    default:
+      return ''
+  }
+}

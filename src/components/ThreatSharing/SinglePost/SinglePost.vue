@@ -53,12 +53,12 @@
           <div class="flex-grow-1"></div>
           <div class="ts-header-btn-1">
             <v-expansion-panel-header
+              id="single-post-expansion-header"
               class="pa-0"
               style="min-height: 36px;"
               disable-icon-rotate
-              id="single-post-expansion-header"
             >
-              <template v-slot:actions mandatory="true">
+              <template #actions>
                 <v-btn
                   v-if="post.isToggle"
                   :id="'threat-sharing-single-post' + post.communityPostResourceId"
@@ -89,7 +89,7 @@
             </v-expansion-panel-header>
           </div>
           <v-menu offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <v-btn
                 :id="'threat-sharing-single-post-dots' + post.communityPostResourceId"
                 icon
@@ -812,7 +812,12 @@ import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/At
 import SinglePostComments from '@/components/ThreatSharing/SinglePost/SinglePostComments'
 import SinglePostDeletePostDialog from '@/components/ThreatSharing/SinglePost/SinglePostDeletePostDialog'
 import SinglePostShareDialog from '@/components/ThreatSharing/SinglePost/SinglePostShareDialog'
-import { getTlcClass, getTlcName, getTlcTooltip } from '@/components/ThreatSharing/SinglePost/utils'
+import {
+  findCategory,
+  getTlcClass,
+  getTlcName,
+  getTlcTooltip
+} from '@/components/ThreatSharing/SinglePost/utils'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1034,6 +1039,10 @@ export default {
     }
   },
   methods: {
+    getTlcClass,
+    getTlcTooltip,
+    getTlcName,
+    findCategory,
     changeCommentsValue(comments, postId) {
       this.comments = comments
       if (this.$store.state['incidents'].incidents.incidentsData) {
@@ -1053,9 +1062,6 @@ export default {
         return categories.length - 2
       }
     },
-    getTlcClass,
-    getTlcTooltip,
-    getTlcName,
     contentCopy(contentBody) {
       copyToClipboard(contentBody)
         .then(() => {
@@ -1104,20 +1110,6 @@ export default {
       this.$emit('refreshData')
       this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
     },
-    findCategory(id) {
-      switch (id) {
-        case 'Ps0SSyl7rVNe':
-          return 'Malicious'
-        case 'bEuAD1pdbRXF':
-          return 'Non-Malicious'
-        case 'NGLCc9UCxJvw':
-          return 'Phishing'
-        case 'Gwt67E1ftYtr':
-          return 'Spam'
-        default:
-          return ''
-      }
-    },
     openInvestigate(post) {
       getCommunityPost(post.communityPostResourceId).then((response) => {
         this.selectedEmail = response.data.data.communityPostEmail
@@ -1156,13 +1148,12 @@ export default {
       }
     },
     userLikePost(postId) {
-      let _this = this
       likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
-          if (_this.$store.state['incidents'].incidents.incidentsData) {
-            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          if (this.$store.state['incidents'].incidents.incidentsData) {
+            this.$store.state['incidents'].incidents.incidentsData.tableData.find(
               (item) => item.communityPostResourceId === postId
             ).likeCount = response.data.data.likeCount
           }
@@ -1173,13 +1164,12 @@ export default {
       })
     },
     userUnlikePost(postId) {
-      let _this = this
       likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
-          if (_this.$store.state['incidents'].incidents.incidentsData) {
-            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          if (this.$store.state['incidents'].incidents.incidentsData) {
+            this.$store.state['incidents'].incidents.incidentsData.tableData.find(
               (item) => item.communityPostResourceId === postId
             ).likeCount = response.data.data.likeCount
           }
@@ -1222,13 +1212,6 @@ export default {
     },
     canEdit(post) {
       return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
-    },
-    canDeleteOrEditComment(type) {
-      if (type === 'update') {
-        return this.getEditCommentPermission
-      } else {
-        return this.getDeletePostPermission
-      }
     }
   }
 }
