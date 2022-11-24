@@ -17,7 +17,6 @@
     </div>
     <app-dialog
       :status="isWantToDelete"
-      @changeStatus="isWantToDelete = false"
       type="delete"
       icon="mdi-delete"
       title="Delete Incident?"
@@ -25,6 +24,7 @@
       subtitle-id="text--threat-sharing-incident-single-post-delete-popup-subtitle"
       :subtitle="deleteIncidentName"
       :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
+      @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -151,9 +151,6 @@
                 </v-btn>
                 <v-btn
                   v-else
-                  @click.native="
-                    getPostDetails(post.communityPostResourceId, postIndex, true, post)
-                  "
                   :id="'threat-sharing-single-post' + post.communityPostResourceId"
                   :key="'single-post-details' + post.communityPostResourceId"
                   outlined
@@ -161,6 +158,9 @@
                   medium
                   color="blue"
                   :disabled="!getPostPermission"
+                  @click.native="
+                    getPostDetails(post.communityPostResourceId, postIndex, true, post)
+                  "
                   >DETAILS
                 </v-btn>
               </template>
