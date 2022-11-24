@@ -72,15 +72,17 @@ export default {
           if (v.length > 0) {
             let booReturn = true
             for (let i = 0; i < v.length; i++) {
-              if (!Validations.email(v, '')) {
+              const chip = document.getElementsByClassName('v-chip--select')[i]
+              if (!Validations.email(v[i], '')) {
                 booReturn = false
-                document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
-                document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
+                chip.style.borderColor = '#ff5252'
+                chip.style.color = '#ff5252'
                 if (v.length === 1) {
                   return v[i] + ' address is not valid'
                 }
               } else {
-                booReturn = true
+                chip.style.borderColor = ''
+                chip.style.color = 'rgba(0, 0, 0, 0.87)'
               }
             }
             return booReturn ? booReturn : 'One of the email addresses is not valid'

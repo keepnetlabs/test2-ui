@@ -15,111 +15,33 @@
         @closeAdd="closeNewInvestigationModal($event)"
       />
     </div>
-    <app-dialog
+    <SinglePostDeletePostDialog
+      v-if="isWantToDelete"
       :status="isWantToDelete"
-      type="delete"
-      icon="mdi-delete"
-      title="Delete Incident?"
-      title-id="text--threat-sharing-incident-single-post-delete-popup-title"
-      subtitle-id="text--threat-sharing-incident-single-post-delete-popup-subtitle"
-      :subtitle="deleteIncidentName"
-      :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
-      @changeStatus="isWantToDelete = false"
-    >
-      <template v-slot:app-dialog-footer>
-        <app-dialog-footer
-          @handleClose="isWantToDelete = false"
-          @handleConfirm="deleteIncidentConfirm()"
-          actionButtonText="DELETE"
-          type="delete"
-          :confirm-button-id="`threat-sharing-single-post-delete-incident-confirm`"
-          :cancel-button-id="`threat-sharing-single-post-delete-incident-confirm`"
-        />
-      </template>
-    </app-dialog>
-    <app-dialog
-      :status="openShareModal"
-      subtitle="Share this incident via email"
-      icon="mdi-send"
-      title="Share incident"
-      size="big"
-      title-id="text--threat-sharing-incident-single-post-share-popup-title"
-      subtitle-id="text--threat-sharing-incident-single-post-share-popup-subtitle"
+      :delete-incident-community-name="deleteIncidentCommunityName"
+      :delete-incident-name="deleteIncidentName"
+      :delete-incident-id="deleteIncidentId"
+      @on-close="isWantToDelete = false"
+      @on-delete="deleteIncidentConfirm"
+    />
+    <SinglePostShareDialog
       v-if="openShareModal"
-      @changeStatus="
-        openShareModal = false
-        shareEmail = []
-      "
-    >
-      <template v-slot:app-dialog-body>
-        <v-form ref="shareModal">
-          <span
-            style="
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: normal;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-            "
-            >Recipients</span
-          >
-          <k-select
-            id="input--threat-sharing-incident-share-email"
-            type="combobox"
-            :items="[]"
-            placeholder="Enter emails (max. 10)"
-            multiple
-            dense
-            deletable-chips
-            autocomplete="disabled"
-            small-chips
-            outlined
-            :no-data-text="'Enter emails (max. 10)'"
-            v-model.trim="shareEmail"
-            :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
-            class="pop-up-card__invite-member"
-            hint="Press enter to separate email addresses"
-          ></k-select>
-        </v-form>
-      </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            id="threat-sharing-single-post-share-modal-close"
-            @click="
-              openShareModal = false
-              shareEmail = []
-            "
-            >{{ labels.Cancel }}</v-btn
-          >
-          <v-btn
-            :disabled="shareButtonDisabled"
-            text
-            color="#2196f3"
-            class="k-dialog__button"
-            @click="shareIncident"
-            id="threat-sharing-single-post-share-modal-save"
-            >Send</v-btn
-          >
-        </div>
-      </template>
-    </app-dialog>
-    <div id="" class="single-post">
+      :status="openShareModal"
+      :shared-incited-id="sharedIncitedId"
+      @on-close="openShareModal = false"
+    />
+    <div class="single-post">
       <div class="threat-sharing-content">
         <div class="ts-header">
           <div class="ts-title">
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-clamp
+                  v-if="post.title"
+                  v-on="on"
                   id="text--threat-sharing-single-post-title"
                   autoresize
                   :max-lines="2"
-                  v-if="post.title"
-                  v-on="on"
                 >
                   {{ post.title }}
                 </v-clamp>
@@ -306,8 +228,8 @@
         </div>
         <div class="ts-body">
           <v-clamp
-            :id="'single-post-description-body' + post.communityPostResourceId"
             v-if="post.description"
+            :id="'single-post-description-body' + post.communityPostResourceId"
             autoresize
             :max-lines="3"
             >{{ post.description }}
@@ -869,16 +791,13 @@ import { mapGetters } from 'vuex'
 import VClamp from 'vue-clamp'
 import NewInvestigation from '@/components/Investigation/NewInvestigation'
 import KShadowFrame from '@/components/KShadowFrame'
-import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import vueCustomElement from 'vue-custom-element'
 import {
-  deleteCommunityPost,
   getComments,
   getCommunityPost,
   getCommunityPostPreview,
-  likePost,
-  shareAPost
+  likePost
 } from '@/api/threatSharing'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
@@ -889,11 +808,11 @@ import {
   copyToClipboard
 } from '@/utils/functions'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import * as Validations from '@/utils/validations'
 import SinglePostComments from '@/components/ThreatSharing/SinglePost/SinglePostComments'
+import SinglePostDeletePostDialog from '@/components/ThreatSharing/SinglePost/SinglePostDeletePostDialog'
+import SinglePostShareDialog from '@/components/ThreatSharing/SinglePost/SinglePostShareDialog'
+import { getTlcClass, getTlcName, getTlcTooltip } from '@/components/ThreatSharing/SinglePost/utils'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1013,13 +932,12 @@ a{position:relative}
 })
 export default {
   components: {
+    SinglePostShareDialog,
+    SinglePostDeletePostDialog,
     SinglePostComments,
-    KSelect,
-    AppDialogFooter,
     PreviewHeaderForSinglePost,
     VClamp,
     NewInvestigation,
-    AppDialog,
     AttachmentsPreview
   },
   props: {
@@ -1036,10 +954,6 @@ export default {
       type: Number,
       required: true
     },
-    totalPostCount: {
-      type: Number,
-      required: true
-    },
     refreshData: {
       required: false
     },
@@ -1051,41 +965,11 @@ export default {
     }
   },
   data: () => ({
-    isConfirmButtonDisabled: false,
     isEditCommentButtonDisabled: false,
-    isPostButtonDisabled: false,
     getCommentDetails: false,
     shareButtonDisabled: false,
     labels,
     openShareModal: false,
-    shareEmail: [],
-    shareEmailRules: {
-      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
-      required: (v) => (v && v.length >= 1) || 'Required',
-      email: (v) => {
-        if (v.length > 0) {
-          let booReturn = true
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          for (let i = 0; i < v.length; i++) {
-            if (!pattern.test(v[i])) {
-              booReturn = false
-              document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
-              document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
-              return v[i] + ' address is not valid'
-            } else if (v.length === i) {
-              return booReturn
-            } else {
-              booReturn = true
-            }
-          }
-          return booReturn
-        } else {
-          return true
-        }
-      }
-    },
-    deleteCommentId: null,
-    isWantToDeleteComment: false,
     deleteIncidentId: null,
     deleteIncidentName: null,
     deleteIncidentCommunityName: null,
@@ -1112,25 +996,14 @@ export default {
         name: 'Spam'
       }
     ],
-    userIdFromStorage: null,
-    expanded: false,
     commentOpened: false,
     isWantToShareIncident: false,
     isWantToInvestigate: false,
     isWantToPostIncident: false,
+    sharedIncitedId: '',
     tab: 0,
-    showAllTags: false,
     seeComments: false,
-    rules: {
-      required: (v) => Validations.required(v),
-      maxLength: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
-      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
     likeCount: 15,
-    userLiked: false,
     hasPermission: false,
     valid: false,
     userComment: '',
@@ -1156,7 +1029,6 @@ export default {
     }
   },
   mounted() {
-    this.userIdFromStorage = localStorage.getItem('userId')
     if (this.$route.query.postId) {
       this.getPostDetails(this.$route.query.postId, 0, true)
     }
@@ -1181,48 +1053,9 @@ export default {
         return categories.length - 2
       }
     },
-    getTlcClass(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'TLP-GREEN'
-        case 'RhHwRcLlZxek':
-          return 'TLP-AMBER'
-        case 'YpUZxVhYJlKg':
-          return 'TLP-RED'
-        case 'wFlYRDMW946M':
-          return 'TLP-WHITE'
-        default:
-          break
-      }
-    },
-    getTlcTooltip(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'Limited disclosure, restricted to the community.'
-        case 'RhHwRcLlZxek':
-          return 'Limited disclosure, restricted to participants’ organizations.'
-        case 'YpUZxVhYJlKg':
-          return 'Not for disclosure, restricted to participants only.'
-        case 'wFlYRDMW946M':
-          return 'Disclosure is not limited.'
-        default:
-          break
-      }
-    },
-    getTlcName(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'TLP: GREEN'
-        case 'RhHwRcLlZxek':
-          return 'TLP: AMBER'
-        case 'YpUZxVhYJlKg':
-          return 'TLP: RED'
-        case 'wFlYRDMW946M':
-          return 'TLP: WHITE'
-        default:
-          break
-      }
-    },
+    getTlcClass,
+    getTlcTooltip,
+    getTlcName,
     contentCopy(contentBody) {
       copyToClipboard(contentBody)
         .then(() => {
@@ -1236,31 +1069,6 @@ export default {
     openShareModalFunc(post) {
       this.sharedIncitedId = post.communityPostResourceId
       this.openShareModal = true
-    },
-    shareIncident() {
-      let id = this.sharedIncitedId
-      this.shareButtonDisabled = true
-      setTimeout(() => {
-        if (this.$refs.shareModal.validate()) {
-          const payload = {
-            emailarray: this.shareEmail
-          }
-          this.shareButtonDisabled = true
-          shareAPost(id, payload)
-            .then(() => {
-              setTimeout(() => {
-                this.$store
-                  .dispatch('rightColumn/changeReloadRightColumnData', true)
-                  .finally(() => (this.shareButtonDisabled = false))
-              }, 500)
-              this.shareEmail = []
-              this.openShareModal = false
-            })
-            .catch(() => (this.shareButtonDisabled = false))
-        } else {
-          this.shareButtonDisabled = false
-        }
-      }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
@@ -1293,13 +1101,8 @@ export default {
       document.getElementById('component-incidents').style.zIndex = 6
     },
     deleteIncidentConfirm() {
-      deleteCommunityPost(this.deleteIncidentId).then(() => {
-        this.$emit('refreshData')
-        this.isWantToDelete = false
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
+      this.$emit('refreshData')
+      this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
     },
     findCategory(id) {
       switch (id) {
