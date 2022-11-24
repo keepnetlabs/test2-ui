@@ -1,6 +1,15 @@
 <template>
-  <!--eslint-disable-next-line vue/no-parsing-error-->
-  <div class="countdown-text">Resend SMS in 00:{{ countDown < 10 ? 0 : '' }}{{ countDown }}</div>
+  <div
+    style="
+      font-size: 11px;
+      font-weight: normal;
+      text-align: center;
+      color: rgba(56, 59, 65, 0.72);
+      letter-spacing: normal;
+    "
+  >
+    {{ getCountdown }}
+  </div>
 </template>
 
 <script>
@@ -13,6 +22,12 @@ export default {
   props: {
     changeButtonStatus: {
       required: false
+    }
+  },
+  computed: {
+    getCountdown() {
+      const { countDown } = this
+      return `Resend SMS in 00:${countDown < 10 ? 0 : ''}${countDown}`
     }
   },
   created() {

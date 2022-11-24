@@ -558,10 +558,6 @@
     }
 }
 
-.investigation__attachments .v-chip:last-child {
-    margin-left: 0 !important;
-}
-
 .investigation-details__container__content--right-menu {
     .v-chip__content {
         text-overflow: ellipsis !important;
@@ -611,8 +607,4 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.investigation-details-emails__row-actions__overflow-menu__icon {
-    margin-right: 16px;
 }

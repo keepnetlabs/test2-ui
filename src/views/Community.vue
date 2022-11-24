@@ -8,6 +8,7 @@
         @closeAdd="onAddClose"
       />
       <v-overlay
+        v-if="showPostIncident"
         id="new-community-overlay"
         :value="showPostIncident"
         :class="{ newCommunityOverlay: showPostIncident }"

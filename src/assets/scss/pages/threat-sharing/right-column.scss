@@ -108,16 +108,6 @@
     }
   }
 
-  .ts-success {
-    display: flex;
-
-    span {
-      align-items: center;
-      font-size: inherit;
-      line-height: unset;
-      line-height: 2;
-    }
-  }
 
   .ts-body {
     margin-top: 8px;
@@ -584,6 +574,7 @@
 #threat-sharing-right-column-invite-plus {
   display: flex;
   align-items: center;
+  margin-top:-1px;
   &:hover {
     text-decoration: none !important;
   }

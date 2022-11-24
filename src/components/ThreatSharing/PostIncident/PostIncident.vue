@@ -1340,9 +1340,6 @@ export default {
     },
     communityName: {
       type: String
-    },
-    refreshData: {
-      required: false
     }
   },
   data: () => ({

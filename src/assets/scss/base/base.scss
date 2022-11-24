@@ -67,7 +67,7 @@ html {
   border-radius: 4px;
 }
 
-.notification-wrapper__v-list {
+.layout-container .notification-wrapper__v-list {
   .v-list-item--active {
     border-left: none !important;
     color: rgba(0, 0, 0, 0.87) !important;
@@ -505,4 +505,12 @@ input[type="number"]::-webkit-outer-spin-button {
 
 hr {
   border: 1px solid #e0e0e0;
+}
+
+.w-25 {
+  width: 25%;
+}
+
+.w-5 {
+  width: 5%;
 }

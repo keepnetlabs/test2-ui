@@ -184,10 +184,10 @@
               </div>
               <div class="d-flex">
                 <k-select
+                  v-model="privacyValue"
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
-                  v-model="privacyValue"
                   multiple
                   hide-details
                   item-text="name"
