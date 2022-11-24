@@ -336,9 +336,9 @@ export default {
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
     }
-    this.callForData()
   },
   mounted() {
+    this.callForData()
     if (this.$route.params && this.$route.params.selectedEmail) {
       this.isShowNewInvestigationModal = true
       if (this.$refs.refNewInvestigation && this.init) {
