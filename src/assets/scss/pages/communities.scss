@@ -2,7 +2,7 @@
     .el-pager {
       padding: 0 !important;
     }
-  
+
     .ts-header-btn-1{
       &__status{
         border: none !important;
@@ -16,7 +16,7 @@
         pointer-events: none;
       }
     }
-  
+
     .el-pagination {
       display: flex;
       .el-pagination__text--1 {
@@ -47,7 +47,7 @@
           color: #2196f3 !important;
         }
       }
-  
+
       @media (max-width: 480px) {
         display: flex;
         justify-content: center;
@@ -82,7 +82,7 @@
         color: #2196f3 !important;
       }
     }
-  
+
     .el-pagination .btn-prev {
       padding-right: 0;
     }
@@ -100,7 +100,7 @@
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
-  
+
       .refuse-btn {
         color: #fff !important;
         border-radius: 18px !important;
@@ -112,7 +112,7 @@
         margin-right: 14px;
         text-transform: uppercase !important;
       }
-  
+
       .accept-btn {
         color: #fff !important;
         border-radius: 18px !important;
@@ -123,7 +123,7 @@
         height: 36px !important;
         text-transform: uppercase !important;
       }
-  
+
       @media only screen and (max-width: 950px) {
         justify-content: center;
         padding-top: 20px;
@@ -154,7 +154,7 @@
         }
       }
     }
-  
+
     .threat-sharing-content {
       min-height: 150px;
       width: 100%;
@@ -164,13 +164,13 @@
       padding: 24px;
       margin-bottom: 16px;
     }
-  
+
     .ts-header {
       display: flex;
       flex-wrap: wrap;
       flex-direction: row;
     }
-  
+
     .ts-title {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 24px;
@@ -188,7 +188,7 @@
       white-space: nowrap;
       overflow: hidden;
     }
-  
+
     .ts-body {
       margin-top: 8px;
       font-family: 'Open Sans', sans-serif !important;
@@ -200,7 +200,7 @@
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
-  
+
     .ts-user-comp {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 12px;
@@ -210,22 +210,22 @@
       line-height: 1.58;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
-  
+
       a {
         text-decoration: none;
       }
-  
+
       .ts-user-date {
         font-weight: bold;
       }
     }
-  
+
     .ts-user-comp-detail {
       align-items: center;
       display: flex;
       flex-wrap: wrap;
     }
-  
+
     .ts-community-industry {
       font-family: 'Open Sans', sans-serif !important;
       color: rgba(0, 0, 0, 0.87) !important;
@@ -235,15 +235,15 @@
       font-style: normal;
       line-height: 1.71;
     }
-  
+
     .ts-people-icon {
       font-size: 16px;
     }
-  
+
     .v-application--is-ltr .v-list-item__icon:first-child {
       margin-right: 10px !important;
     }
-  
+
     .empty-communities {
       align-items: center;
       display: flex;
@@ -251,14 +251,14 @@
       position: relative;
       min-height: 171px;
       width: 100%;
-  
+
       .empty-communities-inline {
         align-items: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
         min-width: 420px;
-  
+
         .no-community {
           font-family: 'Open Sans', sans-serif !important;
           font-size: 24px;
@@ -275,7 +275,7 @@
         }
       }
     }
-  
+
     .create-com-btn {
       align-items: center;
       background-color: #2196f3 !important;
@@ -291,7 +291,7 @@
       height: 36px !important;
       text-transform: uppercase !important;
     }
-  
+
     .v-cart-icon-wrapper {
       width: 48px;
       height: 48px;
@@ -301,7 +301,7 @@
       border: solid 1px rgba(100, 181, 246, 0.5);
       background-color: #e3f2fd;
     }
-  
+
     .delete-info {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 13px !important;
@@ -312,7 +312,7 @@
       letter-spacing: normal !important;
       color: rgba(0, 0, 0, 0.72) !important;
     }
-  
+
     .invite-sub-header {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px !important;
@@ -323,7 +323,7 @@
       letter-spacing: normal !important;
       color: rgba(0, 0, 0, 0.87) !important;
     }
-  
+
     .v-card-headline {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
@@ -334,7 +334,7 @@
       letter-spacing: normal;
       color: #2196f3;
     }
-  
+
     .v-card-sub-header {
       font-size: 15px;
       font-weight: normal;
@@ -344,15 +344,15 @@
       letter-spacing: normal;
       color: #000 !important;
     }
-  
+
     .edit-name-textfield,
     .edit-description {
       font-size: 13px !important;
     }
-  
+
     .edit-select {
       font-size: 13px !important;
-  
+
       .v-input__control {
         .v-select__slot {
           .v-select__selections {
@@ -376,20 +376,7 @@
         }
       }
     }
-  
-    .delete-dialog-body {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.72);
-      margin-top: 38px;
-      margin-bottom: 24px;
-    }
-  
+
     .join-button {
       color: #fff !important;
       background-color: #2196f3 !important;
@@ -397,22 +384,22 @@
       box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
       border: none !important;
     }
-  
+
     .invitation-cancel {
       color: #fff;
       background-color: #f56c6c;
     }
-  
+
     .invitation-accept {
       color: #fff;
       background-color: #2196f3;
     }
-  
+
     ::v-deep .text-decoration-none {
       text-decoration: none !important;
       text-decoration-line: none !important;
     }
-  
+
     .invitations-count {
       align-items: center;
       background-color: #d32f2f;
@@ -444,4 +431,3 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
-  

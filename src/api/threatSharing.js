@@ -71,7 +71,7 @@ export function searchNotifiedMail(payload) {
 }
 
 export function getSelectedEmailPreview(id) {
-  return testRequest.get(`/community-posts/notified-email-preview/${id}`, { loading: true })
+  return testRequest.get(`/community-posts/notified-email-preview/${id}`)
 }
 
 export function uploadEmlOrMsg(file, onUploadProgress) {
@@ -112,7 +112,7 @@ export function likePost(id) {
 }
 
 export function getCommunityPost(id) {
-  return testRequest.get(`community-posts/${id}`, { loading: true })
+  return testRequest.get(`community-posts/${id}`)
 }
 
 export function parseEmail(payload) {
@@ -120,7 +120,7 @@ export function parseEmail(payload) {
 }
 
 export function getCommunityPostPreview(id) {
-  return testRequest.get(`community-posts/${id}/preview`, { loading: true })
+  return testRequest.get(`community-posts/${id}/preview`)
 }
 
 export function getMyLastPosts() {

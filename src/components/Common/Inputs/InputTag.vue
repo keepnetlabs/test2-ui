@@ -7,6 +7,7 @@
     :items="items"
     :class="['hide-caret', className]"
     :slots="{ selection: true }"
+    class="px-0"
     chips
     deletable-chips
     outlined
@@ -15,8 +16,7 @@
     persistent-hint
     small-chips
     :return-object="false"
-    class="px-0"
-    placeholder="Enter tags and press enter key"
+    :placeholder="placeholder"
     @input="handleTagItemChange"
   >
     <template #selection="{ item, index }">
@@ -50,6 +50,10 @@ export default {
     },
     className: {
       type: String
+    },
+    placeholder: {
+      type: String,
+      default: 'Enter tags and press enter key'
     }
   },
   data() {

@@ -54,8 +54,8 @@
                   :items="companyItem"
                   :placeholder="'Company'"
                   :disabled="incidentLoading"
-                  @change="callForIncidentList"
                   :menu-props="{ offsetY: true }"
+                  @change="callForIncidentList"
                 />
               </div>
               <div class="d-flex">
@@ -206,14 +206,6 @@ export default {
   },
   mixins: [useDebounce],
   props: {
-    posts: {
-      type: Array,
-      required: false
-    },
-    incidentsCommunityName: {
-      type: Boolean,
-      required: false
-    },
     refreshIncidents: {
       type: Boolean,
       required: false
