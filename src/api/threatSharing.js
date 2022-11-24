@@ -108,7 +108,7 @@ export function createComments(id, payload) {
 }
 
 export function likePost(id) {
-  return testRequest.post(`community-posts/${id}/like`, {})
+  return testRequest.post(`community-posts/${id}/like`, {}, { snackbar: COMMON_SNACKBAR })
 }
 
 export function getCommunityPost(id) {
@@ -145,10 +145,6 @@ export function getsuggestedCommunities() {
 
 export function createCommunityPost(payload) {
   return testRequest.post(`community-posts`, payload, { snackbar: COMMON_SNACKBAR })
-}
-
-export function systemUser(systemUserData) {
-  return testRequest.post('system-users', systemUserData)
 }
 
 export function deleteCommunityPost(id) {
