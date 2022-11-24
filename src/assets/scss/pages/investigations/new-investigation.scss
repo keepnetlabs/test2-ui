@@ -195,7 +195,7 @@
             }
         }
     }
-  
+
     .v-card-headline {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 20px;
@@ -279,37 +279,6 @@
             position: absolute;
             left: 0;
             bottom: -23px;
-        }
-    }
-
-    .date-picker {
-        .v-input__slot {
-            box-shadow: unset !important;
-            border: 1px solid rgba(0, 0, 0, 0.24);
-            border-radius: 4px;
-            text-align: center;
-
-            input {
-                font-family: 'Open Sans', sans-serif !important;
-                font-size: 13px;
-                font-weight: normal;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: normal;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.54);
-                padding-left: 50px !important;
-                padding-top: 8px !important;
-            }
-
-            label {
-                padding-top: 0 !important;
-            }
-        }
-
-        .v-input__slot::after,
-        .v-input__slot::before {
-            display: none;
         }
     }
 
@@ -414,35 +383,7 @@
         box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
     }
 
-    .v-data-footer {
-        margin-top: 24px !important;
-    }
-
-    .v-data-footer__select {
-        .v-text-field>.v-input__control>.v-input__slot:after {
-            border: none !important;
-            display: none !important;
-        }
-
-        .theme--light.v-text-field>.v-input__control>.v-input__slot:before {
-            border: none !important;
-        }
-
-        .v-input__append-inner {
-            margin-left: 0 !important;
-            margin-top: 3px !important;
-            margin-right: 5px !important;
-            padding-left: 0 !important;
-        }
-
-        .v-input__icon {
-            width: 20px !important;
-            min-width: 20px !important;
-            height: 20px !important;
-        }
-    }
-
-    .v-btn:not(.v-btn--round).v-size--default,
+  .v-btn:not(.v-btn--round).v-size--default,
     .v-btn--icon.v-size--default {
         height: 36px !important;
     }

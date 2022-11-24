@@ -326,53 +326,6 @@
         border-radius: 18px !important;
     }
 
-    .v-data-footer {
-        margin-top: 24px !important;
-    }
-
-    .v-data-footer__select {
-        .v-select {
-            margin: 0 !important;
-            margin-top: 3px !important;
-            margin-left: 32px !important;
-            height: 30px !important;
-        }
-
-        .v-text-field>.v-input__control>.v-input__slot:after {
-            border: none !important;
-            display: none !important;
-        }
-
-        .theme--light.v-text-field>.v-input__control>.v-input__slot:before {
-            border: none !important;
-        }
-
-        .v-input__append-inner {
-            margin-left: 0 !important;
-            margin-top: 3px !important;
-            margin-right: 5px !important;
-            padding-left: 0 !important;
-        }
-
-        .v-select__slot {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            height: 27px !important;
-            background-color: #f2f2f2 !important;
-
-            .v-select__selections {
-                margin-left: 10px;
-            }
-        }
-
-        .v-input__icon {
-            width: 20px !important;
-            min-width: 20px !important;
-            height: 20px !important;
-        }
-    }
-
     .v-btn:not(.v-btn--round).v-size--default,
     .v-btn--icon.v-size--default {
         height: 36px !important;
@@ -381,30 +334,6 @@
     .v-btn--icon.v-size--default {
         margin-left: 4px;
         width: 36px !important;
-    }
-
-    .ts-tags {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        max-width: max-content;
-
-        >.tag-btn,
-        >div>.tag-btn {
-            border-radius: 18px;
-            border: solid 1.5px #c0c4cc;
-            background-color: #fff;
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 14px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.71;
-            letter-spacing: normal;
-            text-align: center;
-            color: #000000;
-            height: 32px !important;
-        }
     }
 
     .ts-footer {
