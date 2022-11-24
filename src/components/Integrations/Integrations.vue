@@ -276,7 +276,7 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {
