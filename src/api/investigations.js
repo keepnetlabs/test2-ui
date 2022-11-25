@@ -3,7 +3,6 @@ import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function investigationList(obj) {
   return testRequest.post(`investigations/search`, obj)
-  //`CompanyInner/GetBusinessCategories?companyId=${localStorage.getItem('companyId')}`
 }
 
 export function getTargetUsers() {
@@ -11,9 +10,6 @@ export function getTargetUsers() {
 }
 
 export function saveNewInvestigation(obj) {
-  //create new investigation function... obj matches with back end acceptance parameters
-  //for more details look at the newInvestigation.vue component.
-  //xxx nme
   return testRequest.post(`investigations`, obj, {
     snackbar: COMMON_SNACKBAR
   })
@@ -45,16 +41,6 @@ export function deleteAndMessageInvestigationDetailsItem(obj, id) {
   return testRequest.post(`investigations/${id}/actions-delete-and-notify`, obj, {
     snackbar: COMMON_SNACKBAR
   })
-}
-
-export function investigationDetails(id, userId) {
-  return webRequest.get(`CommunityInner/NotificationSettings?userId=${userId}&communityId=${id}`)
-}
-
-export function InvestigationGroups() {
-  return webRequest.get(
-    `CompanyInner/GetBusinessCategories?companyId=${localStorage.getItem('companyId')}`
-  )
 }
 
 export function getStatsAndMenuDataFunction(id) {
