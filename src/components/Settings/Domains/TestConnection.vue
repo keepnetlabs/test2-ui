@@ -8,7 +8,7 @@
         '': isAllSuccess
       }"
       class="new-integration__api-key__text"
-      @click="testConnection(false)"
+      @click="handleTestConnectionClick"
     >
       <div v-if="isLoading" class="test-connection__button">
         TESTING CONNECTION
@@ -103,6 +103,9 @@ export default {
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'
+    },
+    handleTestConnectionClick() {
+      this.$emit('testConnectionClicked')
     }
   }
 }
