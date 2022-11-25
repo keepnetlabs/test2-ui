@@ -1913,9 +1913,9 @@ export default {
           Title: this.uploadRespond.Title,
           Description: this.uploadRespond.Description,
           CategoryResourceIdArray: this.uploadRespond.CategoryResourceIdArray,
-          DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection,
-          AffectArea: this.uploadRespond.AffectArea,
-          Scope: this.uploadRespond.Scope,
+          DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection || '',
+          AffectArea: this.uploadRespond.AffectArea || '',
+          Scope: this.uploadRespond.Scope || '',
           IsAnonymous: this.isAnonym,
           securityLabelResourceIdArray: [this.value],
           EmailPreview: {
@@ -1944,6 +1944,7 @@ export default {
           },
           IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
+        console.log('payload', payload)
         createCommunityPost(payload)
           .then(() => {
             this.$store.dispatch('tableReload/setTableReload', true)

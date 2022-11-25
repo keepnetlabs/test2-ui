@@ -109,7 +109,6 @@
                   <singlePost
                     :post="item"
                     :postIndex="ind"
-                    :totalPostCount="props.items.length"
                     :key="$route.query.postId || '1'"
                     :searchValues="{
                       search,

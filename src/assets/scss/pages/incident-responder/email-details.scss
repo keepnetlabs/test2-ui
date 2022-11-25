@@ -326,53 +326,6 @@
         border-radius: 18px !important;
     }
 
-    .v-data-footer {
-        margin-top: 24px !important;
-    }
-
-    .v-data-footer__select {
-        .v-select {
-            margin: 0 !important;
-            margin-top: 3px !important;
-            margin-left: 32px !important;
-            height: 30px !important;
-        }
-
-        .v-text-field>.v-input__control>.v-input__slot:after {
-            border: none !important;
-            display: none !important;
-        }
-
-        .theme--light.v-text-field>.v-input__control>.v-input__slot:before {
-            border: none !important;
-        }
-
-        .v-input__append-inner {
-            margin-left: 0 !important;
-            margin-top: 3px !important;
-            margin-right: 5px !important;
-            padding-left: 0 !important;
-        }
-
-        .v-select__slot {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            height: 27px !important;
-            background-color: #f2f2f2 !important;
-
-            .v-select__selections {
-                margin-left: 10px;
-            }
-        }
-
-        .v-input__icon {
-            width: 20px !important;
-            min-width: 20px !important;
-            height: 20px !important;
-        }
-    }
-
     .v-btn:not(.v-btn--round).v-size--default,
     .v-btn--icon.v-size--default {
         height: 36px !important;
@@ -381,30 +334,6 @@
     .v-btn--icon.v-size--default {
         margin-left: 4px;
         width: 36px !important;
-    }
-
-    .ts-tags {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        max-width: max-content;
-
-        >.tag-btn,
-        >div>.tag-btn {
-            border-radius: 18px;
-            border: solid 1.5px #c0c4cc;
-            background-color: #fff;
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 14px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.71;
-            letter-spacing: normal;
-            text-align: center;
-            color: #000000;
-            height: 32px !important;
-        }
     }
 
     .ts-footer {
@@ -512,29 +441,6 @@
         }
     }
 
-    .ts-action-counter {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.33;
-        letter-spacing: normal;
-        color: #4a4a4a;
-    }
-
-    .ts-actions {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        margin-left: 3px;
-    }
-
     .v-expansion-panel {
         border-radius: 20px !important;
         box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
@@ -633,38 +539,6 @@
             img {
                 width: 100%;
                 height: auto;
-            }
-        }
-    }
-
-    .details-attchments-wrapper {
-        display: flex;
-        flex-direction: column;
-
-        .details-attachments {
-            width: auto !important;
-
-            h2 {
-                font-family: 'Open Sans', sans-serif !important;
-                font-size: 14px;
-                font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.71;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
-                padding-bottom: 4px !important;
-            }
-
-            .file-name {
-                font-family: 'Open Sans', sans-serif !important;
-                font-size: 14px;
-                font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.5;
-                letter-spacing: normal;
-                color: rgba(219, 37, 37, 0.87);
             }
         }
     }
@@ -913,57 +787,8 @@
                     padding-left: 4px;
                 }
             }
-
-            .the-comment {
-                margin-bottom: 0 !important;
-                padding-top: 8px !important;
-                font-family: 'Open Sans', sans-serif !important;
-                font-size: 14px;
-                font-weight: normal;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.5;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                display: block;
-                max-width: 100%;
-            }
         }
 
-        .see-all-comments {
-            padding-top: 16px;
-            padding-bottom: 24px;
-
-            span {
-                text-decoration: none;
-                font-family: 'Open Sans', sans-serif !important;
-                font-size: 14px;
-                font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: normal;
-                letter-spacing: normal;
-                color: #2196f3;
-                cursor: pointer;
-            }
-        }
-    }
-
-    .open-comments {
-        height: auto !important;
-        transition: max-height 0.25s ease-in;
-        padding-bottom: 24px;
-        opacity: 1;
-        z-index: -5;
-    }
-
-    .add-comment {
-        background-color: #fff !important;
-        height: 60px;
-        padding: 0 !important;
     }
 
     .tooltip-wrapper {
@@ -993,46 +818,6 @@
             line-height: 1.33 !important;
             font-weight: 400;
         }
-    }
-
-    .add-comment-row {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: row;
-
-        .comment-input {
-            max-width: 80%;
-        }
-
-        .send-btn {
-            border-radius: 18px !important;
-            box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
-            background-color: #2196f3 !important;
-            color: #fff !important;
-            height: 36px !important;
-
-            i {
-                font-size: 18px !important;
-                padding-right: 8px;
-            }
-        }
-    }
-
-    #incident-badge {
-        padding: 4px 12px;
-    }
-
-    .detected-items {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 20px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.2;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        margin-bottom: 16px;
-        padding-top: 24px;
     }
 
     .malicious-style {
@@ -1145,7 +930,6 @@
 }
 
 .email-details__download-modal {
-
     .v-list-item__title,
     .v-list-item__subtitle {
         white-space: pre-wrap !important;

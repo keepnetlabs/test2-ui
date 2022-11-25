@@ -266,52 +266,7 @@
         border-radius: 18px !important;
     }
 
-    .v-data-footer {
-        margin-top: 24px !important;
-        justify-content: flex-end !important;
-    }
 
-    .v-data-footer__select {
-        .v-select {
-            margin-top: 3px !important;
-            margin-left: 32px !important;
-            height: 30px !important;
-        }
-
-        .v-text-field>.v-input__control>.v-input__slot:after {
-            border: none !important;
-            display: none !important;
-        }
-
-        .theme--light.v-text-field>.v-input__control>.v-input__slot:before {
-            border: none !important;
-        }
-
-        .v-input__append-inner {
-            margin-left: 0 !important;
-            margin-top: 3px !important;
-            margin-right: 5px !important;
-            padding-left: 0 !important;
-        }
-
-        .v-select__slot {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            height: 27px !important;
-            background-color: #f2f2f2 !important;
-
-            .v-select__selections {
-                margin-left: 10px;
-            }
-        }
-
-        .v-input__icon {
-            width: 20px !important;
-            min-width: 20px !important;
-            height: 20px !important;
-        }
-    }
 
     .v-btn:not(.v-btn--round).v-size--default,
     .v-btn--icon.v-size--default {
@@ -341,18 +296,6 @@
         font-stretch: normal;
         font-style: normal;
         line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        padding-top: 8px !important;
-    }
-
-    .about-community-table-td-sec {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.5;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
         padding-top: 8px !important;
@@ -523,8 +466,5 @@
             display: none !important;
         }
 
-        .v-data-footer {
-            justify-content: center !important;
-        }
     }
 }
