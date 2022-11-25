@@ -458,9 +458,26 @@ export default {
       } else {
         this.formData.languageIds = []
       }
+    },
+    'formData.enrollmentScheduler.scheduledDate'(val) {
+      this.checkDateIsValid()
+    },
+    'formData.scheduleTypeId'(val) {
+      if (val !== '2') {
+        this.isDateValid = true
+      }
     }
   },
   methods: {
+    checkDateIsValid() {
+      this.isDateValid = this.formData
+        ? this.formData.scheduleTypeId === '2'
+          ? this.formData.enrollmentScheduler.scheduledDate &&
+            this.formData.enrollmentScheduler.scheduledDate.length > 0
+          : true
+        : false
+      return this.isDateValid
+    },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
