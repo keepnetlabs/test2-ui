@@ -85,7 +85,7 @@
                       v-model.trim="emailSettingsValues.email"
                       entityName="email address"
                       initialPlaceholder="Email address"
-                      hint
+                      required
                     />
                   </form-group>
                   <form-group
@@ -132,7 +132,8 @@
                       outlined
                       dense
                       placeholder="Password"
-                      hint=""
+                      hint="*Required"
+                      required
                       type="password"
                       place
                       :disabled="emailSettingsValues.scanType === 'Manual' ? true : false"
@@ -145,7 +146,8 @@
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.clientId"
                           outlined
-                          hint=""
+                          hint="*Required"
+                          required
                           placeholder="Client Id"
                         />
                       </div>
@@ -156,7 +158,8 @@
                           v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
                           v-model="emailSettingsValues.tenantId"
                           outlined
-                          hint=""
+                          hint="*Required"
+                          required
                           placeholder="Directory (Tenant) ID"
                         />
                       </div>
@@ -177,7 +180,8 @@
                         v-bind="commonRules(emailSettingsValues.owa)"
                         v-model="emailSettingsValues.owaUrl"
                         outlined
-                        hint=""
+                        hint="*Required"
+                        required
                         placeholder="OWA URL"
                       />
                     </div>
@@ -191,7 +195,8 @@
                         v-bind="commonRules(emailSettingsValues.owa)"
                         v-model="emailSettingsValues.username"
                         outlined
-                        hint=""
+                        hint="*Required"
+                        required
                         placeholder="Username"
                       />
                     </div>
@@ -205,6 +210,9 @@
                   <v-list-item-content>
                     <v-list-item-title class="new-phishing-scenario__title">
                       Scan and Delivery Settings</v-list-item-title
+                    >
+                    <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                      >Set email delivery and continuos scan options</v-list-item-subtitle
                     >
                   </v-list-item-content>
                 </v-list-item>
