@@ -6,10 +6,6 @@ html {
   scroll-behavior: smooth;
 }
 
-.mw-100 {
-  max-width: 100%;
-}
-
 .malicious-style {
   color: #bb2a45 !important;
   border-bottom: 1px solid #bb2a45 !important;
@@ -192,14 +188,6 @@ html {
     0 3px 1px -2px rgba(80, 80, 80, 0.12);
 }
 
-.bg-blur {
-  filter: blur(6px);
-}
-
-.cursor-default {
-  cursor: default !important;
-  opacity: 0.7;
-}
 .tlp_subtitle {
   opacity: 0.7;
   font-size: 9px;
@@ -475,13 +463,6 @@ input[type="number"]::-webkit-outer-spin-button {
   path {
     color: #757575 !important;
     fill: #757575 !important;
-  }
-}
-.no-action-on-click {
-  .v-select__selections {
-    input {
-      pointer-events: none !important;
-    }
   }
 }
 

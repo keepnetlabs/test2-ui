@@ -19,6 +19,7 @@
           filterable
           options
           selectable
+          no-padding-bottom
           :show-filter-options="false"
           :loading="isLoading"
           :count-row="countRow"

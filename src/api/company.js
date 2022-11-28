@@ -41,13 +41,11 @@ export function getCompanyByID(id, loading = true) {
 export function searchCompanyGroups(payload) {
   return testRequest.post(`/company-groups/search`, payload)
 }
-export function getCompanyGroupsById(id) {
-  return testRequest.get(`/company-groups/${id}`)
-}
 export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
-export function createCompany(payload) {
+
+function createCompanyPayload(payload) {
   const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
   const parsedStartDate = parsedStartDatePart.split('/').reverse().join('-')
   const parsedEndDatePart = payload.LicenseEndDate.split(' ')[0]
@@ -68,32 +66,18 @@ export function createCompany(payload) {
       }
     }
   }
+  return formData
+}
 
-  return testRequest.post(`/companies`, formData, { snackbar: COMMON_SNACKBAR })
+export function createCompany(payload) {
+  return testRequest.post(`/companies`, createCompanyPayload(payload), {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function updateCompany(id, payload) {
-  const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
-  const parsedStartDate = parsedStartDatePart.split('/').reverse().join('-')
-  const parsedEndDatePart = payload.LicenseEndDate.split(' ')[0]
-  const parsedEndDate = parsedEndDatePart.split('/').reverse().join('-')
-  payload.LicenseStartDate = parsedStartDate
-  payload.LicenseEndDate = parsedEndDate
-
-  const formData = new FormData()
-
-  for (const key in payload) {
-    if (Array.isArray(payload[key])) {
-      payload[key].forEach((x) => formData.append(key, x))
-    } else {
-      if (key === 'PreferredLanguageTypeResourceId') {
-        formData.append(key, payload[key] || '')
-      } else {
-        payload[key] && formData.append(key, payload[key])
-      }
-    }
-  }
-
-  return testRequest.put(`/companies/${id}`, formData, { snackbar: COMMON_SNACKBAR })
+  return testRequest.put(`/companies/${id}`, createCompanyPayload(payload), {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function updateCompanyGroup(id, payload) {
   return testRequest.put(`/company-groups/${id}`, payload, { snackbar: COMMON_SNACKBAR })

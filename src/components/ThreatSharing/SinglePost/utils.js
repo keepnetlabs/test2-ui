@@ -57,3 +57,22 @@ export const findCategory = (id) => {
       return ''
   }
 }
+
+export const getCategories = () => [
+  {
+    resourceId: 'Ps0SSyl7rVNe',
+    name: 'Malicious'
+  },
+  {
+    resourceId: 'bEuAD1pdbRXF',
+    name: 'Non-Malicious'
+  },
+  {
+    resourceId: 'NGLCc9UCxJvw',
+    name: 'Phishing'
+  },
+  {
+    resourceId: 'Gwt67E1ftYtr',
+    name: 'Spam'
+  }
+]

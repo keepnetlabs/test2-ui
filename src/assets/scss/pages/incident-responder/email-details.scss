@@ -641,56 +641,6 @@
         margin-top: 16px;
     }
 
-    .detail-discovery {
-        margin-top: 24px;
-
-        .disc-header {
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 20px;
-            font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.15;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-            padding-bottom: 8px;
-        }
-
-        .discovery-p {
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 14px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.5;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-        }
-    }
-
-    .impact-row {
-        display: flex;
-        flex-direction: row;
-        padding-bottom: 8px;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-
-        .impact-left {
-            min-width: 100px;
-            font-weight: 600 !important;
-        }
-
-        .impact-right {
-            max-width: 80%;
-        }
-    }
-
     .member-company-body {
         .v-slide-group__content {
             border-bottom: unset !important;

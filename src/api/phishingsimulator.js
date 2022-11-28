@@ -121,14 +121,6 @@ export function deleteEmailTemplate(id) {
   })
 }
 
-export function getLookups(name) {
-  const payload = {
-    typeName: name,
-    typeidlist: []
-  }
-  return testRequest.post(`/lookups`, payload)
-}
-
 export function getMergedTextForPhishing() {
   const payload = {
     reportAllPages: false,
