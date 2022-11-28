@@ -1,5 +1,5 @@
 <template>
-  <div class="sandbox mt-2">
+  <div style="min-height: 90vh;" class="sandbox mt-2">
     <div class="incident-responder-parent">
       <div class="incident-responder">
         <div class="pa-2">
