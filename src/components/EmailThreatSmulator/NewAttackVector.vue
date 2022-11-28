@@ -326,22 +326,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.new-attack-vector {
-  .k-form-group .v-list-item__content > *:not(:last-child) {
-    margin-top: 3px;
-  }
-  .k-file-uploads__wrapper {
-    width: 220px;
-  }
-  .is-active-label {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 24px;
-    color: #2196f3;
-    &.passive {
-      color: #383b41;
-    }
-  }
-}
-</style>
