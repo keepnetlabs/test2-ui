@@ -1688,6 +1688,7 @@ export default {
               this.extendedViewValue = [
                 {
                   ...selectedItem,
+                  note: selectedItem.note || '',
                   resourceId: selections[0].resourceId,
                   reportedBy: selections[0].reportedBy,
                   matchingPlaybooks: selections[0].matchingPlaybooks,
@@ -1775,6 +1776,7 @@ export default {
     setExtendedViewValue(selectedItem, rows, selections, shouldRender, ind, allSelections) {
       rows.push({
         ...selectedItem,
+        note: selectedItem.note || '',
         resourceId: selections[ind].resourceId,
         reportedBy: selections[ind].reportedBy,
         matchingPlaybooks: selections[ind].matchingPlaybooks,
