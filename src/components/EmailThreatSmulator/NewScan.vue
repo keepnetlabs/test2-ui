@@ -206,6 +206,9 @@
                     <v-list-item-title class="new-phishing-scenario__title">
                       Scan and Delivery Settings</v-list-item-title
                     >
+                    <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                      >Set email delivery and continuos scan options</v-list-item-subtitle
+                    >
                   </v-list-item-content>
                 </v-list-item>
                 <v-alert
