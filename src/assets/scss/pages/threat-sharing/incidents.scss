@@ -76,12 +76,6 @@
     padding-right: 0;
   }
 
-  .pagination-buttons {
-    box-shadow: none !important;
-    min-width: 45px !important;
-    max-width: 45px !important;
-  }
-
   .el-pagination__total {
     font-weight: normal;
     letter-spacing: normal;
@@ -157,9 +151,6 @@
     }
     > div {
       width: 220px !important;
-      &:nth-child(2) {
-        //width: 315px !important;
-      }
     }
     &__search-filter {
       font-size: 16px !important;
@@ -169,79 +160,6 @@
     }
   }
 
-  .v-cart-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-    border: solid 1px rgba(100, 181, 246, 0.5);
-    background-color: #e3f2fd;
-  }
-
-  .delete-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-  }
-
-  .invite-sub-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-
-  .v-card-headline {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.4;
-    letter-spacing: normal;
-    color: #2196f3;
-  }
-
-  .v-card-sub-header {
-    font-family: Helvetica;
-    font-size: 15px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: #000 !important;
-  }
-
-  .share-inline-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .share-combo-label {
-      width: 100%;
-      text-align: left;
-      margin-bottom: 8px;
-      font-family: Helvetica;
-      font-size: 16px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
 
   .v-overlay__scrim {
     border-radius: 0 !important;
@@ -255,10 +173,6 @@
     border-radius: 12px !important;
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
     0 9px 46px 8px rgba(201, 113, 113, 0.12) !important;
-  }
-
-  .send-incident {
-    margin-right: -18px;
   }
 
   .investigate-overlay,
@@ -323,22 +237,6 @@
     }
   }
 
-  .post-inc-btn {
-    align-items: center;
-    background-color: #2196f3 !important;
-    color: #fff;
-    display: flex;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    height: 36px !important;
-    text-transform: unset !important;
-  }
-
   .v-expansion-panel {
     border-radius: 20px !important;
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 0px 1px rgba(0, 0, 0, 0.25) !important;
@@ -374,39 +272,10 @@
     padding: 0 !important;
   }
 
-  .create-com-btn {
-    background-color: #2196f3 !important;
-    color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    height: 36px !important;
-    text-transform: uppercase !important;
-    padding-bottom: 10px;
-    width: 193px !important;
-    max-width: 193px !important;
-  }
-
   .v-form {
     width: 100%;
   }
 
-  .delete-dialog-body {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-    margin-top: 38px;
-    margin-bottom: 4px;
-  }
 }
 .v-autocomplete__content.v-menu__content {
   border-radius: 8px !important;

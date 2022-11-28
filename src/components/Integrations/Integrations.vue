@@ -276,7 +276,7 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {
@@ -330,6 +330,9 @@ export default {
     handleEdit(row) {
       this.modalStatus = true
       this.integrationId = row.resourceId
+    },
+    checkIfCanCloseNewIntegrationModal() {
+      if (this.modalStatus) this.modalStatus = false
     },
     handleDisable(row) {
       disableIntegration(row.resourceId).then(() => {

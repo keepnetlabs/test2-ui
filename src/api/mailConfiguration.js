@@ -1,6 +1,5 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-const API_URL = 'analysis-engines'
 
 export function getMailConfigurationList(payload) {
   return testRequest.post(`/mail-configurations/search`, payload)

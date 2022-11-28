@@ -23,82 +23,12 @@
       @on-close="isWantToToLeaveFromCommunity = false"
       @on-confirm="leaveFromCommunityConfirm"
     />
-    <app-dialog
+    <CommunitiesNotificationDialog
       v-if="openNotificationModal"
       :status="openNotificationModal"
-      icon="mdi-bell"
-      title="Community Notification Settings"
-      @changeStatus="openNotificationModal = false"
-    >
-      <template #app-dialog-body>
-        <div v-if="notificationLoading">
-          <v-skeleton-loader :loading="notificationLoading" type="article, list-item"
-            ><slot name="skeleton-content"></slot
-          ></v-skeleton-loader>
-        </div>
-        <div v-else>
-          <v-list-item class="pa-0">
-            <div class="communities-wrapper__community-notification-row">
-              <div class="community-notification__text">
-                Email notifications
-              </div>
-              <div>
-                <v-switch
-                  id="email-notif-switch"
-                  v-model="notifications.isEmailEnabled"
-                  color="#2196f3"
-                  hide-details
-                  class="community-notification-switch mt-0"
-                  @change="checkAllNotificationsAreSelected"
-                />
-              </div>
-            </div>
-          </v-list-item>
-        </div>
-      </template>
-      <template #app-dialog-footer>
-        <app-dialog-footer
-          cancel-button-id="threat-sharing-communities-notification-setting-modal-cancel-button"
-          confirm-button-id="threat-sharing-communities-notification-setting-modal-confirm-button"
-          :confirm-button-disabled="isNotificationSettingButtonDisabled"
-          @handleClose="openNotificationModal = false"
-          @handleConfirm="saveNotificationSetting"
-        />
-      </template>
-    </app-dialog>
-    <app-dialog
-      :status="isCancelRequestModal"
-      icon="mdi-exit-to-app"
-      title="Cancel Request?"
-      :subtitle="cancelRequestCommunityName"
-      :body="`You are cancelling your join request to the ${cancelRequestCommunityName}`"
-      @changeStatus="isCancelRequestModal = false"
-    >
-      <template #app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#f56c6c"
-              id="threat-sharing-communities-cancel-request-modal-cancel-button"
-              @click="isCancelRequestModal = false"
-              >{{ labels.Cancel }}
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              id="threat-sharing-communities-cancel-request-modal-confirm-button"
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="cancelRequestConfirm"
-              >Confirm
-            </v-btn>
-          </div>
-        </div>
-      </template>
-    </app-dialog>
+      :community-resource-id="selectedCommunityResourceId"
+      @on-close="openNotificationModal = false"
+    />
     <v-card flat color="basil">
       <v-card-text class="pt-2">
         <v-data-iterator
@@ -184,10 +114,10 @@
               </div>
               <div class="d-flex">
                 <k-select
+                  v-model="privacyValue"
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
-                  v-model="privacyValue"
                   multiple
                   hide-details
                   item-text="name"
@@ -267,8 +197,8 @@
             slot="no-data"
           >
             <div
-              class="empty-communities"
               v-if="selectedTab === 'tab-1' || selectedTab === 'tab-0'"
+              class="empty-communities"
             >
               <div class="empty-communities-inline">
                 <span class="no-community">
@@ -304,8 +234,8 @@
                 <v-btn
                   id="threat-sharing-communities-create-community-button"
                   class="create-com-btn mb-11"
-                  @click="createNewCommunity()"
                   rounded
+                  @click="createNewCommunity()"
                 >
                   Create Community
                 </v-btn>
@@ -342,7 +272,7 @@
               </div>
             </div>
           </template>
-          <template v-slot:footer>
+          <template #footer>
             <v-row
               class="mt-2"
               justify="end"
@@ -398,33 +328,32 @@ import {
   joinCommunity,
   listBusinessCategories,
   refuseInvitation,
-  removeFromCommunities,
-  updateNotifications
+  removeFromCommunities
 } from '@/api/threatSharing'
 import { isOwner, isOwnerOrMember } from '@/utils/functions'
 import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
-import AppDialog from '@/components/AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
-import { getNotifications } from '@/api/dashboard'
 import CommunityCard from '@/components/ThreatSharing/Communities/CommunityCard'
 import CommunityInvitationCard from '@/components/ThreatSharing/Communities/CommunityInvitationCard'
 import { mapGetters } from 'vuex'
 import DeleteCommunityDialog from '@/components/ThreatSharing/Communities/DeleteCommunityDialog'
 import LeaveCommunityDialog from '@/components/ThreatSharing/Communities/LeaveCommunityDialog'
+import CommunitiesNotificationDialog from '@/components/ThreatSharing/Communities/CommunitiesNotificationDialog'
+import useDebounce from '@/hooks/useDebounce'
+import { getAllCommunitiesFilter, privacyList } from '@/components/ThreatSharing/Communities/utils'
 
 export default {
   components: {
+    CommunitiesNotificationDialog,
     LeaveCommunityDialog,
     DeleteCommunityDialog,
     KSelect,
-    AppDialogFooter,
     NewCommunity,
-    AppDialog,
     CommunityCard,
     CommunityInvitationCard
   },
+  mixins: [useDebounce],
   computed: {
     ...mapGetters({
       getMyInvitationsPermission: 'permissions/getThreatSharingMyInvitationsPermission',
@@ -450,29 +379,16 @@ export default {
     itemsPerPageArray: [5, 10, 20],
     page: 1,
     itemsPerPage: 5,
-    isNotificationSettingButtonDisabled: false,
     isRequestToJoinDisabled: false,
-    temporaryResourceId: null,
+    selectedCommunityResourceId: null,
     isLeaveFromCommunityButtonDisabled: false,
-    notificationLoading: false,
     labels,
     industryList: [],
     industryValue: [],
-    privacyList: [
-      { name: 'Public', id: 1 },
-      { name: 'Private', id: 2 },
-      { name: 'Hidden', id: 3 }
-    ],
+    privacyList,
     privacyValue: [],
     cancelRequestCommunityName: null,
     cancelRequestCommunityId: null,
-    isCancelRequestModal: false,
-    notifications: {
-      isNotifications: false,
-      isSMSEnabled: false,
-      isEmailEnabled: false,
-      isDashboardEnabled: false
-    },
     openNotificationModal: false,
     leaveCommunityName: null,
     isWantToToLeaveFromCommunity: false,
@@ -591,15 +507,14 @@ export default {
     }
 
     if (this.$route.params.isCommunity) {
-      let _this = this
       if (this.$route.params.communityName === 'empty') {
-        _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
+        this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.communityId)
           .then((response) => {
             this.communityDetails = response.data.data
             this.filter = response.data.data.name
             setTimeout(() => {
-              _this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
+              this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
             }, 250)
           })
           .catch((error) => {
@@ -647,37 +562,8 @@ export default {
       }
     },
     setNotificationModal(communityResourceId) {
-      this.temporaryResourceId = communityResourceId
-      this.getNotifications()
+      this.selectedCommunityResourceId = communityResourceId
       this.openNotificationModal = true
-    },
-    checkAllNotificationsAreSelected() {
-      this.notifications.isNotifications =
-        this.notifications.isSMSEnabled &&
-        this.notifications.isEmailEnabled &&
-        this.notifications.isDashboardEnabled
-    },
-    getNotifications() {
-      this.notificationLoading = true
-      let payload = {
-        EntityResourceId: this.temporaryResourceId,
-        TypeId: 1
-      }
-      getNotifications(payload)
-        .then((response) => {
-          this.notifications = {
-            isNotifications:
-              response.data.data.isSMSEnabled &&
-              response.data.data.isEmailEnabled &&
-              response.data.data.isDashboardEnabled,
-            isSMSEnabled: response.data.data.isSMSEnabled,
-            isEmailEnabled: response.data.data.isEmailEnabled,
-            isDashboardEnabled: response.data.data.isDashboardEnabled
-          }
-        })
-        .finally(() => {
-          this.notificationLoading = false
-        })
     },
     getIndustryList() {
       listBusinessCategories().then((response) => {
@@ -690,39 +576,11 @@ export default {
     isOwnerOrMember(community) {
       return community.membershipStatusId === 2 || community.membershipStatusId === 1
     },
-    saveNotificationSetting() {
-      let payload = {
-        EntityResourceId: this.temporaryResourceId,
-        TypeId: 1,
-        IsSMSEnabled: this.notifications.isSMSEnabled,
-        IsEmailEnabled: this.notifications.isEmailEnabled,
-        IsDashboardEnabled: this.notifications.isDashboardEnabled
-      }
-      this.isNotificationSettingButtonDisabled = true
-      updateNotifications(payload)
-        .then(() => {
-          this.openNotificationModal = false
-        })
-        .finally(() => (this.isNotificationSettingButtonDisabled = false))
-    },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {
         this.getAllCommunitiesListData()
         this.getInvitationCount()
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
-    },
-    cancelRequestConfirm() {
-      cancelRequest(this.cancelRequestCommunityId).then(() => {
-        this.isCancelRequestModal = false
-        this.getAllCommunitiesListData()
-        this.getMyCommunitiesListData()
-        this.getInvitationCount()
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
+        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
       })
     },
     deleteCommunity(item) {
@@ -817,14 +675,6 @@ export default {
           this.isLeaveFromCommunityButtonDisabled = false
         })
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    },
     editCommunity(item) {
       this.resourceId = item.communityResourceId
       this.communityItem = item
@@ -869,55 +719,16 @@ export default {
     getAllCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
-
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
         orderBy: 'createTime',
         ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'CommunityName',
-                  Operator: 'Contains',
-                  Value: this.filter
-                },
-                {
-                  FieldName: 'CommunityDescription',
-                  Operator: 'Contains',
-                  Value: this.filter
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'IndustryResourceId',
-                  Operator: 'Include',
-                  Value: this.industryValue.map((item) => item.resourceId).toString() || ''
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'PrivacyStatusId',
-                  Operator: 'Include',
-                  Value: this.privacyValue.toString() || ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
+        filter: getAllCommunitiesFilter(
+          this.filter,
+          this.industryValue.map((item) => item.resourceId).toString() || '',
+          this.privacyValue.toString() || ''
+        )
       }
       getAllCommunityList(payload)
         .then((response) => {

@@ -39,9 +39,6 @@ const whitelabel = {
     getCompanyLicense(state) {
       return state.companyLicense
     },
-    getState(state) {
-      return state
-    },
     getEmailTemplateLogoUrl({ emailTemplateLogoUrl }) {
       return emailTemplateLogoUrl
     },
@@ -77,9 +74,6 @@ const whitelabel = {
     },
     getSupportEmailAddress({ supportEmailAddress }) {
       return supportEmailAddress
-    },
-    getFavIcon({ faviconUrl }) {
-      return faviconUrl
     },
     getBrandName({ brandName }) {
       return brandName

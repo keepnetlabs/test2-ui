@@ -21,7 +21,6 @@ Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 Vue.component('VSelect', VSelect)
 Vue.component('VAutocomplete', VAutocomplete)
 Vue.component('VCombobox', VCombobox)
-
 Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default

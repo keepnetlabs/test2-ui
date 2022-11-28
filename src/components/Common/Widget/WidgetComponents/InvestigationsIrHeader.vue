@@ -127,7 +127,7 @@ export default {
       }
     },
     emptyInvestigationButtonClick() {
-      this.$router.push('investigations')
+      this.$router.push('/incident-responder/investigations')
     }
   }
 }

@@ -31,10 +31,6 @@ export function exportProxySettings(payload) {
   return testRequest.post(`${URL}/search/export`, payload, { responseType: 'blob' })
 }
 
-export function searchAvailableFor(payload = {}) {
-  return testRequest.post('/available-for/search', payload)
-}
-
 export function testConnection(payload = {}) {
   return testRequest.post('/companies/proxy-settings/test', payload, {
     snackbar: COMMON_SNACKBAR

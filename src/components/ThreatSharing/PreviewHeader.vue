@@ -1,8 +1,8 @@
 <template>
   <div class="preview-header pt-0">
     <h2
-      style="padding: 0 2px; border-bottom: 1px solid transparent;"
       v-if="uploadRespond && !!uploadRespond.subject"
+      style="padding: 0 2px; border-bottom: 1px solid transparent;"
     >
       <span
         id="text--threat-sharing-preview-header-subject"

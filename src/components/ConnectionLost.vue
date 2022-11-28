@@ -16,21 +16,14 @@
       </v-list-item>
       <div class="connection-lost-sub-title mt-3">You may lose your unsaved progress</div>
       <div class="connection-lost-button d-flex flex-row flex-wrap justify-end">
-        <v-btn text color="#2196f3" v-on:click="onIUnderstand">I UNDERSTAND</v-btn>
+        <v-btn text color="#2196f3" @click="$emit('onIUnderstand', true)">I UNDERSTAND</v-btn>
       </div>
-      <v-card-actions> </v-card-actions>
     </v-card>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ConnectionLost',
-  components: {},
-  methods: {
-    onIUnderstand() {
-      this.$emit('onIUnderstand', true)
-    }
-  }
+  name: 'ConnectionLost'
 }
 </script>
