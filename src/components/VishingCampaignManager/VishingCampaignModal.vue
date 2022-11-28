@@ -182,43 +182,45 @@
               :is-valid="isTargetGroupsValid"
               @handle-selection-change="handleTableSelectionChange"
             />
-            <FormGroup class="mt-6" title="Limit Recipients" />
-            <div class="d-flex" style="align-items: center; gap: 8px;">
-              <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
-                <template #label> </template>
-              </v-checkbox>
-              <span class="form-group-horizontal-content__label">
-                Send this campaign to randomly selected
-              </span>
-              <div style="position: relative;">
-                <v-text-field
-                  ref="refRecipientValue"
-                  :value="formValues.recipientValue"
-                  :disabled="!formValues.isLimitRecipients"
-                  style="max-width: 64px !important;"
+            <template v-if="false">
+              <FormGroup class="mt-6" title="Limit Recipients" />
+              <div class="d-flex" style="align-items: center; gap: 8px;">
+                <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
+                  <template #label> </template>
+                </v-checkbox>
+                <span class="form-group-horizontal-content__label">
+                  Send this campaign to randomly selected
+                </span>
+                <div style="position: relative;">
+                  <v-text-field
+                    ref="refRecipientValue"
+                    :value="formValues.recipientValue"
+                    :disabled="!formValues.isLimitRecipients"
+                    style="max-width: 64px !important;"
+                    outlined
+                    placeholder=""
+                    hide-details
+                    :error="!!getRecipientValueErrorMessage"
+                    @input="handleRecipientValueChange"
+                  />
+                  <CustomError
+                    style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                    :error-message="getRecipientValueErrorMessage"
+                  />
+                </div>
+                <KSelect
+                  v-model="formValues.recipientType"
+                  style="max-width: 120px !important;"
                   outlined
-                  placeholder=""
+                  dense
                   hide-details
-                  :error="!!getRecipientValueErrorMessage"
-                  @input="handleRecipientValueChange"
+                  :return-object="false"
+                  :items="recipientTypes"
+                  :disabled="!formValues.isLimitRecipients"
                 />
-                <CustomError
-                  style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
-                  :error-message="getRecipientValueErrorMessage"
-                />
+                <span class="form-group-horizontal-content__label"> of target users</span>
               </div>
-              <KSelect
-                v-model="formValues.recipientType"
-                style="max-width: 120px !important;"
-                outlined
-                dense
-                hide-details
-                :return-object="false"
-                :items="recipientTypes"
-                :disabled="!formValues.isLimitRecipients"
-              />
-              <span class="form-group-horizontal-content__label"> of target users</span>
-            </div>
+            </template>
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="4">
             <ConfigureCompanyStepHeader
@@ -240,7 +242,6 @@
               />
             </FormGroup>
             <FormGroup
-              class="mt-6"
               title="Distribution"
               subTitle="Call target users with over a specified time period. Set days and hours of calls."
             >
