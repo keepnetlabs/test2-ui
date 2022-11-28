@@ -89,24 +89,6 @@
         border-radius: 0 !important;
     }
 
-    .add-users__title {
-        font-size: 14px;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
-    }
-
-    .edit-fields {
-        display: flex;
-        justify-content: flex-end;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.71;
-        letter-spacing: normal;
-        margin-top: 10px;
-        cursor: pointer;
-        color: #2196f3;
-    }
-
     .btn-add {
         width: 36px;
         height: 36px;
@@ -122,12 +104,10 @@
     }
 
     .ews-target-groups-select__radio-group {
-
         &.v-input--selection-controls.v-input,
         .v-input--selection-controls.v-input {
             margin-top: 0 !important;
         }
-
         .v-messages {
             min-height: 9px !important;
         }

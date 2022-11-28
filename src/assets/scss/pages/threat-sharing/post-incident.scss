@@ -1260,16 +1260,6 @@
     margin-bottom: 8px;
   }
 
-  .disabled-cursor,
-  button:disabled {
-    cursor: no-drop !important;
-    pointer-events: all !important;
-  }
-
-  input[type=file], /* FF, IE7+, chrome (except button) */
-  input[type=file]::-webkit-file-upload-button {
-    cursor: pointer !important;
-  }
 
   .chevron-down {
     i {
@@ -1313,14 +1303,6 @@
     }
   }
 
-  .filter-no-selected {
-    position: absolute;
-    bottom: -20px;
-    right: 20px;
-    color: #d0021b;
-    font-family: "Open Sans", sans-serif;
-    font-size: 9px;
-  }
 }
 
 .select-row-wrap {

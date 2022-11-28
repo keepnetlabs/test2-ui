@@ -421,11 +421,6 @@
         margin-bottom: 8px;
     }
 
-    .disabled-cursor,
-    button:disabled {
-        cursor: no-drop !important;
-        pointer-events: all !important;
-    }
 
     .file-name {
         padding-left: 7px;
