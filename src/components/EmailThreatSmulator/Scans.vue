@@ -399,7 +399,7 @@ export default {
       this.getDatatableList()
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refQuickScanList')
     this.getDatatableList()
   }
