@@ -144,15 +144,17 @@
                   >
                     <div class="template-preview pt-3">
                       <div class="template-preview__icon">
-                        <v-icon
+                        <v-btn
                           v-if="!!emailTemplate"
                           :color="'#2196f3'"
-                          left
-                          medium
+                          icon
+                          outlined
                           @click="handleClickPreview"
                         >
-                          mdi-eye
-                        </v-icon>
+                          <v-icon color="#2196f3" medium>
+                            {{ 'mdi-fullscreen' }}
+                          </v-icon>
+                        </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
@@ -205,15 +207,17 @@
                       >
                         <div class="template-preview pt-3">
                           <div class="template-preview__icon">
-                            <v-icon
+                            <v-btn
                               v-if="!!template.content"
                               :color="'#2196f3'"
-                              left
-                              medium
+                              icon
+                              outlined
                               @click="handleClickPreview"
                             >
-                              mdi-eye
-                            </v-icon>
+                              <v-icon color="#2196f3" medium>
+                                {{ 'mdi-fullscreen' }}
+                              </v-icon>
+                            </v-btn>
                           </div>
                           <div v-if="!!template.content" class="template-preview__text pl-2">
                             <div>
@@ -236,15 +240,17 @@
                     </el-tabs>
                     <div v-else class="template-preview pt-3">
                       <div class="template-preview__icon">
-                        <v-icon
+                        <v-btn
                           v-if="!!getSingleTemplateDetails"
                           :color="'#2196f3'"
-                          left
-                          medium
+                          icon
+                          outlined
                           @click="handleClickPreview"
                         >
-                          mdi-eye
-                        </v-icon>
+                          <v-icon color="#2196f3" medium>
+                            {{ 'mdi-fullscreen' }}
+                          </v-icon>
+                        </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
