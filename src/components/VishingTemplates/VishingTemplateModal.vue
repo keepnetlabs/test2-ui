@@ -89,6 +89,7 @@
               >
                 <KSelect
                   v-model="formValues.languageResourceId"
+                  type="autocomplete"
                   :items="languageItems"
                   placeholder="Select language"
                   item-disabled="disabled"
