@@ -24,6 +24,7 @@ jobs:
     runOnce:
       deploy:
         steps:
+        - download: none
         - checkout: ${{ parameters.repositoryName }}
           path: ${{ parameters.repositoryName }}
           fetchDepth: 0
@@ -33,7 +34,7 @@ jobs:
         - script: |
             git push ${{ parameters.githubConnectionUrl }} --delete test
             git checkout -b test
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Github Test Deployment Checkout'
 
