@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     handleClose() {
-      this.$emit('changeStatus', false)
+      this.$emit('on-close', false)
     },
     handleDeletePost() {
       this.isActionButtonDisabled = true
