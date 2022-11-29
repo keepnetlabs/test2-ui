@@ -200,7 +200,7 @@ export default {
             sortable: false,
             show: true,
             type: 'text',
-            width: 105,
+            width: 250,
             filterableType: 'text'
           },
           {
