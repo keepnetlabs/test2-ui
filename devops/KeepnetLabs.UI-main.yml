@@ -1,55 +1,29 @@
-# trigger: 
-#   branches:
-#     include:
-#     - dev
-  #   exclude:
-  #   - staging
-  #   - master
-  #   - release/*
 
 pool:
   name: 'Azure Pipelines'
   vmImage: 'ubuntu-latest'
 
+schedules:
+- cron: "00 5,9,13 * * 1-5"
+  displayName: Daily build
+  branches:
+    include:
+    - dev
+
 resources:
   repositories:
-  - repository: self # In a different organization
-    type: git
-    name: Keepnet/KeepnetLabs.UI
-    ref: dev
-    trigger:
-    - dev
   - repository: GitHub_Prod_Repo # In a different organization
     type: git
     name: Keepnet/KeepnetLabs.UI
     ref: $(Build.SourceBranch)
     trigger:
     - release/*
-  - repository: GitHub_Staging_Repo # In a different organization
+  - repository: GitHub_Test_Repo # In a different organization
     type: git
     name: Keepnet/KeepnetLabs.UI
-    ref: staging
+    ref: test
     trigger:
-    - staging
-# parameters:
-# - name: runAll
-#   displayName: 'Run all Services and Deploy to'
-#   type: string
-#   default: None 
-#   values:
-#     - None
-#     - DEV
-#     - STAGING
-#     - PREPROD
-#     - PROD  
-
-# - name: runService
-#   displayName: 'Run specific service'
-#   type: string
-#   default: None 
-#   values:
-#     - None
-#     - UI
+    - test
 
 stages:
 # BUILD DEV
@@ -60,27 +34,19 @@ stages:
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
-# # BUILD STAGING
-- stage: CI_Staging
+# # BUILD TEST
+- stage: CI_Test
   jobs:   
   - job: Build_UI
-    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))
+    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
-
-# # BUILD PREPROD
-# - stage: CI_PreProd
-#   jobs:   
-#   - job: Build_UI
-#     condition: and(and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')),or(eq('${{parameters.runService}}', 'None'), eq('${{parameters.runService}}', 'UI')))
-#     steps:
-#       - template: sub-KeepnetLabs.UI-CI.yml
 
 # # BUILD PROD
 - stage: CI_Prod
   jobs:   
   - job: Build_UI
-    condition: and(in(dependencies.CI_Staging.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
+    condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
@@ -99,33 +65,19 @@ stages:
           artifactName: 'drop'
 
 
-# # DEPLOY STAGING          
-- stage: STG
+# # DEPLOY TEST          
+- stage: TEST
   variables:
-  - group: Staging-UI-Config
-  condition: and(in(dependencies.CI_Staging.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))  
-  dependsOn: CI_Staging
+  - group: Test-UI-Config
+  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
+  dependsOn: CI_Test
   jobs:
     - template: sub-KeepnetLabs.UI-CD.yml
       parameters:
           jobName: 'Deploy_UI'
-          environment: 'STAGING_UI'
+          environment: 'TEST_UI'
           websiteName: 'TestUI'
           artifactName: 'drop'
-
-# # DEPLOY PREPROD          
-# - stage: PREPROD
-#   variables:
-#   - group: Prod-UI-Config
-#   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
-#   dependsOn: CI_PreProd
-#   jobs:
-#     - template: sub-KeepnetLabs.UI-CD.yml
-#       parameters:
-#           jobName: 'Deploy_UI'
-#           environment: 'PREPROD'
-#           websiteName: 'PreProdUI'
-#           artifactName: 'drop'
 
 # # DEPLOY PROD          
 - stage: PROD
@@ -141,16 +93,16 @@ stages:
           websiteName: 'UI'
           artifactName: 'drop'
 
-- stage: GH_Repo_STG
+- stage: GH_Repo_TEST
   variables:
-  - group: Staging-UI-Config
-  dependsOn: STG
-  condition: and(in(dependencies.STG.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))  
+  - group: Test-UI-Config
+  dependsOn: CI_Test
+  condition: and(in(dependencies.TEST.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
   jobs:
   - template: sub-KeepnetLabs.UI-GH.yml
     parameters:
-      repositoryName: GitHub_Staging_Repo
-      environment: STAGING_UI
+      repositoryName: GitHub_Test_Repo
+      environment: TEST_UI
       githubConnectionUrl: $(testGitHubConnectionURL)
 
 - stage: GH_Repo_PROD
