@@ -94,9 +94,11 @@ export default {
     handleSubmit(payload = {}, key = null) {
       const newPayload = { exclusionItems: [...this.removeKeysFromData(key), ...payload] }
       this.setLoading(true)
-      updateAnalysisExclusions(newPayload).then(() => {
-        this.getAnalysisExclusions()
-      })
+      updateAnalysisExclusions(newPayload)
+        .then(() => {
+          this.getAnalysisExclusions()
+        })
+        .finally(this.setLoading)
     },
     setLoading(value = false) {
       this.isLoading = value
