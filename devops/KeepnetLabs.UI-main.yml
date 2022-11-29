@@ -104,18 +104,6 @@ stages:
           websiteName: 'UI'
           artifactName: 'drop'
 
-- stage: GH_Repo_TEST
-  variables:
-  - group: Test-UI-Config
-  # dependsOn: CI_Test
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/test')
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Test_Repo
-      environment: TEST_UI
-      githubConnectionUrl: $(testGitHubConnectionURL)
-
 - stage: GH_Repo_PROD
   variables:
   - group: Prod-UI-Config
