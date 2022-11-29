@@ -204,7 +204,9 @@
                   >
                     <InputDescription
                       v-model.trim="formValues.dialogNoticeTextToSpeech"
-                      initialPlaceholder="Enter text here"
+                      initial-placeholder="Enter text here"
+                      entity-name="Text to speech"
+                      :max-length="500"
                     />
                   </FormGroup>
                   <div v-if="formValues.dialogNoticeType === 'uploadAudio'" class="mt-2 pb-3">

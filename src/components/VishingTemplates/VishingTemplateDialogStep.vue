@@ -68,6 +68,8 @@
         >
           <InputDescription
             :value="value.textToSpeech"
+            :max-length="500"
+            entity-name="Text to speech"
             initialPlaceholder="Enter text here"
             @input="onTextToSpeechChange"
           />
@@ -138,7 +140,7 @@ export default {
     return {
       durationRules: [
         (v) => validations.required(v, labels.Required),
-        (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+        (v) => (v >= 0 && v <= 10) || 'Duration must be between 0 and 10 seconds'
       ]
     }
   },
