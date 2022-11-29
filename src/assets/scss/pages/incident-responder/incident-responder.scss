@@ -1,15 +1,5 @@
 .incident-responder-parent {
     .incident-responder {
-        ::v-deep .edit-labels {
-            font-size: 20px;
-            font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.2;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-        }
-
         padding: 0 8px;
         margin-top: 3px;
         padding-bottom: 35px;
@@ -25,19 +15,6 @@
 
             &__opacity-green {
                 background-color: #668267 !important;
-            }
-        }
-
-        .btn-playbook {
-            &__no-data {
-                border-radius: 18px;
-                background-color: #ffffff;
-                font-size: 14px;
-                font-weight: 600;
-                line-height: 1.71;
-                letter-spacing: normal;
-                color: #2196f3;
-                height: 36px;
             }
         }
     }
@@ -426,60 +403,6 @@
                 }
             }
         }
-
-        .wrapper {
-            padding-top: 20px !important;
-            padding-top: 40px !important;
-
-            ::v-deep .v-card {
-                box-shadow: unset !important;
-                padding: 0 !important;
-
-                .table-wrapper {
-                    border-radius: 12px;
-                    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-                        0 1px 1px -1px rgba(204, 204, 204, 0.12);
-
-                    .el-table td {
-                        padding: 12px 0;
-                    }
-
-                    .btn-status {
-                        max-width: 100px !important;
-                    }
-
-                    .btn-inactive {
-                        background-color: #f56c6c !important;
-                    }
-                }
-            }
-        }
-
-        .table.investigations {
-            ::v-deep .v-card {
-                .el-table td {
-                    padding: 13px 0 !important;
-                }
-            }
-        }
-
-        ::v-deep .el-table th>.cell {
-            line-height: 2rem !important;
-        }
-    }
-
-    @media only screen and (max-width: 500px) {
-        ::v-deep .v-card {
-            padding: 16px !important;
-        }
-    }
-
-    @media only screen and (max-width: 1400px) and (min-width: 1025px) {
-
-        .btn-investigations,
-        .btn-playbook {
-            font-size: 12px !important;
-        }
     }
 
     .table.investigations {
@@ -575,14 +498,6 @@
     width: 24% !important;
 }
 
-.roi-number {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    line-height: normal;
-    letter-spacing: normal;
-    color: #ffffff;
-    opacity: 0.7;
-}
 
 .incident-responder__playbook {
     .k-overlay__container {

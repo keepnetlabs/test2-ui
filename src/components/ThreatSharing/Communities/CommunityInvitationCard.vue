@@ -37,7 +37,7 @@
     </div>
     <div class="ts-user-comp">
       <div class="ts-user-comp-detail">
-        <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
+        <v-icon class="pr-1" style="font-size: 16px;">mdi-account-multiple</v-icon>
         <span class="pr-2">{{ community.memberCount }}</span>
         &#8226;
         <span class="ts-community-industry pl-2 pr-2">

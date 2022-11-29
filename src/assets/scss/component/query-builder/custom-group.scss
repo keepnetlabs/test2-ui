@@ -234,19 +234,6 @@
     }
 }
 
-/*
-    .vue-query-builder .vqb-group.depth-1 .vqb-rule,
-    .vue-query-builder .vqb-group.depth-2 {
-      border-left: 2px solid #8bc34a;
-    }
-    .vue-query-builder .vqb-group.depth-2 .vqb-rule,
-    .vue-query-builder .vqb-group.depth-3 {
-      border-left: 2px solid #00bcd4;
-    }
-    .vue-query-builder .vqb-group.depth-3 .vqb-rule,
-    .vue-query-builder .vqb-group.depth-4 {
-      border-left: 2px solid #ff5722;
-    }*/
 .vue-query-builder .close {
     opacity: 1;
     color: rgb(150, 150, 150);
@@ -276,10 +263,6 @@
     100% {
         transform: translateX(0);
     }
-}
-
-.first-depth-button.btnActive {
-    background: #00bcd4 !important;
 }
 
 .vqb-disable {
@@ -321,7 +304,6 @@
     @media (max-width: 896px) {
         top: 137px;
     }
-
     position: absolute;
     left: -57px;
     bottom: -21px;

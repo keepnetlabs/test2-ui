@@ -6,7 +6,7 @@
           <h2>
             Stats
           </h2>
-          <p class="">
+          <p>
             Generic statistics for client and service providers
           </p>
         </div>
@@ -14,10 +14,11 @@
       <div id="sandboxStats">
         <data-table
           id="sandbox-stats-data-table"
+          ref="refSandboxStatsTable"
           is-server-side
           filterable
           options
-          no-padding-bottom
+          :no-padding-bottom="!!tableData.length"
           :loading="loading"
           :table="tableData"
           :columns="tableOptions.columns"
@@ -30,7 +31,7 @@
           :is-show-download-modal="isSandboxStatsDownloadModal"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
-          :axios-payload.sync="bodyData"
+          :axios-payload.sync="axiosPayload"
           :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
           :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
           @deleteAction="showDeleteModal = true"
@@ -39,7 +40,7 @@
           @handleDownloadButtonClick="handleSandboxStatsDownloadButtonClick"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @refreshAction="getDatatableList"
+          @refreshAction="callForData"
           @server-side-page-number-changed="serverSidePageNumberChanged"
           @server-side-size-changed="serverSideSizeChanged"
           @sortChangedEvent="sortChanged"
@@ -62,30 +63,23 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxStats, getSandboxStats } from '@/api/sandbox'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  createAxiosPayloadForSandboxStats,
+  integrationTypesEnum,
+  scanTypesEnum
+} from '@/components/Sandbox/utils'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
   name: 'sandboxStats',
   components: {
     DataTable
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       isSandboxStatsDownloadModal: false,
-      integrationTypesEnum: [
-        { name: 'VirusTotal', value: 1 },
-        { name: 'FortiSandbox', value: 2 },
-        { name: 'Vmray', value: 3 },
-        { name: 'Ibm X-Force', value: 4 },
-        { name: 'SpamHouseZen', value: 5 },
-        { name: 'GoogleSafeBrowser', value: 6 },
-        { name: 'CustomIntegration', value: 7 }
-      ],
-      scanTypesEnum: [
-        { name: 'Url', value: 1 },
-        { name: 'Attachment', value: 2 },
-        { name: 'Ip', value: 3 },
-        { name: 'Hash', value: 4 }
-      ],
+      integrationTypesEnum,
+      scanTypesEnum,
       integrationTypes: [],
       loading: true,
       labels,
@@ -181,102 +175,17 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
       serverSideProps: new ServerSideProps()
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    handleSandboxStatsDownloadButtonClick() {
-      this.isSandboxStatsDownloadModal = true
-    },
-    getDatatableListWhenFilterChange(company, integration, date) {
-      const isArray = Array.isArray(date)
-      this.bodyData = {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'TotalRequest',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'ClientResourceId',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'ScanType',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  Value: '',
-                  FieldName: 'TotalRequest',
-                  Operator: '>'
-                },
-                {
-                  Value: '',
-                  FieldName: 'HarmfulRequest',
-                  Operator: '='
-                },
-                {
-                  Value: '',
-                  FieldName: 'UndetectedRequest',
-                  Operator: '='
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        },
-        FilterSummary: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: integration,
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: integration ? 'Include' : 'Contains'
-                },
-                {
-                  Value: company,
-                  FieldName: 'CompanyName',
-                  Operator: company ? 'Include' : 'Contains'
-                },
-                {
-                  Value: company,
-                  FieldName: 'ClientResourceId',
-                  Operator: company ? 'Include' : 'Contains'
-                },
-                {
-                  FieldName: 'CreateTime',
-                  Operator: isArray ? date[0].Operator : date ? date.Operator : 'Contains',
-                  Value: isArray ? date[0].Value : date ? date.Value : ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      if (isArray)
-        this.bodyData.FilterSummary.FilterGroups[0].FilterItems.push({
-          Value: date[1].Value,
-          FieldName: 'CreateTime',
-          Operator: date[1].Operator
-        })
+    callForData() {
       this.loading = true
-      getSandboxStats(this.bodyData)
+      getSandboxStats(this.axiosPayload)
         .then((response) => {
           const {
             data: { data }
@@ -285,7 +194,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-
           let { results = [] } = data
           results = results.map((resultItem) => {
             return {
@@ -303,15 +211,19 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+    handleSandboxStatsDownloadButtonClick() {
+      this.isSandboxStatsDownloadModal = true
+    },
+    getDatatableListWhenFilterChange(company, integration, date) {
+      this.axiosPayload = createAxiosPayloadForSandboxStats(company, integration, date)
+      this.$refs.refSandboxStatsTable.reRenderFilters({})
+      this.callForData()
     },
     handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {
           if (item.FieldName === 'AnalysisEngineName') {
             item.FieldName = 'analysisEngineTypeId'
@@ -320,35 +232,12 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      this.getDatatableList()
+      this.callForData()
     },
     handleDeleteMultiple(selections) {
       selections.forEach((item) => {
         this.handleDelete(item)
       })
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
     },
     exportSandboxStats({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -359,7 +248,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportSandboxStats(payload).then((response) => {
           const { data } = response
@@ -372,49 +261,7 @@ export default {
           this.isSandboxStatsDownloadModal = false
         })
       })
-    },
-    getDatatableList() {
-      this.loading = true
-      getSandboxStats(this.bodyData)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          let { results = [] } = data
-          results = results.map((resultItem) => {
-            return {
-              ...resultItem,
-              analysisEngineTypeId: this.integrationTypesEnum.find(
-                (item) => resultItem.analysisEngineTypeId === item.value
-              ).name,
-              scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
-            }
-          })
-          this.tableData = results
-        })
-        .catch(() => {
-          this.tableData = []
-        })
-        .finally(() => (this.loading = false))
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
-  },
-  created() {
-    this.getDatatableList()
   }
 }
 </script>

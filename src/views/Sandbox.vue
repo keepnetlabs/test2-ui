@@ -1,5 +1,5 @@
 <template>
-  <div class="sandbox mt-2">
+  <div style="min-height: 90vh;" class="sandbox mt-2">
     <div class="incident-responder-parent">
       <div class="incident-responder">
         <div class="pa-2">
@@ -80,7 +80,6 @@
                   dense
                   height="40"
                   outlined
-                  required
                   v-model="filteredSelectValueDate"
                   :menu-props="{ offsetY: true }"
                   placeholder="Select an option"
@@ -205,11 +204,7 @@ import SandboxLog from '@/components/Sandbox/SandboxLog'
 import SandboxStats from '@/components/Sandbox/SandboxStats'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import {
-  COMMON_CONSTANTS,
-  INTEGRATION_LABELS,
-  INTEGRATION_TYPES
-} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { searchRestApi } from '@/api/restApi'
 import { searchTargetGroups } from '@/api/targetUsers'
 import InfiniteScroll from '@/directives/infinite-scroll'

@@ -22,7 +22,7 @@
                 />
               </FormGroup>
             </v-list-item>
-            <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
+            <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
               <v-list-item-content class>
                 <label id="label--investigation-target-users" class="edit-labels">{{
                   labels.TargetUsers
@@ -838,9 +838,6 @@ export default {
           scrollToComponent(el)
         }, 250)
       }
-    },
-    checkCheckboxValidation() {
-      this.checkboxError = this.scanTypes.length === 0
     },
     handleTargetUserTypeChange() {
       this.targetUsersValue = []

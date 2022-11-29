@@ -114,3 +114,7 @@
     }
   }
 }
+.k-stepper__step--hidden,
+.k-stepper__step--hidden + hr{
+  display: none !important;
+}

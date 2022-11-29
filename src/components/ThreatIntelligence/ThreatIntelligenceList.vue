@@ -7,6 +7,7 @@
     id="threat-intelligence-table"
     is-server-side
     selectable
+    row-key="email"
     :loading="isLoading"
     :countRow="10"
     :table="tableData"
@@ -22,7 +23,6 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :download-button="tableOptions.downloadButton"
-    row-key="email"
     @columnFilterChanged="columnFilterChanged"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
@@ -37,7 +37,6 @@
 import DataTable from '@/components/DataTable'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -69,22 +68,23 @@ export default {
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.THREATS_INTELLIGENCE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.THREATS_INTELLIGENCE_TABLE,
-        serverSideEvents: { pagination: true, search: true, sort: true },
+        serverSideEvents: { pagination: true, search: false, sort: true },
         columns: [
           {
             property: 'email',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Breached Account',
-            fixed: false,
+            fixed: true,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 180,
+            width: 150,
             filterableType: false
           },
           {
             property: 'hashtype',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Password Type',
             fixed: false,
@@ -96,21 +96,23 @@ export default {
           },
           {
             property: 'source',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Source',
-            fixed: 'left',
+            fixed: false,
+            hideSort: false,
             show: true,
             type: 'text',
-            width: 240,
+            width: 150,
             filterableType: false
           },
           {
             property: 'leakdate',
-            align: 'left',
+            //align: 'left',
             editable: false,
             label: 'Leak Date',
             fixed: false,
+            hideSort: false,
             show: true,
             type: 'text',
             filterableType: false
@@ -137,7 +139,7 @@ export default {
       rowActions: []
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   computed: {
@@ -147,7 +149,7 @@ export default {
   },
   methods: {
     callForData() {
-      this.loading = true
+      this.isLoading = true
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
           const {
@@ -167,7 +169,7 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.isLoading = false))
     },
     exportData(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -184,7 +186,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Report.${
+          link.download = `Threat-Intelligence.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -194,11 +196,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#threat-intelligence-table {
-  .table-header {
-    justify-content: right !important;
-  }
-}
-</style>

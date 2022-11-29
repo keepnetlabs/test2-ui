@@ -12,6 +12,7 @@
     small-chips
     deletable-chips
     autocomplete="disabled"
+    hint="*Required"
     item-value="mailConfigurationResourceId"
     item-text="mailConfigurationName"
     :slots="{ item: true, selection: true }"

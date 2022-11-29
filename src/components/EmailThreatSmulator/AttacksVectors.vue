@@ -200,7 +200,7 @@ export default {
             sortable: false,
             show: true,
             type: 'text',
-            width: 105,
+            width: 250,
             filterableType: 'text'
           },
           {
@@ -458,32 +458,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.attacks-vector {
-  .av-risk-factor {
-    border-radius: 4px;
-    color: white;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    background-color: white;
-    width: 30px;
-    text-align: center;
-    margin: auto;
-    color: #00bcd4;
-    border: 1px solid #00bcd4;
-  }
-  .av-status {
-    @extend .av-risk-factor;
-    width: 67px;
-    &.enabled {
-      color: #217124;
-      border: 1px solid #217124;
-    }
-    &.disabled {
-      color: #b6791d;
-      border: 1px solid #b6791d;
-    }
-  }
-}
-</style>

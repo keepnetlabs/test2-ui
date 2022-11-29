@@ -235,7 +235,7 @@
             id="btn--link-navigator-menu-threat-intelligence"
             :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
           >
-            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiMagnifyExpand" />
+            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiSearchWeb" />
           </router-link>
 
           <router-link
@@ -674,7 +674,7 @@ import {
   mdiMenu,
   mdiHelpCircle,
   mdiBook,
-  mdiMagnifyExpand
+  mdiSearchWeb
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -732,7 +732,7 @@ export default {
         mdiMenu,
         mdiHelpCircle,
         mdiBook,
-        mdiMagnifyExpand
+        mdiSearchWeb
       },
       switchDialogStatus: false,
       showNewPassword: false,

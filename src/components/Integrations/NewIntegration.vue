@@ -1690,7 +1690,7 @@ export default {
         })
         .catch((error) => {
           item.status = 'failed'
-          if (error.response.data.Message === 'Internal server error') {
+          if (error?.response?.data?.Message === 'Internal server error') {
             item.errorMessage = 'Error when testing connections!'
           } else {
             item.errorMessage = error.response.data.message || error.response.data.Message
@@ -1736,7 +1736,7 @@ export default {
             .catch((error) => {
               this.saveDisable = false
               this.formValues.apiKeys[i].status = 'failed'
-              if (error.response.data.Message === 'Internal server error') {
+              if (error?.response?.data?.Message === 'Internal server error') {
                 this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
               } else {
                 this.formValues.apiKeys[i].errorMessage =

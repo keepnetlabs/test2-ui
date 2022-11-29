@@ -799,7 +799,6 @@ export default {
 
   methods: {
     ...mapActions({
-      loginAction2: 'login/loginAction',
       setPageNumber: 'login/setPageNumber',
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin',

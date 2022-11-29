@@ -331,6 +331,9 @@ export default {
       this.modalStatus = true
       this.integrationId = row.resourceId
     },
+    checkIfCanCloseNewIntegrationModal() {
+      if (this.modalStatus) this.modalStatus = false
+    },
     handleDisable(row) {
       disableIntegration(row.resourceId).then(() => {
         this.callForData()
