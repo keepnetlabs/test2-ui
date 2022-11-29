@@ -96,8 +96,8 @@ stages:
 - stage: GH_Repo_TEST
   variables:
   - group: Test-UI-Config
-  dependsOn: CI_Test
-  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
+  # dependsOn: CI_Test
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/test')
   jobs:
   - template: sub-KeepnetLabs.UI-GH.yml
     parameters:
