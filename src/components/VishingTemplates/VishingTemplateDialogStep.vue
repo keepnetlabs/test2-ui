@@ -139,7 +139,7 @@ export default {
   data() {
     return {
       durationRules: [
-        (v) => validations.required(v, labels.Required),
+        (v) => (v === 0 ? true : validations.required(v, labels.Required)),
         (v) => (v >= 0 && v <= 10) || 'Duration must be between 0 and 10 seconds'
       ]
     }
