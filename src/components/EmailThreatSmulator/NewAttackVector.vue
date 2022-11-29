@@ -8,7 +8,7 @@
     >
       <template v-slot:app-dialog-body>
         <span>
-          Are you sure you want to enable these attack vectors?
+          Are you sure you want to enable these attack vectors?\
         </span>
       </template>
       <template v-slot:app-dialog-footer>
@@ -30,10 +30,10 @@
           <form-group title="Vector Name" hint>
             <v-text-field
               v-model="formValues.name"
-              outlined
-              hint=""
-              placeholder="Enter a name for the vector"
               v-bind="commonRules(true)"
+              outlined
+              hint="*Required"
+              placeholder="Enter a name for the vector"
               required
             />
           </form-group>
@@ -54,11 +54,11 @@
           >
             <v-text-field
               v-model="formValues.riskFactor"
+              v-bind="setNumberRangeRule(true)"
               outlined
               hint=""
               placeholder="Enter a name for the vector"
               type="number"
-              v-bind="setNumberRangeRule(true)"
               pattern="^[\d]+$"
               required
             />
@@ -66,12 +66,13 @@
           <form-group title="Upload file" sub-title="Upload attack vector file" hint>
             <file-upload
               width="216"
-              hint=""
+              hint="Max. file size 200MB"
               ref="refFileUpload"
               :extensions="[]"
+              :size="200000"
+              :errorText="fileErrorText"
+              :hasError="!!fileErrorText"
               @inputFile="onFileChanged"
-              :size="20000"
-              required
             />
           </form-group>
           <form-group
@@ -82,9 +83,9 @@
           >
             <v-switch
               v-model="formValues.isActive"
-              @change="isActiveChange()"
               color="#2196F3"
               hide-details
+              @change="isActiveChange()"
             >
               <template #prepend>
                 <v-label>
@@ -154,10 +155,10 @@ export default {
       categoryResources: [],
       labels,
       Validations: Validations,
+      fileErrorText: '',
       formValues: {
         name: '',
         categoryResourceId: null,
-        description: '',
         content: '',
         riskFactor: 1,
         isActive: false
@@ -208,8 +209,10 @@ export default {
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
         this.formValues.content = ''
+        this.fileErrorText = 'Attack vector file is required'
       } else {
         this.formValues.content = file
+        this.fileErrorText = ''
       }
     },
     closeAttackVectorPopup() {
@@ -229,19 +232,16 @@ export default {
       }
     },
     submit() {
-      if (this.$refs.refAttackVectorForm.validate()) {
-        const {
-          name,
-          categoryResourceId,
-          description,
-          content,
-          riskFactor,
-          isActive
-        } = this.formValues
+      if (!this.formValues.content) {
+        this.$refs.refAttackVectorForm.validate()
+        this.fileErrorText = 'Attack vector file is required'
+        return
+      }
+      if (this.$refs.refAttackVectorForm.validate() && !this.fileErrorText) {
+        const { name, categoryResourceId, content, riskFactor, isActive } = this.formValues
         const formData = {
           name,
           categoryResourceId,
-          description,
           content,
           riskFactor,
           isActive
@@ -326,22 +326,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.new-attack-vector {
-  .k-form-group .v-list-item__content > *:not(:last-child) {
-    margin-top: 3px;
-  }
-  .k-file-uploads__wrapper {
-    width: 220px;
-  }
-  .is-active-label {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 24px;
-    color: #2196f3;
-    &.passive {
-      color: #383b41;
-    }
-  }
-}
-</style>

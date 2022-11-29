@@ -21,7 +21,15 @@
         >
           OWNER
         </v-btn>
-        <v-btn v-else-if="community.membershipStatusId == 3" outlined rounded medium color="blue">
+        <v-btn
+          v-else-if="community.membershipStatusId == 3"
+          outlined
+          disabled
+          rounded
+          medium
+          color="757575"
+          style="cursor: default; opacity: 1; color: #757575 !important; font-weight: 600;"
+        >
           REQUEST SENT
         </v-btn>
         <v-btn
@@ -44,7 +52,7 @@
           id="threat-sharing-communities-request-to-join-button"
           @click="onRequestJoin"
         >
-          <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
+          <v-icon style="font-size: 20px; margin-right: 8px;" color="#fff">mdi-account-plus</v-icon>
           REQUEST TO JOIN
         </v-btn>
         <v-btn
@@ -60,7 +68,15 @@
           <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
           JOIN
         </v-btn>
-        <v-btn v-else-if="isRequestDeclined" outlined rounded medium color="blue">
+        <v-btn
+          v-else-if="isRequestDeclined"
+          disabled
+          outlined
+          rounded
+          medium
+          color="#757575"
+          style="cursor: default; opacity: 1; color: #757575 !important; font-weight: 600;"
+        >
           Request Declined
         </v-btn>
         <v-btn
@@ -76,20 +92,12 @@
         </v-btn>
       </div>
       <v-menu
+        v-if="isOwnerOrMember || community.membershipStatusId == 3"
         offset-y
         transition="scale-transition"
-        v-if="isOwnerOrMember || community.membershipStatusId == 3"
       >
         <template v-slot:activator="{ on }">
-          <v-btn
-            v-on="on"
-            icon
-            :color="
-              community.membershipStatusId == 1 || community.membershipStatusId == 2
-                ? '#757575'
-                : 'blue'
-            "
-          >
+          <v-btn v-on="on" icon color="#757575">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
@@ -239,25 +247,25 @@ export default {
     isPrivateCommunity() {
       return (
         !this.community?.membershipStatusId &&
-        (this.community?.privacyStatusName == 'Private' ||
+        (this.community?.privacyStatusName === 'Private' ||
           (this.community?.membershipStatusId == 5 &&
-            this.community?.privacyStatusName == 'Private'))
+            this.community?.privacyStatusName === 'Private'))
       )
     },
     isPublicCommunity() {
       return (
         !this.community?.membershipStatusId &&
-        (this.community?.privacyStatusName == 'Public' ||
+        (this.community?.privacyStatusName === 'Public' ||
           (this.community?.membershipStatusId == 5 &&
-            this.community?.privacyStatusName == 'Public'))
+            this.community?.privacyStatusName === 'Public'))
       )
     },
     isRequestDeclined() {
       return (
         this.community?.membershipStatusId &&
         this.community?.membershipStatusId == 5 &&
-        (this.community?.privacyStatusName == 'Private' ||
-          this.community?.privacyStatusName == 'Public')
+        (this.community?.privacyStatusName === 'Private' ||
+          this.community?.privacyStatusName === 'Public')
       )
     }
   },

@@ -282,13 +282,6 @@
         }
     }
 
-    .max-char {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        display: block;
-        max-width: 100%;
-    }
 
     .preview-header {
         margin-top: 24px;
@@ -428,11 +421,6 @@
         margin-bottom: 8px;
     }
 
-    .disabled-cursor,
-    button:disabled {
-        cursor: no-drop !important;
-        pointer-events: all !important;
-    }
 
     .file-name {
         padding-left: 7px;

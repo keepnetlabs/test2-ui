@@ -106,8 +106,8 @@
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
                   <v-list-item
-                    :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
                     v-if="getPostPermission && canEdit(post)"
+                    :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
                     <v-list-item-icon>
@@ -118,10 +118,10 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
+                    v-if="getInvestigationPermissions.POST.hasPermission"
                     :id="
                       'threat-sharing-single-post-investigate-button' + post.communityPostResourceId
                     "
-                    v-if="getInvestigationPermissions.POST.hasPermission"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -132,8 +132,8 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    style="cursor: not-allowed; opacity: 0.3;"
                     v-if="getSharePostPermission && post.communityPrivacyStatusId !== 1"
+                    style="cursor: not-allowed; opacity: 0.3;"
                     :id="'threat-sharing-single-post-share-button' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -163,8 +163,8 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
                     v-if="getDeletePostPermission && canDelete(post)"
+                    :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
                     @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
@@ -194,10 +194,10 @@
             >
             <b v-else class="pl-1 pr-1">Company Name</b> on
             <a
-              :id="`threat-sharing-incidents-list-go-to-community-details${post.communityName}`"
               v-if="post.communityName"
-              @click="goToCommunityDetails(post)"
+              :id="`threat-sharing-incidents-list-go-to-community-details${post.communityName}`"
               class="pl-1"
+              @click="goToCommunityDetails(post)"
               >{{ post.communityName }}</a
             >
             <a v-else class="pl-1 pr-1">Community Name</a>
@@ -234,11 +234,6 @@
             :max-lines="3"
             >{{ post.description }}
           </v-clamp>
-          <v-clamp v-else autoresize :max-lines="3">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </v-clamp>
         </div>
         <div
           :id="'single-post-footer' + post.communityPostResourceId"
@@ -259,17 +254,6 @@
               style="cursor: pointer;"
             >
               <v-icon>mdi-thumb-up</v-icon>
-            </v-btn>
-            <v-btn
-              :id="'threat-sharing-single-post-unlike' + post.communityPostResourceId"
-              v-if="false"
-              disabled
-              text
-              x-small
-              icon
-              color="grey"
-            >
-              <v-icon>mdi-thumb-down</v-icon>
             </v-btn>
             <span class="ts-action-counter">{{
               (postDetails && postDetails.likeCount) || post.likeCount
@@ -309,24 +293,24 @@
           <div class="ts-tags">
             <v-btn
               v-if="post.hasAttachment"
+              id="threat-sharing-single-post-badge-attachment"
               text
               small
               rounded
               outlined
               class="tag-btn text-none"
-              id="threat-sharing-single-post-badge-attachment"
             >
               <span v-if="post.categoryResourceIdArray.length === 1">Attachment</span>
               <span v-else-if="post.categoryResourceIdArray.length > 1">Attachments</span>
             </v-btn>
             <v-btn
               v-if="post.categoryResourceIdArray && post.categoryResourceIdArray.length"
+              id="threat-sharing-single-post-badge--category"
               text
               small
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="threat-sharing-single-post-badge--category"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]).name
@@ -433,7 +417,6 @@
           <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
             <v-tab-item>
               <PreviewHeaderForSinglePost :uploadRespond="emailData" />
-
               <div id="single-post-body" class="preview-body">
                 <k-shadow-frame
                   :id="`sframe${post.communityPostResourceId}`"
@@ -483,9 +466,9 @@
                 </v-btn>
                 <v-btn
                   v-else-if="postDetails && postDetails.isLikedByUser"
-                  @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
                   :class="{ 'active-act': postDetails.isLikedByUser }"
                   :id="'unlike-btn' + post.communityPostResourceId"
+                  @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
                 >
                   <v-icon class="active-act">mdi-thumb-up</v-icon>
                   Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
@@ -814,6 +797,7 @@ import SinglePostDeletePostDialog from '@/components/ThreatSharing/SinglePost/Si
 import SinglePostShareDialog from '@/components/ThreatSharing/SinglePost/SinglePostShareDialog'
 import {
   findCategory,
+  getCategories,
   getTlcClass,
   getTlcName,
   getTlcTooltip
@@ -983,35 +967,12 @@ export default {
     postDetails: {},
     comments: [],
     emailData: null,
-    categories: [
-      {
-        resourceId: 'Ps0SSyl7rVNe',
-        name: 'Malicious'
-      },
-      {
-        resourceId: 'bEuAD1pdbRXF',
-        name: 'Non-Malicious'
-      },
-      {
-        resourceId: 'NGLCc9UCxJvw',
-        name: 'Phishing'
-      },
-      {
-        resourceId: 'Gwt67E1ftYtr',
-        name: 'Spam'
-      }
-    ],
+    categories: getCategories(),
     commentOpened: false,
-    isWantToShareIncident: false,
-    isWantToInvestigate: false,
-    isWantToPostIncident: false,
     sharedIncitedId: '',
     tab: 0,
     seeComments: false,
-    likeCount: 15,
     hasPermission: false,
-    valid: false,
-    userComment: '',
     hoverTool: false,
     details: {},
     shareSettings: {},
@@ -1156,9 +1117,7 @@ export default {
               (item) => item.communityPostResourceId === postId
             ).likeCount = response.data.data.likeCount
           }
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
       })
     },
@@ -1172,9 +1131,7 @@ export default {
               (item) => item.communityPostResourceId === postId
             ).likeCount = response.data.data.likeCount
           }
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
       })
     },

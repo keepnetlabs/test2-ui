@@ -6,19 +6,18 @@
   >
     <DatatableLoading :loading="loading" />
     <download-modal
-      :isShow="isWantToDownload"
-      @downloadEvent="downloadEvent"
-      @changeDownloadModalStatus="changeDownloadModalStatus"
       v-if="options && downloadButton.show && isWantToDownload && isShowDownloadModal"
+      :isShow="isWantToDownload"
       :download="download"
       :title="downloadModalTitle"
+      @downloadEvent="downloadEvent"
+      @changeDownloadModalStatus="changeDownloadModalStatus"
     />
     <data-table-tooltip
       v-if="showOverFlowTooltip"
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-
     <v-card v-show="!loading" class="card">
       <div class="table-wrapper">
         <div

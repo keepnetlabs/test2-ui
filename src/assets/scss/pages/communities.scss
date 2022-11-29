@@ -347,11 +347,18 @@
     }
 
     .join-button {
-      color: #fff !important;
-      background-color: #2196f3 !important;
+      color: #fff;
+      background-color: #2196f3;
       font-family: 'Open Sans', sans-serif !important;
       box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
       border: none !important;
+      .v-btn__content{
+        color:#fff;
+        font-weight: 600;
+        i.mdi.mdi-account-plus{
+          color:#fff !important;
+        }
+      }
     }
 
     .invitation-cancel {
@@ -362,11 +369,6 @@
     .invitation-accept {
       color: #fff;
       background-color: #2196f3;
-    }
-
-    ::v-deep .text-decoration-none {
-      text-decoration: none !important;
-      text-decoration-line: none !important;
     }
 
     .invitations-count {

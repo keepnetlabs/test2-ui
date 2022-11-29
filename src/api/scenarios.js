@@ -27,10 +27,6 @@ export function exportScenarios(payload) {
   })
 }
 
-export function getScenarioPreviewContent(id) {
-  return testRequest.get(`phishing-simulator/phishing-scenario/preview/${id}`)
-}
-
 export function getScenarioDataDetails() {
   return testRequest.get(`phishing-simulator/phishing-scenario/form-details`)
 }
