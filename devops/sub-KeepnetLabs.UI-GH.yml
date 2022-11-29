@@ -19,7 +19,6 @@ jobs:
   displayName: Push_GH
   environment:
     name: '${{ parameters.environment }}'
-    resourceType: VirtualMachine 
   strategy:
     runOnce:
       deploy:
