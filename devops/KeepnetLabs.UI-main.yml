@@ -38,7 +38,7 @@ stages:
 - stage: CI_Test
   jobs:   
   - job: Build_UI
-    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/test')
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
