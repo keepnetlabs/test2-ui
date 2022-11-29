@@ -215,9 +215,14 @@ export default {
         searchCampaignManager(this.axiosPayload)
           .then((response) => {
             const {
-              data: { data = [] }
+              data: { data = {} }
             } = response
-            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+            const {
+              results = [],
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 0,
+              pageNumber = 1
+            } = data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber

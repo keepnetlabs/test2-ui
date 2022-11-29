@@ -87,8 +87,8 @@ export default {
   },
 
   methods: {
-    isNotifiedEmailEmpty(data) {
-      return !(data['reportedMailCount'] || data['harmfulCount'])
+    isNotifiedEmailEmpty(data = {}) {
+      return !(data?.reportedMailCount || data?.harmfulCount || 0)
     }
   }
 }
