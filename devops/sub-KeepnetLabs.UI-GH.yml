@@ -41,7 +41,7 @@ jobs:
         - script: |
             rm public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
             mv public/config.Production.js public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Config.js Changes'
 
@@ -55,14 +55,14 @@ jobs:
         - script: |
             git config --global user.email "keepnetlabs@keepnetlabs.com"
             git config --global user.name "Keepnetlabs"
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Github User Cred'
 
         - script: |
             git add .
             git commit -m "config.js updated"
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'  
           displayName: 'Github Add and Commit Config.js'
 
