@@ -1,4 +1,4 @@
-import testRequest from '../utils/testRequest'
+import vishingRequest from '../utils/vishingRequest'
 
 export function getVishingTemplatePreview(id) {
   // TODO: Add correct endpoint
@@ -320,7 +320,7 @@ export function getVishingTemplateList(payload = {}) {
 }
 
 export function exportVishingCampaigns(payload = {}) {
-  return testRequest.post('/vishing-campaign/search/export', payload, {
+  return vishingRequest.post('/vishing-campaign/search/export', payload, {
     responseType: 'blob'
   })
 }
@@ -362,7 +362,7 @@ export function getVishingTemplate(id) {
 }
 
 export function getVishingCampaigns(payload = {}) {
-  return testRequest.post('/vishing-campaign/search', payload)
+  return vishingRequest.post('/vishing-campaign/search', payload)
 }
 
 export function deleteVishingCampaign(id) {
