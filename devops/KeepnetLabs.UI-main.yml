@@ -82,7 +82,7 @@ stages:
 ## DEPLOY GITHUB TEST  
 - stage: GH_Repo_TEST
   dependsOn: CI_test
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado'))
+  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado'))
   variables:
   - group: Test-UI-Config
   jobs:
