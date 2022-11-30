@@ -24,6 +24,7 @@ jobs:
       deploy:
         steps:
         - download: none
+
         - checkout: ${{ parameters.repositoryName }}
           path: ${{ parameters.repositoryName }}
           fetchDepth: 0
@@ -37,7 +38,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Github Test Deployment Checkout'
 
-        - bash: |
+        - script: |
             rm public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
             mv public/config.Production.js public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
