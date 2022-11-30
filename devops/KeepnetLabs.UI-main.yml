@@ -83,7 +83,7 @@ stages:
 - stage: GH_Repo_TEST
   variables:
   - group: Test-UI-Config
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado')) 
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado')
   jobs:
   - template: sub-KeepnetLabs.UI-GH.yml
     parameters:
