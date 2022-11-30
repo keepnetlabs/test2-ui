@@ -2,12 +2,12 @@
   <DataTable
     v-if="getThreatIntelligencePermissionsSearch"
     ref="refThreatIntelligence"
-    :showPagination="true"
-    :options="true"
     id="threat-intelligence-table"
     is-server-side
     selectable
     row-key="email"
+    :showPagination="true"
+    :options="true"
     :loading="isLoading"
     :countRow="10"
     :table="tableData"
@@ -153,13 +153,14 @@ export default {
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
           const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1,
+            results = []
+          } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
           for (let i = 0; i < results.length; i++) {
             const data = results[i]
             data.isActive = data.isActive ? 'Active' : 'Passive'
@@ -184,12 +185,14 @@ export default {
         }
         exportThreatIntelligence(payload).then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Threat-Intelligence.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
+          if (data && data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Threat-Intelligence.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
         })
       })
     }

@@ -18,10 +18,10 @@
     </v-overlay>
     <DeleteScans
       :status="showDeleteModal"
+      :selectedItem="selectedScan"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      :selectedItem="selectedScan"
     />
     <data-table
       v-if="getEtsQuickScanPermissionSearch"
@@ -32,7 +32,7 @@
       selectable
       filterable
       options
-      :loading="loading"
+      :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
@@ -42,7 +42,7 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       row-key="quickScanResourceId"
@@ -53,7 +53,7 @@
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -115,7 +115,6 @@ import DataTable from '../DataTable'
 import NewScan from './NewScan'
 import DeleteScans from './DeleteScans'
 import {
-  getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -127,6 +126,8 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getQuickScanList, getQuickScanById, exportQuickScan } from '@/api/emailThreatSimlator'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
@@ -142,7 +143,7 @@ export default {
     DeleteScans,
     NewScan
   },
-  mixins: [useCallForLanguagesForTableFilter],
+  mixins: [useLoading, useDefaultTableFunctions, useCallForLanguagesForTableFilter],
   data() {
     return {
       scanDetails: {},
@@ -246,7 +247,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
@@ -261,56 +262,18 @@ export default {
       if (this.isShowPreviewDialog) this.selectedScan = {}
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getDatatableList()
-    },
     paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
+      this.axiosPayload = {
+        ...this.axiosPayload,
         pageSize: pageSize,
         pageNumber: pageNumber,
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
+      this.callForData()
     },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleDelete(row) {
       this?.$refs?.refQuickScanList?.$refs?.elTableRef?.toggleRowSelection(row, false)
@@ -322,7 +285,6 @@ export default {
         this.modalStatus = true
       })
       this.selectedScan = row
-      //quickScanResourceId
     },
     checkIfCanCLoseNewModal() {
       if (this.$refs.newScanModal) {
@@ -335,7 +297,7 @@ export default {
       this.scanDetails = {}
       if (restart) {
         this.selectedScan = {}
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -347,7 +309,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportQuickScan(payload).then((response) => {
           const { data } = response
@@ -360,25 +322,26 @@ export default {
         })
       })
     },
-    getDatatableList() {
-      this.loading = true
+    callForData() {
+      this.isLoading = true
       if (this.getEtsQuickScanPermissionSearch) {
-        getQuickScanList(this.bodyData)
+        getQuickScanList(this.axiosPayload)
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 1,
+              pageNumber = 1,
+              results = []
+            } = response.data.data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
             this.tableData = results
           })
           .catch(() => {
             this.tableData = []
           })
-          .finally(() => (this.loading = false))
+          .finally(() => (this.isLoading = false))
       } else {
         this.$router.push('/')
       }
@@ -386,22 +349,11 @@ export default {
     handleActionDelete(row) {
       this.selectedScan = row
       this.showDeleteModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
   },
   mounted() {
     this.callForLanguages('refQuickScanList')
-    this.getDatatableList()
+    this.callForData()
   }
 }
 </script>

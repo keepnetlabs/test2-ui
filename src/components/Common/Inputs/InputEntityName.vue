@@ -1,10 +1,11 @@
 <template>
   <v-text-field
     v-bind="requiredProps"
-    :value="value"
-    :id="id"
     outlined
     dense
+    :value="value"
+    :id="id"
+    :type="type"
     :placeholder="placeholder"
     :rules="rules"
     :disabled="disabled"
@@ -49,6 +50,10 @@ export default {
     },
     hideDetails: {
       default: false
+    },
+    type: {
+      type: String,
+      default: 'text'
     }
   },
   data() {
