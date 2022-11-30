@@ -24,6 +24,7 @@ const APP_CONFIG = (() => {
     VUE_APP_RECAPTCHA_SITEKEY: '6LfSWikcAAAAAIU4AtHzGDkC_0g2uIOsijvBTKcC',
     VUE_APP_PHISHING_REPORTER_URL: 'https://dev-addin-api.devkeepnet.com/api',
     VUE_APP_AWARENESS_URL: 'https://dev-awareness-api.devkeepnet.com/api',
-    VUE_APP_THREATS_INTELLIGENCE_URL: 'https://dev-ti-api.devkeepnet.com/api'
+    VUE_APP_THREATS_INTELLIGENCE_URL: 'https://dev-ti-api.devkeepnet.com/api',
+    VUE_APP_VISHING_URL: 'https://dev-vishing-api.devkeepnet.com/api'
   }
 })()
