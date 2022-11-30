@@ -17,6 +17,7 @@
         cancel-button-id="btn-cancel--scans-popup"
         confirm-button-id="btn-delete--scans-popup"
         type="delete"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />
@@ -42,15 +43,25 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteQuickScanItem(this.selectedItem.quickScanResourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
-      })
-      this.closeModal()
+      this.isActionButtonDisabled = true
+      deleteQuickScanItem(this.selectedItem.quickScanResourceId)
+        .then(() => {
+          this.$emit('handleSuccessDeleteAction')
+          this.closeModal()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

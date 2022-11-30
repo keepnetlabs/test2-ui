@@ -1,5 +1,6 @@
 import emailThreatSimlatorRequest from '@/utils/emailThreatSimulatorRequest'
 import testRequest from '@/utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function getQuickScanList(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/search`, payload, {
@@ -15,7 +16,8 @@ export function deleteQuickScanItem(resourceId) {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
-    }
+    },
+    snackbar: COMMON_SNACKBAR
   })
 }
 export function getValidateContinuousScan(payload) {
@@ -70,7 +72,8 @@ export function deleteAttackVectorItem(resourceId) {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
-    }
+    },
+    snackbar: COMMON_SNACKBAR
   })
 }
 export function getAttackVectorCreate(payload) {
@@ -104,7 +107,8 @@ export function disableAttackVector(payload) {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
-    }
+    },
+    snackbar: COMMON_SNACKBAR
   })
 }
 export function enableAttackVector(payload) {
@@ -112,7 +116,8 @@ export function enableAttackVector(payload) {
     headers: {
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
-    }
+    },
+    snackbar: COMMON_SNACKBAR
   })
 }
 export function exportAttacksVector(payload) {

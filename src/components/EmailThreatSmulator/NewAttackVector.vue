@@ -7,9 +7,7 @@
       :status="showActiveStatusModal"
     >
       <template v-slot:app-dialog-body>
-        <span>
-          Are you sure you want to enable these attack vectors?\
-        </span>
+        <span> Are you sure you want to enable these attack vectors?\ </span>
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -28,23 +26,20 @@
             sub-title="Enter attack vector information and upload file"
           />
           <form-group title="Vector Name" hint>
-            <v-text-field
-              v-model="formValues.name"
-              v-bind="commonRules(true)"
-              outlined
-              hint="*Required"
-              placeholder="Enter a name for the vector"
-              required
+            <InputEntityName
+              v-model.trim="formValues.name"
+              entityName="name"
+              initialPlaceholder="Enter a name for the vector"
+              :initialRules="baseRules"
             />
           </form-group>
           <form-group title="Category" sub-title="Select type of the vector" hint>
-            <v-select
+            <KSelect
               v-model="formValues.categoryResourceId"
               :items="categoryResources"
               item-text="name"
               item-value="resourceId"
               outlined
-              required
             />
           </form-group>
           <form-group
@@ -52,24 +47,22 @@
             sub-title="Enter between 1-10 (1 being the lowest and 10 being the highest)"
             hint
           >
-            <v-text-field
+            <InputNumber
               v-model="formValues.riskFactor"
-              v-bind="setNumberRangeRule(true)"
-              outlined
-              hint=""
-              placeholder="Enter a name for the vector"
-              type="number"
-              pattern="^[\d]+$"
-              required
+              entityName="severity"
+              initialPlaceholder="Enter severity degree"
+              :initialRules="numberRangeRule"
             />
           </form-group>
           <form-group title="Upload file" sub-title="Upload attack vector file" hint>
-            <file-upload
+            <KFileUpload
               width="216"
               hint="Max. file size 200MB"
               ref="refFileUpload"
+              :deletable="isFileDeletable"
+              :filePreviews="getFilePreviews"
               :extensions="[]"
-              :size="200000"
+              :size="200"
               :errorText="fileErrorText"
               :hasError="!!fileErrorText"
               @inputFile="onFileChanged"
@@ -126,7 +119,7 @@ import AppModal from '../AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import FileUpload from '@/components/Common/FileUpload/FileUpload'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import {
@@ -138,6 +131,9 @@ import {
 import { getLookupListByTypeId } from '@/api/common'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppDialog from '@/components/AppDialog'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputNumber from '@/components/Common/Inputs/InputNumber'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'NewScan',
@@ -145,9 +141,12 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    FileUpload,
+    KFileUpload,
     AppDialog,
-    AppDialogFooter
+    AppDialogFooter,
+    InputEntityName,
+    InputNumber,
+    KSelect
   },
   data() {
     return {
@@ -163,19 +162,11 @@ export default {
         riskFactor: 1,
         isActive: false
       },
-      baseRules: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Vector Name', 160))
-        ]
-      },
-      numberRangeRule: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [(v) => Validations.numberRangeRule(v, 1, 10)]
-      },
+      baseRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Vector Name', 160))
+      ],
+      numberRangeRule: [(v) => Validations.numberRangeRule(v, 1, 10)],
       isSubmitDisabled: false,
       isFormValuesChanged: false,
       showActiveStatusModal: false
@@ -195,12 +186,8 @@ export default {
       type: Object
     }
   },
+
   methods: {
-    commonRules(isNeed) {
-      if (isNeed) {
-        return this.baseRules
-      }
-    },
     setNumberRangeRule(isNeed) {
       if (isNeed) {
         return this.numberRangeRule
@@ -209,6 +196,8 @@ export default {
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
         this.formValues.content = ''
+        this.formValues.fileName = ''
+        this.formValues.extension = ''
         this.fileErrorText = 'Attack vector file is required'
       } else {
         this.formValues.content = file
@@ -232,7 +221,7 @@ export default {
       }
     },
     submit() {
-      if (!this.formValues.content) {
+      if (!this.formValues.content && !(this.formValues.fileName && this.formValues.extension)) {
         this.$refs.refAttackVectorForm.validate()
         this.fileErrorText = 'Attack vector file is required'
         return
@@ -296,12 +285,28 @@ export default {
           this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   computed: {
     pageTitle() {
       return this.isEdit ? 'Edit Attack Vector' : 'Create Attack Vector'
+    },
+    isFileDeletable() {
+      return !!this.formValues?.content?.name
+    },
+    getFilePreviews() {
+      return this.formValues?.content || (this.formValues?.fileName && this.formValues?.extension)
+        ? [
+            {
+              name:
+                this.formValues?.content?.name ||
+                this.formValues?.fileName + this.formValues?.extension ||
+                ''
+            }
+          ]
+        : []
     }
   },
   created() {

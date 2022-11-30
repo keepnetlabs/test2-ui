@@ -39,25 +39,26 @@ stages:
       githubConnectionUrl: $(testGitHubConnectionURL)
 # BUILD DEV
 - stage: CI_Dev 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
   - job: Build_UI
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
 # # BUILD TEST
 - stage: CI_Test
+  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
   jobs:   
   - job: Build_UI
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/test')
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
 # # BUILD PROD
 - stage: CI_Prod
+  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
   jobs:   
   - job: Build_UI
-    condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
@@ -75,35 +76,49 @@ stages:
           websiteName: 'DevUI'
           artifactName: 'drop'
 
-
 # # DEPLOY TEST          
-- stage: TEST
+# - stage: TEST
+#   variables:
+#   - group: Test-UI-Config
+#   condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
+#   dependsOn: CI_Test
+#   jobs:
+#     - template: sub-KeepnetLabs.UI-CD.yml
+#       parameters:
+#           jobName: 'Deploy_UI'
+#           environment: 'TEST_UI'
+#           websiteName: 'TestUI'
+#           artifactName: 'drop'
+
+## DEPLOY GITHUB TEST  
+- stage: GH_Repo_TEST
+  dependsOn: CI_test
+  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
   variables:
   - group: Test-UI-Config
-  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
-  dependsOn: CI_Test
   jobs:
-    - template: sub-KeepnetLabs.UI-CD.yml
-      parameters:
-          jobName: 'Deploy_UI'
-          environment: 'TEST_UI'
-          websiteName: 'TestUI'
-          artifactName: 'drop'
+  - template: sub-KeepnetLabs.UI-GH.yml
+    parameters:
+      repositoryName: GitHub_Test_Repo
+      environment: TEST_UI
+      githubConnectionUrl: $(testGitHubConnectionURL)
 
 # # DEPLOY PROD          
-- stage: PROD
-  variables:
-  - group: Prod-UI-Config
-  condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))  
-  dependsOn: CI_Prod
-  jobs:
-    - template: sub-KeepnetLabs.UI-CD.yml
-      parameters:
-          jobName: 'Deploy_UI'
-          environment: 'PROD_UI'
-          websiteName: 'UI'
-          artifactName: 'drop'
+# - stage: PROD
+#   variables:
+#   - group: Prod-UI-Config
+#   condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))  
+#   dependsOn: CI_Prod
+#   jobs:
+#     - template: sub-KeepnetLabs.UI-CD.yml
+#       parameters:
+#           jobName: 'Deploy_UI'
+#           environment: 'PROD_UI'
+#           websiteName: 'UI'
+#           artifactName: 'drop'
 
+
+## DEPLOY GITHUB PROD 
 - stage: GH_Repo_PROD
   variables:
   - group: Prod-UI-Config

@@ -65,7 +65,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)'  
           displayName: 'Github Add and Commit Config.js'
 
-        - script: 'git push ${{ parameters.githubConnectionUrl }} '
+        - script: 'git push ${{ parameters.githubConnectionUrl }}'
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Github Test Deployment Push'
