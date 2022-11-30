@@ -43,18 +43,6 @@ stages:
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
-## DEPLOY GITHUB TEST  
-- stage: GH_Repo_TEST
-  variables:
-  - group: Test-UI-Config
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado')
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Test_Repo
-      environment: TEST_UI
-      githubConnectionUrl: $(testGitHubConnectionURL)
-
 # # BUILD PROD
 - stage: CI_Prod
   condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
@@ -91,7 +79,18 @@ stages:
 #           websiteName: 'TestUI'
 #           artifactName: 'drop'
 
-
+## DEPLOY GITHUB TEST  
+- stage: GH_Repo_TEST
+  dependsOn: CI_test
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado'))
+  variables:
+  - group: Test-UI-Config
+  jobs:
+  - template: sub-KeepnetLabs.UI-GH.yml
+    parameters:
+      repositoryName: GitHub_Test_Repo
+      environment: TEST_UI
+      githubConnectionUrl: $(testGitHubConnectionURL)
 
 # # DEPLOY PROD          
 # - stage: PROD
