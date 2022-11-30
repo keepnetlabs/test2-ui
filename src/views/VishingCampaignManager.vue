@@ -1,5 +1,5 @@
 <template>
-  <KContainer id="vishing-campaign-manager">
+  <KContainer id="vishing-campaign-manager" tabless>
     <VishingTemplatePreview
       v-if="isPreviewVisible"
       isCampaign
@@ -215,7 +215,7 @@ export default {
           },
           {
             property: 'targetUsers',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Target Users',
             sortable: true,
@@ -382,9 +382,6 @@ export default {
           const { results = [] } = data
           this.tableData = results
         })
-        .catch(() => {
-          this.tableData = []
-        })
         .finally(() => (this.loading = false))
       // } else {
       // this.$router.push('/')
@@ -408,7 +405,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `VishingCampaigns.${
+          link.download = `Vishing-Campaigns.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
