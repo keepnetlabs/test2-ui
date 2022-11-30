@@ -320,7 +320,9 @@ export function getVishingTemplateList(payload = {}) {
 }
 
 export function exportVishingCampaigns(payload = {}) {
-  // TODO: Add correct endpoint
+  return testRequest.post('/vishing-campaign/search/export', payload, {
+    responseType: 'blob'
+  })
 }
 
 export function deleteVishingTemplate(id) {
@@ -360,84 +362,7 @@ export function getVishingTemplate(id) {
 }
 
 export function getVishingCampaigns(payload = {}) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        data: {
-          data: {
-            pageNumber: 1,
-            pageSize: 10,
-            totalNumberOfPages: 1,
-            totalNumberOfRecords: 6,
-            results: [
-              {
-                resourceId: '1',
-                name: 'Netflix Password',
-                targetUsers: 215,
-                status: 'Completed',
-                createdBy: 'System',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49',
-                lastLaunch: '14/06/2022 06:49'
-              },
-              {
-                resourceId: '2',
-                name: 'Reset Password',
-                targetUsers: 215,
-                status: 'Running',
-                createdBy: 'Reseller name',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49',
-                lastLaunch: '14/06/2022 06:49'
-              },
-              {
-                resourceId: '3',
-                name: 'Amazon shopping receipt',
-                targetUsers: 215,
-                status: 'Idle',
-                createdBy: 'Company name',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49'
-              },
-              {
-                resourceId: '4',
-                name: 'Facebook new login',
-                targetUsers: 215,
-                status: 'Scheduled',
-                createdBy: 'Company name',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49'
-              },
-              {
-                resourceId: '5',
-                name: 'Starbucks order',
-                targetUsers: 215,
-                status: 'Cancelled',
-                createdBy: 'System',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49',
-                lastLaunch: '14/06/2022 06:49'
-              },
-              {
-                resourceId: '6',
-                name: 'Error Campaign',
-                targetUsers: 215,
-                status: 'Error',
-                createdBy: 'System',
-                templateName: 'Template Name',
-                createTime: '14/06/2022 06:49',
-                lastLaunch: '14/06/2022 06:49'
-              }
-            ]
-          },
-          status: 'SUCCESS',
-          message: 'Resource retrieved',
-          validationMessages: []
-        }
-      })
-    }, 1000)
-  })
+  return testRequest.post('/vishing-campaign/search', payload)
 }
 
 export function deleteVishingCampaign(id) {
