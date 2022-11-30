@@ -37,7 +37,7 @@ stages:
 
 # # BUILD TEST
 - stage: CI_Test
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado'))
+  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
   jobs:   
   - job: Build_UI
     steps:
@@ -82,7 +82,7 @@ stages:
 ## DEPLOY GITHUB TEST  
 - stage: GH_Repo_TEST
   dependsOn: CI_test
-  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/feature/hotfix_ado'))
+  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
   variables:
   - group: Test-UI-Config
   jobs:
