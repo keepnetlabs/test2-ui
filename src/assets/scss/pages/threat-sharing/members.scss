@@ -242,17 +242,6 @@
     }
   }
 
-
-  .ts-community-industry {
-    font-family: "Open Sans", sans-serif !important;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-  }
-
   .notification-wrapper {
     background-color: #fff;
   }
@@ -322,16 +311,6 @@
         letter-spacing: normal;
         text-decoration: unset;
         color: #2196f3;
-      }
-    }
-
-    .members-pie {
-      float: left;
-      width: 50%;
-
-      @media only screen and (max-width: 750px) {
-        width: 100%;
-        padding-bottom: 20px;
       }
     }
   }

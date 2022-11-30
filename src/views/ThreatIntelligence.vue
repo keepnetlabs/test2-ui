@@ -13,11 +13,6 @@ export default {
   components: {
     KContainer,
     ThreatIntelligenceList
-  },
-  data() {
-    return {
-      tab: 'scans'
-    }
   }
 }
 </script>

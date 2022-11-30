@@ -104,7 +104,7 @@ export default {
       } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
         vm.tab = 1
         setTimeout(() => {
-          vm.$refs.tsCommunities.subTabSelected('tab-2')
+          if (vm?.$refs?.tsCommunities) vm.$refs.tsCommunities.subTabSelected('tab-2')
         }, 1250)
       }
       if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) {

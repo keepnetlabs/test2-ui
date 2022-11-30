@@ -1,0 +1,32 @@
+.quick-scan {
+  .qs-status {
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: white;
+    width: 80px;
+    text-align: center;
+    &.Initial {
+      color: #00bcd4;
+      border: 1px solid #00bcd4;
+    }
+    &.inprogress {
+      color: #1173c1;
+      border: 1px solid #1173c1;
+    }
+    &.completed {
+      color: #217124;
+      border: 1px solid #217124;
+    }
+    &.cancelled {
+      color: #b6791d;
+      border: 1px solid #b6791d;
+    }
+    &.continuous {
+      color: #383b41;
+      border: 1px solid #383b41;
+    }
+  }
+}

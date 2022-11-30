@@ -24,7 +24,7 @@
         </div>
       </template>
     </app-dialog>
-    <app-modal :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
+    <app-modal id="new-scan" :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-stepper light v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
@@ -1062,79 +1062,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.radio-btn-list {
-  .v-input--selection-controls {
-    margin-top: 5px;
-  }
-}
-.email-threat-simulator-warning {
-  .v-cart-icon-wrapper {
-    background-color: #fef7f7 !important;
-    border: 1px solid #f56c6c !important;
-  }
-  .k-dialog__title {
-    color: #f56c6c !important;
-  }
-  .k-dialog__button {
-    background-color: white !important;
-    width: 120px;
-  }
-  .k-dialog__button:hover {
-    background-color: white !important;
-  }
-}
-</style>
-<style lang="scss" scoped>
-.label-left-form {
-  width: 80%;
-  display: flex;
-  flex-wrap: nowrap;
-  margin-top: 10px;
-  label {
-    padding-top: 9px;
-    margin-right: 30px;
-    min-width: 80px;
-    &.little {
-      font-size: 14px;
-    }
-  }
-}
-.loop-type-input-container {
-  height: 36px;
-  margin-bottom: 10px;
-  .left-input {
-    width: 100px;
-  }
-  .right-input {
-    width: 120px;
-  }
-}
-.user-agreement-container {
-  max-width: 554px;
-  height: 345px;
-  border-radius: 8px;
-  background: #fafafa;
-  border: 1px solid #e0e0e0;
-  padding: 11px 16px 11px 10px;
-  overflow: auto;
-  margin-bottom: 16px;
-  font-size: 13px;
-  line-height: 18px;
-  scroll-padding: 50px 0 0 50px;
-  &::-webkit-scrollbar {
-    width: 14px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border: 4px solid rgba(0, 0, 0, 0);
-    background-clip: padding-box;
-    border-radius: 9999px;
-    background-color: #757575;
-  }
-}
-.email-login-error {
-  max-width: 554px;
-  background: rgba(245, 108, 108, 0.2);
-}
-</style>
