@@ -126,41 +126,33 @@
                     has-hint
                     class-name="mt-5"
                   >
-                    <v-text-field
-                      v-bind="commonRules(emailSettingsValues.scanType === 'Manual' ? false : true)"
+                    <InputEntityName
                       v-model="emailSettingsValues.password"
-                      outlined
-                      dense
-                      placeholder="Password"
-                      hint="*Required"
-                      required
+                      entityName="password"
                       type="password"
-                      place
+                      initialPlaceholder="Enter a password"
+                      :initialRules="baseRules"
                       :disabled="emailSettingsValues.scanType === 'Manual' ? true : false"
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
                         <label>Application (Client) ID</label>
-                        <v-text-field
-                          class="ml-2"
-                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                        <InputEntityName
                           v-model="emailSettingsValues.clientId"
-                          outlined
-                          hint="*Required"
-                          required
-                          placeholder="Client Id"
+                          entityName="clientId"
+                          initialPlaceholder="Enter Client Id"
+                          class="ml-2"
+                          :initialRules="baseRules"
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
                         <label>Directory (Tenant) ID&nbsp;</label>
-                        <v-text-field
-                          class="ml-2"
-                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                        <InputEntityName
                           v-model="emailSettingsValues.tenantId"
-                          outlined
-                          hint="*Required"
-                          required
-                          placeholder="Directory (Tenant) ID"
+                          entityName="tenantId"
+                          initialPlaceholder="Enter Directory (Tenant) ID"
+                          class="ml-2"
+                          :initialRules="baseRules"
                         />
                       </div>
                     </div>
@@ -175,14 +167,12 @@
                       class="label-left-form"
                     >
                       <label>OWA URL</label>
-                      <v-text-field
-                        class="ml-2"
-                        v-bind="commonRules(emailSettingsValues.owa)"
+                      <InputEntityName
                         v-model="emailSettingsValues.owaUrl"
-                        outlined
-                        hint="*Required"
-                        required
-                        placeholder="OWA URL"
+                        entityName="owaUrl"
+                        initialPlaceholder="Enter OWA URL"
+                        class="ml-2"
+                        :initialRules="baseRules"
                       />
                     </div>
                     <div
@@ -190,14 +180,12 @@
                       class="label-left-form"
                     >
                       <label>Username</label>
-                      <v-text-field
-                        class="ml-2"
-                        v-bind="commonRules(emailSettingsValues.owa)"
+                      <InputEntityName
                         v-model="emailSettingsValues.username"
-                        outlined
-                        hint="*Required"
-                        required
-                        placeholder="Username"
+                        entityName="username"
+                        initialPlaceholder="Enter Username"
+                        class="ml-2"
+                        :initialRules="baseRules"
                       />
                     </div>
                   </form-group>
@@ -224,7 +212,6 @@
                 >
                   {{ continuosScanErrortext }}
                 </v-alert>
-
                 <v-form ref="refFormStep2" lazy-validation class="mt-8">
                   <form-group title="Continuos Scan" hint>
                     <v-checkbox
@@ -250,13 +237,11 @@
                   >
                     <div class="label-left-form">
                       <label class="little">Sending Limit</label>
-                      <v-text-field
+                      <InputNumber
                         v-model="scanAndDeliveryValues.sendingLimit"
-                        class="shrink mx-1"
-                        type="number"
-                        outlined
-                        hint=""
-                        placeholder="Sending Limit"
+                        entityName="sendingLimit"
+                        initialPlaceholder="Enter Sending Limit"
+                        :required="false"
                         :disabled="
                           scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP' ? false : true
                         "
@@ -768,6 +753,8 @@ import {
   getQuickScanCreate
 } from '@/api/emailThreatSimlator'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputNumber from '@/components/Common/Inputs/InputNumber'
 
 export default {
   name: 'NewScan',
@@ -776,7 +763,9 @@ export default {
     AppModal,
     AppDialog,
     FormGroup,
-    InputEmail
+    InputEmail,
+    InputEntityName,
+    InputNumber
   },
   data() {
     return {
@@ -824,14 +813,10 @@ export default {
         }
       },
       acceptRule: false,
-      baseRules: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
-        ]
-      },
+      baseRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
+      ],
       permissionModalStatus: true,
       isSubmitDisabled: false,
       continuosScanErrortext: '',

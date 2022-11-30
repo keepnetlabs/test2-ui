@@ -1944,7 +1944,6 @@ export default {
           },
           IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
-        console.log('payload', payload)
         createCommunityPost(payload)
           .then(() => {
             this.$store.dispatch('tableReload/setTableReload', true)

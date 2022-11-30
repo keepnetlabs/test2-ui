@@ -31,7 +31,7 @@
               {{ displayFileName(file.name) }}
             </div>
             <div class="k-file-uploads__item-details--filesize">
-              <span>{{ file.size | formatSize }}</span>
+              <span v-if="!!file.size">{{ file.size | formatSize }}</span>
               <span
                 v-if="
                   isStandAlone &&
