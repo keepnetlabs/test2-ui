@@ -191,94 +191,100 @@
               title="Call Settings"
               subtitle="Set call options"
             />
-            <FormGroup
-              class="mt-6"
-              title="Caller Phone Number"
-              subTitle="Select caller phone number for this campaign"
-            >
-              <KSelect
-                v-model="formValues.callerPhoneNumber"
-                outlined
-                dense
-                placeholder="Select a phone number"
-                :items="phoneNumbers"
-              />
-            </FormGroup>
-            <FormGroup
-              title="Distribution"
-              subTitle="Call target users with over a specified time period. Set days and hours of calls."
-            >
-              <div class="vishing-campaign-modal__send-calls">
-                <span>Send calls over</span>
-                <div style="position: relative;">
-                  <v-text-field
-                    ref="refSendCallsOver"
-                    :value="formValues.distributionOverDays"
-                    style="max-width: 100px !important; margin-right: 8px;"
-                    outlined
-                    placeholder=""
-                    hide-details
-                    :error="!!getDistributionOverDaysValueErrorMessage"
-                    @input="handleSendOverCallsValueChange"
-                  />
-                  <CustomError
-                    style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
-                    :error-message="getDistributionOverDaysValueErrorMessage"
-                  />
-                </div>
+            <v-form ref="refFormStep4">
+              <FormGroup
+                has-hint
+                class="mt-6"
+                title="Caller Phone Number"
+                sub-title="Select caller phone number for this campaign"
+              >
                 <KSelect
-                  v-model="formValues.sendCallsOverType"
-                  style="max-width: 137px !important;"
+                  v-model="formValues.callerPhoneNumber"
                   outlined
                   dense
-                  hide-details
-                  position="top"
-                  :return-object="false"
-                  :items="sendCallsOverTypes"
+                  hint="*Required"
+                  persistent-hint
+                  placeholder="Select a phone number"
+                  :items="phoneNumbers"
+                  :rules="[(v) => Validations.required(v)]"
                 />
-              </div>
-              <div class="vishing-campaign-modal__send-calls">
-                <span>Send calls between</span>
-                <el-time-select
-                  v-model="formValues.distributionStartTime"
-                  style="max-width: 100px;"
-                  placeholder="Start time"
-                  :picker-options="{
-                    start: '09:00',
-                    end: '17:00'
-                  }"
-                />
-                <span class="mx-2">and</span>
-                <el-time-select
-                  v-model="formValues.distributionEndTime"
-                  style="max-width: 100px;"
-                  placeholder="End time"
-                  :picker-options="{
-                    start: '09:00',
-                    end: '17:00',
-                    minTime: formValues.distributionStartTime
-                  }"
-                />
-              </div>
-              <div class="vishing-campaign-modal__send-calls-on">
-                <div>
-                  <div>Send calls on</div>
-                </div>
-                <div class="vishing-campaign-modal__send-calls-on__days">
-                  <v-checkbox
-                    v-for="day in sendCallsOnDaysOptions"
-                    v-model="formValues.sendCallsOnDays"
-                    color="#2196F3"
-                    :label="day.text"
-                    :value="day.value"
-                    :key="day.value"
+              </FormGroup>
+              <FormGroup
+                title="Distribution"
+                subTitle="Call target users with over a specified time period. Set days and hours of calls."
+              >
+                <div class="vishing-campaign-modal__send-calls">
+                  <span>Send calls over</span>
+                  <div style="position: relative;">
+                    <v-text-field
+                      ref="refSendCallsOver"
+                      :value="formValues.distributionOverDays"
+                      style="max-width: 100px !important; margin-right: 8px;"
+                      outlined
+                      placeholder=""
+                      hide-details
+                      :error="!!getDistributionOverDaysValueErrorMessage"
+                      @input="handleSendOverCallsValueChange"
+                    />
+                    <CustomError
+                      style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
+                      :error-message="getDistributionOverDaysValueErrorMessage"
+                    />
+                  </div>
+                  <KSelect
+                    v-model="formValues.sendCallsOverType"
+                    style="max-width: 137px !important;"
+                    outlined
+                    dense
+                    hide-details
+                    position="top"
+                    :return-object="false"
+                    :items="sendCallsOverTypes"
                   />
                 </div>
+                <div class="vishing-campaign-modal__send-calls">
+                  <span>Send calls between</span>
+                  <el-time-select
+                    v-model="formValues.distributionStartTime"
+                    style="max-width: 100px;"
+                    placeholder="Start time"
+                    :picker-options="{
+                      start: '09:00',
+                      end: '17:00'
+                    }"
+                  />
+                  <span class="mx-2">and</span>
+                  <el-time-select
+                    v-model="formValues.distributionEndTime"
+                    style="max-width: 100px;"
+                    placeholder="End time"
+                    :picker-options="{
+                      start: '09:00',
+                      end: '17:00',
+                      minTime: formValues.distributionStartTime
+                    }"
+                  />
+                </div>
+                <div class="vishing-campaign-modal__send-calls-on">
+                  <div>
+                    <div>Send calls on</div>
+                  </div>
+                  <div class="vishing-campaign-modal__send-calls-on__days">
+                    <v-checkbox
+                      v-for="day in sendCallsOnDaysOptions"
+                      v-model="formValues.sendCallsOnDays"
+                      color="#2196F3"
+                      :label="day.text"
+                      :value="day.value"
+                      :key="day.value"
+                    />
+                  </div>
+                </div>
+              </FormGroup>
+              <div class="vishing-campaign-modal__send-calls-text">
+                {{ getSendCallsText }}
               </div>
-            </FormGroup>
-            <div class="vishing-campaign-modal__send-calls-text">
-              {{ getSendCallsText }}
-            </div>
+            </v-form>
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="5">
             <ConfigureCompanyStepHeader
@@ -312,6 +318,9 @@
       <StepperFooter
         max-step="5"
         :step.sync="step"
+        :disabled-statuses="{
+          submitButton: isActionButtonDisabled
+        }"
         @on-cancel="handleCancel"
         @on-back="backStep"
         @on-next="nextStep"
@@ -339,6 +348,7 @@ import { searchTargetGroups } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
+import * as Validations from '@/utils/validations'
 import {
   getScheduleType,
   getSendCallOnDays,
@@ -346,7 +356,12 @@ import {
   sendCallsOnDaysOptions,
   sendCallsOverTypes
 } from '@/components/VishingCampaignManager/utils'
-import { getPhoneNumbers, getVishingCampaign } from '@/api/vishing'
+import {
+  createVishingCampaign,
+  getPhoneNumbers,
+  getVishingCampaign,
+  updateVishingCampaign
+} from '@/api/vishing'
 
 const initialFormValues = {
   name: '',
@@ -405,6 +420,7 @@ export default {
   data() {
     return {
       labels,
+      Validations,
       step: 1,
       selectedTemplateStepIndex: 0,
       parsedFormat: getTimeZone(false),
@@ -425,7 +441,8 @@ export default {
       distributionDays: 31,
       phoneNumbers: [],
       sendCallsOverTypes,
-      sendCallsOnDaysOptions
+      sendCallsOnDaysOptions,
+      isActionButtonDisabled: false
     }
   },
   computed: {
@@ -552,7 +569,8 @@ export default {
           scheduleDate,
           scheduleType,
           scheduledDateTimeZoneId,
-          targetGroupResourceIds = []
+          targetGroupResourceIds = [],
+          templateResourceId = ''
         } = response?.data?.data || {}
         this.formValues.callerPhoneNumber = callerPhoneNumber
         this.formValues.distributionEndTime = distributionEndTime.split(':').slice(0, 2).join(':')
@@ -562,11 +580,12 @@ export default {
           .join(':')
         this.formValues.sendCallsOnDays = getSendCallOnDays(distributionDays)
         this.formValues.excludeFromReports = excludeFromReports
-        this.formValues.name = name
+        this.formValues.name = this.isDuplicate ? `${name} - Copy` : name
         this.formValues.scheduleDate = scheduleDate
         this.formValues.scheduledDateTimeZoneId = scheduledDateTimeZoneId
         this.formValues.scheduleType = getScheduleType(scheduleType)
         this.formValues.targetGroupResourceIds = targetGroupResourceIds || []
+        this.formValues.templateResourceId = templateResourceId
         this.$nextTick(() => (this.isTargetGroupsValid = true))
       })
     },
@@ -628,8 +647,8 @@ export default {
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
-    handleCancel() {
-      this.$emit('cancel')
+    handleCancel(forceUpdate = false) {
+      this.$emit('cancel', forceUpdate)
     },
     backStep() {
       this.step--
@@ -647,12 +666,61 @@ export default {
             return
           }
           this.step++
+        }
+        if (this.step === 4) {
+          const { refFormStep4 } = this.$refs
+          if (refFormStep4.validate()) {
+            if (this.distributionDays === 0) {
+            } else this.step++
+          }
         } else {
           this.isTargetGroupsValid = false
         }
       } else this.step++
     },
-    submit() {}
+    submit() {
+      const {
+        name,
+        scheduleType,
+        scheduleDate,
+        scheduledDateTimeZoneId,
+        excludeFromReports,
+        targetGroupResourceIds,
+        callerPhoneNumber,
+        distributionOverDays,
+        distributionStartTime,
+        distributionEndTime,
+        templateResourceId
+      } = this.formValues
+      const payload = {
+        name,
+        scheduleType: parseInt(scheduleType),
+        scheduleDate,
+        scheduledDateTimeZoneId,
+        excludeFromReports,
+        targetGroupResourceIds: targetGroupResourceIds.map((tGroup) => tGroup.value),
+        callerPhoneNumber,
+        distributionOverDays,
+        distributionStartTime,
+        distributionEndTime,
+        distributionDays: this.distributionDays,
+        templateResourceId: 'bkp9fU1cYaC8'
+      }
+      this.isActionButtonDisabled = true
+      if (this.isEdit) {
+        updateVishingCampaign(payload, this.selectedRow.resourceId)
+          .then(() => {
+            this.handleCancel(true)
+          })
+          .finally(() => (this.isActionButtonDisabled = false))
+      } else {
+        createVishingCampaign(payload)
+          .then(() => {
+            this.handleCancel(true)
+          })
+          .finally(() => (this.isActionButtonDisabled = false))
+      }
+    }
   }
 }
 </script>

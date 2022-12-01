@@ -1,4 +1,5 @@
 import vishingRequest from '../utils/vishingRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function getVishingTemplatePreview(id) {
   // TODO: Add correct endpoint
@@ -374,21 +375,15 @@ export function deleteVishingCampaign(id) {
   })
 }
 
-export function updateVishingCampaign(id, payload = {}) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
+export function updateVishingCampaign(payload = {}, resourceId) {
+  return vishingRequest.put(`/vishing-campaign/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
   })
 }
 
 export function createVishingCampaign(payload = {}) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
+  return vishingRequest.post('/vishing-campaign', payload, {
+    snackbar: COMMON_SNACKBAR
   })
 }
 

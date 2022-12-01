@@ -469,7 +469,8 @@ export default {
       this.selectedRow = null
       this.isDeleteModalVisible = false
     },
-    handleCloseCampaignModal() {
+    handleCloseCampaignModal(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
       this.selectedRow = null
       this.isEdit = false
       this.isDuplicate = false
