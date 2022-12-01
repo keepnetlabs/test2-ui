@@ -42,3 +42,55 @@ export function getStatusBadgeProps(status) {
     }
   }
 }
+
+export const sendCallsOnDaysOptions = [
+  {
+    text: 'Monday',
+    value: '1'
+  },
+  {
+    text: 'Tuesday',
+    value: '2'
+  },
+  {
+    text: 'Wednesday',
+    value: '4'
+  },
+  {
+    text: 'Thursday',
+    value: '8'
+  },
+  {
+    text: 'Friday',
+    value: '16'
+  },
+  {
+    text: 'Saturday',
+    value: '32'
+  },
+  {
+    text: 'Sunday',
+    value: '64'
+  }
+]
+
+export const recipientTypes = [
+  {
+    text: 'percent',
+    value: 1
+  },
+  {
+    text: 'users',
+    value: 2
+  }
+]
+export const sendCallsOverTypes = [
+  {
+    text: 'days',
+    value: 'days'
+  },
+  {
+    text: 'weeks',
+    value: 'weeks'
+  }
+]

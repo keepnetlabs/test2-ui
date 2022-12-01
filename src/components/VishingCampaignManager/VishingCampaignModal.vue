@@ -36,8 +36,8 @@
                 <InputEntityName
                   v-model.trim="formValues.name"
                   id="input--new-vishing-campaign-campaign-name"
-                  entityName="campaign name"
-                  initialPlaceholder="Enter a name"
+                  entity-name="campaign name"
+                  initial-placeholder="Enter a name"
                 />
               </FormGroup>
               <FormGroup
@@ -46,7 +46,7 @@
                 subTitle="Start time of this campaign"
               >
                 <v-radio-group
-                  v-model="formValues.scheduleTypeId"
+                  v-model="formValues.scheduleType"
                   class="mt-0 campaign-manager-target-groups-radio"
                   hide-details
                 >
@@ -74,7 +74,7 @@
                     />
                     <div :class="[!isDateValid && 'date-picker-error mb-n3']">
                       <InputDate
-                        v-model="formValues.scheduledDate"
+                        v-model="formValues.scheduleDate"
                         class="date-picker-height-40 ml-2 black-placeholder"
                         type="datetime"
                         ref="refPicker"
@@ -99,7 +99,7 @@
                     </div>
                     <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
                     <InputTimezone
-                      v-model="formValues.scheduledTimeZoneId"
+                      v-model="formValues.scheduledDateTimeZoneId"
                       class="black-placeholder"
                       :disabled="isScheduledTimeDisabled"
                     />
@@ -108,7 +108,7 @@
               </FormGroup>
               <FormGroup class="mt-6" title="Mark as Test">
                 <v-checkbox
-                  v-model="formValues.markedAsTest"
+                  v-model="formValues.excludeFromReports"
                   hide-details
                   color="#2196f3"
                   label="Exclude from reports (Test campaign)"
@@ -125,9 +125,8 @@
             />
             <VishingTemplateSelectList
               ref="refVishingTemplateSelectList"
-              :templateResourceId="formValues.templateResourceId"
+              :template-resource-id="formValues.templateResourceId"
               @initialTemplateId="handleInitialTemplate"
-              @selectedTemplateChange="handleSelectedTemplateChange"
               @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
             />
           </v-stepper-content>
@@ -137,43 +136,6 @@
               title="Target Audience"
               subtitle="Select target users for your campaign"
             />
-            <KSelect
-              v-show="false"
-              v-model.trim="formValues.targetGroupResourceIds"
-              type="combobox"
-              id="input--campaign-target-user-groups"
-              class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-              outlined
-              multiple
-              dense
-              auto-select-first
-              small-chips
-              deletable-chips
-              persistent-hint
-              hint="*Required"
-              placeholder="Select groups"
-              :loading="isTargetGroupSearchLoading"
-              :items="targetGroupItems"
-              :rules="rules.targetGroupSelect"
-              :slots="{ progress: true }"
-              @input="handleTargetGroupsResourceIdsChange"
-              @update:search-input="handleSearchInputChange"
-              @focus="handleFocusOfTargetGroupsInput"
-              @focusout="handleFocusOutOfTargetGroupsInput"
-            >
-              <template #progress>
-                <KSelectLoading v-show="isTargetGroupSearchLoading && isTargetGroupFocused" />
-              </template>
-            </KSelect>
-            <v-btn
-              v-show="false"
-              text
-              class="campaign-manager__close-advanced-search"
-              color="#2196F3"
-              @click="toggleShowAdvancedSearch"
-            >
-              {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
-            </v-btn>
             <CampaignManagerTargetGroups
               ref="refTargetAudience"
               class="mt-2"
@@ -182,6 +144,7 @@
               :is-valid="isTargetGroupsValid"
               @handle-selection-change="handleTableSelectionChange"
             />
+            <CustomError v-if="!isTargetGroupsValid" :error-message="getTargetGroupErrorMessage" />
             <template v-if="false">
               <FormGroup class="mt-6" title="Limit Recipients" />
               <div class="d-flex" style="align-items: center; gap: 8px;">
@@ -234,7 +197,7 @@
               subTitle="Select caller phone number for this campaign"
             >
               <KSelect
-                v-model="formValues.selectedPhoneNumber"
+                v-model="formValues.callerPhoneNumber"
                 outlined
                 dense
                 placeholder="Select a phone number"
@@ -277,9 +240,9 @@
               <div class="vishing-campaign-modal__send-calls">
                 <span>Send calls between</span>
                 <el-time-select
+                  v-model="formValues.distributionStartTime"
                   style="max-width: 100px;"
                   placeholder="Start time"
-                  v-model="formValues.sendCallsBetweenStartTime"
                   :picker-options="{
                     start: '09:00',
                     end: '17:00'
@@ -287,13 +250,13 @@
                 />
                 <span class="mx-2">and</span>
                 <el-time-select
+                  v-model="formValues.distributionEndTime"
                   style="max-width: 100px;"
                   placeholder="End time"
-                  v-model="formValues.sendCallsBetweenEndTime"
                   :picker-options="{
                     start: '09:00',
                     end: '17:00',
-                    minTime: formValues.sendCallsBetweenStartTime
+                    minTime: formValues.distributionStartTime
                   }"
                 />
               </div>
@@ -366,37 +329,40 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import { mapGetters } from 'vuex'
-import { getTimeZone } from '@/utils/functions'
+import { getDefaultAxiosPayload, getTimeZone, scrollToComponent } from '@/utils/functions'
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import KSelectLoading from '@/components/KSelectLoading'
 import { searchTargetGroups } from '@/api/targetUsers'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
+import {
+  recipientTypes,
+  sendCallsOnDaysOptions,
+  sendCallsOverTypes
+} from '@/components/VishingCampaignManager/utils'
 
 const initialFormValues = {
   name: '',
-  scheduleTypeId: '1',
-  scheduledDate: '',
-  scheduledTimeZoneId: '',
-  markedAsTest: false,
-  templateId: '',
+  scheduleType: '1',
+  scheduleDate: '',
+  scheduledDateTimeZoneId: '',
+  excludeFromReports: false,
   templateResourceId: '',
   template: null,
   targetGroupResourceIds: [],
   isLimitRecipients: false,
   recipientType: 1,
   recipientValue: 0,
-  selectedPhoneNumber: '',
+  callerPhoneNumber: '',
   sendCallsOverValue: 2,
   sendCallsOverType: 'days',
-  sendCallsBetweenStartTime: '09:00',
-  sendCallsBetweenEndTime: '17:00',
-  sendCallsOnDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+  distributionStartTime: '09:00',
+  distributionEndTime: '17:00',
+  sendCallsOnDays: ['1', '2', '4', '8', '16']
 }
 
 export default {
@@ -413,7 +379,6 @@ export default {
     CampaignManagerTargetGroups,
     CustomError,
     KSelect,
-    KSelectLoading,
     CampaignManagerSummaryCard,
     VishingCampaignModalSummaryVishingTemplate
   },
@@ -451,104 +416,12 @@ export default {
       totalTargetUserCount: 0,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: {},
-      isTargetGroupSearchLoading: false,
-      isTargetGroupLoading: false,
-      defaultTargetGroups: [],
-      targetGroupItems: [],
-      isShowAdvancedSearch: true,
-      isTargetGroupFocused: false,
       isShowTargetGroupUsersError: false,
-      axiosPayloadOfTargetGroups: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      rules: {
-        targetGroupSelect: [
-          (v) => !!v.length || labels.Required,
-          (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
-        ]
-      },
-      recipientTypes: [
-        {
-          text: 'percent',
-          value: 1
-        },
-        {
-          text: 'users',
-          value: 2
-        }
-      ],
-      phoneNumbers: [
-        {
-          text: '+90 531 567 78 90',
-          value: '+90 531 567 78 90'
-        },
-        {
-          text: '+90 531 567 78 91',
-          value: '+90 531 567 78 91'
-        },
-        {
-          text: '+90 531 567 78 92',
-          value: '+90 531 567 78 92'
-        }
-      ],
-      sendCallsOverTypes: [
-        {
-          text: 'days',
-          value: 'days'
-        },
-        {
-          text: 'weeks',
-          value: 'weeks'
-        }
-      ],
-      sendCallsOnDaysOptions: [
-        {
-          text: 'Monday',
-          value: 'Monday'
-        },
-        {
-          text: 'Tuesday',
-          value: 'Tuesday'
-        },
-        {
-          text: 'Wednesday',
-          value: 'Wednesday'
-        },
-        {
-          text: 'Thursday',
-          value: 'Thursday'
-        },
-        {
-          text: 'Friday',
-          value: 'Friday'
-        },
-        {
-          text: 'Saturday',
-          value: 'Saturday'
-        },
-        {
-          text: 'Sunday',
-          value: 'Sunday'
-        }
-      ]
+      axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
+      recipientTypes,
+      phoneNumbers: [],
+      sendCallsOverTypes,
+      sendCallsOnDaysOptions
     }
   },
   computed: {
@@ -557,7 +430,7 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.sendCallsBetweenStartTime} and ${this.formValues.sendCallsBetweenEndTime} and each user will receive a call approximately every 19 minutes.`
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every 19 minutes.`
     },
     getTitle() {
       return !this.isEdit
@@ -613,7 +486,7 @@ export default {
       // TODO: Insert calculated delivery start-end info here
       return {
         'Delivery Start- End': '28.05.2021 16:29:00 - 29.05.2021 16:29:90',
-        'Caller Phone Number': this.formValues.selectedPhoneNumber
+        'Caller Phone Number': this.formValues.callerPhoneNumber
       }
     }
   },
@@ -634,11 +507,10 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        const userCount = val.reduce((acc, item) => {
+        this.totalTargetUserCount = val.reduce((acc, item) => {
           acc += item?.userCount || 0
           return acc
         }, 0)
-        this.totalTargetUserCount = userCount
       }
     }
   },
@@ -646,59 +518,12 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
-    handleSearchInputChange(val) {
-      this.debounce(() => {
-        if (
-          (!this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
-            val === null) ||
-          (this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
-            this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0].Value === val)
-        )
-          return
-        this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems = [
-          { FieldName: 'Name', Operator: 'Contains', Value: val }
-        ]
-        this.callForTargetGroups()
-      }, 500)
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    },
     callForTargetGroups() {
-      this.isTargetGroupSearchLoading = true
-      this.setTargetGroupLoading(true)
-      searchTargetGroups(this.axiosPayloadOfTargetGroups)
-        .then((response) => {
-          const { data: { data: { results = [] } = {} } = {} } = response
-          if (this.initial) {
-            this.responseOfTargetGroupsItems = response
-          }
-          this.initial = false
-          this.targetGroupItems = results.map((item) => ({
-            text: item.name,
-            value: item.resourceId,
-            extraDatas: item
-          }))
-        })
-        .finally(() => {
-          this.isTargetGroupSearchLoading = false
-          this.setTargetGroupLoading()
-          this.addDefaultTargetGroupItems(this.defaultTargetGroups)
-          this.targetGroupItems.push(...this.defaultTargetGroups)
-        })
-    },
-    setTargetGroupLoading(val = false) {
-      this.isTargetGroupLoading = val
-    },
-    addDefaultTargetGroupItems(targetGroups = []) {
-      if (this.formValues.targetGroupResourceIds.length || !targetGroups.length) return
-      this.$nextTick(() => {
-        this.handleTargetGroupsResourceIdsChange(targetGroups)
+      searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
+        if (this.initial) {
+          this.responseOfTargetGroupsItems = response
+        }
+        this.initial = false
       })
     },
     handleTargetGroupsResourceIdsChange(items) {
@@ -720,55 +545,6 @@ export default {
           value: item.value || item.resourceId,
           extraDatas: item
         }))
-    },
-    handleScroll(
-      e,
-      callback = this.callForTargetGroups,
-      axiosPayload = this.axiosPayloadOfTargetGroups
-    ) {
-      const { scrollTop, scrollHeight, offsetHeight } = e.target
-      if (
-        scrollTop - (scrollHeight - offsetHeight) < 10 &&
-        scrollTop - (scrollHeight - offsetHeight) > -10
-      ) {
-        axiosPayload.pageSize += 10
-        this.debounce(() => {
-          callback()
-        }, 500)
-      }
-    },
-    handleFocusOfTargetGroupsInput() {
-      this.isTargetGroupFocused = true
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
-            document
-              .querySelector('#input--campaign-target-user-groups .k-select__menu')
-              .addEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
-    handleFocusOutOfTargetGroupsInput() {
-      this.isTargetGroupFocused = false
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
-            document
-              .querySelector('#input--campaign-target-user-groups .k-select__menu')
-              .removeEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
-    toggleShowAdvancedSearch() {
-      this.isShowAdvancedSearch = !this.isShowAdvancedSearch
     },
     handleRecipientValueChange(val) {
       if (!val || /\d+$/.test(val)) {
@@ -802,11 +578,7 @@ export default {
       return text
     },
     handleInitialTemplate(id) {
-      this.initialFormValues.templateId = id
-    },
-    handleSelectedTemplateChange(id, item) {
-      this.formValues.templateId = id
-      this.formValues.template = item
+      this.initialFormValues.templateResourceId = id
     },
     handleSelectedTemplateResourceIdChange(id) {
       this.formValues.templateResourceId = id
@@ -821,7 +593,22 @@ export default {
       this.step--
     },
     nextStep() {
-      this.step++
+      if (this.step === 1) {
+        const { refFormStep1 } = this.$refs
+        if (refFormStep1.validate()) this.step++
+        else this.$nextTick(() => scrollToComponent(refFormStep1.$el.querySelector('.error--text')))
+      } else if (this.step === 3) {
+        if (this.formValues.targetGroupResourceIds.length) {
+          if (!this.totalTargetUserCount) {
+            this.isShowTargetGroupUsersError = true
+            this.isTargetGroupsValid = false
+            return
+          }
+          this.step++
+        } else {
+          this.isTargetGroupsValid = false
+        }
+      } else this.step++
     },
     submit() {}
   }
