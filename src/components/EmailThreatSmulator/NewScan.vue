@@ -1019,13 +1019,6 @@ export default {
       deep: true,
       immediate: true
     },
-    passwordRules: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('passwordRules', val)
-      }
-    },
     acceptRule(val) {
       this.disableStartButtonStatus = val
     }
