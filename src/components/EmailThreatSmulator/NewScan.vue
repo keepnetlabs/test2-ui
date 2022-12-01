@@ -131,7 +131,8 @@
                       entityName="password"
                       type="password"
                       initialPlaceholder="Enter a password"
-                      :initialRules="baseRules"
+                      :required="emailSettingsValues.scanType === 'Manual' ? false : true"
+                      :initialRules="passwordRules"
                       :disabled="emailSettingsValues.scanType === 'Manual' ? true : false"
                     />
                     <div>
@@ -817,6 +818,10 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
       ],
+      passwordRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
+      ],
       permissionModalStatus: true,
       isSubmitDisabled: false,
       continuosScanErrortext: '',
@@ -995,16 +1000,31 @@ export default {
   },
   watch: {
     emailSettingsValues: {
-      handler: function (value) {
+      handler: function (value, oldValue) {
         this.isFormValuesChanged = true
         if (value.scanType === 'Manual') {
           this.emailSettingsValues.password = ''
           this.emailSettingsValues.owa = false
           this.emailSettingsValues.owaUrl = ''
           this.emailSettingsValues.username = ''
+          this.passwordRules = []
+        } else {
+          this.passwordRules = this.baseRules
+        }
+
+        if (oldValue && value && value.scanType !== oldValue.scanType) {
+          this.$forceUpdate()
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
+    },
+    passwordRules: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        console.log('passwordRules', val)
+      }
     },
     acceptRule(val) {
       this.disableStartButtonStatus = val
