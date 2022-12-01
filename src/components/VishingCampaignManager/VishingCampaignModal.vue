@@ -213,17 +213,17 @@
                 <div style="position: relative;">
                   <v-text-field
                     ref="refSendCallsOver"
-                    :value="formValues.sendCallsOverValue"
+                    :value="formValues.distributionOverDays"
                     style="max-width: 100px !important; margin-right: 8px;"
                     outlined
                     placeholder=""
                     hide-details
-                    :error="!!getSendCallsOverValueErrorMessage"
+                    :error="!!getDistributionOverDaysValueErrorMessage"
                     @input="handleSendOverCallsValueChange"
                   />
                   <CustomError
                     style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
-                    :error-message="getSendCallsOverValueErrorMessage"
+                    :error-message="getDistributionOverDaysValueErrorMessage"
                   />
                 </div>
                 <KSelect
@@ -335,15 +335,17 @@ import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignMa
 import CustomError from '@/components/CustomError'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { searchTargetGroups } from '@/api/targetUsers'
-import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
 import {
+  getScheduleType,
+  getSendCallOnDays,
   recipientTypes,
   sendCallsOnDaysOptions,
   sendCallsOverTypes
 } from '@/components/VishingCampaignManager/utils'
+import { getVishingCampaign } from '@/api/vishing'
 
 const initialFormValues = {
   name: '',
@@ -358,11 +360,11 @@ const initialFormValues = {
   recipientType: 1,
   recipientValue: 0,
   callerPhoneNumber: '',
-  sendCallsOverValue: 2,
+  distributionOverDays: 2,
   sendCallsOverType: 'days',
   distributionStartTime: '09:00',
   distributionEndTime: '17:00',
-  sendCallsOnDays: ['1', '2', '4', '8', '16']
+  sendCallsOnDays: [1, 2, 4, 8, 16]
 }
 
 export default {
@@ -419,6 +421,7 @@ export default {
       isShowTargetGroupUsersError: false,
       axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
       recipientTypes,
+      distributionDays: 31,
       phoneNumbers: [],
       sendCallsOverTypes,
       sendCallsOnDaysOptions
@@ -430,7 +433,7 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.sendCallsOverValue} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every 19 minutes.`
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.distributionOverDays} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every 19 minutes.`
     },
     getTitle() {
       return !this.isEdit
@@ -440,7 +443,7 @@ export default {
         : 'Edit Vishing Campaign'
     },
     isScheduledTimeDisabled() {
-      return this.formValues.scheduleTypeId !== '3'
+      return this.formValues.scheduleType !== '3'
     },
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
@@ -470,8 +473,11 @@ export default {
 
       return ''
     },
-    getSendCallsOverValueErrorMessage() {
-      if (this.formValues.sendCallsOverValue === '' || this.formValues.sendCallsOverValue <= 0) {
+    getDistributionOverDaysValueErrorMessage() {
+      if (
+        this.formValues.distributionOverDays === '' ||
+        this.formValues.distributionOverDays <= 0
+      ) {
         return 'Enter a number higher than 0'
       }
       return ''
@@ -479,13 +485,13 @@ export default {
     getCampaignInfoItems() {
       return {
         'Campaign Name': this.formValues.name,
-        'Target Users': this.totalTargetUserCount
+        'Target Users': `${this.totalTargetUserCount} users`
       }
     },
     getCampaignDeliveryItems() {
       // TODO: Insert calculated delivery start-end info here
       return {
-        'Delivery Start- End': '28.05.2021 16:29:00 - 29.05.2021 16:29:90',
+        'Delivery Start - End': '',
         'Caller Phone Number': this.formValues.callerPhoneNumber
       }
     }
@@ -512,12 +518,49 @@ export default {
           return acc
         }, 0)
       }
+    },
+    sendCallsOnDays(val) {
+      this.distributionDays = val.reduce((acc, val) => {
+        return acc + val
+      }, 0)
     }
   },
   created() {
+    if (this.isEdit || this.isDuplicate) {
+      this.callForCampaign()
+    }
     this.callForTargetGroups()
   },
   methods: {
+    callForCampaign() {
+      getVishingCampaign(this.selectedRow.resourceId).then((response) => {
+        const {
+          callerPhoneNumber,
+          distributionEndTime = '',
+          distributionStartTime = '',
+          distributionDays,
+          excludeFromReports,
+          name,
+          scheduleDate,
+          scheduleType,
+          scheduledDateTimeZoneId,
+          targetGroupResourceIds = []
+        } = response?.data?.data || {}
+        this.formValues.callerPhoneNumber = callerPhoneNumber
+        this.formValues.distributionEndTime = distributionEndTime.split(':').slice(0, 2).join(':')
+        this.formValues.distributionStartTime = distributionStartTime
+          .split(':')
+          .slice(0, 2)
+          .join(':')
+        this.formValues.sendCallsOnDays = getSendCallOnDays(distributionDays)
+        this.formValues.excludeFromReports = excludeFromReports
+        this.formValues.name = name
+        this.formValues.scheduleDate = scheduleDate
+        this.formValues.scheduledDateTimeZoneId = scheduledDateTimeZoneId
+        this.formValues.scheduleType = getScheduleType(scheduleType)
+        this.formValues.targetGroupResourceIds = targetGroupResourceIds || []
+      })
+    },
     callForTargetGroups() {
       searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
@@ -556,26 +599,11 @@ export default {
     },
     handleSendOverCallsValueChange(val) {
       if (!val || /\d+$/.test(val)) {
-        this.formValues.sendCallsOverValue = val
+        this.formValues.distributionOverDays = val
       } else {
-        this.$refs.refSendCallsOver.initialValue = this.formValues.sendCallsOverValue
-        this.$refs.refSendCallsOver.lazyValue = this.formValues.sendCallsOverValue
+        this.$refs.refSendCallsOver.initialValue = this.formValues.distributionOverDays
+        this.$refs.refSendCallsOver.lazyValue = this.formValues.distributionOverDays
       }
-    },
-    getBadgeColor(text = '') {
-      switch (text.toLowerCase()) {
-        case 'easy':
-          return '#217124'
-        case 'medium':
-          return '#2196f3'
-        case 'hard':
-          return '#f56c6c'
-        default:
-          return '#2196f3'
-      }
-    },
-    getBadgeText(text = '') {
-      return text
     },
     handleInitialTemplate(id) {
       this.initialFormValues.templateResourceId = id

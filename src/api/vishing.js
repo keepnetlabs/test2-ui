@@ -392,13 +392,8 @@ export function createVishingCampaign(payload = {}) {
   })
 }
 
-export function getVishingCampaign(id) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
-  })
+export function getVishingCampaign(resourceId) {
+  return vishingRequest.get(`/vishing-campaign/${resourceId}`)
 }
 
 export function getVishingReportUsers(id) {

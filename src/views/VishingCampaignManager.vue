@@ -440,7 +440,7 @@ export default {
     },
     handleEdit(row, isDuplicate) {
       this.selectedRow = row
-      this.isEdit = true
+      this.isEdit = !isDuplicate
       this.isDuplicate = isDuplicate
       this.isCampaignModalVisible = true
     },
