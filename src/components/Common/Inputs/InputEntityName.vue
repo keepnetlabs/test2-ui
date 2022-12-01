@@ -69,20 +69,6 @@ export default {
       handler() {
         this.applyRequiredProps()
       }
-    },
-    rules: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('rules', val)
-      }
-    },
-    requiredProps: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('requiredProps', val)
-      }
     }
   },
   created() {
