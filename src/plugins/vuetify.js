@@ -8,6 +8,7 @@ import RadioChecked from '@/components/CustomIcons/RadioChecked'
 import RadioUnchecked from '@/components/CustomIcons/RadioUnchecked'
 import RefreshLeft from '@/components/CustomIcons/RefreshLeft'
 import Domain from '@/components/CustomIcons/Domain'
+import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
 
 Vue.use(Vuetify)
 
@@ -40,6 +41,9 @@ export default new Vuetify({
       },
       domain: {
         component: Domain
+      },
+      'threat-intelligence': {
+        component: ThreatIntelligenceIcon
       }
     }
   }
