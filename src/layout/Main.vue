@@ -235,7 +235,7 @@
             id="btn--link-navigator-menu-threat-intelligence"
             :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
           >
-            <app-router-item title="Threat Intelligence" :icon="iconPaths.mdiSearchWeb" />
+            <app-router-item title="Threat Intelligence" icon="$threat-intelligence" />
           </router-link>
 
           <router-link
