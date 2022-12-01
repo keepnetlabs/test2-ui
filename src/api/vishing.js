@@ -1,4 +1,25 @@
 import vishingRequest from '../utils/vishingRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+
+export function exportVishingTemplates(payload = {}) {
+  return vishingRequest.post(`/vishing-template/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+export function getVishingTemplate(resourceId = '') {
+  return vishingRequest.get(`/vishing-template/${resourceId}`)
+}
+
+export function getVishingTemplates(payload = {}) {
+  return vishingRequest.post('/vishing-template/search', payload)
+}
+
+export function deleteVishingTemplate(resourceId = '') {
+  return vishingRequest.delete(`/vishing-template/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 export function getVishingTemplatePreview(id) {
   // TODO: Add correct endpoint
@@ -32,10 +53,6 @@ export function getVishingTemplatePreview(id) {
       })
     }, 1000)
   })
-}
-
-export function exportVishingTemplates(payload = {}) {
-  // TODO: Add correct endpoint
 }
 
 export function getVishingTemplateList(payload = {}) {
@@ -325,15 +342,6 @@ export function exportVishingCampaigns(payload = {}) {
   })
 }
 
-export function deleteVishingTemplate(id) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
-  })
-}
-
 export function updateVishingTemplate(id, payload = {}) {
   // TODO: Add correct endpoint
   return new Promise((res) => {
@@ -344,15 +352,6 @@ export function updateVishingTemplate(id, payload = {}) {
 }
 
 export function createVishingTemplate(payload = {}) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
-  })
-}
-
-export function getVishingTemplate(id) {
   // TODO: Add correct endpoint
   return new Promise((res) => {
     setTimeout(() => {

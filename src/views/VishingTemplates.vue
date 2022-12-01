@@ -30,7 +30,7 @@
       selectable
       filterable
       options
-      :loading="loading"
+      :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
@@ -40,7 +40,7 @@
       :download-button="tableOptions.downloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       @deleteAction="showDeleteModal = true"
@@ -49,10 +49,9 @@
       @addAction="changeNewVishingTemplateModalStatus(true)"
       @downloadEvent="exportVishingTemplates"
       @handleMultipleDelete="handleActionDelete"
-      @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -126,14 +125,13 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import {
-  exportVishingTemplates,
-  getVishingTemplateList,
-  deleteVishingTemplate
-} from '@/api/vishing'
+import { exportVishingTemplates, getVishingTemplates, deleteVishingTemplate } from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
 import VishingTemplateModal from '@/components/VishingTemplates/VishingTemplateModal'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { useLoading } from '@/hooks/useLoading'
+
 export default {
   name: 'VishingTemplates',
   components: {
@@ -146,21 +144,17 @@ export default {
     DeleteVishingTemplateDialog,
     VishingTemplateModal
   },
+  mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
       vishingTemplateId: null,
       modalStatus: false,
       isPreviewVisible: false,
-      loading: true,
       isEdit: false,
       isDuplicate: false,
       tableData: [],
       isDeleteModalVisible: false,
-      // TODO: Set initial value to null
-      selectedTemplate: {
-        resourceId: '123',
-        name: 'Template Name'
-      },
+      selectedTemplate: null,
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHINGTEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHINGTEMPLATES,
@@ -189,12 +183,7 @@ export default {
             fixed: false,
             width: 175,
             filterableType: 'select',
-            filterableItems: [
-              'English - Female',
-              'English - Male',
-              'German - Male',
-              'German - Female'
-            ]
+            filterableItems: ['Turkish - Female', 'Turkish - Male']
           },
           {
             property: 'difficulty',
@@ -268,6 +257,7 @@ export default {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview'
+            // TODO: Add permissions
             // disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
           },
           {
@@ -281,12 +271,14 @@ export default {
             name: labels.FastLaunch,
             icon: 'mdi-send',
             action: 'handleFastLaunch'
+            // TODO: Add permissions
             // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'disable'
+            // TODO: Add permissions
             // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
           },
           {
@@ -323,7 +315,7 @@ export default {
           // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
         }
       },
-      bodyData: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -333,61 +325,16 @@ export default {
     }
   },
   created() {
-    this.getDatatableList()
+    this.callForData()
   },
   methods: {
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    paginationChangedEvent({ pageSize, pageNumber }) {
-      this.bodyData = {
-        ...this.bodyData,
-        pageSize: pageSize,
-        pageNumber: pageNumber
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
     onToggleShowPreviewModal() {
       if (this.isPreviewVisible) this.selectedTemplate = null
       this.isPreviewVisible = !this.isPreviewVisible
     },
     handlePreview(row) {
       this.vishingTemplateId = row.resourceId
+      this.selectedTemplate = row
       this.onToggleShowPreviewModal()
     },
     handleEdit(row, isDuplicate) {
@@ -412,7 +359,7 @@ export default {
         this.vishingTemplateId = null
         this.isEdit = false
         this.isDuplicate = false
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportVishingTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -424,39 +371,42 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportVishingTemplates(payload).then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `VishingTemplates.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
+          if (data && data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `VishingTemplates.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
+            link.click()
+          }
         })
       })
     },
-    getDatatableList() {
+    callForData() {
       // TODO: Add permissions
       // if (this.getEmailTemplatesSearchPermissions) {
-      this.loading = true
-      getVishingTemplateList(this.bodyData)
+      this.isLoading = true
+      getVishingTemplates(this.axiosPayload)
         .then((response) => {
           const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 1,
+            pageNumber = 1,
+            results = []
+          } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
           this.tableData = results
         })
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.isLoading = false))
       // } else {
       // this.$router.push('/')
       // }
@@ -467,7 +417,7 @@ export default {
     },
     handleDeleteConfirm() {
       deleteVishingTemplate(this.selectedTemplate.resourceId)
-        .then(this.getDatatableList)
+        .then(this.callForData)
         .finally(this.onCloseDeleteModal)
     },
     handleActionDelete(row) {
@@ -477,17 +427,6 @@ export default {
     handleFastLaunch(row) {
       this.selectedTemplate = row
       // TODO: Add Fast Launch logic here
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
   }
 }

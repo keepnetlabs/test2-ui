@@ -2,12 +2,18 @@
   <div class="vishing-template-preview-step">
     <v-btn style="display: none;" />
     <span class="vishing-template-preview-step__title">{{ getStepTitle }}</span>
-    <span v-if="isTextToSpeechStep" class="vishing-template-preview-step__text">
-      {{ step.textToSpeech }}
+    <span v-if="(isTextToSpeechStep && step.inputText)" class="vishing-template-preview-step__text">
+      {{ step.inputText }}
     </span>
-    <span v-if="step.fileName" class="vishing-template-preview-step__file-name">
-      {{ step.fileName }}
-    </span>
+    <template v-if="isFileUploadStep">
+      <span
+        v-if="(isFileUploadStep && step.inputUrl)"
+        class="vishing-template-preview-step__file-name"
+      >
+        {{ step.inputUrl }}
+      </span>
+      <AudioPlayer v-if="step.inputUrl" :src="step.inputUrl" />
+    </template>
     <div v-if="hasTags" class="vishing-template-preview-step__tags">
       <Badge
         v-if="hasRequiredDigitCount"
@@ -17,20 +23,22 @@
         :outline="false"
         :text="getRequiredDigitCountTagText"
       />
-      <Badge v-if="step.isFailStep" color="#B83A3A" text="Vishing Step" :outline="false" />
+      <Badge v-if="step.isVishingStep" color="#B83A3A" text="Vishing Step" outline />
     </div>
-    <span v-if="step.pauseSeconds" class="vishing-template-preview-step__text">
-      {{ `Pause for ${step.pauseSeconds} seconds` }}
+    <span v-if="step.duration" class="vishing-template-preview-step__text">
+      {{ `Pause for ${step.duration} seconds` }}
     </span>
   </div>
 </template>
 
 <script>
 import Badge from '@/components/Badge'
+import AudioPlayer from '@/components/AudioPlayer'
 export default {
   name: 'VishingTemplatePreviewStep',
   components: {
-    Badge
+    Badge,
+    AudioPlayer
   },
   props: {
     step: {
@@ -42,32 +50,29 @@ export default {
   },
   computed: {
     getStepTitle() {
-      return `Step ${this.index + 1} - ${this.step.type}`
+      return `Step ${this.index + 1} - ${this.getBeautifedStepType}`
+    },
+    getBeautifedStepType() {
+      if (this.step.inputType === 'TextToSpeech') return 'Text to Speech'
+      if (this.step.inputType === 'FileUpload') return 'File Upload'
+      if (this.step.inputType === 'Pause') return 'Pause'
+      return ''
     },
     isTextToSpeechStep() {
-      return this.step.type === 'Text to Speech'
+      return this.step.inputType === 'TextToSpeech'
+    },
+    isFileUploadStep() {
+      return this.step.inputType === 'FileUpload'
     },
     hasTags() {
-      return this.hasRequiredDigitCount || this.step.isFailStep
+      return this.hasRequiredDigitCount || this.step.isVishingStep
     },
     hasRequiredDigitCount() {
-      return this.step.requiredDigitCount !== undefined
+      return !!this.step.inputDigit
     },
     getRequiredDigitCountTagText() {
-      return this.hasRequiredDigitCount
-        ? `Required ${this.step.requiredDigitCount} digits input`
-        : ''
+      return this.hasRequiredDigitCount ? `Required ${this.step.inputDigit} digits input` : ''
     }
   }
 }
-
-// interface Step {
-//     type: 'Text to Speech' | 'Upload Audio' | 'Pause';
-//     textToSpeech?: string;
-//     fileName?: string;
-//     fileUrl?: string;
-//     requiredDigitCount?: number;
-//     isFailStep: boolean;
-//     pauseSeconds?: number
-// }
 </script>
