@@ -268,6 +268,7 @@
                   <v-checkbox
                     v-for="day in sendCallsOnDaysOptions"
                     v-model="formValues.sendCallsOnDays"
+                    color="#2196F3"
                     :label="day.text"
                     :value="day.value"
                     :key="day.value"
@@ -345,7 +346,7 @@ import {
   sendCallsOnDaysOptions,
   sendCallsOverTypes
 } from '@/components/VishingCampaignManager/utils'
-import { getVishingCampaign } from '@/api/vishing'
+import { getPhoneNumbers, getVishingCampaign } from '@/api/vishing'
 
 const initialFormValues = {
   name: '',
@@ -360,7 +361,7 @@ const initialFormValues = {
   recipientType: 1,
   recipientValue: 0,
   callerPhoneNumber: '',
-  distributionOverDays: 2,
+  distributionOverDays: 5,
   sendCallsOverType: 'days',
   distributionStartTime: '09:00',
   distributionEndTime: '17:00',
@@ -489,11 +490,17 @@ export default {
       }
     },
     getCampaignDeliveryItems() {
-      // TODO: Insert calculated delivery start-end info here
-      return {
-        'Delivery Start - End': '',
+      const deliveryItems = {
         'Caller Phone Number': this.formValues.callerPhoneNumber
       }
+      if (this.formValues.scheduleType === '1') {
+        deliveryItems['Starting'] = 'Now'
+      } else if (this.formValues.scheduleType === '2') {
+        deliveryItems['Starting'] = 'Later'
+      } else {
+        deliveryItems['Scheduled'] = `${this.formValues.scheduleDate}`
+      }
+      return deliveryItems
     }
   },
   watch: {
@@ -529,6 +536,7 @@ export default {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
     }
+    this.callForPhoneNumbers()
     this.callForTargetGroups()
   },
   methods: {
@@ -559,6 +567,7 @@ export default {
         this.formValues.scheduledDateTimeZoneId = scheduledDateTimeZoneId
         this.formValues.scheduleType = getScheduleType(scheduleType)
         this.formValues.targetGroupResourceIds = targetGroupResourceIds || []
+        this.$nextTick(() => (this.isTargetGroupsValid = true))
       })
     },
     callForTargetGroups() {
@@ -567,6 +576,11 @@ export default {
           this.responseOfTargetGroupsItems = response
         }
         this.initial = false
+      })
+    },
+    callForPhoneNumbers() {
+      getPhoneNumbers().then((response) => {
+        this.phoneNumbers = response?.data || []
       })
     },
     handleTargetGroupsResourceIdsChange(items) {

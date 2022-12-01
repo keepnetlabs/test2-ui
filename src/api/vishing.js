@@ -671,3 +671,7 @@ export function getVishingReportNoResponse(id) {
     }, 1000)
   })
 }
+
+export function getPhoneNumbers() {
+  return vishingRequest.get('/voice/phone-numbers')
+}
