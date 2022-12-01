@@ -255,7 +255,7 @@ export function subdomainBlacklist(value) {
     value.toLowerCase().includes(domain.toLowerCase())
   )
   if (subdomainIndex !== -1) {
-    return `${blacklist[subdomainIndex]} cannot be used in subdomain`
+    return `“${blacklist[subdomainIndex]}” is a banned word for a subdomain`
   }
   return true
 }
