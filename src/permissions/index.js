@@ -210,14 +210,39 @@ export default {
   },
   VISHING_LEFT_MENU_PERMISSIONS: {
     VISHING_TEMPLATES: {
-      url: `vishing/vishing-templates/search`,
+      url: `vishing-template/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   VISHING_TEMPLATES_PERMISSIONS: {
     SEARCH: {
-      url: `vishing/vishing-templates/search`,
+      url: `vishing-template/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `vishing-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `vishing-template`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `vishing-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `vishing-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `vishing-template/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

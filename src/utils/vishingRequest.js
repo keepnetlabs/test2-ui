@@ -35,7 +35,7 @@ service.interceptors.response.use(
     //if there is snackbar obj
     if (snackbar && snackbar.show) {
       store.dispatch('common/createSnackBar', {
-        message: response?.data?.message || 'Something went wrong',
+        message: response.data.message,
         icon: snackbar.icon,
         color: snackbar.color
       })

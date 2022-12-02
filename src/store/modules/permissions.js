@@ -320,12 +320,29 @@ const store = {
     getExcludedIpAddressPostPermissions(state) {
       return state?.excludeIpAddressPermissions?.POST?.hasPermission
     },
-    // TODO: Add vishing permissions
     getVishingLeftMenuPermissions(state) {
       return state?.vishingLeftMenuPermissions?.isOneOfThemPermitted
     },
     getVishingTemplatesLeftMenuPermissions(state) {
       return state?.vishingTemplatesPermissions?.isOneOfThemPermitted
+    },
+    getVishingTemplatesSearchPermissions(state) {
+      return state?.vishingTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getVishingTemplatesGetPermissions(state) {
+      return state?.vishingTemplatesPermissions?.GET?.hasPermission
+    },
+    getVishingTemplatesCreatePermissions(state) {
+      return state?.vishingTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getVishingTemplatesEditPermissions(state) {
+      return state?.vishingTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getVishingTemplatesDeletePermissions(state) {
+      return state?.vishingTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getVishingTemplatesExportPermissions(state) {
+      return state?.vishingTemplatesPermissions?.EXPORT?.hasPermission
     },
     getVishingCampaignManagerLeftMenuPermissions(state) {
       return state?.vishingCampaignManagerPermissions?.isOneOfThemPermitted
