@@ -22,37 +22,7 @@ export function deleteVishingTemplate(resourceId = '') {
 }
 
 export function getVishingTemplatePreview(id) {
-  // TODO: Add correct endpoint
-  // return testRequest.post(`/vishing-templates/${id}`)
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        name: 'Microsoft',
-        senderPhoneNumber: '+90 535 061 82 67',
-        steps: [
-          {
-            type: 'Text to Speech',
-            textToSpeech:
-              'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
-            fileUrl:
-              'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
-          },
-          {
-            type: 'Upload Audio',
-            fileName: 'Randomfilename.mp3',
-            fileUrl:
-              'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
-            requiredDigitCount: 4,
-            isFailStep: true
-          },
-          {
-            type: 'Pause',
-            pauseSeconds: 5
-          }
-        ]
-      })
-    }, 1000)
-  })
+  return vishingRequest.get(`/vishing-template/preview/${id}`)
 }
 
 export function getVishingTemplateList(payload = {}) {

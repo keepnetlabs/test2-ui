@@ -24,33 +24,33 @@
                 </div>
                 <div>
                   <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     :items="languages"
                     placeholder="Language"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     item-value="value"
                     outlined
                     persistent-hint
-                    @change="getTemplatesForSearch"
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
                   >
                   </v-select>
                 </div>
                 <div>
                   <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     item-value="value"
                     outlined
                     persistent-hint
-                    @change="getTemplatesForSearch"
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
                   >
                   </v-select>
                 </div>
@@ -172,7 +172,7 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { getVishingTemplateList, getVishingTemplatePreview } from '@/api/vishing'
+import { getVishingTemplatePreview, getVishingTemplates } from '@/api/vishing'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import Badge from '@/components/Badge'
@@ -197,29 +197,17 @@ export default {
     VishingTemplatePreviewStep
   },
   data() {
-    const methods = [
-      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-      { text: 'Attachment', value: '7dLrW2kdBTDs' }
-    ]
     return {
       search: null,
       listData: [],
       template: null,
       defaultListData: [],
-      templateFromName: null,
-      templateSubject: null,
       totalNumberOfPages: 1,
-      templateFromEmail: null,
-      languages: [
-        { text: 'English', value: '1' },
-        { text: 'Turkish', value: '2' },
-        { text: 'German', value: '3' }
-      ],
+      languages: ['Turkish - Female', 'Turkish - Male'],
       difficulties: [
-        { text: 'Easy', value: 'mT0CeYGgKsVb' },
-        { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-        { text: 'Hard', value: 'c4LCGEB9MayB' }
+        { text: 'Easy', value: 'Easy' },
+        { text: 'Medium', value: 'Medium' },
+        { text: 'Hard', value: 'Hard' }
       ],
       bodyData: {
         pageNumber: 1,
@@ -234,22 +222,21 @@ export default {
               FilterItems: [
                 {
                   value: '',
-                  FieldName: 'LanguageResourceId',
+                  FieldName: 'language',
                   Operator: 'Include'
                 },
-                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+                { value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
               FilterGroups: []
             },
             {
               Condition: 'OR',
               FilterItems: [
-                { FieldName: 'Name', Operator: 'Contains', value: '' },
-                { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
-                { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
-                { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
-                { FieldName: 'Tags', Operator: 'Contains', value: '' },
-                { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
+                { FieldName: 'name', Operator: 'Contains', value: '' },
+                { FieldName: 'difficulty', Operator: 'Contains', value: '' },
+                { FieldName: 'createdBy', Operator: 'Contains', value: '' },
+                { FieldName: 'tags', Operator: 'Contains', value: '' },
+                { FieldName: 'createTime', Operator: 'Contains', value: '' }
               ],
               FilterGroups: []
             }
@@ -257,12 +244,7 @@ export default {
         }
       },
       loadingTemplatePreview: false,
-      templateHTML: null,
-      activeTemplateHTML: null,
-      isTemplateDetails: null,
-      selectedTemplateHeader: null,
       loadingTemplates: false,
-      selectedTemplateId: null,
       selectedPreviousIndex: 0
     }
   },
@@ -291,9 +273,8 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getVishingTemplateList(copyOfBodyData)
+        getVishingTemplates(copyOfBodyData)
           .then((response) => {
             if (!response.data.data.results.length) {
               this.listData = []
@@ -322,9 +303,9 @@ export default {
     checkAndAddResourceIdToPayload(isInitial, bodyData) {
       this.loadingTemplates = true
       this.$emit('loading', true)
-      if (isInitial && this.templateResourceId) {
+      if (isInitial && this.templateResourceId && false) {
         bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'ResourceId',
+          FieldName: 'resourceId',
           Operator: 'Include',
           value: this.templateResourceId
         })
@@ -332,7 +313,7 @@ export default {
     },
     getTemplates(isInitial, templateResourceId, bodyData = this.bodyData, isSearch) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      getVishingTemplateList(bodyData)
+      getVishingTemplates(bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -403,14 +384,13 @@ export default {
         this.selectedPreviousIndex = index
       }
       this.loadingTemplatePreview = true
-      this.$emit('selectedTemplateChange', item.id, item)
       this.$emit('selectedTemplateResourceId', item.resourceId)
       if (isInitial) {
         this.$emit('initialTemplateId', item.id)
       }
       getVishingTemplatePreview(item.resourceId)
         .then((response) => {
-          this.template = response
+          this.template = response.data.data
         })
         .finally(() => {
           this.loadingTemplatePreview = false

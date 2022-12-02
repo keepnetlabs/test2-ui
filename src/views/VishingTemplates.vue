@@ -1,6 +1,6 @@
 <!-- TODO: add this line to DataTable v-if="getEmailTemplatesSearchPermissions" -->
 <template>
-  <KContainer id="vishing-templates">
+  <KContainer tabless id="vishing-templates">
     <VishingTemplatePreview
       v-if="isPreviewVisible"
       :status="isPreviewVisible"

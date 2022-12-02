@@ -570,7 +570,8 @@ export default {
           scheduleType,
           scheduledDateTimeZoneId,
           targetGroupResourceIds = [],
-          templateResourceId = ''
+          templateResourceId = '',
+          targetGroups
         } = response?.data?.data || {}
         this.formValues.callerPhoneNumber = callerPhoneNumber
         this.formValues.distributionEndTime = distributionEndTime.split(':').slice(0, 2).join(':')
@@ -584,9 +585,10 @@ export default {
         this.formValues.scheduleDate = scheduleDate
         this.formValues.scheduledDateTimeZoneId = scheduledDateTimeZoneId
         this.formValues.scheduleType = getScheduleType(scheduleType)
-        this.formValues.targetGroupResourceIds = targetGroupResourceIds || []
+        this.formValues.targetGroupResourceIds = targetGroups.map((tGroup) => tGroup.value) || []
         this.formValues.templateResourceId = templateResourceId
         this.$nextTick(() => (this.isTargetGroupsValid = true))
+        this.selectTableItems(targetGroups)
       })
     },
     callForTargetGroups() {
@@ -597,20 +599,20 @@ export default {
         this.initial = false
       })
     },
+    selectTableItems(items) {
+      this.$nextTick(() => {
+        const selectedTableItems = items
+          .filter((item) => item)
+          .map((item) => ({ ...item, resourceId: item.value }))
+        this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+          selectedTableItems
+        )
+      })
+    },
     callForPhoneNumbers() {
       getPhoneNumbers().then((response) => {
         this.phoneNumbers = response?.data || []
       })
-    },
-    handleTargetGroupsResourceIdsChange(items) {
-      const selectedTableItems = items
-        .filter((item) => item)
-        .map((item) => ({ ...item, resourceId: item.value }))
-      if (this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.$refs.elTableRef) {
-        this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
-          selectedTableItems
-        )
-      }
     },
     handleTableSelectionChange(items) {
       this.selectedTargetGroups = items
