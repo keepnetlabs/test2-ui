@@ -413,6 +413,8 @@ export default {
         this.query.value = 'Phishing'
       } else if (value === 'To' || value === 'CC' || value === 'From') {
         this.query.format = 'Email'
+      } else if (value === 'Keyword') {
+        this.query.operator = 'Contains'
       } else {
         this.query.format = 'Custom'
       }
