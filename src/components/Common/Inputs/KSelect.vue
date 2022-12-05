@@ -6,6 +6,8 @@
     :is="getComponentType"
     :class="uniqueSelector"
     :attach="`.${uniqueSelector}`"
+    :hint="hint"
+    :persistent-hint="persistentHint"
     :menu-props="{
       offsetY: true,
       ...getPosition,
@@ -56,6 +58,12 @@ export default {
     slots: {
       type: Object,
       default: () => ({ selection: false, item: false })
+    },
+    hint: {
+      default: undefined
+    },
+    persistentHint: {
+      default: false
     }
   },
   created() {
