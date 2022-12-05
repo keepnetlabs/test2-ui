@@ -668,16 +668,12 @@ export default {
             return
           }
           this.step++
-        }
-        if (this.step === 4) {
-          const { refFormStep4 } = this.$refs
-          if (refFormStep4.validate()) {
-            if (this.distributionDays === 0) {
-            } else this.step++
-          }
         } else {
           this.isTargetGroupsValid = false
         }
+      } else if (this.step === 4) {
+        const { refFormStep4 } = this.$refs
+        if (refFormStep4.validate() && this.distributionDays > 0) this.step++
       } else this.step++
     },
     submit() {
@@ -706,7 +702,7 @@ export default {
         distributionStartTime,
         distributionEndTime,
         distributionDays: this.distributionDays,
-        templateResourceId: 'bkp9fU1cYaC8'
+        templateResourceId
       }
       this.isActionButtonDisabled = true
       if (this.isEdit) {

@@ -2,12 +2,13 @@
   <KContainer id="vishing-campaign-manager" tabless>
     <VishingTemplatePreview
       v-if="isPreviewVisible"
-      isCampaign
+      is-campaign
       :status="isPreviewVisible"
       :selectedRow="selectedRow"
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteVishingCampaignDialog
+      v-if="isDeleteModalVisible"
       :status="isDeleteModalVisible"
       :selectedRow="selectedRow"
       :selectedRowCount="selectedRowCount"
@@ -16,8 +17,8 @@
       @onConfirm="handleConfirmDelete"
     />
     <VishingCampaignModal
-      ref="refVishingCampaignModal"
       v-if="isCampaignModalVisible"
+      ref="refVishingCampaignModal"
       :status="isCampaignModalVisible"
       :selectedRow="selectedRow"
       :isEdit="isEdit"
