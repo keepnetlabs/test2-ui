@@ -9,11 +9,11 @@
       </div>
       <div class="vishing-template-dialog-step__header-right">
         <KButtonCheckbox
-          v-if="value.type !== 'pause'"
-          :value="value.isFailStep"
+          v-if="value.inputType !== 'Pause'"
+          :value="value.isVishingStep"
           label="Fail at this step"
           customStyle="text-transform: none;"
-          @input="onFailStepChange"
+          @input="onVishingStepChange"
         />
         <v-btn color="#000000" icon outlined @click="onRemoveStep">
           <v-icon small>mdi-delete</v-icon>
@@ -23,13 +23,13 @@
     <v-expand-transition>
       <div v-if="value.isExpanded" class="vishing-template-dialog-step__body">
         <FormGroup
-          v-if="value.type === 'pause'"
+          v-if="value.inputType === 'Pause'"
           className="mt-1"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Pause Duration (seconds)"
         >
           <v-text-field
-            v-model.number="value.pauseDuration"
+            v-model.number="value.duration"
             placeholder="Enter pause duration"
             type="number"
             style="max-width: 205px;"
@@ -38,7 +38,7 @@
             @input="onPauseDurationChange"
           />
         </FormGroup>
-        <div v-if="value.type === 'uploadAudio'">
+        <div v-if="value.inputType === 'FileUpload'">
           <div class="vishing-template-dialog-step__form-title">
             <div class="vishing-template-dialog-step__form-title-left">
               <label class="vishing-template-dialog-step__form-label">Audio File</label>
@@ -46,9 +46,9 @@
             </div>
             <div class="vishing-template-dialog-step__form--title-right">
               <AudioPlayer
-                v-if="value.type === 'uploadAudio' && value.fileUrl"
+                v-if="(value.inputType === 'FileUpload' && getFilePreview)"
                 isPreview
-                :src="value.fileUrl"
+                :src="getFilePreview"
               />
             </div>
           </div>
@@ -60,14 +60,14 @@
           />
         </div>
         <FormGroup
-          v-if="value.type === 'textToSpeech'"
+          v-if="value.inputType === 'TextToSpeech'"
           className="mt-1"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Text"
           subTitle="Enter your text to be voiced by AI"
         >
           <InputDescription
-            :value="value.textToSpeech"
+            :value="value.inputText"
             :max-length="500"
             entity-name="Text to speech"
             initialPlaceholder="Enter text here"
@@ -75,20 +75,20 @@
           />
         </FormGroup>
         <FormGroup
-          v-if="value.type !== 'pause'"
+          v-if="value.inputType !== 'Pause'"
           className="mt-4"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Number of digits"
           subTitle="Required number of digits for user to enter"
         >
           <v-text-field
-            v-model.number="value.requiredDigitCount"
+            v-model.number="value.inputDigit"
             placeholder="Enter pause duration"
             type="number"
             style="max-width: 205px;"
             outlined
             :rules="durationRules"
-            @input="onRequiredDigitCountChange"
+            @input="onDigitCountChange"
           />
         </FormGroup>
       </div>
@@ -124,16 +124,27 @@ export default {
   },
   computed: {
     getTitle() {
-      switch (this.value.type) {
-        case 'textToSpeech':
+      switch (this.value.inputType) {
+        case 'TextToSpeech' || 1:
           return `Step ${this.index + 1} - Text To Speech`
-        case 'uploadAudio':
+        case 'FileUpload' || 2:
           return `Step ${this.index + 1} - Upload Audio`
-        case 'pause':
+        case 'Pause' || 3:
           return `Step ${this.index + 1} - Pause`
         default:
           return ''
       }
+    },
+    getFilePreview() {
+      if (this.value?.content) {
+        return URL.createObjectURL(this.value.content)
+      }
+
+      if (this.value?.inputUrl) {
+        return this.value.inputUrl
+      }
+
+      return null
     }
   },
   data() {
@@ -153,44 +164,34 @@ export default {
     },
     onPauseDurationChange(val) {
       if (!val || /\d+$/.test(val)) {
-        this.$emit('input', { ...this.value, pauseDuration: parseInt(val) })
+        this.$emit('input', { ...this.value, duration: parseInt(val) })
       }
     },
     onTextToSpeechChange(val) {
-      this.$emit('input', { ...this.value, textToSpeech: val })
+      this.$emit('input', { ...this.value, inputText: val })
     },
-    onRequiredDigitCountChange(val) {
+    onDigitCountChange(val) {
       if (!val || /\d+$/.test(val)) {
-        this.$emit('input', { ...this.value, requiredDigitCount: parseInt(val) })
+        this.$emit('input', { ...this.value, inputDigit: parseInt(val) })
       }
     },
-    onFailStepChange(val) {
-      this.$emit('input', { ...this.value, isFailStep: val })
+    onVishingStepChange(val) {
+      this.$emit('input', { ...this.value, isVishingStep: val })
       if (val) {
-        this.$emit('failStepChange', this.index)
+        this.$emit('vishingStepChange', this.index)
       }
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.$emit('input', { ...this.value, fileName: '', file: null, fileUrl: '' })
+        this.$emit('input', { ...this.value, content: null, inputUrl: null })
       } else {
         this.$emit('input', {
           ...this.value,
-          fileName: file.name,
-          file,
-          fileUrl: URL.createObjectURL(file)
+          inputUrl: URL.createObjectURL(file),
+          content: file
         })
       }
     }
   }
-  // interface Step {
-  //     type: 'Text to Speech' | 'Upload Audio' | 'Pause';
-  //     textToSpeech?: string;
-  //     fileName?: string;
-  //     fileUrl?: string;
-  //     requiredDigitCount?: number;
-  //     isFailStep: boolean;
-  //     pauseDuration?: number;
-  // }
 }
 </script>

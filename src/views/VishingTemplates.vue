@@ -21,7 +21,7 @@
       :templateId="getTemplateId"
       :isEdit="isEdit"
       :isDuplicate="isDuplicate"
-      @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus(false)"
+      @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus"
     />
     <DataTable
       id="vishing-templates-data-table"

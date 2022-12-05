@@ -54,7 +54,7 @@ export default {
     },
     getBeautifedStepType() {
       if (this.step.inputType === 'TextToSpeech') return 'Text to Speech'
-      if (this.step.inputType === 'FileUpload') return 'File Upload'
+      if (this.step.inputType === 'FileUpload') return 'Upload Audio'
       if (this.step.inputType === 'Pause') return 'Pause'
       return ''
     },
