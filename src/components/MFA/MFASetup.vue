@@ -7,7 +7,7 @@
       <div class="mfa-setup__content">
         <v-row align="center" justify="center">
           <v-col sm="12">
-            <p class="mfa-setup__content--header">
+            <p class="mfa-setup__content--header mfa-setup__content--header--1">
               1. Install an MFA app on your mobile device
             </p>
             <p class="mfa-setup__content--text">

@@ -59,41 +59,6 @@
         }
     }
 
-    .ts-body {
-        margin-top: 8px;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: normal;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-    }
-
-    .ts-user-comp {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-
-        a {
-            text-decoration: none;
-        }
-
-        .ts-user-date {
-            font-weight: bold;
-        }
-    }
-
-    ::v-deep .main-column>.v-card {
-        border-radius: 20px !important;
-        box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-    }
 
     // Threat sharing Content
     .threat-sharing-content {
@@ -105,54 +70,12 @@
         padding: 29px 32px 16px 32px;
     }
 
-    .ts-header {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-    }
-
-    .ts-title {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 24px;
-        font-weight: normal;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 1.29;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-    }
-
-    // Threat sharing Content End
-
-    ::v-deep .v-slide-group__wrapper {
-        padding-left: 20px !important;
-    }
 
     .v-card.v-sheet.theme--light {
         padding-top: 0;
         padding-left: 3px;
         padding-right: 3px;
         border-radius: 20px;
-    }
-
-    //search Input css
-    ::v-deep .v-label--active {
-        transform: translateY(-15px) scale(0.75);
-    }
-
-    ::v-deep .v-text-field--outlined .v-label {
-        top: 11px;
-    }
-
-    ::v-deep .v-input__slot {
-        -webkit-box-align: stretch;
-        -ms-flex-align: stretch;
-        align-items: stretch;
-        min-height: 40px !important;
-    }
-
-    ::v-deep label.v-label.theme--light {
-        font-size: 12px;
     }
 
     .v-input {
@@ -190,10 +113,6 @@
         }
     }
 
-    ::v-deep .v-text-field--outlined fieldset {
-        border-radius: 6px !important;
-    }
-
     .search-wrapper {
         align-items: center;
         display: flex;
@@ -219,20 +138,6 @@
         line-height: normal;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.54);
-    }
-
-    .create-com-btn {
-        background-color: #2196f3 !important;
-        color: #fff;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.71;
-        letter-spacing: normal;
-        height: 36px !important;
-        text-transform: uppercase !important;
     }
 
     .ts-community-industry {
@@ -286,47 +191,6 @@
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
         padding-left: 2px;
-    }
-
-    ::v-deep .v-input--switch__thumb {
-        top: calc(50% - 13px);
-        height: 26.7px;
-        width: 24.8px;
-    }
-
-    ::v-deep .v-input--switch__track {
-        opacity: 0.4;
-    }
-
-    .v-card-headline {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 20px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.4;
-        letter-spacing: normal;
-        color: #2196f3;
-    }
-
-    .v-card-sub-header {
-        font-size: 15px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.2;
-        letter-spacing: normal;
-        color: #000 !important;
-    }
-
-    .v-cart-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
-        margin-right: 24px;
-        box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-        border: solid 1px rgba(100, 181, 246, 0.5);
-        background-color: #e3f2fd;
     }
 
     .newCommunityOverlay {

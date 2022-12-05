@@ -29,6 +29,7 @@
                   >
                   <v-btn
                     id="btn-change--security-login-password-dashboard-popup"
+                    style="font-weight: 600;"
                     outlined
                     rounded
                     medium
@@ -43,6 +44,7 @@
                   }}</label>
                   <v-btn
                     id="btn-status--security-mfa-dashboard-popup"
+                    style="font-weight: 600;"
                     outlined
                     rounded
                     medium
@@ -59,7 +61,7 @@
         <v-card-text class="password-modal" v-if="step === 2">
           <div class="new-password-wrapper">
             <v-row align="center" justify="center">
-              <v-col sm="12" class="p-0">
+              <v-col sm="12" class="p-0 pt-2 pb-6">
                 <v-form ref="newPasswordByMain">
                   <div>
                     <label

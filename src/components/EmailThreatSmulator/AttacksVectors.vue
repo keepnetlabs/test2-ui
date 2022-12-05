@@ -11,17 +11,17 @@
     </v-overlay>
     <delete-attack-vector
       :status="showDeleteModal"
+      :selectedItem="selectedAttackVector"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleToggleRowSelection="handleToggleRowSelection($event)"
-      :selectedItem="selectedAttackVector"
     />
     <change-status-attackVector
       :status="showStatusModal"
+      :selectedItem="selectedAttackVector"
       @handleSuccessStatusAction="handleSuccessStatusAction"
       @handleCloseModal="showStatusModal = false"
       @handleToggleRowSelection="handleToggleRowSelection($event)"
-      :selectedItem="selectedAttackVector"
     />
     <data-table
       v-if="getEtsAttackVectorPermissionSearch"
@@ -32,7 +32,7 @@
       selectable
       filterable
       options
-      :loading="loading"
+      :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
@@ -42,7 +42,7 @@
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :download-button="tableOptions.downloadButton"
-      :axios-payload.sync="bodyData"
+      :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       row-key="pluginResourceId"
@@ -52,7 +52,7 @@
       @downloadEvent="exportTableData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      @refreshAction="getDatatableList"
+      @refreshAction="callForData"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
@@ -135,8 +135,9 @@ import {
   getAttackVectorById,
   exportAttacksVector
 } from '@/api/emailThreatSimlator'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
@@ -152,13 +153,12 @@ export default {
     DefaultMenuRowAction,
     RowActionsMenu
   },
-  mixins: [useCallForLanguagesForTableFilter],
+  mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
       languageFilterOptions: [],
       attackVectorDetails: {},
       selectedRow: null,
-      loading: true,
       isEdit: false,
       labels,
       tableData: [],
@@ -200,7 +200,7 @@ export default {
             sortable: false,
             show: true,
             type: 'text',
-            width: 105,
+            width: 250,
             filterableType: 'text'
           },
           {
@@ -286,7 +286,7 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -311,51 +311,13 @@ export default {
       if (this.isShowPreviewDialog) this.selectedAttackVector = {}
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
-    handleSearchChange(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    sortChangedEvent({ prop, order }) {
-      this.bodyData = {
-        ...this.bodyData,
-        orderBy: prop,
-        ascending: order === 'ascending'
-      }
-      this.getDatatableList()
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getDatatableList()
-    },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleSuccessStatusAction() {
       this.showStatusModal = false
-      this.getDatatableList()
+      this.callForData()
     },
     handleToggleRowSelection(row) {
       this?.$refs?.refAttacksVectorList?.$refs?.elTableRef?.toggleRowSelection(row, false)
@@ -367,7 +329,6 @@ export default {
         this.modalStatus = true
       })
       this.selectedAttackVector = row
-      //quickScanResourceId
     },
     checkIfCanCLoseNewModal() {
       if (this.$refs.newAttackVectorModal) {
@@ -380,7 +341,7 @@ export default {
       this.attackVectorDetails = {}
       if (restart) {
         this.selectedAttackVector = {}
-        this.getDatatableList()
+        this.callForData()
       }
     },
     exportTableData({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -392,23 +353,25 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyData.filter
+          filter: this.axiosPayload.filter
         }
         exportAttacksVector(payload).then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `AttacksVector.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
+          if (data && data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `AttacksVector.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
+            link.click()
+          }
         })
       })
     },
-    getDatatableList() {
-      this.loading = true
+    callForData() {
+      this.isLoading = true
       if (this.getEtsAttackVectorPermissionSearch) {
-        getAttackVectorList(this.bodyData)
+        getAttackVectorList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -427,7 +390,7 @@ export default {
           .catch(() => {
             this.tableData = []
           })
-          .finally(() => (this.loading = false))
+          .finally(() => (this.isLoading = false))
       } else {
         this.$router.push('/')
       }
@@ -439,51 +402,11 @@ export default {
     handleActionStatus(row) {
       this.selectedAttackVector = row
       this.showStatusModal = true
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refAttacksVectorList')
-    this.getDatatableList()
+    this.callForData()
   }
 }
 </script>
-<style lang="scss">
-.attacks-vector {
-  .av-risk-factor {
-    border-radius: 4px;
-    color: white;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    background-color: white;
-    width: 30px;
-    text-align: center;
-    margin: auto;
-    color: #00bcd4;
-    border: 1px solid #00bcd4;
-  }
-  .av-status {
-    @extend .av-risk-factor;
-    width: 67px;
-    &.enabled {
-      color: #217124;
-      border: 1px solid #217124;
-    }
-    &.disabled {
-      color: #b6791d;
-      border: 1px solid #b6791d;
-    }
-  }
-}
-</style>

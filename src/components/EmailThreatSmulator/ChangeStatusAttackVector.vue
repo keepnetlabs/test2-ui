@@ -20,6 +20,7 @@
         type="confirm"
         cancel-button-id="btn-cancel--attack-vector-dialog-popup"
         confirm-button-id="btn-confirm-attack-vector-dialog-popup"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleStatus"
       />
@@ -45,21 +46,31 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleStatus() {
+      this.isActionButtonDisabled = true
       const payload = { resourceIds: [] }
       payload.resourceIds.push(this.selectedItem.pluginResourceId)
       const requestFunc =
         this.selectedItem.status == 'Enabled'
           ? disableAttackVector(payload)
           : enableAttackVector(payload)
-      requestFunc.then(() => {
-        this.$emit('handleSuccessStatusAction')
-      })
-      this.closeModal()
+      requestFunc
+        .then(() => {
+          this.$emit('handleSuccessStatusAction')
+          this.closeModal()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

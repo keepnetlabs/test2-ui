@@ -1,4 +1,4 @@
-
+<template>
   <svg
     width="22"
     height="22"
@@ -41,3 +41,10 @@
       </clipPath>
     </defs>
   </svg>
+</template>
+
+<script>
+export default {
+  name: 'ThreatIntelligenceIcon'
+}
+</script>

@@ -17,6 +17,7 @@
         cancel-button-id="btn-cancel--scans-popup"
         confirm-button-id="btn-delete--scans-popup"
         type="delete"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />
@@ -42,15 +43,25 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteAttackVectorItem(this.selectedItem.pluginResourceId).then(() => {
-        this.$emit('handleSuccessDeleteAction')
-      })
-      this.closeModal()
+      this.isActionButtonDisabled = true
+      deleteAttackVectorItem(this.selectedItem.pluginResourceId)
+        .then(() => {
+          this.$emit('handleSuccessDeleteAction')
+          this.closeModal()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

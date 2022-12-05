@@ -2,11 +2,12 @@
   <DataTable
     v-if="getThreatIntelligencePermissionsSearch"
     ref="refThreatIntelligence"
-    :showPagination="true"
-    :options="true"
     id="threat-intelligence-table"
     is-server-side
     selectable
+    row-key="email"
+    :showPagination="true"
+    :options="true"
     :loading="isLoading"
     :countRow="10"
     :table="tableData"
@@ -22,7 +23,6 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :download-button="tableOptions.downloadButton"
-    row-key="email"
     @columnFilterChanged="columnFilterChanged"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
@@ -37,7 +37,6 @@
 import DataTable from '@/components/DataTable'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -140,7 +139,7 @@ export default {
       rowActions: []
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   computed: {
@@ -150,17 +149,18 @@ export default {
   },
   methods: {
     callForData() {
-      this.loading = true
+      this.isLoading = true
       getThreatIntelligenceList(this.axiosPayload)
         .then((response) => {
           const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1,
+            results = []
+          } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
           for (let i = 0; i < results.length; i++) {
             const data = results[i]
             data.isActive = data.isActive ? 'Active' : 'Passive'
@@ -170,7 +170,7 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.isLoading = false))
     },
     exportData(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -185,23 +185,17 @@ export default {
         }
         exportThreatIntelligence(payload).then((response) => {
           const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Report.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
+          if (data && data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Threat-Intelligence.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
         })
       })
     }
   }
 }
 </script>
-
-<style lang="scss">
-#threat-intelligence-table {
-  .table-header {
-    justify-content: right !important;
-  }
-}
-</style>

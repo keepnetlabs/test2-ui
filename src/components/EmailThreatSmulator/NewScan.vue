@@ -24,7 +24,7 @@
         </div>
       </template>
     </app-dialog>
-    <app-modal :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
+    <app-modal id="new-scan" :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
       <template v-slot:overlay-body>
         <v-stepper light v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
@@ -85,7 +85,7 @@
                       v-model.trim="emailSettingsValues.email"
                       entityName="email address"
                       initialPlaceholder="Email address"
-                      hint
+                      required
                     />
                   </form-group>
                   <form-group
@@ -126,38 +126,34 @@
                     has-hint
                     class-name="mt-5"
                   >
-                    <v-text-field
-                      v-bind="commonRules(emailSettingsValues.scanType === 'Manual' ? false : true)"
+                    <InputEntityName
                       v-model="emailSettingsValues.password"
-                      outlined
-                      dense
-                      placeholder="Password"
-                      hint=""
+                      entityName="password"
                       type="password"
-                      place
+                      initialPlaceholder="Enter a password"
+                      :required="emailSettingsValues.scanType === 'Manual' ? false : true"
+                      :initialRules="passwordRules"
                       :disabled="emailSettingsValues.scanType === 'Manual' ? true : false"
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
                         <label>Application (Client) ID</label>
-                        <v-text-field
-                          class="ml-2"
-                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                        <InputEntityName
                           v-model="emailSettingsValues.clientId"
-                          outlined
-                          hint=""
-                          placeholder="Client Id"
+                          entityName="clientId"
+                          initialPlaceholder="Enter Client Id"
+                          class="ml-2"
+                          :initialRules="baseRules"
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
                         <label>Directory (Tenant) ID&nbsp;</label>
-                        <v-text-field
-                          class="ml-2"
-                          v-bind="commonRules(emailSettingsValues.scanType === 'OAUTH')"
+                        <InputEntityName
                           v-model="emailSettingsValues.tenantId"
-                          outlined
-                          hint=""
-                          placeholder="Directory (Tenant) ID"
+                          entityName="tenantId"
+                          initialPlaceholder="Enter Directory (Tenant) ID"
+                          class="ml-2"
+                          :initialRules="baseRules"
                         />
                       </div>
                     </div>
@@ -172,13 +168,12 @@
                       class="label-left-form"
                     >
                       <label>OWA URL</label>
-                      <v-text-field
-                        class="ml-2"
-                        v-bind="commonRules(emailSettingsValues.owa)"
+                      <InputEntityName
                         v-model="emailSettingsValues.owaUrl"
-                        outlined
-                        hint=""
-                        placeholder="OWA URL"
+                        entityName="owaUrl"
+                        initialPlaceholder="Enter OWA URL"
+                        class="ml-2"
+                        :initialRules="baseRules"
                       />
                     </div>
                     <div
@@ -186,13 +181,12 @@
                       class="label-left-form"
                     >
                       <label>Username</label>
-                      <v-text-field
-                        class="ml-2"
-                        v-bind="commonRules(emailSettingsValues.owa)"
+                      <InputEntityName
                         v-model="emailSettingsValues.username"
-                        outlined
-                        hint=""
-                        placeholder="Username"
+                        entityName="username"
+                        initialPlaceholder="Enter Username"
+                        class="ml-2"
+                        :initialRules="baseRules"
                       />
                     </div>
                   </form-group>
@@ -206,6 +200,9 @@
                     <v-list-item-title class="new-phishing-scenario__title">
                       Scan and Delivery Settings</v-list-item-title
                     >
+                    <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                      >Set email delivery and continuos scan options</v-list-item-subtitle
+                    >
                   </v-list-item-content>
                 </v-list-item>
                 <v-alert
@@ -216,7 +213,6 @@
                 >
                   {{ continuosScanErrortext }}
                 </v-alert>
-
                 <v-form ref="refFormStep2" lazy-validation class="mt-8">
                   <form-group title="Continuos Scan" hint>
                     <v-checkbox
@@ -242,13 +238,11 @@
                   >
                     <div class="label-left-form">
                       <label class="little">Sending Limit</label>
-                      <v-text-field
+                      <InputNumber
                         v-model="scanAndDeliveryValues.sendingLimit"
-                        class="shrink mx-1"
-                        type="number"
-                        outlined
-                        hint=""
-                        placeholder="Sending Limit"
+                        entityName="sendingLimit"
+                        initialPlaceholder="Enter Sending Limit"
+                        :required="false"
                         :disabled="
                           scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP' ? false : true
                         "
@@ -760,6 +754,8 @@ import {
   getQuickScanCreate
 } from '@/api/emailThreatSimlator'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputNumber from '@/components/Common/Inputs/InputNumber'
 
 export default {
   name: 'NewScan',
@@ -768,7 +764,9 @@ export default {
     AppModal,
     AppDialog,
     FormGroup,
-    InputEmail
+    InputEmail,
+    InputEntityName,
+    InputNumber
   },
   data() {
     return {
@@ -816,14 +814,14 @@ export default {
         }
       },
       acceptRule: false,
-      baseRules: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
-        ]
-      },
+      baseRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
+      ],
+      passwordRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
+      ],
       permissionModalStatus: true,
       isSubmitDisabled: false,
       continuosScanErrortext: '',
@@ -1002,16 +1000,24 @@ export default {
   },
   watch: {
     emailSettingsValues: {
-      handler: function (value) {
+      handler: function (value, oldValue) {
         this.isFormValuesChanged = true
         if (value.scanType === 'Manual') {
           this.emailSettingsValues.password = ''
           this.emailSettingsValues.owa = false
           this.emailSettingsValues.owaUrl = ''
           this.emailSettingsValues.username = ''
+          this.passwordRules = []
+        } else {
+          this.passwordRules = this.baseRules
+        }
+
+        if (oldValue && value && value.scanType !== oldValue.scanType) {
+          this.$forceUpdate()
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
     acceptRule(val) {
       this.disableStartButtonStatus = val
@@ -1054,79 +1060,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.radio-btn-list {
-  .v-input--selection-controls {
-    margin-top: 5px;
-  }
-}
-.email-threat-simulator-warning {
-  .v-cart-icon-wrapper {
-    background-color: #fef7f7 !important;
-    border: 1px solid #f56c6c !important;
-  }
-  .k-dialog__title {
-    color: #f56c6c !important;
-  }
-  .k-dialog__button {
-    background-color: white !important;
-    width: 120px;
-  }
-  .k-dialog__button:hover {
-    background-color: white !important;
-  }
-}
-</style>
-<style lang="scss" scoped>
-.label-left-form {
-  width: 80%;
-  display: flex;
-  flex-wrap: nowrap;
-  margin-top: 10px;
-  label {
-    padding-top: 9px;
-    margin-right: 30px;
-    min-width: 80px;
-    &.little {
-      font-size: 14px;
-    }
-  }
-}
-.loop-type-input-container {
-  height: 36px;
-  margin-bottom: 10px;
-  .left-input {
-    width: 100px;
-  }
-  .right-input {
-    width: 120px;
-  }
-}
-.user-agreement-container {
-  max-width: 554px;
-  height: 345px;
-  border-radius: 8px;
-  background: #fafafa;
-  border: 1px solid #e0e0e0;
-  padding: 11px 16px 11px 10px;
-  overflow: auto;
-  margin-bottom: 16px;
-  font-size: 13px;
-  line-height: 18px;
-  scroll-padding: 50px 0 0 50px;
-  &::-webkit-scrollbar {
-    width: 14px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border: 4px solid rgba(0, 0, 0, 0);
-    background-clip: padding-box;
-    border-radius: 9999px;
-    background-color: #757575;
-  }
-}
-.email-login-error {
-  max-width: 554px;
-  background: rgba(245, 108, 108, 0.2);
-}
-</style>
