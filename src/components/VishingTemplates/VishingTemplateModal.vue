@@ -52,7 +52,7 @@
                 class-name="mb-6"
               >
                 <v-radio-group
-                  v-model="formValues.difficultyResourceId"
+                  v-model="formValues.difficulty"
                   class="send-welcome-email__radio-group mt-4"
                   hide-details
                   row
@@ -60,9 +60,9 @@
                 >
                   <v-radio
                     v-for="item in difficultyItems"
-                    :key="item.name"
-                    :value="item.resourceId"
-                    :label="item.name"
+                    :key="item.text"
+                    :value="item.value"
+                    :label="item.text"
                     color="#2196f3"
                   ></v-radio>
                 </v-radio-group>
@@ -88,7 +88,7 @@
                 sub-title="Select the language of this template and text-to-speech speaker"
               >
                 <KSelect
-                  v-model="formValues.languageResourceId"
+                  v-model="formValues.vishingLanguageResourceId"
                   type="autocomplete"
                   :items="languageItems"
                   placeholder="Select language"
@@ -119,7 +119,7 @@
                       :index="index"
                       :key="index"
                       @removeStep="onRemoveStep(index)"
-                      @failStepChange="onFailStepChange"
+                      @vishingStepChange="onVishingStepChange"
                     />
                   </draggable>
                 </div>
@@ -281,8 +281,10 @@ const initialFormValues = {
   name: '',
   description: '',
   tags: [],
-  difficultyResourceId: 'mT0CeYGgKsVb',
+  difficulty: 'Easy',
   languageResourceId: 'WNZt0sCVCWB3',
+  vishingLanguage: 'Turkish - Female',
+  vishingLanguageResourceId: 'e3bb63b95abf',
   availableForRequests: [],
   dialogNoticeType: 'textToSpeech',
   dialogNoticeTextToSpeech:
@@ -295,7 +297,7 @@ const initialFormValues = {
       textToSpeech: '',
       requiredDigitCount: 0,
       pauseDuration: 0,
-      isFailStep: false,
+      isVishingStep: false,
       fileName: '',
       fileUrl: '',
       isExpanded: true
@@ -338,7 +340,7 @@ export default {
   },
   data() {
     return {
-      isFailStepSelected: true,
+      isVishingStepSelected: false,
       editItemsDisabled: false,
       step: 1,
       isSubmitDisabled: false,
@@ -376,39 +378,50 @@ export default {
           text: 'File upload'
         }
       ],
+      // difficultyItems: [
+      //   {
+      //     resourceId: 'mT0CeYGgKsVb',
+      //     genericCodeTypeId: 20,
+      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
+      //     name: 'Easy',
+      //     code: '1',
+      //     description: null,
+      //     orderNumber: 1
+      //   },
+      //   {
+      //     resourceId: 'Z5XeVlpw6Dps',
+      //     genericCodeTypeId: 20,
+      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
+      //     name: 'Medium',
+      //     code: '2',
+      //     description: null,
+      //     orderNumber: 2
+      //   },
+      //   {
+      //     resourceId: 'c4LCGEB9MayB',
+      //     genericCodeTypeId: 20,
+      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
+      //     name: 'Hard',
+      //     code: '3',
+      //     description: null,
+      //     orderNumber: 3
+      //   }
+      // ],
       difficultyItems: [
         {
-          resourceId: 'mT0CeYGgKsVb',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
-          description: null,
-          orderNumber: 1
+          value: 1,
+          text: 'Easy'
         },
         {
-          resourceId: 'Z5XeVlpw6Dps',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
-          description: null,
-          orderNumber: 2
+          value: 2,
+          text: 'Medium'
         },
         {
-          resourceId: 'c4LCGEB9MayB',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
-          description: null,
-          orderNumber: 3
+          value: 3,
+          text: 'Hard'
         }
       ],
-      languageItems: [
-        { text: 'English - Male', value: 'WNZt0sCVCWB3' },
-        { text: 'English - Female', value: 'DYC0gugxJMjT' }
-      ]
+      languageItems: [{ text: 'Turkish - Female', value: 'e3bb63b95abf' }]
     }
   },
   computed: {
@@ -426,54 +439,50 @@ export default {
       return this.formValues.steps.length > 4
     }
   },
-  watch: {
-    'formValues.steps': {
-      handler(val) {
-        this.isFailStepSelected = this.validateFailStep()
-      },
-      deep: true
-    }
-  },
   created() {
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit || this.isDuplicate) {
       getVishingTemplate(this.templateId).then((response) => {
-        // TODO: Make necessary assignments
-        //  this.formValues = {
-        //   ...response.data.data,
-        // }
-        // if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        // if (this.$refs.refMakeAvailableFor && availableForList.length) {
-        //   const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-        //     availableForList
-        //   )
-        //   if (!availableForListFromBackend.length) {
-        //     this.availableForRequests = [
-        //       {
-        //         id: 'MyCompanyOnly',
-        //         label: 'My company only',
-        //         type: 'MyCompanyOnly',
-        //         resourceId: null
-        //       }
-        //     ]
-        //   } else {
-        //     this.availableForRequests = availableForListFromBackend
-        //   }
-        // } else {
-        //   this.availableForRequests = [
-        //     {
-        //       id: 'MyCompanyOnly',
-        //       label: 'My company only',
-        //       type: 'MyCompanyOnly',
-        //       resourceId: null
-        //     }
-        //   ]
-        //   this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-        //     response.data.data.availableForList
-        //   )
-        // }
+        this.formValues = JSON.parse(JSON.stringify(response?.data?.data || {}))
+        for (let i = 0; i < this.formValues.steps.length; i++) {
+          this.formValues.steps[i]['isExpanded'] = false
+        }
+        this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
+        delete this.formValues.availableForList
+        delete this.formValues.createTime
+        delete this.formValues.vishingLanguage
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+        if (this.$refs.refMakeAvailableFor && response?.data?.data?.availableForList?.length) {
+          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            response.data.data.availableForList
+          )
+          if (!availableForListFromBackend.length) {
+            this.formValues.availableForRequests = [
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ]
+          } else {
+            this.formValues.availableForRequests = availableForListFromBackend
+          }
+        } else {
+          this.formValues.availableForRequests = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
+            response.data.data.availableForList
+          )
+        }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
@@ -481,64 +490,68 @@ export default {
   methods: {
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        this.formValues.steps[i].order = i
+      }
     },
     onAddStep(type) {
       for (let i = 0; i < this.formValues.steps.length; i++) {
         this.formValues.steps[i].isExpanded = false
       }
+      const order = this.formValues.steps.length
       let newItem
       switch (type) {
         case 'textToSpeech':
           newItem = {
-            type: 'textToSpeech',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: '',
-            isExpanded: true
+            inputType: 'TextToSpeech',
+            inputText: '',
+            inputUrl: null,
+            inputDigit: 0,
+            duration: 0,
+            isVishingStep: false,
+            order,
+            isExpanded: false
           }
           break
         case 'uploadAudio':
           newItem = {
-            type: 'uploadAudio',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: '',
-            isExpanded: true
+            inputType: 'FileUpload',
+            inputText: null,
+            inputUrl: null,
+            inputDigit: 0,
+            duration: 0,
+            isVishingStep: false,
+            order,
+            isExpanded: false
           }
           break
         case 'pause':
           newItem = {
-            type: 'pause',
-            textToSpeech: '',
-            requiredDigitCount: 0,
-            pauseDuration: 0,
-            isFailStep: false,
-            fileName: '',
-            fileUrl: '',
-            isExpanded: true
+            inputType: 'Pause',
+            inputText: null,
+            inputUrl: null,
+            inputDigit: 0,
+            duration: 0,
+            isVishingStep: false,
+            order,
+            isExpanded: false
           }
         default:
           break
       }
       this.formValues.steps.push(newItem)
     },
-    onFailStepChange(index) {
+    onVishingStepChange(index) {
       for (let i = 0; i < this.formValues.steps.length; i++) {
         if (index === i) {
-          this.formValues.steps[i].isFailStep = true
+          this.formValues.steps[i].isVishingStep = true
         } else {
-          this.formValues.steps[i].isFailStep = false
+          this.formValues.steps[i].isVishingStep = false
         }
       }
     },
     validateFailStep() {
-      return this.formValues.steps.some((step) => step.isFailStep)
+      return this.formValues.steps.some((step) => step.isVishingStep)
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
@@ -561,6 +574,30 @@ export default {
         }
       })
     },
+    getInputTypeValue(inputType = 'TextToSpeech') {
+      switch (inputType) {
+        case 'TextToSpeech':
+          return 1
+        case 'FileUpload':
+          return 2
+        case 'Pause':
+          return 3
+        default:
+          return 1
+      }
+    },
+    getDifficultyValue(difficulty = 'Easy') {
+      switch (difficulty) {
+        case 'Easy':
+          return 1
+        case 'Medium':
+          return 2
+        case 'Hard':
+          return 3
+        default:
+          return 1
+      }
+    },
     nextStep() {
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
@@ -579,9 +616,8 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
-      this.isFailStepSelected = this.validateFailStep()
-      if (!this.isFailStepSelected) {
-        // TODO: Show snackbar
+      this.isVishingStepSelected = this.validateFailStep()
+      if (!this.isVishingStepSelected) {
         this.$store.dispatch('common/createSnackBar', {
           message: 'One step should be chosen as fail step.',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -597,19 +633,58 @@ export default {
         this.isSubmitDisabled = false
         return
       }
-
-      if (this.isEdit) {
-        updateVishingTemplate(this.templateId, this.formValues)
+      const formData = new FormData()
+      formData.append('Name', this.formValues.name)
+      formData.append('Description', this.formValues.description)
+      for (let i = 0; i < this.formValues.tags.length; i++) {
+        formData.append(`Tags[${i}]`, this.formValues.tags[i])
+      }
+      formData.append('VishingLanguageResourceId', this.formValues.vishingLanguageResourceId)
+      formData.append('Difficulty', this.formValues.difficulty)
+      formData.append('Description', this.formValues.description)
+      for (let i = 0; i < this.formValues.availableForRequests.length; i++) {
+        formData.append(
+          `AvailableForRequests[${i}].ResourceId`,
+          this.formValues.availableForRequests[i].resourceId
+        )
+        formData.append(
+          `AvailableForRequests[${i}].Type`,
+          this.formValues.availableForRequests[i].type
+        )
+      }
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        formData.append(
+          `Steps[${i}].InputType`,
+          this.getInputTypeValue(this.formValues.steps[i].inputType)
+        )
+        formData.append(`Steps[${i}].Order`, i)
+        formData.append(`Steps[${i}].IsVishingStep`, this.formValues.steps[i].isVishingStep)
+        formData.append(`Steps[${i}].InputText`, this.formValues.steps[i].inputText)
+        formData.append(`Steps[${i}].InputDigit`, this.formValues.steps[i].inputDigit)
+        formData.append(`Steps[${i}].Duration`, this.formValues.steps[i].duration)
+        if (this.formValues.steps[i].inputType === 'FileUpload') {
+          if (this.formValues.steps[i].content) {
+            formData.append(`Steps[${i}].Content`, this.formValues.steps[i].content)
+          } else if (this.formValues.steps[i].inputUrl) {
+            formData.append(`Steps[${i}].InputUrl`, this.formValues.steps[i].inputUrl)
+          }
+        }
+        if (this.formValues.steps[i].resourceId) {
+          formData.append(`Steps[${i}].ResourceId`, this.formValues.steps[i].resourceId)
+        }
+      }
+      if (this.isEdit && !this.isDuplicate) {
+        updateVishingTemplate(this.templateId, formData)
           .then(() => {
-            this.$emit('changeVishingTemplateModalStatus', false)
+            this.$emit('changeVishingTemplateModalStatus', false, true)
           })
           .finally(() => {
             this.isSubmitDisabled = false
           })
       } else {
-        createVishingTemplate(this.formValues)
+        createVishingTemplate(formData)
           .then(() => {
-            this.$emit('changeVishingTemplateModalStatus', false)
+            this.$emit('changeVishingTemplateModalStatus', false, true)
           })
           .finally(() => {
             this.isSubmitDisabled = false
