@@ -37,6 +37,8 @@
             <KSelect
               v-model="formValues.categoryResourceId"
               :items="categoryResources"
+              :hint="'*Required'"
+              persistentHint
               item-text="name"
               item-value="resourceId"
               outlined
