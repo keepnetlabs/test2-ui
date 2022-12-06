@@ -12,6 +12,10 @@ parameters:
   displayName: GitHub Connection URL
   type: string
 
+- name: githubBranchName
+  displayName: GitHub Branch Name
+  type: string
+
 jobs:
 - deployment: Push_GH
   workspace:
@@ -32,11 +36,11 @@ jobs:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            git push ${{ parameters.githubConnectionUrl }} --delete test
-            git checkout -b test
+            git push ${{ parameters.githubConnectionUrl }} --delete ${{ parameters.githubBranchName }}
+            git checkout -b ${{ parameters.githubBranchName }}
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-          displayName: 'Github Test Deployment Checkout'
+          displayName: 'Github Deployment Checkout: ${{ parameters.githubBranchName }}'
 
         - script: |
             rm public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
@@ -69,5 +73,5 @@ jobs:
         - script: 'git push ${{ parameters.githubConnectionUrl }}'
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-          displayName: 'Github Test Deployment Push'
+          displayName: 'Github Deployment Push: ${{ parameters.githubBranchName }}'
 
