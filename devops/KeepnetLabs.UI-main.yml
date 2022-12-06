@@ -91,6 +91,7 @@ stages:
       repositoryName: GitHub_Test_Repo
       environment: TEST_UI
       githubConnectionUrl: $(testGitHubConnectionURL)
+      githubBranchName: test
 
 # # DEPLOY PROD          
 # - stage: PROD
@@ -119,6 +120,7 @@ stages:
       repositoryName: GitHub_Prod_Repo
       environment: PROD_UI
       githubConnectionUrl: $(prodGitHubConnectionURL)
+      githubBranchName: production
 
 - stage: ONPREM_BUCKET
   variables:
