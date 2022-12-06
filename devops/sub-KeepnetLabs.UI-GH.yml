@@ -32,8 +32,8 @@ jobs:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            git push ${{ parameters.githubConnectionUrl }} --delete test
-            git checkout -b test
+            git push ${{ parameters.githubConnectionUrl }} --delete production
+            git checkout -b production
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Github Test Deployment Checkout'
