@@ -14,7 +14,6 @@
       :selectedRowCount="selectedRowCount"
       :isMultiple="isMultipleDelete"
       @onCancel="handleCloseDeleteModal"
-      @onConfirm="handleConfirmDelete"
     />
     <VishingCampaignModal
       v-if="isCampaignModalVisible"
@@ -444,11 +443,6 @@ export default {
       this.isDuplicate = isDuplicate
       this.isCampaignModalVisible = true
     },
-    handleConfirmDelete() {
-      deleteVishingCampaign(this.selectedRow.resourceId)
-        .then(this.callForData)
-        .finally(this.handleCloseDeleteModal)
-    },
     handleDelete(row) {
       this.selectedRow = row
       this.isDeleteModalVisible = true
@@ -464,7 +458,8 @@ export default {
       this.isMultipleDelete = true
       this.onToggleShowDeleteModal()
     },
-    handleCloseDeleteModal() {
+    handleCloseDeleteModal(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
       this.isMultipleDelete = false
       this.selectedRow = null
       this.isDeleteModalVisible = false

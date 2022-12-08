@@ -47,12 +47,9 @@ export function getVishingCampaigns(payload = {}) {
   return vishingRequest.post('/vishing-campaign/search', payload)
 }
 
-export function deleteVishingCampaign(id) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res()
-    }, 1000)
+export function deleteVishingCampaign(resourceId) {
+  return vishingRequest.delete(`vishing-campaign/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
   })
 }
 

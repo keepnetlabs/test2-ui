@@ -16,6 +16,7 @@
         cancel-button-id="btn-cancel--vishing-campaign-popup"
         confirm-button-id="btn-delete--vishing-campaign-popup"
         type="delete"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />
@@ -26,6 +27,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { deleteVishingCampaign } from '@/api/vishing'
 export default {
   name: 'DeleteVishingCampaignDialog',
   components: {
@@ -49,6 +51,11 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   computed: {
     getTitle() {
       return this.isMultiple
@@ -64,11 +71,18 @@ export default {
     }
   },
   methods: {
-    closeModal() {
-      this.$emit('onCancel')
+    closeModal(forceUpdate = false) {
+      this.$emit('onCancel', forceUpdate)
     },
     handleDelete() {
-      this.$emit('onConfirm')
+      this.isActionButtonDisabled = true
+      deleteVishingCampaign(this.selectedRow.resourceId)
+        .then(() => {
+          this.closeModal(true)
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }
