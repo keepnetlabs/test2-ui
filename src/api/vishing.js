@@ -21,14 +21,18 @@ export function deleteVishingTemplate(resourceId = '') {
   })
 }
 
-export function getVishingTemplatePreview(id) {
-  return vishingRequest.get(`/vishing-template/preview/${id}`)
+export function getVishingTemplatePreview(resourceId = '') {
+  return vishingRequest.get(`/vishing-template/preview/${resourceId}`)
 }
 
 export function exportVishingCampaigns(payload = {}) {
   return vishingRequest.post('/vishing-campaign/search/export', payload, {
     responseType: 'blob'
   })
+}
+
+export function getVishingTemplateLanguages() {
+  return vishingRequest.get(`/vishing-template/language`)
 }
 
 export function updateVishingTemplate(resourceId = '', payload = {}) {
