@@ -326,6 +326,9 @@ export default {
   methods: {
     callForData() {
       this.callApis(true)
+      this.interval = setInterval(() => {
+        this.callApis()
+      }, 15000)
     },
     callApis(isUseLoading = false) {
       if (isUseLoading) {
