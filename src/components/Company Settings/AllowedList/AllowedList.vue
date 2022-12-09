@@ -366,20 +366,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.allow-list-table {
-  .allow-list-status {
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    background-color: white;
-    width: 77px;
-    text-align: center;
-    margin: auto;
-    color: #00bcd4;
-    border: 1px solid #00bcd4;
-  }
-}
-</style>
