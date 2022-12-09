@@ -37,7 +37,7 @@
         flex-direction: row;
         justify-content: space-between;
 
-        @media only screen and (max-width: 1023px) {
+        @media only screen and (max-width: 1025px) {
             flex-wrap: wrap;
 
             .dashboard-cards__skeleton-loading {
@@ -217,7 +217,7 @@
             padding-bottom: 24px;
         }
 
-        @media only screen and (max-width: 1023px) {
+        @media only screen and (max-width: 1025px) {
             flex-wrap: wrap;
 
             .column {

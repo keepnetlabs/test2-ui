@@ -14,12 +14,14 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
+//widget componentleri
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 //dynamic kullanımda bindingi gelmiyodu
 Vue.component('VSelect', VSelect)
 Vue.component('VAutocomplete', VAutocomplete)
 Vue.component('VCombobox', VCombobox)
+//kendisi içerisinde kendisini çağırınca hata veriyordu ondan böyle bind edildi.
 Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
@@ -69,18 +71,6 @@ Vue.use(require('vue-moment'))
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
-Vue.filter('formatSize', function (size) {
-  if (size > 1024 * 1024 * 1024 * 1024) {
-    return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
-  } else if (size > 1024 * 1024 * 1024) {
-    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
-  } else if (size > 1024 * 1024) {
-    return (size / 1024 / 1024).toFixed(2) + ' MB'
-  } else if (size > 1024) {
-    return (size / 1024).toFixed(2) + ' KB'
-  }
-  return size.toString() + ' B'
-})
 const vm = new Vue({
   router,
   store,
