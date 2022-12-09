@@ -65,6 +65,16 @@ export function createVishingCampaign(payload = {}) {
   })
 }
 
+export function stopVishingCampaign(resourceId = '') {
+  return vishingRequest.put(
+    `/vishing-campaign/stop/${resourceId}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
 export function getVishingCampaign(resourceId) {
   return vishingRequest.get(`/vishing-campaign/${resourceId}`)
 }

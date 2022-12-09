@@ -7,6 +7,12 @@
       :selectedRow="selectedRow"
       @on-close="onToggleShowPreviewModal"
     />
+    <VishingCampaignStopDialog
+      v-if="isShowStopDialog"
+      :status="isShowStopDialog"
+      :selected-row="selectedRow"
+      @on-cancel="toggleShowStopDialog"
+    />
     <DeleteVishingCampaignDialog
       v-if="isDeleteModalVisible"
       :status="isDeleteModalVisible"
@@ -169,10 +175,12 @@ import Badge from '@/components/Badge'
 import VishingTemplatePreview from '@/components/VishingTemplates/VishingTemplatePreview'
 import DeleteVishingCampaignDialog from '@/components/VishingCampaignManager/DeleteVishingCampaignDialog'
 import VishingCampaignModal from '@/components/VishingCampaignManager/VishingCampaignModal'
+import VishingCampaignStopDialog from '@/components/VishingCampaignManager/VishingCampaignStopDialog.vue'
 
 export default {
   name: 'VishingCampaignManager',
   components: {
+    VishingCampaignStopDialog,
     KContainer,
     DataTable,
     DefaultButtonRowAction,
@@ -187,6 +195,7 @@ export default {
   data() {
     return {
       isPreviewVisible: false,
+      isShowStopDialog: false,
       isDeleteModalVisible: false,
       isCampaignModalVisible: false,
       loading: true,
@@ -365,6 +374,11 @@ export default {
     this.callForData()
   },
   methods: {
+    toggleShowStopDialog(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      if (this.isShowStopDialog) this.selectedRow = null
+      this.isShowStopDialog = !this.isShowStopDialog
+    },
     callForData() {
       // TODO: Add permissions
       // if (this.getEmailTemplatesSearchPermissions) {
@@ -431,7 +445,10 @@ export default {
       })
     },
     handleTryAgain(row) {},
-    handleStop(row) {},
+    handleStop(row) {
+      this.selectedRow = row
+      this.toggleShowStopDialog()
+    },
     handleLaunch(row) {},
     handlePreview(row) {
       this.selectedRow = row
