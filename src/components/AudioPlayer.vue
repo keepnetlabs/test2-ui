@@ -3,8 +3,8 @@
     <audio
       ref="refAudio"
       style="display: none;"
-      :src="url"
       preload="auto"
+      :src="url"
       @play="onPlay"
       @pause="onPause"
       @timeupdate="onTimeupdate($event)"
@@ -79,6 +79,13 @@ export default {
         maxTime: 0,
         playing: false,
         speed: 1
+      }
+    }
+  },
+  watch: {
+    src(newSrc) {
+      if (this.type === 'client') {
+        this.url = newSrc || null
       }
     }
   },

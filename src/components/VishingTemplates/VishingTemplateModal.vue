@@ -184,32 +184,36 @@
                     subTitle="Choose playback method"
                     labelClassName="vishing-template-dialog-step__form-label"
                   >
-                    <k-select
+                    <KSelect
                       type="select"
-                      v-model.trim="formValues.dialogNoticeType"
-                      :items="dialogNoticeItems"
                       persistent-hint
                       dense
                       item-text="text"
                       item-value="value"
                       outlined
-                    ></k-select>
+                      :value="formValues.dialingNoticeStepInputType"
+                      :items="dialingNoticeItems"
+                      @input="onDialingNoticeInputTypeChange"
+                    />
                   </FormGroup>
                   <FormGroup
-                    v-if="formValues.dialogNoticeType === 'textToSpeech'"
+                    v-if="formValues.dialingNoticeStepInputType === 'TextToSpeech'"
                     className="mt-2"
                     labelClassName="vishing-template-dialog-step__form-label"
                     title="Text"
                     subTitle="Enter your text to be voiced by AI"
                   >
                     <InputDescription
-                      v-model.trim="formValues.dialogNoticeTextToSpeech"
+                      v-model.trim="formValues.dialingNoticeStepInputText"
                       initial-placeholder="Enter text here"
                       entity-name="Text to speech"
                       :max-length="500"
                     />
                   </FormGroup>
-                  <div v-if="formValues.dialogNoticeType === 'uploadAudio'" class="mt-2 pb-3">
+                  <div
+                    v-if="formValues.dialingNoticeStepInputType === 'FileUpload'"
+                    class="mt-2 pb-3"
+                  >
                     <div class="vishing-template-dialog-step__form-title">
                       <div class="vishing-template-dialog-step__form-title-left">
                         <label class="vishing-template-dialog-step__form-label">Audio File</label>
@@ -220,11 +224,11 @@
                       <div class="vishing-template-dialog-step__form--title-right">
                         <AudioPlayer
                           v-if="
-                            formValues.dialogNoticeType === 'uploadAudio' &&
-                            formValues.dialogNoticeFileUrl
+                            formValues.dialingNoticeStepInputType === 'FileUpload' &&
+                            getDialingNoticeFileSrc
                           "
                           isPreview
-                          :src="formValues.dialogNoticeFileUrl"
+                          :src="getDialingNoticeFileSrc"
                         />
                       </div>
                     </div>
@@ -233,6 +237,7 @@
                       :extensions="['mp3']"
                       :size="1"
                       @inputFile="onFileChanged"
+                      @on-clear="onClearFile"
                     />
                   </div>
                 </v-card>
@@ -286,11 +291,11 @@ const initialFormValues = {
   vishingLanguage: 'Turkish - Female',
   vishingLanguageResourceId: 'e3bb63b95abf',
   availableForRequests: [],
-  dialogNoticeType: 'textToSpeech',
-  dialogNoticeTextToSpeech:
+  dialingNoticeStepInputType: 'TextToSpeech',
+  dialingNoticeStepInputText:
     'I am sorry, I cannot recognize your request. Please enter your request again.',
-  dialogNoticeFile: null,
-  dialogNoticeFileUrl: '',
+  dialingNoticeStepContent: null,
+  dialingNoticeStepInputUrl: null,
   steps: [
     {
       inputType: 'TextToSpeech',
@@ -356,28 +361,28 @@ export default {
       nonEditableAvailableForRequests: [],
       addStepItems: [
         {
-          value: 'textToSpeech',
+          value: 'TextToSpeech',
           text: 'Text to speech',
           description: 'Create AI dub from text'
         },
         {
-          value: 'uploadAudio',
+          value: 'FileUpload',
           text: 'File upload',
           description: 'Upload a sound file'
         },
         {
-          value: 'pause',
+          value: 'Pause',
           text: 'Pause',
           description: 'Give a pause'
         }
       ],
-      dialogNoticeItems: [
+      dialingNoticeItems: [
         {
-          value: 'textToSpeech',
+          value: 'TextToSpeech',
           text: 'Text to speech'
         },
         {
-          value: 'uploadAudio',
+          value: 'FileUpload',
           text: 'File upload'
         }
       ],
@@ -411,6 +416,17 @@ export default {
     },
     isAddStepDisabled() {
       return this.formValues.steps.length > 4
+    },
+    getDialingNoticeFileSrc() {
+      if (this.formValues?.dialingNoticeStepContent) {
+        return URL.createObjectURL(this.formValues.dialingNoticeStepContent)
+      }
+
+      if (this.formValues?.dialingNoticeStepInputUrl) {
+        return this.formValues.dialingNoticeStepInputUrl
+      }
+
+      return null
     }
   },
   created() {
@@ -419,9 +435,24 @@ export default {
     }
     if (this.isEdit || this.isDuplicate) {
       getVishingTemplate(this.templateId).then((response) => {
-        this.formValues = JSON.parse(JSON.stringify(response?.data?.data || {}))
+        this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
         for (let i = 0; i < this.formValues.steps.length; i++) {
           this.formValues.steps[i]['isExpanded'] = false
+        }
+        const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
+          (step) => step.order === 0
+        )
+        if (invalidDialingNoticeStepIndex !== -1) {
+          this.formValues.dialingNoticeStepInputType = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].inputType
+          this.formValues.dialingNoticeStepInputText = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].inputText
+          this.formValues.dialingNoticeStepInputUrl = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].inputUrl
+          this.formValues.steps.splice(invalidDialingNoticeStepIndex, 1)
         }
         this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
         delete this.formValues.availableForList
@@ -477,17 +508,17 @@ export default {
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
       for (let i = 0; i < this.formValues.steps.length; i++) {
-        this.formValues.steps[i].order = i
+        this.formValues.steps[i].order = i + 1
       }
     },
     onAddStep(type) {
       for (let i = 0; i < this.formValues.steps.length; i++) {
         this.formValues.steps[i].isExpanded = false
       }
-      const order = this.formValues.steps.length
+      const order = this.formValues.steps.length + 1
       let newItem
       switch (type) {
-        case 'textToSpeech':
+        case 'TextToSpeech':
           newItem = {
             inputType: 'TextToSpeech',
             inputText: '',
@@ -499,7 +530,7 @@ export default {
             isExpanded: true
           }
           break
-        case 'uploadAudio':
+        case 'FileUpload':
           newItem = {
             inputType: 'FileUpload',
             inputText: null,
@@ -511,7 +542,7 @@ export default {
             isExpanded: true
           }
           break
-        case 'pause':
+        case 'Pause':
           newItem = {
             inputType: 'Pause',
             inputText: null,
@@ -541,12 +572,15 @@ export default {
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formValues.dialogNoticeFile = null
-        this.formValues.dialogNoticeFileUrl = ''
+        this.formValues.dialingNoticeStepContent = null
+        this.formValues.dialingNoticeStepInputUrl = null
       } else {
-        this.formValues.dialogNoticeFile = file
-        this.formValues.dialogNoticeFileUrl = URL.createObjectURL(file)
+        this.formValues.dialingNoticeStepContent = file
       }
+    },
+    onClearFile() {
+      this.formValues.dialingNoticeStepContent = null
+      this.formValues.dialingNoticeStepInputUrl = null
     },
     changeVishingTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
@@ -582,6 +616,15 @@ export default {
           return 3
         default:
           return 1
+      }
+    },
+    onDialingNoticeInputTypeChange(value) {
+      this.formValues.dialingNoticeStepInputType = value
+      if (value === 'TextToSpeech') {
+        this.formValues.dialingNoticeStepInputUrl = null
+        this.formValues.dialingNoticeStepContent = null
+      } else {
+        this.formValues.dialingNoticeStepInputText = null
       }
     },
     nextStep() {
@@ -621,13 +664,12 @@ export default {
       }
       const formData = new FormData()
       formData.append('Name', this.formValues.name)
-      formData.append('Description', this.formValues.description)
+      formData.append('Description', this.formValues.description || null)
       for (let i = 0; i < this.formValues.tags.length; i++) {
         formData.append(`Tags[${i}]`, this.formValues.tags[i])
       }
       formData.append('VishingLanguageResourceId', this.formValues.vishingLanguageResourceId)
       formData.append('Difficulty', this.formValues.difficulty)
-      formData.append('Description', this.formValues.description)
       for (let i = 0; i < this.formValues.availableForRequests.length; i++) {
         formData.append(
           `AvailableForRequests[${i}].ResourceId`,
@@ -640,24 +682,34 @@ export default {
       }
       for (let i = 0; i < this.formValues.steps.length; i++) {
         formData.append(
-          `Steps[${i}].InputType`,
+          `Steps[${i + 1}].InputType`,
           this.getInputTypeValue(this.formValues.steps[i].inputType)
         )
-        formData.append(`Steps[${i}].Order`, i)
-        formData.append(`Steps[${i}].IsVishingStep`, this.formValues.steps[i].isVishingStep)
-        formData.append(`Steps[${i}].InputText`, this.formValues.steps[i].inputText)
-        formData.append(`Steps[${i}].InputDigit`, this.formValues.steps[i].inputDigit)
-        formData.append(`Steps[${i}].Duration`, this.formValues.steps[i].duration)
-        if (this.formValues.steps[i].inputType === 'FileUpload') {
-          if (this.formValues.steps[i].content) {
-            formData.append(`Steps[${i}].Content`, this.formValues.steps[i].content)
-          } else if (this.formValues.steps[i].inputUrl) {
-            formData.append(`Steps[${i}].InputUrl`, this.formValues.steps[i].inputUrl)
-          }
-        }
-        if (this.formValues.steps[i].resourceId) {
-          formData.append(`Steps[${i}].ResourceId`, this.formValues.steps[i].resourceId)
-        }
+        formData.append(`Steps[${i + 1}].Order`, i + 1)
+        formData.append(
+          `Steps[${i + 1}].IsVishingStep`,
+          this.formValues.steps[i].isVishingStep || false
+        )
+        formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText || null)
+        formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit || 0)
+        formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration || 0)
+        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content || null)
+        formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl || null)
+      }
+      if (
+        (this.formValues.dialingNoticeStepInputType === 'TextToSpeech' &&
+          this.formValues.dialingNoticeStepInputText) ||
+        (this.formValues.dialingNoticeStepInputType === 'FileUpload' &&
+          (this.formValues.dialingNoticeStepInputUrl || this.formValues.dialingNoticeStepContent))
+      ) {
+        formData.append('Steps[0].Order', 0)
+        formData.append(
+          'Steps[0].InputType',
+          this.getInputTypeValue(this.formValues.dialingNoticeStepInputType)
+        )
+        formData.append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
+        formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
+        formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
       }
       if (this.isEdit && !this.isDuplicate) {
         updateVishingTemplate(this.templateId, formData)

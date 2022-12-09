@@ -104,6 +104,12 @@ export default {
       getVishingTemplatePreview(this.selectedRow.resourceId)
         .then((response) => {
           this.templateData = response?.data?.data || {}
+          const invalidDialingNoticeStepIndex = this.templateData.steps.findIndex(
+            (step) => step.order === 0
+          )
+          if (invalidDialingNoticeStepIndex !== -1) {
+            this.templateData.steps.splice(invalidDialingNoticeStepIndex, 1)
+          }
         })
         .finally(() => {
           this.isLoading = false

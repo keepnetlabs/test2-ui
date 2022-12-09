@@ -46,9 +46,9 @@
             </div>
             <div class="vishing-template-dialog-step__form--title-right">
               <AudioPlayer
-                v-if="(value.inputType === 'FileUpload' && getFilePreview)"
+                v-if="(value.inputType === 'FileUpload' && getFileSrc)"
                 isPreview
-                :src="getFilePreview"
+                :src="getFileSrc"
               />
             </div>
           </div>
@@ -56,7 +56,9 @@
             hint="Only MP3 files. Max. file size 1MB"
             :extensions="['mp3']"
             :size="1"
+            :filePreviews="getFilePreviews"
             @inputFile="onFileChanged"
+            @on-clear="onClearFile"
           />
         </div>
         <FormGroup
@@ -135,7 +137,7 @@ export default {
           return ''
       }
     },
-    getFilePreview() {
+    getFileSrc() {
       if (this.value?.content) {
         return URL.createObjectURL(this.value.content)
       }
@@ -145,6 +147,19 @@ export default {
       }
 
       return null
+    },
+    getFilePreviews() {
+      if (this.value?.content) {
+        return [{ name: this.value.content.name, size: this.value.content.size }]
+      }
+
+      if (this.value?.inputUrl) {
+        const lastSlashIndex = this.value.inputUrl.lastIndexOf('/') + 1
+        const fileName = this.value.inputUrl.substring(lastSlashIndex)
+        return [{ name: fileName }]
+      }
+
+      return []
     }
   },
   data() {
@@ -187,10 +202,13 @@ export default {
       } else {
         this.$emit('input', {
           ...this.value,
-          inputUrl: URL.createObjectURL(file),
+          inputUrl: null,
           content: file
         })
       }
+    },
+    onClearFile() {
+      this.$emit('input', { ...this.value, content: null, inputUrl: null })
     }
   }
 }
