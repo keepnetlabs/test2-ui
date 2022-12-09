@@ -7,6 +7,18 @@
       :selectedRow="selectedRow"
       @on-close="onToggleShowPreviewModal"
     />
+    <VishingCampaignStopDialog
+      v-if="isShowStopDialog"
+      :status="isShowStopDialog"
+      :selected-row="selectedRow"
+      @on-cancel="toggleShowStopDialog"
+    />
+    <VishingCampaignLaunchDialog
+      v-if="isShowLaunchDialog"
+      :status="isShowLaunchDialog"
+      :selected-row="selectedRow"
+      @on-cancel="toggleShowLaunchDialog"
+    />
     <DeleteVishingCampaignDialog
       v-if="isDeleteModalVisible"
       :status="isDeleteModalVisible"
@@ -169,10 +181,14 @@ import Badge from '@/components/Badge'
 import VishingTemplatePreview from '@/components/VishingTemplates/VishingTemplatePreview'
 import DeleteVishingCampaignDialog from '@/components/VishingCampaignManager/DeleteVishingCampaignDialog'
 import VishingCampaignModal from '@/components/VishingCampaignManager/VishingCampaignModal'
+import VishingCampaignStopDialog from '@/components/VishingCampaignManager/VishingCampaignStopDialog.vue'
+import VishingCampaignLaunchDialog from '@/components/VishingCampaignManager/VishingCampaignLaunchDialog.vue'
 
 export default {
   name: 'VishingCampaignManager',
   components: {
+    VishingCampaignLaunchDialog,
+    VishingCampaignStopDialog,
     KContainer,
     DataTable,
     DefaultButtonRowAction,
@@ -187,6 +203,8 @@ export default {
   data() {
     return {
       isPreviewVisible: false,
+      isShowStopDialog: false,
+      isShowLaunchDialog: false,
       isDeleteModalVisible: false,
       isCampaignModalVisible: false,
       loading: true,
@@ -386,6 +404,16 @@ export default {
       // this.$router.push('/')
       // }
     },
+    toggleShowLaunchDialog(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      if (this.isShowLaunchDialog) this.selectedRow = null
+      this.isShowLaunchDialog = !this.isShowLaunchDialog
+    },
+    toggleShowStopDialog(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      if (this.isShowStopDialog) this.selectedRow = null
+      this.isShowStopDialog = !this.isShowStopDialog
+    },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     },
@@ -431,8 +459,14 @@ export default {
       })
     },
     handleTryAgain(row) {},
-    handleStop(row) {},
-    handleLaunch(row) {},
+    handleStop(row) {
+      this.selectedRow = row
+      this.toggleShowStopDialog()
+    },
+    handleLaunch(row) {
+      this.selectedRow = row
+      this.toggleShowLaunchDialog()
+    },
     handlePreview(row) {
       this.selectedRow = row
       this.onToggleShowPreviewModal()
