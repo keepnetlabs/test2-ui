@@ -31,7 +31,7 @@
               {{ displayFileName(file.name) }}
             </div>
             <div class="k-file-uploads__item-details--filesize">
-              <span v-if="!!file.size">{{ file.size | formatSize }}</span>
+              <span v-if="!!file.size">{{ getFileSize(file.size) }}</span>
               <span
                 v-if="
                   isStandAlone &&
@@ -179,6 +179,18 @@ export default {
     }
   },
   methods: {
+    getFileSize(size = 0) {
+      if (size > 1024 * 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
+      } else if (size > 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
+      } else if (size > 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + ' MB'
+      } else if (size > 1024) {
+        return (size / 1024).toFixed(2) + ' KB'
+      }
+      return size.toString() + ' B'
+    },
     displayFileName(fileName) {
       return fileName ? (fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...') : ''
     },
