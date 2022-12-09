@@ -90,7 +90,7 @@
                 <KSelect
                   v-model="formValues.vishingLanguageResourceId"
                   type="autocomplete"
-                  :items="languageItems"
+                  :items="vishingLanguageItems"
                   placeholder="Select language"
                   item-disabled="disabled"
                   item-text="text"
@@ -281,7 +281,7 @@ const initialFormValues = {
   name: '',
   description: '',
   tags: [],
-  difficulty: 'Easy',
+  difficulty: 1,
   languageResourceId: 'WNZt0sCVCWB3',
   vishingLanguage: 'Turkish - Female',
   vishingLanguageResourceId: 'e3bb63b95abf',
@@ -293,13 +293,12 @@ const initialFormValues = {
   dialogNoticeFileUrl: '',
   steps: [
     {
-      type: 'textToSpeech',
-      textToSpeech: '',
-      requiredDigitCount: 0,
-      pauseDuration: 0,
+      inputType: 'TextToSpeech',
+      inputText: '',
+      inputDigit: 0,
+      duration: 0,
       isVishingStep: false,
-      fileName: '',
-      fileUrl: '',
+      inputUrl: null,
       isExpanded: true
     }
   ]
@@ -336,6 +335,10 @@ export default {
     },
     templateId: {
       type: String
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -378,35 +381,6 @@ export default {
           text: 'File upload'
         }
       ],
-      // difficultyItems: [
-      //   {
-      //     resourceId: 'mT0CeYGgKsVb',
-      //     genericCodeTypeId: 20,
-      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
-      //     name: 'Easy',
-      //     code: '1',
-      //     description: null,
-      //     orderNumber: 1
-      //   },
-      //   {
-      //     resourceId: 'Z5XeVlpw6Dps',
-      //     genericCodeTypeId: 20,
-      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
-      //     name: 'Medium',
-      //     code: '2',
-      //     description: null,
-      //     orderNumber: 2
-      //   },
-      //   {
-      //     resourceId: 'c4LCGEB9MayB',
-      //     genericCodeTypeId: 20,
-      //     genericCodeTypeName: 'Phishing Simulator Difficulties',
-      //     name: 'Hard',
-      //     code: '3',
-      //     description: null,
-      //     orderNumber: 3
-      //   }
-      // ],
       difficultyItems: [
         {
           value: 1,
@@ -421,7 +395,7 @@ export default {
           text: 'Hard'
         }
       ],
-      languageItems: [{ text: 'Turkish - Female', value: 'e3bb63b95abf' }]
+      vishingLanguageItems: []
     }
   },
   computed: {
@@ -487,6 +461,18 @@ export default {
       })
     }
   },
+  watch: {
+    languages: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.vishingLanguageItems = val.map((language) => ({
+          value: language.resourceId,
+          text: language.name
+        }))
+      }
+    }
+  },
   methods: {
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
@@ -510,7 +496,7 @@ export default {
             duration: 0,
             isVishingStep: false,
             order,
-            isExpanded: false
+            isExpanded: true
           }
           break
         case 'uploadAudio':
@@ -522,7 +508,7 @@ export default {
             duration: 0,
             isVishingStep: false,
             order,
-            isExpanded: false
+            isExpanded: true
           }
           break
         case 'pause':
@@ -534,7 +520,7 @@ export default {
             duration: 0,
             isVishingStep: false,
             order,
-            isExpanded: false
+            isExpanded: true
           }
         default:
           break

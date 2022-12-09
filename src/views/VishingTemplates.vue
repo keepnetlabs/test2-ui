@@ -21,6 +21,7 @@
       :templateId="getTemplateId"
       :isEdit="isEdit"
       :isDuplicate="isDuplicate"
+      :languages="languages"
       @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus"
     />
     <DataTable
@@ -77,13 +78,13 @@
             :text="tableOptions.rowActions[1].name"
             @on-click="handleEdit(scope.row, false)"
           />
-          <DefaultMenuRowAction
+          <!-- <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
             @on-click="handleFastLaunch(scope.row, false)"
-          />
+          /> -->
           <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"
@@ -125,7 +126,12 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { exportVishingTemplates, getVishingTemplates, deleteVishingTemplate } from '@/api/vishing'
+import {
+  exportVishingTemplates,
+  getVishingTemplates,
+  getVishingTemplateLanguages,
+  deleteVishingTemplate
+} from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
 import VishingTemplateModal from '@/components/VishingTemplates/VishingTemplateModal'
@@ -155,6 +161,7 @@ export default {
       tableData: [],
       isDeleteModalVisible: false,
       selectedTemplate: null,
+      languages: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHINGTEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHINGTEMPLATES,
@@ -183,7 +190,7 @@ export default {
             fixed: false,
             width: 175,
             filterableType: 'select',
-            filterableItems: ['Turkish - Female', 'Turkish - Male']
+            filterableItems: []
           },
           {
             property: 'difficulty',
@@ -326,6 +333,7 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForLanguages()
   },
   methods: {
     onToggleShowPreviewModal() {
@@ -410,6 +418,20 @@ export default {
       // } else {
       // this.$router.push('/')
       // }
+    },
+    callForLanguages() {
+      getVishingTemplateLanguages().then((response) => {
+        this.languages = response?.data?.data || []
+        const filterableItems = response?.data?.data
+          ? response.data.data.map((language) => language.name)
+          : []
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'language'),
+          'filterableItems',
+          filterableItems
+        )
+        this?.$refs?.refVishingTemplatesList?.reRenderFilters()
+      })
     },
     onCloseDeleteModal() {
       this.selectedTemplate = null
