@@ -1,16 +1,15 @@
 <template>
   <AppDialog
-    :status="status"
     icon="mdi-alert"
-    title="Stop Vishing Campaign"
-    subtitle="Do you want to stop this vishing campaign?"
-    body="Once stopped, you cannot resume this vishing campaign"
+    :status="status"
+    title="Launch Vishing Campaign"
+    body="Do you want to launch this vishing campaign?"
     @changeStatus="handleClose"
   >
     <template #app-dialog-footer>
       <AppDialogFooter
-        cancel-button-id="btn-cancel--vishing-campaign-stop-popup"
-        confirm-button-id="btn-stop--vishing-campaign-stop-popup"
+        cancel-button-id="btn-cancel--vishing-campaign-launch-popup"
+        confirm-button-id="btn-stop--vishing-campaign-launch-popup"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleStop"
@@ -21,12 +20,12 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { stopVishingCampaign } from '@/api/vishing'
+import { launchVishingCampaign } from '@/api/vishing'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 
 export default {
-  name: 'VishingCampaignStopDialog',
-  components: { AppDialogFooter, AppDialog },
+  name: 'VishingCampaignLaunchDialog',
+  components: { AppDialog, AppDialogFooter },
   props: {
     status: {
       type: Boolean
@@ -46,7 +45,7 @@ export default {
     },
     handleStop() {
       this.isActionButtonDisabled = true
-      stopVishingCampaign(this.selectedRow.resourceId)
+      launchVishingCampaign(this.selectedRow.resourceId)
         .then(() => {
           this.handleClose(true)
         })
