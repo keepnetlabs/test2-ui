@@ -4,7 +4,7 @@
       v-if="isPreviewVisible"
       is-campaign
       :status="isPreviewVisible"
-      :selectedRow="selectedRow"
+      :selected-row="selectedRow"
       @on-close="onToggleShowPreviewModal"
     />
     <VishingCampaignStopDialog

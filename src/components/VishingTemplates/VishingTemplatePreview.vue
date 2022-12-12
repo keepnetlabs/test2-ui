@@ -44,7 +44,7 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import { getVishingTemplatePreview } from '@/api/vishing'
+import { getVishingCampaignPreview, getVishingTemplatePreview } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
@@ -101,7 +101,8 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      getVishingTemplatePreview(this.selectedRow.resourceId)
+      const fn = this.isCampaign ? getVishingCampaignPreview : getVishingTemplatePreview
+      fn(this.selectedRow.resourceId)
         .then((response) => {
           this.templateData = response?.data?.data || {}
           const invalidDialingNoticeStepIndex = this.templateData.steps.findIndex(

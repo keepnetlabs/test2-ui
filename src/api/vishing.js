@@ -79,6 +79,10 @@ export function stopVishingCampaign(resourceId = '') {
   )
 }
 
+export function getVishingCampaignPreview(resourceId = '') {
+  return vishingRequest.get(`/vishing-campaign/preview/${resourceId}`)
+}
+
 export function launchVishingCampaign(resourceId = '') {
   return vishingRequest.put(
     `/vishing-campaign/launch/${resourceId}`,
