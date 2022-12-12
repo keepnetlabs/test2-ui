@@ -118,6 +118,7 @@
                       v-model="formValues.steps[index]"
                       :index="index"
                       :key="index"
+                      :isRemoveDisabled="formValues.steps.length === 1"
                       @removeStep="onRemoveStep(index)"
                       @vishingStepChange="onVishingStepChange"
                     />
@@ -731,6 +732,18 @@ export default {
         if (this.isEdit && !this.formValues.steps[i].content) {
           formData.set(`Steps[${i + 1}].Content`, null)
           formData.set(`Steps[${i + 1}].InputUrl`, null)
+        }
+        if (
+          this.isDuplicate &&
+          !this.formValues.steps[i].content &&
+          this.formValues.steps[i].inputUrl
+        ) {
+          formData.set(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
+          formData.set(`Steps[${i + 1}].Content`, null)
+        }
+        if (this.isDuplicate && this.formValues.steps[i].content) {
+          formData.set(`Steps[${i + 1}].InputUrl`, null)
+          formData.set(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
         }
       }
       if (

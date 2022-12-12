@@ -15,9 +15,22 @@
           customStyle="text-transform: none;"
           @input="onVishingStepChange"
         />
-        <v-btn color="#000000" icon outlined @click="onRemoveStep">
-          <v-icon small>mdi-delete</v-icon>
-        </v-btn>
+        <v-tooltip :disabled="!isRemoveDisabled" right max-width="200">
+          <template v-slot:activator="{ on }">
+            <div v-on="on">
+              <v-btn
+                color="#000000"
+                icon
+                outlined
+                :disabled="isRemoveDisabled"
+                @click="onRemoveStep"
+              >
+                <v-icon small>mdi-delete</v-icon>
+              </v-btn>
+            </div>
+          </template>
+          <span class="tooltip-span">It cannot be deleted since there is only one step</span>
+        </v-tooltip>
       </div>
     </div>
     <v-expand-transition>
@@ -122,6 +135,10 @@ export default {
     },
     index: {
       type: Number
+    },
+    isRemoveDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
