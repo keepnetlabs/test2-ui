@@ -236,6 +236,7 @@
                       hint="Only MP3 files. Max. file size 1MB"
                       :extensions="['mp3']"
                       :size="1"
+                      :filePreviews="getDialingNoticeFilePreviews"
                       @inputFile="onFileChanged"
                       @on-clear="onClearFile"
                     />
@@ -283,6 +284,7 @@ import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 const initialFormValues = {
+  resourceId: null,
   name: '',
   description: '',
   tags: [],
@@ -291,6 +293,7 @@ const initialFormValues = {
   vishingLanguage: 'Turkish - Female',
   vishingLanguageResourceId: 'e3bb63b95abf',
   availableForRequests: [],
+  dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
   dialingNoticeStepInputText:
     'I am sorry, I cannot recognize your request. Please enter your request again.',
@@ -427,6 +430,24 @@ export default {
       }
 
       return null
+    },
+    getDialingNoticeFilePreviews() {
+      if (this.formValues?.dialingNoticeStepContent) {
+        return [
+          {
+            name: this.formValues.dialingNoticeStepContent.name,
+            size: this.formValues?.dialingNoticeStepContent.size
+          }
+        ]
+      }
+
+      if (this.formValues?.dialingNoticeStepInputUrl) {
+        const lastSlashIndex = this.formValues.dialingNoticeStepInputUrl.lastIndexOf('/') + 1
+        const fileName = this.formValues.dialingNoticeStepInputUrl.substring(lastSlashIndex)
+        return [{ name: fileName }]
+      }
+
+      return []
     }
   },
   created() {
@@ -443,6 +464,9 @@ export default {
           (step) => step.order === 0
         )
         if (invalidDialingNoticeStepIndex !== -1) {
+          this.formValues.dialingNoticeStepResourceId = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].resourceId
           this.formValues.dialingNoticeStepInputType = this.formValues.steps[
             invalidDialingNoticeStepIndex
           ].inputType
@@ -452,6 +476,9 @@ export default {
           this.formValues.dialingNoticeStepInputUrl = this.formValues.steps[
             invalidDialingNoticeStepIndex
           ].inputUrl
+          this.formValues.dialingNoticeStepContent = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].content
           this.formValues.steps.splice(invalidDialingNoticeStepIndex, 1)
         }
         this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
@@ -663,6 +690,9 @@ export default {
         return
       }
       const formData = new FormData()
+      if (this.formValues.resourceId) {
+        formData.append('ResouceId', this.formValues.resourceId)
+      }
       formData.append('Name', this.formValues.name)
       formData.append('Description', this.formValues.description || null)
       for (let i = 0; i < this.formValues.tags.length; i++) {
@@ -681,6 +711,9 @@ export default {
         )
       }
       for (let i = 0; i < this.formValues.steps.length; i++) {
+        if (this.formValues.steps[i].resourceId) {
+          formData.append(`Steps[${i + 1}].ResourceId`, this.formValues.steps[i].resourceId)
+        }
         formData.append(
           `Steps[${i + 1}].InputType`,
           this.getInputTypeValue(this.formValues.steps[i].inputType)
@@ -693,8 +726,12 @@ export default {
         formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText || null)
         formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit || 0)
         formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration || 0)
-        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content || null)
         formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl || null)
+        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content || null)
+        if (this.isEdit && !this.formValues.steps[i].content) {
+          formData.set(`Steps[${i + 1}].Content`, null)
+          formData.set(`Steps[${i + 1}].InputUrl`, null)
+        }
       }
       if (
         (this.formValues.dialingNoticeStepInputType === 'TextToSpeech' &&
@@ -702,6 +739,7 @@ export default {
         (this.formValues.dialingNoticeStepInputType === 'FileUpload' &&
           (this.formValues.dialingNoticeStepInputUrl || this.formValues.dialingNoticeStepContent))
       ) {
+        formData.append('Steps[0].ResourceId', this.formValues.dialingNoticeStepResourceId)
         formData.append('Steps[0].Order', 0)
         formData.append(
           'Steps[0].InputType',
@@ -710,6 +748,10 @@ export default {
         formData.append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
         formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
         formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
+        if (this.isEdit && !this.formValues.dialingNoticeStepContent) {
+          formData.set(`Steps[0].Content`, null)
+          formData.set(`Steps[0].InputUrl`, null)
+        }
       }
       if (this.isEdit && !this.isDuplicate) {
         updateVishingTemplate(this.templateId, formData)
