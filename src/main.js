@@ -9,11 +9,9 @@ import './assets/scss/@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 import { SmartWidget, SmartWidgetGrid } from 'vue-smart-widget'
 import VueMask, { VueMaskDirective } from 'v-mask'
-import * as Sentry from '@sentry/browser'
-import { Vue as VueIntegration } from '@sentry/integrations'
-import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
+import useSentry from './plugins/sentry'
 //widget componentleri
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
@@ -26,30 +24,13 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-
 const gtmID = APP_CONFIG.VUE_APP_GTM_ID
 const gtmPreviewEnv = APP_CONFIG.VUE_APP_GTM_ENV
 const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
 const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
-const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
 const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
-const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
-
 if (isCloud) {
-  //Sentry
-  sentryStatus &&
-    Sentry.init({
-      dsn: sentryDSN,
-      integrations: [
-        new VueIntegration({
-          Vue,
-          tracing: true
-        }),
-        new Integrations.BrowserTracing()
-      ],
-      tracesSampleRate: 1.0
-    })
-
+  useSentry()
   //Google Tag Manager
   !!gtmStatus &&
     Vue.use(VueTagManager, {
