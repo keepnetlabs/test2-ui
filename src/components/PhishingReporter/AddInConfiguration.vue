@@ -290,41 +290,37 @@ export default {
     changeStep(flag) {
       let hasValidationError = false
       let ret = null
-      switch (this.step) {
-        case 1:
-          ret = this.$refs.refAddInSettings.submit()
-          if (ret) {
-            this.addingSettings = ret
-            hasValidationError = false
-          } else {
-            hasValidationError = true
-          }
-          break
-        case 2:
-          ret = this.$refs.refEmailSettings.submit()
-          if (ret) {
-            this.emailSettings = ret
-            hasValidationError = false
-          } else {
-            hasValidationError = true
-          }
-          break
-        case 3:
-          ret = this.$refs.refOtherSettings.submit()
-          if (ret) {
-            this.otherSettings = ret
-            hasValidationError = false
-          } else {
-            hasValidationError = true
-          }
-          break
-        case 4:
-          ret = this.$refs.refDiagnosticTool.formValues
-          this.diagnosticTool = ret
+      if (this.step === 1) {
+        ret = this.$refs.refAddInSettings.submit()
+        if (ret) {
+          this.addingSettings = ret
           hasValidationError = false
-          break
-        default:
-          break
+        } else {
+          hasValidationError = true
+        }
+      }
+      if (this.step === 2) {
+        ret = this.$refs.refEmailSettings.submit()
+        if (ret) {
+          this.emailSettings = ret
+          hasValidationError = false
+        } else {
+          hasValidationError = true
+        }
+      }
+      if (this.step === 3) {
+        ret = this.$refs.refOtherSettings.submit()
+        if (ret) {
+          this.otherSettings = ret
+          hasValidationError = false
+        } else {
+          hasValidationError = true
+        }
+      }
+      if (this.step === 4) {
+        ret = this.$refs.refDiagnosticTool.formValues
+        this.diagnosticTool = ret
+        hasValidationError = false
       }
       if (!hasValidationError || flag === -1) {
         this.step += flag

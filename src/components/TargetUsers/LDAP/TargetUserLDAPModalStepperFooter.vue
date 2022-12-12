@@ -108,17 +108,13 @@ export default {
   },
   methods: {
     changeStep(val = 1) {
-      switch (val) {
-        case 1:
-          this.$emit('validate-step1', () => {
-            this.$emit('update:step', this.step + val)
-          })
-          break
-        case -1:
+      if (val === 1) {
+        this.$emit('validate-step1', () => {
           this.$emit('update:step', this.step + val)
-          break
-        default:
-          break
+        })
+      }
+      if (val === -1) {
+        this.$emit('update:step', this.step + val)
       }
     },
     handleCancel() {

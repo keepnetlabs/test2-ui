@@ -234,36 +234,20 @@ export default {
         .finally(this.setLoading)
     },
     getStatusName(status) {
-      switch (status) {
-        case 0:
-          return 'Waiting'
-        case 1:
-          return 'Started'
-        case 2:
-          return 'Working'
-        case 3:
-          return 'Finished'
-        case 4:
-          return 'Failed'
-        default:
-          return ''
-      }
+      if (status === 0) return 'Waiting'
+      if (status === 1) return 'Started'
+      if (status === 2) return 'Working'
+      if (status === 3) return 'Finished'
+      if (status === 4) return 'Failed'
+      return ''
     },
     getPriorityName(priority) {
-      switch (priority) {
-        case 1:
-          return 'Very Low'
-        case 2:
-          return 'Low'
-        case 3:
-          return 'Medium'
-        case 4:
-          return 'High'
-        case 5:
-          return 'Very High'
-        default:
-          return ''
-      }
+      if (priority === 1) return 'Very Low'
+      if (priority === 2) return 'Low'
+      if (priority === 3) return 'Medium'
+      if (priority === 4) return 'High'
+      if (priority === 5) return 'Very High'
+      return ''
     },
     handleClose() {
       this.$emit('onClose')

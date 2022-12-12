@@ -645,130 +645,66 @@ export default {
       })
     },
     getTagsComponent(item) {
-      switch (item) {
-        case '{FULLNAME}':
-          return fullName
-        case '{USERNAME}':
-          return userName
-        case '{PASSWORDURL}':
-          return passwordURL
-        case '{POSTDATE}':
-          return postDate
-        case '{SHAREUSERNAME}':
-          return shareUserName
-        case '{COMPANYNAME}':
-          return companyName
-        case '{COMMUNITYNAME}':
-          return communityName
-        case '{COMMUNITYDESCRIPTION}':
-          return communityDescription
-        case '{POSTTITLE}':
-          return postTitle
-        case '{POSTDESC}':
-          return postDesc
-        case '{POSTUSERNAME}':
-          return postUserName
-        case '{POSTCOMPANYNAME}':
-          return postCompanyName
-        case '{WEBURL}':
-          return webUrl
-        case '{POSTURL}':
-          return postUrl
-        case '{CURRENTDATE}':
-          return currentDate
-        case '{DESCRIPTION}':
-          return description
-        case '{SHARECOMPANYNAME}':
-          return shareCompanyName
-        case '{LINK}':
-          return link
-        case '{COMMUNITYTITLE}':
-          return communityTitle
-        case '{COMMUNITYUSER}':
-          return communityUser
-        case '{CATEGORY}':
-          return category
-        case '{COMMUNITYDESC}':
-          return communityDesc
-        case '{STATUS}':
-          return status
-        case '{ACTIVEUSERS}':
-          return activeUsers
-        case '{ANALYSEDEMAIL}':
-          return analysedEmail
-        case '{FOUNDEMAILCOUNT}':
-          return foundEmailCount
-        case '{STARTEDBY}':
-          return startedBy
-        case '{STARTDATE}':
-          return startDate
-        case '{INVESTIGATIONNAME}':
-          return investigationName
-        case '{INVITEDUSERNAME}':
-          return invitedUserName
-        case '{INVITEDBYCOMPANYNAME}':
-          return invitedByCompanyName
-        case '{COMMUNITYURL}':
-          return communityUrl
-        case '{MEMBERCOUNT}':
-          return memberCount
-        case '{COMMUNITYINDUSTRY}':
-          return communityIndustry
-        case '{ANALYSISEMAIL}':
-          return analysisEmail
-        case '{OWNER}':
-          return owner
-        case '{DATE}':
-          return date
-        case '{REPORTBY}':
-          return reportBy
-        case '{FROM}':
-          return fromText
-        case '{TO}':
-          return to
-        case '{SUBJECT}':
-          return subject
-        case '{ATTACHMENT}':
-          return attachment
-        case '{CREATEDATE}':
-          return createDate
-        case '{SENDERIP}':
-          return senderIP
-        case '{CASEID}':
-          return caseID
-        case '{USEREMAIL}':
-          return userEmail
-        case '{USERAGENT}':
-          return userAgent
-        case '{ACTIONDATE}':
-          return actionDate
-        case '{ACTIONIP}':
-          return actionIP
-        case '{PRODUCTNAME}':
-          return productName
-        case '{ANALYSISDETAILURL}':
-          return analysisDetailUrl
-        case '{INVESTIGATIONURL}':
-          return investigationUrl
-        case '{COMPANYLOGO}':
-          return companyLogo
-        case '{DATEMAILSENT}':
-          return dateEmailSent
-        case '{EMAIL}':
-          return emailMergedText
-        case '{FIRSTNAME}':
-          return firstName
-        case '{FROMEMAIL}':
-          return fromEmail
-        case '{FROMNAME}':
-          return fromName
-        case '{LASTNAME}':
-          return lastName
-        case '{PHISHINGURL}':
-          return phishingUrl
-        default:
-          break
-      }
+      if (item === '{FULLNAME}') return fullName
+      if (item === '{USERNAME}') return userName
+      if (item === '{PASSWORDURL}') return passwordURL
+      if (item === '{POSTDATE}') return postDate
+      if (item === '{SHAREUSERNAME}') return shareUserName
+      if (item === '{COMPANYNAME}') return companyName
+      if (item === '{COMMUNITYNAME}') return communityName
+      if (item === '{COMMUNITYDESCRIPTION}') return communityDescription
+      if (item === '{POSTTITLE}') return postTitle
+      if (item === '{POSTDESC}') return postDesc
+      if (item === '{POSTUSERNAME}') return postUserName
+      if (item === '{POSTCOMPANYNAME}') return postCompanyName
+      if (item === '{WEBURL}') return webUrl
+      if (item === '{POSTURL}') return postUrl
+      if (item === '{CURRENTDATE}') return currentDate
+      if (item === '{DESCRIPTION}') return description
+      if (item === '{SHARECOMPANYNAME}') return shareCompanyName
+      if (item === '{LINK}') return link
+      if (item === '{COMMUNITYTITLE}') return communityTitle
+      if (item === '{COMMUNITYUSER}') return communityUser
+      if (item === '{CATEGORY}') return category
+      if (item === '{COMMUNITYDESC}') return communityDesc
+      if (item === '{STATUS}') return status
+      if (item === '{ACTIVEUSERS}') return activeUsers
+      if (item === '{ANALYSEDEMAIL}') return analysedEmail
+      if (item === '{FOUNDEMAILCOUNT}') return foundEmailCount
+      if (item === '{STARTEDBY}') return startedBy
+      if (item === '{STARTDATE}') return startDate
+      if (item === '{INVESTIGATIONNAME}') return investigationName
+      if (item === '{INVITEDUSERNAME}') return invitedUserName
+      if (item === '{INVITEDBYCOMPANYNAME}') return invitedByCompanyName
+      if (item === '{COMMUNITYURL}') return communityUrl
+      if (item === '{MEMBERCOUNT}') return memberCount
+      if (item === '{COMMUNITYINDUSTRY}') return communityIndustry
+      if (item === '{ANALYSISEMAIL}') return analysisEmail
+      if (item === '{OWNER}') return owner
+      if (item === '{DATE}') return date
+      if (item === '{REPORTBY}') return reportBy
+      if (item === '{FROM}') return fromText
+      if (item === '{TO}') return to
+      if (item === '{SUBJECT}') return subject
+      if (item === '{ATTACHMENT}') return attachment
+      if (item === '{CREATEDATE}') return createDate
+      if (item === '{SENDERIP}') return senderIP
+      if (item === '{CASEID}') return caseID
+      if (item === '{USEREMAIL}') return userEmail
+      if (item === '{USERAGENT}') return userAgent
+      if (item === '{ACTIONDATE}') return actionDate
+      if (item === '{ACTIONIP}') return actionIP
+      if (item === '{PRODUCTNAME}') return productName
+      if (item === '{ANALYSISDETAILURL}') return analysisDetailUrl
+      if (item === '{INVESTIGATIONURL}') return investigationUrl
+      if (item === '{COMPANYLOGO}') return companyLogo
+      if (item === '{DATEMAILSENT}') return dateEmailSent
+      if (item === '{EMAIL}') return emailMergedText
+      if (item === '{FIRSTNAME}') return firstName
+      if (item === '{FROMEMAIL}') return fromEmail
+      if (item === '{FROMNAME}') return fromName
+      if (item === '{LASTNAME}') return lastName
+      if (item === '{PHISHINGURL}') return phishingUrl
     },
     setActiveBlockManagerComponents(activeComponent = []) {
       this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {

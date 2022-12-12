@@ -650,49 +650,45 @@ export default {
     },
     getDynamicCheckboxProps(engine = {}, index = 0, type = '') {
       const props = {}
-      switch (type) {
-        case 'hash':
-          if (engine.analysisEngineType['isSendFileHash']) {
-            props['style'] = { cursor: 'pointer' }
-            props['class'] = engine.isCheckHash
-              ? 'analyze__main__select-row-inline__button-selected'
-              : ''
-          } else {
-            props['style'] = { cursor: 'default', visibility: 'hidden' }
-          }
-          break
-        case 'file':
-          if (engine.analysisEngineType['isSendFile']) {
-            props['style'] = { cursor: 'pointer' }
-            props['class'] = engine.isCheckFile
-              ? 'analyze__main__select-row-inline__button-selected'
-              : ''
-          } else {
-            props['style'] = { cursor: 'default', visibility: 'hidden' }
-          }
-          break
-        case 'url':
-          if (engine.analysisEngineType['isSendUrl']) {
-            props['style'] = { cursor: 'pointer' }
-            props['class'] = engine.isCheckUrl
-              ? 'analyze__main__select-row-inline__button-selected'
-              : ''
-          } else {
-            props['style'] = { cursor: 'default', visibility: 'hidden' }
-          }
-          break
-        case 'sendIp':
-          if (engine.analysisEngineType['isSendIp']) {
-            props['style'] = { cursor: 'pointer' }
-            props['class'] = engine.isCheckSenderIP
-              ? 'analyze__main__select-row-inline__button-selected'
-              : ''
-          } else {
-            props['style'] = { cursor: 'default', visibility: 'hidden' }
-          }
-          break
-        default:
-          break
+      if (type === 'hash') {
+        if (engine.analysisEngineType['isSendFileHash']) {
+          props['style'] = { cursor: 'pointer' }
+          props['class'] = engine.isCheckHash
+            ? 'analyze__main__select-row-inline__button-selected'
+            : ''
+        } else {
+          props['style'] = { cursor: 'default', visibility: 'hidden' }
+        }
+      }
+      if (type === 'file') {
+        if (engine.analysisEngineType['isSendFile']) {
+          props['style'] = { cursor: 'pointer' }
+          props['class'] = engine.isCheckFile
+            ? 'analyze__main__select-row-inline__button-selected'
+            : ''
+        } else {
+          props['style'] = { cursor: 'default', visibility: 'hidden' }
+        }
+      }
+      if (type === 'url') {
+        if (engine.analysisEngineType['isSendUrl']) {
+          props['style'] = { cursor: 'pointer' }
+          props['class'] = engine.isCheckUrl
+            ? 'analyze__main__select-row-inline__button-selected'
+            : ''
+        } else {
+          props['style'] = { cursor: 'default', visibility: 'hidden' }
+        }
+      }
+      if (type === 'sendIp') {
+        if (engine.analysisEngineType['isSendIp']) {
+          props['style'] = { cursor: 'pointer' }
+          props['class'] = engine.isCheckSenderIP
+            ? 'analyze__main__select-row-inline__button-selected'
+            : ''
+        } else {
+          props['style'] = { cursor: 'default', visibility: 'hidden' }
+        }
       }
       return props
     },

@@ -603,47 +603,28 @@ export default {
     },
 
     getComponent(componentString) {
-      switch (componentString) {
-        case 'RecentInvestigations':
-          return RecentInvestigations
-        case 'RecentCampaigns':
-          return RecentCampaigns
-        case 'MostPhishedUsers':
-          return MostPhishedUsers
-        case 'MostEngagedCampaigns':
-          return MostEngagedCampaigns
-        case 'Reporters':
-          return Reporters
-        case 'TopRules':
-          return TopRules
-        case 'TopPosts':
-          return TopPosts
-        /*
-        case 'IncidentClusters':
+      if (componentString === 'RecentInvestigations') return RecentInvestigations
+      if (componentString === 'RecentCampaigns') return RecentCampaigns
+      if (componentString === 'MostPhishedUsers') return MostPhishedUsers
+      if (componentString === 'MostEngagedCampaigns') return MostEngagedCampaigns
+      if (componentString === 'Reporters') return Reporters
+      if (componentString === 'TopRules') return TopRules
+      if (componentString === 'TopPosts') return TopPosts
+      /*
+        if (componentString ===  'IncidentClusters')
           return IncidentClusters
 
          */
-        case 'RecentlyPostedThreats':
-          return RecentlyPostedThreats
-        case 'RecentlyReportedIncidents':
-          return RecentlyReportedIncidents
-        case 'ReportedEmailTrends':
-          return ReportedEmailTrends
-        case 'PhishingCampaignTrends':
-          return PhishingCampaignTrends
-        case 'PhishingReporterIrHeader':
-          return PhishingReporterIrHeader
-        case 'IncidentAnalysisIrHeader':
-          return IncidentAnalysisIrHeader
-        case 'InvestigationsIrHeader':
-          return InvestigationsIrHeader
-        case 'ROISummaryIrHeader':
-          return RoiSummaryIrHeader
-        case 'TopPhishingSimulationReporters':
-          return TopPhishingSimulationReporters
-        default:
-          break
-      }
+      if (componentString === 'RecentlyPostedThreats') return RecentlyPostedThreats
+      if (componentString === 'RecentlyReportedIncidents') return RecentlyReportedIncidents
+      if (componentString === 'ReportedEmailTrends') return ReportedEmailTrends
+      if (componentString === 'PhishingCampaignTrends') return PhishingCampaignTrends
+      if (componentString === 'PhishingReporterIrHeader') return PhishingReporterIrHeader
+      if (componentString === 'IncidentAnalysisIrHeader') return IncidentAnalysisIrHeader
+      if (componentString === 'InvestigationsIrHeader') return InvestigationsIrHeader
+      if (componentString === 'ROISummaryIrHeader') return RoiSummaryIrHeader
+      if (componentString === 'TopPhishingSimulationReporters')
+        return TopPhishingSimulationReporters
     },
     handleDeleteShadows() {
       document.querySelectorAll('.smartwidget').forEach((item) => {

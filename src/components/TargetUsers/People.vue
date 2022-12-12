@@ -650,19 +650,15 @@ export default {
       this.isWantToShowCustomFieldsModal = !this.isWantToShowCustomFieldsModal
     },
     handleAddUsers(item) {
-      switch (item) {
-        case this.addUsersItems[0].text:
-          this.selectedRow = null
-          this.isWantToShowAddUsersModal = true
-          break
-        case this.addUsersItems[1].text:
-          this.isWantToImportFile = true
-          break
-        case this.addUsersItems[2].text:
-          this.toggleImportLDAPModal()
-          break
-        default:
-          break
+      if (item === this.addUsersItems[0].text) {
+        this.selectedRow = null
+        this.isWantToShowAddUsersModal = true
+      }
+      if (item === this.addUsersItems[1].text) {
+        this.isWantToImportFile = true
+      }
+      if (item === this.addUsersItems[2].text) {
+        this.toggleImportLDAPModal()
       }
     },
     handleClickEmptyBtnClicked() {

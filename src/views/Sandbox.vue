@@ -409,39 +409,39 @@ export default {
       }
     },
     handleListItemClick(value) {
-      switch (value) {
-        case 'Set as default filter':
-          this.setFilterOptions()
-          break
-        case 'Restore default filter':
-          if (localStorage.getItem('sandboxCompany'))
-            this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
-          if (localStorage.getItem('sandboxIntegration'))
-            this.analysisEngineTypeResourceId =
-              localStorage.getItem('sandboxIntegration').split(',') || ''
-          if (localStorage.getItem('sandboxDateValue'))
-            this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
-          if (localStorage.getItem('sandboxDateValue'))
-            this.filteredDateValueSelect = {
-              name: localStorage.getItem('sandboxDateOption'),
-              value: 'custom'
-            }
-          let dateValue = localStorage.getItem('sandboxDateOption')
-          if (this.filteredSelectValueDate === 'between') {
-            this.filteredDateValueRange = dateValue.split(',')
-          } else {
-            this.filteredDateValue = dateValue
+      if (value === 'Set as default filter') {
+        this.setFilterOptions()
+      }
+
+      if (value === 'Restore default filter') {
+        if (localStorage.getItem('sandboxCompany'))
+          this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
+        if (localStorage.getItem('sandboxIntegration'))
+          this.analysisEngineTypeResourceId =
+            localStorage.getItem('sandboxIntegration').split(',') || ''
+        if (localStorage.getItem('sandboxDateValue'))
+          this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
+        if (localStorage.getItem('sandboxDateValue'))
+          this.filteredDateValueSelect = {
+            name: localStorage.getItem('sandboxDateOption'),
+            value: 'custom'
           }
-          this.handleFilter()
-          break
-        case 'Clear filters':
-          this.companyValue = ''
-          this.analysisEngineTypeResourceId = null
-          this.filteredDateValue = null
-          this.filteredDateValueRange = null
-          this.filteredDateValueSelect = { name: 'All Time', value: '' }
-          this.handleFilter()
-          break
+        let dateValue = localStorage.getItem('sandboxDateOption')
+        if (this.filteredSelectValueDate === 'between') {
+          this.filteredDateValueRange = dateValue.split(',')
+        } else {
+          this.filteredDateValue = dateValue
+        }
+        this.handleFilter()
+      }
+
+      if (value === 'Clear filters') {
+        this.companyValue = ''
+        this.analysisEngineTypeResourceId = null
+        this.filteredDateValue = null
+        this.filteredDateValueRange = null
+        this.filteredDateValueSelect = { name: 'All Time', value: '' }
+        this.handleFilter()
       }
     },
     clearFilter() {
