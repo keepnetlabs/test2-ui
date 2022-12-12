@@ -161,7 +161,9 @@ export default {
   },
   methods: {
     callForTemplate(resourceId, jobResourceId) {
-      this.setLoading(true)
+      if (this.isFetchingSummary) {
+        this.setLoading(true)
+      }
       getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId)
         .then((response) => {
           const {
