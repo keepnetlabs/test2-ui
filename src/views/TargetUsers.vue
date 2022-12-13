@@ -89,16 +89,12 @@ export default {
     } = this
     if (params && params.tab) {
       let tab
-      switch (params.tab) {
-        case 'first':
-          tab = 'target-users--people'
-          break
-        case 'second':
-          tab = 'target-users--group'
-          break
-        default:
-          tab = params.tab
-          break
+      if (params.tab === 'first') {
+        tab = 'target-users--people'
+      } else if (params.tab === 'second') {
+        tab = 'target-users--group'
+      } else {
+        tab = params.tab
       }
       this.tab = tab
     }

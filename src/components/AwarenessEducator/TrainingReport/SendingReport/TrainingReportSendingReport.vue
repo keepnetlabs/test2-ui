@@ -386,16 +386,18 @@ export default {
     getEventReason(event = {}) {
       const { reason, event: eventName } = event
       if (reason) return reason
-      switch (eventName) {
-        case 'processed':
-          return `We sent the email using the shared IP address ${
-            this.extendedViewValue[0]?.originatingIP || ''
-          }.`
-        case 'delivered':
-          return 'This email was delivered'
-        default:
-          return ''
+
+      if (eventName === 'processed') {
+        return `We sent the email using the shared IP address ${
+          this.extendedViewValue[0]?.originatingIP || ''
+        }.`
       }
+
+      if (eventName === 'delivered') {
+        return 'This email was delivered'
+      }
+
+      return ''
     },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)

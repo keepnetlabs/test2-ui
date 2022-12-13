@@ -632,21 +632,23 @@ export default {
       return !this.filterValue
     },
     getFilterButtonDisabled() {
-      switch (this.filterableType) {
-        case 'text':
-          return this.checkTextFilterButtonIsDisabled
-        case 'select':
-          return !this?.filterChecked?.length
-        case 'numeric':
-          return !this.filterValue
-        case 'date':
-          if (this.filteredSelectValueDate === 'between') {
-            return !this?.filteredDateRangeValue?.length
-          }
-          return !this.filteredDateValue
-        default:
-          return false
+      if (this.filterableType === 'text') {
+        return this.checkTextFilterButtonIsDisabled
       }
+      if (this.filterableType === 'select') {
+        return !this?.filterChecked?.length
+      }
+      if (this.filterableType === 'numeric') {
+        return !this.filterValue
+      }
+      if (this.filterableType === 'date') {
+        if (this.filteredSelectValueDate === 'between') {
+          return !this?.filteredDateRangeValue?.length
+        }
+        return !this.filteredDateValue
+      }
+
+      return false
     },
     fieldName: function () {
       return this.filterableCustomFieldName || this.column.property

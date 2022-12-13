@@ -107,20 +107,19 @@ export default {
     downloadEvent() {
       const downloadTypes = []
       this.downloadType.map((item, index) => {
-        if (item) {
-          switch (index) {
-            case 0:
-              downloadTypes.push('XLS')
-              break
-            case 1:
-              downloadTypes.push('CSV')
-              break
-            case 2:
-              downloadTypes.push('PDF')
-              break
-            default:
-              break
-          }
+        if (!item) return
+
+        if (index === 0) {
+          downloadTypes.push('XLS')
+          return
+        }
+        if (index === 1) {
+          downloadTypes.push('CSV')
+          return
+        }
+        if (index === 2) {
+          downloadTypes.push('PDF')
+          return
         }
       })
       this.$emit('downloadEvent', downloadTypes)
