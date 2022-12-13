@@ -2671,13 +2671,19 @@ export default {
     },
     handleSelect(selection, row) {
       if (this.isServerSide && this.isServerSideSelection) {
-        if (selection.find((item) => item[this.rowKey] === row[this.rowKey])) {
-          this.serverSideSelectionCount++
-          this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey])
-        } else {
-          this.serverSideSelectionCount--
-          if (this.isSelectedAllEver) {
-            this.excludedResourceIdList.push(row[this.rowKey])
+        if (row.hasOwnProperty(this.rowKey)) {
+          if (
+            selection.find(
+              (item) => item.hasOwnProperty(this.rowKey) && [this.rowKey] === row[this.rowKey]
+            )
+          ) {
+            this.serverSideSelectionCount++
+            this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey])
+          } else {
+            this.serverSideSelectionCount--
+            if (this.isSelectedAllEver) {
+              this.excludedResourceIdList.push(row[this.rowKey])
+            }
           }
         }
       }

@@ -310,7 +310,7 @@ export default {
             }
             res()
           })
-          .catch(rej)
+          .catch(() => rej('something went wrong'))
       })
     },
     closeOverlay() {
