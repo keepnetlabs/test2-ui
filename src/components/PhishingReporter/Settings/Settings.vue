@@ -122,15 +122,12 @@ export default {
         setTimeout(() => {
           if (this.tab !== 'phishing-reporter-settings-add-in-settings') {
             let transformValue
-            switch (this.tab) {
-              case 'phishing-reporter-settings-email-settings':
-                transformValue = 'translateX(130px)'
-                break
-              case 'phishing-reporter-settings-other-settings':
-                transformValue = 'translateX(253px)'
-                break
-              default:
-                transformValue = 'translateX(379px)'
+            if (this.tab === 'phishing-reporter-settings-email-settings') {
+              transformValue = 'translateX(130px)'
+            } else if (this.tab === 'phishing-reporter-settings-other-settings') {
+              transformValue = 'translateX(253px)'
+            } else {
+              transformValue = 'translateX(379px)'
             }
             document
               .querySelector('#settings-el-tabs')

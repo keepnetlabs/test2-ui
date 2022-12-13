@@ -23,14 +23,8 @@ export default {
   },
   methods: {
     getBtnUserStatusColor(type) {
-      switch (type.toLowerCase()) {
-        case 'online':
-          return '#00bcd4'
-        case 'offline':
-          return '#f56c6c'
-        default:
-          break
-      }
+      if (type.toLowerCase() === 'online') return '#00bcd4'
+      if (type.toLowerCase() === 'offline') return '#f56c6c'
     }
   }
 }

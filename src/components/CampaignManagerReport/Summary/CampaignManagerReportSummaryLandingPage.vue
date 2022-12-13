@@ -111,6 +111,8 @@ import KEmailPreview from '@/components/KEmailPreview'
 import { useLoading } from '@/hooks/useLoading'
 import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { getDifficultyBadgeColor } from '@/utils/functions'
+
 export default {
   name: 'CampaignManagerReportSummaryLandingPage',
   components: {
@@ -174,16 +176,7 @@ export default {
         .finally(this.setLoading)
     },
     getBadgeColor(text = '') {
-      switch (text.toLowerCase()) {
-        case 'easy':
-          return '#217124'
-        case 'medium':
-          return '#2196f3'
-        case 'hard':
-          return '#f56c6c'
-        default:
-          return '#2196f3'
-      }
+      return getDifficultyBadgeColor(text)
     },
     getBadgeText(text = '') {
       return text

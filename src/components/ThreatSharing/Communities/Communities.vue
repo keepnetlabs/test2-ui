@@ -486,18 +486,14 @@ export default {
         this.filter = null
         this.industryValue = []
         this.privacyValue = []
-        switch (this.selectedTab) {
-          case 'tab-0':
-            this.getMyCommunitiesListData(true)
-            break
-          case 'tab-1':
-            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
-            break
-          case 'tab-2':
-            this.getInvitions()
-            break
-          default:
-            return false
+        if (this.selectedTab === 'tab-0') {
+          this.getMyCommunitiesListData(true)
+        } else if (this.selectedTab === 'tab-1') {
+          if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
+        } else if (this.selectedTab === 'tab-2') {
+          this.getInvitions()
+        } else {
+          return false
         }
         this.$store.dispatch('tableReload/setTableReload', false)
       }
@@ -537,27 +533,23 @@ export default {
     handleSizeChange(val) {
       this.itemsPerPage = val
       if (!this.isLoadState) {
-        switch (this.selectedTab) {
-          case 'tab-0':
-            this.getMyCommunitiesListData(true)
-            break
-          case 'tab-1':
-            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
-            break
-          default:
-            return false
+        if (this.selectedTab === 'tab-0') {
+          this.getMyCommunitiesListData(true)
+        }
+        if (this.selectedTab === 'tab-1') {
+          if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
+        } else {
+          return false
         }
       }
     },
     onChangePagination() {
       if (!this.isLoadState) {
-        switch (this.selectedTab) {
-          case 'tab-0':
-            this.getMyCommunitiesListData()
-            break
-          case 'tab-1':
-            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
-            break
+        if (this.selectedTab === 'tab-0') {
+          this.getMyCommunitiesListData()
+        }
+        if (this.selectedTab === 'tab-1') {
+          if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
         }
       }
     },
@@ -591,19 +583,17 @@ export default {
     deleteCommunityConfirm() {
       deleteCommunity(this.deleteCommunityId).then(() => {
         this.isWantToDelete = false
-        switch (this.selectedTab) {
-          case 'tab-0':
-            this.getMyCommunitiesListData()
-            break
-          case 'tab-1':
-            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
-            break
-          case 'tab-2':
-            this.getInvitions()
-            this.getInvitationCount()
-            break
-          default:
-            return false
+        if (this.selectedTab === 'tab-0') {
+          this.getMyCommunitiesListData()
+        }
+        if (this.selectedTab === 'tab-1') {
+          if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
+        }
+        if (this.selectedTab === 'tab-2') {
+          this.getInvitions()
+          this.getInvitationCount()
+        } else {
+          return false
         }
         setTimeout(() => {
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -874,18 +864,14 @@ export default {
     updateCommunities() {
       this.$route.params.isCommunity = false
       if (!this.isLoadState) {
-        switch (this.selectedTab) {
-          case 'tab-0':
-            this.getMyCommunitiesListData(true)
-            break
-          case 'tab-1':
-            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
-            break
-          case 'tab-2':
-            this.getInvitions()
-            break
-          default:
-            return false
+        if (this.selectedTab === 'tab-0') {
+          this.getMyCommunitiesListData(true)
+        } else if (this.selectedTab === 'tab-1') {
+          if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
+        } else if (this.selectedTab === 'tab-2') {
+          this.getInvitions()
+        } else {
+          return false
         }
       }
     },

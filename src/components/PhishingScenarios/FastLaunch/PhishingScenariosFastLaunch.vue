@@ -273,63 +273,59 @@ export default {
       const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
       const { formData } = refCampaignManagerCampaignInfo
       const { refForm } = refCampaignManagerCampaignInfo.$refs
-      switch (this.step) {
-        case 1:
-          if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-            const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
-            const totalUserCount = targetGroups.reduce((acc, item) => {
-              acc += item?.userCount || 0
-              return acc
-            }, 0)
+      if (this.step === 1) {
+        if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
+          const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
+          const totalUserCount = targetGroups.reduce((acc, item) => {
+            acc += item?.userCount || 0
+            return acc
+          }, 0)
 
-            if (totalUserCount) {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-              this.changeStep()
-            } else {
-              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-            }
-            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+          if (totalUserCount) {
+            refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+            refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+            this.changeStep()
           } else {
-            if (!formData?.targetGroupResourceIds?.length) {
-              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-            }
-            this.showErrorMessage(refForm)
+            refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+            this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
           }
-          break
-        case 2:
-          this.setActionButtonDisability(true)
-          const payload = {
-            name: formData.name,
-            phishingScenarioResourceId: this.selectedScenario.resourceId,
-            scheduleTypeId: '1',
-            duration: 365,
-            targetGroupResourceIds: formData.targetGroupResourceIds.map((item) => item.value),
-            distributionTypeId: '1',
-            distributionSmtpDelayEvery: 20,
-            distributionSmtpDelayTimeTypeId: '1',
-            distributionEmailOver: 8,
-            distributionEmailOverTimeTypeId: '1',
-            sendingLimit: 50,
-            excludeFromReports: refFastLaunch.formData.excludeFromReports,
-            sendOnlyActiveUsers: false,
-            sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
-            sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
-            sendRandomlyUsersCalculateTypeId:
-              refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
-            smtpSettingResourceId: this.smtpSettingResourceId
+          refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
+        } else {
+          if (!formData?.targetGroupResourceIds?.length) {
+            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
           }
-          createCampaignManager(payload)
-            .then(() => {
-              this.isSubmitted = true
-              this.$router.push({ name: 'Campaign Manager' })
-            })
-            .finally(this.setActionButtonDisability)
-          break
-        default:
-          break
+          this.showErrorMessage(refForm)
+        }
+      }
+
+      if (this.step === 2) {
+        this.setActionButtonDisability(true)
+        const payload = {
+          name: formData.name,
+          phishingScenarioResourceId: this.selectedScenario.resourceId,
+          scheduleTypeId: '1',
+          duration: 365,
+          targetGroupResourceIds: formData.targetGroupResourceIds.map((item) => item.value),
+          distributionTypeId: '1',
+          distributionSmtpDelayEvery: 20,
+          distributionSmtpDelayTimeTypeId: '1',
+          distributionEmailOver: 8,
+          distributionEmailOverTimeTypeId: '1',
+          sendingLimit: 50,
+          excludeFromReports: refFastLaunch.formData.excludeFromReports,
+          sendOnlyActiveUsers: false,
+          sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
+          sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
+          sendRandomlyUsersCalculateTypeId: refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
+          smtpSettingResourceId: this.smtpSettingResourceId
+        }
+        createCampaignManager(payload)
+          .then(() => {
+            this.isSubmitted = true
+            this.$router.push({ name: 'Campaign Manager' })
+          })
+          .finally(this.setActionButtonDisability)
       }
     }
   }

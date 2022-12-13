@@ -1582,28 +1582,20 @@ export default {
     },
     getUserFriendlyName(activeMenu) {
       let name
-      switch (activeMenu) {
-        case 'SentItems':
-          name = 'Sent'
-          break
-        case 'DeletedItems':
-          name = 'Deleted Items'
-          break
-        case 'JunkEmail':
-          name = 'Junk'
-          break
-        case 'Drafts':
-          name = 'Draft'
-          break
-        case 'Others':
-          name = 'Others'
-          break
-        case 'Stored':
-          name = 'Stored'
-          break
-        default:
-          name = 'Inbox'
-          break
+      if (activeMenu === 'SentItems') {
+        name = 'Sent'
+      } else if (activeMenu === 'DeletedItems') {
+        name = 'Deleted Items'
+      } else if (activeMenu === 'JunkEmail') {
+        name = 'Junk'
+      } else if (activeMenu === 'Drafts') {
+        name = 'Draft'
+      } else if (activeMenu === 'Others') {
+        name = 'Others'
+      } else if (activeMenu === 'Stored') {
+        name = 'Stored'
+      } else {
+        name = 'Inbox'
       }
       return name
     },
@@ -1630,80 +1622,75 @@ export default {
       //status = 'CompletedWithError'
       //actionType = 'Warning'
       //isPermanentDelete = false
-      switch (status) {
-        case 'Idle':
-        case 'Running':
-          if (actionType === 'Delete') {
-            if (isPermanentDelete) {
-              returnValue.icon = null
-              returnValue.color = '#fff'
-            } else {
-              returnValue.icon = null
-              returnValue.color = '#fff'
-            }
-          } else if (actionType === 'DeleteAndNotify') {
-            if (isPermanentDelete) {
-              returnValue.icon = null
-              returnValue.color = '#fff'
-            } else {
-              returnValue.icon = null
-              returnValue.color = '#fff'
-            }
-          } else if (actionType === 'Warning') {
-            returnValue.icon = 'mdi-check-circle'
-            returnValue.color = '#43a047'
+      if (['Idle', 'Running'].includes(status)) {
+        if (actionType === 'Delete') {
+          if (isPermanentDelete) {
+            returnValue.icon = null
+            returnValue.color = '#fff'
+          } else {
+            returnValue.icon = null
+            returnValue.color = '#fff'
           }
-          break
-        case 'Completed':
-          if (actionType === 'Delete') {
-            if (isPermanentDelete) {
-              returnValue.icon = 'mdi-close-circle'
-              returnValue.color = '#6d6d6d'
-            } else {
-              returnValue.icon = 'mdi-delete'
-              returnValue.color = '#6d6d6d'
-            }
-          } else if (actionType === 'DeleteAndNotify') {
-            if (isPermanentDelete) {
-              returnValue.icon = 'mdi-close-circle'
-              returnValue.color = '#6d6d6d'
-            } else {
-              returnValue.icon = 'mdi-close-circle'
-              returnValue.color = '#6d6d6d'
-            }
-          } else if (actionType === 'Warning') {
-            returnValue.icon = 'mdi-check-underline-circle'
-            returnValue.color = '#43a047'
+        } else if (actionType === 'DeleteAndNotify') {
+          if (isPermanentDelete) {
+            returnValue.icon = null
+            returnValue.color = '#fff'
+          } else {
+            returnValue.icon = null
+            returnValue.color = '#fff'
           }
-          break
-        case 'CompletedWithError':
-          if (actionType === 'Delete') {
-            if (isPermanentDelete) {
-              returnValue.icon = 'mdi-alert-circle'
-              returnValue.color = '#f56c6c'
-            } else {
-              returnValue.icon = 'mdi-alert-circle'
-              returnValue.color = '#f56c6c'
-            }
-          } else if (actionType === 'DeleteAndNotify') {
-            if (isPermanentDelete) {
-              returnValue.icon = 'mdi-alert-circle'
-              returnValue.color = '#f56c6c'
-            } else {
-              returnValue.icon = 'mdi-alert-circle'
-              returnValue.color = '#f56c6c'
-            }
-          } else if (actionType === 'Warning') {
+        } else if (actionType === 'Warning') {
+          returnValue.icon = 'mdi-check-circle'
+          returnValue.color = '#43a047'
+        }
+      }
+      if (status === 'Completed') {
+        if (actionType === 'Delete') {
+          if (isPermanentDelete) {
+            returnValue.icon = 'mdi-close-circle'
+            returnValue.color = '#6d6d6d'
+          } else {
+            returnValue.icon = 'mdi-delete'
+            returnValue.color = '#6d6d6d'
+          }
+        } else if (actionType === 'DeleteAndNotify') {
+          if (isPermanentDelete) {
+            returnValue.icon = 'mdi-close-circle'
+            returnValue.color = '#6d6d6d'
+          } else {
+            returnValue.icon = 'mdi-close-circle'
+            returnValue.color = '#6d6d6d'
+          }
+        } else if (actionType === 'Warning') {
+          returnValue.icon = 'mdi-check-underline-circle'
+          returnValue.color = '#43a047'
+        }
+      }
+      if (status === 'CompletedWithError') {
+        if (actionType === 'Delete') {
+          if (isPermanentDelete) {
+            returnValue.icon = 'mdi-alert-circle'
+            returnValue.color = '#f56c6c'
+          } else {
             returnValue.icon = 'mdi-alert-circle'
             returnValue.color = '#f56c6c'
           }
-          break
-        case 'ItemNotFound':
+        } else if (actionType === 'DeleteAndNotify') {
+          if (isPermanentDelete) {
+            returnValue.icon = 'mdi-alert-circle'
+            returnValue.color = '#f56c6c'
+          } else {
+            returnValue.icon = 'mdi-alert-circle'
+            returnValue.color = '#f56c6c'
+          }
+        } else if (actionType === 'Warning') {
           returnValue.icon = 'mdi-alert-circle'
           returnValue.color = '#f56c6c'
-          break
-        default:
-          break
+        }
+      }
+      if (status === 'ItemNotFound') {
+        returnValue.icon = 'mdi-alert-circle'
+        returnValue.color = '#f56c6c'
       }
       return returnValue
     },
@@ -1722,30 +1709,21 @@ export default {
     },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       let fileName = 'Investigation Details '
-      switch (this.activeMenu) {
-        case 'SentItems':
-          fileName += 'Sent'
-          break
-        case 'DeletedItems':
-          fileName += 'Deleted Items'
-          break
-        case 'JunkEmail':
-          fileName += 'Junk'
-          break
-        case 'Drafts':
-          fileName += 'Draft'
-          break
-        case 'Others':
-          fileName += 'Others'
-          break
-        case 'Stored':
-          fileName += 'Stored'
-          break
-        default:
-          fileName += 'Inbox'
-          break
+      if (this.activeMenu === 'SentItems') {
+        fileName += 'Sent'
+      } else if (this.activeMenu === 'DeletedItems') {
+        fileName += 'Deleted Items'
+      } else if (this.activeMenu === 'JunkEmail') {
+        fileName += 'Junk'
+      } else if (this.activeMenu === 'Drafts') {
+        fileName += 'Draft'
+      } else if (this.activeMenu === 'Others') {
+        fileName += 'Others'
+      } else if (this.activeMenu === 'Stored') {
+        fileName += 'Stored'
+      } else {
+        fileName += 'Inbox'
       }
-
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.investigationListBodyData.filter)),
         this.$refs.refInvestigationListData,
@@ -1893,111 +1871,56 @@ export default {
     getStatusText(section, val) {
       if (val == null) val = 0
       this.iconType()
-      switch (section) {
-        case 'statusTime':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return this.statsAndMenuData.estimatedTime
-                ? this.statsAndMenuData.estimatedTime
-                : 'Estimated time can not be calculated at the moment'
-            case 'Canceled':
-              return this.investigationDetailsData['finishedTime']
-            case 'Expired':
-              return this.investigationDetailsData.expireDate
-            case 'Finished':
-              return this.investigationDetailsData['finishedTime']
-            default:
-              break
-          }
-          break
-        case 'onlineUserCount':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return `${val} Online User(s)`
-            case 'Canceled':
-              return `${val} User(s)`
-            case 'Expired':
-              return `${val} User(s)`
-            case 'Finished':
-              return 'All users scanned'
-            default:
-              break
-          }
-          break
-        case 'totalUserCount':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return this.statsAndMenuData['onlineUserCount']
-                ? `of remaining ${this.statsAndMenuData.notScannedUserCount} users`
-                : `Waiting for users`
-            case 'Expired':
-            case 'Canceled':
-              return `Could not be scanned`
-            case 'Finished':
-              return 'No remaining users'
-            default:
-              break
-          }
-          break
-        case 'scannedUserCount':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return `${val} Scanned User(s)`
-            case 'Canceled':
-              return `${val} Scanned User(s)`
-            case 'Expired':
-              return `${val} Scanned User(s)`
-            case 'Finished':
-              return `${val} Scanned User(s)`
-            default:
-              break
-          }
-          break
-        case 'totalUserCountScannedUser':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return `of total ${val} user(s)`
-            case 'Canceled':
-              return `of total ${val} user(s)`
-            case 'Expired':
-              return `of total ${val} user(s)`
-            case 'Finished':
-              return `of total ${val} user(s)`
-            default:
-              break
-          }
-          break
-        case 'scannedEmailCount':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return `${val} Email(s) Scanned`
-            case 'Canceled':
-              return `${val} Email(s) Scanned`
-            case 'Expired':
-              return `${val} Email(s) Scanned`
-            case 'Finished':
-              return `${val} Email(s) Scanned`
-            default:
-              break
-          }
-          break
-        case 'totalEmailCount':
-          switch (this.statsAndMenuData.status) {
-            case 'Running':
-              return `of total ${val} email(s)`
-            case 'Canceled':
-              return `of total ${val} email(s)`
-            case 'Expired':
-              return `of total ${val} email(s)`
-            case 'Finished':
-              return `of total ${val} email(s)`
-            default:
-              break
-          }
-          break
-
-        default:
-          break
+      if (section === 'statusTime') {
+        if (this.statsAndMenuData.status === 'Running')
+          return this.statsAndMenuData.estimatedTime
+            ? this.statsAndMenuData.estimatedTime
+            : 'Estimated time can not be calculated at the moment'
+        if (this.statsAndMenuData.status === 'Canceled')
+          return this.investigationDetailsData['finishedTime']
+        if (this.statsAndMenuData.status === 'Expired')
+          return this.investigationDetailsData.expireDate
+        if (this.statsAndMenuData.status === 'Finished')
+          return this.investigationDetailsData['finishedTime']
+      }
+      if (section === 'onlineUserCount') {
+        if (this.statsAndMenuData.status === 'Running') return `${val} Online User(s)`
+        if (this.statsAndMenuData.status === 'Canceled') return `${val} User(s)`
+        if (this.statsAndMenuData.status === 'Expired') return `${val} User(s)`
+        if (this.statsAndMenuData.status === 'Finished') return 'All users scanned'
+      }
+      if (section === 'totalUserCount') {
+        if (this.statsAndMenuData.status === 'Running')
+          return this.statsAndMenuData['onlineUserCount']
+            ? `of remaining ${this.statsAndMenuData.notScannedUserCount} users`
+            : `Waiting for users`
+        if (['Expired', 'Canceled'].includes(this.statsAndMenuData.status))
+          return `Could not be scanned`
+        if (this.statsAndMenuData.status === 'Finished') return 'No remaining users'
+      }
+      if (section === 'scannedUserCount') {
+        if (this.statsAndMenuData.status === 'Running') return `${val} Scanned User(s)`
+        if (this.statsAndMenuData.status === 'Canceled') return `${val} Scanned User(s)`
+        if (this.statsAndMenuData.status === 'Expired') return `${val} Scanned User(s)`
+        if (this.statsAndMenuData.status === 'Finished') return `${val} Scanned User(s)`
+      }
+      if (section === 'totalUserCountScannedUser') {
+        if (this.statsAndMenuData.status === 'Running') return `of total ${val} user(s)`
+        if (this.statsAndMenuData.status === 'Canceled') return `of total ${val} user(s)`
+        if (this.statsAndMenuData.status === 'Expired') return `of total ${val} user(s)`
+        if (this.statsAndMenuData.status === 'Finished') return `of total ${val} user(s)`
+      }
+      if (section === 'scannedEmailCount') {
+        if (this.statsAndMenuData.status === 'Running') return `${val} Email(s) Scanned`
+        if (this.statsAndMenuData.status === 'Canceled') return `${val} Email(s) Scanned`
+        if (this.statsAndMenuData.status === 'Expired') return `${val} Email(s) Scanned`
+        if (this.statsAndMenuData.status === 'Finished') return `${val} Email(s) Scanned`
+      }
+      if (section === 'totalEmailCount') {
+        if (this.statsAndMenuData.status === 'Running') return `of total ${val} email(s)`
+        if (this.statsAndMenuData.status === 'Canceled') return `of total ${val} email(s)`
+        if (this.statsAndMenuData.status === 'Expired') return `of total ${val} email(s)`
+        if (this.statsAndMenuData.status === 'Finished') return `of total ${val} email(s)`
       }
     },
     menuClick(menu) {
