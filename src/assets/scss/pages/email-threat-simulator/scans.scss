@@ -30,3 +30,26 @@
     }
   }
 }
+.sent-attacks {
+  .report-result-btn {
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: #217124;
+    width: 80px;
+    text-align: center;
+    cursor: context-menu;
+    &.unchecked {
+      background-color: #e0e0e0;
+      color: #383b41;
+    }
+    &.secure {
+      background-color: #217124;
+    }
+    &.insecure {
+      background-color: #f56c6c;
+    }
+  }
+}
