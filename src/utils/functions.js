@@ -82,6 +82,7 @@ export function getBtnStatusColor(type) {
   if (_type === 'medium') return 'rgba(17, 115, 193, 1)'
   if (_type === 'hard') return 'rgba(184, 58, 58, 1)'
   if (_type === 'no match') return '#757575'
+  return '#00bcd4'
 }
 
 export function getBtnPriorityColor(type) {
