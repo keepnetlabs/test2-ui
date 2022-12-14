@@ -130,7 +130,7 @@ export const LABEL_STORE = {
   PROVIDER: 'Provider',
   ACCOUNTSID: 'Account SID',
   ROLE: 'Role',
-  PHONENUMBER: 'Phone',
+  PHONENUMBER: 'Phone Number',
   STATUSNAME: 'Status',
   ADDINSTATUSNAME: 'Add-in Status',
   TYPENAME: 'Type',

@@ -49,6 +49,13 @@
         <form-group has-hint title="Email">
           <InputEmail v-model.trim="formValues.email" id="input--target-user-email" />
         </form-group>
+        <form-group title="Phone Number">
+          <InputPhone
+            v-model.trim="formValues.phoneNumber"
+            ref="refPhone"
+            id="input--target-user-phone-number"
+          />
+        </form-group>
         <form-group title="Department">
           <InputDepartment
             v-model.trim="formValues.department"
@@ -200,6 +207,8 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
 import { getTimeZone, getTimeValueFormatZone, isDifferent } from '@/utils/functions'
+import InputPhone from '@/components/Common/Inputs/InputPhone'
+
 export default {
   name: 'AddUserModal',
   components: {
@@ -212,6 +221,7 @@ export default {
     KSelect,
     InputEntityName,
     InputDate,
+    InputPhone,
     InputDepartment,
     TargetUsersCheckLicenseDialog
   },
@@ -238,6 +248,7 @@ export default {
         firstName: '',
         lastName: '',
         email: '',
+        phoneNumber: '',
         department: '',
         priority: 'Medium',
         isActive: true
@@ -318,7 +329,9 @@ export default {
         }
       }
       this.$forceUpdate()
-      if (!this.$refs.refForm.validate() || !isPickersValid) {
+      this.$refs.refPhone.validatePhoneNumber()
+      const isNumberValid = this.$refs.refPhone.isPhoneNumberValid
+      if (!this.$refs.refForm.validate() || !isPickersValid || !isNumberValid) {
         return this.$nextTick(() => {
           const el = this.$el.querySelector('.error--text')
           scrollToComponent(el)
