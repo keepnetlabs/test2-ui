@@ -50,14 +50,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.domain-verified-close-btn {
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 24px;
-  color: #2196f3;
-  cursor: pointer;
-  text-align: right;
-}
-</style>

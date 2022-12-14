@@ -1827,7 +1827,9 @@ export default {
       this.isSelectedAllEver = false
       this.excludedResourceIdList = []
       this.serverSideSelectionCount = 0
-      this.$refs.elTableRef.clearSelection()
+      if (this?.$refs?.elTableRef) {
+        this?.$refs?.elTableRef?.clearSelection()
+      }
       this.clusteredItems = []
     },
     handleExpandedRowChange(row, isExpanded) {

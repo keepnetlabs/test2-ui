@@ -551,7 +551,7 @@ export default {
       this.onDragStop()
       this.setLinkType()
       this.editor.on('component:drag:end', (droppedComponent) => {
-        const el = droppedComponent?.target.getEl()
+        const el = droppedComponent?.target?.getEl()
         if (
           el.id.includes('outlook-button-href-id') &&
           el.parentElement.constructor.name !== 'HTMLSpanElement'

@@ -958,7 +958,7 @@ export function copyToClipboard(textToCopy) {
     textArea.select()
     return new Promise((res, rej) => {
       // here the magic happens
-      document.execCommand('copy') ? res() : rej()
+      document.execCommand('copy') ? res() : rej('something went wrong')
       textArea.remove()
     })
   }

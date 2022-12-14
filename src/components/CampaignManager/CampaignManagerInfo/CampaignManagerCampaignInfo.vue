@@ -614,7 +614,7 @@ export default {
             this.$emit('update:isActionButtonDisabled', false)
             res()
           })
-          .catch(rej)
+          .catch(() => rej('something went wrong'))
       })
     },
     toggleShowAdvancedSearch() {
