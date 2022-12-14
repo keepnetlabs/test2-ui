@@ -76,16 +76,10 @@ export default {
   },
   computed: {
     getComponentType() {
-      switch (this.type) {
-        case 'autocomplete':
-          return VAutocomplete
-        case 'combobox':
-          return VCombobox
-        case 'select':
-          return VSelect
-        default:
-          return VSelect
-      }
+      if (this.type === 'autocomplete') return VAutocomplete
+      if (this.type === 'combobox') return VCombobox
+      if (this.type === 'select') return VSelect
+      return VSelect
     },
     getPosition() {
       return { [this.position]: true }

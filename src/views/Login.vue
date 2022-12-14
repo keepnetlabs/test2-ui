@@ -1158,41 +1158,37 @@ export default {
           NewPassword: this.newPassword,
           ConfirmNewPassword: this.reNewPassword
         }
-        switch (this.resetType) {
-          case 'createPassword':
-            createPasswordByToken(payload)
-              .then(() => {
-                let url = new URL(location.href)
-                this.$router.replace({ query: {} })
-                url.searchParams.delete('cp')
-                this.blurConfirm = false
-                this.isPasswordStep5Complete = true
-                this.pageNumber = 1
-              })
-              .catch((error) => {
-                this.newPasswordError = true
-                this.newPasswordErrorText =
-                  error?.response?.data?.message || error?.response?.data?.Message || ''
-              })
-            break
-          case 'resetPassword':
-            resetPasswordByToken(payload)
-              .then(() => {
-                let url = new URL(location.href)
-                this.$router.replace({ query: {} })
-                url.searchParams.delete('rp')
-                this.blurConfirm = false
-                this.isPasswordStep5Complete = true
-                this.pageNumber = 1
-              })
-              .catch((error) => {
-                this.newPasswordError = true
-                this.newPasswordErrorText =
-                  error?.response?.data?.message || error?.response?.data?.Message || ''
-              })
-            break
-          default:
-            break
+        if (this.resetType === 'createPassword') {
+          createPasswordByToken(payload)
+            .then(() => {
+              let url = new URL(location.href)
+              this.$router.replace({ query: {} })
+              url.searchParams.delete('cp')
+              this.blurConfirm = false
+              this.isPasswordStep5Complete = true
+              this.pageNumber = 1
+            })
+            .catch((error) => {
+              this.newPasswordError = true
+              this.newPasswordErrorText =
+                error?.response?.data?.message || error?.response?.data?.Message || ''
+            })
+        }
+        if (this.resetType === 'resetPassword') {
+          resetPasswordByToken(payload)
+            .then(() => {
+              let url = new URL(location.href)
+              this.$router.replace({ query: {} })
+              url.searchParams.delete('rp')
+              this.blurConfirm = false
+              this.isPasswordStep5Complete = true
+              this.pageNumber = 1
+            })
+            .catch((error) => {
+              this.newPasswordError = true
+              this.newPasswordErrorText =
+                error?.response?.data?.message || error?.response?.data?.Message || ''
+            })
         }
       }
     },

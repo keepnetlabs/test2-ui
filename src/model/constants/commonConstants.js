@@ -382,15 +382,11 @@ export const TABLE_SETTINGS_KEYS = {
 export function getStoreValue(key, type) {
   key = key.trim().toUpperCase()
   let value = LABEL_STORE[key]
-  switch (type) {
-    case COMMON_CONSTANTS.UPPERCASE:
-      value = value.toUpperCase()
-      break
-    case COMMON_CONSTANTS.LOWERCASE:
-      value = value.toLowerCase()
-      break
-    default:
-      break
+  if (type === COMMON_CONSTANTS.UPPERCASE) {
+    value = value.toUpperCase()
+  }
+  if (type === COMMON_CONSTANTS.LOWERCASE) {
+    value = value.toLowerCase()
   }
   return value
 }

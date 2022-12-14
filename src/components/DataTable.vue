@@ -1827,7 +1827,9 @@ export default {
       this.isSelectedAllEver = false
       this.excludedResourceIdList = []
       this.serverSideSelectionCount = 0
-      this.$refs.elTableRef.clearSelection()
+      if (this?.$refs?.elTableRef) {
+        this?.$refs?.elTableRef?.clearSelection()
+      }
       this.clusteredItems = []
     },
     handleExpandedRowChange(row, isExpanded) {
@@ -2331,16 +2333,13 @@ export default {
         const cellValue = row[column.property]
         let text
         if (cellValue) {
-          switch (typeof cellValue) {
-            case 'object':
-              text =
-                cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
-              break
-            case 'string':
-              text = row[column.property]
-              break
-            default:
-              break
+          if (typeof cellValue === 'object') {
+            text =
+              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+          }
+
+          if (typeof cellValue === 'string') {
+            text = row[column.property]
           }
         }
         if (!text) return
@@ -2885,29 +2884,36 @@ export default {
       }
     },
     rowAct(action, row, scope) {
-      switch (action) {
-        case 'details':
-          this.$router.push('/analysis-details')
-          break
-        case 'stopInvestigationFunc':
-          this.$emit('stopInvestigationFunc', { row })
-          break
-        case 'investigationDetails':
-          this.$emit('investigationDetails', { row })
-          break
-        case 'deleteAndNotifyInvestigationDetails':
-          this.$emit(
-            'deleteAndNotifyInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
-          )
-          break
-        case 'syncUser':
-          this.$emit('syncUser', scope)
-          break
-        default:
-          this.$emit(action, row)
-          return false
+      if (action === 'details') {
+        this.$router.push('/analysis-details')
+        return
       }
+
+      if (action === 'stopInvestigationFunc') {
+        this.$emit('stopInvestigationFunc', { row })
+        return
+      }
+
+      if (action === 'investigationDetails') {
+        this.$emit('investigationDetails', { row })
+        return
+      }
+
+      if (action === 'deleteAndNotifyInvestigationDetails') {
+        this.$emit(
+          'deleteAndNotifyInvestigationDetailsFunction',
+          this.multipleSelection.length > 0 ? this.multipleSelection : row
+        )
+        return
+      }
+
+      if (action === 'syncUser') {
+        this.$emit('syncUser', scope)
+        return
+      }
+
+      this.$emit(action, row)
+      return false
     },
     clusterSelected(name) {
       this.selectedCluster = name
@@ -3000,25 +3006,22 @@ export default {
       }
     },
     handleDelete(selections) {
-      switch (this.refName) {
-        case 'investigationDetailsListTable':
-          this.$emit(
-            'deleteInvestigationDetails',
-            selections,
-            ...Object.values(this.getServerSideSelectionParams())
-          )
-          break
-        default:
-          if (this.isServerSideSelection) {
-            this.$emit(
-              'handleMultipleDelete',
-              selections,
-              ...Object.values(this.getServerSideSelectionParams())
-            )
-          } else {
-            this.$emit('handleMultipleDelete', this.multipleSelection)
-          }
-          break
+      if (this.refName === 'investigationDetailsListTable') {
+        this.$emit(
+          'deleteInvestigationDetails',
+          selections,
+          ...Object.values(this.getServerSideSelectionParams())
+        )
+        return
+      }
+      if (this.isServerSideSelection) {
+        this.$emit(
+          'handleMultipleDelete',
+          selections,
+          ...Object.values(this.getServerSideSelectionParams())
+        )
+      } else {
+        this.$emit('handleMultipleDelete', this.multipleSelection)
       }
     },
     handleWarning(selections) {
