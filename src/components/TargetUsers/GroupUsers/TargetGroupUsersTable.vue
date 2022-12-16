@@ -211,6 +211,18 @@ export default {
           dbName: 'email'
         },
         {
+          property: PROPERTY_STORE.PHONENUMBER,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 200,
+          filterableType: 'text',
+          dbName: 'PhoneNumber'
+        },
+        {
           property: PROPERTY_STORE.DEPARTMENT,
           align: 'left',
           editable: false,
