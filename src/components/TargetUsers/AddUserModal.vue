@@ -407,6 +407,7 @@ export default {
         this.toggleShowLicenseExceededDialog()
       }
       const payload = this.getCustomFieldsPayload()
+      payload.phoneNumber = payload.phoneNumber.split(' ').join('')
       this.saveDisable = true
       createTargetUser(payload)
         .then(() => {
@@ -463,6 +464,7 @@ export default {
       this.saveDisable = true
       const payload = this.getCustomFieldsPayload()
       delete payload.status
+      payload.phoneNumber = payload.phoneNumber.split(' ').join('')
       updateTargetUser(payload)
         .then(() => {
           this.$emit('closeAddUserModalWithUpdate')
