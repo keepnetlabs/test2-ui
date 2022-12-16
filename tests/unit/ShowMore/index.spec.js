@@ -35,8 +35,6 @@ describe('Show more component', () => {
       status: 1,
       computedData: []
     })
-    console.log('wrapper', wrapper.html())
-
     //expecting show more button to be rendered
     const button = wrapper.find('.show-more__right')
     expect(button.exists()).toBe(true)
