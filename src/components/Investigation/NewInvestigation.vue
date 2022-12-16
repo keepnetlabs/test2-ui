@@ -1066,7 +1066,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'from') {
             if (
@@ -1085,7 +1084,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'to') {
             if (
@@ -1104,7 +1102,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
 
           if (this.filterList[index].option === 'cc') {
@@ -1124,7 +1121,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'bcc') {
             if (
@@ -1143,7 +1139,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'subject') {
             if (
@@ -1162,7 +1157,6 @@ export default {
                 senderName: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'senderName') {
             if (
@@ -1183,7 +1177,6 @@ export default {
                 senderName: this.filterList[index].text
               })
             }
-            return
           }
 
           if (this.filterList[index].option === 'url') {
@@ -1199,7 +1192,6 @@ export default {
                 isRegex: false
               })
             }
-            return
           }
           if (this.filterList[index].option === 'keyword') {
             if (
@@ -1214,7 +1206,6 @@ export default {
                 isRegex: false
               })
             }
-            return
           }
           if (this.filterList[index].option === 'size') {
             if (
@@ -1231,7 +1222,6 @@ export default {
                 extension: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'name') {
             if (
@@ -1248,7 +1238,6 @@ export default {
                 extension: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'sha512') {
             if (
@@ -1267,7 +1256,6 @@ export default {
                 extension: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'md5') {
             if (
@@ -1284,7 +1272,6 @@ export default {
                 extension: null
               })
             }
-            return
           }
           if (this.filterList[index].option === 'extension') {
             if (
@@ -1303,7 +1290,6 @@ export default {
                 extension: this.filterList[index].text
               })
             }
-            return
           }
 
           if (this.filterList[index].option === 'regex') {
@@ -1319,7 +1305,6 @@ export default {
                 regex: this.filterList[index].text
               })
             }
-            return
           }
         }
 
