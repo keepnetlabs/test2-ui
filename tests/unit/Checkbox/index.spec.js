@@ -2,11 +2,13 @@ import { createLocalVue } from '@vue/test-utils'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
 import { mount } from '@vue/test-utils'
 import CONSTANTS from '../Datatable/constants'
+import { customVuetify as vuetify } from '../utils'
 describe('Checkbox Unit cases', () => {
   const localVue = createLocalVue()
   it('Checking is rendering', () => {
     const wrapper = mount(KCheckbox, {
-      localVue
+      localVue,
+      vuetify
     })
     //checking parent element
     expect(wrapper.find('div').classes('v-input--checkbox')).toBe(true)
@@ -16,7 +18,8 @@ describe('Checkbox Unit cases', () => {
 
   it('Checking selection(Tri-state)', () => {
     const wrapper = mount(KCheckbox, {
-      localVue
+      localVue,
+      vuetify
     })
     const clickCheckbox = () => {
       wrapper.find('.v-input__control .v-input__slot').trigger(CONSTANTS.EVENT_TYPES.CLICK)
@@ -40,6 +43,7 @@ describe('Checkbox Unit cases', () => {
   it('Giving default indeterminate value', async () => {
     const wrapper = mount(KCheckbox, {
       localVue,
+      vuetify,
       propsData: {
         defaultValue: 'indeterminate'
       }
