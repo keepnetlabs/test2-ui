@@ -743,8 +743,12 @@ export default {
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
       const doc = new DOMParser().parseFromString(html, 'text/html')
+      const docId = doc.body.id
       this.editor.setComponents(doc.children[0].outerHTML)
       this.editor.getWrapper().setStyle(doc.body.style.cssText)
+      this.editor.getWrapper().addAttributes({
+        id: docId
+      })
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         let el
@@ -900,7 +904,7 @@ export default {
           htmlElement.insertAdjacentElement('afterbegin', head)
         } else {
           const newHtmlDOM = document.createElement('html')
-          newHtmlDOM.innerHTML = htmlDOM.innerHTML
+          newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
           newHtmlDOM.insertAdjacentElement('afterbegin', head)
           return newHtmlDOM.outerHTML
         }
