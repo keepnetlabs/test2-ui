@@ -906,11 +906,9 @@ export default {
           const newHtmlDOM = document.createElement('html')
           newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
           newHtmlDOM.insertAdjacentElement('afterbegin', head)
-          console.log(htmlDOM.outerHTML)
           return newHtmlDOM.outerHTML
         }
       }
-      console.log(htmlDOM.outerHTML)
       return htmlDOM.outerHTML
     }
   }
