@@ -297,9 +297,7 @@ export default {
           }
           this.showErrorMessage(refForm)
         }
-      }
-
-      if (this.step === 2) {
+      } else if (this.step === 2) {
         this.setActionButtonDisability(true)
         const payload = {
           name: formData.name,
