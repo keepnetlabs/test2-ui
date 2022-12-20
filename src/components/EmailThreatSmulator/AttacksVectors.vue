@@ -62,7 +62,7 @@
         <span
           v-if="scope.column.property === 'riskFactor'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link"
+          class="datatable-link d-flex justify-center"
         >
           <div class="av-risk-factor py-1" :style="setStatusColor(scope.row.riskFactor)">
             {{ scope.row.riskFactor }}
@@ -71,7 +71,7 @@
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link"
+          class="datatable-link d-flex justify-center"
         >
           <div class="av-status py-1" :class="scope.row.status.toLowerCase()">
             {{ scope.row.status }}
@@ -205,24 +205,24 @@ export default {
           },
           {
             property: 'riskFactor',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Severity',
             sortable: true,
             show: true,
             type: 'slot',
-            width: 125,
+            width: 150,
             filterableType: 'number'
           },
           {
             property: 'status',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: false,
             show: true,
             type: 'slot',
-            width: 130,
+            width: 150,
             filterableType: 'select',
             filterableItems: ['Enabled', 'Disabled']
           },
@@ -230,11 +230,13 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: 'Date Create',
+            label: 'Date Created',
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date'
+            filterableType: 'date',
+            width: 180,
+            overrideWidth: true
           }
         ],
         rowActions: [
