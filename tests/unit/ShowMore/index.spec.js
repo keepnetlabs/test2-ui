@@ -32,27 +32,17 @@ describe('Show more component', () => {
     })
     await wrapper.setData({
       renderedBadgeCount: 1,
-      status: 1
+      status: 1,
+      computedData: []
     })
-
     //expecting show more button to be rendered
     const button = wrapper.find('.show-more__right')
     expect(button.exists()).toBe(true)
-    //checking menu icon
-    expect(button.find('.mdi-menu-up').exists()).toBe(true)
     //checking text
     expect(button.text().includes('Show less')).toBeTruthy()
-
     //clicking button
-
     await button.find('button').trigger('click')
-
-    //checking icon
-
-    expect(button.find('.mdi-menu-down').exists()).toBe(true)
-
     //checking text
-
     expect(button.text().includes('+2 more')).toBe(true)
   })
 })

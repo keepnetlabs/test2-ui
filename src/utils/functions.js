@@ -8,215 +8,109 @@ export function getBtnStatusColor(type) {
   if (typeof _type !== 'number') {
     _type = _type.toLowerCase()
   }
-  switch (_type && _type) {
-    case 'pending':
-      return '#00bcd4'
-    case 'clean':
-      return '#00bcd4'
-    case 'active':
-      return '#1173C1'
-    case 'deferred':
-      return '#B6791D'
-    case 'dropped':
-      return '#F56C6C'
-    case 'blocked':
-      return '#F56C6C'
-    case 'inactive':
-      return '#b83a3a'
-    case 'sending':
-      return '#1173C1'
-    case 'scheduled':
-      return '#1173C1'
-    case 'finished':
-      return '#217124'
-    case 'warning':
-      return '#b6791d'
-    case 'processing':
-      return '#1173C1'
-    case 'processed':
-      return '#217124'
-    case 'delivered':
-      return '#217124'
-    case 'clicked':
-      return '#217124'
-    case 'opened':
-      return '#217124'
-    case 'bounced':
-      return '#F56C6C'
-    case 'blocks':
-      return '#F56C6C'
-    case 'spam_report':
-      return '#F56C6C'
-    case 'malicious':
-      return '#b83a3a'
-    case 'unsubscribes':
-      return '#B6791D'
-    case 'group_unsubscribe':
-      return '#B6791D'
-    case 'group_resubscribe':
-      return '#B6791D'
-    case 'nonmalicious':
-      return '#00bcd4'
-    case 'offline':
-      return '#B83A3A'
-    case 'expired':
-      return '#B6791D'
-    case 'paused':
-      return '#B6791D'
-    case 'passive':
-      return '#b83a3a'
-    case 'cancelled':
-      return '#B6791D'
-    case 'canceled':
-      return '#B6791D'
-    case 'quequed':
-      return '#0198AC'
-    case 'phishing':
-      return '#b83a3a'
-    case 'idle':
-      return '#0198AC'
-    case 'excluded':
-      return '#757575'
-    case 'disabled':
-      return '#b83a3a'
-    case 'network error':
-      return '#b83a3a'
-    case 'quedued':
-      return '#00bcd4'
-    case 'inqueue':
-    case 'in queue':
-      return '#1173C1'
-    case 'none':
-      return '#00bcd4'
-    case 'running':
-      return '#1173C1'
-    case 'Running':
-      return '#1173C1'
-    case 'Not Running':
-      return '#1173C1'
-    case 'not delivered':
-      return '#757575'
-    case 'completed':
-      return '#217124'
-    case 'complete':
-      return '#217124'
-    case 'finished':
-      return '#217124'
-    case 'successful':
-      return '#217124'
-    case 'success':
-      return '#217124'
-    case 'online':
-      return '#217124'
-    case 'deactivated':
-      return '#757575'
-    case 'notinstalled':
-      return '#757575'
-    case 'user unavailable':
-      return '#757575'
-    case 'completedwitherror':
-      return '#6d6d6d'
-    case 'itemnotfound':
-      return '#fafafa'
-    case 'failed':
-      return '#b83a3a'
-    case 'n/a':
-      return '#00bcd4'
-    case 'stopped':
-      return '#b83a3a'
-    case 'error':
-      return '#B83A3A'
-    case 'exist':
-      return '#1173C1'
-    case 'new':
-      return '#217124'
-    case 'undetected':
-      return '#1173C1'
-    case 'listed':
-      return '#b83a3a'
-    case 'low':
-      return '#0198AC'
-    case 'verylow':
-      return '#757575'
-    case 'custom':
-      return '#f56c6c'
-    case 'system':
-      return '#1173C1'
-    case 'yes':
-      return '#1173c1'
-    case 'no':
-      return '#757575'
-    case 'not running':
-      return '#B83A3A'
-    case 'easy':
-      return 'rgba(33, 113, 36, 1)'
-    case 'medium':
-      return 'rgba(17, 115, 193, 1)'
-    case 'hard':
-      return 'rgba(184, 58, 58, 1)'
-    case 'no match':
-      return '#757575'
-    default:
-      return '#00bcd4'
-  }
+  if (!_type) return '#00bcd4'
+  if (_type === 'pending') return '#00bcd4'
+  if (_type === 'clean') return '#00bcd4'
+  if (_type === 'active') return '#1173C1'
+  if (_type === 'deferred') return '#B6791D'
+  if (_type === 'dropped') return '#F56C6C'
+  if (_type === 'blocked') return '#F56C6C'
+  if (_type === 'inactive') return '#b83a3a'
+  if (_type === 'sending') return '#1173C1'
+  if (_type === 'scheduled') return '#1173C1'
+  if (_type === 'finished') return '#217124'
+  if (_type === 'warning') return '#b6791d'
+  if (_type === 'processing') return '#1173C1'
+  if (_type === 'processed') return '#217124'
+  if (_type === 'delivered') return '#217124'
+  if (_type === 'clicked') return '#217124'
+  if (_type === 'opened') return '#217124'
+  if (_type === 'bounced') return '#F56C6C'
+  if (_type === 'blocks') return '#F56C6C'
+  if (_type === 'spam_report') return '#F56C6C'
+  if (_type === 'malicious') return '#b83a3a'
+  if (_type === 'unsubscribes') return '#B6791D'
+  if (_type === 'group_unsubscribe') return '#B6791D'
+  if (_type === 'group_resubscribe') return '#B6791D'
+  if (_type === 'nonmalicious') return '#00bcd4'
+  if (_type === 'offline') return '#B83A3A'
+  if (_type === 'expired') return '#B6791D'
+  if (_type === 'paused') return '#B6791D'
+  if (_type === 'passive') return '#b83a3a'
+  if (_type === 'cancelled') return '#B6791D'
+  if (_type === 'canceled') return '#B6791D'
+  if (_type === 'quequed') return '#0198AC'
+  if (_type === 'phishing') return '#b83a3a'
+  if (_type === 'idle') return '#0198AC'
+  if (_type === 'excluded') return '#757575'
+  if (_type === 'disabled') return '#b83a3a'
+  if (_type === 'network error') return '#b83a3a'
+  if (_type === 'quedued') return '#00bcd4'
+  if (_type === 'inqueue') if (_type === 'in queue') return '#1173C1'
+  if (_type === 'none') return '#00bcd4'
+  if (_type === 'running') return '#1173C1'
+  if (_type === 'Running') return '#1173C1'
+  if (_type === 'Not Running') return '#1173C1'
+  if (_type === 'not delivered') return '#757575'
+  if (_type === 'completed') return '#217124'
+  if (_type === 'complete') return '#217124'
+  if (_type === 'finished') return '#217124'
+  if (_type === 'successful') return '#217124'
+  if (_type === 'success') return '#217124'
+  if (_type === 'online') return '#217124'
+  if (_type === 'deactivated') return '#757575'
+  if (_type === 'notinstalled') return '#757575'
+  if (_type === 'user unavailable') return '#757575'
+  if (_type === 'completedwitherror') return '#6d6d6d'
+  if (_type === 'itemnotfound') return '#fafafa'
+  if (_type === 'failed') return '#b83a3a'
+  if (_type === 'n/a') return '#00bcd4'
+  if (_type === 'stopped') return '#b83a3a'
+  if (_type === 'error') return '#B83A3A'
+  if (_type === 'exist') return '#1173C1'
+  if (_type === 'new') return '#217124'
+  if (_type === 'undetected') return '#1173C1'
+  if (_type === 'listed') return '#b83a3a'
+  if (_type === 'low') return '#0198AC'
+  if (_type === 'verylow') return '#757575'
+  if (_type === 'custom') return '#f56c6c'
+  if (_type === 'system') return '#1173C1'
+  if (_type === 'yes') return '#1173c1'
+  if (_type === 'no') return '#757575'
+  if (_type === 'not running') return '#B83A3A'
+  if (_type === 'easy') return 'rgba(33, 113, 36, 1)'
+  if (_type === 'medium') return 'rgba(17, 115, 193, 1)'
+  if (_type === 'hard') return 'rgba(184, 58, 58, 1)'
+  if (_type === 'no match') return '#757575'
+  return '#00bcd4'
 }
 
 export function getBtnPriorityColor(type) {
-  switch (type.toLowerCase()) {
-    case 'active':
-      return '#00bcd4'
-    case 'inactive':
-      return '#b83a3a'
-    case 'low':
-      return '#0198AC'
-    case 'very low':
-      return '#757575'
-    case 'verylow':
-      return '#757575'
-    case 'medium':
-      return '#1173C1'
-    case 'high':
-      return '#b6791d'
-    case 'very high':
-      return '#b83a3a'
-    case 'veryhigh':
-      return '#b83a3a'
-    case 'n/a':
-      return '#00bcd4'
-    case 'error':
-      return '#b83a3a'
-    case 'exist':
-      return '#1173C1'
-    case 'new':
-      return '#217124'
-    case 'excluded':
-      return '#757575'
-    default:
-      break
-  }
+  if (type.toLowerCase() === 'active') return '#00bcd4'
+  if (type.toLowerCase() === 'inactive') return '#b83a3a'
+  if (type.toLowerCase() === 'low') return '#0198AC'
+  if (type.toLowerCase() === 'very low') return '#757575'
+  if (type.toLowerCase() === 'verylow') return '#757575'
+  if (type.toLowerCase() === 'medium') return '#1173C1'
+  if (type.toLowerCase() === 'high') return '#b6791d'
+  if (type.toLowerCase() === 'very high') return '#b83a3a'
+  if (type.toLowerCase() === 'veryhigh') return '#b83a3a'
+  if (type.toLowerCase() === 'n/a') return '#00bcd4'
+  if (type.toLowerCase() === 'error') return '#b83a3a'
+  if (type.toLowerCase() === 'exist') return '#1173C1'
+  if (type.toLowerCase() === 'new') return '#217124'
+  if (type.toLowerCase() === 'excluded') return '#757575'
 }
 
 export function getTextColor(type) {
-  switch (type.toLowerCase()) {
-    case 'open':
-      return '#f56c6c'
-    case 'in progress':
-      return '#2196f3'
-    case 'false positive':
-      return '#e6a23c'
-    case 'closed':
-      return '#43a047'
-    case 'very high':
-      return '#43a047'
-    case 'medium':
-      return '#00bcd4'
-    case 'low':
-      return '#e6a23c'
-    case 'very low':
-      return '#f56c6c'
-    default:
-      break
-  }
+  if (type.toLowerCase() === 'open') return '#f56c6c'
+  if (type.toLowerCase() === 'in progress') return '#2196f3'
+  if (type.toLowerCase() === 'false positive') return '#e6a23c'
+  if (type.toLowerCase() === 'closed') return '#43a047'
+  if (type.toLowerCase() === 'very high') return '#43a047'
+  if (type.toLowerCase() === 'medium') return '#00bcd4'
+  if (type.toLowerCase() === 'low') return '#e6a23c'
+  if (type.toLowerCase() === 'very low') return '#f56c6c'
 }
 
 export function getDataTableFieldLabel(field = '') {
@@ -232,55 +126,30 @@ export function getDataTableFieldLabel(field = '') {
       upperCaseCount++
     }
   }
-  switch (field) {
-    case 'beinganalyzed':
-      return 'Being Analyzed'
-    case 'inprogress':
-      return 'In Progress'
-    case 'falsepositive':
-      return 'False Positive'
-    case 'nonmalicious':
-      return 'Clean'
-    case 'veryhigh':
-      return 'Very High'
-    case 'verylow':
-      return 'Very Low'
-    case 'completedwitherror':
-      return 'Completed with error'
-    case 'itemnotfound':
-      return 'Item not found'
-    case 'Running':
-      return 'Running'
-    case 'Not Running':
-      return 'Not Running'
-    case 'n/a':
-      return 'N/A'
-    case 'notinstalled':
-      return 'Not Installed'
-    case 'waitingresponse':
-      return 'Waiting Response'
-    case 'unknown':
-      return 'N/A'
-    case 'Easy':
-      return 'Easy'
-    case 'Medium':
-      return 'Medium'
-    case 'Hard':
-      return 'Hard'
-    default:
-      return defField
-  }
+  if (field === 'beinganalyzed') return 'Being Analyzed'
+  if (field === 'inprogress') return 'In Progress'
+  if (field === 'falsepositive') return 'False Positive'
+  if (field === 'nonmalicious') return 'Clean'
+  if (field === 'veryhigh') return 'Very High'
+  if (field === 'verylow') return 'Very Low'
+  if (field === 'completedwitherror') return 'Completed with error'
+  if (field === 'itemnotfound') return 'Item not found'
+  if (field === 'Running') return 'Running'
+  if (field === 'Not Running') return 'Not Running'
+  if (field === 'n/a') return 'N/A'
+  if (field === 'notinstalled') return 'Not Installed'
+  if (field === 'waitingresponse') return 'Waiting Response'
+  if (field === 'unknown') return 'N/A'
+  if (field === 'Easy') return 'Easy'
+  if (field === 'Medium') return 'Medium'
+  if (field === 'Hard') return 'Hard'
+  return defField
 }
 
 export function isOwnerOrMember(membershipStatusId) {
-  switch (membershipStatusId) {
-    case 1:
-      return true
-    case 2:
-      return true
-    default:
-      return false
-  }
+  if (membershipStatusId === 1) return true
+  if (membershipStatusId === 2) return true
+  return false
 }
 
 export function isOwner(membershipStatusId) {
@@ -898,37 +767,24 @@ export function getTimeZone(isDate, fallback) {
   }
 
   if (isDate) {
-    switch (timeZone) {
-      case 'DD/MM/YYYY':
-        timeZone = `dd/MM/yyyy`
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-      case 'MM/DD/YYYY':
-        timeZone = `MM/dd/yyyy`
+    if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy`
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
+    if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy`
 
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-      case 'YYYY/MM/DD':
-        timeZone = `yyyy/MM/dd`
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-    }
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
+    if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd`
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
   } else {
-    switch (timeZone) {
-      case 'DD/MM/YYYY':
-        timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-      case 'MM/DD/YYYY':
-        timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    if (timeZone === 'DD/MM/YYYY')
+      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
+    if (timeZone === 'MM/DD/YYYY')
+      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
 
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-      case 'YYYY/MM/DD':
-        timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-        //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break
-    }
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
+    if (timeZone === 'YYYY/MM/DD')
+      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    //timeZone = `yyyy-MM-dd HH:mm:ss`
   }
 
   return timeZone
@@ -945,21 +801,18 @@ export function getTimeValueFormatZone(isDate) {
     timeFormat = 'HH'
   }
 
-  switch (timeZone) {
-    case 'DD/MM/YYYY':
-      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-    case 'MM/DD/YYYY':
-      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'DD/MM/YYYY')
+    timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-    case 'YYYY/MM/DD':
-      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-  }
+  if (timeZone === 'MM/DD/YYYY')
+    timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
+
+  if (timeZone === 'YYYY/MM/DD')
+    timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
 
   return timeZone
 }
@@ -993,20 +846,15 @@ export function getTimeZoneForMoment(fallback) {
     timeFormat = 'HH'
   }
 
-  switch (timeZone) {
-    case 'DD/MM/YYYY':
-      timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-    case 'MM/DD/YYYY':
-      timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-    case 'YYYY/MM/DD':
-      timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
-      //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break
-  }
+  if (timeZone === 'DD/MM/YYYY')
+    timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
+  if (timeZone === 'MM/DD/YYYY')
+    timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
+  if (timeZone === 'YYYY/MM/DD')
+    timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
 
   return timeZone
 }
@@ -1083,20 +931,14 @@ export function isDifferent(a, b) {
 }
 
 export function getInvestigationStatusTooltipText(type) {
-  switch (type) {
-    case 'Queued':
-      return 'This investigation will start when others before it are finished'
-    case 'Running':
-      return 'Investigation will finish on expiry date'
-    case 'No match':
-      return 'This email does not match properties required by the rule: No attachment'
-    case 'Finished':
-      return 'Investigation of all target users are completed and expired'
-    case 'Canceled':
-      return 'Investigation was cancelled manually'
-    case 'Expired':
-      return 'Investigation expired before completing investigation for all target users'
-  }
+  if (type === 'Queued') return 'This investigation will start when others before it are finished'
+  if (type === 'Running') return 'Investigation will finish on expiry date'
+  if (type === 'No match')
+    return 'This email does not match properties required by the rule: No attachment'
+  if (type === 'Finished') return 'Investigation of all target users are completed and expired'
+  if (type === 'Canceled') return 'Investigation was cancelled manually'
+  if (type === 'Expired')
+    return 'Investigation expired before completing investigation for all target users'
 }
 
 export function copyToClipboard(textToCopy) {
@@ -1117,7 +959,7 @@ export function copyToClipboard(textToCopy) {
     textArea.select()
     return new Promise((res, rej) => {
       // here the magic happens
-      document.execCommand('copy') ? res() : rej()
+      document.execCommand('copy') ? res() : rej('something went wrong')
       textArea.remove()
     })
   }
@@ -1379,4 +1221,11 @@ export const getErrorMessage = (error) => {
     error.message ||
     'Something Went Wrong'
   )
+}
+
+export const getDifficultyBadgeColor = (text = '') => {
+  if (text.toLowerCase() === 'easy') return '#217124'
+  if (text.toLowerCase() === 'medium') return '#2196f3'
+  if (text.toLowerCase() === 'hard') return '#f56c6c'
+  return '#2196f3'
 }

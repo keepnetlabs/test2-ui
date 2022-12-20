@@ -1197,31 +1197,27 @@ export default {
       }
     },
     changeDropdownItem(item) {
-      switch (item) {
-        case 'logout':
-          this.logoutUser()
-          break
-        case 'changePassword':
-          this.openPasswordChange = true
-          break
-        case 'switchCompany':
-          this.setSwitchDialog(true)
-          break
-        case 'returnToMainAccount':
-          let mainCompanyId = localStorage.getItem('companyResourceId')
-          let mainCompanyName = localStorage.getItem('companyName')
-          localStorage.setItem('isSelectCompany', false)
-          localStorage.setItem('companyId', mainCompanyId)
-          localStorage.setItem('companyRequestId', mainCompanyId)
-          localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
-          localStorage.setItem('selectedCompanyName', mainCompanyName)
-          this.$router.go(0)
-          break
-        case 'changeSettings':
-          this.changeSettings()
-          break
-        default:
-          return
+      if (item === 'logout') {
+        this.logoutUser()
+      }
+      if (item === 'changePassword') {
+        this.openPasswordChange = true
+      }
+      if (item === 'switchCompany') {
+        this.setSwitchDialog(true)
+      }
+      if (item === 'returnToMainAccount') {
+        let mainCompanyId = localStorage.getItem('companyResourceId')
+        let mainCompanyName = localStorage.getItem('companyName')
+        localStorage.setItem('isSelectCompany', false)
+        localStorage.setItem('companyId', mainCompanyId)
+        localStorage.setItem('companyRequestId', mainCompanyId)
+        localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
+        localStorage.setItem('selectedCompanyName', mainCompanyName)
+        this.$router.go(0)
+      }
+      if (item === 'changeSettings') {
+        this.changeSettings()
       }
     },
     onIUnderstandClick(data) {

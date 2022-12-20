@@ -257,31 +257,22 @@ export default {
       this.customFields = tableData[0].customFields.map((item) => {
         const filterableProps = {}
         const { dataType, name } = item
-        switch (dataType.toLowerCase()) {
-          case 'string':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'email':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'number':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'boolean':
-            filterableProps['filterableType'] = 'select'
-            filterableProps['filterableItems'] = [
-              { text: 'Yes', value: 1 },
-              { text: 'No', value: 0 }
-            ]
-            break
-          case 'date':
-            filterableProps['filterableType'] = 'dateOnly'
-            break
-          case 'datetime':
-            filterableProps['filterableType'] = 'date'
-            break
-          default:
-            break
+        if (dataType.toLowerCase() === 'string') {
+          filterableProps['filterableType'] = 'text'
+        } else if (dataType.toLowerCase() === 'email') {
+          filterableProps['filterableType'] = 'text'
+        } else if (dataType.toLowerCase() === 'number') {
+          filterableProps['filterableType'] = 'text'
+        } else if (dataType.toLowerCase() === 'boolean') {
+          filterableProps['filterableType'] = 'select'
+          filterableProps['filterableItems'] = [
+            { text: 'Yes', value: 1 },
+            { text: 'No', value: 0 }
+          ]
+        } else if (dataType.toLowerCase() === 'date') {
+          filterableProps['filterableType'] = 'dateOnly'
+        } else if (dataType.toLowerCase() === 'datetime') {
+          filterableProps['filterableType'] = 'date'
         }
         return {
           property: name,

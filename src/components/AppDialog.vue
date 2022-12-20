@@ -123,26 +123,28 @@ export default {
   },
   computed: {
     dialogWidth() {
-      let retValue
-      switch (this.size) {
-        case 'small':
-          retValue = '480'
-          break
-        case 'big':
-          retValue = '580'
-          break
-        case 'maximum':
-          retValue = '650'
-          break
-        case 'ultraMaximum':
-          retValue = '700'
-          break
-        default:
-          break
+      let retValue = '480'
+
+      if (this.size === 'small') {
+        retValue = '480'
       }
+
+      if (this.size === 'big') {
+        retValue = '580'
+      }
+
+      if (this.size === 'maximum') {
+        retValue = '650'
+      }
+
+      if (this.size === 'ultraMaximum') {
+        retValue = '700'
+      }
+
       if (this.customSize) {
         retValue = this.customSize
       }
+
       return retValue
     },
     getTitleClass() {

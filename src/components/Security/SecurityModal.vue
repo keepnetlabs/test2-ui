@@ -327,21 +327,17 @@ export default {
   computed: {
     getTitle() {
       let title = null
-      switch (this.step) {
-        case 1:
-          title = labels.Security
-          break
-        case 2:
-          title = labels.LoginPassword
-          break
-        case 3:
-          title = labels.DisableMfa
-          break
-        case 4:
-          title = labels.EnableMfa
-          break
-        default:
-          break
+      if (this.step === 1) {
+        title = labels.Security
+      }
+      if (this.step === 2) {
+        title = labels.LoginPassword
+      }
+      if (this.step === 3) {
+        title = labels.DisableMfa
+      }
+      if (this.step === 4) {
+        title = labels.EnableMfa
       }
       return title
     }

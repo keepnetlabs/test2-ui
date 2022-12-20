@@ -578,18 +578,11 @@ export default {
   },
   methods: {
     findCategory(id) {
-      switch (id) {
-        case 'Ps0SSyl7rVNe':
-          return 'Malicious'
-        case 'bEuAD1pdbRXF':
-          return 'Non-Malicious'
-        case 'NGLCc9UCxJvw':
-          return 'Phishing'
-        case 'Gwt67E1ftYtr':
-          return 'Spam'
-        default:
-          return ''
-      }
+      if (id === 'Ps0SSyl7rVNe') return 'Malicious'
+      if (id === 'bEuAD1pdbRXF') return 'Non-Malicious'
+      if (id === 'NGLCc9UCxJvw') return 'Phishing'
+      if (id === 'Gwt67E1ftYtr') return 'Spam'
+      return ''
     },
     getByValue() {
       return this.uploadRespond.PostedUserFullName || localStorage.getItem('userName')

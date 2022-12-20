@@ -546,7 +546,7 @@ export default {
             this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
             res()
           })
-          .catch(rej)
+          .catch(() => rej('something went wrong'))
       })
     },
     handleBatchImportClick() {
@@ -565,7 +565,7 @@ export default {
             }
             res()
           })
-          .catch(rej)
+          .catch(() => rej('something went wrong'))
       })
     },
     closeOverlay() {
