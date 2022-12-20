@@ -10,7 +10,7 @@
         v-if="(isFileUploadStep && step.inputUrl)"
         class="vishing-template-preview-step__file-name"
       >
-        {{ step.inputUrl }}
+        {{ getFileName(step.inputUrl) }}
       </span>
       <AudioPlayer v-if="step.inputUrl" :src="step.inputUrl" />
     </template>
@@ -34,6 +34,7 @@
 <script>
 import Badge from '@/components/Badge'
 import AudioPlayer from '@/components/AudioPlayer'
+import * as validations from '@/utils/validations'
 export default {
   name: 'VishingTemplatePreviewStep',
   components: {
@@ -72,6 +73,16 @@ export default {
     },
     getRequiredDigitCountTagText() {
       return this.hasRequiredDigitCount ? `Required ${this.step.inputDigit} digits input` : ''
+    }
+  },
+  methods: {
+    getFileName(url = '') {
+      if (validations.url(url)) {
+        const lastSlashIndex = this.step.inputUrl.lastIndexOf('/') + 1
+        const fileName = this.step.inputUrl.substring(lastSlashIndex)
+        return fileName
+      }
+      return url
     }
   }
 }
