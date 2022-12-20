@@ -662,6 +662,19 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: PROPERTY_STORE.PHONENUMBER,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'PhoneNumber',
+            emptyText: 'No Data'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
