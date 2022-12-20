@@ -63,7 +63,7 @@
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link"
+          class="datatable-link d-flex justify-center"
         >
           <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
             {{ scope.row.status.replace('InProgress', 'In Progress') }}
@@ -163,16 +163,18 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: 'Date Create',
+            label: 'Date Created',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date'
+            filterableType: 'date',
+            width: 180,
+            overrideWidth: true
           },
           {
             property: 'status',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
