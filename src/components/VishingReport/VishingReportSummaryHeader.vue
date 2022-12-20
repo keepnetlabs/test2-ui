@@ -52,7 +52,8 @@ export default {
       type: String
     },
     vishingReportItems: {
-      type: Object
+      type: Object,
+      default: () => {}
     }
   },
   data() {

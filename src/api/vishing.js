@@ -97,6 +97,10 @@ export function getVishingCampaign(resourceId) {
   return vishingRequest.get(`/vishing-campaign/${resourceId}`)
 }
 
+export function getVishingReportSummary(resourceId = '') {
+  return vishingRequest.get(`/vishing-report/${resourceId}`)
+}
+
 export function getVishingReportUsers(id) {
   // TODO: Add correct endpoint
   return new Promise((res) => {

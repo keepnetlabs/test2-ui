@@ -16,7 +16,7 @@
     <template v-if="isTestTraining" #header-right>
       <div class="campaign-manager-report-summary-campaign-info__right-side">
         <v-btn style="display: none;" />
-        <Badge color="#B6791D" text="Marked as Test" :outline="false" />
+        <Badge color="#B6791D" text="Test Campaign" :outline="false" />
       </div>
     </template>
   </CampaignManagerSummaryCard>

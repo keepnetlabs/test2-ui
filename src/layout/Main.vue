@@ -410,6 +410,10 @@
                   route-name="Vishing Campaign Manager"
                   route-text="Campaign Manager"
                   :router-name="routerName"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Vishing Campaign Manager' || routerName === 'Vishing Report'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -681,6 +685,9 @@
             <h1 v-else-if="routerName === 'Training Report'">
               {{ getTrainingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Vishing Report'">
+              {{ getVishingReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -908,6 +915,12 @@ export default {
         return `Training Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Training Report'
+    },
+    getVishingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Vishing Report'
     },
     getRouterKey() {
       const { name } = this.$route

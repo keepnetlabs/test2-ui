@@ -96,7 +96,13 @@ export default {
       this.selectedTemplateStepIndex = index
     },
     getStepName(step, index) {
-      return `Step ${index + 1} - ${step.type}`
+      return `Step ${index + 1} - ${this.getStepText(step.type || step.inputType)}`
+    },
+    getStepText(step) {
+      if (step === 'TextToSpeech') return 'Text to Speech'
+      if (step === 'FileUpload') return 'Upload Audio'
+      if (step === 'Pause') return 'Pause'
+      return ''
     }
   }
 }

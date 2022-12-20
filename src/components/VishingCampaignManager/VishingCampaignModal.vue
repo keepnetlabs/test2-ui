@@ -139,6 +139,7 @@
             <CampaignManagerTargetGroups
               ref="refTargetAudience"
               class="mt-2"
+              last-column-name="phoneNumber"
               :selected-target-groups="formValues.targetGroupResourceIds"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"

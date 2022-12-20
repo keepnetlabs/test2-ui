@@ -5,16 +5,23 @@
       :id="id"
       :vishing-report-items="getResendDialogItems"
     />
-    <VishingReportSummaryCards :items="getCardsData" />
+    <VishingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <VishingReportCampaignInfo
         class="vishing-report-campaign-info"
+        :is-loading="isLoading"
         :items="getVishingInfoData"
         :is-test-training="isTestTraining"
       />
-      <VishingReportDelivery class="ml-4" :items="getTrainingVishingDeliveryData" />
+      <VishingReportDelivery
+        class="ml-4"
+        :is-loading="isLoading"
+        :items="getVishingDeliveryData"
+        :helper-data="getVishingDeliveryHelperData"
+      />
     </div>
-    <VishingReportTemplate :form-data="getVishingTemplateData" />
+    <DatatableLoading v-if="isLoading" :loading="isLoading" />
+    <VishingReportTemplate v-else :form-data="getVishingTemplateData" />
   </div>
 </template>
 
@@ -24,9 +31,12 @@ import VishingReportSummaryCards from '@/components/VishingReport/VishingReportS
 import VishingReportCampaignInfo from '@/components/VishingReport/VishingReportCampaignInfo'
 import VishingReportDelivery from '@/components/VishingReport/VishingReportDelivery'
 import VishingReportTemplate from '@/components/VishingReport/VishingReportTemplate'
+import { getVishingReportSummary } from '@/api/vishing'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
   name: 'VishingReportSummary',
   components: {
+    DatatableLoading,
     VishingReportTemplate,
     VishingReportDelivery,
     VishingReportCampaignInfo,
@@ -39,144 +49,128 @@ export default {
     },
     vishingName: {
       type: String
-    },
-    trainingSummary: {
-      type: Object,
-      default: () => {}
     }
   },
   data() {
-    return {}
+    return {
+      vishingSummary: {},
+      isLoading: false
+    }
   },
   computed: {
     getCardsData() {
-      const { reportDetail = {}, completedCount = 0 } = this.trainingSummary || {}
       const {
-        totalTargetUserCount = 0,
-        totalUserClickedCount = 0,
-        totalUserOpenedCount = 0,
+        answeredCount = 0,
+        answeredPercent = 0,
+        vishedCount = 0,
+        vishedPercent = 0,
         noResponseCount = 0,
-        inProgressCount = 0
-      } = reportDetail
-      const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
+        noResponsePercent = 0
+      } = this.vishingSummary || {}
       return {
-        openedEmail: {
-          userCount: totalUserOpenedCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
+        answered: {
+          userCount: answeredCount,
+          userPercent: answeredPercent.toString()
         },
-        inProgress: {
-          userCount: inProgress,
-          userPercent:
-            totalTargetUserCount === 0 ? '0' : ((inProgress / totalTargetUserCount) * 100).toFixed()
-        },
-        completedTraining: {
-          userCount: completedCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((completedCount / totalTargetUserCount) * 100).toFixed()
+        vished: {
+          userCount: vishedCount,
+          userPercent: vishedPercent.toString()
         },
         noResponse: {
           userCount: noResponseCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((noResponseCount / totalTargetUserCount) * 100).toFixed()
+          userPercent: noResponsePercent.toString()
         }
       }
     },
-    getTrainingVishingDeliveryData() {
-      const {
-        phoneNumber = '+44 545 678 95 53',
-        startDate = '28.05.2021 16:29:00 - 29.05.2021 16:29:90'
-      } = this.trainingSummary || {}
+    getVishingDeliveryData() {
+      const { callerPhoneNumber = '', startTime = '', endTime } = this.vishingSummary || {}
       return {
-        'Campaign Start-End Date': startDate,
-        'Caller Phone Number': phoneNumber,
-        'Calling Status': 15
+        'Campaign Start-End Date': `${startTime || ''}-${endTime || ''}`,
+        'Caller Phone Number': callerPhoneNumber,
+        'Calling Status': ''
+      }
+    },
+    getVishingDeliveryHelperData() {
+      const { errorTargetUserCount = 0, errorlessTargetUserCount = 0, targetUserCount = 0 } =
+        this.vishingSummary || {}
+      return {
+        totalTargetUserCount: targetUserCount,
+        emailErrorUserCount: errorTargetUserCount,
+        emailDeliveredUserCount: errorlessTargetUserCount
       }
     },
     getVishingInfoData() {
-      const { totalTargetUserCount = 15 } = this?.trainingSummary?.reportDetail || {}
+      const { targetUserCount = 0, vishingTemplateDto = {} } = this.vishingSummary || {}
       return {
         'Target Users': {
           show: true,
-          value: totalTargetUserCount
+          value: targetUserCount
         },
         Language: {
           show: true,
-          value: 'EN/Female'
+          value: vishingTemplateDto?.vishingLanguage
         }
       }
     },
     isTestTraining() {
-      const { isTest = false } = this.trainingSummary || {}
-      return isTest
+      const { isTestCampaign = false } = this.vishingSummary || {}
+      return isTestCampaign
     },
     getVishingTemplateData() {
-      const { trainingDetails = {} } = this.trainingSummary || {}
-      const { companyName = '', description: trainingDescription = '' } = trainingDetails
-      const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
+      const { vishingTemplateDto = {} } = this.vishingSummary || {}
+      const {
+        name = '',
+        description = '',
+        difficulty = '',
+        createTime = '',
+        tags = [],
+        steps = []
+      } = vishingTemplateDto
+      //  isOwner: true,availableFor :true
+      this.$store.dispatch('common/setActivePageRouterName', name)
+      const splittedLanguage = vishingTemplateDto?.vishingLanguage?.split('-')
+      const languageShortCode = splittedLanguage[0].trim()
+      const narratorGender = splittedLanguage[1].trim()
+      const invalidDialingNoticeStepIndex = steps.findIndex((step) => step.order === 0)
+      if (invalidDialingNoticeStepIndex !== -1) {
+        steps.splice(invalidDialingNoticeStepIndex, 1)
+      }
       return {
         template: {
-          resourceId: '1',
-          name: 'Long Template Name that Creates Overflow Elipsis',
-          language: 'English - Female',
-          languageShortCode: 'EN',
-          narratorGender: 'Female',
-          description:
-            'Blandit quam habitant eget nisi eget quam amet, at amet. Enim, eget donec aliquet leo quis interdum tortor ',
-          difficulty: 'Medium',
-          createdBy: 'System',
-          createTime: '14/06/2022 06:49',
-          isOwner: true,
-          availableFor: 'No',
-          tags: ['tag1', 'tag2', 'tag1', 'tag2', 'tag1', 'tag2'],
-          steps: [
-            {
-              type: 'Text to Speech',
-              textToSpeech:
-                'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
-              fileUrl:
-                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
-            },
-            {
-              type: 'Upload Audio',
-              fileName: 'Randomfilename.mp3',
-              fileUrl:
-                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
-              requiredDigitCount: 4
-            },
-            {
-              type: 'Pause',
-              pauseSeconds: 5
-            },
-            {
-              type: 'Text to Speech',
-              textToSpeech:
-                'Nunc dignissim nullam enim malesuada non. Non nisl quam eget risus varius. Nunc sed tortor molestie eu interdum. Tristique viverra eget varius enim vitae. Bibendum enim imperdiet eu, neque, habitant volutpat. Aliquam suspendisse massa nunc accumsan tortor, neque. Nisi libero tincidunt nunc doloraa. ',
-              fileUrl:
-                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3'
-            },
-            {
-              type: 'Upload Audio',
-              fileName: 'Randomfilename.mp3',
-              fileUrl:
-                'https://tutorialehtml.com/assets_tutorials/media/Loreena_Mckennitt_Snow_56bit.mp3',
-              requiredDigitCount: 4,
-              isFailStep: true
-            }
-          ]
+          resourceId: this.$route.params.id,
+          name,
+          language: vishingTemplateDto?.vishingLanguage,
+          languageShortCode,
+          narratorGender,
+          description,
+          difficulty,
+          createdBy: '',
+          createTime,
+          tags,
+          steps
         }
       }
+    },
+    getResendDialogItems() {
+      return {}
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    getResendDialogItems() {
-      return { answered: 21, noResponse: 36 }
+    callForData() {
+      if (!this.id) return
+      this.isLoading = true
+      getVishingReportSummary(this.id)
+        .then((res) => {
+          const { data: { data = {} } = {} } = res || {}
+          this.vishingSummary = data
+          console.log('this.vishingSummary', this.vishingSummary)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     }
   }
 }
