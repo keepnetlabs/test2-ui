@@ -74,7 +74,7 @@ export default {
       CONSTANTS: {
         id: 'vishing-report-users-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_REPORT_USERS_TABLE,
@@ -108,7 +108,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            minWidth: 200,
+            minWidth: 180,
             overrideWidth: true
           },
           {
@@ -121,7 +121,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            minWidth: 200,
+            minWidth: 160,
             overrideWidth: true
           },
           {
@@ -134,7 +134,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            minWidth: 200,
+            minWidth: 180,
             overrideWidth: true
           },
           {
@@ -146,7 +146,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            minWidth: 200,
+            minWidth: 180,
             overrideWidth: true,
             filterableType: 'date'
           },
@@ -159,7 +159,7 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            minWidth: 150,
+            minWidth: 200,
             props: {
               style: {
                 maxWidth: '110px !important'
@@ -194,12 +194,13 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      getVishingReportUsers(this.id)
+      getVishingReportUsers(this.axiosPayload, this.id)
         .then((response) => {
-          this.tableData = response.data.data.results
-          this.serverSideProps.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = response.data.data.totalNumberOfPages
-          this.serverSideProps.pageNumber = response.data.data.pageNumber
+          const { data: { data = {} } = {} } = response || {}
+          this.tableData = data.results
+          this.serverSideProps.totalNumberOfRecords = data.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = data.totalNumberOfPages
+          this.serverSideProps.pageNumber = data.pageNumber
         })
         .catch(() => {
           this.tableData = []
