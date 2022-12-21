@@ -58,21 +58,20 @@
       margin-top: 5px;
     }
   }
-
-  .email-threat-simulator-warning {
-    .v-cart-icon-wrapper {
-      background-color: #fef7f7 !important;
-      border: 1px solid #f56c6c !important;
-    }
-    .k-dialog__title {
-      color: #f56c6c !important;
-    }
-    .k-dialog__button {
-      background-color: white !important;
-      width: 120px;
-    }
-    .k-dialog__button:hover {
-      background-color: white !important;
-    }
+}
+.email-threat-simulator-warning {
+  .k-dialog__header .v-cart-icon-wrapper {
+    background-color: #fef7f7 !important;
+    border: 1px solid #f56c6c !important;
+  }
+  .k-dialog__title {
+    color: #f56c6c !important;
+  }
+  .k-dialog__button {
+    background-color: white !important;
+    width: 120px;
+  }
+  .k-dialog__button:hover {
+    background-color: white !important;
   }
 }
