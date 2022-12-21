@@ -4,11 +4,11 @@
     title-id="text--company-group-details-add-company-to-company-group-popup-title"
     subtitle-id="text--company-group-details-add-company-to-company-group-popup-subtitle"
     icon="mdi-account-multiple-plus"
+    max-height-size="auto"
+    class-name="add-to-group-modal"
+    custom-size="900"
     :title="getTitle"
     :subtitle="labels.AddCompaniesToCompanyGroupSubtitle"
-    :custom-size="dialogWidth"
-    maxHeightSize="auto"
-    class-name="add-to-group-modal"
     @changeStatus="closeOverlay"
   >
     <template #app-dialog-body>
@@ -20,6 +20,7 @@
         filterable
         options
         is-server-side
+        no-padding-bottom
         :show-filter-options="false"
         :loading="loading"
         :table="tableData"
@@ -88,7 +89,6 @@ export default {
       saveDisable: false,
       loading: true,
       selectedArray: [],
-      dialogWidth: '650',
       tableData: [],
       tableOptions: {
         columns: [
@@ -256,7 +256,6 @@ export default {
                 response.data.data.results.length > 0
                   ? response.data.data.results
                   : []
-              this.dialogWidth = this.tableData.length > 1000 ? '750' : '650'
             })
             .catch(() => {
               this.tableData = []

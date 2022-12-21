@@ -109,9 +109,9 @@ import { maxLength, required, startsWithSpace } from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
-import { searchTargetGroups } from '@/api/targetUsers'
 import { getSelectSearchPayload } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+
 export default {
   name: 'CreateItemModal',
   components: {
@@ -217,7 +217,7 @@ export default {
     },
     getCompaniesSearch(search = '') {
       if (search) {
-        searchTargetGroups(getSelectSearchPayload(this.payload, search, 'CompanyName'))
+        searchCompanies(getSelectSearchPayload(this.payload, search, 'CompanyName'))
           .then(this.setCompanies)
           .finally(() => {
             this.isCompaniesLoading = false
