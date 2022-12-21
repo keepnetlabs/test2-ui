@@ -3,10 +3,9 @@
     <app-dialog
       v-if="permissionModalStatus"
       :status="permissionModalStatus"
-      type="delete"
       className="email-threat-simulator-warning"
       icon="mdi-information"
-      iconColor="#f56c6c"
+      icon-color="#f56c6c"
       title="Warning!"
       subtitle="Do not use your real email accounts"
       body="We recommend creating a test account and even using virtual machine because of the potential security problems."
