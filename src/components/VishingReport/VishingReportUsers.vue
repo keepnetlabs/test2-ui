@@ -56,10 +56,9 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { getVishingReportUsers } from '@/api/vishing'
+import { exportVishingUsers, getVishingReportUsers } from '@/api/vishing'
 import { getStatusBadgeProps } from '@/components/VishingReport/utils'
 import Badge from '@/components/Badge'
-
 export default {
   name: 'VishingReportUsers',
   components: { DataTable, CampaignManagerReportHeader, Badge },
@@ -207,7 +206,28 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportVishingReportUsers() {},
+    exportVishingReportUsers(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportVishingUsers(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Vishing-Users.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     }

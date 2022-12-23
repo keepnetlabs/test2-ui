@@ -105,6 +105,12 @@ export function getVishingReportUsers(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/users/search`, payload)
 }
 
+export function exportVishingUsers(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/users/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export function getVishingReportAnswered(id) {
   // TODO: Add correct endpoint
   return new Promise((res) => {
