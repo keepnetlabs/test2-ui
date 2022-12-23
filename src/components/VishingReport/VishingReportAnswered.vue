@@ -31,7 +31,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @downloadEvent="exportVishingReportUsers"
+      @downloadEvent="exportVishingReportAnsweredUsers"
       @refreshAction="callForData"
     />
   </div>
@@ -49,7 +49,7 @@ import {
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import { getVishingReportAnswered } from '@/api/vishing'
+import { exportVishingAnsweredUsers, getVishingReportAnswered } from '@/api/vishing'
 
 export default {
   name: 'VishingReportAnswered',
@@ -188,7 +188,28 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportVishingReportUsers() {}
+    exportVishingReportAnsweredUsers(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportVishingAnsweredUsers(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Vishing-Answered-Users.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    }
   }
 }
 </script>

@@ -114,6 +114,11 @@ export function exportVishingUsers(payload = {}, resourceId = '') {
 export function getVishingReportAnswered(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/answered/search`, payload)
 }
+export function exportVishingAnsweredUsers(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/answered/export`, payload, {
+    responseType: 'blob'
+  })
+}
 
 export function getVishingReportDialedNumber(id) {
   // TODO: Add correct endpoint

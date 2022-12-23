@@ -282,8 +282,7 @@ export default {
             show: true,
             type: 'text',
             width: 200,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
