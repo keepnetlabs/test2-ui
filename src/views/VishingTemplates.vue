@@ -331,7 +331,7 @@ export default {
       return this.selectedTemplate ? this.selectedTemplate.resourceId : ''
     }
   },
-  created() {
+  mounted() {
     this.callForData()
     this.callForLanguages()
   },

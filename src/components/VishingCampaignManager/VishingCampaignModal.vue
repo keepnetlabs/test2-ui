@@ -126,8 +126,10 @@
             <VishingTemplateSelectList
               ref="refVishingTemplateSelectList"
               :template-resource-id="formValues.templateResourceId"
+              :languages="languages"
               @initialTemplateId="handleInitialTemplate"
               @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
+              @selectedTemplateChange="handleSelectedTemplateChange"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="3">
@@ -416,6 +418,10 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -643,6 +649,9 @@ export default {
     },
     handleInitialTemplate(id) {
       this.initialFormValues.templateResourceId = id
+    },
+    handleSelectedTemplateChange(item) {
+      this.formValues.template = item
     },
     handleSelectedTemplateResourceIdChange(id) {
       this.formValues.templateResourceId = id

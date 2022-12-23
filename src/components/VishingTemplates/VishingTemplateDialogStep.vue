@@ -102,7 +102,7 @@
             type="number"
             style="max-width: 205px;"
             outlined
-            :rules="durationRules"
+            :rules="numberOfDigitsRules"
             @input="onDigitCountChange"
           />
         </FormGroup>
@@ -184,6 +184,10 @@ export default {
       durationRules: [
         (v) => (v === 0 ? true : validations.required(v, labels.Required)),
         (v) => (v >= 0 && v <= 10) || 'Duration must be between 0 and 10 seconds'
+      ],
+      numberOfDigitsRules: [
+        (v) => (v === 0 ? true : validations.required(v, labels.Required)),
+        (v) => (v >= 0 && v <= 10) || 'Number of digits must be between 0 and 10'
       ]
     }
   },

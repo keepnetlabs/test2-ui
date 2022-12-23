@@ -34,6 +34,7 @@
       :selectedRow="selectedRow"
       :isEdit="isEdit"
       :isDuplicate="isDuplicate"
+      :languages="languages"
       @cancel="handleCloseCampaignModal"
     />
     <DataTable
@@ -170,7 +171,11 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getVishingCampaigns, exportVishingCampaigns, deleteVishingCampaign } from '@/api/vishing'
+import {
+  getVishingCampaigns,
+  exportVishingCampaigns,
+  getVishingTemplateLanguages
+} from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -211,6 +216,7 @@ export default {
       isEdit: false,
       isMultipleDelete: false,
       isDuplicate: false,
+      languages: [],
       tableData: [],
       selectedRow: null,
       selectedRowCount: 0,
@@ -381,6 +387,7 @@ export default {
   },
   mounted() {
     this.callForData()
+    this.callForLanguages()
   },
   methods: {
     callForData() {
@@ -403,6 +410,13 @@ export default {
       // } else {
       // this.$router.push('/')
       // }
+    },
+    callForLanguages() {
+      getVishingTemplateLanguages().then((response) => {
+        this.languages = response?.data?.data
+          ? response.data.data.map((language) => language.name)
+          : []
+      })
     },
     toggleShowLaunchDialog(forceUpdate = false) {
       if (forceUpdate) this.callForData()

@@ -17,9 +17,7 @@
               />
               <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                 <template #content>
-                  <v-icon class="mr-1">mdi-web</v-icon>{{ formValues.template.languageShortCode }}
-                  <div class="vishing-campaign-modal__badge-info-divider" />
-                  {{ formValues.template.narratorGender }}
+                  <v-icon class="mr-1">mdi-web</v-icon>{{ formValues.template.language }}
                 </template>
               </Badge>
             </div>
@@ -39,7 +37,7 @@
                 <span class="vishing-campaign-modal__summary__template-step-name">
                   {{ getStepName(step, index) }}
                 </span>
-                <Badge v-if="step.isFailStep" color="#B83A3A" text="Vishing Step" />
+                <Badge v-if="step.isVishingStep" color="#B83A3A" text="Vishing Step" />
                 <div v-else />
               </div>
             </div>
