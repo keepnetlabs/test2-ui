@@ -234,8 +234,7 @@ export default {
             type: 'text',
             fixed: 'left',
             width: 240,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            filterableType: 'text'
           },
           {
             property: 'targetUsers',
