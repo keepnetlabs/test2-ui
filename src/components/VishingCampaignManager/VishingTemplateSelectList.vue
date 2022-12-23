@@ -61,7 +61,7 @@
             <div
               class="pane"
               :style="{
-                maxWidth: '400px !important',
+                width: '400px !important',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"
@@ -108,11 +108,12 @@
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   <div class="template-list--item__narrator">
                     <v-icon color="#757575">mdi-web</v-icon>
-                    <span class="template-list--item__language">{{ item.languageShortCode }}</span>
+                    <span class="template-list--item__language">{{ item.language }}</span>
+                    <!-- <span class="template-list--item__language">{{ item.languageShortCode }}</span>
                     <span class="template-list--item__divider">|</span>
                     <span class="template-list--item__narrator-gender">{{
                       item.narratorGender
-                    }}</span>
+                    }}</span> -->
                   </div>
                 </div>
               </div>
@@ -184,6 +185,10 @@ export default {
     templateResourceId: {
       type: String,
       default: ''
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   directives: {
@@ -203,7 +208,6 @@ export default {
       template: null,
       defaultListData: [],
       totalNumberOfPages: 1,
-      languages: ['Turkish - Female', 'Turkish - Male'],
       difficulties: [
         { text: 'Easy', value: 'Easy' },
         { text: 'Medium', value: 'Medium' },
@@ -386,11 +390,18 @@ export default {
       this.loadingTemplatePreview = true
       this.$emit('selectedTemplateResourceId', item.resourceId)
       if (isInitial) {
-        this.$emit('initialTemplateId', item.id)
+        this.$emit('initialTemplateId', item.resourceId)
       }
       getVishingTemplatePreview(item.resourceId)
         .then((response) => {
           this.template = response.data.data
+          const invalidDialingNoticeStepIndex = this.template.steps.findIndex(
+            (step) => step.order === 0
+          )
+          if (invalidDialingNoticeStepIndex !== -1) {
+            this.template.steps.splice(invalidDialingNoticeStepIndex, 1)
+          }
+          this.$emit('selectedTemplateChange', { ...item, ...this.template })
         })
         .finally(() => {
           this.loadingTemplatePreview = false
