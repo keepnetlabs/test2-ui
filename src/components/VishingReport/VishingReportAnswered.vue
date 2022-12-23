@@ -68,7 +68,7 @@ export default {
       CONSTANTS: {
         id: 'vishing-report-answered-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_REPORT_ANSWERED_TABLE,
@@ -175,12 +175,13 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      getVishingReportAnswered(this.id)
+      getVishingReportAnswered(this.axiosPayload, this.id)
         .then((response) => {
-          this.tableData = response.data.data.results
-          this.serverSideProps.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = response.data.data.totalNumberOfPages
-          this.serverSideProps.pageNumber = response.data.data.pageNumber
+          const { data: { data = {} } = {} } = response || {}
+          this.tableData = data.results
+          this.serverSideProps.totalNumberOfRecords = data.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = data.totalNumberOfPages
+          this.serverSideProps.pageNumber = data.pageNumber
         })
         .catch(() => {
           this.tableData = []
