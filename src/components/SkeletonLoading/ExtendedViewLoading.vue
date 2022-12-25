@@ -20,16 +20,12 @@ export default {
   },
   computed: {
     getType() {
-      switch (this.size) {
-        case 'small':
-          return 'table-heading,list-item,list-item,list-item'
-        case 'medium':
-          return 'table-heading,list-item,list-item,list-item,list-item,list-item'
-        case 'big':
-          return 'table-heading,list-item,list-item,list-item,list-item,list-item,list-item,list-item'
-        default:
-          return 'table-heading,list-item,list-item,list-item'
-      }
+      if (this.size === 'small') return 'table-heading,list-item,list-item,list-item'
+      if (this.size === 'medium')
+        return 'table-heading,list-item,list-item,list-item,list-item,list-item'
+      if (this.size === 'big')
+        return 'table-heading,list-item,list-item,list-item,list-item,list-item,list-item,list-item'
+      return 'table-heading,list-item,list-item,list-item'
     }
   }
 }

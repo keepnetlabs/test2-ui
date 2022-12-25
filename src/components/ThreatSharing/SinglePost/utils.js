@@ -1,61 +1,34 @@
 export const getTlcClass = (item) => {
-  switch (item) {
-    case 'wKBhLuFZ46y9':
-      return 'TLP-GREEN'
-    case 'RhHwRcLlZxek':
-      return 'TLP-AMBER'
-    case 'YpUZxVhYJlKg':
-      return 'TLP-RED'
-    case 'wFlYRDMW946M':
-      return 'TLP-WHITE'
-    default:
-      break
-  }
+  if (item === 'wKBhLuFZ46y9') return 'TLP-GREEN'
+  if (item === 'RhHwRcLlZxek') return 'TLP-AMBER'
+  if (item === 'YpUZxVhYJlKg') return 'TLP-RED'
+  if (item === 'wFlYRDMW946M') return 'TLP-WHITE'
+  return ''
 }
 
 export const getTlcTooltip = (item) => {
-  switch (item) {
-    case 'wKBhLuFZ46y9':
-      return 'Limited disclosure, restricted to the community.'
-    case 'RhHwRcLlZxek':
-      return 'Limited disclosure, restricted to participants’ organizations.'
-    case 'YpUZxVhYJlKg':
-      return 'Not for disclosure, restricted to participants only.'
-    case 'wFlYRDMW946M':
-      return 'Disclosure is not limited.'
-    default:
-      break
-  }
+  if (item === 'wKBhLuFZ46y9') return 'Limited disclosure, restricted to the community.'
+  if (item === 'RhHwRcLlZxek')
+    return 'Limited disclosure, restricted to participants’ organizations.'
+  if (item === 'YpUZxVhYJlKg') return 'Not for disclosure, restricted to participants only.'
+  if (item === 'wFlYRDMW946M') return 'Disclosure is not limited.'
+  return ''
 }
 
 export const getTlcName = (item) => {
-  switch (item) {
-    case 'wKBhLuFZ46y9':
-      return 'TLP: GREEN'
-    case 'RhHwRcLlZxek':
-      return 'TLP: AMBER'
-    case 'YpUZxVhYJlKg':
-      return 'TLP: RED'
-    case 'wFlYRDMW946M':
-      return 'TLP: WHITE'
-    default:
-      break
-  }
+  if (item === 'wKBhLuFZ46y9') return 'TLP: GREEN'
+  if (item === 'RhHwRcLlZxek') return 'TLP: AMBER'
+  if (item === 'YpUZxVhYJlKg') return 'TLP: RED'
+  if (item === 'wFlYRDMW946M') return 'TLP: WHITE'
+  return ''
 }
 
 export const findCategory = (id) => {
-  switch (id) {
-    case 'Ps0SSyl7rVNe':
-      return 'Malicious'
-    case 'bEuAD1pdbRXF':
-      return 'Non-Malicious'
-    case 'NGLCc9UCxJvw':
-      return 'Phishing'
-    case 'Gwt67E1ftYtr':
-      return 'Spam'
-    default:
-      return ''
-  }
+  if (id === 'Ps0SSyl7rVNe') return 'Malicious'
+  if (id === 'bEuAD1pdbRXF') return 'Non-Malicious'
+  if (id === 'NGLCc9UCxJvw') return 'Phishing'
+  if (id === 'Gwt67E1ftYtr') return 'Spam'
+  return ''
 }
 
 export const getCategories = () => [

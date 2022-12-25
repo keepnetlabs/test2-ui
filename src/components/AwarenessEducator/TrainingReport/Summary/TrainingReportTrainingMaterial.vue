@@ -102,16 +102,10 @@ export default {
       this.toggleShowPreviewDialog()
     },
     getBadgeColor(text = '') {
-      switch (text.toLowerCase()) {
-        case 'easy':
-          return '#217124'
-        case 'medium':
-          return '#2196f3'
-        case 'hard':
-          return '#f56c6c'
-        default:
-          return '#2196f3'
-      }
+      if (text.toLowerCase() === 'easy') return '#217124'
+      if (text.toLowerCase() === 'medium') return '#2196f3'
+      if (text.toLowerCase() === 'hard') return '#f56c6c'
+      return '#2196f3'
     },
     getBadgeText(text = '') {
       return text

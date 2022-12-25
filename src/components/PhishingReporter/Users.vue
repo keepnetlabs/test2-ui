@@ -333,52 +333,48 @@ export default {
       const textOutlookVersion = `Outlook version: ${outlookVersion || 'N/A'}\n`
       const textOutlookArchitecture = `Outlook architecture: ${outlookArchitecture || 'N/A'}\n`
 
-      switch (row[PROPERTY_STORE.ADDINSTATUSNAME]) {
-        case 'Online':
-          text = 'Add-in is installed and active\n'
-          text += textHKLM
-          text += textBootTime
-          text += textOutlookVersion
-          text += textOutlookArchitecture
-          text += textOS
-          break
-        case 'Inactive':
-          text = 'Addin is inactivated by user\n'
-          text += 'User is offline\n'
-          text += textHKLM
-          text += textOutlookVersion
-          text += textOutlookArchitecture
-          text += textOS
-          break
-        case 'Offline':
-          text = 'Add-in is installed\n'
-          text += 'User is offline\n'
-          text += textHKLM
-          text += textBootTime
-          text += textOutlookVersion
-          text += textOutlookArchitecture
-          text += textOS
-          break
-        case 'Disabled':
-          text = 'Add-in is installed but disabled\n'
-          text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
-          text += `Disabled time: ${
-            addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
-          }\n`
-          text += textHKLM
-          text += textBootTime
-          text += textOutlookVersion
-          text += textOutlookArchitecture
-          text += textOS
-          break
-        case 'NotInstalled':
-          text = 'Add-in has not been installed'
-          break
-        case 'N/A':
-          text = 'This user is not an active user in your active directory'
-          break
-        default:
-          break
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Online') {
+        text = 'Add-in is installed and active\n'
+        text += textHKLM
+        text += textBootTime
+        text += textOutlookVersion
+        text += textOutlookArchitecture
+        text += textOS
+      }
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Inactive') {
+        text = 'Addin is inactivated by user\n'
+        text += 'User is offline\n'
+        text += textHKLM
+        text += textOutlookVersion
+        text += textOutlookArchitecture
+        text += textOS
+      }
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Offline') {
+        text = 'Add-in is installed\n'
+        text += 'User is offline\n'
+        text += textHKLM
+        text += textBootTime
+        text += textOutlookVersion
+        text += textOutlookArchitecture
+        text += textOS
+      }
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Disabled') {
+        text = 'Add-in is installed but disabled\n'
+        text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
+        text += `Disabled time: ${
+          addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
+        }\n`
+        text += textHKLM
+        text += textBootTime
+        text += textOutlookVersion
+        text += textOutlookArchitecture
+        text += textOS
+      }
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'NotInstalled') {
+        text = 'Add-in has not been installed'
+      }
+      if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'N/A') {
+        text = 'This user is not an active user in your active directory'
       }
       return text
     },

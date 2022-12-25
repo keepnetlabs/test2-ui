@@ -1341,49 +1341,48 @@ export default {
       }
     },
     handleAddMailConfiguration(item) {
-      switch (item) {
-        case this.mailConfigurationTypes[0]:
-          this.statusGoogleWorkSpace = true
-          this.googleWorkSpaceEditData = null
-          this.isTestConnectionWorkedBefore = false
-          this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
-          break
-        case this.mailConfigurationTypes[1]:
-          this.formValues = {
-            name: null,
-            applicationId: null,
-            applicationSecret: null,
-            directoryId: null,
-            email: null,
-            allowedDomains: []
-          }
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-          this.editData = null
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.status = true
-          break
-        case this.mailConfigurationTypes[2]:
-          this.ewsFormValues = {
-            Name: null,
-            ServiceUrl: null,
-            ExchangeVersionLookupResourceId: null,
-            AccountType: 1,
-            Username: null,
-            Password: null,
-            Email: null,
-            XAnchorMailBoxHeader: false,
-            TargetGroupResourceIdList: [],
-            IsAllTargetGroupsSelected: true
-          }
-          this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
-          this.ewsEditData = null
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.ewsStatus = true
-          break
-        default:
-          break
+      if (item === this.mailConfigurationTypes[0]) {
+        this.statusGoogleWorkSpace = true
+        this.googleWorkSpaceEditData = null
+        this.isTestConnectionWorkedBefore = false
+        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+        return
+      }
+      if (item === this.mailConfigurationTypes[1]) {
+        this.formValues = {
+          name: null,
+          applicationId: null,
+          applicationSecret: null,
+          directoryId: null,
+          email: null,
+          allowedDomains: []
+        }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.editData = null
+        this.isTestConnectionWorkedBefore = false
+        this.saveButtonDisabled = false
+        this.status = true
+        return
+      }
+      if (item === this.mailConfigurationTypes[2]) {
+        this.ewsFormValues = {
+          Name: null,
+          ServiceUrl: null,
+          ExchangeVersionLookupResourceId: null,
+          AccountType: 1,
+          Username: null,
+          Password: null,
+          Email: null,
+          XAnchorMailBoxHeader: false,
+          TargetGroupResourceIdList: [],
+          IsAllTargetGroupsSelected: true
+        }
+        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
+        this.ewsEditData = null
+        this.isTestConnectionWorkedBefore = false
+        this.saveButtonDisabled = false
+        this.ewsStatus = true
+        return
       }
     },
     handleEditMailConfiguration(selectedRow) {

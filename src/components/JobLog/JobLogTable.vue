@@ -185,20 +185,12 @@ export default {
         .finally(this.setLoading)
     },
     getStatusName(status) {
-      switch (status) {
-        case 0:
-          return 'Waiting'
-        case 1:
-          return 'Started'
-        case 2:
-          return 'Working'
-        case 3:
-          return 'Finished'
-        case 4:
-          return 'Failed'
-        default:
-          return ''
-      }
+      if (status === 0) return 'Waiting'
+      if (status === 1) return 'Started'
+      if (status === 2) return 'Working'
+      if (status === 3) return 'Finished'
+      if (status === 4) return 'Failed'
+      return ''
     },
     exportJobLogData(downloadTypes) {
       //   downloadTypes.exportTypes.forEach((item) => {

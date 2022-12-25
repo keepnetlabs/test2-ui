@@ -6,11 +6,11 @@
           <v-form class="mt-8" ref="refdomainForm">
             <form-group title="Domain" sub-title="Enter a domain you want to use" hint>
               <v-text-field
+                v-bind="commonRules(true)"
                 v-model="formValues.domain"
                 outlined
                 hint=""
                 placeholder="Enter your domain"
-                v-bind="commonRules(true)"
                 required
               />
             </form-group>
@@ -83,8 +83,8 @@
             class="add-user-overlay__footer-btn-save white--text"
             color="#2196f3"
             rounded
-            @click="submit"
             :disabled="saveButtonStatus"
+            @click="submit"
           >
             {{ labels.Save }}
           </v-btn>
@@ -146,6 +146,9 @@ export default {
       return false
     }
   },
+  created() {
+    this.getTxtRecord()
+  },
   methods: {
     copyClipboard(value) {
       navigator.clipboard.writeText(value)
@@ -166,9 +169,6 @@ export default {
       }
     },
     closeDomainPopup() {
-      if (this.formValues.domain.length === 0) {
-        this.changeNewDomainPopupStatus(false)
-      }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
@@ -176,7 +176,7 @@ export default {
         }
       })
     },
-    gettxtRecord() {
+    getTxtRecord() {
       createTxtRecord().then((record) => {
         this.formValues.txtRecord = record.data.data
       })
@@ -209,42 +209,6 @@ export default {
           })
       }
     }
-  },
-  watch: {},
-  created() {
-    this.gettxtRecord()
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.name-value-container {
-  max-width: 554px;
-  background: #f1f8fe;
-  border: 1px solid #f1f8fe;
-  border-radius: 8px;
-  padding: 16px;
-  box-sizing: border-box;
-  .copy-btn {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 24px;
-    color: #2196f3;
-    cursor: pointer;
-    padding: 7px 0;
-  }
-  .text-title-container {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 21px;
-    color: #383b41;
-    p {
-      font-weight: 600;
-      font-size: 20px;
-      line-height: 24px;
-      margin: 0;
-      padding: 0;
-    }
-  }
-}
-</style>

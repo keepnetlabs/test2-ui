@@ -662,6 +662,19 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: PROPERTY_STORE.PHONENUMBER,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'PhoneNumber',
+            emptyText: 'No Data'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
@@ -740,6 +753,19 @@ export default {
             width: 300,
             filterableType: 'text',
             dbName: 'Department',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.PHONENUMBER,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'PhoneNumber',
             emptyText: 'No Data'
           },
           {
@@ -854,21 +880,22 @@ export default {
       this.selectedTableData = !selectedValues.length
     },
     getLabelCount(label) {
-      switch (label) {
-        case labels.ImportSelected:
-          let selectedValues = this.$refs.refValidateList
-            .getSelectedMultipleValues()
-            .map((item) => item.resourceId)
-          return selectedValues.length
-        case labels.ImportAll:
-          return this.mappingStatus.newUserCount + this.mappingStatus.existingUserCount
-        case 'onlyImportNewUsers':
-          return this.responsNumbers.newUserCount
-        case 'onlyUpdateExistingUsers':
-          return this.responsNumbers.existingUserCount
-        default:
-          return ''
+      if (label === labels.ImportSelected) {
+        let selectedValues = this.$refs.refValidateList
+          .getSelectedMultipleValues()
+          .map((item) => item.resourceId)
+        return selectedValues.length
       }
+      if (label === labels.ImportAll) {
+        return this.mappingStatus.newUserCount + this.mappingStatus.existingUserCount
+      }
+      if (label === 'onlyImportNewUsers') {
+        return this.responsNumbers.newUserCount
+      }
+      if (label === 'onlyUpdateExistingUsers') {
+        return this.responsNumbers.existingUserCount
+      }
+      return ''
     },
     filterStatusChange() {
       this.isShowInvalid = !this.isShowInvalid
@@ -952,31 +979,27 @@ export default {
           if (data.length) {
             customFields = data[0].customFields.map((item) => {
               const filterableProps = {}
-              switch (item.dataType.toLowerCase()) {
-                case 'string':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'email':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'number':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'boolean':
-                  filterableProps['filterableType'] = 'select'
-                  filterableProps['filterableItems'] = [
-                    { text: 'Yes', value: 1 },
-                    { text: 'No', value: 0 }
-                  ]
-                  break
-                case 'date':
-                  filterableProps['filterableType'] = 'dateOnly'
-                  break
-                case 'datetime':
-                  filterableProps['filterableType'] = 'date'
-                  break
-                default:
-                  break
+              if (item.dataType.toLowerCase() === 'string') {
+                filterableProps['filterableType'] = 'text'
+              }
+              if (item.dataType.toLowerCase() === 'email') {
+                filterableProps['filterableType'] = 'text'
+              }
+              if (item.dataType.toLowerCase() === 'number') {
+                filterableProps['filterableType'] = 'text'
+              }
+              if (item.dataType.toLowerCase() === 'boolean') {
+                filterableProps['filterableType'] = 'select'
+                filterableProps['filterableItems'] = [
+                  { text: 'Yes', value: 1 },
+                  { text: 'No', value: 0 }
+                ]
+              }
+              if (item.dataType.toLowerCase() === 'date') {
+                filterableProps['filterableType'] = 'dateOnly'
+              }
+              if (item.dataType.toLowerCase() === 'datetime') {
+                filterableProps['filterableType'] = 'date'
               }
               return {
                 property: item.name,
@@ -1370,25 +1393,20 @@ export default {
     },
     save(label) {
       let payload
-      switch (label) {
-        case labels.ImportSelected:
-          let selectedValues = this.$refs.refValidateList
-            .getSelectedMultipleValues()
-            .map((item) => item.resourceId)
-          if (!selectedValues.length) return false
-          payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
-          break
-        case labels.ImportAll:
-          payload = { ImportType: 'ImportAll' }
-          break
-        case 'onlyImportNewUsers':
-          payload = { ImportType: 'OnlyNew' }
-          break
-        case 'onlyUpdateExistingUsers':
-          payload = { ImportType: 'OnlyUpdateExisting' }
-          break
-        default:
-          return ''
+      if (label === labels.ImportSelected) {
+        let selectedValues = this.$refs.refValidateList
+          .getSelectedMultipleValues()
+          .map((item) => item.resourceId)
+        if (!selectedValues.length) return false
+        payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
+      } else if (label === labels.ImportAll) {
+        payload = { ImportType: 'ImportAll' }
+      } else if (label === 'onlyImportNewUsers') {
+        payload = { ImportType: 'OnlyNew' }
+      } else if (label === 'onlyUpdateExistingUsers') {
+        payload = { ImportType: 'OnlyUpdateExisting' }
+      } else {
+        return ''
       }
       importTmpUsers(payload, this.excelInfo.transactionId).then(() => {
         this.saveSuccess = true

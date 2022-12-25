@@ -112,32 +112,28 @@ export function createCustomFieldColumns(customFields = []) {
   return customFields.map((field) => {
     const { name, fieldDataType } = field
     const filterableProps = {}
-    switch (fieldDataType.toLowerCase()) {
-      case 'string':
-        filterableProps['filterableType'] = 'text'
-        break
-      case 'email':
-        filterableProps['filterableType'] = 'text'
-        break
-      case 'number':
-        filterableProps['filterableType'] = 'text'
-        break
-      case 'boolean':
-        filterableProps['filterableType'] = 'select'
-        filterableProps['filterableItems'] = [
-          { text: 'Yes', value: 1 },
-          { text: 'No', value: 0 }
-        ]
-        break
-      case 'date':
-        filterableProps['filterableType'] = 'dateOnly'
-        filterableProps['type'] = 'date'
-        break
-      case 'datetime':
-        filterableProps['filterableType'] = 'date'
-        break
-      default:
-        break
+    if (fieldDataType.toLowerCase() === 'string') {
+      filterableProps['filterableType'] = 'text'
+    }
+    if (fieldDataType.toLowerCase() === 'email') {
+      filterableProps['filterableType'] = 'text'
+    }
+    if (fieldDataType.toLowerCase() === 'number') {
+      filterableProps['filterableType'] = 'text'
+    }
+    if (fieldDataType.toLowerCase() === 'boolean') {
+      filterableProps['filterableType'] = 'select'
+      filterableProps['filterableItems'] = [
+        { text: 'Yes', value: 1 },
+        { text: 'No', value: 0 }
+      ]
+    }
+    if (fieldDataType.toLowerCase() === 'date') {
+      filterableProps['filterableType'] = 'dateOnly'
+      filterableProps['type'] = 'date'
+    }
+    if (fieldDataType.toLowerCase() === 'datetime') {
+      filterableProps['filterableType'] = 'date'
     }
     return {
       property: name,

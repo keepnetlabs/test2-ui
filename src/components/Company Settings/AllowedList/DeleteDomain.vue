@@ -100,26 +100,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.domain-delete-text-container {
-  color: #383b41;
-  font-weight: 400;
-  .delete-title {
-    font-size: 13px;
-    line-height: 18px;
-  }
-  .confirm-label {
-    font-size: 14px;
-    line-height: 21px;
-    width: 40%;
-  }
-  .confirm-input {
-    width: 62%;
-    .v-text-field .v-input__control {
-      height: 0 !important;
-      min-height: 0 !important;
-    }
-  }
-}
-</style>

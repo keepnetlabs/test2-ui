@@ -2,6 +2,7 @@ export const defaultFieldMappings = [
   { customFieldResourceId: 'Email', ldapResourceId: '' },
   { customFieldResourceId: 'FirstName', ldapResourceId: '' },
   { customFieldResourceId: 'LastName', ldapResourceId: '' },
+  { customFieldResourceId: 'PhoneNumber', ldapResourceId: '' },
   { customFieldResourceId: 'Department', ldapResourceId: '' }
 ]
 

@@ -119,32 +119,38 @@ export default {
       return rowActions
     },
     getIconName() {
-      switch (this.actionStatus) {
-        case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.CANCEL:
-          return 'mdi-text-box'
-        case ACTION_STATUSES.RUNNING:
-          return 'mdi-stop'
-        case ACTION_STATUSES.IDLE:
-          return 'mdi-send'
-        default:
-          return 'mdi-eye'
+      if ([ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL].includes(this.actionStatus)) {
+        return 'mdi-text-box'
       }
+
+      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+        return 'mdi-stop'
+      }
+
+      if (this.actionStatus === ACTION_STATUSES.IDLE) {
+        return 'mdi-send'
+      }
+
+      return 'mdi-eye'
     },
     getTooltipText() {
-      switch (this.actionStatus) {
-        case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.CANCEL:
-          return labels.ViewReport
-        case ACTION_STATUSES.IDLE:
-          return labels.Launch
-        case ACTION_STATUSES.DELETE:
-          return labels.Delete
-        case ACTION_STATUSES.RUNNING:
-          return labels.Stop
-        default:
-          return labels.Preview
+      if ([ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL].includes(this.actionStatus)) {
+        return labels.ViewReport
       }
+
+      if (this.actionStatus === ACTION_STATUSES.IDLE) {
+        return labels.Launch
+      }
+
+      if (this.actionStatus === ACTION_STATUSES.DELETE) {
+        return labels.Delete
+      }
+
+      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+        return labels.Stop
+      }
+
+      return labels.Preview
     }
   },
   methods: {
@@ -159,16 +165,13 @@ export default {
         })
       }
       let eventName = act.action
-      switch (act.action) {
-        case ACTION_STATUSES.IDLE:
-          eventName = 'on-launch'
-          break
-        case ACTION_STATUSES.RUNNING:
-          eventName = 'on-stop'
-          break
-        default:
-          eventName = act.action
+
+      if (act.action === ACTION_STATUSES.IDLE) {
+        eventName = 'on-launch'
+      } else if (act.action === ACTION_STATUSES.RUNNING) {
+        eventName = 'on-stop'
       }
+
       this.$emit(eventName, this.scope.row)
     }
   }
