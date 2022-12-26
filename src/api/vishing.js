@@ -120,72 +120,8 @@ export function exportVishingAnsweredUsers(payload = {}, resourceId = '') {
   })
 }
 
-export function getVishingReportDialedNumber(id) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        data: {
-          data: {
-            pageNumber: 1,
-            pageSize: 10,
-            totalNumberOfPages: 1,
-            totalNumberOfRecords: 6,
-            results: [
-              {
-                resourceId: '1',
-                firstName: 'Bruce',
-                lastName: 'Wayne',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Executives',
-                callDate: '14/06/2022 06:49:33',
-                callDuration: '00:02:00'
-              },
-              {
-                resourceId: '2',
-                firstName: 'Clark',
-                lastName: 'Kent',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Reporters',
-                callDate: '14/06/2022 06:49:33',
-                callDuration: '00:02:00'
-              },
-              {
-                resourceId: '3',
-                firstName: 'Peter',
-                lastName: 'Parker',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Photography',
-                callDate: '14/06/2022 06:49:33',
-                callDuration: '00:02:00'
-              },
-              {
-                resourceId: '4',
-                firstName: 'Tony',
-                lastName: 'Stark',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Executives',
-                callDate: '14/06/2022 06:49:33',
-                callDuration: '00:02:00'
-              },
-              {
-                resourceId: '5',
-                firstName: 'Steve',
-                lastName: 'Rogers',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Security',
-                callDate: '14/06/2022 06:49:33',
-                callDuration: '00:02:00'
-              }
-            ]
-          },
-          status: 'SUCCESS',
-          message: 'Resource retrieved',
-          validationMessages: []
-        }
-      })
-    }, 1000)
-  })
+export function getVishingReportDialedNumber(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/dialed-number/search`, payload)
 }
 
 export function getVishingReportNoResponse(id) {
