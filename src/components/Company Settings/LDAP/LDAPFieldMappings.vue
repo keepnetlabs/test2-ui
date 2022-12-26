@@ -87,7 +87,6 @@ export default {
           required: false,
           customFieldResourceId: cField.resourceId
         }))
-
         const mappedHeaders = [
           ...this.fieldMappings.map((item) => ({
             name:
@@ -169,7 +168,11 @@ export default {
       })
       if (findedFieldMappingIndex !== -1) {
         if (item.name === 'None Selected') {
-          if (['LastName', 'Department', 'FirstName', 'Email'].includes(item?.header?.name)) {
+          if (
+            ['LastName', 'Department', 'FirstName', 'Email', 'PhoneNumber'].includes(
+              item?.header?.name
+            )
+          ) {
             this.fieldMappings[findedFieldMappingIndex].ldapFieldResourceId = ''
           } else {
             this.fieldMappings.splice(findedFieldMappingIndex, 1)

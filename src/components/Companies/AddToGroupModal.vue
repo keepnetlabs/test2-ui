@@ -4,8 +4,8 @@
     icon="mdi-account-multiple-plus"
     :title="title"
     subtitle="Select groups to add companies to"
-    size="ultraMaximum"
-    maxHeightSize="auto"
+    custom-size="900"
+    max-height-size="auto"
     class-name="add-to-group-modal"
     title-id="text--company-add-to-group-popup-title"
     subtitle-id="text--company-add-to-group-delete-popup-subtitle"
@@ -111,7 +111,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 130
+            width: 160
           },
           {
             property: 'createTime',
@@ -121,7 +121,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 212,
             overrideWidth: true,
             filterableType: 'date'
           }

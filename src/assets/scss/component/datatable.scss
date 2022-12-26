@@ -468,7 +468,7 @@
           width: 100%;
           padding-left: 24px;
 
-          @media (max-width:1023px) {
+          @media (max-width:1025px) {
             flex-direction: column;
           }
           &-disable{
@@ -515,7 +515,7 @@
               padding-top: 13px;
             }
 
-            @media (max-width:1023px) {
+            @media (max-width:1025px) {
               margin-top: 12px
             }
           }

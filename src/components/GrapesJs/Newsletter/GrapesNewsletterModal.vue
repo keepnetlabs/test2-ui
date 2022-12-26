@@ -174,29 +174,23 @@ export default {
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (droppedComponent && block.attributes && block.attributes.customId === 'grapesForm') {
           droppedComponent.components().forEach((inner) => {
-            if (
-              inner &&
-              inner.find('label') &&
-              inner.find('label')[0] &&
-              inner.find('label')[0].view
-            ) {
-              switch (inner.find('label')[0].view.el.textContent) {
-                case 'Name':
-                  inner.find('input')[0].addAttributes({ name: 'Name' })
-                  break
-                case 'Email':
-                  inner.find('input')[0].addAttributes({ name: 'Email' })
-                  break
-                case 'Gender':
-                  inner.find('input')[0].addAttributes({ name: 'Male' })
-                  inner.find('input')[1].addAttributes({ name: 'Female' })
-                  break
-                case 'Message':
-                  inner.find('textarea')[0].addAttributes({ name: 'Message' })
-                  break
-                default:
-                  break
-              }
+            if (!inner?.find('label')?.[0]?.view) return
+            if (inner.find('label')[0].view.el.textContent === 'Name') {
+              inner.find('input')[0].addAttributes({ name: 'Name' })
+              return
+            }
+            if (inner.find('label')[0].view.el.textContent === 'Email') {
+              inner.find('input')[0].addAttributes({ name: 'Email' })
+              return
+            }
+            if (inner.find('label')[0].view.el.textContent === 'Gender') {
+              inner.find('input')[0].addAttributes({ name: 'Male' })
+              inner.find('input')[1].addAttributes({ name: 'Female' })
+              return
+            }
+            if (inner.find('label')[0].view.el.textContent === 'Message') {
+              inner.find('textarea')[0].addAttributes({ name: 'Message' })
+              return
             }
           })
         }
@@ -557,7 +551,7 @@ export default {
       this.onDragStop()
       this.setLinkType()
       this.editor.on('component:drag:end', (droppedComponent) => {
-        const el = droppedComponent?.target.getEl()
+        const el = droppedComponent?.target?.getEl()
         if (
           el.id.includes('outlook-button-href-id') &&
           el.parentElement.constructor.name !== 'HTMLSpanElement'
@@ -749,8 +743,12 @@ export default {
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
       const doc = new DOMParser().parseFromString(html, 'text/html')
+      const docId = doc.body.id
       this.editor.setComponents(doc.children[0].outerHTML)
       this.editor.getWrapper().setStyle(doc.body.style.cssText)
+      this.editor.getWrapper().addAttributes({
+        id: docId
+      })
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         let el
@@ -906,7 +904,7 @@ export default {
           htmlElement.insertAdjacentElement('afterbegin', head)
         } else {
           const newHtmlDOM = document.createElement('html')
-          newHtmlDOM.innerHTML = htmlDOM.innerHTML
+          newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
           newHtmlDOM.insertAdjacentElement('afterbegin', head)
           return newHtmlDOM.outerHTML
         }

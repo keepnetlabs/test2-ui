@@ -3,11 +3,12 @@ import { mount } from '@vue/test-utils'
 import Vuex from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-
+import { customVuetify as vuetify } from '../utils'
 export default class MFACantLogin {
   constructor(localVue, propsData) {
     this.wrapper = mount(MFACantLoginComponent, {
       localVue,
+      vuetify,
       store: new Vuex.Store({
         modules: {
           common: {

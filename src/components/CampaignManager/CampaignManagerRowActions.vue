@@ -114,54 +114,48 @@ export default {
         action: 'on-edit',
         disabled: !this.getCampaignManagerParentUpdatePermissions
       }
-      switch (this.actionStatus) {
-        case ACTION_STATUSES.IDLE:
-          copyOfRowActions.push(editItem)
-          copyOfRowActions.push(newInstanceItem)
-          copyOfRowActions.push(duplicateItem)
-          copyOfRowActions.push(deleteItem)
-          break
-        case ACTION_STATUSES.RUNNING:
-          copyOfRowActions.push(editItem)
-          copyOfRowActions.push(newInstanceItem)
-          copyOfRowActions.push(duplicateItem)
-          copyOfRowActions.push(deleteItem)
-          break
-        case ACTION_STATUSES.COMPLETE:
-          copyOfRowActions.push(editItem)
-          copyOfRowActions.push(newInstanceItem)
-          copyOfRowActions.push(deleteItem)
-          break
-        case ACTION_STATUSES.CANCEL:
-          copyOfRowActions.push(editItem)
-          copyOfRowActions.push(newInstanceItem)
-          copyOfRowActions.push(deleteItem)
-          break
-        default:
-          copyOfRowActions.push(editItem)
-          copyOfRowActions.push(deleteItem)
-          break
+
+      if (this.actionStatus === ACTION_STATUSES.IDLE) {
+        copyOfRowActions.push(editItem)
+        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(duplicateItem)
+        copyOfRowActions.push(deleteItem)
+      } else if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+        copyOfRowActions.push(editItem)
+        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(duplicateItem)
+        copyOfRowActions.push(deleteItem)
+      } else if (this.actionStatus === ACTION_STATUSES.COMPLETE) {
+        copyOfRowActions.push(editItem)
+        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(deleteItem)
+      } else if (this.actionStatus === ACTION_STATUSES.CANCEL) {
+        copyOfRowActions.push(editItem)
+        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(deleteItem)
+      } else {
+        copyOfRowActions.push(editItem)
+        copyOfRowActions.push(deleteItem)
       }
+
       return copyOfRowActions
     }
   },
   methods: {
     handleItemClick(act = {}) {
       let eventName = ''
-      switch (act.action) {
-        case ACTION_STATUSES.RUNNING:
-          eventName = 'on-pause'
-          break
-        case ACTION_STATUSES.PAUSE:
-          eventName = 'on-run'
-          break
-        case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.IDLE:
-        case ACTION_STATUSES.CANCEL:
-          eventName = 'on-launch'
-          break
-        default:
-          eventName = act.action
+      if (act.action === ACTION_STATUSES.RUNNING) {
+        eventName = 'on-pause'
+      } else if (act.action === ACTION_STATUSES.PAUSE) {
+        eventName = 'on-run'
+      } else if (
+        [ACTION_STATUSES.COMPLETE, ACTION_STATUSES.IDLE, ACTION_STATUSES.CANCEL].includes(
+          act.action
+        )
+      ) {
+        eventName = 'on-launch'
+      } else {
+        eventName = act.action
       }
       this.$emit(eventName, this.scope.row)
     }

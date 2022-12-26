@@ -15,6 +15,9 @@ export function createAllowListList(payload) {
       'Content-Type': 'multipart/form-data',
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    },
+    snackbar: {
+      hideError: true
     }
   })
 }
