@@ -130,67 +130,8 @@ export function exportVishingReportDialedNumbers(payload = {}, resourceId = '') 
   })
 }
 
-export function getVishingReportNoResponse(id) {
-  // TODO: Add correct endpoint
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        data: {
-          data: {
-            pageNumber: 1,
-            pageSize: 10,
-            totalNumberOfPages: 1,
-            totalNumberOfRecords: 6,
-            results: [
-              {
-                resourceId: '1',
-                firstName: 'Bruce',
-                lastName: 'Wayne',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Executives',
-                callDate: '14/06/2022 06:49:33'
-              },
-              {
-                resourceId: '2',
-                firstName: 'Clark',
-                lastName: 'Kent',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Reporters',
-                callDate: '14/06/2022 06:49:33'
-              },
-              {
-                resourceId: '3',
-                firstName: 'Peter',
-                lastName: 'Parker',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Photography',
-                callDate: '14/06/2022 06:49:33'
-              },
-              {
-                resourceId: '4',
-                firstName: 'Tony',
-                lastName: 'Stark',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Executives',
-                callDate: '14/06/2022 06:49:33'
-              },
-              {
-                resourceId: '5',
-                firstName: 'Steve',
-                lastName: 'Rogers',
-                phoneNumber: '+90 545 678 95 64',
-                department: 'Security',
-                callDate: '14/06/2022 06:49:33'
-              }
-            ]
-          },
-          status: 'SUCCESS',
-          message: 'Resource retrieved',
-          validationMessages: []
-        }
-      })
-    }, 1000)
-  })
+export function getVishingReportNoResponse(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/no-response/search`, payload)
 }
 
 export function getPhoneNumbers() {

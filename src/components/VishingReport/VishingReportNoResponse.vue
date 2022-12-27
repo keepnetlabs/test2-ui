@@ -68,7 +68,7 @@ export default {
       CONSTANTS: {
         id: 'vishing-report-no-response-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHING_REPORT_NO_RESPONSE_TABLE,
@@ -160,7 +160,21 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.isLoading = true
+      getVishingReportNoResponse(this.axiosPayload, this.id)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response || {}
+          this.tableData = data.results
+          this.serverSideProps.totalNumberOfRecords = data.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = data.totalNumberOfPages
+          this.serverSideProps.pageNumber = data.pageNumber
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(this.setLoading)
+    },
     exportVishingReportUsers() {}
   }
 }
