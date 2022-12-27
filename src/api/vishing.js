@@ -124,6 +124,12 @@ export function getVishingReportDialedNumber(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/dialed-number/search`, payload)
 }
 
+export function exportVishingReportDialedNumbers(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/dialed-number/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export function getVishingReportNoResponse(id) {
   // TODO: Add correct endpoint
   return new Promise((res) => {
