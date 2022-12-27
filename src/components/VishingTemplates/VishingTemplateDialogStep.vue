@@ -211,7 +211,7 @@ export default {
     },
     onPauseDurationChange(val) {
       if (!val || /\d+$/.test(val)) {
-        this.$emit('input', { ...this.value, duration: parseInt(val) })
+        this.$emit('input', { ...this.value, duration: val.length ? parseInt(val) : null })
       }
     },
     onTextToSpeechChange(val) {
@@ -219,7 +219,7 @@ export default {
     },
     onDigitCountChange(val) {
       if (!val || /\d+$/.test(val)) {
-        this.$emit('input', { ...this.value, inputDigit: parseInt(val) })
+        this.$emit('input', { ...this.value, inputDigit: val.length ? parseInt(val) : null })
       }
     },
     onVishingStepChange(val) {

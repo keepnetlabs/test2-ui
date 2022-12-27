@@ -97,6 +97,8 @@
                   item-value="value"
                   outlined
                   persistent-hint
+                  hint="*Required"
+                  :rules="[(v) => Validations.required(v, labels.Required)]"
                   class="filter-field-scenarios"
                   style="padding-right: 4px !important; padding-left: 4px !important;"
                 />
@@ -283,6 +285,8 @@ import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
 import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import * as Validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
 
 const initialFormValues = {
   resourceId: null,
@@ -292,7 +296,7 @@ const initialFormValues = {
   difficulty: 1,
   languageResourceId: 'WNZt0sCVCWB3',
   vishingLanguage: 'Turkish - Female',
-  vishingLanguageResourceId: 'e3bb63b95abf',
+  vishingLanguageResourceId: '0c2f30ce5db5',
   availableForRequests: [],
   dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
@@ -352,6 +356,8 @@ export default {
   },
   data() {
     return {
+      Validations,
+      labels,
       isVishingStepSelected: false,
       editItemsDisabled: false,
       step: 1,
@@ -529,6 +535,16 @@ export default {
           value: language.resourceId,
           text: language.name
         }))
+        if (!this.isEdit && !this.isDuplicate) {
+          const englishFemaleIndex = this.vishingLanguageItems.findIndex(
+            (item) => item.text === 'Turkish - Female'
+          )
+          if (englishFemaleIndex) {
+            this.formValues.vishingLanguageResourceId = this.vishingLanguageItems[
+              englishFemaleIndex
+            ].value
+          }
+        }
       }
     }
   },
