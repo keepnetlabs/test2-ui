@@ -73,6 +73,12 @@
             @inputFile="onFileChanged"
             @on-clear="onClearFile"
           />
+          <CustomError
+            class="mb-6"
+            style="margin-top: 2px;"
+            :isValid="!fileUploadErrorText"
+            :errorMessage="fileUploadErrorText"
+          />
         </div>
         <FormGroup
           v-if="value.inputType === 'TextToSpeech'"
@@ -86,6 +92,7 @@
             :max-length="500"
             entity-name="Text to speech"
             initialPlaceholder="Enter text here"
+            required
             @input="onTextToSpeechChange"
           />
         </FormGroup>
@@ -119,6 +126,8 @@ import labels from '@/model/constants/labels'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AudioPlayer from '@/components/AudioPlayer'
+import CustomError from '@/components/CustomError'
+
 export default {
   name: 'VishingTemplateDialogStep',
   components: {
@@ -126,7 +135,8 @@ export default {
     FormGroup,
     InputDescription,
     KFileUpload,
-    AudioPlayer
+    AudioPlayer,
+    CustomError
   },
   emits: ['removeStep'],
   props: {
@@ -181,6 +191,7 @@ export default {
   },
   data() {
     return {
+      fileUploadErrorText: '',
       durationRules: [
         (v) => (v === 0 ? true : validations.required(v, labels.Required)),
         (v) => (v >= 0 && v <= 10) || 'Duration must be between 0 and 10 seconds'
@@ -220,7 +231,9 @@ export default {
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
         this.$emit('input', { ...this.value, content: null, inputUrl: null })
+        this.fileUploadErrorText = `Audio file can't be empty.`
       } else {
+        this.fileUploadErrorText = ''
         this.$emit('input', {
           ...this.value,
           inputUrl: null,
@@ -229,6 +242,7 @@ export default {
       }
     },
     onClearFile() {
+      this.fileUploadErrorText = `Audio file can't be empty.`
       this.$emit('input', { ...this.value, content: null, inputUrl: null })
     }
   }

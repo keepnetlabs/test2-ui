@@ -1,4 +1,4 @@
-<!-- TODO: add this line to DataTable v-if="getEmailTemplatesSearchPermissions" -->
+<!-- TODO: add this line to DataTable v-if="getVishingTemplatesSearchPermissions" -->
 <template>
   <KContainer tabless id="vishing-templates">
     <VishingTemplatePreview
@@ -264,42 +264,36 @@ export default {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview'
-            // TODO: Add permissions
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
+            // disabled: !this.$store.getters['permissions/getVishingTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit'
-            // TODO: Add permissions
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
+            // disabled: !this.$store.getters['permissions/getVishingTemplatesEditPermissions']
           },
           {
             name: labels.FastLaunch,
             icon: 'mdi-send',
             action: 'handleFastLaunch'
-            // TODO: Add permissions
             // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'disable'
-            // TODO: Add permissions
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+            // disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction'
-            // TODO: Add permissions
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
+            // disabled: !this.$store.getters['permissions/getVishingTemplatesDeletePermissions']
           }
         ],
         downloadButton: {
           show: true
-          // TODO: Add permissions
-          // disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          // disabled: !this.$store.getters['permissions/getVishingTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -318,8 +312,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Vishing Template',
           id: 'btn-add--vishingTemplates'
-          // TODO: Add permissions
-          // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          // disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
@@ -395,7 +388,6 @@ export default {
       })
     },
     callForData() {
-      // TODO: Add permissions
       // if (this.getEmailTemplatesSearchPermissions) {
       this.isLoading = true
       getVishingTemplates(this.axiosPayload)
@@ -448,7 +440,6 @@ export default {
     },
     handleFastLaunch(row) {
       this.selectedTemplate = row
-      // TODO: Add Fast Launch logic here
     }
   }
 }

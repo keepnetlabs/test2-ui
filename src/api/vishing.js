@@ -51,8 +51,12 @@ export function getVishingCampaigns(payload = {}) {
   return vishingRequest.post('/vishing-campaign/search', payload)
 }
 
-export function deleteVishingCampaign(resourceId) {
-  return vishingRequest.delete(`vishing-campaign/${resourceId}`, {
+export function getVishingCampaign(resourceId) {
+  return vishingRequest.get(`/vishing-campaign/${resourceId}`)
+}
+
+export function createVishingCampaign(payload = {}) {
+  return vishingRequest.post('/vishing-campaign', payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -63,8 +67,8 @@ export function updateVishingCampaign(payload = {}, resourceId) {
   })
 }
 
-export function createVishingCampaign(payload = {}) {
-  return vishingRequest.post('/vishing-campaign', payload, {
+export function deleteVishingCampaign(resourceId) {
+  return vishingRequest.delete(`vishing-campaign/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -93,8 +97,8 @@ export function launchVishingCampaign(resourceId = '') {
   )
 }
 
-export function getVishingCampaign(resourceId) {
-  return vishingRequest.get(`/vishing-campaign/${resourceId}`)
+export function getVishingCampaignDistributionCalculation(payload = {}) {
+  return vishingRequest.post(`/vishing-campaign/calculate-distribution`, payload)
 }
 
 export function getVishingReportSummary(resourceId = '') {
@@ -114,6 +118,7 @@ export function exportVishingUsers(payload = {}, resourceId = '') {
 export function getVishingReportAnswered(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/answered/search`, payload)
 }
+
 export function exportVishingAnsweredUsers(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/answered/export`, payload, {
     responseType: 'blob'
