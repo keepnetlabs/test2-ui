@@ -39,25 +39,29 @@
     letter-spacing: normal;
     color: #ffffff;
   }
-
-  .add-step-menu-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-width: 300px;
+}
+.add-step-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  width:554px;
+  border-radius: 8px;
+  @media (max-width: 768px) {
+    width: 300px;
   }
+}
 
-  .add-step-menu-item__text {
-    font-weight: 400;
-    font-size: 14px;
-    margin-right: 1rem;
-  }
+.add-step-menu-item__text {
+  font-weight: 400;
+  font-size: 14px;
+  margin-right: 1rem;
+}
 
-  .add-step-menu-item__description {
-    color: #757575;
-    font-weight: 400;
-    font-size: 12px;
-  }
+.add-step-menu-item__description {
+  color: #757575;
+  font-weight: 400;
+  font-size: 12px;
 }
 
 #vishing-template-add-step-button:disabled {
