@@ -363,7 +363,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         empty: {
@@ -470,7 +470,6 @@ export default {
         }
       })
     },
-    handleTryAgain(row) {},
     handleStop(row) {
       this.selectedRow = row
       this.toggleShowStopDialog()
