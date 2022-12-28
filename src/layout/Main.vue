@@ -374,7 +374,7 @@
           </v-list-group>
 
           <v-list-group
-            v-if="getVishingLeftMenuPermissions || true"
+            v-if="getVishingLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
@@ -387,7 +387,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="getVishingTemplatesLeftMenuPermissions || true"
+              v-if="getVishingTemplatesLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -400,7 +400,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getVishingCampaignManagerLeftMenuPermissions || true"
+              v-if="getVishingCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">

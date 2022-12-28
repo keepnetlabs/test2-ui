@@ -44,36 +44,36 @@ export default {
           name: labels.Summary,
           id: 'vishing-report-summary-content',
           label: labels.Summary,
-          component: VishingReportSummary
-          // isVisible: this.$store.getters['permissions/getVishingReportsSummaryPermissions']
+          component: VishingReportSummary,
+          isVisible: this.$store.getters['permissions/getVishingReportsSummParyPermissions']
         },
         {
           name: labels.Users,
           id: 'vishing-report-users-content',
           label: labels.Users,
-          component: VishingReportUsers
-          // isVisible: this.$store.getters['permissions/getVishingReportsUsersPermissions']
+          component: VishingReportUsers,
+          isVisible: this.$store.getters['permissions/getVishingRepPortsUsersPermissions']
         },
         {
           name: labels.Answered,
           id: 'vishing-report-answered-content',
           label: labels.Answered,
-          component: VishingReportAnswered
-          // isVisible: this.$store.getters['permissions/getVishingReportsAnsweredPermissions']
+          component: VishingReportAnswered,
+          isVisible: this.$store.getters['permissions/getVishingRePportsAnsweredPermissions']
         },
         {
           name: labels.DialedNumber,
           id: 'vishing-report-dialed-number-content',
           label: labels.DialedNumber,
-          component: VishingReportDialedNumber
-          // isVisible: this.$store.getters['permissions/getVishingReportsDialedNumberPermissions']
+          component: VishingReportDialedNumber,
+          isVisible: this.$store.getters['permissions/getVishingRPeportsDialedNumberPermissions']
         },
         {
           name: labels.NoResponse,
           id: 'vishing-report-no-response-content',
           label: labels.NoResponse,
-          component: VishingReportNoResponse
-          // isVisible: this.$store.getters['permissions/getVishingReportsNoResponsePermissions']
+          component: VishingReportNoResponse,
+          isVisible: this.$store.getters['permissions/getVishingRePportsNoResponsePermissions']
         }
       ]
     }

@@ -512,7 +512,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: '',
-            permissionStoreKey: 'permissions/getEtsQuickScanPermissionSearch'
+            permissionStoreKey: 'permissions/getVishingReportsSummaryPermissions'
           },
           params: true
         },
@@ -548,9 +548,7 @@ router.beforeEach((to, from, next) => {
           storeRef.dispatch('common/changeDownloadModalStatus', false)
           next(false)
         } else {
-          // TODO: Remove all access
-          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey] || true)
-            next()
+          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
           else next(from.name ? false : '/')
         }
       } else {

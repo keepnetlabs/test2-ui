@@ -36,8 +36,18 @@
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="vishing-report-users__status-column">
-          <v-btn style="display: none;" />
-          <Badge v-bind="getStatusBadgeProps(scope.row.status)" size="medium" :col="col" />
+          <v-tooltip bottom :disabled="scope.row.status !== 'CallingError'">
+            <template v-slot:activator="{ on }">
+              <v-btn style="display: none;" />
+              <Badge
+                v-bind="getStatusBadgeProps(scope.row.status)"
+                :listeners="on"
+                size="medium"
+                :col="col"
+              />
+            </template>
+            <span>{{ getErrorMessage(scope.row) }}</span>
+          </v-tooltip>
         </div>
       </template>
     </DataTable>
@@ -205,6 +215,12 @@ export default {
           this.tableData = []
         })
         .finally(this.setLoading)
+    },
+    getErrorMessage(row = {}) {
+      if (row.status === 'CallingError') {
+        return row?.errorMessage || ''
+      }
+      return ''
     },
     exportVishingReportUsers(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

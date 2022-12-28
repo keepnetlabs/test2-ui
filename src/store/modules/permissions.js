@@ -999,7 +999,6 @@ const store = {
     SET_PERMISSIONS_LIST(state = {}, permissions = []) {
       state.permissions = permissions
     },
-    // TODO: Add vishing permissions
     SET_ALL_PERMISSIONS(state = {}) {
       const statePermissionKeys = [
         'playbookPermissions',

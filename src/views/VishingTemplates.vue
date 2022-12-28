@@ -1,4 +1,3 @@
-<!-- TODO: add this line to DataTable v-if="getVishingTemplatesSearchPermissions" -->
 <template>
   <KContainer tabless id="vishing-templates">
     <VishingTemplatePreview
@@ -25,6 +24,7 @@
       @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus"
     />
     <DataTable
+      v-if="getVishingTemplatesSearchPermissions"
       id="vishing-templates-data-table"
       ref="refVishingTemplatesList"
       is-server-side
@@ -137,6 +137,7 @@ import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVis
 import VishingTemplateModal from '@/components/VishingTemplates/VishingTemplateModal'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { useLoading } from '@/hooks/useLoading'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'VishingTemplates',
@@ -263,37 +264,37 @@ export default {
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getVishingTemplatesPreviewPermissions']
+            action: 'handlePreview',
+            disabled: !this.$store.getters['permissions/getVishingTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit'
-            // disabled: !this.$store.getters['permissions/getVishingTemplatesEditPermissions']
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getVishingTemplatesEditPermissions']
           },
           {
             name: labels.FastLaunch,
             icon: 'mdi-send',
-            action: 'handleFastLaunch'
-            // disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            action: 'handleFastLaunch',
+            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'disable'
-            // disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
+            action: 'disable',
+            disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
-            action: 'deleteAction'
-            // disabled: !this.$store.getters['permissions/getVishingTemplatesDeletePermissions']
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getVishingTemplatesDeletePermissions']
           }
         ],
         downloadButton: {
-          show: true
-          // disabled: !this.$store.getters['permissions/getVishingTemplatesExportPermissions']
+          show: true,
+          disabled: !this.$store.getters['permissions/getVishingTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -311,8 +312,8 @@ export default {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Vishing Template',
-          id: 'btn-add--vishingTemplates'
-          // disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
+          id: 'btn-add--vishingTemplates',
+          disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
@@ -322,7 +323,10 @@ export default {
   computed: {
     getTemplateId() {
       return this.selectedTemplate ? this.selectedTemplate.resourceId : ''
-    }
+    },
+    ...mapGetters({
+      getVishingTemplatesSearchPermissions: 'permissions/getVishingTemplatesSearchPermissions'
+    })
   },
   mounted() {
     this.callForData()
@@ -388,28 +392,28 @@ export default {
       })
     },
     callForData() {
-      // if (this.getEmailTemplatesSearchPermissions) {
-      this.isLoading = true
-      getVishingTemplates(this.axiosPayload)
-        .then((response) => {
-          const {
-            totalNumberOfRecords = 0,
-            totalNumberOfPages = 1,
-            pageNumber = 1,
-            results = []
-          } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-        })
-        .catch(() => {
-          this.tableData = []
-        })
-        .finally(() => (this.isLoading = false))
-      // } else {
-      // this.$router.push('/')
-      // }
+      if (this.getVishingTemplatesSearchPermissions) {
+        this.isLoading = true
+        getVishingTemplates(this.axiosPayload)
+          .then((response) => {
+            const {
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 1,
+              pageNumber = 1,
+              results = []
+            } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            this.tableData = results
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.isLoading = false))
+      } else {
+        this.$router.push('/')
+      }
     },
     callForLanguages() {
       getVishingTemplateLanguages().then((response) => {

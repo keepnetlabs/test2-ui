@@ -1,4 +1,3 @@
-<!-- TODO: add this line to DataTable v-if="getVishingCampaignManagerSearchPermissions" -->
 <template>
   <KContainer id="vishing-campaign-manager" tabless>
     <VishingTemplatePreview
@@ -39,6 +38,7 @@
       @cancel="handleCloseCampaignModal"
     />
     <DataTable
+      v-if="getVishingCampaignManagerSearchPermissions"
       id="vishing-campaign-manager-data-table"
       ref="refTable"
       is-server-side
@@ -189,6 +189,7 @@ import DeleteVishingCampaignDialog from '@/components/VishingCampaignManager/Del
 import VishingCampaignModal from '@/components/VishingCampaignManager/VishingCampaignModal'
 import VishingCampaignStopDialog from '@/components/VishingCampaignManager/VishingCampaignStopDialog.vue'
 import VishingCampaignLaunchDialog from '@/components/VishingCampaignManager/VishingCampaignLaunchDialog.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'VishingCampaignManager',
@@ -316,49 +317,51 @@ export default {
           {
             name: labels.Launch,
             icon: 'mdi-send',
-            action: 'handleLaunch'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerLaunchPermissions']
+            action: 'handleLaunch',
+            disabled: !this.$store.getters['permissions/getVishingCampaignManagerLaunchPermissions']
           },
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerPreviewPermissions']
+            action: 'handlePreview',
+            disabled: !this.$store.getters[
+              'permissions/getVishingCampaignManagerPreviewPermissions'
+            ]
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerEditPermissions']
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getVishingCampaignManagerEditPermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'handleDuplicate'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
+            action: 'handleDuplicate',
+            disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
-            action: 'handleDelete'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerDeletePermissions']
+            action: 'handleDelete',
+            disabled: !this.$store.getters['permissions/getVishingCampaignManagerDeletePermissions']
           },
           {
             name: labels.ViewReport,
             icon: 'mdi-text-box',
-            action: 'handleViewReport'
-            // disabled: !this.$store.getters['permissions/getVishingReportsSummaryPermissions']
+            action: 'handleViewReport',
+            disabled: !this.$store.getters['permissions/getVishingReportsSummaryPermissions']
           },
           {
             name: labels.Stop,
             icon: 'mdi-stop',
-            action: 'handleStop'
-            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerStopPermissions']
+            action: 'handleStop',
+            disabled: !this.$store.getters['permissions/getVishingCampaignManagerStopPermissions']
           }
         ],
         downloadButton: {
-          show: true
-          // disabled: !this.$store.getters['permissions/getVishingCampaignManagerExportPermissions']
+          show: true,
+          disabled: !this.$store.getters['permissions/getVishingCampaignManagerExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -376,13 +379,19 @@ export default {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Vishing Campaign',
-          id: 'btn-add--vishingCampaigns'
-          // disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
+          id: 'btn-add--vishingCampaigns',
+          disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getVishingCampaignManagerSearchPermissions:
+        'permissions/getVishingCampaignManagerSearchPermissions'
+    })
   },
   mounted() {
     this.callForData()
@@ -390,24 +399,24 @@ export default {
   },
   methods: {
     callForData() {
-      // if (this.getVishingCampaignManagerSearchPermissions) {
-      this.loading = true
-      getVishingCampaigns(this.axiosPayload)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
-          this.tableData = results
-        })
-        .finally(() => (this.loading = false))
-      // } else {
-      // this.$router.push('/')
-      // }
+      if (this.getVishingCampaignManagerSearchPermissions) {
+        this.loading = true
+        getVishingCampaigns(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+          })
+          .finally(() => (this.loading = false))
+      } else {
+        this.$router.push('/')
+      }
     },
     callForLanguages() {
       getVishingTemplateLanguages().then((response) => {
