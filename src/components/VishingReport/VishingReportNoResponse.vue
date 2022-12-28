@@ -49,7 +49,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { getVishingReportNoResponse } from '@/api/vishing'
+import { exportVishingReportNoResponse, getVishingReportNoResponse } from '@/api/vishing'
 
 export default {
   name: 'VishingReportNoResponse',
@@ -175,7 +175,28 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportVishingReportUsers() {}
+    exportVishingReportUsers(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportVishingReportNoResponse(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Vishing-No-Response-Users.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    }
   }
 }
 </script>
