@@ -97,6 +97,8 @@
                   item-value="value"
                   outlined
                   persistent-hint
+                  hint="*Required"
+                  :rules="[(v) => Validations.required(v, labels.Required)]"
                   class="filter-field-scenarios"
                   style="padding-right: 4px !important; padding-left: 4px !important;"
                 />
@@ -283,6 +285,8 @@ import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
 import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import * as Validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
 
 const initialFormValues = {
   resourceId: null,
@@ -292,7 +296,7 @@ const initialFormValues = {
   difficulty: 1,
   languageResourceId: 'WNZt0sCVCWB3',
   vishingLanguage: 'Turkish - Female',
-  vishingLanguageResourceId: 'e3bb63b95abf',
+  vishingLanguageResourceId: '0c2f30ce5db5',
   availableForRequests: [],
   dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
@@ -352,6 +356,8 @@ export default {
   },
   data() {
     return {
+      Validations,
+      labels,
       isVishingStepSelected: false,
       editItemsDisabled: false,
       step: 1,
@@ -529,6 +535,16 @@ export default {
           value: language.resourceId,
           text: language.name
         }))
+        if (!this.isEdit && !this.isDuplicate) {
+          const englishFemaleIndex = this.vishingLanguageItems.findIndex(
+            (item) => item.text === 'Turkish - Female'
+          )
+          if (englishFemaleIndex) {
+            this.formValues.vishingLanguageResourceId = this.vishingLanguageItems[
+              englishFemaleIndex
+            ].value
+          }
+        }
       }
     }
   },
@@ -597,6 +613,68 @@ export default {
     },
     validateFailStep() {
       return this.formValues.steps.some((step) => step.isVishingStep)
+    },
+    validateSteps() {
+      let valid = true
+      let invalidStepIndex = 0
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        if (this.formValues.steps[i].inputType === 'Pause') {
+          if (
+            this.formValues.steps[i].duration === null ||
+            this.formValues.steps[i].duration > 10 ||
+            this.formValues.steps[i].duration < 0
+          ) {
+            valid = false
+            invalidStepIndex = i
+            break
+          }
+        }
+        if (this.formValues.steps[i].inputType === 'FileUpload') {
+          if (
+            (!this.formValues.steps[i].inputUrl && !this.formValues.steps[i].content) ||
+            this.formValues.steps[i].inputDigit === null ||
+            this.formValues.steps[i].inputDigit > 10 ||
+            this.formValues.steps[i].inputDigit < 0
+          ) {
+            valid = false
+            invalidStepIndex = i
+            break
+          }
+        }
+        if (this.formValues.steps[i].inputType === 'TextToSpeech') {
+          if (
+            !this.formValues.steps[i].inputText ||
+            this.formValues.steps[i].inputDigit === null ||
+            this.formValues.steps[i].inputDigit > 10 ||
+            this.formValues.steps[i].inputDigit < 0
+          ) {
+            valid = false
+            invalidStepIndex = i
+            break
+          }
+        }
+      }
+
+      if (!valid) {
+        for (let i = 0; i < this.formValues.steps.length; i++) {
+          if (i === invalidStepIndex) {
+            this.$set(this.formValues.steps, i, {
+              ...this.formValues.steps[i],
+              isExpanded: true
+            })
+            this.$nextTick(() => {
+              this.$refs.refFormStep2.validate()
+            })
+          } else {
+            this.$set(this.formValues.steps, i, {
+              ...this.formValues.steps[i],
+              isExpanded: false
+            })
+          }
+        }
+      }
+
+      return valid
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
@@ -684,7 +762,7 @@ export default {
         return
       }
 
-      if (!this.$refs.refFormStep2.validate()) {
+      if (!this.$refs.refFormStep2.validate() || !this.validateSteps()) {
         const el = this.$refs.refFormStep2.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
         this.isSubmitDisabled = false
@@ -695,7 +773,7 @@ export default {
         formData.append('ResouceId', this.formValues.resourceId)
       }
       formData.append('Name', this.formValues.name)
-      formData.append('Description', this.formValues.description || null)
+      formData.append('Description', this.formValues.description || '')
       for (let i = 0; i < this.formValues.tags.length; i++) {
         formData.append(`Tags[${i}]`, this.formValues.tags[i])
       }
@@ -712,7 +790,7 @@ export default {
         )
       }
       for (let i = 0; i < this.formValues.steps.length; i++) {
-        if (this.formValues.steps[i].resourceId) {
+        if (this.isEdit && this.formValues.steps[i].resourceId) {
           formData.append(`Steps[${i + 1}].ResourceId`, this.formValues.steps[i].resourceId)
         }
         formData.append(
@@ -724,14 +802,14 @@ export default {
           `Steps[${i + 1}].IsVishingStep`,
           this.formValues.steps[i].isVishingStep || false
         )
-        formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText || null)
-        formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit || 0)
-        formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration || 0)
-        formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl || null)
-        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content || null)
+        formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText)
+        formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit)
+        formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration)
+        formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
+        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
         if (this.isEdit && !this.formValues.steps[i].content) {
-          formData.set(`Steps[${i + 1}].Content`, null)
-          formData.set(`Steps[${i + 1}].InputUrl`, null)
+          formData.delete(`Steps[${i + 1}].Content`)
+          formData.delete(`Steps[${i + 1}].InputUrl`)
         }
         if (
           this.isDuplicate &&
@@ -739,10 +817,10 @@ export default {
           this.formValues.steps[i].inputUrl
         ) {
           formData.set(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
-          formData.set(`Steps[${i + 1}].Content`, null)
+          formData.delete(`Steps[${i + 1}].Content`)
         }
         if (this.isDuplicate && this.formValues.steps[i].content) {
-          formData.set(`Steps[${i + 1}].InputUrl`, null)
+          formData.delete(`Steps[${i + 1}].InputUrl`)
           formData.set(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
         }
       }
@@ -762,8 +840,20 @@ export default {
         formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
         formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
         if (this.isEdit && !this.formValues.dialingNoticeStepContent) {
-          formData.set(`Steps[0].Content`, null)
-          formData.set(`Steps[0].InputUrl`, null)
+          formData.delete(`Steps[0].Content`)
+          formData.delete(`Steps[0].InputUrl`)
+        }
+        if (
+          this.isDuplicate &&
+          !this.formValues.dialingNoticeStepContent &&
+          this.formValues.dialingNoticeStepInputUrl
+        ) {
+          formData.set(`Steps[0].InputUrl`, this.formValues.dialingNoticeStepInputUrl)
+          formData.delete(`Steps[0].Content`)
+        }
+        if (this.isDuplicate && this.formValues.dialingNoticeStepContent) {
+          formData.delete(`Steps[0].InputUrl`)
+          formData.set(`Steps[0].Content`, this.formValues.dialingNoticeStepContent)
         }
       }
       if (this.isEdit && !this.isDuplicate) {

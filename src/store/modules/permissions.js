@@ -46,6 +46,7 @@ const {
   VISHING_LEFT_MENU_PERMISSIONS,
   VISHING_TEMPLATES_PERMISSIONS,
   VISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  VISHING_REPORTS_PERMISSIONS,
   AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
   AWARENESS_EDUCATOR_PERMISSIONS,
   ETS_QUICK_SCAN_PERMISSIONS,
@@ -102,6 +103,7 @@ const defaultState = {
   vishingLeftMenuPermissions: VISHING_LEFT_MENU_PERMISSIONS,
   vishingTemplatesPermissions: VISHING_TEMPLATES_PERMISSIONS,
   vishingCampaignManagerPermissions: VISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  vishingReportsPermissions: VISHING_REPORTS_PERMISSIONS,
   awarenessEducatorListGroupPermissions: AWARENESS_EDUCATOR_LIST_GROUP_PERMISSIONS,
   awarenessEducatorPermissions: AWARENESS_EDUCATOR_PERMISSIONS,
   etsQuickScanPermissions: ETS_QUICK_SCAN_PERMISSIONS,
@@ -341,11 +343,59 @@ const store = {
     getVishingTemplatesDeletePermissions(state) {
       return state?.vishingTemplatesPermissions?.DELETE?.hasPermission
     },
+    getVishingTemplatesPreviewPermissions(state) {
+      return state?.vishingTemplatesPermissions?.PREVIEW?.hasPermission
+    },
     getVishingTemplatesExportPermissions(state) {
       return state?.vishingTemplatesPermissions?.EXPORT?.hasPermission
     },
     getVishingCampaignManagerLeftMenuPermissions(state) {
       return state?.vishingCampaignManagerPermissions?.isOneOfThemPermitted
+    },
+    getVishingCampaignManagerSearchPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.SEARCH?.hasPermission
+    },
+    getVishingCampaignManagerGetPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.GET?.hasPermission
+    },
+    getVishingCampaignManagerCreatePermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.CREATE?.hasPermission
+    },
+    getVishingCampaignManagerEditPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.EDIT?.hasPermission
+    },
+    getVishingCampaignManagerDeletePermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.DELETE?.hasPermission
+    },
+    getVishingCampaignManagerStopPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.STOP?.hasPermission
+    },
+    getVishingCampaignManagerPreviewPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.PREVIEW?.hasPermission
+    },
+    getVishingCampaignManagerLaunchPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.LAUNCH?.hasPermission
+    },
+    getVishingCampaignManagerExportPermissions(state) {
+      return state?.vishingCampaignManagerPermissions?.EXPORT?.hasPermission
+    },
+    getVishingReportsSummaryPermissions(state) {
+      return state?.vishingReportsPermissions?.SUMMARY?.hasPermission
+    },
+    getVishingReportsUsersPermissions(state) {
+      return state?.vishingReportsPermissions?.USERS?.hasPermission
+    },
+    getVishingReportsAnsweredPermissions(state) {
+      return state?.vishingReportsPermissions?.ANSWERED?.hasPermission
+    },
+    getVishingReportsDialedNumberPermissions(state) {
+      return state?.vishingReportsPermissions?.DIALLED_NUMBER?.hasPermission
+    },
+    getVishingReportsNoResponsePermissions(state) {
+      return state?.vishingReportsPermissions?.NO_RESPONSE?.hasPermission
+    },
+    getVishingReportsResendPermissions(state) {
+      return state?.vishingReportsPermissions?.RESEND?.hasPermission
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -997,6 +1047,7 @@ const store = {
         'vishingLeftMenuPermissions',
         'vishingTemplatesPermissions',
         'vishingCampaignManagerPermissions',
+        'vishingReportsPermissions',
         'awarenessEducatorListGroupPermissions',
         'awarenessEducatorPermissions',
         'etsQuickScanPermissions',

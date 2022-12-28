@@ -1,3 +1,4 @@
+<!-- TODO: add this line to DataTable v-if="getVishingCampaignManagerSearchPermissions" -->
 <template>
   <KContainer id="vishing-campaign-manager" tabless>
     <VishingTemplatePreview
@@ -316,47 +317,48 @@ export default {
             name: labels.Launch,
             icon: 'mdi-send',
             action: 'handleLaunch'
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerLaunchPermissions']
           },
           {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview'
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit'
-            // TODO: Add permissions
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerEditPermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'handleDuplicate'
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'handleDelete'
-            // disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerDeletePermissions']
           },
           {
             name: labels.ViewReport,
             icon: 'mdi-text-box',
             action: 'handleViewReport'
+            // disabled: !this.$store.getters['permissions/getVishingReportsSummaryPermissions']
           },
           {
             name: labels.Stop,
             icon: 'mdi-stop',
             action: 'handleStop'
+            // disabled: !this.$store.getters['permissions/getVishingCampaignManagerStopPermissions']
           }
         ],
         downloadButton: {
           show: true
-          // TODO: Add permissions
-          // disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          // disabled: !this.$store.getters['permissions/getVishingCampaignManagerExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -375,8 +377,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Vishing Campaign',
           id: 'btn-add--vishingCampaigns'
-          // TODO: Add permissions
-          // disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          // disabled: !this.$store.getters['permissions/getVishingCampaignManagerCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
@@ -389,8 +390,7 @@ export default {
   },
   methods: {
     callForData() {
-      // TODO: Add permissions
-      // if (this.getEmailTemplatesSearchPermissions) {
+      // if (this.getVishingCampaignManagerSearchPermissions) {
       this.loading = true
       getVishingCampaigns(this.axiosPayload)
         .then((response) => {

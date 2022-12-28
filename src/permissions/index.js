@@ -213,6 +213,11 @@ export default {
       url: `vishing-template/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    VISHING_CAMPAING_MANAGER: {
+      url: `vishing-campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   VISHING_TEMPLATES_PERMISSIONS: {
@@ -241,6 +246,11 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
+    PREVIEW: {
+      url: `vishing-template/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
     EXPORT: {
       url: `vishing-template/search/export`,
       hasPermission: false,
@@ -249,7 +259,79 @@ export default {
   },
   VISHING_CAMPAIGN_MANAGER_PERMISSIONS: {
     SEARCH: {
-      url: `vishing/campaign-manager/search`,
+      url: `vishing-campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `vishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `vishing-campaign`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `vishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `vishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    STOP: {
+      url: `vishing-campaign/stop/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    PREVIEW: {
+      url: `vishing-campaign/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    LAUNCH: {
+      url: `vishing-campaign/launch/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    EXPORT: {
+      url: `vishing-campaign/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  VISHING_REPORTS_PERMISSIONS: {
+    SUMMARY: {
+      url: `vishing-report/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    USERS: {
+      url: `vishing-report/{resourceId}/users/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    ANSWERED: {
+      url: `vishing-report/{resourceId}/answered/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DIALLED_NUMBER: {
+      url: `vishing-report/{resourceId}/dialed-number/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    NO_RESPONSE: {
+      url: `vishing-report/{resourceId}/no-response/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    RESEND: {
+      url: `vishing-report/resend/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

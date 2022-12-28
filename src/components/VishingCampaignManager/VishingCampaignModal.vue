@@ -255,6 +255,7 @@
                       start: '09:00',
                       end: '17:00'
                     }"
+                    @change="callForCalculateSendingInfo"
                   />
                   <span class="mx-2">and</span>
                   <el-time-select
@@ -266,6 +267,7 @@
                       end: '17:00',
                       minTime: formValues.distributionStartTime
                     }"
+                    @change="callForCalculateSendingInfo"
                   />
                 </div>
                 <div class="vishing-campaign-modal__send-calls-on">
@@ -363,7 +365,8 @@ import {
   createVishingCampaign,
   getPhoneNumbers,
   getVishingCampaign,
-  updateVishingCampaign
+  updateVishingCampaign,
+  getVishingCampaignDistributionCalculation
 } from '@/api/vishing'
 
 const initialFormValues = {
@@ -430,6 +433,7 @@ export default {
       Validations,
       step: 1,
       selectedTemplateStepIndex: 0,
+      delayBetweenEachCallInMinutes: 0,
       parsedFormat: getTimeZone(false),
       isDateValid: true,
       datePickerOptions: {
@@ -449,7 +453,8 @@ export default {
       phoneNumbers: [],
       sendCallsOverTypes,
       sendCallsOnDaysOptions,
-      isActionButtonDisabled: false
+      isActionButtonDisabled: false,
+      distributionDayCount: 5
     }
   },
   computed: {
@@ -458,7 +463,7 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.distributionOverDays} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every 19 minutes.`
+      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.distributionOverDays} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every ${this.delayBetweenEachCallInMinutes} minutes.`
     },
     getTitle() {
       return !this.isEdit
@@ -550,10 +555,32 @@ export default {
         }, 0)
       }
     },
-    sendCallsOnDays(val) {
-      this.distributionDays = val.reduce((acc, val) => {
-        return acc + val
-      }, 0)
+    'formValues.sendCallsOnDays': {
+      deep: true,
+      handler(val) {
+        this.distributionDays = val.reduce((acc, val) => {
+          return acc + val
+        }, 0)
+      }
+    },
+    distributionDays(val) {
+      this.callForCalculateSendingInfo()
+    },
+    'formValues.sendCallsOverType'(val) {
+      if (val === 'weeks') {
+        this.distributionDayCount = parseInt(this.formValues.distributionOverDays * 7)
+      } else {
+        this.distributionDayCount = parseInt(this.formValues.distributionOverDays)
+      }
+      this.callForCalculateSendingInfo()
+    },
+    'formValues.distributionOverDays'(val) {
+      if (this.formValues.sendCallsOverType === 'weeks') {
+        this.distributionDayCount = parseInt(val * 7)
+      } else {
+        this.distributionDayCount = parseInt(val)
+      }
+      this.callForCalculateSendingInfo()
     }
   },
   created() {
@@ -571,6 +598,7 @@ export default {
           distributionEndTime = '',
           distributionStartTime = '',
           distributionDays,
+          distributionOverDays,
           excludeFromReports,
           name,
           scheduleDate,
@@ -587,6 +615,7 @@ export default {
           .slice(0, 2)
           .join(':')
         this.formValues.sendCallsOnDays = getSendCallOnDays(distributionDays)
+        this.formValues.distributionOverDays = distributionOverDays
         this.formValues.excludeFromReports = excludeFromReports
         this.formValues.name = this.isDuplicate ? `${name} - Copy` : name
         this.formValues.scheduleDate = scheduleDate
@@ -605,6 +634,32 @@ export default {
         }
         this.initial = false
       })
+    },
+    callForCalculateSendingInfo() {
+      if (!this.formValues.distributionOverDays) return
+      if (!this.formValues.distributionStartTime) return
+      if (!this.formValues.distributionEndTime) return
+      this.debounce(() => {
+        const payload = {
+          distributionOverDays: this.distributionDayCount,
+          distributionStartTime: this.formValues.distributionStartTime,
+          distributionEndTime: this.formValues.distributionEndTime,
+          distributionDays: this.distributionDays,
+          totalTargetUserCount: this.totalTargetUserCount
+        }
+        getVishingCampaignDistributionCalculation(payload).then((response) => {
+          this.delayBetweenEachCallInMinutes =
+            response?.data?.data?.delayBetweenEachCallInMinutes || 0
+        })
+      }, 500)
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     },
     selectTableItems(items) {
       this.$nextTick(() => {
@@ -646,6 +701,7 @@ export default {
         this.$refs.refSendCallsOver.initialValue = this.formValues.distributionOverDays
         this.$refs.refSendCallsOver.lazyValue = this.formValues.distributionOverDays
       }
+      this.callForCalculateSendingInfo()
     },
     handleInitialTemplate(id) {
       this.initialFormValues.templateResourceId = id
@@ -671,6 +727,7 @@ export default {
         if (refFormStep1.validate()) this.step++
         else this.$nextTick(() => scrollToComponent(refFormStep1.$el.querySelector('.error--text')))
       } else if (this.step === 3) {
+        this.callForCalculateSendingInfo()
         if (this.formValues.targetGroupResourceIds.length) {
           if (!this.totalTargetUserCount) {
             this.isShowTargetGroupUsersError = true
