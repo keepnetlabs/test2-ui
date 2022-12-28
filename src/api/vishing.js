@@ -151,6 +151,12 @@ export function exportVishingReportSummary(resourceId = '') {
   })
 }
 
+export function resendVishingReport(resourceId = '', payload = {}) {
+  return vishingRequest.post(`/vishing-report/resend/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function getPhoneNumbers() {
   return vishingRequest.get('/voice/phone-numbers')
 }

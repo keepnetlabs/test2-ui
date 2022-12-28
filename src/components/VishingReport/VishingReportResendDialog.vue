@@ -17,7 +17,7 @@
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
             :disabled="!items.answered"
-            :value="5"
+            :value="1"
           >
             <template #label> Answered {{ `(${items.answered || 0})` }}</template>
           </v-checkbox>
@@ -26,7 +26,7 @@
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
             :disabled="!items.noResponse"
-            :value="4"
+            :value="2"
           >
             <template #label> No response {{ `(${items.noResponse || 0})` }}</template>
           </v-checkbox>
