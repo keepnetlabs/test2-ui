@@ -40,6 +40,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import VishingReportResendDialog from '@/components/VishingReport/VishingReportResendDialog'
+import { exportVishingReportSummary } from '@/api/vishing'
 
 export default {
   name: 'VishingReportSummaryHeader',
@@ -69,7 +70,20 @@ export default {
       this.isShowResendDialog = !this.isShowResendDialog
     },
     handleOnConfirmResend(types) {},
-    handleDownloadReport() {}
+    handleDownloadReport() {
+      this.isDownloadReportDisabled = true
+      exportVishingReportSummary(this.id)
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Vishing-Report.xlsx`
+          link.click()
+        })
+        .finally(() => {
+          this.isDownloadReportDisabled = false
+        })
+    }
   }
 }
 </script>
