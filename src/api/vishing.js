@@ -134,6 +134,18 @@ export function getVishingReportNoResponse(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/no-response/search`, payload)
 }
 
+export function exportVishingReportNoResponse(payload = {}, resourceId = '') {
+  return vishingRequest.post(`/vishing-report/${resourceId}/no-response/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+export function exportVishingReportSummary(resourceId = '') {
+  return vishingRequest.get(`/vishing-report/${resourceId}/export`, {
+    responseType: 'blob'
+  })
+}
+
 export function getPhoneNumbers() {
   return vishingRequest.get('/voice/phone-numbers')
 }

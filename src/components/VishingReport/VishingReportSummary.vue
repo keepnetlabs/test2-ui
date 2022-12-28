@@ -85,7 +85,7 @@ export default {
     getVishingDeliveryData() {
       const { callerPhoneNumber = '', startTime = '', endTime } = this.vishingSummary || {}
       return {
-        'Campaign Start-End Date': `${startTime || ''}-${endTime || ''}`,
+        'Delivery Start-End Date': `${startTime || ''}-${endTime || 'In Progress'}`,
         'Caller Phone Number': callerPhoneNumber,
         'Calling Status': ''
       }
