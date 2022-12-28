@@ -168,7 +168,6 @@ export default {
         .then((res) => {
           const { data: { data = {} } = {} } = res || {}
           this.vishingSummary = data
-          console.log('this.vishingSummary', this.vishingSummary)
         })
         .finally(() => {
           this.isLoading = false

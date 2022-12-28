@@ -120,7 +120,7 @@ export function getVishingReportAnswered(payload = {}, resourceId = '') {
 }
 
 export function exportVishingAnsweredUsers(payload = {}, resourceId = '') {
-  return vishingRequest.post(`/vishing-report/${resourceId}/answered/export`, payload, {
+  return vishingRequest.post(`/vishing-report/${resourceId}/answered/search/export`, payload, {
     responseType: 'blob'
   })
 }
@@ -130,7 +130,7 @@ export function getVishingReportDialedNumber(payload = {}, resourceId = '') {
 }
 
 export function exportVishingReportDialedNumbers(payload = {}, resourceId = '') {
-  return vishingRequest.post(`/vishing-report/${resourceId}/dialed-number/export`, payload, {
+  return vishingRequest.post(`/vishing-report/${resourceId}/dialed-number/search/export`, payload, {
     responseType: 'blob'
   })
 }

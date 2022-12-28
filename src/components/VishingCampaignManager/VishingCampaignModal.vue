@@ -563,7 +563,7 @@ export default {
         }, 0)
       }
     },
-    distributionDays(val) {
+    distributionDays() {
       this.callForCalculateSendingInfo()
     },
     'formValues.sendCallsOverType'(val) {
