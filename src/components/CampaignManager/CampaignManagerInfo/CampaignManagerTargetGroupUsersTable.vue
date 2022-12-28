@@ -20,6 +20,7 @@
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
+        :add-row-class-name="addRowClassName"
       />
     </div>
   </div>
@@ -50,6 +51,9 @@ export default {
     lastColumnName: {
       type: String,
       default: 'email'
+    },
+    addRowClassName: {
+      type: Function
     }
   },
   data() {

@@ -1133,6 +1133,9 @@
     color: #0097fa !important;
     text-decoration: none;
   }
+  &-row--disabled{
+    opacity:.5;
+  }
 }
 
 .el-table {

@@ -56,6 +56,7 @@
               :resourceId="highlightedRow.resourceId"
               :group-name="highlightedRow.name"
               :last-column-name="lastColumnName"
+              :add-row-class-name="addRowClassName"
             />
           </div>
         </Multipane>
@@ -148,6 +149,9 @@ export default {
     },
     handleHiglightedRowChange(row) {
       this.highlightedRow = row
+    },
+    addRowClassName({ row = {} }) {
+      return !!row.phoneNumber ? '' : 'k-table-row--disabled'
     }
   }
 }
