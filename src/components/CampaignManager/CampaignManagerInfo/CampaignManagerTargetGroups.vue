@@ -35,6 +35,7 @@
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :search="search"
               :is-all-groups="isAllGroups"
+              :is-show-company-column="isShowCompanyColumn"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
             />
@@ -54,6 +55,8 @@
               :is-target-group-loading="isTargetGroupLoading"
               :resourceId="highlightedRow.resourceId"
               :group-name="highlightedRow.name"
+              :last-column-name="lastColumnName"
+              :add-row-class-name="addRowClassName"
             />
           </div>
         </Multipane>
@@ -88,6 +91,14 @@ export default {
     isAllGroups: {
       type: Boolean,
       default: false
+    },
+    isShowCompanyColumn: {
+      type: Boolean,
+      default: true
+    },
+    lastColumnName: {
+      type: String,
+      default: 'email'
     }
   },
   data() {
@@ -138,6 +149,9 @@ export default {
     },
     handleHiglightedRowChange(row) {
       this.highlightedRow = row
+    },
+    addRowClassName({ row = {} }) {
+      return !!row.phoneNumber ? '' : 'k-table-row--disabled'
     }
   }
 }

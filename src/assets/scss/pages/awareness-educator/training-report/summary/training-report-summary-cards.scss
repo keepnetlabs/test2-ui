@@ -115,3 +115,8 @@
         }
     }
 }
+.vishing-report-summary-cards{
+  display: grid;
+  grid-template-columns: 0.33fr 0.33fr 0.34fr;
+  grid-column-gap: 16px;
+}

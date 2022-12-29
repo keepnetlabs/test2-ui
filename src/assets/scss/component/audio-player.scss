@@ -1,0 +1,31 @@
+.audio-player {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top:8px;
+    .el-slider__runway {
+      height: 4px !important;
+      background-color: #e0e0e0 !important;
+    }
+    .el-slider__bar {
+      height: 4px !important;
+      background-color: #757575 !important;
+    }
+    .el-slider__button-wrapper {
+      display: none !important;
+    }
+  }
+  .audio-player__track {
+    flex: 1;
+    max-width: 450px;
+  }
+  .audio-payer__time-text {
+    color: #383b41;
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .audio-player__preview-text {
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: none;
+  }

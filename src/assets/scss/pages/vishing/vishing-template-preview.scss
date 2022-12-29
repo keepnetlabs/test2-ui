@@ -1,0 +1,22 @@
+.template-preview__text--body {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.template-preview__steps {
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e7e7e7;
+  margin-top: 12px;
+
+  hr {
+    border-top: 1px solid #e7e7e7;
+  }
+
+  &__header {
+    color: #383b41;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+}

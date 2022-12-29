@@ -374,6 +374,52 @@
           </v-list-group>
 
           <v-list-group
+            v-if="getVishingLeftMenuPermissions"
+            id="btn--link-navigator-menu-phishing-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
+            :prepend-icon="iconPaths.mdiPhoneInTalk"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Vishing</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getVishingTemplatesLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/vishing-templates"
+                  id="btn--link-navigator-menu-vishing-templates"
+                  route-name="Vishing Templates"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getVishingCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/campaign-manager"
+                  id="btn--link-navigator-menu-vishing-campaign-manager"
+                  route-name="Vishing Campaign Manager"
+                  route-text="Campaign Manager"
+                  :router-name="routerName"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Vishing Campaign Manager' || routerName === 'Vishing Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group
             v-if="getIncidentResponderListGroupPermissions"
             id="btn--link-navigator-menu-incident-responder-list-group"
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
@@ -639,6 +685,9 @@
             <h1 v-else-if="routerName === 'Training Report'">
               {{ getTrainingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Vishing Report'">
+              {{ getVishingReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -673,6 +722,7 @@ import {
   mdiBriefcaseVariant,
   mdiMenu,
   mdiHelpCircle,
+  mdiPhoneInTalk,
   mdiBook,
   mdiSearchWeb
 } from '@mdi/js'
@@ -731,6 +781,7 @@ export default {
         mdiBriefcaseVariant,
         mdiMenu,
         mdiHelpCircle,
+        mdiPhoneInTalk,
         mdiBook,
         mdiSearchWeb
       },
@@ -799,6 +850,10 @@ export default {
       getPhishingSimulatorLeftMenuPermissions:
         'permissions/getPhishingSimulatorLeftMenuPermissions',
       getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
+      getVishingLeftMenuPermissions: 'permissions/getVishingLeftMenuPermissions',
+      getVishingTemplatesLeftMenuPermissions: 'permissions/getVishingTemplatesLeftMenuPermissions',
+      getVishingCampaignManagerLeftMenuPermissions:
+        'permissions/getVishingCampaignManagerLeftMenuPermissions',
       getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
       getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
       getIncidentResponderListGroupPermissions:
@@ -861,6 +916,12 @@ export default {
       }
       return 'Training Report'
     },
+    getVishingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Vishing Report'
+    },
     getRouterKey() {
       const { name } = this.$route
       if (['Community', 'Threat Sharing'].includes(name)) {
@@ -880,6 +941,18 @@ export default {
         routerName === 'System Users' ||
         routerName === 'Job Log' ||
         routerName === 'Audit'
+      return {
+        'primary--text active-menu-parent': isSelected,
+        'un-selected-list-item': !isSelected
+      }
+    },
+    getVishingClasses() {
+      const routerName = this.routerName
+      const isSelected =
+        routerName === 'Vishing' ||
+        routerName === 'Vishing Templates' ||
+        routerName === 'Vishing Campaign Manager' ||
+        routerName === 'Vishing Report'
       return {
         'primary--text active-menu-parent': isSelected,
         'un-selected-list-item': !isSelected
