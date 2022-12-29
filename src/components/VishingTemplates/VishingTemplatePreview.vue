@@ -12,7 +12,7 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <div v-else class="template-preview pt-3">
+      <div v-else :class="['template-preview']">
         <div v-if="showTemplateInfo" class="template-preview__text mb-4">
           <div>
             <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
