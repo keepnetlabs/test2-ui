@@ -1625,19 +1625,20 @@ export default {
         let recrusiveFunctionForDom = () =>
           document.getElementById(id) && document.getElementById(id)?.shadowRoot
         if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
-        _this.uploadRespond.urls = _this.uploadRespond.urls.map((item, index) => {
-          let urlItem = document
-            .getElementById(id)
-            ?.shadowRoot?.querySelectorAll('[href="' + item.url + '"]')
-          return {
-            ...item,
-            url: item.url.replace(/amp;/g, ''),
-            name: item.name,
-            urlHtml:
-              urlItem && !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
-            index: index + 1
-          }
-        })
+        _this.uploadRespond.urls =
+          _this?.uploadRespond?.urls?.map((item, index) => {
+            let urlItem = document
+              .getElementById(id)
+              ?.shadowRoot?.querySelectorAll('[href="' + item.url + '"]')
+            return {
+              ...item,
+              url: item.url.replace(/amp;/g, ''),
+              name: item.name,
+              urlHtml:
+                urlItem && !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
+              index: index + 1
+            }
+          }) || []
         if (id === 'incident-preview-1' || id === 'last-preview-body-shadow-root-review') {
           for (let url of this.uploadRespond.urls) {
             incidenPostReviewElementBind(url, null, id, true)

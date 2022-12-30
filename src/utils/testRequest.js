@@ -91,13 +91,11 @@ testService.interceptors.response.use(
               {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message:
-                  (error?.response?.data &&
-                    error?.response?.data?.validationMessages &&
-                    error?.response?.data?.validationMessages?.length &&
-                    error?.response?.data?.validationMessages[0]) ||
+                  error?.response?.data?.validationMessages?.[0] ||
                   error?.response?.data?.message ||
                   error?.response?.data?.Message ||
-                  error.message,
+                  error?.message ||
+                  'Something Went Wrong',
                 icon: 'mdi-alert'
               },
               { root: true }
@@ -117,13 +115,10 @@ testService.interceptors.response.use(
           {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message:
-              (error?.response?.data &&
-                error?.response?.data?.validationMessages &&
-                error?.response?.data?.validationMessages?.length &&
-                error?.response?.data?.validationMessages[0]) ||
+              error?.response?.data?.validationMessages?.[0] ||
               error?.response?.data?.message ||
               error?.response?.data?.Message ||
-              error.message ||
+              error?.message ||
               'Something Went Wrong',
             icon: 'mdi-alert'
           },
