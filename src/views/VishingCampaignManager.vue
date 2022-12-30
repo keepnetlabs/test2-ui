@@ -297,20 +297,6 @@ export default {
             width: 200,
             filterableType: 'date',
             filterableCustomFieldName: 'createTime'
-          },
-          {
-            property: 'lastLaunch',
-            align: 'left',
-            editable: false,
-            label: 'Last Launch',
-            fixed: false,
-            sortable: true,
-            show: true,
-            overrideWidth: true,
-            width: 200,
-            type: 'text',
-            filterableType: 'date',
-            filterableCustomFieldName: 'createTime'
           }
         ],
         rowActions: [
