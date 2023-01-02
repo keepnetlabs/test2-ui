@@ -581,6 +581,15 @@ export default {
         this.distributionDayCount = parseInt(val)
       }
       this.callForCalculateSendingInfo()
+    },
+    'formValues.scheduleType'(val) {
+      if (val !== '3') {
+        this.isDateValid = true
+        this.formValues.scheduleDate = ''
+      }
+    },
+    'formValues.scheduleDate'() {
+      this.checkDateIsValid()
     }
   },
   created() {
@@ -591,6 +600,14 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    checkDateIsValid() {
+      this.isDateValid = this.formValues
+        ? this.formValues.scheduleType === '3'
+          ? this.formValues.scheduleDate && this.formValues.scheduleDate.length > 0
+          : true
+        : false
+      return this.isDateValid
+    },
     callForCampaign() {
       getVishingCampaign(this.selectedRow.resourceId).then((response) => {
         const {
@@ -724,7 +741,7 @@ export default {
     nextStep() {
       if (this.step === 1) {
         const { refFormStep1 } = this.$refs
-        if (refFormStep1.validate()) this.step++
+        if (refFormStep1.validate() && this.checkDateIsValid()) this.step++
         else this.$nextTick(() => scrollToComponent(refFormStep1.$el.querySelector('.error--text')))
       } else if (this.step === 3) {
         this.callForCalculateSendingInfo()
