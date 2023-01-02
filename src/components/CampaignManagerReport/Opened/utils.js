@@ -339,7 +339,7 @@ export const COLUMNS = {
     label: labels.DELIVERY_STATUS,
     sortable: true,
     show: true,
-    type: 'badge',
+    type: 'slot',
     width: 220,
     filterableType: 'select',
     props: {
@@ -357,5 +357,49 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+  }
+}
+
+export function getStatusBadgeProps(status) {
+  if (status === 'Not Delivered') {
+    return {
+      color: '#757575',
+      text: 'Not Delivered'
+    }
+  }
+
+  if (status === 'InQueue' || status === 'In Queue') {
+    return {
+      color: '#1173C1',
+      text: 'In Queue'
+    }
+  }
+
+  if (status === 'Error') {
+    return {
+      color: '#B83A3A',
+      text: 'Error'
+    }
+  }
+
+  if (status === 'Cancelled' || status === 'Canceled') {
+    return {
+      color: '#B6791D',
+      text: 'Cancelled'
+    }
+  }
+
+  if (status === 'Successful') {
+    return {
+      color: '#217124',
+      text: 'Successful'
+    }
+  }
+
+  if (status === 'Processing') {
+    return {
+      color: '#1173C1',
+      text: 'Processing'
+    }
   }
 }
