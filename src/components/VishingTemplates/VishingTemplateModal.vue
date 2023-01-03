@@ -637,7 +637,7 @@ export default {
           if (
             (!this.formValues.steps[i].inputUrl && !this.formValues.steps[i].content) ||
             this.formValues.steps[i].inputDigit === null ||
-            this.formValues.steps[i].inputDigit > 10 ||
+            this.formValues.steps[i].inputDigit > 20 ||
             this.formValues.steps[i].inputDigit < 0
           ) {
             valid = false
@@ -649,7 +649,7 @@ export default {
           if (
             !this.formValues.steps[i].inputText ||
             this.formValues.steps[i].inputDigit === null ||
-            this.formValues.steps[i].inputDigit > 10 ||
+            this.formValues.steps[i].inputDigit > 20 ||
             this.formValues.steps[i].inputDigit < 0
           ) {
             valid = false
