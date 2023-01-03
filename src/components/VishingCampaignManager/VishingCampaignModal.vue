@@ -478,7 +478,7 @@ export default {
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
         ? this.isShowTargetGroupUsersError
-          ? 'Target groups must have at least 1 user'
+          ? 'Target groups must have at least 1 user with phone number'
           : 'Required'
         : 'Required'
     },
@@ -550,7 +550,7 @@ export default {
       deep: true,
       handler(val) {
         this.totalTargetUserCount = val.reduce((acc, item) => {
-          acc += item?.userCount || 0
+          acc += item?.userCountWithPhoneNumber || 0
           return acc
         }, 0)
       }
