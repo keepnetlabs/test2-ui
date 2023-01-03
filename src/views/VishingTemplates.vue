@@ -349,11 +349,11 @@ export default {
       this.isDuplicate = isDuplicate
       this.vishingTemplateId = row.resourceId
     },
-    // checkIfCanCloseNewEmailTemplate() {
-    //   if (this.$refs.newEmailTemplate) {
-    //     this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
-    //   }
-    // },
+    checkIfCanCloseVishingTemplateModal() {
+      if (this.$refs?.refVishingTemplateModal) {
+        this.$refs.refVishingTemplateModal.changeVishingTemplateModalStatus()
+      }
+    },
     changeNewVishingTemplateModalStatus(status, restart) {
       this.modalStatus = status
       this.vishingTemplateId = null
@@ -444,6 +444,15 @@ export default {
     },
     handleFastLaunch(row) {
       this.selectedTemplate = row
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refVishingTemplateModal } = this.$refs
+    if (refVishingTemplateModal && refVishingTemplateModal.status) {
+      refVishingTemplateModal.changeVishingTemplateModalStatus()
+      next(false)
+    } else {
+      next()
     }
   }
 }

@@ -27,7 +27,10 @@
         <div class="template-preview__steps">
           <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
             <VishingTemplatePreviewStep :step="step" :index="index" />
-            <hr v-if="index !== templateData.steps.length - 1" />
+            <hr
+              v-if="index !== templateData.steps.length - 1"
+              class="template-preview__steps__separator"
+            />
           </div>
         </div>
       </div>

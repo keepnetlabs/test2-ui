@@ -69,7 +69,7 @@
                       :id="`input--campaign-manager-radio-schedule-to`"
                       style="margin-bottom: 0;"
                       color="#2196f3"
-                      label="Schedule to"
+                      label="Schedule to:"
                       value="3"
                     />
                     <div :class="[!isDateValid && 'date-picker-error mb-n3']">
@@ -142,6 +142,7 @@
               ref="refTargetAudience"
               class="mt-2"
               last-column-name="phoneNumber"
+              :isShowCompanyColumn="false"
               :selected-target-groups="formValues.targetGroupResourceIds"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"
@@ -240,7 +241,7 @@
                     outlined
                     dense
                     hide-details
-                    position="top"
+                    position="bottom"
                     :return-object="false"
                     :items="sendCallsOverTypes"
                   />
@@ -326,7 +327,7 @@
         :disabled-statuses="{
           submitButton: isActionButtonDisabled
         }"
-        @on-cancel="handleCancel"
+        @on-cancel="changeVishingCampaignModalStatus"
         @on-back="backStep"
         @on-next="nextStep"
         @on-submit="submit"
@@ -344,7 +345,12 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import { mapGetters } from 'vuex'
-import { getDefaultAxiosPayload, getTimeZone, scrollToComponent } from '@/utils/functions'
+import {
+  getDefaultAxiosPayload,
+  getTimeZone,
+  scrollToComponent,
+  isDifferent
+} from '@/utils/functions'
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
@@ -600,6 +606,18 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    changeVishingCampaignModalStatus() {
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('cancel')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('cancel')
+        }
+      })
+    },
     checkDateIsValid() {
       this.isDateValid = this.formValues
         ? this.formValues.scheduleType === '3'
@@ -640,6 +658,7 @@ export default {
         this.formValues.scheduleType = getScheduleType(scheduleType)
         this.formValues.targetGroupResourceIds = targetGroups.map((tGroup) => tGroup.value) || []
         this.formValues.templateResourceId = templateResourceId
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         this.$nextTick(() => (this.isTargetGroupsValid = true))
         this.selectTableItems(targetGroups)
       })
@@ -731,9 +750,6 @@ export default {
     },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
-    },
-    handleCancel(forceUpdate = false) {
-      this.$emit('cancel', forceUpdate)
     },
     backStep() {
       this.step--

@@ -107,7 +107,7 @@
                   <ShowMoreTags :showMaximumBadgeCount="1" :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   <div class="template-list--item__narrator">
-                    <v-icon color="#757575">mdi-web</v-icon>
+                    <v-icon :size="16" color="#757575">mdi-web</v-icon>
                     <span class="template-list--item__language">{{ item.language }}</span>
                     <!-- <span class="template-list--item__language">{{ item.languageShortCode }}</span>
                     <span class="template-list--item__divider">|</span>

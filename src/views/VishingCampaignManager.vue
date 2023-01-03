@@ -510,6 +510,20 @@ export default {
       this.isEdit = false
       this.isDuplicate = false
       this.isCampaignModalVisible = false
+    },
+    checkIfCanCloseVishingTemplateModal() {
+      if (this.$refs?.refVishingCampaignModal) {
+        this.$refs.refVishingCampaignModal.changeVishingCampaignModalStatus()
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refVishingCampaignModal } = this.$refs
+    if (refVishingCampaignModal && refVishingCampaignModal.status) {
+      refVishingCampaignModal.changeVishingCampaignModalStatus()
+      next(false)
+    } else {
+      next()
     }
   }
 }

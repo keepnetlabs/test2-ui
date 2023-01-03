@@ -126,6 +126,7 @@
     &:hover,
     &--selected {
       background-color: #f1f8fe;
+      border-bottom-color: #b3d4fc;
 
       .template-list--item__header {
         color: #2196f3 !important;

@@ -19,7 +19,7 @@
           <template v-slot:activator="{ on }">
             <div v-on="on">
               <v-btn
-                color="#000000"
+                color="#383B41"
                 icon
                 outlined
                 :disabled="isRemoveDisabled"
@@ -66,7 +66,7 @@
             </div>
           </div>
           <KFileUpload
-            hint="Only MP3 files. Max. file size 1MB"
+            hint="*Required (Only MP3 files. Max. file size 1MB)"
             :extensions="['mp3']"
             :size="1"
             :filePreviews="getFilePreviews"
@@ -74,8 +74,9 @@
             @on-clear="onClearFile"
           />
           <CustomError
-            class="mb-6"
+            class="mb-4"
             style="margin-top: 2px;"
+            :showValidMessage="false"
             :isValid="!fileUploadErrorText"
             :errorMessage="fileUploadErrorText"
           />

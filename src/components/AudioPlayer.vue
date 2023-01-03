@@ -22,10 +22,9 @@
     </div>
     <div v-else class="audio-player">
       <v-btn
-        small
         icon
         color="#ffffff"
-        :style="canPlay ? 'background-color: #000000;' : ''"
+        :style="getButtonStyles"
         :disabled="!canPlay"
         @click="onTogglePlay"
       >
@@ -92,6 +91,13 @@ export default {
   computed: {
     getCurrentTime() {
       return `${formatSeconds(this.audio.currentTime)} - ${formatSeconds(this.audio.maxTime)}`
+    },
+    getButtonStyles() {
+      return {
+        backgroundColor: this.canPlay ? '#000000' : 'unset',
+        width: '32px',
+        height: '32px'
+      }
     }
   },
   methods: {

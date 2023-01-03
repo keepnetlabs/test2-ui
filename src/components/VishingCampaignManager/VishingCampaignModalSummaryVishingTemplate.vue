@@ -17,7 +17,7 @@
               />
               <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                 <template #content>
-                  <v-icon class="mr-1">mdi-web</v-icon>{{ formValues.template.language }}
+                  <v-icon :size="16" class="mr-1">mdi-web</v-icon>{{ formValues.template.language }}
                 </template>
               </Badge>
             </div>

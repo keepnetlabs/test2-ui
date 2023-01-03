@@ -177,11 +177,11 @@ export default {
             overrideWidth: true,
             filterableType: 'select',
             filterableItems: [
-              'Not Responded',
+              { text: 'Not Responded', value: 'NotResponded' },
               'Answered',
               'Vished',
-              'In Queue',
-              'Calling Error',
+              { text: 'In Queue', value: 'InQueue' },
+              { text: 'Calling Error', value: 'CallingError' },
               'Cancelled'
             ]
           }

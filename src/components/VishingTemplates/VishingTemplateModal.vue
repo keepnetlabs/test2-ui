@@ -103,7 +103,11 @@
                   style="padding-right: 4px !important; padding-left: 4px !important;"
                 />
               </FormGroup>
-              <FormGroup title="Steps" sub-title="Define your vishing template step by step">
+              <FormGroup
+                class="mt-4"
+                title="Steps"
+                sub-title="Define your vishing template step by step"
+              >
                 <div
                   :class="{
                     'vishing-template__steps': true
