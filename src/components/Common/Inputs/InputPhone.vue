@@ -63,6 +63,11 @@ export default {
       if (this.value) {
         return labels.InvalidPhoneNumber
       }
+
+      if (this.required) {
+        return 'Required'
+      }
+
       return ''
     }
   },
