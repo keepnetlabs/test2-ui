@@ -521,7 +521,7 @@ export default {
       sendCallsOverTypes,
       sendCallsOnDaysOptions,
       isActionButtonDisabled: false,
-      distributionDayCount: 5
+      distributionDayCount: 7
     }
   },
   computed: {
