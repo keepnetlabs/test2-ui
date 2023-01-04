@@ -214,7 +214,7 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
-    VISHING_CAMPAING_MANAGER: {
+    VISHING_CAMPAIGN_MANAGER: {
       url: `vishing-campaign/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST

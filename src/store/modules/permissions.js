@@ -326,7 +326,7 @@ const store = {
       return state?.vishingLeftMenuPermissions?.isOneOfThemPermitted
     },
     getVishingTemplatesLeftMenuPermissions(state) {
-      return state?.vishingTemplatesPermissions?.isOneOfThemPermitted
+      return state?.vishingLeftMenuPermissions?.VISHING_TEMPLATES?.hasPermission
     },
     getVishingTemplatesSearchPermissions(state) {
       return state?.vishingTemplatesPermissions?.SEARCH?.hasPermission
@@ -350,7 +350,7 @@ const store = {
       return state?.vishingTemplatesPermissions?.EXPORT?.hasPermission
     },
     getVishingCampaignManagerLeftMenuPermissions(state) {
-      return state?.vishingCampaignManagerPermissions?.isOneOfThemPermitted
+      return state?.vishingLeftMenuPermissions?.VISHING_CAMPAIGN_MANAGER?.hasPermission
     },
     getVishingCampaignManagerSearchPermissions(state) {
       return state?.vishingCampaignManagerPermissions?.SEARCH?.hasPermission

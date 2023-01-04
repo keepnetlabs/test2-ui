@@ -98,11 +98,25 @@
                       </div>
                     </div>
                     <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
-                    <InputTimezone
-                      v-model="formValues.scheduledDateTimeZoneId"
-                      class="black-placeholder"
-                      :disabled="isScheduledTimeDisabled"
-                    />
+                    <div :class="[!isTimezoneValid && 'date-picker-error mb-n3']">
+                      <InputTimezone
+                        v-model="formValues.scheduledDateTimeZoneId"
+                        class="black-placeholder"
+                        :disabled="isScheduledTimeDisabled"
+                        :rules="[(v) => Validations.required(v)]"
+                      />
+                      <div class="v-text-field__details checkbox-error" v-if="!isTimezoneValid">
+                        <transition appear name="bounce">
+                          <div class="v-messages theme--light error--text" role="alert">
+                            <div class="v-messages__wrapper">
+                              <div class="v-messages__message" style="padding-left: 10px;">
+                                Timezone is required
+                              </div>
+                            </div>
+                          </div>
+                        </transition>
+                      </div>
+                    </div>
                   </div>
                 </v-radio-group>
               </FormGroup>
@@ -223,9 +237,9 @@
                     <v-text-field
                       ref="refSendCallsOver"
                       :value="formValues.distributionOverDays"
-                      style="max-width: 100px !important; margin-right: 8px;"
+                      style="max-width: 125px !important; margin-right: 8px;"
                       outlined
-                      placeholder=""
+                      placeholder="Enter a number"
                       hide-details
                       :error="!!getDistributionOverDaysValueErrorMessage"
                       @input="handleSendOverCallsValueChange"
@@ -235,7 +249,10 @@
                       :error-message="getDistributionOverDaysValueErrorMessage"
                     />
                   </div>
-                  <KSelect
+                  <span class="form-group-horizontal-content__label">
+                    {{ formValues.distributionOverDays > 1 ? 'weeks' : 'week' }}
+                  </span>
+                  <!-- <KSelect
                     v-model="formValues.sendCallsOverType"
                     style="max-width: 137px !important;"
                     outlined
@@ -244,32 +261,7 @@
                     position="bottom"
                     :return-object="false"
                     :items="sendCallsOverTypes"
-                  />
-                </div>
-                <div class="vishing-campaign-modal__send-calls">
-                  <span>Send calls between</span>
-                  <el-time-select
-                    v-model="formValues.distributionStartTime"
-                    style="max-width: 100px;"
-                    placeholder="Start time"
-                    :picker-options="{
-                      start: '09:00',
-                      end: '17:00'
-                    }"
-                    @change="callForCalculateSendingInfo"
-                  />
-                  <span class="mx-2">and</span>
-                  <el-time-select
-                    v-model="formValues.distributionEndTime"
-                    style="max-width: 100px;"
-                    placeholder="End time"
-                    :picker-options="{
-                      start: '09:00',
-                      end: '17:00',
-                      minTime: formValues.distributionStartTime
-                    }"
-                    @change="callForCalculateSendingInfo"
-                  />
+                  /> -->
                 </div>
                 <div class="vishing-campaign-modal__send-calls-on">
                   <div>
@@ -285,6 +277,74 @@
                       :key="day.value"
                     />
                   </div>
+                </div>
+                <div
+                  class="vishing-campaign-modal__send-calls"
+                  style="max-width: unset; width: 1000px;"
+                >
+                  <span>Send calls between</span>
+                  <div
+                    :class="[!formValues.distributionStartTime && 'date-picker-error']"
+                    style="position: relative;"
+                  >
+                    <el-time-select
+                      v-model="formValues.distributionStartTime"
+                      style="max-width: 125px;"
+                      placeholder="Start time"
+                      :picker-options="{
+                        start: '09:00',
+                        end: '17:00'
+                      }"
+                      @change="callForCalculateSendingInfo"
+                    />
+                    <CustomError
+                      style="
+                        margin-left: -8px;
+                        margin-top: 2px;
+                        position: absolute;
+                        bottom: -16px;
+                        width: 200px;
+                      "
+                      :showValidMessage="false"
+                      :is-valid="!!formValues.distributionStartTime"
+                      error-message="Start Time is required"
+                    />
+                  </div>
+                  <span class="mx-2">and</span>
+                  <div
+                    :class="[!formValues.distributionEndTime && 'date-picker-error']"
+                    style="position: relative;"
+                  >
+                    <el-time-select
+                      v-model="formValues.distributionEndTime"
+                      style="max-width: 125px;"
+                      placeholder="End time"
+                      :picker-options="{
+                        start: '09:00',
+                        end: '17:00',
+                        minTime: formValues.distributionStartTime
+                      }"
+                      @change="callForCalculateSendingInfo"
+                    />
+                    <CustomError
+                      style="
+                        margin-left: -8px;
+                        margin-top: 2px;
+                        position: absolute;
+                        bottom: -16px;
+                        width: 200px;
+                      "
+                      :showValidMessage="false"
+                      :is-valid="!!formValues.distributionEndTime"
+                      error-message="End Time is required"
+                    />
+                  </div>
+                  <span
+                    v-if="!!selectedTimeZoneText"
+                    class="ml-2 form-group-horizontal-content__label"
+                  >
+                    {{ selectedTimeZoneText }}
+                  </span>
                 </div>
               </FormGroup>
               <div class="vishing-campaign-modal__send-calls-text">
@@ -324,6 +384,7 @@
       <StepperFooter
         max-step="5"
         :step.sync="step"
+        :saveButtonText="labels.Launch"
         :disabled-statuses="{
           submitButton: isActionButtonDisabled
         }"
@@ -388,8 +449,8 @@ const initialFormValues = {
   recipientType: 1,
   recipientValue: 0,
   callerPhoneNumber: '',
-  distributionOverDays: 5,
-  sendCallsOverType: 'days',
+  distributionOverDays: 1,
+  sendCallsOverType: 'weeks',
   distributionStartTime: '09:00',
   distributionEndTime: '17:00',
   sendCallsOnDays: [1, 2, 4, 8, 16]
@@ -442,6 +503,8 @@ export default {
       delayBetweenEachCallInMinutes: 0,
       parsedFormat: getTimeZone(false),
       isDateValid: true,
+      isTimezoneValid: true,
+      selectedTimeZoneText: '',
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
@@ -466,10 +529,30 @@ export default {
   computed: {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone',
+      timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${this.formValues.distributionOverDays} ${this.formValues.sendCallsOverType} between ${this.formValues.distributionStartTime} and ${this.formValues.distributionEndTime} and each user will receive a call approximately every ${this.delayBetweenEachCallInMinutes} minutes.`
+      return `${this.totalTargetUserCount} users will receive calls over ${
+        this.formValues.distributionOverDays
+      } ${this.getDistributionTimeText} between ${
+        this.formValues.distributionStartTime ? this.formValues.distributionStartTime : ' '
+      } and ${
+        this.formValues.distributionEndTime ? this.formValues.distributionEndTime : ' '
+      } and each user will receive a call approximately every ${
+        this.delayBetweenEachCallInMinutes
+      } minutes.`
+    },
+    getDistributionTimeText() {
+      if (this.formValues.sendCallsOverType === 'days') {
+        if (this.formValues.distributionOverDays > 1) {
+          return 'days'
+        } else return 'day'
+      } else {
+        if (this.formValues.distributionOverDays > 1) {
+          return 'weeks'
+        } else return 'week'
+      }
     },
     getTitle() {
       return !this.isEdit
@@ -539,6 +622,15 @@ export default {
     }
   },
   watch: {
+    timeZones: {
+      deep: true,
+      handler(val) {
+        if (this.formValues.scheduledDateTimeZoneId)
+          this.selectedTimeZoneText =
+            val?.timeZoneList?.find((item) => item.id === this.formValues.scheduledDateTimeZoneId)
+              ?.displayName || ''
+      }
+    },
     timezoneFormat: {
       deep: true,
       immediate: true,
@@ -591,21 +683,41 @@ export default {
     'formValues.scheduleType'(val) {
       if (val !== '3') {
         this.isDateValid = true
+        this.isTimezoneValid = true
         this.formValues.scheduleDate = ''
+        this.selectedTimeZoneText = ''
       }
     },
     'formValues.scheduleDate'() {
       this.checkDateIsValid()
+    },
+    'formValues.scheduledDateTimeZoneId'(val) {
+      if (val) {
+        this.selectedTimeZoneText =
+          this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+      }
+      this.checkTimezoneValid()
+    },
+    selectedTimeZone(val) {
+      this.formValues.scheduledDateTimeZoneId = val
     }
   },
   created() {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
     }
+    this.getSelectedTimeZone()
     this.callForPhoneNumbers()
     this.callForTargetGroups()
   },
   methods: {
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formValues.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
+    },
     handleCancel(forceUpdate = false) {
       this.$emit('cancel', forceUpdate)
     },
@@ -628,6 +740,14 @@ export default {
           : true
         : false
       return this.isDateValid
+    },
+    checkTimezoneValid() {
+      this.isTimezoneValid = this.formValues
+        ? this.formValues.scheduleType === '3'
+          ? !!this.formValues.scheduledDateTimeZoneId
+          : true
+        : false
+      return this.isTimezoneValid
     },
     callForCampaign() {
       getVishingCampaign(this.selectedRow.resourceId).then((response) => {
@@ -760,8 +880,16 @@ export default {
     nextStep() {
       if (this.step === 1) {
         const { refFormStep1 } = this.$refs
-        if (refFormStep1.validate() && this.checkDateIsValid()) this.step++
-        else this.$nextTick(() => scrollToComponent(refFormStep1.$el.querySelector('.error--text')))
+        refFormStep1.validate()
+        this.checkDateIsValid()
+        this.checkTimezoneValid()
+        this.$nextTick(() => {
+          if (refFormStep1.$el.querySelector('.error--text')) {
+            scrollToComponent(refFormStep1.$el.querySelector('.error--text'))
+          } else {
+            this.step++
+          }
+        })
       } else if (this.step === 3) {
         this.callForCalculateSendingInfo()
         if (this.formValues.targetGroupResourceIds.length) {
@@ -776,7 +904,14 @@ export default {
         }
       } else if (this.step === 4) {
         const { refFormStep4 } = this.$refs
-        if (refFormStep4.validate() && this.distributionDays > 0) this.step++
+        if (
+          refFormStep4.validate() &&
+          this.distributionDays > 0 &&
+          this.formValues.distributionStartTime &&
+          this.formValues.distributionEndTime &&
+          this.formValues.distributionOverDays > 0
+        )
+          this.step++
       } else this.step++
     },
     submit() {

@@ -1114,6 +1114,10 @@
       box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
       background-color: #2196f3;
 
+      &.btn-add--disabled {
+        box-shadow: none;
+      }
+
       &__text {
         margin-left: 4px;
         font-size: 14px;
