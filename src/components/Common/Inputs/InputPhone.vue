@@ -25,7 +25,7 @@
         </div>
       </transition>
     </div>
-    <div class="v-messages theme--light" v-else>
+    <div class="v-messages theme--light" v-if="isPhoneNumberValid && this.required">
       <div class="v-messages__wrapper">
         <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
           *Required
@@ -42,7 +42,15 @@ export default {
   components: {
     VueTelInput
   },
-  props: ['value'],
+  props: {
+    value: {
+      type: String
+    },
+    required: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       isPhoneNumberValid: true,
@@ -55,7 +63,12 @@ export default {
       if (this.value) {
         return labels.InvalidPhoneNumber
       }
-      return 'Required'
+
+      if (this.required) {
+        return 'Required'
+      }
+
+      return ''
     }
   },
   watch: {
@@ -122,7 +135,15 @@ export default {
       this.$nextTick(() => {
         if (this.$refs.refTelInput) {
           this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
-          this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+          if (this.required) {
+            this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+          } else {
+            if (this.value) {
+              this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+            } else {
+              this.isPhoneNumberValid = true
+            }
+          }
         }
       })
     }

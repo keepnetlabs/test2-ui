@@ -54,6 +54,7 @@
             v-model.trim="formValues.phoneNumber"
             ref="refPhone"
             id="input--target-user-phone-number"
+            :required="false"
           />
         </form-group>
         <form-group title="Department">
