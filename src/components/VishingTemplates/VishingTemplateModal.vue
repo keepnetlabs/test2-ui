@@ -758,7 +758,7 @@ export default {
       this.isVishingStepSelected = this.validateFailStep()
       if (!this.isVishingStepSelected) {
         this.$store.dispatch('common/createSnackBar', {
-          message: 'One step should be chosen as fail step.',
+          message: 'One step should be chosen as Vishing Step.',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert'
         })
