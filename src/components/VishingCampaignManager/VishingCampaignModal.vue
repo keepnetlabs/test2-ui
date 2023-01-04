@@ -944,7 +944,7 @@ export default {
         excludeFromReports,
         targetGroupResourceIds: targetGroupResourceIds.map((tGroup) => tGroup.value),
         callerPhoneNumber,
-        distributionOverDays,
+        distributionOverDays: this.distributionDayCount,
         distributionStartTime,
         distributionEndTime,
         distributionDays: this.distributionDays,

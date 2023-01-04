@@ -1,5 +1,5 @@
 <template functional>
-  <div class="d-flex align-center">
+  <div>
     <template v-if="$options.getHasRowContent(props)">
       <span
         v-if="$options.getHasRowContent(props)"
@@ -14,6 +14,7 @@
             v-if="$options.getHasValidationError(props)"
             v-on="on"
             class="ml-2"
+            style="margin-top: -3px;"
             color="#B83A3A"
             medium
             >mdi-information</v-icon
