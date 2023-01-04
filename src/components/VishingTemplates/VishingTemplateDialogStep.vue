@@ -11,7 +11,7 @@
         <KButtonCheckbox
           v-if="value.inputType !== 'Pause'"
           :value="value.isVishingStep"
-          label="Fail at this step"
+          label="Vishing Step"
           customStyle="text-transform: none;"
           @input="onVishingStepChange"
         />
