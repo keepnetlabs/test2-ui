@@ -57,7 +57,7 @@
             </div>
           </div>
           <div v-if="deletable" class="k-file-uploads__item-actions">
-            <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
+            <v-icon :disabled="isLoading" @click="clear">mdi-delete</v-icon>
           </div>
         </div>
       </template>

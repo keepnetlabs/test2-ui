@@ -23,19 +23,23 @@ const CONSTANTS = {
     "Cannot read properties of null (reading 'ownerDocument')",
     'this.getDoc() is null',
     'this.em.getSelected is not a function',
-    'this.em.getSelectedAll is not a function'
+    'this.em.getSelectedAll is not a function',
+    "undefined is not an object (evaluating 'u.width')",
+    "null is not an object (evaluating 'this.getDoc().querySelector')"
   ],
   VUETIFY_INTERNAL: ["Cannot read properties of undefined (reading 'getTiles')"],
   VUE_ROUTER: 'Navigation aborted from',
   SMARTLOOK: 'smartlook',
-  RESIZE_OBSERVER: 'ResizeObserver loop limit exceeded',
+  RECORDER_ERROR: 'Could not start new session on document.visible event',
+  RESIZE_OBSERVER: 'ResizeObserver',
   AXIOS_ERROR: [
     'Request failed with status code 401',
     'timeout of 100000ms exceeded',
-    'Request aborted'
+    'Request aborted',
+    'Request failed with status code 524'
   ],
   NETWORK_ERROR: 'Network Error',
-  USER_FLOW: 'Userflow.js error reply (generic)',
+  USER_FLOW: ['Userflow.js error reply (generic)', 'Unexpected token'],
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
     'Redirected when going from "/login" to "/" via a navigation guard.',
@@ -71,11 +75,12 @@ export default () => {
       if (CONSTANTS.ANIMATION_FRAME.some((m) => message.includes(m))) return null
       if (CONSTANTS.GTAG.some((m) => message.includes(m))) return null
       if (CONSTANTS.CHART_JS.some((m) => message.includes(m))) return null
+      if (CONSTANTS.USER_FLOW.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
+      if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.VUE_ROUTER)) return null
       if (message.includes(CONSTANTS.RESIZE_OBSERVER)) return null
       if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
-      if (message.includes(CONSTANTS.USER_FLOW)) return null
     }
     return event
   })

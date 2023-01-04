@@ -131,7 +131,7 @@
                             name="email"
                             ref="email"
                             class="username-field"
-                            label="Username or email"
+                            label="Email address"
                             outlined
                             validate-on-blur
                             autocomplete="disabled"

@@ -55,9 +55,84 @@ export default {
     isAllGroups: {
       type: Boolean,
       default: false
+    },
+    isShowCompanyColumn: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
+    const columns = [
+      {
+        property: PROPERTY_STORE.NAME,
+        align: 'left',
+        editable: false,
+        label: 'Group Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 340,
+        isEditable: true,
+        filterableType: 'text'
+      },
+      {
+        property: PROPERTY_STORE.PRIORITY,
+        align: 'center',
+        editable: false,
+        label: getStoreValue(PROPERTY_STORE.PRIORITY),
+        sortable: true,
+        show: true,
+        type: 'priority',
+        fixed: false,
+        isEditable: true,
+        filterableType: 'select',
+        filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
+        showSelectSearch: false,
+        editOptions: {
+          component: 'select',
+          props: {
+            items: [
+              { text: 'Very Low', value: 'VeryLow' },
+              'Low',
+              'Medium',
+              'High',
+              { text: 'Very High', value: 'VeryHigh' }
+            ]
+          }
+        },
+        width: 260,
+        overrideWidth: true
+      },
+      {
+        property: PROPERTY_STORE.CREATETIME,
+        align: 'left',
+        editable: false,
+        fixed: false,
+        label: getStoreValue(PROPERTY_STORE.CREATETIME),
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'date',
+        minWidth: 150,
+        isEditable: true,
+        overrideWidth: true
+      }
+    ]
+    if (this.isShowCompanyColumn)
+      columns.splice(1, 0, {
+        property: PROPERTY_STORE.COMPANYNAME,
+        align: 'left',
+        editable: false,
+        label: labels.CompanyName,
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        isEditable: true,
+        filterableType: 'text'
+      })
     return {
       axiosPayload: getDefaultAxiosPayload(),
       CONSTANTS: {
@@ -66,76 +141,7 @@ export default {
       },
       tableData: [],
       tableOptions: {
-        columns: [
-          {
-            property: PROPERTY_STORE.NAME,
-            align: 'left',
-            editable: false,
-            label: 'Group Name',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 340,
-            isEditable: true,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.COMPANYNAME,
-            align: 'left',
-            editable: false,
-            label: labels.CompanyName,
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            isEditable: true,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.PRIORITY,
-            align: 'center',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.PRIORITY),
-            sortable: true,
-            show: true,
-            type: 'priority',
-            fixed: false,
-            isEditable: true,
-            filterableType: 'select',
-            filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
-            showSelectSearch: false,
-            editOptions: {
-              component: 'select',
-              props: {
-                items: [
-                  { text: 'Very Low', value: 'VeryLow' },
-                  'Low',
-                  'Medium',
-                  'High',
-                  { text: 'Very High', value: 'VeryHigh' }
-                ]
-              }
-            },
-            width: 260,
-            overrideWidth: true
-          },
-          {
-            property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
-            editable: false,
-            fixed: false,
-            label: getStoreValue(PROPERTY_STORE.CREATETIME),
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'date',
-            minWidth: 150,
-            isEditable: true,
-            overrideWidth: true
-          }
-        ],
+        columns,
         iEmpty: {
           message: labels.EmptyTargetGroup,
           subMes: 'Go to Company > Target Users to add Target Groups',

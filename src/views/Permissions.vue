@@ -346,6 +346,9 @@ export default {
           if (item.moduleName === 'Company') {
             sortedPermissions[6] = item
           }
+          if (item.moduleName === 'Vishing') {
+            sortedPermissions[7] = item
+          }
         })
         this.permissions = sortedPermissions.filter((item) => item)
         function search_and_delete(obj, search_term) {

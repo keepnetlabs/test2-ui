@@ -351,6 +351,10 @@
             display: none;
         }
     }
+
+    &__error-row {
+        background-color: #FEF7F7 !important;
+    }
 }
 
 .validate-data-table-wrapper {
