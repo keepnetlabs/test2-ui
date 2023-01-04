@@ -18,7 +18,8 @@ const dashboard = {
   getters: {
     isPopupOpened: (state) => state.popupFeedback,
     getIsSwitchDialogOpen: (state) => state.isSwitchDialogOpen,
-    getCompanyDropdowns: (state) => state.dropdownCompanies
+    getCompanyDropdowns: (state) => state.dropdownCompanies,
+    getCurrentCompanyObject: (state) => state.selectedCompanyObject
   },
   mutations: {
     SET_DROPDOWN_COMPANIES(state, payload) {

@@ -339,10 +339,8 @@
                       error-message="End Time is required"
                     />
                   </div>
-                  <span
-                    v-if="!!selectedTimeZoneText"
-                    class="ml-2 form-group-horizontal-content__label"
-                  >
+                  <span v-if="!!selectedTimeZoneText" class="mx-2">in</span>
+                  <span v-if="!!selectedTimeZoneText" class="form-group-horizontal-content__label">
                     {{ selectedTimeZoneText }}
                   </span>
                 </div>
@@ -528,7 +526,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone',
+      companyObject: 'dashboard/getCurrentCompanyObject',
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
@@ -595,9 +593,10 @@ export default {
     getDistributionOverDaysValueErrorMessage() {
       if (
         this.formValues.distributionOverDays === '' ||
-        this.formValues.distributionOverDays <= 0
+        this.formValues.distributionOverDays < 1 ||
+        this.formValues.distributionOverDays > 6
       ) {
-        return 'Enter a number higher than 0'
+        return 'Enter a number between 1 and 6'
       }
       return ''
     },
@@ -624,11 +623,9 @@ export default {
   watch: {
     timeZones: {
       deep: true,
+      immediate: true,
       handler(val) {
-        if (this.formValues.scheduledDateTimeZoneId)
-          this.selectedTimeZoneText =
-            val?.timeZoneList?.find((item) => item.id === this.formValues.scheduledDateTimeZoneId)
-              ?.displayName || ''
+        this.setTimezoneId()
       }
     },
     timezoneFormat: {
@@ -691,31 +688,42 @@ export default {
     'formValues.scheduleDate'() {
       this.checkDateIsValid()
     },
-    'formValues.scheduledDateTimeZoneId'(val) {
-      if (val) {
-        this.selectedTimeZoneText =
-          this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+    'formValues.scheduledDateTimeZoneId': {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.selectedTimeZoneText =
+            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+        }
+        this.checkTimezoneValid()
       }
-      this.checkTimezoneValid()
     },
-    selectedTimeZone(val) {
-      this.formValues.scheduledDateTimeZoneId = val
+    companyObject: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.setTimezoneId()
+      }
     }
   },
   created() {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
     }
-    this.getSelectedTimeZone()
     this.callForPhoneNumbers()
     this.callForTargetGroups()
   },
   methods: {
-    getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
-        this.formValues.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
-      } else {
-        this.$store.dispatch('common/callForSettings')
+    setTimezoneId() {
+      if (this.isEdit || this.isDuplicate) return
+      if (this.timeZones && this.companyObject) {
+        this.formValues.scheduledDateTimeZoneId = this.companyObject?.timeZoneId || ''
+        if (this.formValues.scheduledDateTimeZoneId) {
+          this.selectedTimeZoneText =
+            this.timeZones?.timeZoneList?.find(
+              (item) => item.id === this.formValues.scheduledDateTimeZoneId
+            )?.displayName || ''
+        }
       }
     },
     handleCancel(forceUpdate = false) {
@@ -906,7 +914,7 @@ export default {
         const { refFormStep4 } = this.$refs
         if (
           refFormStep4.validate() &&
-          this.distributionDays > 0 &&
+          !this.getDistributionOverDaysValueErrorMessage &&
           this.formValues.distributionStartTime &&
           this.formValues.distributionEndTime &&
           this.formValues.distributionOverDays > 0
