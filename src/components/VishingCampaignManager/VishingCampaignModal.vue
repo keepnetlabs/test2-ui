@@ -606,6 +606,9 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    handleCancel(forceUpdate = false) {
+      this.$emit('cancel', forceUpdate)
+    },
     changeVishingCampaignModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
