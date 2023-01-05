@@ -33,6 +33,7 @@ export const labels = {
   OpenedTrainingEmail: 'Opened Training Email',
   ClickedTrainingLink: 'Clicked Training Link',
   ExcludeIPAddress: 'Exclude IP Address',
+  ExcludedURLTooltipText: 'This URL is excluded by system to prevent false positive reporting.',
   TargetUserGroups: 'Target User Groups',
   UserWhoOpenedEmail: 'Users who opened the e-mail',
   TargetUserGroupsSub: 'Select user groups below to send the training exercise',
