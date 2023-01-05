@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    :content-class="className"
+    :content-class="getClassName"
     :opacity="0.23"
     :value="status"
     :id="id"
@@ -112,7 +112,8 @@ export default {
       default: 'small'
     },
     className: {
-      type: String
+      type: String,
+      default: ''
     },
     id: {
       type: String
@@ -153,6 +154,11 @@ export default {
       }
 
       return retValue
+    },
+    getClassName() {
+      let className = this.className || ''
+      if (this.maxHeight && this.maxHeightSize) className += ' k-dialog__max-height-border-radius'
+      return className
     },
     getTitleClass() {
       const className = ['k-dialog__title']

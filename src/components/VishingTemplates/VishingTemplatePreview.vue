@@ -1,0 +1,127 @@
+<template>
+  <AppDialog
+    icon="mdi-eye"
+    custom-size="670"
+    :status="status"
+    :title="getTitle"
+    :subtitle="getSubtitle"
+    max-height
+    max-height-size="900"
+    class-name="vishing-template-preview-dialog"
+    @changeStatus="handleClose"
+  >
+    <template #app-dialog-body>
+      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+      <div v-else :class="['template-preview']">
+        <div v-if="showTemplateInfo" class="template-preview__text mb-4">
+          <div>
+            <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
+          </div>
+          <div v-if="templateData.senderPhoneNumber">
+            <span class="template-preview__text--body"
+              >Sender Phone Number: {{ templateData.senderPhoneNumber }}</span
+            >
+          </div>
+        </div>
+        <h3 class="template-preview__steps__header">Steps</h3>
+        <div class="template-preview__steps">
+          <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
+            <VishingTemplatePreviewStep :step="step" :index="index" />
+            <hr
+              v-if="index !== templateData.steps.length - 1"
+              class="template-preview__steps__separator"
+            />
+          </div>
+        </div>
+      </div>
+    </template>
+    <template #app-dialog-footer>
+      <div class="d-flex" style="justify-content: flex-end;">
+        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
+          >CLOSE
+        </v-btn>
+      </div>
+    </template>
+  </AppDialog>
+</template>
+
+<script>
+import AppDialog from '@/components/AppDialog'
+import { getVishingCampaignPreview, getVishingTemplatePreview } from '@/api/vishing'
+import labels from '@/model/constants/labels'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+export default {
+  name: 'VishingTemplatePreview',
+  components: {
+    DatatableLoading,
+    AppDialog,
+    VishingTemplatePreviewStep
+  },
+  props: {
+    isCampaign: {
+      type: Boolean
+    },
+    status: {
+      type: Boolean
+    },
+    selectedRow: {
+      type: Object
+    },
+    showTemplateInfo: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data() {
+    return {
+      isLoading: false,
+      labels,
+      timeoutId: '',
+      templateData: null
+    }
+  },
+  computed: {
+    getTitle() {
+      if (this.isCampaign) {
+        return 'Vishing Campaign Preview'
+      }
+      return 'Vishing Template Preview'
+    },
+    getSubtitle() {
+      return this.selectedRow.name
+    },
+    isRenderSteps() {
+      return this.templateData?.steps?.length > 0
+    }
+  },
+  created() {
+    this.callForData()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
+  methods: {
+    callForData() {
+      this.isLoading = true
+      const fn = this.isCampaign ? getVishingCampaignPreview : getVishingTemplatePreview
+      fn(this.selectedRow.resourceId)
+        .then((response) => {
+          this.templateData = response?.data?.data || {}
+          const invalidDialingNoticeStepIndex = this.templateData.steps.findIndex(
+            (step) => step.order === 0
+          )
+          if (invalidDialingNoticeStepIndex !== -1) {
+            this.templateData.steps.splice(invalidDialingNoticeStepIndex, 1)
+          }
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    handleClose() {
+      this.$emit('on-close')
+    }
+  }
+}
+</script>
