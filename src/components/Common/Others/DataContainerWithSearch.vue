@@ -32,7 +32,19 @@
             <v-icon v-on="on" class="filter__icon">mdi-filter-variant</v-icon>
           </template>
           <div class="filter__body-container">
-            <v-checkbox v-model="isFilterChecked" color="#2196f3" label="Only show invalid entries">
+            <v-checkbox
+              v-if="isCustomFilterAvailable"
+              v-model="isCustomFilterChecked"
+              color="#2196f3"
+              label="Only show custom entries"
+            >
+            </v-checkbox>
+            <v-checkbox
+              v-if="isInvalidFilterAvailable"
+              v-model="isFilterChecked"
+              color="#2196f3"
+              label="Only show invalid entries"
+            >
             </v-checkbox>
             <div class="filter__footer">
               <v-btn text class="filter__footer-button" color="#00BCD4" @click="clearFilter">
@@ -41,8 +53,8 @@
               <v-btn
                 text
                 class="filter__footer-button"
-                :color="isFilterChecked ? '#409eff' : '#2196f3'"
-                :disabled="!isFilterChecked"
+                :color="isOneOfFiltersChecked ? '#409eff' : '#2196f3'"
+                :disabled="!isOneOfFiltersChecked"
                 @click="handleFilter"
               >
                 Filter
@@ -65,6 +77,8 @@
             <data-container-with-search-item
               :key="getItems[index].key"
               :value="getItems[index].val"
+              :isEditable="getItems[index].isEditable"
+              :disabledTooltipText="getItems[index].disabledTooltipText"
               :index="index"
               :item-height="itemHeight"
               :text-field-rules="textFieldRules"
@@ -152,13 +166,27 @@ export default {
     invalidMessage: {
       type: String,
       default: labels.InvalidURLS
+    },
+    getEditability: {
+      type: Function,
+      default: (item) => true
+    },
+    disabledTooltipText: {
+      type: String,
+      default: 'You cannot edit or delete this record.'
+    },
+    filters: {
+      type: Array,
+      default: () => ['invalid']
     }
   },
   data() {
     return {
       isFilterChecked: false,
+      isCustomFilterChecked: false,
       isAllValid: true,
       isFilterActive: false,
+      isCustomFilterActive: false,
       isMenuOpen: false,
       search: '',
       scrollKey: 'scroll-key-aksaks',
@@ -170,17 +198,36 @@ export default {
       return { ...this.customStyle, maxWidth: this.maxWidth }
     },
     getItems() {
-      const items = this.search
+      let items = this.search
         ? this.options.filter((item) => item.val.includes(this.search))
         : this.options
+      if (this.isCustomFilterActive) {
+        items = items.filter((item) => item.isEditable)
+      }
       return this.isFilterActive
-        ? items.filter((item) => !this.textFieldRules.every((func) => func(item.val) === true))
+        ? items.filter(
+            (item) =>
+              item.isEditable && !this.textFieldRules.every((func) => func(item.val) === true)
+          )
         : items
+    },
+    isCustomFilterAvailable() {
+      return this.filters.includes('custom')
+    },
+    isInvalidFilterAvailable() {
+      return this.filters.includes('invalid')
+    },
+    isOneOfFiltersChecked() {
+      if (this.isCustomFilterAvailable && this.isInvalidFilterAvailable) {
+        return this.isCustomFilterChecked || this.isFilterChecked
+      }
+
+      return this.isFilterChecked
     }
   },
   watch: {
     value() {
-      this.setOptions()
+      this.setOptions('push', true)
       this.checkAllValid()
       this.$nextTick(() => {
         this.scrollKey = `scroll-key${Math.random().toString().substring(0, 5)}`
@@ -208,14 +255,23 @@ export default {
       this.checkAllValid()
     },
     checkAllValid() {
-      this.isAllValid = this.value.every((value) =>
-        this.textFieldRules.every((func) => func(value) === true)
-      )
-    },
-    setOptions(funcName = 'unshift') {
-      this.value.forEach((val) => {
-        if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val, funcName)
+      this.isAllValid = this.value.every((value) => {
+        const isEditable = this.getEditability(value)
+        if (!isEditable) {
+          return true
+        } else {
+          return this.textFieldRules.every((func) => func(value) === true)
+        }
       })
+    },
+    setOptions(funcName = 'unshift', reset = false) {
+      if (reset) {
+        this.options = []
+      }
+      for (let i = 0; i < this.value.length; i++) {
+        if (!this.options.find((item) => item.val === this.value[i]))
+          this.addItemToOptions(this.value[i], funcName)
+      }
     },
     resetOptions() {
       this.options = []
@@ -225,6 +281,8 @@ export default {
         val,
         key: Math.random().toString(8),
         isEdit: false,
+        isEditable: this.getEditability(val),
+        disabledTooltipText: this.disabledTooltipText,
         textFieldDefaultValue: val
       })
     },
@@ -236,16 +294,35 @@ export default {
         this.value.findIndex((val) => val === item),
         1
       )
+      this.$emit('on-delete', index)
       this.checkAllValid()
     },
     handleFilter() {
-      this.setCommonProperties(true)
+      if (this.isFilterChecked) {
+        this.isFilterActive = true
+      } else {
+        this.isFilterActive = false
+      }
+
+      if (this.isCustomFilterChecked) {
+        this.isCustomFilterActive = true
+      } else {
+        this.isCustomFilterActive = false
+      }
+      this.isMenuOpen = false
     },
     clearFilter() {
-      this.setCommonProperties()
+      this.isFilterChecked = false
+      this.isCustomFilterChecked = false
+      this.isFilterActive = false
+      this.isCustomFilterActive = false
+      this.isMenuOpen = false
     },
     setCommonProperties(val = false) {
-      this.isFilterChecked = val
+      if (val === false) {
+        this.isFilterChecked = false
+        this.isCustomFilterChecked = false
+      }
       this.isFilterActive = val
       this.isMenuOpen = false
     }
