@@ -1,0 +1,441 @@
+<template>
+  <div class="vishing-template-select-list">
+    <div class="vishing-template-select-list__container" ref="topOfTheTemplate">
+      <div class="vishing-template-select-list__container-main">
+        <div class="vishing-template-select-list-content">
+          <div class="vishing-template-select-list-content--search">
+            <div class="d-flex justify-space-between">
+              <div class="d-flex">
+                <div>
+                  <v-text-field
+                    placeholder="Search"
+                    outlined
+                    class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
+                    v-model.trim="search"
+                    hide-details
+                    prepend-inner-icon="mdi-magnify"
+                    style="
+                      max-width: 328px;
+                      min-width: 328px;
+                      width: 100%;
+                      padding-right: 4px !important;
+                    "
+                  />
+                </div>
+                <div>
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
+                <div>
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
+                    :items="difficulties"
+                    placeholder="Difficulty"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <multipane class="vertical-panes" layout="vertical">
+            <div
+              class="pane"
+              :style="{
+                width: '400px !important',
+                pointerEvents: loadingTemplates ? 'none' : 'inherit'
+              }"
+              @scroll="handleScroll"
+            >
+              <div
+                class="template-list"
+                v-for="(item, index) in listData"
+                :key="item.name + index"
+                :class="{ 'template-list--selected': item['selected'] }"
+                @click="setSelectedTemplate(item, index)"
+              >
+                <div class="d-flex justify-space-between mb-2">
+                  <div class="d-flex flex-column wrapWord">
+                    <div class="template-list--item template-list--item__header">
+                      {{ item.name }}
+                    </div>
+                    <div
+                      class="template-list--item template-list--item__sub-header"
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                    >
+                      <span class="template-list--item__sub-header--span">by</span>
+                      {{ item['createdBy'] }}
+                    </div>
+                  </div>
+                  <div
+                    class="template-list--item template-list--item__difficulty"
+                    :class="
+                      item['difficulty'] === 'Easy'
+                        ? 'difficulty-easy'
+                        : item['difficulty'] === 'Medium'
+                        ? 'difficulty-medium'
+                        : 'difficulty-hard'
+                    "
+                  >
+                    {{ item['difficulty'] }}
+                  </div>
+                </div>
+
+                <div class="template-list--item">
+                  {{ getItemDescription(item) }}
+                </div>
+                <div class="template-list--item__tags mt-2">
+                  <ShowMoreTags :showMaximumBadgeCount="1" :default-badges="item.tags" />
+                  <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                  <div class="template-list--item__narrator">
+                    <v-icon :size="16" color="#757575">mdi-web</v-icon>
+                    <span class="template-list--item__language">{{ item.language }}</span>
+                    <!-- <span class="template-list--item__language">{{ item.languageShortCode }}</span>
+                    <span class="template-list--item__divider">|</span>
+                    <span class="template-list--item__narrator-gender">{{
+                      item.narratorGender
+                    }}</span> -->
+                  </div>
+                </div>
+              </div>
+              <div
+                v-if="
+                  !loadingTemplates &&
+                  !loadingTemplatePreview &&
+                  (search ||
+                    bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+                    bodyData.filter.FilterGroups[0].FilterItems[1].value) &&
+                  !listData.length
+                "
+                class="pl-5 pt-5"
+              >
+                Search criteria has no results
+              </div>
+              <div
+                v-else-if="
+                  !loadingTemplates && !loadingTemplatePreview && !search && !listData.length
+                "
+                class="pl-5 pt-5"
+              >
+                You do not have Vishing Template
+              </div>
+            </div>
+            <multipane-resizer></multipane-resizer>
+            <div class="pane" :style="{ flexGrow: 1 }">
+              <div class="template-preview" v-if="!!template">
+                <div class="template-preview__header">
+                  <div class="template-preview__header-left">
+                    <v-icon color="#383B41"> mdi-eye </v-icon>
+                    <span class="template-preview__header-left-text"> Preview of Steps</span>
+                  </div>
+                  <div class="template-preview__header-right">
+                    <Badge
+                      color="#E0E0E0"
+                      textBlack
+                      :outline="false"
+                      :text="template.steps.length + ' Steps'"
+                    />
+                  </div>
+                </div>
+                <div class="template-preview__steps">
+                  <div v-if="!!template" v-for="(step, index) in template.steps" :key="index">
+                    <VishingTemplatePreviewStep :step="step" :index="index" />
+                    <hr v-if="index !== template.steps.length - 1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </multipane>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { Multipane, MultipaneResizer } from 'vue-multipane'
+import { getVishingTemplatePreview, getVishingTemplates } from '@/api/vishing'
+import ShowMoreTags from '@/components/ShowMoreTags'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import Badge from '@/components/Badge'
+import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+
+export default {
+  name: 'VishingTemplateSelectList',
+  props: {
+    templateResourceId: {
+      type: String,
+      default: ''
+    },
+    languages: {
+      type: Array,
+      default: () => []
+    }
+  },
+  directives: {
+    'infinite-scroll': InfiniteScroll
+  },
+  components: {
+    ShowMoreTags,
+    Multipane,
+    MultipaneResizer,
+    Badge,
+    VishingTemplatePreviewStep
+  },
+  data() {
+    return {
+      search: null,
+      listData: [],
+      template: null,
+      defaultListData: [],
+      totalNumberOfPages: 1,
+      difficulties: [
+        { text: 'Easy', value: 'Easy' },
+        { text: 'Medium', value: 'Medium' },
+        { text: 'Hard', value: 'Hard' }
+      ],
+      bodyData: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  value: '',
+                  FieldName: 'language',
+                  Operator: 'Include'
+                },
+                { value: '', FieldName: 'difficulty', Operator: 'Include' }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                { FieldName: 'name', Operator: 'Contains', value: '' },
+                { FieldName: 'difficulty', Operator: 'Contains', value: '' },
+                { FieldName: 'createdBy', Operator: 'Contains', value: '' },
+                { FieldName: 'tags', Operator: 'Contains', value: '' },
+                { FieldName: 'createTime', Operator: 'Contains', value: '' }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      loadingTemplatePreview: false,
+      loadingTemplates: false,
+      selectedPreviousIndex: 0
+    }
+  },
+  mounted() {
+    this.getTemplates(true, this.templateResourceId)
+  },
+  methods: {
+    getItemDescription(item = {}) {
+      if (!item?.description) {
+        return '\xa0'
+      }
+
+      if (item?.description === 'null' || item?.description === 'undefined') {
+        return '\xa0'
+      }
+
+      return item?.description || '\xa0'
+    },
+    callForSearch() {
+      this.debounce(() => {
+        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
+        copyOfBodyData.pageNumber = 1
+        copyOfBodyData.pageSize = 100
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
+        this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
+        getVishingTemplates(copyOfBodyData)
+          .then((response) => {
+            if (!response.data.data.results.length) {
+              this.listData = []
+              this.template = null
+            } else {
+              this.listData = response.data.data.results.map((item) => {
+                return { ...item, selected: item.resourceId === this.templateResourceId }
+              })
+            }
+          })
+          .finally(() => {
+            this.loadingTemplates = false
+            this.showLoader = false
+            this.$emit('loading', false)
+          })
+      }, 500)
+    },
+    getTemplatesForSearch() {
+      this.bodyData.pageSize = 100
+      if (this.search) {
+        this.callForSearch()
+      } else {
+        this.getTemplates(true, this.templateResourceId, this.bodyData, true)
+      }
+    },
+    checkAndAddResourceIdToPayload(isInitial, bodyData) {
+      this.loadingTemplates = true
+      this.$emit('loading', true)
+      if (isInitial && this.templateResourceId && false) {
+        bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'resourceId',
+          Operator: 'Include',
+          value: this.templateResourceId
+        })
+      }
+    },
+    getTemplates(isInitial, templateResourceId, bodyData = this.bodyData, isSearch) {
+      this.checkAndAddResourceIdToPayload(isInitial, bodyData)
+      getVishingTemplates(bodyData)
+        .then((response) => {
+          const { data } = response
+          this.totalNumberOfPages = data.data.totalNumberOfPages
+          if (!response.data.data.results.length) {
+            this.listData = []
+            this.template = null
+          } else {
+            data.data.results = data.data.results.map((item) => {
+              return { ...item, selected: false }
+            })
+            if (isSearch) {
+              this.listData = data.data.results
+            } else {
+              this.listData = [...this.listData, ...data.data.results]
+              this.defaultListData = [...this.listData]
+            }
+            if (!templateResourceId) {
+              this.listData[this.selectedPreviousIndex].selected = true
+            }
+            if (isInitial) {
+              if (!!templateResourceId) {
+                const index = this.listData.findIndex(
+                  (item) => item.resourceId === templateResourceId
+                )
+                if (index > -1) {
+                  this.setSelectedTemplate(this.listData[index], index, true)
+                  this.listData[index].selected = true
+                }
+              } else {
+                if (!templateResourceId) {
+                  this.setSelectedTemplate(this.listData[0], 0, true)
+                }
+              }
+              this.defaultListData = [...this.listData]
+            }
+          }
+        })
+        .finally(() => {
+          this.loadingTemplates = false
+          this.showLoader = false
+          this.$emit('loading', false)
+        })
+    },
+    handleScroll(e) {
+      const scrollPosition = e.target.scrollTop + e.target.offsetHeight
+      const scrollHeight = e.target.scrollHeight - 30
+      if (scrollPosition > scrollHeight) {
+        this.debounce(() => {
+          this.getDataAfterValidScroll()
+        }, 250)
+      }
+    },
+    getDataAfterValidScroll() {
+      if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
+        this.bodyData.pageNumber += 1
+        this.loadingTemplates = true
+        this.getTemplates()
+      }
+    },
+    setSelectedTemplate(item, index, isInitial = false) {
+      this.listData = this.listData.map((item) => {
+        return { ...item, selected: false }
+      })
+      if (index !== undefined) {
+        if (this.listData[index]) {
+          this.listData[index].selected = true
+        }
+        this.selectedPreviousIndex = index
+      }
+      this.loadingTemplatePreview = true
+      this.$emit('selectedTemplateResourceId', item.resourceId)
+      if (isInitial) {
+        this.$emit('initialTemplateId', item.resourceId)
+      }
+      getVishingTemplatePreview(item.resourceId)
+        .then((response) => {
+          this.template = response.data.data
+          const invalidDialingNoticeStepIndex = this.template.steps.findIndex(
+            (step) => step.order === 0
+          )
+          if (invalidDialingNoticeStepIndex !== -1) {
+            this.template.steps.splice(invalidDialingNoticeStepIndex, 1)
+          }
+          this.$emit('selectedTemplateChange', { ...item, ...this.template })
+        })
+        .finally(() => {
+          this.loadingTemplatePreview = false
+        })
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    }
+  },
+  watch: {
+    search(newVal, oldVal) {
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
+          this.getTemplates(true)
+        } else {
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.templateResourceId
+          }))
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
+      }
+    }
+  }
+}
+</script>

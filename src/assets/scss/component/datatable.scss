@@ -468,7 +468,7 @@
           width: 100%;
           padding-left: 24px;
 
-          @media (max-width:1023px) {
+          @media (max-width:1025px) {
             flex-direction: column;
           }
           &-disable{
@@ -515,7 +515,7 @@
               padding-top: 13px;
             }
 
-            @media (max-width:1023px) {
+            @media (max-width:1025px) {
               margin-top: 12px
             }
           }
@@ -1114,6 +1114,10 @@
       box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
       background-color: #2196f3;
 
+      &.btn-add--disabled {
+        box-shadow: none;
+      }
+
       &__text {
         margin-left: 4px;
         font-size: 14px;
@@ -1132,6 +1136,9 @@
     letter-spacing: normal;
     color: #0097fa !important;
     text-decoration: none;
+  }
+  &-row--disabled{
+    opacity:.5;
   }
 }
 

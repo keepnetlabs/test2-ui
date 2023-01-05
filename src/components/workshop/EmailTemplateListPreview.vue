@@ -148,15 +148,17 @@
             <div class="pane" :style="{ flexGrow: 1 }">
               <div class="template-preview">
                 <div class="template-preview__icon">
-                  <v-icon
-                    :color="'#2196f3'"
-                    left
-                    medium
-                    @click="isTemplateDetails = true"
+                  <v-btn
                     v-if="!!templateHTML"
+                    color="#2196F3"
+                    icon
+                    outlined
+                    @click="isTemplateDetails = true"
                   >
-                    {{ 'mdi-eye' }}
-                  </v-icon>
+                    <v-icon color="#2196f3" medium>
+                      {{ 'mdi-fullscreen' }}
+                    </v-icon>
+                  </v-btn>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
                   <div class="mb-2">
@@ -413,16 +415,16 @@ export default {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
       if (scrollPosition > scrollHeight) {
-        this.getDataAfterValidScroll()
+        this.debounce(() => {
+          this.getDataAfterValidScroll()
+        }, 250)
       }
     },
     getDataAfterValidScroll() {
       if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
         this.bodyData.pageNumber += 1
-        this.debounce(() => {
-          this.loadingTemplates = true
-          this.getTemplates()
-        }, 250)
+        this.loadingTemplates = true
+        this.getTemplates()
       }
     },
     setSelectedTemplate(item, index, isInitial = false) {

@@ -66,37 +66,28 @@ export default {
   computed: {
     getActionButtonColor() {
       let actionButtonColor
-      switch (this.type) {
-        case 'delete':
-          actionButtonColor = '#f56c6c'
-          break
-        default:
-          actionButtonColor = this.actionButtonColor
-          break
+      if (this.type === 'delete') {
+        actionButtonColor = '#f56c6c'
+      } else {
+        actionButtonColor = this.actionButtonColor
       }
       return actionButtonColor
     },
     getCancelButtonColor() {
       let cancelButtonColor
-      switch (this.type) {
-        case 'delete':
-          cancelButtonColor = '#383b41'
-          break
-        default:
-          cancelButtonColor = this.cancelButtonColor
-          break
+      if (this.type === 'delete') {
+        cancelButtonColor = '#383b41'
+      } else {
+        cancelButtonColor = this.cancelButtonColor
       }
       return cancelButtonColor
     },
     getActionButtonText() {
       let actionButtonText
-      switch (this.type) {
-        case 'delete':
-          actionButtonText = 'DELETE'
-          break
-        default:
-          actionButtonText = this.actionButtonText
-          break
+      if (this.type === 'delete') {
+        actionButtonText = 'DELETE'
+      } else {
+        actionButtonText = this.actionButtonText
       }
       return actionButtonText
     }

@@ -235,34 +235,38 @@ export default {
     },
     handleSaveAndContinue() {
       const { refWhiteLabeling } = this.$refs
-      switch (this.step) {
-        case 1:
-          if (refWhiteLabeling.$refs.refForm.validate()) {
-            this.saveWhiteLabeling(refWhiteLabeling)
+      if (this.step === 1) {
+        if (refWhiteLabeling?.$refs?.refForm?.validate?.()) {
+          this.saveWhiteLabeling(refWhiteLabeling)
+        }
+        return
+      }
+
+      if (this.step === 2) {
+        const isNumberValid = this.$refs.refForm.validatePhoneNumber()
+        const isFormValid = this.$refs.refForm.validate()
+        if (isFormValid && isNumberValid) {
+          this.isSaveDisabled = true
+          const { phoneNumber } = this.systemUserFormData
+          const formData = {
+            ...this.systemUserFormData,
+            phoneNumber: phoneNumber.split(' ').join('')
           }
-          break
-        case 2:
-          const isNumberValid = this.$refs.refForm.validatePhoneNumber()
-          const isFormValid = this.$refs.refForm.validate()
-          if (isFormValid && isNumberValid) {
-            this.isSaveDisabled = true
-            const { phoneNumber } = this.systemUserFormData
-            const formData = {
-              ...this.systemUserFormData,
-              phoneNumber: phoneNumber.split(' ').join('')
-            }
-            formData.roleResourceIdList = [this.systemUserFormData.roleResourceIdList]
-            this.callForCreateSystemUser(formData)
-          } else {
-            this.$forceUpdate()
-            this.$nextTick(() => {
-              const el = this.$refs.refForm.$el.querySelector('.error--text')
-              scrollToComponent(el)
-            })
-          }
-          break
-        case 3:
-          this.closeOverlay()
+          formData.roleResourceIdList = [this.systemUserFormData.roleResourceIdList]
+          this.callForCreateSystemUser(formData)
+        } else {
+          this.$forceUpdate()
+          this.$nextTick(() => {
+            const el = this.$refs.refForm.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        }
+        return
+      }
+
+      if (this.step === 3) {
+        this.closeOverlay()
+        return
       }
     }
   }

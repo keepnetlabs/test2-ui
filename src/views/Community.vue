@@ -8,6 +8,7 @@
         @closeAdd="onAddClose"
       />
       <v-overlay
+        v-if="showPostIncident"
         id="new-community-overlay"
         :value="showPostIncident"
         :class="{ newCommunityOverlay: showPostIncident }"
@@ -44,12 +45,7 @@
                 :transition="false"
                 :reverse-transition="false"
               >
-                <incidents
-                  ref="refIncidents"
-                  :posts="[]"
-                  :incidents-community-name="''"
-                  :refreshIncidents="refreshIncidentsData"
-                />
+                <incidents ref="refIncidents" :refreshIncidents="refreshIncidentsData" />
               </v-tab-item>
               <v-tab-item
                 v-if="getThreatSharingGetMembersPermission"

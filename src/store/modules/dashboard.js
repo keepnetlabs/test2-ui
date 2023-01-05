@@ -1,4 +1,4 @@
-import { selectCompany, logoutUser, getNotifications, notificationSeen } from '@/api/dashboard'
+import { selectCompany, logoutUser } from '@/api/dashboard'
 import AuthenticationService from '../../services/authentication'
 import router from '../../router'
 import { getCompanyList } from '@/api/company'
@@ -7,7 +7,6 @@ const dashboard = {
   namespaced: true,
   state: {
     popupFeedback: false,
-    notificationList: [],
     dropdownCompanies: [],
     selectedCompany: 'Loading...',
     selectedCompanyObject: {
@@ -19,48 +18,28 @@ const dashboard = {
   getters: {
     isPopupOpened: (state) => state.popupFeedback,
     getIsSwitchDialogOpen: (state) => state.isSwitchDialogOpen,
-    getSelectedCompany: (state) => state.selectedCompany,
-    getCompanyDropdowns: (state) => state.dropdownCompanies
+    getCompanyDropdowns: (state) => state.dropdownCompanies,
+    getCurrentCompanyObject: (state) => state.selectedCompanyObject
   },
   mutations: {
     SET_DROPDOWN_COMPANIES(state, payload) {
       state.dropdownCompanies = payload
     },
     SET_SELECTED_COMPANY(state, payload) {
-      const defaultAccountDropdown = []
       localStorage.setItem('isSelectCompany', 'true')
       payload.name = localStorage.getItem('selectedCompanyName')
       payload.id = localStorage.getItem('selectedCompanyRequestId')
       state.selectedCompany = payload
       state.selectedCompanyName = payload
-      defaultAccountDropdown.push(payload)
-      defaultAccountDropdown.push({
-        companyId: 'default',
-        name: 'Switch Company',
-        index: 5 // this.state.auth.user.role.id
-      })
-      state.switchAccountDropdown = defaultAccountDropdown
     },
     SET_SWITCH_DIALOG(state, payload) {
       state.isSwitchDialogOpen = payload
-    },
-    SET_NOTIFICATIONS(state, payload) {
-      state.notificationList = payload
     },
     CHANGE_FEEDBACK_POPUP(state, payload) {
       state.popupFeedback = payload
     }
   },
   actions: {
-    notificationSeen({ commit }, payload) { // eslint-disable-line
-      notificationSeen(payload.id).then(() => {})
-    },
-    getNotifications({ commit }) {
-      getNotifications().then((response) => {
-        const result = response.data
-        commit('SET_NOTIFICATIONS', result)
-      })
-    },
     logoutUser({ commit }) {
       commit('common/SET_SNACK_STATUS', false, { root: true })
       commit('common/SET_SNACKBAR_COLOR', '', { root: true })
@@ -68,7 +47,6 @@ const dashboard = {
         root: true
       })
       commit('common/SET_ERROR_STATE', false, { root: true })
-
       logoutUser()
         .then(() => {
           AuthenticationService.removeToken()

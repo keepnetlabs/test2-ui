@@ -71,7 +71,7 @@ export function searchNotifiedMail(payload) {
 }
 
 export function getSelectedEmailPreview(id) {
-  return testRequest.get(`/community-posts/notified-email-preview/${id}`, { loading: true })
+  return testRequest.get(`/community-posts/notified-email-preview/${id}`)
 }
 
 export function uploadEmlOrMsg(file, onUploadProgress) {
@@ -108,11 +108,11 @@ export function createComments(id, payload) {
 }
 
 export function likePost(id) {
-  return testRequest.post(`community-posts/${id}/like`, {})
+  return testRequest.post(`community-posts/${id}/like`, {}, { snackbar: COMMON_SNACKBAR })
 }
 
 export function getCommunityPost(id) {
-  return testRequest.get(`community-posts/${id}`, { loading: true })
+  return testRequest.get(`community-posts/${id}`)
 }
 
 export function parseEmail(payload) {
@@ -120,7 +120,7 @@ export function parseEmail(payload) {
 }
 
 export function getCommunityPostPreview(id) {
-  return testRequest.get(`community-posts/${id}/preview`, { loading: true })
+  return testRequest.get(`community-posts/${id}/preview`)
 }
 
 export function getMyLastPosts() {
@@ -145,10 +145,6 @@ export function getsuggestedCommunities() {
 
 export function createCommunityPost(payload) {
   return testRequest.post(`community-posts`, payload, { snackbar: COMMON_SNACKBAR })
-}
-
-export function systemUser(systemUserData) {
-  return testRequest.post('system-users', systemUserData)
 }
 
 export function deleteCommunityPost(id) {

@@ -1,0 +1,87 @@
+import Vue from 'vue'
+const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
+const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
+import * as Sentry from '@sentry/browser'
+import { Vue as VueIntegration } from '@sentry/integrations'
+import { Integrations } from '@sentry/tracing'
+const CONSTANTS = {
+  ERROR: 'error',
+  GRAPESJS_INTERNAL: [
+    "Cannot read properties of null (reading 'querySelector')",
+    "Cannot read properties of null (reading 'hasFocus')",
+    "Cannot read properties of undefined (reading 'width')",
+    "Cannot read properties of null (reading 'CodeMirror')",
+    "Cannot read properties of undefined (reading 'get')",
+    "Cannot read properties of undefined (reading '__trgEv')",
+    'this.em.trigger is not a function',
+    "Cannot read properties of undefined (reading 'lastComponent')",
+    'this.model.get is not a function',
+    'this.get(...) is undefined',
+    'o is null',
+    "Cannot read properties of undefined (reading 'getZoomDecimal')",
+    "Cannot read properties of undefined (reading 'parseHtml')",
+    "Cannot read properties of null (reading 'ownerDocument')",
+    'this.getDoc() is null',
+    'this.em.getSelected is not a function',
+    'this.em.getSelectedAll is not a function',
+    "undefined is not an object (evaluating 'u.width')",
+    "null is not an object (evaluating 'this.getDoc().querySelector')"
+  ],
+  VUETIFY_INTERNAL: ["Cannot read properties of undefined (reading 'getTiles')"],
+  VUE_ROUTER: 'Navigation aborted from',
+  SMARTLOOK: 'smartlook',
+  RECORDER_ERROR: 'Could not start new session on document.visible event',
+  RESIZE_OBSERVER: 'ResizeObserver',
+  AXIOS_ERROR: [
+    'Request failed with status code 401',
+    'timeout of 100000ms exceeded',
+    'Request aborted',
+    'Request failed with status code 524'
+  ],
+  NETWORK_ERROR: 'Network Error',
+  USER_FLOW: ['Userflow.js error reply (generic)', 'Unexpected token'],
+  LOGIN_NAVIGATION_DUPLICATED: [
+    'Avoided redundant navigation to current location: "/login"',
+    'Redirected when going from "/login" to "/" via a navigation guard.',
+    'Navigation aborted from "/login?'
+  ],
+  ANIMATION_FRAME: [
+    'window.requestAnimationFrame is not a function',
+    'requestAnimationFrame is not defined'
+  ],
+  GTAG: ['a.indexOf is not a function', 'Illegal invocation'],
+  CHART_JS: ['No error message']
+}
+export default () => {
+  if (!sentryStatus) return
+  Sentry.init({
+    dsn: sentryDSN,
+    integrations: [
+      new VueIntegration({
+        Vue,
+        tracing: true
+      }),
+      new Integrations.BrowserTracing()
+    ],
+    tracesSampleRate: 1.0
+  })
+  Sentry.addGlobalEventProcessor(function (event) {
+    if (event?.level === CONSTANTS.ERROR && event?.exception?.values?.[0]) {
+      const message = event.exception.values[0].value
+      if (CONSTANTS.GRAPESJS_INTERNAL.some((m) => message.includes(m))) return null
+      if (CONSTANTS.VUETIFY_INTERNAL.some((m) => message.includes(m))) return null
+      if (CONSTANTS.AXIOS_ERROR.some((m) => message.includes(m))) return null
+      if (CONSTANTS.LOGIN_NAVIGATION_DUPLICATED.some((m) => message.includes(m))) return null
+      if (CONSTANTS.ANIMATION_FRAME.some((m) => message.includes(m))) return null
+      if (CONSTANTS.GTAG.some((m) => message.includes(m))) return null
+      if (CONSTANTS.CHART_JS.some((m) => message.includes(m))) return null
+      if (CONSTANTS.USER_FLOW.some((m) => message.includes(m))) return null
+      if (message.includes(CONSTANTS.SMARTLOOK)) return null
+      if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
+      if (message.includes(CONSTANTS.VUE_ROUTER)) return null
+      if (message.includes(CONSTANTS.RESIZE_OBSERVER)) return null
+      if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
+    }
+    return event
+  })
+}

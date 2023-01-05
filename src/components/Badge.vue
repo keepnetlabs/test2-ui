@@ -57,6 +57,10 @@ export default {
       type: String,
       default: ''
     },
+    isBlackText: {
+      type: Boolean,
+      default: false
+    },
     defaultBackgroundColor: {
       type: String,
       default: '#fff'
@@ -98,19 +102,23 @@ export default {
   },
   getBadgeSize(val) {
     let retValue = ''
-    switch (val) {
-      case 'medium':
-        retValue = 'k-badge__sizes--medium'
-        break
-      case 'small':
-        retValue = 'k-badge__sizes--small'
-        break
-      case 'mini':
-        retValue = 'k-badge__sizes--mini'
-        break
-      default:
-        break
+
+    if (val === 'medium') {
+      retValue = 'k-badge__sizes--medium'
     }
+
+    if (val === 'small') {
+      retValue = 'k-badge__sizes--small'
+    }
+
+    if (val === 'mini') {
+      retValue = 'k-badge__sizes--mini'
+    }
+
+    if (val === 'auto') {
+      retValue = 'k-badge__sizes--auto'
+    }
+
     return retValue
   },
   getDynamicProps(props = {}) {

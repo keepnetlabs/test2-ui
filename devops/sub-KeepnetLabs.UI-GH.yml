@@ -12,6 +12,10 @@ parameters:
   displayName: GitHub Connection URL
   type: string
 
+- name: githubBranchName
+  displayName: GitHub Branch Name
+  type: string
+
 jobs:
 - deployment: Push_GH
   workspace:
@@ -19,11 +23,12 @@ jobs:
   displayName: Push_GH
   environment:
     name: '${{ parameters.environment }}'
-    resourceType: VirtualMachine 
   strategy:
     runOnce:
       deploy:
         steps:
+        - download: none
+
         - checkout: ${{ parameters.repositoryName }}
           path: ${{ parameters.repositoryName }}
           fetchDepth: 0
@@ -31,18 +36,18 @@ jobs:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            git push ${{ parameters.githubConnectionUrl }} --delete test
-            git checkout -b test
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            displayName: 'Github Test Deployment Checkout'
+            git push ${{ parameters.githubConnectionUrl }} --delete ${{ parameters.githubBranchName }}
+            git checkout -b ${{ parameters.githubBranchName }}
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          displayName: 'Github Deployment Checkout: ${{ parameters.githubBranchName }}'
 
         - script: |
             rm public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
             mv public/config.Production.js public/3da9996d-1c60-461b-a56c-430f3ea053f4.js
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            displayName: 'Config.js Changes'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          displayName: 'Config.js Changes'
 
         - task: qetza.replacetokens.replacetokens-task.replacetokens@3
           displayName: 'Replace tokens in 3da9996d-1c60-461b-a56c-430f3ea053f4.js'
@@ -54,19 +59,19 @@ jobs:
         - script: |
             git config --global user.email "keepnetlabs@keepnetlabs.com"
             git config --global user.name "Keepnetlabs"
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            displayName: 'Github User Cred'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          displayName: 'Github User Cred'
 
         - script: |
             git add .
             git commit -m "config.js updated"
-            # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'  
-            displayName: 'Github Add and Commit Config.js'
+          # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'  
+          displayName: 'Github Add and Commit Config.js'
 
-        - script: 'git push ${{ parameters.githubConnectionUrl }} '
+        - script: 'git push ${{ parameters.githubConnectionUrl }}'
           # workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.repositoryName }}'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-          displayName: 'Github Test Deployment Push'
+          displayName: 'Github Deployment Push: ${{ parameters.githubBranchName }}'
 

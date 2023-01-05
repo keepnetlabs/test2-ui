@@ -31,7 +31,7 @@
               {{ displayFileName(file.name) }}
             </div>
             <div class="k-file-uploads__item-details--filesize">
-              <span>{{ file.size | formatSize }}</span>
+              <span v-if="!!file.size">{{ getFileSize(file.size) }}</span>
               <span
                 v-if="
                   isStandAlone &&
@@ -57,7 +57,7 @@
             </div>
           </div>
           <div v-if="deletable" class="k-file-uploads__item-actions">
-            <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
+            <v-icon :disabled="isLoading" @click="clear">mdi-delete</v-icon>
           </div>
         </div>
       </template>
@@ -179,6 +179,18 @@ export default {
     }
   },
   methods: {
+    getFileSize(size = 0) {
+      if (size > 1024 * 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
+      } else if (size > 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
+      } else if (size > 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + ' MB'
+      } else if (size > 1024) {
+        return (size / 1024).toFixed(2) + ' KB'
+      }
+      return size.toString() + ' B'
+    },
     displayFileName(fileName) {
       return fileName ? (fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...') : ''
     },

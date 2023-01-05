@@ -15,10 +15,6 @@
     }
 }
 
-.position-relative {
-    position: relative;
-}
-
 .max-width__form {
     position: relative;
     max-width: 554px !important;
@@ -49,10 +45,6 @@
         .v-menu__content {
             z-index: 900000 !important;
         }
-    }
-
-    .v-list-item {
-        //margin-bottom: 1px;
     }
 
     .v-list-item__content>*:not(:last-child) {

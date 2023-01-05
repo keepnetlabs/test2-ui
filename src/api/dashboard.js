@@ -1,4 +1,3 @@
-import request from '../utils/request'
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
@@ -10,10 +9,6 @@ export function logoutUser() {
   return testRequest.get('account/logout')
 }
 
-export function notificationSeen(payload) {
-  return request.post(`user/notification/${payload}/read`)
-}
-
 export function sendFeedback(payload) {
   return testRequest.post('feedback', payload, {
     snackbar: COMMON_SNACKBAR
@@ -21,7 +16,7 @@ export function sendFeedback(payload) {
 }
 
 export function getNotifications(payload) {
-  return request.post('/system-users/notification-setting', payload)
+  return testRequest.post('/system-users/notification-setting', payload)
 }
 
 export function getAuditLogs(payload) {

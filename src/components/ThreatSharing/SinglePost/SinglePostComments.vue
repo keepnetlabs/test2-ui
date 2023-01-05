@@ -19,9 +19,9 @@
       <template v-slot:skeleton-content> </template>
     </PostCardLoading>
     <div
+      v-if="!commentsLoading"
       class="preview-comments"
       :class="{ 'open-comments': commentOpened }"
-      v-if="!commentsLoading"
     >
       <v-form ref="refCommentForm" class="add-comment-row" onSubmit="return false;">
         <InputEntityName

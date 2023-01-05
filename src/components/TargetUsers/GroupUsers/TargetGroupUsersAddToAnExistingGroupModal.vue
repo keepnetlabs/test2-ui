@@ -16,6 +16,7 @@
         selectable
         is-server-side
         filterable
+        no-padding-bottom
         :count-row="5"
         :loading="loading"
         :columns="tableOptions.columns"

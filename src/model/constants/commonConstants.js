@@ -104,6 +104,7 @@ export const LABEL_STORE = {
   CREATEDBY: 'Created By',
   NO_INTEGRATIONS: 'You do not have any integrations',
   NO_EMAIL_TEMPLATES: 'You do not have any templates',
+  NO_VISHING_TEMPLATES: 'You do not have any vishing templates',
   NO_RULES_CONFIGURED: 'You do not have any rules',
   NO_TARGET_GROUPS_DEFINED: 'You do not have any target groups',
   NO_TARGET_USER_ADDED: 'You do not have any users',
@@ -130,7 +131,7 @@ export const LABEL_STORE = {
   PROVIDER: 'Provider',
   ACCOUNTSID: 'Account SID',
   ROLE: 'Role',
-  PHONENUMBER: 'Phone',
+  PHONENUMBER: 'Phone Number',
   STATUSNAME: 'Status',
   ADDINSTATUSNAME: 'Add-in Status',
   TYPENAME: 'Type',
@@ -317,6 +318,10 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
+  VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTableSettings',
+  VISHING_REPORT_DIALED_TABLE: 'VishingReportDialedTableSettings',
+  VISHING_REPORT_NO_RESPONSE_TABLE: 'VishingReportNoResponseTableSettings',
   TRASH_LIST: 'TrashListTableSettings',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTableSettings',
   TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTableSettings',
@@ -365,6 +370,8 @@ export const TABLE_SETTINGS_KEYS = {
   SAML_SETTINGS: 'SamlSettingsTableSettings',
   PROXY_SETTINGS: 'ProxySettingsTableSettings',
   EMAILTEMPLATES: 'EmailTemplatesTableSettings',
+  VISHINGTEMPLATES: 'VishingTemplatesTableSettings',
+  VISHING_CAMPAIGN_MANAGER: 'VishingCampaignManagerSettings',
   SANDBOX: 'Sandbox',
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceListTableSettingsKey',
@@ -382,15 +389,11 @@ export const TABLE_SETTINGS_KEYS = {
 export function getStoreValue(key, type) {
   key = key.trim().toUpperCase()
   let value = LABEL_STORE[key]
-  switch (type) {
-    case COMMON_CONSTANTS.UPPERCASE:
-      value = value.toUpperCase()
-      break
-    case COMMON_CONSTANTS.LOWERCASE:
-      value = value.toLowerCase()
-      break
-    default:
-      break
+  if (type === COMMON_CONSTANTS.UPPERCASE) {
+    value = value.toUpperCase()
+  }
+  if (type === COMMON_CONSTANTS.LOWERCASE) {
+    value = value.toLowerCase()
   }
   return value
 }
@@ -444,6 +447,10 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
+  VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTable',
+  VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
+  VISHING_REPORT_DIALED_TABLE: 'VishingReportDialedTable',
+  VISHING_REPORT_NO_RESPONSE_TABLE: 'VishingReportNoResponseTable',
   TRASH_LIST: 'TrashListTable',
   TRAINING_REPORT_CLICKED_TABLE: 'TrainingReportClickedTable',
   TRAINING_REPORT_PROGRESS_TABLE: 'TrainingReportProgressTable',
@@ -492,6 +499,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SAMLSETTINGS: 'SamlSettings',
   PROXY_SETTINGS: 'ProxySettings',
   EMAILTEMPLATES: 'EmailTemplatesSearchContainer',
+  VISHINGTEMPLATES: 'VishingTemplatesSearchContainer',
+  VISHING_CAMPAIGN_MANAGER: 'VishingCampaignManagerSearchContainer',
   SANDBOX: 'Sandbox',
   sandbox: 'Sandbox',
   SANDBOXSTATS: 'SandboxStatsSearchContainerKeys',

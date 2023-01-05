@@ -92,7 +92,8 @@
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}
                       <span class="template-list--item__sub-header--span">
-                        <span style="font-size: 20px; vertical-align: sub;">&#8226;</span> by</span
+                        <span style="font-size: 20px; vertical-align: sub;">&#8226;</span>
+                        by</span
                       >
                       {{ item['createdBy'] }}
                     </div>
@@ -155,15 +156,17 @@
                 >
                   <div class="template-preview">
                     <div class="template-preview__icon">
-                      <v-icon
+                      <v-btn
                         v-if="!!template.content"
-                        :color="'#2196f3'"
-                        left
-                        medium
+                        color="#2196F3"
+                        icon
+                        outlined
                         @click="isTemplateDetails = true"
                       >
-                        {{ 'mdi-eye' }}
-                      </v-icon>
+                        <v-icon color="#2196f3" medium>
+                          {{ 'mdi-fullscreen' }}
+                        </v-icon>
+                      </v-btn>
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!template.content">
                       <div>
@@ -187,15 +190,17 @@
               <div v-else>
                 <div class="template-preview">
                   <div class="template-preview__icon">
-                    <v-icon
+                    <v-btn
                       :color="'#2196f3'"
-                      left
-                      medium
+                      icon
+                      outlined
                       @click="isTemplateDetails = true"
                       v-if="!!getSingleTemplateDetails"
                     >
-                      {{ 'mdi-eye' }}
-                    </v-icon>
+                      <v-icon color="#2196f3" medium>
+                        {{ 'mdi-fullscreen' }}
+                      </v-icon>
+                    </v-btn>
                   </div>
                   <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                     <div>
@@ -447,16 +452,16 @@ export default {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
       if (scrollPosition > scrollHeight) {
-        this.getDataAfterValidScroll()
+        this.debounce(() => {
+          this.getDataAfterValidScroll()
+        }, 250)
       }
     },
     getDataAfterValidScroll() {
       if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
         this.bodyData.pageNumber += 1
-        this.debounce(() => {
-          this.loadingTemplates = true
-          this.getTemplates()
-        }, 250)
+        this.loadingTemplates = true
+        this.getTemplates()
       }
     },
     setSelectedTemplate(item, index, isInitial = false) {

@@ -139,6 +139,7 @@
             ref="testConnection"
             :values="formValues"
             @testConnectionValues="onTestConnectionValuesChange"
+            @testConnectionClicked="handleTestConnectionClick"
             @loading="onTestConnectionLoadingChange"
             @save-button-disabled="onTestConnectionSaveButtonDisabledChange"
           />
@@ -355,9 +356,34 @@ export default {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave) {
-          this.$nextTick(() => {
-            if (this.status) this.submit()
-          })
+          const { refMakeAvailableFor } = this.$refs
+          let payload = {
+            ...this.formValues,
+            availableForRequests: refMakeAvailableFor.getAvailableForValues(
+              this.availableForRequests
+            )
+          }
+          if (!this.isShowCustomizeDnsRecordsDetail) {
+            this.formValues.recordTypeId = null
+            this.formValues.dnsRecord = null
+          }
+          if (this.isEdit && !this.isDuplicate) {
+            updateDomain(payload, this.resourceId)
+              .then(() => {
+                this.$emit('changeStatus', false, true)
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
+          } else {
+            createDomain(payload)
+              .then(() => {
+                this.$emit('changeStatus', false, true)
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
+          }
         }
       }
     },
@@ -391,13 +417,14 @@ export default {
       })
     },
     submit() {
-      if (
-        JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
-        this.isEdit
-      ) {
-        if (JSON.stringify(this.formValues) !== JSON.stringify(this.formValuesAfterTest))
-          this.isTestConnectionWorkedBefore = false
-      }
+      this.handleTestConnectionClick(true)
+    },
+    validateAvailableFor(value = {}) {
+      this.isAvailableForValidated = true
+      this.isAvailableForValid = !!value.length
+      this.$emit('validation', this.isAvailableForValid)
+    },
+    handleTestConnectionClick(isSave = false) {
       this.saveButtonDisabled = true
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
@@ -405,40 +432,9 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
-      let payload = {
-        ...this.formValues,
-        availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
-      }
-      if (this.$refs.domainForm.validate() && isValid && this.isTestConnectionWorkedBefore) {
-        //this line added for if the customize checkbox unselected
-        if (!this.isShowCustomizeDnsRecordsDetail) {
-          this.formValues.recordTypeId = null
-          this.formValues.dnsRecord = null
-        }
-        if (this.isEdit && !this.isDuplicate) {
-          updateDomain(payload, this.resourceId)
-            .then(() => {
-              this.$emit('changeStatus', false, true)
-            })
-            .finally(() => {
-              this.saveButtonDisabled = false
-            })
-        } else {
-          createDomain(payload)
-            .then(() => {
-              this.$emit('changeStatus', false, true)
-            })
-            .finally(() => {
-              this.saveButtonDisabled = false
-            })
-        }
-      } else if (
-        this.$refs.domainForm.validate() &&
-        isValid &&
-        !this.isTestConnectionWorkedBefore
-      ) {
-        this.saveButtonDisabled = true
-        this.$refs.testConnection.testConnection(true)
+
+      if (this.$refs.domainForm.validate() && isValid) {
+        this.$refs.testConnection.testConnection(isSave)
         setTimeout(() => {
           let el = this.$el.querySelector('.test-connection__testing-content__item')
           scrollToComponent(el)
@@ -448,11 +444,6 @@ export default {
         const el = this.$refs.domainForm.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
       }
-    },
-    validateAvailableFor(value = {}) {
-      this.isAvailableForValidated = true
-      this.isAvailableForValid = !!value.length
-      this.$emit('validation', this.isAvailableForValid)
     }
   }
 }

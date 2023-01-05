@@ -327,7 +327,11 @@ export default {
         }
       } else if (this.step === 2 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
-        if (refSendTrainingSettings.validateForm()) {
+        if (
+          refSendTrainingSettings &&
+          refSendTrainingSettings.validateForm() &&
+          refSendTrainingSettings.checkDateIsValid()
+        ) {
           this.step += flag
         } else {
           this.$nextTick(() => {

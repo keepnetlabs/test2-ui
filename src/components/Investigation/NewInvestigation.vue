@@ -22,7 +22,7 @@
                 />
               </FormGroup>
             </v-list-item>
-            <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
+            <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
               <v-list-item-content class>
                 <label id="label--investigation-target-users" class="edit-labels">{{
                   labels.TargetUsers
@@ -839,9 +839,6 @@ export default {
         }, 250)
       }
     },
-    checkCheckboxValidation() {
-      this.checkboxError = this.scanTypes.length === 0
-    },
     handleTargetUserTypeChange() {
       this.targetUsersValue = []
       this.$refs.form.resetValidation()
@@ -1049,268 +1046,265 @@ export default {
         // If It's already exist, then new element pushs to the array.
         // for more info look at the ip case ( 4 line below)
         for (let index = 0; index < this.filterList.length; index++) {
-          switch (this.filterList[index].option) {
-            case 'ip':
-              if (
-                !headersData[headersData.length - 1].ip &&
-                headersData[headersData.length - 1].ip != this.filterList[index].text
-              ) {
-                // in the first array, there is no value at ip value name pair
-                // that's why, we can set the our ip value to the first array element
-                headersData.filter((s) => s.ip == null)[0].ip = this.filterList[index].text
-              } else {
-                // ip value name pair is already exist. Thus, we push new array tp the headersData with all values null except ip.
-                headersData.push({
-                  ip: this.filterList[index].text,
-                  from: null,
-                  to: null,
-                  cc: null,
-                  bcc: null,
-                  subject: null,
-                  senderName: null
-                })
-              }
-              break
-            case 'from':
-              if (
-                !headersData[headersData.length - 1].from &&
-                headersData[headersData.length - 1].from != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.from == null)[0].from = this.filterList[index].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: this.filterList[index].text,
-                  to: null,
-                  cc: null,
-                  bcc: null,
-                  subject: null,
-                  senderName: null
-                })
-              }
-              break
-            case 'to':
-              if (
-                !headersData[headersData.length - 1].to &&
-                headersData[headersData.length - 1].to != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.to == null)[0].to = this.filterList[index].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: null,
-                  to: this.filterList[index].text,
-                  cc: null,
-                  bcc: null,
-                  subject: null,
-                  senderName: null
-                })
-              }
-              break
-            case 'cc':
-              if (
-                !headersData[headersData.length - 1].cc &&
-                headersData[headersData.length - 1].cc != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.cc == null)[0].cc = this.filterList[index].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: null,
-                  to: null,
-                  cc: this.filterList[index].text,
-                  bcc: null,
-                  subject: null,
-                  senderName: null
-                })
-              }
-              break
-            case 'bcc':
-              if (
-                !headersData[headersData.length - 1].bcc &&
-                headersData[headersData.length - 1].bcc != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.bcc == null)[0].bcc = this.filterList[index].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: null,
-                  to: null,
-                  cc: null,
-                  bcc: this.filterList[index].text,
-                  subject: null,
-                  senderName: null
-                })
-              }
-              break
-            case 'subject':
-              if (
-                !headersData[headersData.length - 1].subject &&
-                headersData[headersData.length - 1].subject != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.subject == null)[0].subject = this.filterList[
-                  index
-                ].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: null,
-                  to: null,
-                  cc: null,
-                  bcc: null,
-                  subject: this.filterList[index].text,
-                  senderName: null
-                })
-              }
-              break
-            case 'senderName':
-              if (
-                !headersData[headersData.length - 1].senderName &&
-                headersData[headersData.length - 1].senderName != this.filterList[index].text
-              ) {
-                headersData.filter((s) => s.senderName == null)[0].senderName = this.filterList[
-                  index
-                ].text
-              } else {
-                headersData.push({
-                  ip: null,
-                  from: null,
-                  to: null,
-                  cc: null,
-                  bcc: null,
-                  subject: null,
-                  senderName: this.filterList[index].text
-                })
-              }
-              break
-            case 'url':
-              if (
-                !bodyData[bodyData.length - 1].url &&
-                bodyData[bodyData.length - 1].url != this.filterList[index].text
-              ) {
-                bodyData.filter((s) => s.url == null)[0].url = this.filterList[index].text
-              } else {
-                bodyData.push({
-                  url: this.filterList[index].text,
-                  keyword: null,
-                  isRegex: false
-                })
-              }
-              break
-            case 'keyword':
-              if (
-                !bodyData[bodyData.length - 1].keyword &&
-                bodyData[bodyData.length - 1].keyword != this.filterList[index].text
-              ) {
-                bodyData.filter((s) => s.keyword == null)[0].keyword = this.filterList[index].text
-              } else {
-                bodyData.push({
-                  url: null,
-                  keyword: this.filterList[index].text,
-                  isRegex: false
-                })
-              }
-              break
-            case 'size':
-              if (
-                !attachmentsData[attachmentsData.length - 1].size &&
-                attachmentsData[attachmentsData.length - 1].size != this.filterList[index].text
-              ) {
-                attachmentsData.filter((s) => s.size == null)[0].size = this.filterList[index].text
-              } else {
-                attachmentsData.push({
-                  size: this.filterList[index].text,
-                  name: null,
-                  md5: null,
-                  sha512: null,
-                  extension: null
-                })
-              }
-              break
-            case 'name':
-              if (
-                !attachmentsData[attachmentsData.length - 1].name &&
-                attachmentsData[attachmentsData.length - 1].name != this.filterList[index].text
-              ) {
-                attachmentsData.filter((s) => s.name == null)[0].name = this.filterList[index].text
-              } else {
-                attachmentsData.push({
-                  size: null,
-                  name: this.filterList[index].text,
-                  md5: null,
-                  sha512: null,
-                  extension: null
-                })
-              }
-              break
-            case 'sha512':
-              if (
-                !attachmentsData[attachmentsData.length - 1].sha512 &&
-                attachmentsData[attachmentsData.length - 1].sha512 != this.filterList[index].text
-              ) {
-                attachmentsData.filter((s) => s.sha512 == null)[0].sha512 = this.filterList[
-                  index
-                ].text
-              } else {
-                attachmentsData.push({
-                  size: null,
-                  name: null,
-                  md5: null,
-                  sha512: this.filterList[index].text,
-                  extension: null
-                })
-              }
-              break
-            case 'md5':
-              if (
-                !attachmentsData[attachmentsData.length - 1].md5 &&
-                attachmentsData[attachmentsData.length - 1].md5 != this.filterList[index].text
-              ) {
-                attachmentsData.filter((s) => s.md5 == null)[0].md5 = this.filterList[index].text
-              } else {
-                attachmentsData.push({
-                  size: null,
-                  name: null,
-                  md5: this.filterList[index].text,
-                  sha512: null,
-                  extension: null
-                })
-              }
-              break
-            case 'extension':
-              if (
-                !attachmentsData[attachmentsData.length - 1].extension &&
-                attachmentsData[attachmentsData.length - 1].extension != this.filterList[index].text
-              ) {
-                attachmentsData.filter((s) => s.extension == null)[0].extension = this.filterList[
-                  index
-                ].text
-              } else {
-                attachmentsData.push({
-                  size: null,
-                  name: null,
-                  md5: null,
-                  sha512: null,
-                  extension: this.filterList[index].text
-                })
-              }
-              break
-            case 'regex':
-              if (
-                !bodyData[bodyData.length - 1].regex &&
-                bodyData[bodyData.length - 1].regex !== this.filterList[index].text
-              ) {
-                bodyData.filter((s) => s.regex == null)[0].regex = this.filterList[index].text
-              } else {
-                bodyData.push({
-                  url: null,
-                  keyword: null,
-                  regex: this.filterList[index].text
-                })
-              }
-              break
-            default:
-              break
+          if (this.filterList[index].option === 'ip') {
+            if (
+              !headersData[headersData.length - 1].ip &&
+              headersData[headersData.length - 1].ip != this.filterList[index].text
+            ) {
+              // in the first array, there is no value at ip value name pair
+              // that's why, we can set the our ip value to the first array element
+              headersData.filter((s) => s.ip == null)[0].ip = this.filterList[index].text
+            } else {
+              // ip value name pair is already exist. Thus, we push new array tp the headersData with all values null except ip.
+              headersData.push({
+                ip: this.filterList[index].text,
+                from: null,
+                to: null,
+                cc: null,
+                bcc: null,
+                subject: null,
+                senderName: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'from') {
+            if (
+              !headersData[headersData.length - 1].from &&
+              headersData[headersData.length - 1].from != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.from == null)[0].from = this.filterList[index].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: this.filterList[index].text,
+                to: null,
+                cc: null,
+                bcc: null,
+                subject: null,
+                senderName: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'to') {
+            if (
+              !headersData[headersData.length - 1].to &&
+              headersData[headersData.length - 1].to != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.to == null)[0].to = this.filterList[index].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: null,
+                to: this.filterList[index].text,
+                cc: null,
+                bcc: null,
+                subject: null,
+                senderName: null
+              })
+            }
+          }
+
+          if (this.filterList[index].option === 'cc') {
+            if (
+              !headersData[headersData.length - 1].cc &&
+              headersData[headersData.length - 1].cc != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.cc == null)[0].cc = this.filterList[index].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: null,
+                to: null,
+                cc: this.filterList[index].text,
+                bcc: null,
+                subject: null,
+                senderName: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'bcc') {
+            if (
+              !headersData[headersData.length - 1].bcc &&
+              headersData[headersData.length - 1].bcc != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.bcc == null)[0].bcc = this.filterList[index].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: null,
+                to: null,
+                cc: null,
+                bcc: this.filterList[index].text,
+                subject: null,
+                senderName: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'subject') {
+            if (
+              !headersData[headersData.length - 1].subject &&
+              headersData[headersData.length - 1].subject != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.subject == null)[0].subject = this.filterList[index].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: null,
+                to: null,
+                cc: null,
+                bcc: null,
+                subject: this.filterList[index].text,
+                senderName: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'senderName') {
+            if (
+              !headersData[headersData.length - 1].senderName &&
+              headersData[headersData.length - 1].senderName != this.filterList[index].text
+            ) {
+              headersData.filter((s) => s.senderName == null)[0].senderName = this.filterList[
+                index
+              ].text
+            } else {
+              headersData.push({
+                ip: null,
+                from: null,
+                to: null,
+                cc: null,
+                bcc: null,
+                subject: null,
+                senderName: this.filterList[index].text
+              })
+            }
+          }
+
+          if (this.filterList[index].option === 'url') {
+            if (
+              !bodyData[bodyData.length - 1].url &&
+              bodyData[bodyData.length - 1].url != this.filterList[index].text
+            ) {
+              bodyData.filter((s) => s.url == null)[0].url = this.filterList[index].text
+            } else {
+              bodyData.push({
+                url: this.filterList[index].text,
+                keyword: null,
+                isRegex: false
+              })
+            }
+          }
+          if (this.filterList[index].option === 'keyword') {
+            if (
+              !bodyData[bodyData.length - 1].keyword &&
+              bodyData[bodyData.length - 1].keyword != this.filterList[index].text
+            ) {
+              bodyData.filter((s) => s.keyword == null)[0].keyword = this.filterList[index].text
+            } else {
+              bodyData.push({
+                url: null,
+                keyword: this.filterList[index].text,
+                isRegex: false
+              })
+            }
+          }
+          if (this.filterList[index].option === 'size') {
+            if (
+              !attachmentsData[attachmentsData.length - 1].size &&
+              attachmentsData[attachmentsData.length - 1].size != this.filterList[index].text
+            ) {
+              attachmentsData.filter((s) => s.size == null)[0].size = this.filterList[index].text
+            } else {
+              attachmentsData.push({
+                size: this.filterList[index].text,
+                name: null,
+                md5: null,
+                sha512: null,
+                extension: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'name') {
+            if (
+              !attachmentsData[attachmentsData.length - 1].name &&
+              attachmentsData[attachmentsData.length - 1].name != this.filterList[index].text
+            ) {
+              attachmentsData.filter((s) => s.name == null)[0].name = this.filterList[index].text
+            } else {
+              attachmentsData.push({
+                size: null,
+                name: this.filterList[index].text,
+                md5: null,
+                sha512: null,
+                extension: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'sha512') {
+            if (
+              !attachmentsData[attachmentsData.length - 1].sha512 &&
+              attachmentsData[attachmentsData.length - 1].sha512 != this.filterList[index].text
+            ) {
+              attachmentsData.filter((s) => s.sha512 == null)[0].sha512 = this.filterList[
+                index
+              ].text
+            } else {
+              attachmentsData.push({
+                size: null,
+                name: null,
+                md5: null,
+                sha512: this.filterList[index].text,
+                extension: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'md5') {
+            if (
+              !attachmentsData[attachmentsData.length - 1].md5 &&
+              attachmentsData[attachmentsData.length - 1].md5 != this.filterList[index].text
+            ) {
+              attachmentsData.filter((s) => s.md5 == null)[0].md5 = this.filterList[index].text
+            } else {
+              attachmentsData.push({
+                size: null,
+                name: null,
+                md5: this.filterList[index].text,
+                sha512: null,
+                extension: null
+              })
+            }
+          }
+          if (this.filterList[index].option === 'extension') {
+            if (
+              !attachmentsData[attachmentsData.length - 1].extension &&
+              attachmentsData[attachmentsData.length - 1].extension != this.filterList[index].text
+            ) {
+              attachmentsData.filter((s) => s.extension == null)[0].extension = this.filterList[
+                index
+              ].text
+            } else {
+              attachmentsData.push({
+                size: null,
+                name: null,
+                md5: null,
+                sha512: null,
+                extension: this.filterList[index].text
+              })
+            }
+          }
+
+          if (this.filterList[index].option === 'regex') {
+            if (
+              !bodyData[bodyData.length - 1].regex &&
+              bodyData[bodyData.length - 1].regex !== this.filterList[index].text
+            ) {
+              bodyData.filter((s) => s.regex == null)[0].regex = this.filterList[index].text
+            } else {
+              bodyData.push({
+                url: null,
+                keyword: null,
+                regex: this.filterList[index].text
+              })
+            }
           }
         }
 

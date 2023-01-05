@@ -458,82 +458,84 @@ export default {
       this.isActionButtonDisabled = flag
     },
     handleSubmit() {
-      switch (this.step) {
-        case 1:
-          const { refCampaignManagerCampaignInfo } = this.$refs
-          const { refForm } = refCampaignManagerCampaignInfo.$refs
-          if (
-            refCampaignManagerCampaignInfo.formData.scheduleTypeId === '3' &&
-            !refCampaignManagerCampaignInfo.formData.scheduledDate
-          ) {
-            refCampaignManagerCampaignInfo.isDateValid = false
-          }
-          if (!refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.length) {
-            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-          }
-          if (
-            refForm.validate() &&
-            refCampaignManagerCampaignInfo.isDateValid &&
-            refCampaignManagerCampaignInfo.isTargetGroupsValid
-          )
-            this.changeStep()
-          else this.showErrorMessage(refForm)
-          break
-        case 2:
-          const { refCampaignManagerAdvancedSettings } = this.$refs
-          const { refForm: refFormAdvanced } = refCampaignManagerAdvancedSettings.$refs
-          if (refFormAdvanced && refFormAdvanced.validate()) this.changeStep()
-          else this.showErrorMessage(refFormAdvanced)
-          break
-        case 3:
-          const {
-            refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
-            refCampaignManagerAdvancedSettings: { formData: advancedSettingsFormData }
-          } = this.$refs
+      if (this.step === 1) {
+        const { refCampaignManagerCampaignInfo } = this.$refs
+        const { refForm } = refCampaignManagerCampaignInfo.$refs
+        if (
+          refCampaignManagerCampaignInfo.formData.scheduleTypeId === '3' &&
+          !refCampaignManagerCampaignInfo.formData.scheduledDate
+        ) {
+          refCampaignManagerCampaignInfo.isDateValid = false
+        }
+        if (!refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.length) {
+          refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+        }
+        if (
+          refForm.validate() &&
+          refCampaignManagerCampaignInfo.isDateValid &&
+          refCampaignManagerCampaignInfo.isTargetGroupsValid
+        )
+          this.changeStep()
+        else this.showErrorMessage(refForm)
+        return
+      }
 
-          const payload = {
-            name: campaignManagerFormData.name,
-            phishingScenarioResourceId: campaignManagerFormData.phishingScenarioResourceId,
-            duration: campaignManagerFormData.duration,
-            targetGroupResourceIds: campaignManagerFormData.targetGroupResourceIds.map(
-              (item) => item.value
-            ),
-            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
-            scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
-            scheduledDate:
-              parseInt(campaignManagerFormData.scheduleTypeId) !== 3
-                ? null
-                : campaignManagerFormData.scheduledDate,
-            distributionTypeId: advancedSettingsFormData.distributionTypeId,
-            distributionSmtpDelayEvery: advancedSettingsFormData.distributionSmtpDelayEvery,
-            distributionSmtpDelayTimeTypeId:
-              advancedSettingsFormData.distributionSmtpDelayTimeTypeId,
-            distributionEmailOver: advancedSettingsFormData.distributionEmailOver,
-            distributionEmailOverTimeTypeId:
-              advancedSettingsFormData.distributionEmailOverTimeTypeId,
-            sendingLimit: advancedSettingsFormData.sendingLimit,
-            excludeFromReports: advancedSettingsFormData.excludeFromReports,
-            sendOnlyActiveUsers: advancedSettingsFormData.sendOnlyActiveUsers,
-            sendRandomlyUsers: advancedSettingsFormData.sendRandomlyUsers,
-            sendRandomlyUsersCount: advancedSettingsFormData.sendRandomlyUsersCount,
-            sendRandomlyUsersCalculateTypeId:
-              advancedSettingsFormData.sendRandomlyUsersCalculateTypeId,
-            smtpSettingResourceId: advancedSettingsFormData.smtpSettingResourceId
-          }
-          this.setActionButtonDisability(true)
-          if (this.isEdit) {
-            updateCampaignManager(this.selectedRow.resourceId, payload)
-              .then(() => {
-                this.$emit(EMITS.ON_SUBMIT)
-              })
-              .finally(this.setActionButtonDisability)
-          } else {
-            createCampaignManager(payload)
-              .then(() => {
-                this.$emit(EMITS.ON_SUBMIT)
-              })
-              .finally(this.setActionButtonDisability)
-          }
+      if (this.step === 2) {
+        const { refCampaignManagerAdvancedSettings } = this.$refs
+        const { refForm: refFormAdvanced } = refCampaignManagerAdvancedSettings.$refs
+        if (refFormAdvanced && refFormAdvanced.validate()) this.changeStep()
+        else this.showErrorMessage(refFormAdvanced)
+        return
+      }
+
+      if (this.step === 3) {
+        const {
+          refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
+          refCampaignManagerAdvancedSettings: { formData: advancedSettingsFormData }
+        } = this.$refs
+
+        const payload = {
+          name: campaignManagerFormData.name,
+          phishingScenarioResourceId: campaignManagerFormData.phishingScenarioResourceId,
+          duration: campaignManagerFormData.duration,
+          targetGroupResourceIds: campaignManagerFormData.targetGroupResourceIds.map(
+            (item) => item.value
+          ),
+          scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
+          scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
+          scheduledDate:
+            parseInt(campaignManagerFormData.scheduleTypeId) !== 3
+              ? null
+              : campaignManagerFormData.scheduledDate,
+          distributionTypeId: advancedSettingsFormData.distributionTypeId,
+          distributionSmtpDelayEvery: advancedSettingsFormData.distributionSmtpDelayEvery,
+          distributionSmtpDelayTimeTypeId: advancedSettingsFormData.distributionSmtpDelayTimeTypeId,
+          distributionEmailOver: advancedSettingsFormData.distributionEmailOver,
+          distributionEmailOverTimeTypeId: advancedSettingsFormData.distributionEmailOverTimeTypeId,
+          sendingLimit: advancedSettingsFormData.sendingLimit,
+          excludeFromReports: advancedSettingsFormData.excludeFromReports,
+          sendOnlyActiveUsers: advancedSettingsFormData.sendOnlyActiveUsers,
+          sendRandomlyUsers: advancedSettingsFormData.sendRandomlyUsers,
+          sendRandomlyUsersCount: advancedSettingsFormData.sendRandomlyUsersCount,
+          sendRandomlyUsersCalculateTypeId:
+            advancedSettingsFormData.sendRandomlyUsersCalculateTypeId,
+          smtpSettingResourceId: advancedSettingsFormData.smtpSettingResourceId
+        }
+        this.setActionButtonDisability(true)
+        if (this.isEdit) {
+          updateCampaignManager(this.selectedRow.resourceId, payload)
+            .then(() => {
+              this.$emit(EMITS.ON_SUBMIT)
+            })
+            .finally(this.setActionButtonDisability)
+        } else {
+          createCampaignManager(payload)
+            .then(() => {
+              this.$emit(EMITS.ON_SUBMIT)
+            })
+            .finally(this.setActionButtonDisability)
+        }
+        return
       }
     }
   }

@@ -199,7 +199,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150,
+            width: 200,
             filterableType: 'text',
             filterableCustomFieldName: 'PhoneNumber'
           },
@@ -284,7 +284,7 @@ export default {
       getUser: 'auth/userGetter'
     })
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

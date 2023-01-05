@@ -23,3 +23,53 @@
     display: none !important;
   }
 }
+
+.max-width--780 {
+  max-width: 780px !important;
+}
+
+.w-25 {
+  width: 25%;
+}
+
+.w-5 {
+  width: 5%;
+}
+
+.max-width-228 {
+  max-width: 228px;
+}
+.w-100 {
+  width: 100%;
+}
+.max-w-100{
+  max-width: 100% !important;
+}
+.fw-600 {
+  font-weight: 600 !important;
+}
+.no-box-shadow{
+  box-shadow: none !important;
+}
+
+.full-width {
+  width: 100%;
+}
+.hidden-icon-link {
+  background-color: #757575 !important;
+  color: #ffffff !important;
+}
+.max-char {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+  max-width: 100%;
+}
+.position-relative {
+  position: relative;
+}
+
+.bg-white {
+  background: white;
+}

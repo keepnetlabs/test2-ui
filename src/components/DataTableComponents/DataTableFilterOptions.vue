@@ -48,18 +48,17 @@ export default {
   },
   methods: {
     handleListItemClick(item = '') {
-      switch (item) {
-        case COMMON_CONSTANTS.FILTER_OPTIONS[0]:
-          this.$emit('set-default-search')
-          break
-        case COMMON_CONSTANTS.FILTER_OPTIONS[1]:
-          this.$emit('restore-default-search')
-          break
-        case COMMON_CONSTANTS.FILTER_OPTIONS[2]:
-          this.$emit('clear-filters')
-          break
-        default:
-          break
+      if (item === COMMON_CONSTANTS.FILTER_OPTIONS[0]) {
+        this.$emit('set-default-search')
+        return
+      }
+      if (item === COMMON_CONSTANTS.FILTER_OPTIONS[1]) {
+        this.$emit('restore-default-search')
+        return
+      }
+      if (item === COMMON_CONSTANTS.FILTER_OPTIONS[2]) {
+        this.$emit('clear-filters')
+        return
       }
     }
   }

@@ -327,66 +327,63 @@ export default {
     getRules() {
       if (this.query) {
         const { format, operator } = this.query
-        switch (format) {
-          case 'Email':
-            const emailValidationArray = [
-              (v) => this.validations.required(v, labels.Required),
-              (v) =>
-                this.validations.maxLength(
-                  v,
-                  320,
-                  labels.getMaxLengthMessage(labels.EmailAddress, 320)
-                )
-            ]
-            if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-              emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
-              emailValidationArray.push((v) => {
-                if (this.validations.email(v)) {
-                  return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
-                }
-                return false
-              })
-            }
-            return emailValidationArray
-          case 'Domain':
-            const domainValidationArray = [
-              (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
-            ]
-            if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-              domainValidationArray.push((v) =>
-                this.validations.domain(v, labels.InvalidDomainName)
+        if (format === 'Email') {
+          const emailValidationArray = [
+            (v) => this.validations.required(v, labels.Required),
+            (v) =>
+              this.validations.maxLength(
+                v,
+                320,
+                labels.getMaxLengthMessage(labels.EmailAddress, 320)
               )
-            }
-            return domainValidationArray
-          case 'Regex':
-            return [
-              (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
-            ]
-          case 'Group':
-            return [
-              (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
-            ]
-          default:
-            return [(v) => this.validations.required(v, labels.Required)]
+          ]
+          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+            emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+            emailValidationArray.push((v) => {
+              if (this.validations.email(v)) {
+                return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+              }
+              return false
+            })
+          }
+          return emailValidationArray
         }
+
+        if (format === 'Domain') {
+          const domainValidationArray = [
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
+          ]
+          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+            domainValidationArray.push((v) => this.validations.domain(v, labels.InvalidDomainName))
+          }
+          return domainValidationArray
+        }
+
+        if (format === 'Regex') {
+          return [
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
+          ]
+        }
+
+        if (format === 'Group') {
+          return [
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
+          ]
+        }
+
+        return [(v) => this.validations.required(v, labels.Required)]
       }
     },
     getPlaceholder() {
-      switch (this.query && this.query.format) {
-        case 'Email':
-          return 'Enter an email address'
-        case 'Domain':
-          return 'Enter a domain address'
-        case 'Regex':
-          return 'Enter a regular expression'
-        case 'Group':
-          return 'Enter a group name'
-        default:
-          return 'Enter custom field value'
-      }
+      if (!this.query?.format) return 'Enter custom field value'
+      if (this.query.format === 'Email') return 'Enter an email address'
+      if (this.query.format === 'Domain') return 'Enter a domain address'
+      if (this.query.format === 'Regex') return 'Enter a regular expression'
+      if (this.query.format === 'Group') return 'Enter a group name'
+      return 'Enter custom field value'
     },
     getSubjectRules() {
       return [
@@ -428,6 +425,8 @@ export default {
         this.query.value = 'Phishing'
       } else if (value === 'To' || value === 'CC' || value === 'From') {
         this.query.format = 'Email'
+      } else if (value === 'Keyword') {
+        this.query.operator = 'Contains'
       } else {
         this.query.format = 'Custom'
       }

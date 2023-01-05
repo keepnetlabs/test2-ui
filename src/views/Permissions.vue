@@ -58,12 +58,12 @@
           :select-event="tableOptions.selectEvent"
           :addButton="tableOptions.addButton"
           :rowActions="tableOptions.rowActions"
-          :axios-payload.sync="bodyData"
+          :axios-payload.sync="axiosPayload"
           :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
           :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
           :download-button="{ show: false }"
           @openPermissionModal="openPermissionModal"
-          @refreshAction="getDatatableList"
+          @refreshAction="callForData"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -118,10 +118,10 @@ import {
 } from '@/api/permissions'
 import AppDialog from '../components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import CannotDeleteRoleDialog from '@/components/Permissions/CannotDeleteRoleDialog'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
   name: 'Permission',
@@ -133,6 +133,7 @@ export default {
     AppDialogFooter,
     AppDialog
   },
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       systemUserCount: 0,
@@ -248,8 +249,7 @@ export default {
           }
         ]
       },
-      bodyData: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       newPermissionsModalStatus: false,
       isEdit: false,
@@ -266,7 +266,7 @@ export default {
   },
   created() {
     this.getPermissions()
-    this.getDatatableList()
+    this.callForData()
   },
   methods: {
     handleEditAction({ resourceId } = {}) {
@@ -289,7 +289,7 @@ export default {
           })
           this.$refs.refPermissionList.unSelectRow(this.selectedItem)
           this.deleteDialog = false
-          this.getDatatableList()
+          this.callForData()
         })
         .catch((e) => {
           if (e?.response?.status === 400) {
@@ -325,30 +325,29 @@ export default {
       getPermissionAll().then((response) => {
         let sortedPermissions = []
         response.data.data.map((item) => {
-          switch (item.moduleName) {
-            case 'Threat Sharing':
-              sortedPermissions[0] = item
-              break
-            case 'Phishing Simulation':
-              sortedPermissions[1] = item
-              break
-            case 'Awareness Educator':
-              sortedPermissions[2] = item
-              break
-            case 'Incident Responder':
-              sortedPermissions[3] = item
-              break
-            case 'Phishing Reporter Add-In':
-              sortedPermissions[4] = item
-              break
-            case 'Email Threat Simulator':
-              sortedPermissions[5] = item
-              break
-            case 'Company':
-              sortedPermissions[6] = item
-              break
-            default:
-              break
+          if (item.moduleName === 'Threat Sharing') {
+            sortedPermissions[0] = item
+          }
+          if (item.moduleName === 'Phishing Simulation') {
+            sortedPermissions[1] = item
+          }
+          if (item.moduleName === 'Awareness Educator') {
+            sortedPermissions[2] = item
+          }
+          if (item.moduleName === 'Incident Responder') {
+            sortedPermissions[3] = item
+          }
+          if (item.moduleName === 'Phishing Reporter Add-In') {
+            sortedPermissions[4] = item
+          }
+          if (item.moduleName === 'Email Threat Simulator') {
+            sortedPermissions[5] = item
+          }
+          if (item.moduleName === 'Company') {
+            sortedPermissions[6] = item
+          }
+          if (item.moduleName === 'Vishing') {
+            sortedPermissions[7] = item
           }
         })
         this.permissions = sortedPermissions.filter((item) => item)
@@ -378,7 +377,7 @@ export default {
         this.isEdit = false
       }
       this.newPermissionsModalStatus = !this.newPermissionsModalStatus
-      this.getDatatableList()
+      this.callForData()
     },
     togglePermissionModalStatus() {
       if (this.newPermissionsModalStatus) {
@@ -390,20 +389,6 @@ export default {
     openPermissionModal() {
       this.togglePermissionModalStatus()
     },
-    serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber
-      this.getDatatableList()
-    },
-    serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getDatatableList()
-    },
-    resetPageNumber() {
-      this.bodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-    },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
@@ -411,24 +396,18 @@ export default {
         )
         return column.filterableType
       })
-      function myFunction(item) {
+      filterItems.forEach((item) => {
         if (item.FieldName === 'TypeName') {
           item.FieldName = 'Type'
         }
-      }
-      filterItems.forEach(myFunction)
-      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
+      })
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.getDatatableList()
+      this.callForData()
     },
-    sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === 'ascending'
-      this.bodyData.orderBy = prop
-      this.getDatatableList()
-    },
-    getDatatableList() {
+    callForData() {
       this.loading = true
-      getPermissionLogs(this.bodyData)
+      getPermissionLogs(this.axiosPayload)
         .then((response) => {
           const {
             data: {
@@ -444,17 +423,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-    columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
-      this.getDatatableList()
-    },
-    columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.bodyData
-      )
-      this.getDatatableList()
     },
     checkIfCanClosePermissionsModal() {
       if (this.$refs.permissionsModal) {

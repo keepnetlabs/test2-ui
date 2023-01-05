@@ -6,14 +6,6 @@ export function getTargetUsers(payload) {
   return testRequest.post(`/target-users/search`, payload)
 }
 
-export function getTargetUser(resourceId) {
-  return testRequest.get(`/target-users/${resourceId}`)
-}
-
-export function getTargetUsersByEmail(payload) {
-  return testRequest.post('/target-users/search-email', payload)
-}
-
 export function deleteTargetUser(resourceId) {
   return testRequest.delete(`/target-users/${resourceId}`, { snackbar: COMMON_SNACKBAR })
 }
@@ -44,14 +36,6 @@ export function searchTargetGroups(payload) {
 }
 export function searchAllTargetGroups(payload) {
   return testRequest.post('/target-groups/search/all', payload)
-}
-
-export function getTargetGroupsByName(payload) {
-  return testRequest.post('/target-groups/search-name', payload)
-}
-
-export function getTargetGroup(id) {
-  return testRequest.get(`/target-groups/${id}`)
 }
 
 export function createTargetGroup(payload) {

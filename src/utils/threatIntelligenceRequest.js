@@ -15,24 +15,31 @@ service.interceptors.request.use(
     config &&
       config.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
+      config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
+      config.headers['X-IR-COMPANY-ID'] = config.overrideCompanyId
+        ? config.headers['X-IR-COMPANY-ID']
+        : config.isCompanySelect
+        ? localStorage.getItem('companyResourceId')
+        : localStorage.getItem('companyRequestId')
     }
     return config
   },
-  (error) => (error) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+  () => {
+    if (!config.loader) store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )
 
 service.interceptors.response.use(
   (response) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    response?.config?.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     return response
   },
   (error) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    error?.config?.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
     }

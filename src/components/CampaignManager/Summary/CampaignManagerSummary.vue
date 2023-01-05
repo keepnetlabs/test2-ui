@@ -187,6 +187,7 @@ import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
+import { getDifficultyBadgeColor } from '@/utils/functions'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -329,16 +330,7 @@ export default {
   },
   methods: {
     getBadgeColor(text = '') {
-      switch (text.toLowerCase()) {
-        case 'easy':
-          return '#217124'
-        case 'medium':
-          return '#2196f3'
-        case 'hard':
-          return '#f56c6c'
-        default:
-          return '#2196f3'
-      }
+      return getDifficultyBadgeColor(text)
     },
     getBadgeText(text = '') {
       return text

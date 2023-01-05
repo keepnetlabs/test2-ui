@@ -1,10 +1,11 @@
 <template>
   <v-text-field
     v-bind="requiredProps"
-    :value="value"
-    :id="id"
     outlined
     dense
+    :value="value"
+    :id="id"
+    :type="type"
     :placeholder="placeholder"
     :rules="rules"
     :disabled="disabled"
@@ -49,6 +50,10 @@ export default {
     },
     hideDetails: {
       default: false
+    },
+    type: {
+      type: String,
+      default: 'text'
     }
   },
   data() {
@@ -58,12 +63,15 @@ export default {
       requiredProps: {}
     }
   },
-  created() {
-    if (this.required) {
-      this.requiredProps = { hint: '*Required', persistentHint: true }
-      this.rules.unshift((v) => Validations.required(v))
+  watch: {
+    required: {
+      immediate: true,
+      handler() {
+        this.applyRequiredProps()
+      }
     }
-
+  },
+  created() {
     this.rules.unshift((v) =>
       Validations.maxLength(v, 64, labels.getMaxLengthMessage(this.entityName, 64))
     )
@@ -71,6 +79,17 @@ export default {
     this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`
 
     this.rules = this.applyRules ? this.initialRules || this.rules : []
+  },
+  methods: {
+    applyRequiredProps() {
+      if (this.required) {
+        this.requiredProps = { hint: '*Required', persistentHint: true }
+        this.rules.unshift((v) => Validations.required(v))
+      } else {
+        this.requiredProps = {}
+        this.rules = this.applyRules ? this.initialRules : []
+      }
+    }
   }
 }
 </script>

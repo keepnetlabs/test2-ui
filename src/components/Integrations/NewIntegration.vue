@@ -644,9 +644,7 @@
           </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
-              <v-list-item-title class="new-integration__label">
-                Tags
-              </v-list-item-title>
+              <v-list-item-title class="new-integration__label"> Tags </v-list-item-title>
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
                 Use enter key to use tags
               </v-list-item-subtitle>
@@ -1213,24 +1211,25 @@ export default {
           }
         })
         this.uploadFileTypes = lookups.data.map((item) => {
-          switch (item.name) {
-            case 'Archive':
-              return { text: 'Archive files (.zip, .rar)', value: item.name }
-            case 'Image':
-              return {
-                text: 'Image files (.jpg, .png, .gif, .bmp)',
-                value: item.name
-              }
-            case 'Microsoft Office':
-              return {
-                text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
-                value: item.name
-              }
-            case 'Other':
-              return { text: 'Other', value: item.name }
-            default:
-              return { text: item.name, value: item.name }
+          if (item.name === 'Archive') {
+            return { text: 'Archive files (.zip, .rar)', value: item.name }
           }
+          if (item.name === 'Image') {
+            return {
+              text: 'Image files (.jpg, .png, .gif, .bmp)',
+              value: item.name
+            }
+          }
+          if (item.name === 'Microsoft Office') {
+            return {
+              text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
+              value: item.name
+            }
+          }
+          if (item.name === 'Other') {
+            return { text: 'Other', value: item.name }
+          }
+          return { text: item.name, value: item.name }
         })
         this.addProxyItems(proxies.data.results, true)
         if (response[1]) this.updateModels(response[1])
@@ -1287,36 +1286,32 @@ export default {
     },
     getFriendlyName(name) {
       let label
-      switch (name) {
-        case INTEGRATION_TYPES.FORTINET:
-          label = INTEGRATION_LABELS.FORTINET
-          break
-        case INTEGRATION_TYPES.VIRUSTOTAL:
-          label = INTEGRATION_LABELS.VIRUSTOTAL
-          break
-        case INTEGRATION_TYPES.VMRAY:
-          label = INTEGRATION_LABELS.VMRAY
-          break
-        case INTEGRATION_TYPES.IBMXFORCE:
-          label = INTEGRATION_LABELS.IBMXFORCE
-          break
-        case INTEGRATION_TYPES.SPAMHOUSE:
-          label = INTEGRATION_LABELS.SPAMHOUSE
-          break
-        case INTEGRATION_TYPES.CUSTOMINTEGRATION:
-          label = INTEGRATION_LABELS.CUSTOMINTEGRATION
-          break
-        case INTEGRATION_TYPES.GOOGLESAFEBROWSER:
-          label = INTEGRATION_LABELS.GOOGLESAFEBROWSER
-          break
-        case INTEGRATION_TYPES.ROKSIT:
-          label = INTEGRATION_LABELS.CyberXRay
-          break
-        case INTEGRATION_TYPES.GOOGLEWEBRISK:
-          label = INTEGRATION_TYPES.GOOGLEWEBRISK
-          break
-        default:
-          return
+      if (name === INTEGRATION_TYPES.FORTINET) {
+        label = INTEGRATION_LABELS.FORTINET
+      }
+      if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
+        label = INTEGRATION_LABELS.VIRUSTOTAL
+      }
+      if (name === INTEGRATION_TYPES.VMRAY) {
+        label = INTEGRATION_LABELS.VMRAY
+      }
+      if (name === INTEGRATION_TYPES.IBMXFORCE) {
+        label = INTEGRATION_LABELS.IBMXFORCE
+      }
+      if (name === INTEGRATION_TYPES.SPAMHOUSE) {
+        label = INTEGRATION_LABELS.SPAMHOUSE
+      }
+      if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+        label = INTEGRATION_LABELS.CUSTOMINTEGRATION
+      }
+      if (name === INTEGRATION_TYPES.GOOGLESAFEBROWSER) {
+        label = INTEGRATION_LABELS.GOOGLESAFEBROWSER
+      }
+      if (name === INTEGRATION_TYPES.ROKSIT) {
+        label = INTEGRATION_LABELS.CyberXRay
+      }
+      if (name === INTEGRATION_TYPES.GOOGLEWEBRISK) {
+        label = INTEGRATION_TYPES.GOOGLEWEBRISK
       }
       return label
     },
@@ -1690,7 +1685,7 @@ export default {
         })
         .catch((error) => {
           item.status = 'failed'
-          if (error.response.data.Message === 'Internal server error') {
+          if (error?.response?.data?.Message === 'Internal server error') {
             item.errorMessage = 'Error when testing connections!'
           } else {
             item.errorMessage = error.response.data.message || error.response.data.Message
@@ -1736,7 +1731,7 @@ export default {
             .catch((error) => {
               this.saveDisable = false
               this.formValues.apiKeys[i].status = 'failed'
-              if (error.response.data.Message === 'Internal server error') {
+              if (error?.response?.data?.Message === 'Internal server error') {
                 this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
               } else {
                 this.formValues.apiKeys[i].errorMessage =

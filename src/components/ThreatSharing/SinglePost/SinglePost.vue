@@ -15,111 +15,33 @@
         @closeAdd="closeNewInvestigationModal($event)"
       />
     </div>
-    <app-dialog
+    <SinglePostDeletePostDialog
+      v-if="isWantToDelete"
       :status="isWantToDelete"
-      @changeStatus="isWantToDelete = false"
-      type="delete"
-      icon="mdi-delete"
-      title="Delete Incident?"
-      title-id="text--threat-sharing-incident-single-post-delete-popup-title"
-      subtitle-id="text--threat-sharing-incident-single-post-delete-popup-subtitle"
-      :subtitle="deleteIncidentName"
-      :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
-    >
-      <template v-slot:app-dialog-footer>
-        <app-dialog-footer
-          @handleClose="isWantToDelete = false"
-          @handleConfirm="deleteIncidentConfirm()"
-          actionButtonText="DELETE"
-          type="delete"
-          :confirm-button-id="`threat-sharing-single-post-delete-incident-confirm`"
-          :cancel-button-id="`threat-sharing-single-post-delete-incident-confirm`"
-        />
-      </template>
-    </app-dialog>
-    <app-dialog
-      :status="openShareModal"
-      subtitle="Share this incident via email"
-      icon="mdi-send"
-      title="Share incident"
-      size="big"
-      title-id="text--threat-sharing-incident-single-post-share-popup-title"
-      subtitle-id="text--threat-sharing-incident-single-post-share-popup-subtitle"
+      :delete-incident-community-name="deleteIncidentCommunityName"
+      :delete-incident-name="deleteIncidentName"
+      :delete-incident-id="deleteIncidentId"
+      @on-close="isWantToDelete = false"
+      @on-delete="deleteIncidentConfirm"
+    />
+    <SinglePostShareDialog
       v-if="openShareModal"
-      @changeStatus="
-        openShareModal = false
-        shareEmail = []
-      "
-    >
-      <template v-slot:app-dialog-body>
-        <v-form ref="shareModal">
-          <span
-            style="
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: normal;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-            "
-            >Recipients</span
-          >
-          <k-select
-            id="input--threat-sharing-incident-share-email"
-            type="combobox"
-            :items="[]"
-            placeholder="Enter emails (max. 10)"
-            multiple
-            dense
-            deletable-chips
-            autocomplete="disabled"
-            small-chips
-            outlined
-            :no-data-text="'Enter emails (max. 10)'"
-            v-model.trim="shareEmail"
-            :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
-            class="pop-up-card__invite-member"
-            hint="Press enter to separate email addresses"
-          ></k-select>
-        </v-form>
-      </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            id="threat-sharing-single-post-share-modal-close"
-            @click="
-              openShareModal = false
-              shareEmail = []
-            "
-            >{{ labels.Cancel }}</v-btn
-          >
-          <v-btn
-            :disabled="shareButtonDisabled"
-            text
-            color="#2196f3"
-            class="k-dialog__button"
-            @click="shareIncident"
-            id="threat-sharing-single-post-share-modal-save"
-            >Send</v-btn
-          >
-        </div>
-      </template>
-    </app-dialog>
-    <div id="" class="single-post">
+      :status="openShareModal"
+      :shared-incited-id="sharedIncitedId"
+      @on-close="openShareModal = false"
+    />
+    <div class="single-post">
       <div class="threat-sharing-content">
         <div class="ts-header">
           <div class="ts-title">
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-clamp
+                  v-if="post.title"
+                  v-on="on"
                   id="text--threat-sharing-single-post-title"
                   autoresize
                   :max-lines="2"
-                  v-if="post.title"
-                  v-on="on"
                 >
                   {{ post.title }}
                 </v-clamp>
@@ -131,12 +53,12 @@
           <div class="flex-grow-1"></div>
           <div class="ts-header-btn-1">
             <v-expansion-panel-header
+              id="single-post-expansion-header"
               class="pa-0"
               style="min-height: 36px;"
               disable-icon-rotate
-              id="single-post-expansion-header"
             >
-              <template v-slot:actions mandatory="true">
+              <template #actions>
                 <v-btn
                   v-if="post.isToggle"
                   :id="'threat-sharing-single-post' + post.communityPostResourceId"
@@ -151,9 +73,6 @@
                 </v-btn>
                 <v-btn
                   v-else
-                  @click.native="
-                    getPostDetails(post.communityPostResourceId, postIndex, true, post)
-                  "
                   :id="'threat-sharing-single-post' + post.communityPostResourceId"
                   :key="'single-post-details' + post.communityPostResourceId"
                   outlined
@@ -161,13 +80,16 @@
                   medium
                   color="blue"
                   :disabled="!getPostPermission"
+                  @click.native="
+                    getPostDetails(post.communityPostResourceId, postIndex, true, post)
+                  "
                   >DETAILS
                 </v-btn>
               </template>
             </v-expansion-panel-header>
           </div>
           <v-menu offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <v-btn
                 :id="'threat-sharing-single-post-dots' + post.communityPostResourceId"
                 icon
@@ -184,8 +106,8 @@
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
                   <v-list-item
-                    :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
                     v-if="getPostPermission && canEdit(post)"
+                    :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
                     <v-list-item-icon>
@@ -196,10 +118,10 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
+                    v-if="getInvestigationPermissions.POST.hasPermission"
                     :id="
                       'threat-sharing-single-post-investigate-button' + post.communityPostResourceId
                     "
-                    v-if="getInvestigationPermissions.POST.hasPermission"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -210,8 +132,8 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    style="cursor: not-allowed; opacity: 0.3;"
                     v-if="getSharePostPermission && post.communityPrivacyStatusId !== 1"
+                    style="cursor: not-allowed; opacity: 0.3;"
                     :id="'threat-sharing-single-post-share-button' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -241,8 +163,8 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
                     v-if="getDeletePostPermission && canDelete(post)"
+                    :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
                     @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
@@ -272,10 +194,10 @@
             >
             <b v-else class="pl-1 pr-1">Company Name</b> on
             <a
-              :id="`threat-sharing-incidents-list-go-to-community-details${post.communityName}`"
               v-if="post.communityName"
-              @click="goToCommunityDetails(post)"
+              :id="`threat-sharing-incidents-list-go-to-community-details${post.communityName}`"
               class="pl-1"
+              @click="goToCommunityDetails(post)"
               >{{ post.communityName }}</a
             >
             <a v-else class="pl-1 pr-1">Community Name</a>
@@ -306,16 +228,11 @@
         </div>
         <div class="ts-body">
           <v-clamp
-            :id="'single-post-description-body' + post.communityPostResourceId"
             v-if="post.description"
+            :id="'single-post-description-body' + post.communityPostResourceId"
             autoresize
             :max-lines="3"
             >{{ post.description }}
-          </v-clamp>
-          <v-clamp v-else autoresize :max-lines="3">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
           </v-clamp>
         </div>
         <div
@@ -337,17 +254,6 @@
               style="cursor: pointer;"
             >
               <v-icon>mdi-thumb-up</v-icon>
-            </v-btn>
-            <v-btn
-              :id="'threat-sharing-single-post-unlike' + post.communityPostResourceId"
-              v-if="false"
-              disabled
-              text
-              x-small
-              icon
-              color="grey"
-            >
-              <v-icon>mdi-thumb-down</v-icon>
             </v-btn>
             <span class="ts-action-counter">{{
               (postDetails && postDetails.likeCount) || post.likeCount
@@ -387,24 +293,24 @@
           <div class="ts-tags">
             <v-btn
               v-if="post.hasAttachment"
+              id="threat-sharing-single-post-badge-attachment"
               text
               small
               rounded
               outlined
               class="tag-btn text-none"
-              id="threat-sharing-single-post-badge-attachment"
             >
               <span v-if="post.categoryResourceIdArray.length === 1">Attachment</span>
               <span v-else-if="post.categoryResourceIdArray.length > 1">Attachments</span>
             </v-btn>
             <v-btn
               v-if="post.categoryResourceIdArray && post.categoryResourceIdArray.length"
+              id="threat-sharing-single-post-badge--category"
               text
               small
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="threat-sharing-single-post-badge--category"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]).name
@@ -511,7 +417,6 @@
           <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
             <v-tab-item>
               <PreviewHeaderForSinglePost :uploadRespond="emailData" />
-
               <div id="single-post-body" class="preview-body">
                 <k-shadow-frame
                   :id="`sframe${post.communityPostResourceId}`"
@@ -561,9 +466,9 @@
                 </v-btn>
                 <v-btn
                   v-else-if="postDetails && postDetails.isLikedByUser"
-                  @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
                   :class="{ 'active-act': postDetails.isLikedByUser }"
                   :id="'unlike-btn' + post.communityPostResourceId"
+                  @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
                 >
                   <v-icon class="active-act">mdi-thumb-up</v-icon>
                   Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
@@ -869,16 +774,13 @@ import { mapGetters } from 'vuex'
 import VClamp from 'vue-clamp'
 import NewInvestigation from '@/components/Investigation/NewInvestigation'
 import KShadowFrame from '@/components/KShadowFrame'
-import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import vueCustomElement from 'vue-custom-element'
 import {
-  deleteCommunityPost,
   getComments,
   getCommunityPost,
   getCommunityPostPreview,
-  likePost,
-  shareAPost
+  likePost
 } from '@/api/threatSharing'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
@@ -889,11 +791,17 @@ import {
   copyToClipboard
 } from '@/utils/functions'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import * as Validations from '@/utils/validations'
 import SinglePostComments from '@/components/ThreatSharing/SinglePost/SinglePostComments'
+import SinglePostDeletePostDialog from '@/components/ThreatSharing/SinglePost/SinglePostDeletePostDialog'
+import SinglePostShareDialog from '@/components/ThreatSharing/SinglePost/SinglePostShareDialog'
+import {
+  findCategory,
+  getCategories,
+  getTlcClass,
+  getTlcName,
+  getTlcTooltip
+} from '@/components/ThreatSharing/SinglePost/utils'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1013,13 +921,12 @@ a{position:relative}
 })
 export default {
   components: {
+    SinglePostShareDialog,
+    SinglePostDeletePostDialog,
     SinglePostComments,
-    KSelect,
-    AppDialogFooter,
     PreviewHeaderForSinglePost,
     VClamp,
     NewInvestigation,
-    AppDialog,
     AttachmentsPreview
   },
   props: {
@@ -1036,10 +943,6 @@ export default {
       type: Number,
       required: true
     },
-    totalPostCount: {
-      type: Number,
-      required: true
-    },
     refreshData: {
       required: false
     },
@@ -1051,41 +954,11 @@ export default {
     }
   },
   data: () => ({
-    isConfirmButtonDisabled: false,
     isEditCommentButtonDisabled: false,
-    isPostButtonDisabled: false,
     getCommentDetails: false,
     shareButtonDisabled: false,
     labels,
     openShareModal: false,
-    shareEmail: [],
-    shareEmailRules: {
-      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
-      required: (v) => (v && v.length >= 1) || 'Required',
-      email: (v) => {
-        if (v.length > 0) {
-          let booReturn = true
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          for (let i = 0; i < v.length; i++) {
-            if (!pattern.test(v[i])) {
-              booReturn = false
-              document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
-              document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
-              return v[i] + ' address is not valid'
-            } else if (v.length === i) {
-              return booReturn
-            } else {
-              booReturn = true
-            }
-          }
-          return booReturn
-        } else {
-          return true
-        }
-      }
-    },
-    deleteCommentId: null,
-    isWantToDeleteComment: false,
     deleteIncidentId: null,
     deleteIncidentName: null,
     deleteIncidentCommunityName: null,
@@ -1094,46 +967,12 @@ export default {
     postDetails: {},
     comments: [],
     emailData: null,
-    categories: [
-      {
-        resourceId: 'Ps0SSyl7rVNe',
-        name: 'Malicious'
-      },
-      {
-        resourceId: 'bEuAD1pdbRXF',
-        name: 'Non-Malicious'
-      },
-      {
-        resourceId: 'NGLCc9UCxJvw',
-        name: 'Phishing'
-      },
-      {
-        resourceId: 'Gwt67E1ftYtr',
-        name: 'Spam'
-      }
-    ],
-    userIdFromStorage: null,
-    expanded: false,
+    categories: getCategories(),
     commentOpened: false,
-    isWantToShareIncident: false,
-    isWantToInvestigate: false,
-    isWantToPostIncident: false,
+    sharedIncitedId: '',
     tab: 0,
-    showAllTags: false,
     seeComments: false,
-    rules: {
-      required: (v) => Validations.required(v),
-      maxLength: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
-      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
-    likeCount: 15,
-    userLiked: false,
     hasPermission: false,
-    valid: false,
-    userComment: '',
     hoverTool: false,
     details: {},
     shareSettings: {},
@@ -1156,21 +995,23 @@ export default {
     }
   },
   mounted() {
-    this.userIdFromStorage = localStorage.getItem('userId')
     if (this.$route.query.postId) {
       this.getPostDetails(this.$route.query.postId, 0, true)
     }
   },
   methods: {
+    getTlcClass,
+    getTlcTooltip,
+    getTlcName,
+    findCategory,
     changeCommentsValue(comments, postId) {
       this.comments = comments
-      if (this.$store.state['incidents'].incidents.incidentsData) {
-        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
-          (item) => item.communityPostResourceId === postId
-        ).comments = comments
-        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
-          (item) => item.communityPostResourceId === postId
-        ).commentCount = comments.length
+      if (this.incidents.length) {
+        const post = this.incidents.find((item) => item.communityPostResourceId === postId)
+        if (post) {
+          post.comments = comments
+          post.commentCount = comments.length
+        }
       }
       this.$forceUpdate()
     },
@@ -1179,48 +1020,6 @@ export default {
         return categories.length - 1
       } else {
         return categories.length - 2
-      }
-    },
-    getTlcClass(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'TLP-GREEN'
-        case 'RhHwRcLlZxek':
-          return 'TLP-AMBER'
-        case 'YpUZxVhYJlKg':
-          return 'TLP-RED'
-        case 'wFlYRDMW946M':
-          return 'TLP-WHITE'
-        default:
-          break
-      }
-    },
-    getTlcTooltip(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'Limited disclosure, restricted to the community.'
-        case 'RhHwRcLlZxek':
-          return 'Limited disclosure, restricted to participants’ organizations.'
-        case 'YpUZxVhYJlKg':
-          return 'Not for disclosure, restricted to participants only.'
-        case 'wFlYRDMW946M':
-          return 'Disclosure is not limited.'
-        default:
-          break
-      }
-    },
-    getTlcName(item) {
-      switch (item) {
-        case 'wKBhLuFZ46y9':
-          return 'TLP: GREEN'
-        case 'RhHwRcLlZxek':
-          return 'TLP: AMBER'
-        case 'YpUZxVhYJlKg':
-          return 'TLP: RED'
-        case 'wFlYRDMW946M':
-          return 'TLP: WHITE'
-        default:
-          break
       }
     },
     contentCopy(contentBody) {
@@ -1236,31 +1035,6 @@ export default {
     openShareModalFunc(post) {
       this.sharedIncitedId = post.communityPostResourceId
       this.openShareModal = true
-    },
-    shareIncident() {
-      let id = this.sharedIncitedId
-      this.shareButtonDisabled = true
-      setTimeout(() => {
-        if (this.$refs.shareModal.validate()) {
-          const payload = {
-            emailarray: this.shareEmail
-          }
-          this.shareButtonDisabled = true
-          shareAPost(id, payload)
-            .then(() => {
-              setTimeout(() => {
-                this.$store
-                  .dispatch('rightColumn/changeReloadRightColumnData', true)
-                  .finally(() => (this.shareButtonDisabled = false))
-              }, 500)
-              this.shareEmail = []
-              this.openShareModal = false
-            })
-            .catch(() => (this.shareButtonDisabled = false))
-        } else {
-          this.shareButtonDisabled = false
-        }
-      }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
@@ -1293,27 +1067,8 @@ export default {
       document.getElementById('component-incidents').style.zIndex = 6
     },
     deleteIncidentConfirm() {
-      deleteCommunityPost(this.deleteIncidentId).then(() => {
-        this.$emit('refreshData')
-        this.isWantToDelete = false
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
-    },
-    findCategory(id) {
-      switch (id) {
-        case 'Ps0SSyl7rVNe':
-          return 'Malicious'
-        case 'bEuAD1pdbRXF':
-          return 'Non-Malicious'
-        case 'NGLCc9UCxJvw':
-          return 'Phishing'
-        case 'Gwt67E1ftYtr':
-          return 'Spam'
-        default:
-          return ''
-      }
+      this.$emit('refreshData')
+      this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
     },
     openInvestigate(post) {
       getCommunityPost(post.communityPostResourceId).then((response) => {
@@ -1353,36 +1108,44 @@ export default {
       }
     },
     userLikePost(postId) {
-      let _this = this
       likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
-          if (_this.$store.state['incidents'].incidents.incidentsData) {
-            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          if (this.$store.state['incidents'].incidents.incidentsData) {
+            const postIndex = this.$store.state[
+              'incidents'
+            ].incidents.incidentsData.tableData.findIndex(
               (item) => item.communityPostResourceId === postId
-            ).likeCount = response.data.data.likeCount
+            )
+            if (postIndex !== -1) {
+              this.$store.state['incidents'].incidents.incidentsData.tableData[
+                postIndex
+              ].likeCount = response.data.data.likeCount
+            }
           }
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
       })
     },
     userUnlikePost(postId) {
-      let _this = this
       likePost(postId).then(() => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
-          if (_this.$store.state['incidents'].incidents.incidentsData) {
-            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          if (this.$store.state['incidents'].incidents.incidentsData) {
+            const postIndex = this.$store.state[
+              'incidents'
+            ].incidents.incidentsData.tableData.findIndex(
               (item) => item.communityPostResourceId === postId
-            ).likeCount = response.data.data.likeCount
+            )
+            if (postIndex !== -1) {
+              this.$store.state['incidents'].incidents.incidentsData.tableData[
+                postIndex
+              ].likeCount = response.data.data.likeCount
+            }
           }
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
       })
     },
@@ -1414,21 +1177,11 @@ export default {
       this.deleteIncidentCommunityName = post.communityName
       this.isWantToDelete = true
     },
-    regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
-    },
     canDelete(post) {
       return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
     },
     canEdit(post) {
       return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
-    },
-    canDeleteOrEditComment(type) {
-      if (type === 'update') {
-        return this.getEditCommentPermission
-      } else {
-        return this.getDeletePostPermission
-      }
     }
   }
 }
