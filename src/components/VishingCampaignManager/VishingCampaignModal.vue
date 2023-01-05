@@ -682,7 +682,6 @@ export default {
         this.isDateValid = true
         this.isTimezoneValid = true
         this.formValues.scheduleDate = ''
-        this.selectedTimeZoneText = ''
       }
     },
     'formValues.scheduleDate'() {

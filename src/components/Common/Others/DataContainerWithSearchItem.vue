@@ -17,7 +17,7 @@
       </v-form>
     </div>
     <div v-if="!isEdit" class="data-container-with-search-item__actions">
-      <v-tooltip v-if="!isValid" bottom opacity="1">
+      <v-tooltip v-if="!isValid && isEditable" bottom opacity="1">
         <template #activator="{ on }">
           <v-icon v-on="on" class="mr-2" color="#F56C6C" style="font-size: 24px !important;"
             >mdi-alert-circle</v-icon
@@ -25,12 +25,24 @@
         </template>
         This Domain is not valid!
       </v-tooltip>
-      <v-btn icon @click="handleEditClick">
+      <v-btn v-if="isEditable" icon @click="handleEditClick">
         <v-icon> mdi-pencil</v-icon>
       </v-btn>
-      <v-btn icon class="ml-2" @click="$emit('on-delete', value)">
+      <v-btn v-if="isEditable" icon class="ml-2" @click="$emit('on-delete', value)">
         <v-icon>mdi-close</v-icon>
       </v-btn>
+      <v-tooltip v-if="!isEditable" right>
+        <template v-slot:activator="{ on }">
+          <div
+            v-if="!isEditable"
+            v-on="on"
+            class="d-flex justify-center align-center v-btn--icon v-size--default"
+          >
+            <v-icon> mdi-information-outline </v-icon>
+          </div>
+        </template>
+        <span>{{ disabledTooltipText }}</span>
+      </v-tooltip>
     </div>
     <div v-else class="d-flex download-buttons flex-row flex-wrap justify-end">
       <v-tooltip v-if="!isValid" bottom opacity="1">
@@ -72,6 +84,14 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    isEditable: {
+      type: Boolean,
+      default: true
+    },
+    disabledTooltipText: {
+      type: String,
+      default: 'You cannot edit or delete this record.'
     },
     itemHeight: {
       type: String,
@@ -119,6 +139,7 @@ export default {
       return this.textFieldErrorMessage
     },
     isValid() {
+      if (!this.isEditable) return true
       const comparator = this.isEdit ? this.textFieldValue : this.value
       return comparator && this.textFieldRules.every((func) => func(comparator) === true)
     },

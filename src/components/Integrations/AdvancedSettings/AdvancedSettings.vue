@@ -105,7 +105,9 @@ export default {
     },
     removeKeysFromData(key) {
       const copyOfData = JSON.parse(JSON.stringify(this.formData))
-      return copyOfData.filter(({ exclusionType }) => exclusionType !== key)
+      return copyOfData.filter(
+        ({ exclusionType, isEditable }) => exclusionType !== key && isEditable
+      )
     }
   }
 }
