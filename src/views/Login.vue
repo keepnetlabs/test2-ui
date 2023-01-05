@@ -969,7 +969,9 @@ export default {
           .catch((error) => {
             if (error && error.response && error.response.data) {
               this.mfaSetupErrorText =
-                error?.response?.data?.message || error?.response?.data?.validationMessages[0]
+                error?.response?.data?.message ||
+                error?.response?.data?.validationMessages?.[0] ||
+                'Something went wrong'
             }
             this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
           })

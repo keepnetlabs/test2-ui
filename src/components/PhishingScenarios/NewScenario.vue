@@ -89,13 +89,7 @@
                             {{ item.text }}
                           </div>
                           <div class="mail-configuration-select-sources__item-right-platform">
-                            {{
-                              item.text === 'Click-Only'
-                                ? 'See who fails for phishing links'
-                                : item.text === 'Data Submission'
-                                ? 'Gather information from users'
-                                : 'Send a trackable file '
-                            }}
+                            {{ getMethodTypeDescription(item.text) }}
                           </div>
                         </div>
                       </div>
@@ -227,11 +221,7 @@
                       </div>
                       <div class="summary-content-details">
                         <span class="summary-content__title">Method</span
-                        ><span class="summary-content__body">{{
-                          scenarioDetailsLookup.methodTypes.find(
-                            (item) => item.value === formValues.methodTypeId
-                          ).text
-                        }}</span>
+                        ><span class="summary-content__body">{{ getMethodText }}</span>
                       </div>
                       <div class="summary-content-details" style="border-bottom: none !important;">
                         <span class="summary-content__title">Difficulty</span
@@ -277,11 +267,7 @@
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
                           <div
-                            v-if="
-                              summaryData &&
-                              summaryData.emailTemplate &&
-                              summaryData.emailTemplate.phishingFileName
-                            "
+                            v-if="hasPhishingFile"
                             class="attachment-wrapper mt-2 mb-0"
                             style="position: relative;"
                           >
@@ -710,6 +696,13 @@ export default {
     }
   },
   methods: {
+    getMethodTypeDescription(method = '') {
+      return method === 'Click-Only'
+        ? 'See who fails for phishing links'
+        : method === 'Data Submission'
+        ? 'Gather information from users'
+        : 'Send a trackable file '
+    },
     getInitialEmailTemplateId(id) {
       this.initialFormValues.emailTemplateId = id
     },
@@ -902,6 +895,9 @@ export default {
     }
   },
   computed: {
+    hasPhishingFile() {
+      return !!this.summaryData?.emailTemplate?.phishingFileName
+    },
     getSelectedMethod() {
       return this.formValues?.methodTypeId
         ? this.methods[Number(this.formValues?.methodTypeId) - 1].text
@@ -973,6 +969,13 @@ export default {
       return (
         this.scenarioDetailsLookup['difficultyTypes'].find(
           (item) => item.value === this.generalDifficultyTypeId
+        )?.text || ''
+      )
+    },
+    getMethodText() {
+      return (
+        this.scenarioDetailsLookup.methodTypes.find(
+          (item) => item.value === this.formValues.methodTypeId
         )?.text || ''
       )
     },
