@@ -37,7 +37,8 @@ export default {
       type: Array
     },
     entityName: {
-      type: String
+      type: String,
+      default: labels.Description
     },
     required: {
       type: Boolean,
@@ -71,7 +72,7 @@ export default {
           Validations.maxLength(
             v,
             this.maxLength,
-            labels.getMaxLengthMessage(labels.Description, this.maxLength)
+            labels.getMaxLengthMessage(this.entityName, this.maxLength)
           )
       ],
       placeholder: '',

@@ -1113,9 +1113,16 @@ export default {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
           if (this.$store.state['incidents'].incidents.incidentsData) {
-            this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+            const postIndex = this.$store.state[
+              'incidents'
+            ].incidents.incidentsData.tableData.findIndex(
               (item) => item.communityPostResourceId === postId
-            ).likeCount = response.data.data.likeCount
+            )
+            if (postIndex !== -1) {
+              this.$store.state['incidents'].incidents.incidentsData.tableData[
+                postIndex
+              ].likeCount = response.data.data.likeCount
+            }
           }
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
@@ -1127,9 +1134,16 @@ export default {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
           if (this.$store.state['incidents'].incidents.incidentsData) {
-            this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+            const postIndex = this.$store.state[
+              'incidents'
+            ].incidents.incidentsData.tableData.findIndex(
               (item) => item.communityPostResourceId === postId
-            ).likeCount = response.data.data.likeCount
+            )
+            if (postIndex !== -1) {
+              this.$store.state['incidents'].incidents.incidentsData.tableData[
+                postIndex
+              ].likeCount = response.data.data.likeCount
+            }
           }
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })

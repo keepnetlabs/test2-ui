@@ -249,6 +249,7 @@
                       show: true
                     }"
                     :show-filter-options="false"
+                    :add-row-class-name="addRowClassName"
                     @downloadEvent="exportIntegrationList"
                     @sortChangedEvent="sortChangedEvent($event)"
                     @searchChangedEvent="searchChangedEvent($event)"
@@ -836,6 +837,9 @@ export default {
     }
   },
   methods: {
+    addRowClassName({ row }) {
+      return row?.validationDetail?.length > 0 ? ' target-user-import-file__error-row' : ''
+    },
     handleSearchChange(searchFilter = {}) {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems

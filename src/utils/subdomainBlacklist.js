@@ -65,5 +65,11 @@ export default [
   'Wordpress',
   'Yahoo',
   'Yandex',
-  'Youtube'
+  'Youtube',
+  'Uber',
+  'Ubereats',
+  'Dropbox',
+  'Onedrive',
+  'Wetransfer',
+  'Gmail'
 ]

@@ -24,7 +24,11 @@
       v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
       ref="dataContainerWithSearch"
+      :filters="['invalid', 'custom']"
       :text-field-rules="[...COMMON_CONSTANTS.DEFAULT_URL_RULES]"
+      :getEditability="getEditability"
+      :disabledTooltipText="labels.ExcludedURLTooltipText"
+      @on-delete="handleDeleteItem"
     />
     <button
       id="btn-import--advanced-settings-url"
@@ -55,7 +59,11 @@ import labels from '@/model/constants/labels'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { getFormData, setFormData } from '@/components/Integrations/AdvancedSettings/util'
+import {
+  getFormData,
+  setFormData,
+  getFormDataWithObjects
+} from '@/components/Integrations/AdvancedSettings/util'
 export default {
   name: 'AdvancedSettingsURLs',
   components: { BatchImportPopup, DataContainerWithSearch, InputUrl, DataContainerWithSearchInput },
@@ -72,6 +80,7 @@ export default {
     return {
       urlSearch: '',
       dataContainerWithSearchItems: [],
+      dataWithObjects: [],
       isBatchImportPopupOpen: false,
       labels,
       COMMON_CONSTANTS
@@ -86,12 +95,24 @@ export default {
     this.setFormDataToURL()
   },
   methods: {
+    getEditability(value) {
+      return this.dataWithObjects?.find((item) => item.value === value)?.isEditable
+    },
     setFormDataToURL(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'URL')
+      this.dataWithObjects = getFormDataWithObjects(val, 'URL')
     },
     handleUrlAdd() {
       this.dataContainerWithSearchItems.unshift(this.urlSearch)
+      this.dataWithObjects.unshift({
+        value: this.urlSearch,
+        exclusionType: 'URL',
+        isEditable: true
+      })
       this.resetUrlSearch()
+    },
+    handleDeleteItem(index) {
+      this.dataWithObjects.splice(index, 1)
     },
     resetUrlSearch() {
       this.urlSearch = ''
@@ -106,7 +127,11 @@ export default {
     handleSaveChanges() {
       if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
         return
-      const payload = setFormData(this.dataContainerWithSearchItems, 'URL')
+      for (let i = 0; i < this.dataWithObjects.length; i++) {
+        this.dataWithObjects[i].value = this.dataContainerWithSearchItems[i]
+      }
+      const editableItems = this.dataWithObjects.filter((item) => item.isEditable)
+      const payload = setFormData(editableItems, 'URL')
       this.$emit('on-submit', payload, 'URL')
     }
   }

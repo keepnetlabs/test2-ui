@@ -1,20 +1,24 @@
 .k-badge {
     &--default {
-        .v-btn__content {
-            color: #fff;
-        }
+      .v-btn__content {
+        color: #fff;
+      }
     }
-
     &:focus {
-        &:before {
-            opacity: 0.12 !important;
-        }
+      &:before {
+        opacity: 0.12 !important;
+      }
     }
-
     &:hover {
-        &:before {
-            opacity: 0 !important;
-        }
+      &:before {
+        opacity: 0 !important;
+      }
+    }
+  
+    &--black {
+      .v-btn__content {
+        color: #383b41 !important;
+      }
     }
 
     &--text-black {
@@ -22,59 +26,76 @@
             color: #383B41 !important;
         }
     }
+  
+    &--black {
+      .v-btn__content {
+        color: #383b41 !important;
+      }
+    }
+    &--text-black {
+        .v-btn__content {
+            color: #383B41 !important;
+        }
+    }
 
     .v-btn__content {
-        font-size: 12px !important;
-        font-weight: 600 !important;
-        line-height: 1.33;
-        padding-top: 1px;
-        letter-spacing: normal !important;
-        text-align: center;
-        text-transform: none !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      line-height: 1.33;
+      padding-top: 1px;
+      letter-spacing: normal !important;
+      text-align: center;
+      text-transform: none !important;
     }
-
     &__sizes {
-        &--medium {
-            &.v-btn {
-                border-radius: 4px;
-                margin: 0 auto;
-                max-width: 100px;
-                height: 24px !important;
-                box-shadow: none !important;
-            }
-
-            &.v-btn:not(.v-btn--round).v-size--default {
-                min-width: 90px;
-            }
+      &--auto {
+        &.v-btn {
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          max-width: unset !important;
+          height: auto !important;
+          padding: 4px 6px !important;
         }
-
-        &--small {
-            &.v-btn {
-                border-radius: 4px !important;
-                box-shadow: none !important;
-                max-width: fit-content;
-                height: auto !important;
-                padding: 4px 6px !important;
-            }
-
-            &.v-btn:not(.v-btn--round).v-size--default {
-                min-width: 60px;
-                padding: 0;
-            }
+      }
+      &--medium {
+        &.v-btn {
+          border-radius: 4px;
+          margin: 0 auto;
+          max-width: 84px;
+          height: 24px !important;
+          box-shadow: none !important;
         }
-
-        &--mini {
-            &.v-btn {
-                border-radius: 4px !important;
-                max-width: 26px;
-                height: 24px !important;
-                box-shadow: none !important;
-            }
-
-            &.v-btn:not(.v-btn--round).v-size--default {
-                min-width: 26px;
-                padding: 0;
-            }
+        &.v-btn:not(.v-btn--round).v-size--default {
+          min-width: 90px;
         }
+      }
+      &--small {
+        &.v-btn {
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          max-width: fit-content;
+          height: auto !important;
+          padding: 4px 6px !important;
+        }
+        &.v-btn:not(.v-btn--round).v-size--default {
+          min-width: 60px;
+          padding: 0;
+        }
+      }
+      &--mini {
+        &.v-btn {
+          border-radius: 4px !important;
+          max-width: 26px;
+          height: 24px !important;
+          box-shadow: none !important;
+        }
+        &.v-btn:not(.v-btn--round).v-size--default {
+          min-width: 26px;
+          padding: 0;
+        }
+      }
     }
+  .full-width {
+    width: 100%;
+  }
 }

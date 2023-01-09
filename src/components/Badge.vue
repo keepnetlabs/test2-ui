@@ -57,6 +57,10 @@ export default {
       type: String,
       default: ''
     },
+    isBlackText: {
+      type: Boolean,
+      default: false
+    },
     defaultBackgroundColor: {
       type: String,
       default: '#fff'
@@ -109,6 +113,10 @@ export default {
 
     if (val === 'mini') {
       retValue = 'k-badge__sizes--mini'
+    }
+
+    if (val === 'auto') {
+      retValue = 'k-badge__sizes--auto'
     }
 
     return retValue

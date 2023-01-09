@@ -31,6 +31,9 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import VishingRoute from '@/views/VishingRoute'
+import VishingTemplates from '@/views/VishingTemplates'
+import VishingCampaignManager from '@/views/VishingCampaignManager'
 import TrainingReport from '@/views/TrainingReport'
 import AwarenessEducator from '@/views/AwarenessEducator'
 import TrainingList from '@/views/TrainingList'
@@ -41,6 +44,7 @@ import EmailThreatSimulator from '@/views/EmailThreatSimulator'
 import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
+import VishingReport from '@/views/VishingReport'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -103,6 +107,36 @@ const router = new Router({
             permissionStoreKey: 'permissions/getPhishingSimulatorLeftMenuPermissions'
           },
           component: PhishingSimulatorRoute
+        },
+        {
+          path: '/vishing',
+          name: 'Vishing',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getVishingLeftMenuPermissions'
+          },
+          component: VishingRoute
+        },
+        {
+          path: '/vishing/vishing-templates',
+          name: 'Vishing Templates',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Vishing',
+            permissionStoreKey: 'permissions/getVishingTemplatesLeftMenuPermissions'
+          },
+          component: VishingTemplates
+        },
+        {
+          path: '/vishing/campaign-manager',
+          name: 'Vishing Campaign Manager',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Vishing',
+            permissionStoreKey: 'permissions/getVishingCampaignManagerLeftMenuPermissions'
+          },
+          component: VishingCampaignManager
         },
         {
           path: '/threat-sharing',
@@ -470,6 +504,17 @@ const router = new Router({
           },
           params: true,
           props: true
+        },
+        {
+          path: 'vishing-report/:id',
+          name: 'Vishing Report',
+          component: VishingReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: '',
+            permissionStoreKey: 'permissions/getVishingReportsSummaryPermissions'
+          },
+          params: true
         },
         {
           path: '/threat-intelligence',
