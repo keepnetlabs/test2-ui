@@ -408,7 +408,7 @@ export default {
         this.toggleShowLicenseExceededDialog()
       }
       const payload = this.getCustomFieldsPayload()
-      payload.phoneNumber = payload.phoneNumber.split(' ').join('')
+      payload.phoneNumber = payload?.phoneNumber?.split(' ').join('') || ''
       this.saveDisable = true
       createTargetUser(payload)
         .then(() => {
