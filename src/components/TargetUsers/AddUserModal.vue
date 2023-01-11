@@ -465,7 +465,7 @@ export default {
       this.saveDisable = true
       const payload = this.getCustomFieldsPayload()
       delete payload.status
-      payload.phoneNumber = payload.phoneNumber.split(' ').join('')
+      payload.phoneNumber = payload?.phoneNumber?.split(' ').join('') || ''
       updateTargetUser(payload)
         .then(() => {
           this.$emit('closeAddUserModalWithUpdate')
