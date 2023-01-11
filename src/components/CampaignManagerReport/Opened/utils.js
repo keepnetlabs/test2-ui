@@ -140,7 +140,8 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 160,
+    width: 200,
+    overrideWidth: true,
     filterableType: 'number'
   },
   DATE_CLICKED: {
