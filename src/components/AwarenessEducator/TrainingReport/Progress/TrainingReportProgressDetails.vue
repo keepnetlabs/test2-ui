@@ -31,10 +31,10 @@
         :axios-payload.sync="axiosPayload"
         @refreshAction="callForData"
       >
-        <template v-slot:datatable-custom-column="{ scope }">
+        <template v-slot:datatable-custom-column="{ scope, col }">
           <div class="training-report-progress__progress-column">
             <v-btn style="display: none;" />
-            <Badge v-bind="getStatusBadgeProps(scope.row.progress)" size="medium" />
+            <Badge v-bind="getStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
           </div>
         </template>
       </DataTable>
@@ -102,7 +102,12 @@ export default {
             hideSort: true,
             show: true,
             type: 'slot',
-            width: 180
+            width: 180,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            }
           },
           {
             property: 'sessionStartDate',
