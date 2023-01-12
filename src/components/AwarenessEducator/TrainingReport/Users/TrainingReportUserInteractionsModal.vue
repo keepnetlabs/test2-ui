@@ -41,10 +41,10 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
-        <template v-slot:datatable-custom-column="{ scope }">
+        <template v-slot:datatable-custom-column="{ scope, col }">
           <div class="training-report-users-interactions__interaction-column">
             <v-btn style="display: none;" />
-            <Badge v-bind="getStatusBadgeProps(scope.row.interaction)" size="medium" />
+            <Badge v-bind="getStatusBadgeProps(scope.row.interaction)" :col="col" size="medium" />
           </div>
         </template>
       </DataTable>
@@ -162,6 +162,11 @@ export default {
         show: true,
         type: 'slot',
         width: 180,
+        props: {
+          style: {
+            maxWidth: '110px !important'
+          }
+        },
         hideSort: true
       })
     else {
