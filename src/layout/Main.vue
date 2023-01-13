@@ -14,6 +14,11 @@
       :showSettingsModalStatus="showSettingsModalStatus"
       @changeSettings="changeSettings"
     />
+    <InitializeCompanyModal
+      v-if="isShowInitializeCompanyModal"
+      :status="isShowInitializeCompanyModal"
+      @on-close="toggleShowInitializeCompanyModal"
+    />
     <LeavingDialog />
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
@@ -743,10 +748,12 @@ import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
+import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal.vue'
 
 export default {
   name: 'Main',
   components: {
+    InitializeCompanyModal,
     AppRouterLink,
     LeavingDialog,
     NavigationDrawerFooter,
@@ -765,6 +772,7 @@ export default {
   },
   data() {
     return {
+      isShowInitializeCompanyModal: false,
       showSettingsModalStatus: false,
       labels,
       navigationDrawerClass: '',
@@ -1146,6 +1154,9 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    toggleShowInitializeCompanyModal() {
+      this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
+    },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },

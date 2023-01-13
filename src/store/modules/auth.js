@@ -18,8 +18,6 @@ const auth = {
   getters: {
     getUserRole: (state) => state.userRoleName,
     userGetter: (state) => state.user,
-    getTimeFormat: (state) => state.timeFormat,
-    getDateFormat: (state) => state.dateFormat,
     getTimezoneFormat: (state) => {
       return {
         timeFormat: state.timeFormat,
@@ -60,6 +58,12 @@ const auth = {
       if (payload.timeFormat) {
         state.timeFormat = payload.timeFormat
       }
+    },
+    SET_COMPANY_NAME(state, payload) {
+      state.selectedCompanyName = payload
+      state.companyName = payload
+      localStorage.setItem('selectedCompanyName', payload)
+      localStorage.setItem('companyName', payload)
     }
   },
   actions: {
@@ -99,6 +103,9 @@ const auth = {
           permissions: tokenData.Permission
         })
       }
+    },
+    setCompanyName({ commit }, payload) {
+      commit('SET_COMPANY_NAME', payload)
     }
   }
 }
