@@ -26,16 +26,21 @@ const CONSTANTS = {
     "undefined is not an object (evaluating 'u.width')",
     "null is not an object (evaluating 'this.getDoc().querySelector')"
   ],
-  VUETIFY_INTERNAL: ["Cannot read properties of undefined (reading 'getTiles')"],
+  VUETIFY_INTERNAL: [
+    "Cannot read properties of undefined (reading 'getTiles')",
+    't.hasAttribute is not a function'
+  ],
   VUE_ROUTER: 'Navigation aborted from',
   SMARTLOOK: 'smartlook',
   RECORDER_ERROR: 'Could not start new session on document.visible event',
   RESIZE_OBSERVER: 'ResizeObserver',
   AXIOS_ERROR: [
     'Request failed with status code 401',
+    'Request failed with status code 403',
     'timeout of 100000ms exceeded',
     'Request aborted',
-    'Request failed with status code 524'
+    'Request failed with status code 524',
+    'Non-Error promise rejection captured with value: Timeout'
   ],
   NETWORK_ERROR: 'Network Error',
   USER_FLOW: ['Userflow.js error reply (generic)', 'Unexpected token'],
@@ -49,7 +54,11 @@ const CONSTANTS = {
     'requestAnimationFrame is not defined'
   ],
   GTAG: ['a.indexOf is not a function', 'Illegal invocation'],
-  CHART_JS: ['No error message']
+  CHART_JS: ['No error message', "Cannot read properties of undefined (reading '_meta')"],
+  ANALYTICS: [
+    "null is not an object (evaluating 'g.readyState')",
+    'Error response received for message <get-frame-manager-configuration>'
+  ]
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -60,6 +69,11 @@ export default (router) => {
       new BrowserTracing({
         routingInstrumentation: Sentry.vueRouterInstrumentation(router)
       })
+    ],
+    ignoreErrors: [
+      'ResizeObserver loop limit exceeded',
+      'ResizeObserver loop completed with undelivered notifications.',
+      'Request failed with status code 403'
     ],
     trackComponents: true,
     tracesSampleRate: 1.0
@@ -75,6 +89,7 @@ export default (router) => {
       if (CONSTANTS.GTAG.some((m) => message.includes(m))) return null
       if (CONSTANTS.CHART_JS.some((m) => message.includes(m))) return null
       if (CONSTANTS.USER_FLOW.some((m) => message.includes(m))) return null
+      if (CONSTANTS.ANALYTICS.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.VUE_ROUTER)) return null
