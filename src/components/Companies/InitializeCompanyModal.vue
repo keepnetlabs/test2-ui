@@ -200,6 +200,7 @@ export default {
         preferredLanguageTypeResourceId: '',
         address: '',
         websiteUrl: '',
+        resourceId: localStorage.getItem('companyRequestId'),
         file: null
       }
     }
@@ -243,7 +244,7 @@ export default {
       })
     },
     callForCompany() {
-      getCompanyByID(localStorage.getItem('companyRequestId'), false).then((response) => {
+      getCompanyByID(this.formData.resourceId, false).then((response) => {
         const { data: { data = {} } = {} } = response || {}
         Object.keys(this.formData).map((key) => {
           this.formData[key] = data[key]

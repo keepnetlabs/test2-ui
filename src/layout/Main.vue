@@ -749,6 +749,7 @@ import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
 import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal.vue'
+import { isCompanyUpdateRequired } from '@/api/company'
 
 export default {
   name: 'Main',
@@ -1124,6 +1125,7 @@ export default {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
         this.callForSystemSummary()
+        this.callForIsCampanyUpdateRequired()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
@@ -1154,6 +1156,14 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    callForIsCampanyUpdateRequired() {
+      //it will be fired after successful login therefore there will be this.$store.state.auth.user
+      isCompanyUpdateRequired(this?.$store?.state?.auth?.user?.email).then((response) => {
+        const { data: { data = {} } = {} } = response || {}
+        const { isCompanyUpdateRequired = false } = data || {}
+        if (isCompanyUpdateRequired) this.toggleShowInitializeCompanyModal()
+      })
+    },
     toggleShowInitializeCompanyModal() {
       this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
     },

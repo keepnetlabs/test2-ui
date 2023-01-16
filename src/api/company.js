@@ -179,3 +179,7 @@ export function makeDefaultTemplate(resourceId = '', payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function isCompanyUpdateRequired(email) {
+  return testRequest.get(`/account/isCompanyUpdateRequired/${email}`)
+}
