@@ -374,7 +374,8 @@ import {
   getTimeZoneForMoment,
   scrollToComponent,
   isDifferent,
-  getTimeZone
+  getTimeZone,
+  createRandomCryptStringNumber
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -537,7 +538,7 @@ export default {
       ],
       filterList: [
         {
-          renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
+          renderKey: `column-key-${createRandomCryptStringNumber()}`,
           text: ''
         }
       ],
@@ -950,7 +951,7 @@ export default {
     },
     addNewFilterListOption() {
       this.filterList.push({
-        renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
+        renderKey: `column-key-${createRandomCryptStringNumber()}`,
         text: ''
       })
     },

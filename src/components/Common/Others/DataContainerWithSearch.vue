@@ -110,6 +110,7 @@
 import DataContainerWithSearchItem from '@/components/Common/Others/DataContainerWithSearchItem'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'DataContainerWithSearch',
@@ -244,7 +245,7 @@ export default {
       const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
       this.value[indexOfOldValue] = newVal
       this.$set(item, 'isEdit', false)
-      item.key = Math.random().toString(8)
+      item.key = createRandomCryptStringNumber()
 
       if (this.removeDuplicates) {
         const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))

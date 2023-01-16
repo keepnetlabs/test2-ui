@@ -406,19 +406,16 @@ export default {
       if (minutes === 0 && hours === 0 && seconds === 0) {
         seconds = 1
       }
-      hours = hours.toString()
-      minutes = minutes.toString()
-      seconds = seconds.toString()
 
       const hoursText = hours > 1 ? 'hours' : 'hour'
       const minutesText = minutes > 1 ? 'minutes' : 'minute'
       const secondsText = seconds > 1 ? 'seconds' : 'second'
 
-      return `${hours !== '0' ? `${hours} ${hoursText} ` : ''}${
-        minutes !== '0' ? `${minutes} ${minutesText} ` : ''
+      return `${hours !== 0 ? `${hours} ${hoursText} ` : ''}${
+        minutes !== 0 ? `${minutes} ${minutesText} ` : ''
       }${
-        seconds !== '0'
-          ? hours !== '0' || minutes !== '0'
+        seconds !== 0
+          ? hours !== 0 || minutes !== 0
             ? `and ${seconds} ${secondsText}`
             : `${seconds} ${secondsText}`
           : ''

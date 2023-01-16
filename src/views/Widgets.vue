@@ -84,6 +84,7 @@ import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPh
 import MostEngagedCampaigns from '@/components/Common/Widget/WidgetComponents/MostEngagedCampaigns'
 import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends'
 import TopPhishingSimulationReporters from '@/components/Common/Widget/WidgetComponents/TopPhishingSimulationReporters'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'Widgets',
   components: {
@@ -123,7 +124,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
           isAllowed: this?.permissions?.runningInvestigation
@@ -139,7 +140,7 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'PhishingReporterIrHeader',
           title: 'Phishing Reporter Ir Header',
           isAllowed: this?.permissions?.phishingReporterCard
@@ -155,7 +156,7 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'IncidentAnalysisIrHeader',
           title: 'Incident Analysis Ir Header',
           isAllowed: this?.permissions?.irSummary
@@ -171,7 +172,7 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'InvestigationsIrHeader',
           title: 'Investigations Ir Header',
           isAllowed: this?.permissions?.irSummary
@@ -187,7 +188,7 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'ROISummaryIrHeader',
           title: 'ROI Summary Ir Header',
           isAllowed: this?.permissions?.roiSettingCard
@@ -203,7 +204,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           title: 'Recently Reported Incidents',
           key: 'RecentlyReportedIncidents',
           isAllowed: this?.permissions?.notifiedEmail
@@ -219,7 +220,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           title: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
           isAllowed: this?.permissions?.communityPosts
@@ -235,7 +236,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'TopRules',
           title: 'Top Rules',
           isAllowed: this?.permissions?.topRules
@@ -251,7 +252,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'TopPosts',
           title: 'Top Posts',
           isAllowed: this?.permissions?.topPosts
@@ -267,7 +268,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'Reporters',
           title: 'Reporters',
           isAllowed: this?.permissions?.reporters
@@ -283,7 +284,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
@@ -299,7 +300,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'PhishingCampaignTrends',
           title: 'Phishing Campaign Trends',
           isAllowed: this?.permissions?.phishingCampaignTrendsCard
@@ -315,7 +316,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'RecentCampaigns',
           title: 'Recent Campaigns',
           isAllowed: this?.permissions?.recentCampaignsCard
@@ -331,7 +332,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'MostPhishedUsers',
           title: 'Most Phished Users',
           isAllowed: this?.permissions?.mostPhishedUsersCard
@@ -347,7 +348,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'MostEngagedCampaigns',
           title: 'Most Engaged Campaigns',
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
@@ -363,7 +364,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'TopPhishingSimulationReporters',
           title: 'Top Phishing Simulation Reporters',
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard
@@ -871,7 +872,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'RecentCampaigns',
           title: 'Recent Campaigns',
           isAllowed: this?.permissions?.recentCampaignsCard
@@ -887,7 +888,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'MostPhishedUsers',
           title: 'Most Phished Users',
           isAllowed: this?.permissions?.mostPhishedUsersCard
@@ -903,7 +904,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'MostEngagedCampaigns',
           title: 'Most Engaged Campaigns',
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
@@ -919,7 +920,7 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: Math.random().toString(),
+          i: createRandomCryptStringNumber(),
           key: 'TopPhishingSimulationReporters',
           title: 'Top Phishing Simulation Reporters',
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard

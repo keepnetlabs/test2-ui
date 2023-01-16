@@ -76,6 +76,7 @@
 
 <script>
 import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'WidgetList',
   components: {
@@ -118,7 +119,7 @@ export default {
       showOverFlowTooltip: false,
       overFlowTooltipStyle: {},
       overFlowTooltipContent: '',
-      tableId: `table-${Math.random()}`
+      tableId: `table-${createRandomCryptStringNumber()}`
     }
   },
   computed: {

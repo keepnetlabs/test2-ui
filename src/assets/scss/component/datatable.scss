@@ -316,15 +316,12 @@
           font-weight: 600;
           line-height: 1.3rem;
           color: #383B41;
-          //min-height: 21px;
           padding-left: 12px !important;
 
           .el-checkbox__input.is-indeterminate .el-checkbox__inner {
             background-color: #2196f3;
             border-color: #2196f3 !important;
           }
-
-          .el-checkbox:first-child {}
 
           .el-checkbox__input.is-checked .el-checkbox__inner {
             background-color: #2196f3;

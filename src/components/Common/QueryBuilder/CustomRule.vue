@@ -265,6 +265,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -318,7 +319,7 @@ export default {
     }
   },
   created() {
-    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
+    this.attachId = `id-${createRandomCryptStringNumber()}`
     if (!this.query.format) {
       this.query.format = 'Email'
     }

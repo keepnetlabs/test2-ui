@@ -862,7 +862,7 @@ export default {
           if (this.value.length === 1) {
             this.value.map((item) => {
               const keys = Object.keys(item)
-              keys.map((key) => {
+              keys.forEach((key) => {
                 //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
                 item[key] = this.copyOfEditedRows[0][key]
               })
@@ -875,7 +875,7 @@ export default {
             })
             this.value.map((item, index) => {
               const keys = Object.keys(item)
-              keys.map((key) => {
+              keys.forEach((key) => {
                 const keyIndex = this.editedPopupProperties.findIndex((k) => {
                   return k === key
                 })

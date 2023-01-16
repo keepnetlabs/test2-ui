@@ -1,5 +1,6 @@
 import { getTimezones } from '@/api/common'
 import { getSystemUserSettings } from '@/api/settings'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 const common = {
   namespaced: true,
@@ -115,7 +116,11 @@ const common = {
       color --> string,
       action --> object { link, label }
        */
-      commit('SET_CREATE_SNACKBAR', { ...payload, status: true, id: Math.random() })
+      commit('SET_CREATE_SNACKBAR', {
+        ...payload,
+        status: true,
+        id: createRandomCryptStringNumber()
+      })
     },
     closeSnackBar({ commit }, payload) {
       commit('SET_CLOSE_SNACKBAR', payload)
