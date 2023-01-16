@@ -61,6 +61,8 @@
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
               :text="scope.row[col.property]"
+              :col="col"
+              size="medium"
             />
           </template>
           <span>{{ scope.row.tooltipText }}</span>
@@ -246,7 +248,13 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 240,
+            minWidth: 220,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            },
+            overrideWidth: true,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.emailStatusEnum.map((status) => ({
