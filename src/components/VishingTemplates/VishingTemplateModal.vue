@@ -601,6 +601,7 @@ export default {
             order,
             isExpanded: true
           }
+          break
         default:
           break
       }
