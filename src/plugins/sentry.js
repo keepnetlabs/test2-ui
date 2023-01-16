@@ -1,9 +1,8 @@
 import Vue from 'vue'
 const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
 const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
-import * as Sentry from '@sentry/browser'
-import { Vue as VueIntegration } from '@sentry/integrations'
-import { Integrations } from '@sentry/tracing'
+import * as Sentry from '@sentry/vue'
+import { BrowserTracing } from '@sentry/tracing'
 const CONSTANTS = {
   ERROR: 'error',
   GRAPESJS_INTERNAL: [
@@ -52,17 +51,17 @@ const CONSTANTS = {
   GTAG: ['a.indexOf is not a function', 'Illegal invocation'],
   CHART_JS: ['No error message']
 }
-export default () => {
+export default (router) => {
   if (!sentryStatus) return
   Sentry.init({
+    Vue,
     dsn: sentryDSN,
     integrations: [
-      new VueIntegration({
-        Vue,
-        tracing: true
-      }),
-      new Integrations.BrowserTracing()
+      new BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+      })
     ],
+    trackComponents: true,
     tracesSampleRate: 1.0
   })
   Sentry.addGlobalEventProcessor(function (event) {
