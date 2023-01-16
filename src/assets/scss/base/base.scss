@@ -14,9 +14,9 @@ html {
   position: relative;
   z-index: 9;
   text-indent: 0;
-}
-
-.malicious-style {
+  .red-malicious-alert:not(:first-child) {
+    display: none !important;
+  }
   &-hidden {
     background: #757575;
     color: white;
@@ -24,7 +24,7 @@ html {
 }
 
 .malicious-icon {
-  top: 0px;
+  top: 0;
   background: transparent;
   color: #f56c6c;
   font-size: inherit !important;
@@ -42,12 +42,6 @@ html {
 
 .red-malicious-alert::before {
   border: unset !important;
-}
-
-.malicious-style {
-  .red-malicious-alert:not(:first-child) {
-    display: none !important;
-  }
 }
 
 .malicious-tooltip--span {

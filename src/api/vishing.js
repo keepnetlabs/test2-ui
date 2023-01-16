@@ -51,7 +51,7 @@ export function getVishingCampaigns(payload = {}) {
   return vishingRequest.post('/vishing-campaign/search', payload)
 }
 
-export function getVishingCampaign(resourceId) {
+export function getVishingCampaign(resourceId = '') {
   return vishingRequest.get(`/vishing-campaign/${resourceId}`)
 }
 
@@ -61,13 +61,13 @@ export function createVishingCampaign(payload = {}) {
   })
 }
 
-export function updateVishingCampaign(payload = {}, resourceId) {
+export function updateVishingCampaign(payload = {}, resourceId = '') {
   return vishingRequest.put(`/vishing-campaign/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
-export function deleteVishingCampaign(resourceId) {
+export function deleteVishingCampaign(resourceId = '') {
   return vishingRequest.delete(`vishing-campaign/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
   })

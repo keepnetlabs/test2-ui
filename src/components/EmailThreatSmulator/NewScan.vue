@@ -745,7 +745,7 @@ import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import {
