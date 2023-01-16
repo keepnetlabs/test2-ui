@@ -13,7 +13,8 @@ const auth = {
     selectedCompanyName: '',
     selectedCompanyId: '',
     dateFormat: null,
-    timeFormat: null
+    timeFormat: null,
+    isCompanyUpdateRequired: false
   },
   getters: {
     getUserRole: (state) => state.userRoleName,
@@ -23,7 +24,8 @@ const auth = {
         timeFormat: state.timeFormat,
         dateFormat: state.dateFormat
       }
-    }
+    },
+    isCompanyUpdateRequired: (state) => state.isCompanyUpdateRequired
   },
   mutations: {
     SET_CURRENTUSER(state, payload) {
@@ -64,6 +66,9 @@ const auth = {
       state.companyName = payload
       localStorage.setItem('selectedCompanyName', payload)
       localStorage.setItem('companyName', payload)
+    },
+    SET_IS_COMPANY_UPDATE_REQUIRED(state, payload) {
+      state.isCompanyUpdateRequired = payload
     }
   },
   actions: {
@@ -106,6 +111,9 @@ const auth = {
     },
     setCompanyName({ commit }, payload) {
       commit('SET_COMPANY_NAME', payload)
+    },
+    setIsCompanyUpdateRequired({ commit }, payload) {
+      commit('SET_IS_COMPANY_UPDATE_REQUIRED', payload)
     }
   }
 }
