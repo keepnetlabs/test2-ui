@@ -12,9 +12,8 @@
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
     "@riophae/vue-treeselect": "^0.4.0",
-    "@sentry/browser": "6.17.2",
-    "@sentry/integrations": "6.17.2",
-    "@sentry/tracing": "6.17.2",
+    "@sentry/vue": "7.30.0",
+    "@sentry/tracing": "7.30.0",
     "@sum.cumo/vue-browserupdate": "^3.0.1",
     "axios": "0.27.2",
     "babel-polyfill": "^6.26.0",
