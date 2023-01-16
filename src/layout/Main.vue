@@ -14,6 +14,11 @@
       :showSettingsModalStatus="showSettingsModalStatus"
       @changeSettings="changeSettings"
     />
+    <InitializeCompanyModal
+      v-if="isShowInitializeCompanyModal"
+      :status="isShowInitializeCompanyModal"
+      @on-close="toggleShowInitializeCompanyModal"
+    />
     <LeavingDialog />
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
@@ -743,10 +748,13 @@ import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
+import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal.vue'
+import { isCompanyUpdateRequired } from '@/api/company'
 
 export default {
   name: 'Main',
   components: {
+    InitializeCompanyModal,
     AppRouterLink,
     LeavingDialog,
     NavigationDrawerFooter,
@@ -765,6 +773,7 @@ export default {
   },
   data() {
     return {
+      isShowInitializeCompanyModal: false,
       showSettingsModalStatus: false,
       labels,
       navigationDrawerClass: '',
@@ -1116,6 +1125,7 @@ export default {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
         this.callForSystemSummary()
+        this.callForIsCampanyUpdateRequired()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
@@ -1146,6 +1156,17 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    callForIsCampanyUpdateRequired() {
+      //it will be fired after successful login therefore there will be this.$store.state.auth.user
+      isCompanyUpdateRequired(this?.$store?.state?.auth?.user?.email).then((response) => {
+        const { data: { data = {} } = {} } = response || {}
+        const { isCompanyUpdateRequired = false } = data || {}
+        if (isCompanyUpdateRequired) this.toggleShowInitializeCompanyModal()
+      })
+    },
+    toggleShowInitializeCompanyModal() {
+      this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
+    },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },

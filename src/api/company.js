@@ -79,6 +79,13 @@ export function updateCompany(id, payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function updateInitializeCompany(payload) {
+  return testRequest.put(`/companies/limited`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function updateCompanyGroup(id, payload) {
   return testRequest.put(`/company-groups/${id}`, payload, { snackbar: COMMON_SNACKBAR })
 }
@@ -171,4 +178,8 @@ export function makeDefaultTemplate(resourceId = '', payload = {}) {
   return testRequest.put(`/companies/email-templates/make-default/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
+}
+
+export function isCompanyUpdateRequired(email) {
+  return testRequest.get(`/account/isCompanyUpdateRequired/${email}`)
 }
