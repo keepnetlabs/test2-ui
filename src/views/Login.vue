@@ -894,6 +894,9 @@ export default {
               const {
                 data: { data }
               } = response
+              const companyUpdateRequired = data?.companyUpdateRequired || false
+              if (companyUpdateRequired)
+                this.$store.dispatch('auth/setCompanyUpdateRequired', companyUpdateRequired)
               if (data.authenticationTypeId === 1) {
                 this.showPasswordField = true
               } else if (data.authenticationTypeId === 2) {

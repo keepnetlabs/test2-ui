@@ -63,6 +63,7 @@ export default {
       default: undefined
     },
     persistentHint: {
+      type: Boolean,
       default: false
     }
   },
