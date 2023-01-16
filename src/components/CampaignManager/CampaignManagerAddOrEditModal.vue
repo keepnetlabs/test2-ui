@@ -165,13 +165,8 @@ export default {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
     },
-    getLastStepText() {
-      return this.$refs.refCampaignManagerCampaignInfo.formData.scheduleTypeId === '1'
-        ? labels.Start
-        : labels.Save
-    },
     getSaveButtonText() {
-      return [1, 2].includes(this.step) ? labels.Next : this.getLastStepText
+      return [1, 2].includes(this.step) ? labels.Next : labels.Launch
     },
     getSelectedPhishingScenario() {
       let selectedScenario = {}

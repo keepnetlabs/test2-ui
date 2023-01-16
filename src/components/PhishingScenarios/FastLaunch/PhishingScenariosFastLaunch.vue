@@ -62,6 +62,7 @@
           nextButton: isActionButtonDisabled,
           submitButton: isActionButtonDisabled
         }"
+        :saveButtonText="labels.Launch"
         @on-cancel="closeOverlay"
         @on-back="changeStep(-1)"
         @on-next="handleSubmit"
