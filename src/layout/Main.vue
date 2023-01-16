@@ -844,7 +844,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isCompanyUpdateRequired: 'auth/isCompanyUpdateRequired',
+      companyUpdateRequired: 'auth/companyUpdateRequired',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       isLoadingFromStore: 'common/getIsLoading',
@@ -1125,7 +1125,7 @@ export default {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
         this.callForSystemSummary()
-        if (this.isCompanyUpdateRequired) this.toggleShowInitializeCompanyModal()
+        if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
