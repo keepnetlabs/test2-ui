@@ -530,7 +530,6 @@ export default {
             })
             .finally(this.setActionButtonDisability)
         }
-        return
       }
     }
   }

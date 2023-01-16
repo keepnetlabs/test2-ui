@@ -1,6 +1,13 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-
+const getPhishingFileType = (payload) => {
+  if (payload.attachmentFiles[0]) {
+    return payload.attachmentFiles[0]?.name
+      ? payload.attachmentFiles[0]?.name?.split('.')[1]
+      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+  }
+  return payload?.phishingFileName?.split('.')?.[1] || null
+}
 const createCommonFormDataForPhishingTemplate = (payload) => {
   const formData = new FormData()
   formData.append('name', payload.name)
@@ -23,12 +30,7 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   if (payload.isAttachmentBasedTemplate) {
-    const phishingFileType = payload.attachmentFiles[0]
-      ? payload.attachmentFiles[0]?.name
-        ? payload.attachmentFiles[0]?.name?.split('.')[1]
-        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-      : payload?.phishingFileName?.split('.')?.[1] || null
-
+    const phishingFileType = getPhishingFileType(payload)
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',

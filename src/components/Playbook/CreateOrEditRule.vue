@@ -356,7 +356,7 @@ export default {
       let playbookActionAnalyzers = []
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key) => {
+        keys.forEach((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             if (ref?.$refs[key][0].investigateData) {
               playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
@@ -446,7 +446,7 @@ export default {
       let playbookActionAnalyzers = []
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key) => {
+        keys.forEach((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             if (ref?.$refs[key][0].investigateData) {
               playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
@@ -585,8 +585,8 @@ export default {
           }
           let temp = []
           if (children.length > 1) {
-            children.map((item) => {
-              item.map((i) => {
+            children.forEach((item) => {
+              item.forEach((i) => {
                 temp.push(i)
               })
             })
@@ -614,7 +614,7 @@ export default {
     getQuery(children) {
       const conditionItems = []
       const conditionGroups = []
-      children.map((obj) => {
+      children.forEach((obj) => {
         if (obj.type === 'query-builder-group') {
           conditionGroups.push({
             operator: obj.query.logicalOperator,
@@ -639,7 +639,7 @@ export default {
     },
     findHasError(object) {
       const keys = Object.keys(object)
-      keys.map((key) => {
+      keys.forEach((key) => {
         if (object.hasOwnProperty(key)) {
           if (
             key === 'children' &&

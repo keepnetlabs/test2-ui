@@ -130,7 +130,6 @@ import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
 import ConfigureNewCompanyNextSteps from '@/components/Companies/ConfigureNewCompanyNextSteps'
 import { updateWhiteLabel } from '@/api/whitelabel'
-import { mapGetters } from 'vuex'
 export default {
   name: 'ConfigureNewCompanyModal',
   components: {
@@ -263,10 +262,8 @@ export default {
         }
         return
       }
-
       if (this.step === 3) {
         this.closeOverlay()
-        return
       }
     }
   }

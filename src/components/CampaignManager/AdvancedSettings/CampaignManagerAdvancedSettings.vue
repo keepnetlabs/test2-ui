@@ -265,7 +265,6 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
-import * as validations from '@/utils/validations'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
 export default {
@@ -344,8 +343,8 @@ export default {
       },
       rules: {
         number: [
-          (v) => validations.required(v, 'Enter a number higher than 0'),
-          (v) => validations.startsWith(v, 'Cannot start with 0', 0),
+          (v) => Validations.required(v, 'Enter a number higher than 0'),
+          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       }
@@ -485,10 +484,6 @@ export default {
             data: { data }
           } = response
           this.responseOfSmtpItems = data.results
-          // this.responseOfSmtpItems = data.results.map((item, index) => ({
-          //   ...item,
-          //   isDefault: index % 3 === 0 ? true : false,
-          // }));
           const defaultSmtpItems = this.responseOfSmtpItems.filter((item) => item.isDefault)
           this.smtpItems = this.responseOfSmtpItems
             .map((smtpItem) => {

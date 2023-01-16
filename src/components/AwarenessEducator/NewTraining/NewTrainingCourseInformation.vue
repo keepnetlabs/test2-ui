@@ -163,7 +163,8 @@ export default {
   methods: {
     handleCoverImageChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        return (this.formData.coverImage = null)
+        this.formData.coverImage = null
+        return
       }
       this.formData.coverImage = file
     },

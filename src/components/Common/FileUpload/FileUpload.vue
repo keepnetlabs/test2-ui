@@ -73,8 +73,7 @@
 
 <script>
 import FileUpload from 'vue-upload-component'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { LABEL_STORE } from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, LABEL_STORE } from '@/model/constants/commonConstants'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
@@ -194,8 +193,11 @@ export default {
       }
       return size.toString() + ' B'
     },
-    displayFileName(fileName) {
-      return fileName ? (fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...') : ''
+    displayFileName(fileName = '') {
+      return fileName ? this.getFileNameText(fileName) : ''
+    },
+    getFileNameText(fileName = '') {
+      return fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...'
     },
     inputFile() {
       this.$emit('inputFile', this.files[0]?.file || [])
@@ -238,9 +240,9 @@ export default {
   watch: {
     onUploadProgress() {
       if (this.onUploadProgress) {
-        return (this.uploadProgress = Math.round(
+        this.uploadProgress = Math.round(
           (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
-        ))
+        )
       }
     }
   }

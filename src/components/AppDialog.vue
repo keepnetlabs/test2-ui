@@ -133,10 +133,6 @@ export default {
     dialogWidth() {
       let retValue = '480'
 
-      if (this.size === 'small') {
-        retValue = '480'
-      }
-
       if (this.size === 'big') {
         retValue = '580'
       }

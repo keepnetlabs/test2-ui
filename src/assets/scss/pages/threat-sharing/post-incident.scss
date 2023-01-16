@@ -527,14 +527,6 @@
     }
   }
 
-  .max-char {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: block;
-    max-width: 100%;
-  }
-
   .required {
     font-family: "Open Sans", sans-serif !important;
     font-size: 9px;
@@ -556,69 +548,6 @@
 
   .minify-filter {
     width: 120px !important;
-  }
-
-
-  // Email Preview css
-  .preview-header {
-    margin-top: 24px;
-
-    h2 {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 20px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-bottom: 16px;
-      width: 100%;
-      display: block;
-    }
-
-    .header-info {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-
-  .preview-body {
-    margin-top: 24px;
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    border-bottom: 1px solid #b3d4fc;
-    position: relative;
-    padding-bottom: 24px;
-    min-height: auto;
-    max-height: 500px;
-    overflow: auto;
-
-    .company-img {
-      display: flex;
-      position: absolute;
-      right: 0;
-      top: 20px;
-      width: 84px;
-      height: 84px;
-
-      img {
-        width: 100%;
-        height: auto;
-      }
-    }
   }
 
   .preview-footer {
@@ -817,8 +746,6 @@
     text-overflow: ellipsis;
     display: block;
   }
-
-  // Threat sharing Content End
 
   .notification-wrapper {
     background-color: #fff;
