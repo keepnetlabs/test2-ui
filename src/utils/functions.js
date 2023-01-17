@@ -1229,3 +1229,13 @@ export const getDifficultyBadgeColor = (text = '') => {
   if (text.toLowerCase() === 'hard') return '#f56c6c'
   return '#2196f3'
 }
+
+export function createRandomCryptNumber() {
+  const crypto = window.crypto || window.msCrypto
+  const array = new Uint32Array(1)
+  return crypto.getRandomValues(array)[0]
+}
+
+export function createRandomCryptStringNumber() {
+  return createRandomCryptNumber().toString()
+}

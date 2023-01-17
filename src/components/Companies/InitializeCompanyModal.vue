@@ -161,7 +161,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload.vue'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { getCompanyByID, updateCompany, updateInitializeCompany } from '@/api/company'
+import { getCompanyByID, updateInitializeCompany } from '@/api/company'
 import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'InitializeCompanyModal',
@@ -246,7 +246,7 @@ export default {
     callForCompany() {
       getCompanyByID(this.formData.resourceId, false).then((response) => {
         const { data: { data = {} } = {} } = response || {}
-        Object.keys(this.formData).map((key) => {
+        Object.keys(this.formData).forEach((key) => {
           this.formData[key] = data[key]
         })
       })

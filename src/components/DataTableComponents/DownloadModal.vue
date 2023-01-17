@@ -62,6 +62,7 @@
 <script>
 import AppDialog from '../AppDialog'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'DownloadModal',
@@ -85,7 +86,7 @@ export default {
     return {
       labels,
       downloadType: [false, false, false],
-      downloadButtonKey: `button-key${Math.random().toString().substring(0, 5)}`
+      downloadButtonKey: `button-key-${createRandomCryptStringNumber()}`
     }
   },
   computed: {
@@ -97,7 +98,7 @@ export default {
   },
   watch: {
     downloadType() {
-      this.downloadButtonKey = `button-key${Math.random().toString().substring(0, 5)}`
+      this.downloadButtonKey = `button-key-${createRandomCryptStringNumber()}`
     }
   },
   methods: {

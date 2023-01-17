@@ -49,6 +49,7 @@
 
 <script>
 import Badge from '@/components/Badge'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'ShowMoreTags',
   components: { Badge },
@@ -86,7 +87,7 @@ export default {
   },
   methods: {
     getKey(index) {
-      return `${index}ab-${Math.random()}`
+      return `${index}ab-${createRandomCryptStringNumber()}`
     },
     getBadgeText(text = '') {
       if (text.length > 25) {

@@ -23,10 +23,10 @@
     <iframe
       v-if="activeTemplate"
       :key="iframeKey"
-      frameborder="0"
+      title="Training Preview"
       allowfullscreen
       :src="activeTemplate"
-      style="min-width: 1200px; min-height: 900px;"
+      style="min-width: 1200px; min-height: 900px; border-width: 0;"
     ></iframe>
   </div>
 </template>

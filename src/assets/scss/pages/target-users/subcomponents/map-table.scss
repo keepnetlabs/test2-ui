@@ -4,7 +4,6 @@
     }
 
     .table th {
-        text-align: left;
         padding: 24px 16px 16px;
         font-size: 18px;
         font-weight: 600;
@@ -87,10 +86,6 @@
     td.empty {
         /*flex: 1 0 90%;
       text-align: center;*/
-    }
-
-    * {
-        box-model: border-box;
     }
 
     &__header {

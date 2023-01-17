@@ -1616,7 +1616,6 @@ export default {
           response.data.data.password = response['data'].data['apiCredentials'].length
             ? response['data'].data['apiCredentials'][0].password
             : ''
-          response.data.data.proxyResourceId = response['data'].data.proxyResourceId
         }
       } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET) {
         const { userName, password, resourceId, proxyResourceId } = response['data'].data[

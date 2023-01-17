@@ -492,8 +492,7 @@ export default {
     },
     checkIsItemDisabled(item) {
       if (item.value === 'All') return false
-      if (this.isAllSelected) return true
-      return false
+      return !!this.isAllSelected
     },
     getCheckboxCheckedValue(item) {
       if (

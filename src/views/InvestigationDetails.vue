@@ -1964,10 +1964,7 @@ export default {
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
-        const {
-          data: {}
-        } = response
-        const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+        const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response?.data?.data || {}
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
         this.serverSideProps.totalNumberOfPages = totalNumberOfPages
         this.serverSideProps.pageNumber = pageNumber

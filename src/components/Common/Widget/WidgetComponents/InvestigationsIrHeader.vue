@@ -74,7 +74,7 @@
           class="bg-image"
           :style="[!isInvestigationsEmpty(investigationTypeCount) && { opacity: 0.4 }]"
         >
-          <img src="../../../../assets/img/ic-check-box.svg" />
+          <img src="../../../../assets/img/ic-check-box.svg" alt="img-checked" />
         </div>
       </div>
     </template>

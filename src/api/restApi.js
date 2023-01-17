@@ -16,17 +16,17 @@ export function createRestApi(payload = {}) {
   })
 }
 
-export function getRestApi(resourceId = {}) {
+export function getRestApi(resourceId = '') {
   return testRequest.get(`${API_URL}/${resourceId}`)
 }
 
-export function updateRestApi(resourceId = {}, payload) {
+export function updateRestApi(resourceId = '', payload = {}) {
   return testRequest.put(`${API_URL}/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
-export function deleteRestApi(resourceId = {}) {
+export function deleteRestApi(resourceId = '') {
   return testRequest.delete(`${API_URL}/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
   })
