@@ -290,7 +290,11 @@ export default {
         newVal !== 'Exists' &&
         newVal !== 'DoesNotExists'
       ) {
-        this.query.format = 'Email'
+        if (this.query.operand === 'SenderIp') {
+          this.query.format = 'Ip'
+        } else {
+          this.query.format = 'Email'
+        }
       }
     },
     'query.operand'(newVal = '') {
