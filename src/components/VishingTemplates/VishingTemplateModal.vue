@@ -291,6 +291,7 @@ import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 
 const initialFormValues = {
   resourceId: null,
@@ -544,9 +545,8 @@ export default {
             (item) => item.text === 'Turkish - Female'
           )
           if (englishFemaleIndex) {
-            this.formValues.vishingLanguageResourceId = this.vishingLanguageItems[
-              englishFemaleIndex
-            ].value
+            const vishingItem = this.vishingLanguageItems[englishFemaleIndex]
+            this.formValues.vishingLanguageResourceId = vishingItem?.value || ''
           }
         }
       }
