@@ -545,9 +545,8 @@ export default {
             (item) => item.text === 'Turkish - Female'
           )
           if (englishFemaleIndex) {
-            this.formValues.vishingLanguageResourceId = this.vishingLanguageItems[
-              englishFemaleIndex
-            ].value
+            const vishingItem = this.vishingLanguageItems[englishFemaleIndex]
+            this.formValues.vishingLanguageResourceId = vishingItem?.value || ''
           }
         }
       }
