@@ -197,11 +197,6 @@
             }
         }
     }
-
-    &__btn-save-changes {
-        @media (max-width: 768px) {}
-    }
-
     .v-list-item__content>*:not(:last-child) {
         margin-bottom: 0;
     }

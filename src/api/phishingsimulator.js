@@ -1,16 +1,14 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function updatePhishingEmailTemplate(payload = {}, id) {
+const createCommonFormDataForPhishingTemplate = (payload) => {
   const formData = new FormData()
-
   formData.append('name', payload.name)
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
-
   formData.append('difficultyResourceId', payload.difficultyResourceId)
   for (let i = 0; i < payload.availableForRequests.length; i++) {
     formData.append(`availableForRequests[${[i]}].Type`, payload.availableForRequests[i].type)
@@ -24,7 +22,6 @@ export function updatePhishingEmailTemplate(payload = {}, id) {
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
-
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = payload.attachmentFiles[0]
       ? payload.attachmentFiles[0]?.name
@@ -41,54 +38,20 @@ export function updatePhishingEmailTemplate(payload = {}, id) {
     formData.append('isPhishingFileModified', payload.isPhishingFileModified)
     formData.append('phishingFileName', payload.phishingFileName)
   }
+  return formData
+}
+
+export function updatePhishingEmailTemplate(payload = {}, id = '') {
+  const formData = createCommonFormDataForPhishingTemplate(payload)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
 export function createPhishingEmailTemplate(payload = {}) {
-  const formData = new FormData()
-
+  const formData = createCommonFormDataForPhishingTemplate(payload)
   formData.append('isDuplicated', payload.isDuplicated)
   formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
-  formData.append('name', payload.name)
-  formData.append('description', payload.description)
-  formData.append('categoryResourceId', payload.categoryResourceId)
-  for (let i = 0; i < payload?.tags?.length; i++) {
-    formData.append(`tags[${[i]}]`, payload.tags[i])
-  }
-
-  formData.append('difficultyResourceId', payload.difficultyResourceId)
-  for (let i = 0; i < payload.availableForRequests.length; i++) {
-    formData.append(`availableForRequests[${[i]}].Type`, payload.availableForRequests[i].type)
-    formData.append(
-      `availableForRequests[${[i]}].ResourceId`,
-      payload.availableForRequests[i].resourceId
-    )
-  }
-
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
-
-  if (payload.isAttachmentBasedTemplate) {
-    const phishingFileType = payload.attachmentFiles[0]
-      ? payload.attachmentFiles[0]?.name
-        ? payload.attachmentFiles[0]?.name?.split('.')[1]
-        : payload.attachmentFiles[0]?.fileName?.split('.')[1]
-      : payload?.phishingFileName?.split('.')?.[1] || null
-
-    formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-    formData.append(
-      'phishingFile',
-      payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
-    )
-    formData.append('phishingFileType', phishingFileType)
-    formData.append('phishingFileName', payload.phishingFileName)
-    formData.append('isPhishingFileModified', payload.isPhishingFileModified)
-  }
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
@@ -195,13 +158,6 @@ export function updateCampaignManager(resourceId = '', payload = {}) {
   })
 }
 
-export function createCampaignInstance(resourceId = '', payload = {}) {
-  return new Promise((res) => setTimeout(() => res(), 2500))
-  // return testRequest.post(`/phishing-simulator/phishing-campaign/${resourceId}/create-instance`, payload, {
-  //   snackbar: COMMON_SNACKBAR
-  // })
-}
-
 export function getCampaignManager(resourceId = '') {
   return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
 }
@@ -225,13 +181,6 @@ export function getCampaignManagerPreview(resourceId = '') {
 export function getDefaultCompanySmtpSetting() {
   return testRequest.get(
     '/phishing-simulator/phishing-campaign/root-company-shared-smtp-resource-id'
-  )
-}
-
-export function searchCampaignJobUsers(payload = {}, id) {
-  return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
-    payload
   )
 }
 

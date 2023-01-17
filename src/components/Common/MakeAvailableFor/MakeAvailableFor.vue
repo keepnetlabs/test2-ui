@@ -159,7 +159,7 @@ export default {
             })
             if (this?.$refs?.refTreeSelect?.remoteSearch) {
               const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
-              keys.map((key) => {
+              keys.forEach((key) => {
                 this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
               })
             }
@@ -340,7 +340,7 @@ export default {
       })
       if (this?.$refs?.refTreeSelect?.remoteSearch) {
         const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
-        keys.map((key) => {
+        keys.forEach((key) => {
           const object = this.$refs.refTreeSelect.remoteSearch[key]
           if (object) {
             object?.options[2]?.children?.map((item) => (item.isDisabled = isDisabled))

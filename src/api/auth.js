@@ -6,9 +6,7 @@ import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 export function loginAction(payload) {
   const params = new URLSearchParams()
   let skipMfa = false
-  if (payload.mfa && payload.mfa.StatusName === 'Active') {
-    skipMfa = false
-  } else if (payload.mfa && payload.mfa.StatusName === 'Inactive') {
+  if (payload.mfa && payload.mfa.StatusName === 'Inactive') {
     skipMfa = !payload.mfa.IsExpired
   }
   if (payload.skipMfa === 'forced') skipMfa = false

@@ -209,7 +209,7 @@ export default {
       const formData = new FormData()
       const id = refWhiteLabeling.configureCompanyWhitelabelingResourceId
       const payload = refWhiteLabeling.formValues
-      Object.keys(payload).map((key) => {
+      Object.keys(payload).forEach((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
       })
       updateWhiteLabel(formData, id, {

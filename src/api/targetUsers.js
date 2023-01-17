@@ -144,7 +144,7 @@ export function importTmpUsers(payload, id) {
   return testRequest.post(`/target-users/${id}/import`, payload)
 }
 
-export function getTargetUserViewUserGroups(resourceId = '', payload) {
+export function getTargetUserViewUserGroups(resourceId = '', payload = {}) {
   return testRequest.post(`target-users/${resourceId}/groups`, payload)
 }
 
