@@ -11,8 +11,8 @@
       <file-upload
         ref="upload"
         v-model="files"
-        :input-id="`id-${Math.random().toString().substring(4)}`"
-        :id="`id-${Math.random().toString().substring(4)}`"
+        :input-id="inputId"
+        :id="id"
         :extensions="_extensions"
         :accept="accept"
         :multiple="false"
@@ -75,6 +75,7 @@
 import FileUpload from 'vue-upload-component'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { LABEL_STORE } from '@/model/constants/commonConstants'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'KFileUpload',
@@ -154,7 +155,9 @@ export default {
     return {
       files: [],
       uploadProgress: 0,
-      constant: LABEL_STORE
+      constant: LABEL_STORE,
+      id: `id-${createRandomCryptStringNumber()}`,
+      inputId: `id-${createRandomCryptStringNumber()}`
     }
   },
   computed: {

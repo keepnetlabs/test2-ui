@@ -108,7 +108,11 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDefaultAxiosPayload, getErrorMessage } from '@/utils/functions'
+import {
+  createRandomCryptStringNumber,
+  getDefaultAxiosPayload,
+  getErrorMessage
+} from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
 import {
   deletePermission,
@@ -356,7 +360,7 @@ export default {
             delete obj['children']
           }
           if (obj && !obj.permissionResourceId) {
-            obj.permissionResourceId = Math.random()
+            obj.permissionResourceId = createRandomCryptStringNumber()
           }
           if (obj && obj.children) {
             obj.children = obj.children.filter((elem) => search_and_delete(elem, search_term))

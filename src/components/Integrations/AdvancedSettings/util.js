@@ -10,7 +10,7 @@ export const getFormData = (val = [], key = '') => {
 
 export const getFormDataWithObjects = (val = [], key = '') => {
   return val.reduce((acc, item) => {
-    const { exclusionType, value } = item
+    const { exclusionType } = item
     if (exclusionType === key) {
       acc.push(item)
     }
