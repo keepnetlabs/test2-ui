@@ -160,19 +160,44 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="3" style="margin-bottom: -16px;">
-        <k-select
-          v-model="investigateData.filters"
-          :id="`input--action-investigate-filters-${getParentIndex}`"
-          :items="act.investigateFilters"
-          placeholder="Select Filters"
-          outlined
-          multiple
-          small-chips
-          deletable-chips
-          :menu-props="{ offsetY: true }"
-          :rules="[(v) => v.length || labels.Required]"
-        />
+      <v-col md="6" style="margin-bottom: -16px;">
+        <v-radio-group
+          v-model="investigateData.hasFilters"
+          :id="`input--action-investigate-has-filters-${getParentIndex}`"
+          :mandatory="true"
+          hide-details
+          @change="handlerHasFiltersRadioGroup"
+        >
+          <v-radio
+            :value="false"
+            class="mb-2"
+            label="Auto-detect malicious and phishing attributes"
+            color="#2196f3"
+          ></v-radio>
+          <v-radio :value="true" class="align-start" color="#2196f3">
+            <template #label>
+              <div class="d-flex" style="width: 100%;">
+                <span class="mr-2" style="flex-basis: 225px; flex-shrink: 0;">
+                  Select attributes to investigate
+                </span>
+                <k-select
+                  v-model="investigateData.filters"
+                  style="width: 100%; margin-top: -6px;"
+                  :id="`input--action-investigate-filters-${getParentIndex}`"
+                  :items="act.investigateFilters"
+                  :disabled="!investigateData.hasFilters"
+                  :menu-props="{ offsetY: true }"
+                  :rules="investigateData.hasFilters ? [(v) => v.length || labels.Required] : []"
+                  placeholder="Select Filters"
+                  outlined
+                  multiple
+                  small-chips
+                  deletable-chips
+                />
+              </div>
+            </template>
+          </v-radio>
+        </v-radio-group>
       </v-col>
     </v-row>
     <v-row align="center" class="mb-4">
@@ -503,6 +528,11 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
+    },
+    handlerHasFiltersRadioGroup(value) {
+      if (!value) {
+        this.investigateData.filters = []
+      }
     },
     handleRadioGroup() {
       this.investigateData.targetUsers = []
