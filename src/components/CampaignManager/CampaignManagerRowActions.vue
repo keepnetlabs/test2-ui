@@ -115,21 +115,18 @@ export default {
         disabled: !this.getCampaignManagerParentUpdatePermissions
       }
 
-      if (this.actionStatus === ACTION_STATUSES.IDLE) {
+      if (
+        this.actionStatus === ACTION_STATUSES.IDLE ||
+        this.actionStatus === ACTION_STATUSES.RUNNING
+      ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
         copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
-      } else if (this.actionStatus === ACTION_STATUSES.RUNNING) {
-        copyOfRowActions.push(editItem)
-        copyOfRowActions.push(newInstanceItem)
-        copyOfRowActions.push(duplicateItem)
-        copyOfRowActions.push(deleteItem)
-      } else if (this.actionStatus === ACTION_STATUSES.COMPLETE) {
-        copyOfRowActions.push(editItem)
-        copyOfRowActions.push(newInstanceItem)
-        copyOfRowActions.push(deleteItem)
-      } else if (this.actionStatus === ACTION_STATUSES.CANCEL) {
+      } else if (
+        this.actionStatus === ACTION_STATUSES.COMPLETE ||
+        this.actionStatus === ACTION_STATUSES.CANCEL
+      ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
         copyOfRowActions.push(deleteItem)

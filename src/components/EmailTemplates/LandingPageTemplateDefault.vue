@@ -1,5 +1,8 @@
 <template>
-  <table style="padding-top: 24px; border-spacing: 0; border: none !important; width: 100%;">
+  <table
+    style="padding-top: 24px; border-spacing: 0; border: none !important; width: 100%;"
+    aria-label="landing-page-template"
+  >
     <tbody>
       <tr
         style="

@@ -264,32 +264,35 @@ export default {
   },
   computed: {
     getModalId() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? 'duplicate-notification-template-modal'
-          : 'edit-notification-template-modal'
-        : 'new-notification-template-modal'
+      return this.selectedItem ? this.getSelectedItemTitleId : 'new-notification-template-modal'
+    },
+    getSelectedItemTitleId() {
+      return this.isDuplicate
+        ? 'duplicate-notification-template-modal'
+        : 'edit-notification-template-modal'
     },
     getModalTitle() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplate
-          : labels.EditNotificationTemplate
-        : labels.NewNotificationTemplate
+      return this.selectedItem ? this.getSelectedItemModalTitle : labels.NewNotificationTemplate
+    },
+    getSelectedItemModalTitle() {
+      return this.isDuplicate
+        ? labels.DuplicateNotificationTemplate
+        : labels.EditNotificationTemplate
     },
     getBodyTitle() {
       return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplate
-          : labels.EditNotificationTemplate
+        ? this.getSelectedItemModalTitle
         : labels.CreateNewNotificationTemplate
     },
     getBodySubtitle() {
       return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplateSubtitle
-          : labels.EditNotificationTemplateSubtitle
+        ? this.getSelectedItemBodySubtitle
         : labels.NewNotificationTemplateSubtitle
+    },
+    getSelectedItemBodySubtitle() {
+      return this.isDuplicate
+        ? labels.DuplicateNotificationTemplateSubtitle
+        : labels.EditNotificationTemplateSubtitle
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled

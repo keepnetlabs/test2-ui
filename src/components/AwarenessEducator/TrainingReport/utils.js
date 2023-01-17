@@ -1,47 +1,48 @@
 export function getStatusBadgeProps(status) {
-  if (status === 'Not Responded' || status === 'NotResponded') {
+  const trimmedStatus = status?.replace(/\s/, '')
+  if (trimmedStatus === 'NotResponded') {
     return {
       color: '#B6791D',
       text: 'Not Responded'
     }
   }
 
-  if (status === 'Opened Email' || status === 'OpenedEmail') {
+  if (trimmedStatus === 'OpenedEmail') {
     return {
       color: '#0198AC',
       text: 'Opened Email'
     }
   }
 
-  if (status === 'Clicked Link' || status === 'ClickedLink') {
+  if (trimmedStatus === 'ClickedLink') {
     return {
       color: '#1173C1',
       text: 'Clicked Link'
     }
   }
 
-  if (status === 'In Progress' || status === 'InProgress') {
+  if (trimmedStatus === 'InProgress') {
     return {
       color: '#1173C1',
       text: 'In Progress'
     }
   }
 
-  if (status === 'Completed') {
+  if (trimmedStatus === 'Completed') {
     return {
       color: '#217124',
       text: 'Completed'
     }
   }
 
-  if (status === 'In Queue' || status === 'InQueue') {
+  if (trimmedStatus === 'InQueue') {
     return {
       color: '#1173C1',
       text: 'In Queue'
     }
   }
 
-  if (status === 'Sending Error' || status === 'SendingError' || status === 'Error') {
+  if (trimmedStatus === 'SendingError' || trimmedStatus === 'Error') {
     return {
       color: '#F56C6C',
       text: 'Sending Error',
@@ -49,7 +50,7 @@ export function getStatusBadgeProps(status) {
     }
   }
 
-  if (status === 'Cancelled') {
+  if (trimmedStatus === 'Cancelled') {
     return {
       color: '#B6791D',
       text: 'Cancelled',
@@ -57,7 +58,7 @@ export function getStatusBadgeProps(status) {
     }
   }
 
-  if (status === 'Excluded') {
+  if (trimmedStatus === 'Excluded') {
     return {
       color: '#E0E0E0',
       text: 'Excluded',
@@ -65,14 +66,14 @@ export function getStatusBadgeProps(status) {
       textBlack: true
     }
   }
-  if (status === 'Processing') {
+  if (trimmedStatus === 'Processing') {
     return {
       color: '#1173C1',
       text: 'Processing',
       outline: true
     }
   }
-  if (status === 'NotDelivered' || status === 'Not Delivered') {
+  if (trimmedStatus === 'Not Delivered') {
     return {
       color: '#B83A3A',
       text: 'Not Delivered',

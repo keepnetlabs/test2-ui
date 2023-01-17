@@ -50,15 +50,6 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
       >
-        <!-- <template v-slot:datatable-custom-column="{ scope }">
-          <div>
-            <span>{{ scope.row.name }}</span>
-            <v-icon v-if="scope.row.isDefault === 'Yes'" color="#1173C1"
-            class="pl-2"
-              >mdi-star-circle</v-icon
-            >
-          </div>
-        </template> -->
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
@@ -227,14 +218,6 @@ export default {
             id: 'btn-delete--proxy-settings-row-actions',
             disabled: !this.$store.getters['permissions/getProxySettingsDeletePermissions']
           }
-          // {
-          //   name: "Make Default",
-          //   icon: "mdi-star-circle",
-          //   action: "makeDefaultAction",
-          //   id: "btn-make-default--proxy-settings-row-actions",
-          //   disabled: !this.$store.getters['permissions/getProxySettingsUpdatePermissions']
-          //   disabled: !this.PERMISSIONS.UPDATE.hasPermission,
-          // },
         ],
         empty: {
           message: labels.EmptyProxy,
