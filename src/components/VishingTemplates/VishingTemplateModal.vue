@@ -291,6 +291,7 @@ import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 
 const initialFormValues = {
   resourceId: null,

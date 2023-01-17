@@ -171,7 +171,7 @@ export default {
           const {
             data: { data }
           } = response
-          this.templates = data.landingPages
+          this.templates = data?.landingPages || []
         })
         .finally(this.setLoading)
     },
