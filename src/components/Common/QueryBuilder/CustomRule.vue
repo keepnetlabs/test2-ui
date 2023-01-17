@@ -150,7 +150,7 @@
           <InputIpAddress
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
-            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter Regex'"
+            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter regular expression'"
             :rules="
               query.format === 'Ip'
                 ? [
