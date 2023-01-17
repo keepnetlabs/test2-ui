@@ -10,7 +10,7 @@
       :status="status"
       @closeOverlay="status = false"
     >
-      <template v-slot:overlay-body>
+      <template #overlay-body>
         <v-form ref="mailConfiguration">
           <app-modal-body-header
             :title="getTitle"
@@ -682,11 +682,10 @@ import {
   updateO365
 } from '@/api/mailConfiguration'
 import * as validations from '@/utils/validations'
-import { getDefaultAxiosPayload, isDifferent } from '@/utils/functions'
+import { getDefaultAxiosPayload, isDifferent, scrollToComponent } from '@/utils/functions'
 import TestConnection from './TestConnection'
 import TestConnectionEWS from './TestConnectionEWS'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -1382,7 +1381,6 @@ export default {
         this.isTestConnectionWorkedBefore = false
         this.saveButtonDisabled = false
         this.ewsStatus = true
-        return
       }
     },
     handleEditMailConfiguration(selectedRow) {

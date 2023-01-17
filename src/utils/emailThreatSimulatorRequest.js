@@ -40,7 +40,6 @@ service.interceptors.response.use(
       })
     }
     return response
-    return response
   },
   (error) => {
     error?.config?.loading &&
@@ -54,7 +53,7 @@ service.interceptors.response.use(
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
-      router.push({ name: 'login', params: { isSessionExpired: 'true' } })
+      router.push({ name: 'login', params: { isSessionExpired: 'true' } }).catch(() => {})
     }
     return Promise.reject(error)
   }

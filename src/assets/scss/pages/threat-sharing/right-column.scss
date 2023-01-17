@@ -26,8 +26,8 @@
     margin-right: 0 !important;
   }
 
-  .right-side- {
-    &title {
+  .right-side {
+    &-title {
       font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
@@ -245,17 +245,6 @@
     a:hover {
       text-decoration: underline !important;
     }
-  }
-
-  .right-side-title {
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
   }
 
   .right-side-sub-title {

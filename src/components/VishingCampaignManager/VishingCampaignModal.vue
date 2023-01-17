@@ -771,7 +771,6 @@ export default {
           scheduleDate,
           scheduleType,
           scheduledDateTimeZoneId,
-          targetGroupResourceIds = [],
           templateResourceId = '',
           targetGroups
         } = response?.data?.data || {}

@@ -454,7 +454,7 @@
     overflow: auto;
     max-width: 100%;
     height: auto;
-
+    position: relative;
     h2 {
       font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
@@ -470,6 +470,8 @@
     .attachment-wrapper {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
+      max-width: 100%;
 
       .attachment {
         width: 182px;
@@ -479,6 +481,20 @@
         flex-direction: row;
         margin-right: 16px;
         border: 1px solid transparent;
+        margin-bottom: 8px;
+
+        span {
+          width: 100%;
+          text-align: center;
+          font-family: "Open Sans", sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+        }
 
         .attach-icon {
           min-width: 40px;
@@ -518,10 +534,12 @@
       }
 
       .red-attach {
+        background-color: #f3e1e5;
         border: 1px solid #bb2a45;
       }
 
       .blue-attach {
+        background-color: #f1f8fe;
         border: 1px solid #2196f3;
       }
     }
@@ -548,79 +566,6 @@
 
   .minify-filter {
     width: 120px !important;
-  }
-
-  .preview-footer {
-    display: flex;
-    flex-direction: column;
-    margin-top: 24px;
-    position: relative;
-
-    h2 {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 20px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.15;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      padding-bottom: 16px;
-    }
-
-    .attachment-wrapper {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      max-width: 100%;
-
-      .attachment {
-        width: 182px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        margin-right: 16px;
-        margin-bottom: 8px;
-
-        .attach-icon {
-          min-width: 40px;
-          height: 32px;
-          align-items: center;
-          display: flex;
-          justify-content: center;
-        }
-
-        .red-icon {
-          background-color: #bb2a45 !important;
-        }
-
-        .blue-icon {
-          background-color: #2196f3 !important;
-        }
-
-        span {
-          width: 100%;
-          text-align: center;
-          font-family: "Open Sans", sans-serif !important;
-          font-size: 12px;
-          font-weight: normal;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: 1.58;
-          letter-spacing: normal;
-          color: rgba(0, 0, 0, 0.87);
-        }
-      }
-
-      .red-attach {
-        background-color: #f3e1e5;
-      }
-
-      .blue-attach {
-        background-color: #f1f8fe;
-      }
-    }
   }
 
   .detail-discovery {

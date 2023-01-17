@@ -128,7 +128,7 @@ const whitelabel = {
       const id = payload['resourceId']
       delete payload.id
 
-      Object.keys(payload).map((key) => {
+      Object.keys(payload).forEach((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
       })
 

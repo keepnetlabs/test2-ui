@@ -118,7 +118,14 @@
             position: relative;
             &__delete-button {
                 opacity: 0;
-
+              width: 44px;
+              height: 40px;
+              color: #757575;
+              position: absolute;
+              right: -40px;
+              top: 0;
+              justify-content: center;
+              display: flex;
                 &:hover {
                     opacity: 1;
                 }
@@ -164,17 +171,6 @@
                 &:focus-within {
                     outline: 0 !important;
                 }
-            }
-
-            &__delete-button {
-                width: 44px;
-                height: 40px;
-                color: #757575;
-                position: absolute;
-                right: -40px;
-                top: 0px;
-                justify-content: center;
-                display: flex;
             }
 
             &__file-size {

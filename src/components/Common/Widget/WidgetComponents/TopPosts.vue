@@ -131,7 +131,7 @@ export default {
     onResize() {
       const listContainer = document.querySelector('.top-posts-widget')
       if (listContainer) {
-        const { width: listWidth } = listContainer && listContainer.getBoundingClientRect()
+        const { width: listWidth } = listContainer.getBoundingClientRect()
         const th = document.querySelector('.k-widget-list__th-engagement')
         if (th && Math.floor(listWidth) < 250) {
           th.classList.add('top-posts-title')

@@ -592,12 +592,10 @@ export default {
       this.toggleShowingTargetUserAddToGroup()
     },
     handleConfirmAddUserToGroup(groups = []) {
-      // TODO: Insert add user to group(s) logic here
       this.selectedUserToAddToGroup = null
       this.toggleShowingTargetUserAddToGroup()
     },
     handleConfirmCreateUserWithGroup(groupName = '') {
-      // TODO: Insert create group with user logic here
       this.selectedUserToCreateGroupWith = null
       this.toggleShowingTargetUserCreateGroupWithUser()
     },

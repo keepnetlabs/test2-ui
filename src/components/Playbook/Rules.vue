@@ -432,7 +432,7 @@ export default {
               : this.deleteValues
           values.push(value)
         }
-        values.map((item) => {
+        values.forEach((item) => {
           this.deleteButtonDisabled = true
           deletePlaybookRule(item.resourceId)
             .then(() => {

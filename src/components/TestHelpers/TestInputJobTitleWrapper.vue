@@ -16,8 +16,6 @@
 <script>
 import TestFormWrapper from '@/components/TestHelpers/TestFormWrapper'
 import * as Validations from '@/utils/validations'
-import labels from '@/model/constants/labels'
-
 export default {
   name: 'TestInputJobTitleWrapper',
   components: { TestFormWrapper },
