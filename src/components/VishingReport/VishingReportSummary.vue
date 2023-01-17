@@ -126,11 +126,12 @@ export default {
         tags = [],
         steps = []
       } = vishingTemplateDto
-      //  isOwner: true,availableFor :true
       this.$store.dispatch('common/setActivePageRouterName', name)
       const splittedLanguage = vishingTemplateDto?.vishingLanguage?.split('-')
-      const languageShortCode = splittedLanguage[0].trim()
-      const narratorGender = splittedLanguage[1].trim()
+      const languageShortCode =
+        (splittedLanguage && splittedLanguage[0] && splittedLanguage[0].trim()) || ''
+      const narratorGender =
+        (splittedLanguage && splittedLanguage[1] && splittedLanguage[1].trim()) || ''
       const invalidDialingNoticeStepIndex = steps.findIndex((step) => step.order === 0)
       if (invalidDialingNoticeStepIndex !== -1) {
         steps.splice(invalidDialingNoticeStepIndex, 1)
