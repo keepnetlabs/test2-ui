@@ -77,11 +77,6 @@ export default {
     handleCopyToClipboard() {
       copyToClipboard(this.apiKey)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
           this.handleClose()
         })
         .catch(() => {})

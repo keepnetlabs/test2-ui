@@ -37,7 +37,7 @@
                     </v-col>
 
                     <v-col cols="12" md="5">
-                      <div class="copy-btn" @click="copyClipboard(formValues.domain)">
+                      <div class="copy-btn" @click="copyToClipboard(formValues.domain)">
                         Copy to clipboard
                       </div>
                     </v-col>
@@ -59,7 +59,7 @@
                     </v-col>
 
                     <v-col cols="12" md="5">
-                      <div class="copy-btn" @click="copyClipboard(formValues.txtRecord)">
+                      <div class="copy-btn" @click="copyToClipboard(formValues.txtRecord)">
                         Copy to clipboard
                       </div>
                     </v-col>
@@ -101,6 +101,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { createTxtRecord, createAllowListList } from '@/api/allowList'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { copyToClipboard } from '@/utils/functions'
 
 export default {
   name: 'Newdomain',
@@ -150,14 +151,7 @@ export default {
     this.getTxtRecord()
   },
   methods: {
-    copyClipboard(value) {
-      navigator.clipboard.writeText(value)
-      this.$store.dispatch('common/createSnackBar', {
-        message: labels.CopyToClipboard,
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-checkbox-marked-circle '
-      })
-    },
+    copyToClipboard,
     commonRules(isNeed) {
       if (isNeed) {
         return this.baseRules
