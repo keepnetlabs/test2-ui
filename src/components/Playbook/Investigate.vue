@@ -160,21 +160,35 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="6" style="margin-bottom: -16px;">
+      <v-col v-if="actionType === 'investigate'" md="3" style="margin-bottom: -16px;">
+        <k-select
+          v-model="investigateData.filters"
+          :id="`input--action-investigate-filters-${getParentIndex}`"
+          :items="act.investigateFilters"
+          placeholder="Select Filters"
+          outlined
+          multiple
+          small-chips
+          deletable-chips
+          :menu-props="{ offsetY: true }"
+          :rules="[(v) => v.length || labels.Required]"
+        />
+      </v-col>
+      <v-col v-if="actionType === 'analyze'" md="6" style="margin-bottom: -16px;">
         <v-radio-group
-          v-model="investigateData.hasFilters"
+          v-model="investigateData.autoDetectFilters"
           :id="`input--action-investigate-has-filters-${getParentIndex}`"
           :mandatory="true"
           hide-details
-          @change="handlerHasFiltersRadioGroup"
+          @change="handleAutoDetectFiltersChange"
         >
           <v-radio
-            :value="false"
+            :value="true"
             class="mb-2"
             label="Auto-detect malicious and phishing attributes"
             color="#2196f3"
           ></v-radio>
-          <v-radio :value="true" class="align-start" color="#2196f3">
+          <v-radio :value="false" class="align-start" color="#2196f3">
             <template #label>
               <div class="d-flex" style="width: 100%;">
                 <span class="mr-2" style="flex-basis: 225px; flex-shrink: 0;">
@@ -185,9 +199,11 @@
                   style="width: 100%; margin-top: -6px;"
                   :id="`input--action-investigate-filters-${getParentIndex}`"
                   :items="act.investigateFilters"
-                  :disabled="!investigateData.hasFilters"
+                  :disabled="investigateData.autoDetectFilters"
                   :menu-props="{ offsetY: true }"
-                  :rules="investigateData.hasFilters ? [(v) => v.length || labels.Required] : []"
+                  :rules="
+                    !investigateData.autoDetectFilters ? [(v) => v.length || labels.Required] : []
+                  "
                   placeholder="Select Filters"
                   outlined
                   multiple
@@ -367,6 +383,9 @@ export default {
     'select-search-handler': SelectSearchHandler
   },
   props: {
+    actionType: {
+      type: String
+    },
     act: {
       type: Object
     },
@@ -382,6 +401,7 @@ export default {
         return {
           isCreatedByAnalyzer: false,
           scanTypes: [],
+          autoDetectFilters: false,
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -529,8 +549,8 @@ export default {
         fn()
       }, delay)
     },
-    handlerHasFiltersRadioGroup(value) {
-      if (!value) {
+    handleAutoDetectFiltersChange(value) {
+      if (value) {
         this.investigateData.filters = []
       }
     },
