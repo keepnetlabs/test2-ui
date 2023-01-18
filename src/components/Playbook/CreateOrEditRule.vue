@@ -273,7 +273,7 @@ export default {
             { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ],
-          operatorSenderIP: [{ text: 'Ip Address', value: 'Ip' }, 'Regex'],
+          operatorSenderIP: [{ text: 'IP Address', value: 'Ip' }, 'Regex'],
           operandsAttachmentHash: [
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' }
