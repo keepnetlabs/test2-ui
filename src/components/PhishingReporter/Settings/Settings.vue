@@ -184,14 +184,12 @@ export default {
         ...diagnosticTool,
         ...updatedValues
       }
-
       //this is added for previewing and deleting obj key on sending
       if (!newFormData?.file?.name) {
         delete newFormData.file
       }
-
       const formData = new FormData()
-      Object.keys(newFormData).map((key) => {
+      Object.keys(newFormData).forEach((key) => {
         formData.append(
           key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
           newFormData[key] === null || newFormData[key] === undefined ? '' : newFormData[key]

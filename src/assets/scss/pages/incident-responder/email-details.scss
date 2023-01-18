@@ -86,10 +86,6 @@
             width: auto;
         }
 
-        .v-tab--active {
-            color: #2196f3 !important;
-        }
-
         .v-tabs-bar {
             height: 48px !important;
             border-radius: 0 !important;
@@ -485,16 +481,13 @@
         text-decoration: none !important;
         position: relative;
         text-indent: 0;
+        .red-malicious-alert:not(:first-child) {
+        display: block !important;
+        }
     }
 
     .red-malicious-alert::before {
         border: unset !important;
-    }
-
-    .malicious-style {
-        .red-malicious-alert:not(:first-child) {
-            display: block !important;
-        }
     }
 
     .k-table__wrapper .card .table-wrapper .el-table th>.cell {

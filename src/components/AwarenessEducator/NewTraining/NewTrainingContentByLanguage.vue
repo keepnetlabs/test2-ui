@@ -118,7 +118,8 @@ export default {
   methods: {
     handleFileChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        return (this.value.file = null)
+        this.value.file = null
+        return
       }
       this.abortController = new AbortController()
       const payload = new FormData()

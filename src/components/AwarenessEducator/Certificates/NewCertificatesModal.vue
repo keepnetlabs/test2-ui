@@ -134,21 +134,19 @@ export default {
   },
   computed: {
     getModalTitle() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateCertificate
-          : labels.EditCertificate
-        : labels.CreateNewCertificate
+      return this.selectedItem ? this.getSelectedItemTitle : labels.CreateNewCertificate
+    },
+    getSelectedItemTitle() {
+      return this.isDuplicate ? labels.DuplicateCertificate : labels.EditCertificate
     },
     getBodyTitle() {
       return labels.TrainingCertificateInformation
     },
     getBodySubtitle() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateCertificateSub
-          : labels.EditCertificateSub
-        : labels.CreateNewCertificateSub
+      return this.selectedItem ? this.getSelectedItemSubTitle : labels.CreateNewCertificateSub
+    },
+    getSelectedItemSubTitle() {
+      return this.isDuplicate ? labels.DuplicateCertificateSub : labels.EditCertificateSub
     }
   },
   created() {

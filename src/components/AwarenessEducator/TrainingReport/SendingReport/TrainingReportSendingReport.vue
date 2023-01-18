@@ -115,7 +115,6 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'

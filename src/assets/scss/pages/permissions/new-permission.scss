@@ -27,6 +27,15 @@
     .v-treeview-node__checkbox {
         position: absolute;
         right: 40px !important;
+          &.v-icon--disabled {
+           &.mdi-checkbox-blank-outline {
+          color: #d6d5d5 !important;
+        }
+
+        &.mdi-checkbox-marked::before {
+          color: #d6d5d5 !important;
+        }
+      }
     }
 
     .v-treeview-node__content {
@@ -75,17 +84,5 @@
 
     .mdi-minus-box::before {
         color: #757575 !important;
-    }
-
-    .v-treeview-node__checkbox {
-        &.v-icon--disabled {
-            &.mdi-checkbox-blank-outline {
-                color: #d6d5d5 !important;
-            }
-
-            &.mdi-checkbox-marked::before {
-                color: #d6d5d5 !important;
-            }
-        }
     }
 }
