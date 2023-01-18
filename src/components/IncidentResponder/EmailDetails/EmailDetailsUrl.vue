@@ -122,15 +122,9 @@
 <script>
 import Badge from '@/components/Badge'
 import DataTable from '@/components/DataTable'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE,
-  INTEGRATION_TYPES
-} from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getBtnStatusColor, copyToClipboard } from '@/utils/functions'
-
 export default {
   name: 'EmailDetailsUrl',
   components: {
@@ -223,14 +217,6 @@ export default {
     },
     handleCopyUrl(url = '') {
       copyToClipboard(url)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {

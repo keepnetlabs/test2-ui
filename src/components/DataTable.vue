@@ -2946,16 +2946,7 @@ export default {
         })
         text += '\n'
       })
-
       copyToClipboard(text)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     unSelectRow(row) {
       this?.$refs?.elTableRef?.toggleRowSelection(row, false)
