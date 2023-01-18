@@ -470,7 +470,7 @@ export default {
   },
   methods: {
     checkDateIsValid() {
-      let isDateValid = this.isDateValid
+      let isDateValid
       if (this.formData) {
         isDateValid =
           this.formData.scheduleTypeId === '2'

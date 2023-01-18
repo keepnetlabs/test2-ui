@@ -1,10 +1,10 @@
 <template>
   <div class="action-items" id="playbook-action-items">
     <app-dialog
+      v-if="openEnginesModal"
       size="big"
       :status="openEnginesModal"
       icon="mdi-blur"
-      v-if="openEnginesModal"
       max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
@@ -23,7 +23,7 @@
               outlined
               prepend-inner-icon="mdi-magnify"
               hide-details
-              @keyup="searchEnginesModel()"
+              @input="searchEnginesModel"
             />
             <div class="analyze__main__select-row-wrap check-all">
               <div class="checkbox-and-text">
@@ -717,13 +717,17 @@ export default {
     searchEnginesModel() {
       if (this.searchEnginesModelInput) {
         this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
-          Object.values(item).find((i) => {
+          for (const keyValue of Object.values(item)) {
             if (
-              typeof i === 'string' &&
-              i.toLocaleLowerCase().includes(this.searchEnginesModelInput.toLocaleLowerCase())
-            )
-              return acc.push(item)
-          })
+              typeof keyValue === 'string' &&
+              keyValue
+                .toLocaleLowerCase()
+                .includes(this.searchEnginesModelInput.toLocaleLowerCase())
+            ) {
+              acc.push(item)
+              break
+            }
+          }
           return acc
         }, [])
       } else {
@@ -1139,14 +1143,6 @@ export default {
           }
         })
       }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     callForSearchEmailTemplate() {
       let payload = {

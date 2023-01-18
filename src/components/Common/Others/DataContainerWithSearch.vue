@@ -231,7 +231,7 @@ export default {
       this.setOptions('push', true)
       this.checkAllValid()
       this.$nextTick(() => {
-        this.scrollKey = `scroll-key${Math.random().toString().substring(0, 5)}`
+        this.scrollKey = `scroll-key-${createRandomCryptStringNumber()}`
       })
     }
   },
@@ -280,7 +280,7 @@ export default {
     addItemToOptions(val, funcName = 'unshift') {
       this.options[funcName]({
         val,
-        key: Math.random().toString(8),
+        key: createRandomCryptStringNumber(),
         isEdit: false,
         isEditable: this.getEditability(val),
         disabledTooltipText: this.disabledTooltipText,
@@ -299,17 +299,8 @@ export default {
       this.checkAllValid()
     },
     handleFilter() {
-      if (this.isFilterChecked) {
-        this.isFilterActive = true
-      } else {
-        this.isFilterActive = false
-      }
-
-      if (this.isCustomFilterChecked) {
-        this.isCustomFilterActive = true
-      } else {
-        this.isCustomFilterActive = false
-      }
+      this.isFilterActive = this.isFilterChecked
+      this.isCustomFilterActive = this.isCustomFilterChecked
       this.isMenuOpen = false
     },
     clearFilter() {
@@ -317,14 +308,6 @@ export default {
       this.isCustomFilterChecked = false
       this.isFilterActive = false
       this.isCustomFilterActive = false
-      this.isMenuOpen = false
-    },
-    setCommonProperties(val = false) {
-      if (val === false) {
-        this.isFilterChecked = false
-        this.isCustomFilterChecked = false
-      }
-      this.isFilterActive = val
       this.isMenuOpen = false
     }
   }

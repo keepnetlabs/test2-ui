@@ -2341,58 +2341,53 @@ export default {
     },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
-      return this.loading
-        ? 'Loading...'
-        : this.statsAndMenuData.status === 'Finished'
-        ? 'Finished'
-        : this.statsAndMenuData.status === 'Canceled'
-        ? 'Canceled'
-        : this.statsAndMenuData.status === 'Expired'
-        ? 'Expired'
-        : `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
-            totalHours > 0 ? `${totalHours} hour(s) ` : ''
-          }${totalMinutes} minute(s) left`
+      if (this.loading) return 'Loading...'
+      else if (this.statsAndMenuData.status === 'Finished') return 'Finished'
+      else if (this.statsAndMenuData.status === 'Canceled') return 'Canceled'
+      else if (this.statsAndMenuData.status === 'Expired') return 'Expired'
+      else
+        return `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
+          totalHours > 0 ? `${totalHours} hour(s) ` : ''
+        }${totalMinutes} minute(s) left`
     },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this
-      const style = {}
-      style.boxShadow = statsAndMenuData
-        ? statsAndMenuData.status === 'Running'
-          ? '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Finished'
-          ? '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : (statsAndMenuData && statsAndMenuData.status === 'Expired') ||
-            (statsAndMenuData && statsAndMenuData.status === 'Canceled')
-          ? '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-        : ''
+      const style = { boxShadow: '' }
+      if (!statsAndMenuData) {
+        return style
+      } else if (statsAndMenuData.status === 'Running') {
+        style.boxShadow = '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Finished') {
+        style.boxShadow = '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled') {
+        style.boxShadow = '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       return style
     },
     getHeaderCardBoxShadowSecond() {
       const { statsAndMenuData } = this
-      const style = {}
-      style.boxShadow = statsAndMenuData
-        ? statsAndMenuData.status === 'Running'
-          ? statsAndMenuData['onlineUserCount']
-            ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-            : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Finished'
+      const style = { boxShadow: '' }
+      if (!statsAndMenuData) {
+        return style
+      } else if (statsAndMenuData.status === 'Running') {
+        style.boxShadow = statsAndMenuData['onlineUserCount']
           ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData &&
-            statsAndMenuData.status === 'Expired' &&
-            '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-        : ''
+          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Finished') {
+        style.boxShadow = '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Expired') {
+        style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      }
       return style
     },
     getHeaderCardBoxClassSecond() {
       const { statsAndMenuData } = this
-      return statsAndMenuData && statsAndMenuData.status === 'Running'
-        ? statsAndMenuData['onlineUserCount']
-          ? 'bg-turquoise'
-          : 'bg-macaroni'
-        : statsAndMenuData && statsAndMenuData.status === 'Finished'
-        ? 'bg-turquoise'
-        : statsAndMenuData && statsAndMenuData.status === 'Expired' && 'bg-macaroni'
+      if (!statsAndMenuData) return ''
+      if (statsAndMenuData.status === 'Running') {
+        return statsAndMenuData['onlineUserCount'] ? 'bg-turquoise' : 'bg-macaroni'
+      } else if (statsAndMenuData.status === 'Finished') return 'bg-turquoise'
+      else if (statsAndMenuData.status === 'Expired') return 'bg-macaroni'
+      else return ''
     },
     getGoogleData() {
       return (
