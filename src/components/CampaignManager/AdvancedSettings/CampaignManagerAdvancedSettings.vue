@@ -452,7 +452,7 @@ export default {
         return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
       } else {
         return (
-          !(this.totalTargetUserCount < val) ||
+          this.totalTargetUserCount >= val ||
           'This number cannot be higher than number of total target users.'
         )
       }

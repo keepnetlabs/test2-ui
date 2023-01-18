@@ -1,7 +1,7 @@
 import blacklist from './subdomainBlacklist'
 
 export function hasValue(value) {
-  return value && value
+  return value ? value : undefined
 }
 
 function getValue(value) {
@@ -141,7 +141,7 @@ export function controlEmailLength(value, message = '') {
   value = getValue(value)
   const [leftSide = '', rightSide = ''] = value.split('@')
   if (leftSide.length > 64 || rightSide.length > 256) {
-    return message && message
+    return message ? message : ''
   }
   return true
 }

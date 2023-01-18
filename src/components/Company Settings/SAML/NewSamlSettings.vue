@@ -337,7 +337,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
-import { isDifferent, copyToClipboard } from '@/utils/functions'
+import { isDifferent, copyToClipboard, createRandomCryptStringNumber } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
@@ -501,7 +501,7 @@ export default {
         if (this.certificateText) {
           this.isCertificateTextDisabled = true
         }
-        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+        this.roleSelectKey = `key-${createRandomCryptStringNumber()}`
         this.$refs.refDomainToAddForm.validate()
       })
     },

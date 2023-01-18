@@ -552,11 +552,7 @@ export default {
         return true
       }
 
-      if (!(this.excelInfo && this.excelInfo.transactionId)) {
-        return true
-      }
-
-      return false
+      return !(this.excelInfo && this.excelInfo.transactionId)
     },
     canNext() {
       return this.activeStep < this.totalStep
@@ -1401,7 +1397,7 @@ export default {
         let selectedValues = this.$refs.refValidateList
           .getSelectedMultipleValues()
           .map((item) => item.resourceId)
-        if (!selectedValues.length) return false
+        if (!selectedValues.length) return ''
         payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
       } else if (label === labels.ImportAll) {
         payload = { ImportType: 'ImportAll' }

@@ -120,6 +120,7 @@
 import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
 import QueryBuilderRule from './CustomRule'
 import deepClone from 'vue-query-builder/src/utilities'
+import { createRandomCryptNumber } from '@/utils/functions'
 export default {
   name: 'QueryBuilderGroup',
   extends: QueryBuilderGroup,
@@ -136,7 +137,7 @@ export default {
   data() {
     return {
       blockAnimation: true,
-      attachId: Math.random(),
+      attachId: createRandomCryptNumber(),
       getCustomBadgeRender: this.depth !== 1
     }
   },

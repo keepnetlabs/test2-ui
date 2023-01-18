@@ -950,7 +950,7 @@ import {
   getDataTableFieldLabel,
   copyToClipboard
 } from '@/utils/functions'
-import { columnStandards, COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -1305,11 +1305,8 @@ export default {
       return (tableData && tableData.length) || isColumnFilterActive || loading
     },
     getTableData() {
-      return this.isServerSide
-        ? this.tableData
-        : this.showfilteredData
-        ? this.filteredData
-        : this.tableData
+      if (this.isServerSide) return this.tableData
+      return this.showfilteredData ? this.filteredData : this.tableData
     },
     isExtendedViewRender() {
       return (

@@ -150,7 +150,11 @@
                   <span class="analysis-link">
                     <div>{{ labels.InAnalysis }}...</div>
                     <div>
-                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                      <img
+                        src="../assets/img/spinner.png"
+                        alt="spinner-image"
+                        class="add-in-settings__spinner"
+                      />
                     </div>
                   </span>
                 </template>
@@ -308,7 +312,11 @@
                   <span class="analysis-link">
                     <div>{{ labels.InAnalysis }}...</div>
                     <div>
-                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                      <img
+                        src="../assets/img/spinner.png"
+                        alt="spinner-image"
+                        class="add-in-settings__spinner"
+                      />
                     </div>
                   </span>
                 </template>

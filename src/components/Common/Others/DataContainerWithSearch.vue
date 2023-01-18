@@ -239,7 +239,7 @@ export default {
     this.setOptions('push')
   },
   methods: {
-    handleInputChange(newVal = '', oldVal, index) {
+    handleInputChange(newVal = '', oldVal = '', index = 0) {
       const item = this.getItems[index]
       item.val = newVal
       const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
@@ -269,9 +269,8 @@ export default {
       if (reset) {
         this.options = []
       }
-      for (let i = 0; i < this.value.length; i++) {
-        if (!this.options.find((item) => item.val === this.value[i]))
-          this.addItemToOptions(this.value[i], funcName)
+      for (const row of this.value) {
+        if (!this.options.find((item) => item.val === row)) this.addItemToOptions(row, funcName)
       }
     },
     resetOptions() {

@@ -343,16 +343,25 @@ export default {
         this.step += flag
       }
     },
-    handleSubmit() {
-      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-      const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
+    handleSetPhishingCampaignConditionTypes(formData = {}) {
+      const phishingCampaignConditionTypes = []
       const {
         userWhoOpenedEmail,
         userWhoClickedEmail,
         userWhoSubmittedData,
         userWhoDownloadedAttachment,
         userWhoReportedAsSuspicious
-      } = refSendTrainingSelectUsers.formData
+      } = formData
+      if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
+      if (userWhoClickedEmail) phishingCampaignConditionTypes.push('PhishingLinkClicked')
+      if (userWhoSubmittedData) phishingCampaignConditionTypes.push('DataSubmitted')
+      if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
+      if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
+      return phishingCampaignConditionTypes
+    },
+    handleSubmit() {
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
       const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
       const {
         enrollmentScheduler,
@@ -366,11 +375,9 @@ export default {
       const newLanguageIds = languageIds.filter((languageId) => languageId !== 'All')
       const phishingCampaignConditionTypes = []
       if (selectedIndex === 1) {
-        if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
-        if (userWhoClickedEmail) phishingCampaignConditionTypes.push('PhishingLinkClicked')
-        if (userWhoSubmittedData) phishingCampaignConditionTypes.push('DataSubmitted')
-        if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
-        if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
+        phishingCampaignConditionTypes.push(
+          ...this.handleSetPhishingCampaignConditionTypes(refSendTrainingSelectUsers.formData)
+        )
       }
       if (enrollmentScheduler.scheduledTimeZoneId) enrollmentScheduler.useOwnTimeZone = false
       const payload = {
