@@ -212,7 +212,7 @@
         :rules="rules.days"
         @input="handleDurationChange"
       ></v-text-field>
-      <span style="position: absolute; top: 62px; left: 56px; font-size: 13px; color: #000;"
+      <span style="position: absolute; top: 65px; left: 56px; font-size: 13px; color: #000;"
         >Day(s)</span
       >
     </FormGroup>
@@ -493,7 +493,7 @@ export default {
       }
     },
     handleDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,3}$/.test(val)) {
         this.formData.duration = val
       } else {
         this.$refs.refDurationTextField.initialValue = this.formData.duration

@@ -368,7 +368,7 @@ export default {
     },
     toggleRuleModal() {
       this.selectedPlaybookId = null
-      return (this.showRuleModal = !this.showRuleModal)
+      this.showRuleModal = !this.showRuleModal
     },
     handleEdit(row) {
       this.selectedPlaybookId = row.resourceId

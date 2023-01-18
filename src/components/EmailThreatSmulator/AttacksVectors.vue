@@ -297,6 +297,10 @@ export default {
       getEtsAttackVectorPermissionSearch: 'permissions/getEtsAttackVectorPermissionSearch'
     })
   },
+  mounted() {
+    this.callForLanguages('refAttacksVectorList')
+    this.callForData()
+  },
   methods: {
     setStatusColor(riskFactor) {
       let color = '#1173C1'
@@ -383,9 +387,8 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            for (let i = 0; i < results.length; i++) {
-              const data = results[i]
-              data.isActive = data.isActive ? 'Active' : 'Passive'
+            for (const row of results) {
+              row.isActive = row.isActive ? 'Active' : 'Passive'
             }
             this.tableData = results
           })
@@ -405,10 +408,6 @@ export default {
       this.selectedAttackVector = row
       this.showStatusModal = true
     }
-  },
-  mounted() {
-    this.callForLanguages('refAttacksVectorList')
-    this.callForData()
   }
 }
 </script>

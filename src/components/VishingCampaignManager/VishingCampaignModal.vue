@@ -931,7 +931,6 @@ export default {
         excludeFromReports,
         targetGroupResourceIds,
         callerPhoneNumber,
-        distributionOverDays,
         distributionStartTime,
         distributionEndTime,
         templateResourceId

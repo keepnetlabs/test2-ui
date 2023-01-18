@@ -6,12 +6,11 @@ export function searchProxySettings(payload = {}) {
 }
 
 export function deleteProxySettings(id) {
-  return testRequest.delete(`${URL}/${id}`, { loading: true, snackbar: COMMON_SNACKBAR })
+  return testRequest.delete(`${URL}/${id}`, { snackbar: COMMON_SNACKBAR })
 }
 
 export function createProxySettings(payload) {
   return testRequest.post(`/companies/proxy-settings`, payload, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -22,7 +21,6 @@ export function getProxySettings(resourceId) {
 
 export function updateProxySettings(payload) {
   return testRequest.put(`${URL}/${payload.resourceId}`, payload, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }

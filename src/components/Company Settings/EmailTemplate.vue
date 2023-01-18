@@ -221,10 +221,7 @@ export default {
     template: {
       handler(val) {
         this.previewTemplate =
-          val?.replace(
-            new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.whitelabel.mainLogoUrl || ''
-          ) || ''
+          val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
       },
       immediate: true
     }

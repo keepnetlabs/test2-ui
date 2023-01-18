@@ -148,21 +148,7 @@ export default {
             isWithTooltip: true,
             width: 150,
             filterableType: false
-            // filterableType: 'select',
-            // filterableItems: ['Running', 'Failed', 'Completed']
           }
-          //   {
-          //     property: 'createdBy',
-          //     align: 'left',
-          //     label: 'Created By',
-          //     fixed: false,
-          //     hideSort: true,
-          //     show: true,
-          //     type: 'text',
-          //     width: 180,
-          //     isEditable: true,
-          //     filterableType: false
-          //   }
         ],
         addButton: {
           show: false
@@ -211,28 +197,7 @@ export default {
       if (status === 4) return 'Failed'
       return ''
     },
-    exportJobLogData(downloadTypes) {
-      //   downloadTypes.exportTypes.forEach((item) => {
-      //     let payload = {
-      //       pageNumber: downloadTypes.pageNumber,
-      //       pageSize: downloadTypes.pageSize,
-      //       orderBy: this.axiosPayload.orderBy,
-      //       ascending: this.axiosPayload.ascending,
-      //       reportAllPages: downloadTypes.reportAllPages,
-      //       exportType: item === "XLS" ? "Excel" : item,
-      //       filter: this.axiosPayload.filter,
-      //     };
-      //     exportCampaignReports(payload).then((response) => {
-      //       const { data } = response;
-      //       const link = document.createElement("a");
-      //       link.href = window.URL.createObjectURL(data);
-      //       link.download = `Campaign-Manager-Report.${
-      //         item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
-      //       }`;
-      //       link.click();
-      //     });
-      //   });
-    },
+    exportJobLogData(downloadTypes) {},
     handleDetailsClick(row = {}) {
       this.$emit('onDetails', row)
     },

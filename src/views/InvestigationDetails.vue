@@ -1817,15 +1817,11 @@ export default {
       this.isWantToStop = true
     },
     iconType() {
-      this.statsAndMenuData.status === 'Running'
-        ? (this.statusIcon = 'mdi-play')
-        : this.statsAndMenuData.status === 'Finished'
-        ? (this.statusIcon = 'mdi-check')
-        : this.statsAndMenuData.status === 'Expired'
-        ? (this.statusIcon = 'mdi-clock')
-        : this.statsAndMenuData.status === 'Canceled'
-        ? (this.statusIcon = 'mdi-close-circle')
-        : (this.statusIcon = 'mdi-close')
+      if (this.statsAndMenuData.status === 'Running') this.statusIcon = 'mdi-play'
+      else if (this.statsAndMenuData.status === 'Finished') this.statusIcon = 'mdi-check'
+      else if (this.statsAndMenuData.status === 'Expired') this.statusIcon = 'mdi-clock'
+      else if (this.statsAndMenuData.status === 'Canceled') this.statusIcon = 'mdi-close-circle'
+      else this.statusIcon = 'mdi-close'
     },
     getStatusText(section, val) {
       if (val == null) val = 0
@@ -1985,9 +1981,6 @@ export default {
                   if (this.autoRefreshInterval) {
                     clearInterval(this.autoRefreshInterval)
                   }
-                  // this.timeoutId = setTimeout(() => {
-                  //   this.handleClearFilters(this.isAutoRefreshActive)
-                  // }, 15000)
                 })
             })
         })
@@ -2052,9 +2045,6 @@ export default {
                     if (this.autoRefreshInterval) {
                       clearInterval(this.autoRefreshInterval)
                     }
-                    // this.timeoutId = setTimeout(() => {
-                    //   this.handleClearFilters(this.isAutoRefreshActive)
-                    // }, 15000)
                   }
                 })
             })
@@ -2254,7 +2244,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // get table data via vuex.
       tableData: 'investigations/getInvestigationDetailsListGetter', // for using getters,
       statsAndMenuData: 'investigations/statsAndMenuGetter', // for stats getters,
       investigationDetailsData: 'investigations/investigationDetailsDataGetter', // for stats getters,
