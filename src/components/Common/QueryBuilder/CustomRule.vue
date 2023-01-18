@@ -150,7 +150,7 @@
           <InputIpAddress
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
-            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter Regex'"
+            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter regular expression'"
             :rules="
               query.format === 'Ip'
                 ? [
@@ -290,7 +290,11 @@ export default {
         newVal !== 'Exists' &&
         newVal !== 'DoesNotExists'
       ) {
-        this.query.format = 'Email'
+        if (this.query.operand === 'SenderIp') {
+          this.query.format = 'Ip'
+        } else {
+          this.query.format = 'Email'
+        }
       }
     },
     'query.operand'(newVal = '') {
