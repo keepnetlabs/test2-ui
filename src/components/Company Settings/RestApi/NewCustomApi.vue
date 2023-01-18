@@ -57,7 +57,7 @@
               text
               color="#2196f3"
               class="ml-2"
-              @click="handleCopyToClipboard(formValues.clientId)"
+              @click="copyToClipboard(formValues.clientId)"
               >{{ labels.CopyToClipboard }}</v-btn
             >
           </div>
@@ -89,7 +89,7 @@
               text
               color="#2196f3"
               class="ml-2"
-              @click="handleCopyToClipboard(formValues.clientSecret)"
+              @click="copyToClipboard(formValues.clientSecret)"
               >{{ labels.CopyToClipboard }}</v-btn
             >
           </div>
@@ -201,7 +201,6 @@ import {
 } from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import * as validations from '../../../utils/validations'
 import { getSystemUsersRole } from '@/api/systemUsers'
@@ -285,6 +284,7 @@ export default {
     })
   },
   methods: {
+    copyToClipboard,
     getRoles() {
       return new Promise((res, rej) => {
         let payload = getDefaultAxiosPayload({ pageSize: 1000 }, 'RoleName')
@@ -350,17 +350,6 @@ export default {
       }
       if (!this.formValues.allowedIpAddresses)
         this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
-    },
-    handleCopyToClipboard(data = '') {
-      copyToClipboard(data)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     handleGenerateClientBtnClick() {
       if (!(this.selectedRow && this.selectedRow.resourceId)) {
