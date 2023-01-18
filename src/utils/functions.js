@@ -1,3 +1,6 @@
+import store from '@/store'
+import labels from '@/model/constants/labels'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export function getBtnStatusColor(type) {
   let _type = type
   if (typeof _type === 'boolean' && _type) {
@@ -941,10 +944,18 @@ export function getInvestigationStatusTooltipText(type) {
     return 'Investigation expired before completing investigation for all target users'
 }
 
+export function createCopyToClipboardSnackbar() {
+  store.dispatch('common/createSnackBar', {
+    message: labels.CopiedToClipboard,
+    color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+    icon: 'mdi-checkbox-marked-circle '
+  })
+}
 export function copyToClipboard(textToCopy) {
   // navigator clipboard api needs a secure context (https)
   if (navigator.clipboard && window.isSecureContext) {
     // navigator clipboard api method'
+    createCopyToClipboardSnackbar()
     return navigator.clipboard.writeText(textToCopy)
   } else {
     // text area method
@@ -958,8 +969,11 @@ export function copyToClipboard(textToCopy) {
     textArea.focus()
     textArea.select()
     return new Promise((res, rej) => {
-      // here the magic happens
-      document.execCommand('copy') ? res() : rej('something went wrong')
+      if (document.execCommand('copy')) {
+        res()
+        createCopyToClipboardSnackbar()
+      } else rej('something went wrong')
+
       textArea.remove()
     })
   }
@@ -1232,6 +1246,7 @@ export const getDifficultyBadgeColor = (text = '') => {
 
 export function createRandomCryptNumber() {
   const crypto = window.crypto || window.msCrypto
+  if (!crypto) return Math.random().toString(10)
   const array = new Uint32Array(1)
   return crypto.getRandomValues(array)[0]
 }

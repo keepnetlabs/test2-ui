@@ -303,7 +303,7 @@ export default {
         const {
           data: { data }
         } = response
-        Object.keys(this.formData).map((key) => {
+        Object.keys(this.formData).forEach((key) => {
           this.formData[key] = data[key]
         })
       })

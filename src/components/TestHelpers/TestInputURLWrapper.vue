@@ -15,10 +15,7 @@
 
 <script>
 import TestFormWrapper from '@/components/TestHelpers/TestFormWrapper'
-import * as Validations from '@/utils/validations'
-import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
 export default {
   name: 'TestInputURLWrapper',
   components: { TestFormWrapper },

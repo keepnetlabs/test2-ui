@@ -309,7 +309,7 @@ import Badge from '@/components/Badge'
 import Datatable from '@/components/DataTable'
 import DownloadModal from '@/components/IncidentResponder/DownloadModal'
 import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
@@ -318,7 +318,6 @@ import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/f
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
-import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 export default {
   components: {
     KEmailPreview,

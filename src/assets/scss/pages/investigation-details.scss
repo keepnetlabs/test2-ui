@@ -247,8 +247,6 @@
 
                 .k-table__wrapper {
                     padding-bottom: 0;
-
-                    .pagination {}
                 }
 
                 &--left-menu {
@@ -594,12 +592,9 @@
         .card .table-wrapper .el-table td>.cell {
             padding-left: 10.5px !important;
         }
-
         .card .table-wrapper .el-table th>.cell.actions-label {
             margin-left: 0 !important;
         }
-
-        .card .table-wrapper .el-table th>.cell {}
     }
 }
 

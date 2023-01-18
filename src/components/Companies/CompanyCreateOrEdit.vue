@@ -952,7 +952,7 @@ export default {
     handleSave() {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
-        !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
+        if (!this.formData.IsNumberOfUsersLimited) this.formData.NumberOfUsers = 9999
         this.formData.LicenseTypeName = this.licenceTypes.find((item) => {
           return item.resourceId === this.formData.LicenseTypeResourceId
         }).name
@@ -1039,7 +1039,6 @@ export default {
             const el = this.$refs.refStep2Form.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
-        } else if (this.activeStep === 3) {
         }
         return this.$nextTick(() => {
           const el = this.$refs.refStep3Form.$el.querySelector('.error--text')

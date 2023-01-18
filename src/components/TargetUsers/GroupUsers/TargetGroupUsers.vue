@@ -221,7 +221,6 @@ export default {
       this.toggleShowingTargetUserCreateGroupWithUser()
     },
     handleConfirmCreateUserWithGroup(groupName = '') {
-      // TODO: Insert create group with user logic here
       this.selectedUserToCreateGroupWith = null
       this.toggleShowingTargetUserCreateGroupWithUser()
     },

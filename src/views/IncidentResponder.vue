@@ -1794,7 +1794,7 @@ export default {
         rows = [...this.extendedViewValue, ...rows]
       }
       const note = rows[0].note
-      rows.map((item) => {
+      rows.forEach((item) => {
         if (item.note !== note) {
           this.hasMultipleNoteValue = true
         }

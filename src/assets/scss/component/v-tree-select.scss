@@ -106,10 +106,6 @@
   }
 }
 
-.vue-treeselect__indent-level-1 .vue-treeselect__option{
-  padding-left: 8px !important;
-}
-
 .vue-treeselect {
   min-height: 40px;
   &__single-value {
@@ -172,7 +168,6 @@
   font-style: normal;
   letter-spacing: normal;
   color: #383b41;
-  //pointer-events: none;
 }
 .vue-treeselect__indent-level-1 {
   img {
@@ -186,6 +181,7 @@
     }
   }
   .vue-treeselect__option {
+    padding-left: 8px !important;
     .vue-treeselect__option-arrow-container {
       svg {
         margin-left: 30px !important;

@@ -563,12 +563,14 @@ export default {
       return this.formValues.scheduleType !== '3'
     },
     getTargetGroupErrorMessage() {
-      return this.formValues.targetGroupResourceIds.length
-        ? this.isShowTargetGroupUsersError
+      if (this.formValues.targetGroupResourceIds.length) {
+        return this.isShowTargetGroupUsersError
           ? 'Target groups must have at least 1 user with phone number'
-          : 'Required'
-        : 'Required'
+          : labels.Required
+      }
+      return labels.Required
     },
+
     getRecipientValueErrorMessage() {
       if (this.formValues.isLimitRecipients) {
         if (this.formValues.recipientType === 1) {
@@ -769,7 +771,6 @@ export default {
           scheduleDate,
           scheduleType,
           scheduledDateTimeZoneId,
-          targetGroupResourceIds = [],
           templateResourceId = '',
           targetGroups
         } = response?.data?.data || {}
