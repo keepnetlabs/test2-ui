@@ -189,7 +189,6 @@ export default {
             }
             if (inner.find('label')[0].view.el.textContent === 'Message') {
               inner.find('textarea')[0].addAttributes({ name: 'Message' })
-              return
             }
           })
         }
@@ -449,23 +448,6 @@ export default {
         editor.DomComponents.addType('image', {
           isComponent: (el) => {
             return el.tagName === 'IMG'
-            if (
-              el.tagName === 'IMG' &&
-              el.parentElement.constructor.name !== 'HTMLinkElement' &&
-              el.parentElement.constructor.name !== 'HTMLBodyElement'
-            ) {
-              return {
-                type: 'link',
-                tagName: 'a',
-                components: [
-                  {
-                    tagName: 'img',
-                    type: 'image',
-                    content: el.outerHTML
-                  }
-                ]
-              }
-            }
           },
           model: {
             defaults: {
@@ -816,14 +798,6 @@ export default {
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
             copyToClipboard(codeViewer.editor.getValue())
-              .then(() => {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'COPIED TO CLIPBOARD',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle'
-                })
-              })
-              .catch(() => {})
           }
           codeViewer.set({
             codeName: 'htmlmixed',

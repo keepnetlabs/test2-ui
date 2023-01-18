@@ -116,7 +116,6 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
   getSCIMFields,
   getSCIMSetting,
@@ -368,14 +367,6 @@ export default {
     },
     handleCopyToClipboard(data = '') {
       copyToClipboard(data)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     handleManipulateItems(items = []) {
       return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))

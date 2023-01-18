@@ -1055,7 +1055,7 @@ const store = {
         'threatIntelligencePermissions',
         'allowListPermissions'
       ]
-      statePermissionKeys.map((key) => {
+      statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }
         const permissions = Object.keys(permissionObject).filter(
           (key) => key !== 'isOneOfThemPermitted'

@@ -116,7 +116,7 @@ export default {
     handleTelBlur() {
       this.validatePhoneNumber()
     },
-    setOldValueBySplitter(splitter = '-', newVal) {
+    setOldValueBySplitter(splitter = '-', newVal = '') {
       if (!this.value) {
         const splittedVal = newVal.split(splitter)[0]
         this.$refs.refTelInput.phone = splittedVal

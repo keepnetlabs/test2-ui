@@ -56,7 +56,7 @@ export default {
   computed: {
     getItems() {
       const newItems = { ...this.items }
-      Object.keys(this.items).map((key) => {
+      Object.keys(this.items).forEach((key) => {
         if (!newItems[key].show) delete newItems[key]
         else newItems[key] = newItems[key].value
       })

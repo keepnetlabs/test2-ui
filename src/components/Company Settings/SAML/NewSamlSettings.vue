@@ -583,14 +583,6 @@ export default {
     },
     handleCopyToClipboard(key = '') {
       copyToClipboard(this.formValues[key] || this[key])
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     handleDomainToAddButtonClick() {
       if (

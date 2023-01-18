@@ -1618,27 +1618,10 @@ export default {
         tooltipText: tooltipText,
         text: text
       }
-      //exampple
-      //status = 'CompletedWithError'
-      //actionType = 'Warning'
-      //isPermanentDelete = false
       if (['Idle', 'Running'].includes(status)) {
-        if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          } else {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          }
-        } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          } else {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          }
+        if (actionType === 'Delete' || actionType === 'DeleteAndNotify') {
+          returnValue.icon = null
+          returnValue.color = '#fff'
         } else if (actionType === 'Warning') {
           returnValue.icon = 'mdi-check-circle'
           returnValue.color = '#43a047'
@@ -1646,44 +1629,23 @@ export default {
       }
       if (status === 'Completed') {
         if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          } else {
-            returnValue.icon = 'mdi-delete'
-            returnValue.color = '#6d6d6d'
-          }
+          returnValue.color = '#6d6d6d'
+          if (isPermanentDelete) returnValue.icon = 'mdi-close-circle'
+          else returnValue.icon = 'mdi-delete'
         } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          } else {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          }
+          returnValue.icon = 'mdi-close-circle'
+          returnValue.color = '#6d6d6d'
         } else if (actionType === 'Warning') {
           returnValue.icon = 'mdi-check-underline-circle'
           returnValue.color = '#43a047'
         }
       }
       if (status === 'CompletedWithError') {
-        if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          } else {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          }
-        } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          } else {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          }
-        } else if (actionType === 'Warning') {
+        if (
+          actionType === 'Delete' ||
+          actionType === 'DeleteAndNotify' ||
+          actionType === 'Warning'
+        ) {
           returnValue.icon = 'mdi-alert-circle'
           returnValue.color = '#f56c6c'
         }
@@ -1695,11 +1657,8 @@ export default {
       return returnValue
     },
     getProgressText(scope) {
-      return scope.row.status === 'Completed'
-        ? 'Completed'
-        : scope.row.progress === 100
-        ? 'Completed'
-        : `${scope.row.progress}%`
+      if (scope.row.status === 'Completed' || scope.row.progress === 100) return 'Completed'
+      return `${scope.row.progress}%`
     },
     getProgressValue(scope) {
       if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
@@ -2430,9 +2389,9 @@ export default {
             : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : statsAndMenuData && statsAndMenuData.status === 'Finished'
           ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Expired'
-          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : statsAndMenuData &&
+            statsAndMenuData.status === 'Expired' &&
+            '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
         : ''
       return style
     },
@@ -2444,9 +2403,7 @@ export default {
           : 'bg-macaroni'
         : statsAndMenuData && statsAndMenuData.status === 'Finished'
         ? 'bg-turquoise'
-        : statsAndMenuData && statsAndMenuData.status === 'Expired'
-        ? 'bg-macaroni'
-        : 'bg-macaroni'
+        : statsAndMenuData && statsAndMenuData.status === 'Expired' && 'bg-macaroni'
     },
     getGoogleData() {
       return (

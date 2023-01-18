@@ -92,7 +92,6 @@ export default {
       return new Promise((res) => setTimeout(() => res(), 2000)).finally(() => {
         this.isLoading = false
       })
-      // TODO: Make API call to get excluded IP addresses
     },
     handleBatchImport(data = []) {
       if (!data.length) return
@@ -112,7 +111,6 @@ export default {
     handleSaveChanges() {
       if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
         return
-      // TODO: Make API call to save changes
     }
   }
 }

@@ -782,7 +782,6 @@ import {
   getCommunityPostPreview,
   likePost
 } from '@/api/threatSharing'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
   incidenPostReviewElementBind,
   isOwner,
@@ -1024,13 +1023,6 @@ export default {
     },
     contentCopy(contentBody) {
       copyToClipboard(contentBody)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Copied Successfully!'
-          })
-        })
-        .catch(() => {})
     },
     openShareModalFunc(post) {
       this.sharedIncitedId = post.communityPostResourceId
