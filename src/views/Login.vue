@@ -909,9 +909,13 @@ export default {
               this.$store.commit('common/SET_ERROR_STATE', true, {
                 root: true
               })
-              this.$store.commit('common/SET_ERROR_MESSAGE', e?.response?.data?.message || '', {
-                root: true
-              })
+              this.$store.commit(
+                'common/SET_ERROR_MESSAGE',
+                e?.response?.data?.message || labels.ServiceUnavailable,
+                {
+                  root: true
+                }
+              )
             })
         }
       }
@@ -1112,7 +1116,7 @@ export default {
               ? error.response.data.error_description
               : error.response.data.Message
               ? error.response.data.Message
-              : 'Unknown Error Occured !!!'
+              : labels.ServiceUnavailable
           this.$store.commit('common/SET_ERROR_MESSAGE', content, {
             root: true
           })

@@ -13,6 +13,7 @@ export const labels = {
   CompanyProfile: 'Company Profile',
   CompanyProfileSub: 'Set up your company profile first to start',
   Website: 'Website',
+  ServiceUnavailable: 'The service is unavailable, please contact our support team.',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
   EmptyVishingReportAnswered: 'You do not have any users who answered the call',
   EmptyVishingReportDialedNumber: 'You do not have any users who dialed number',
