@@ -1173,7 +1173,7 @@ import PreviewHeader from '@/components/ThreatSharing/PreviewHeader'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import {
   createCommunityPost,
-  getCommunityPost,
+  getCommunityPostEditableData,
   getSelectedEmailPreview,
   listThreatCategories,
   parseEmail,
@@ -1734,7 +1734,7 @@ export default {
     getSelectedEmailPreview(selectedItem, isInitial = false) {
       if (this.editItem) {
         this.isIncidentPreviewLoading = true
-        getCommunityPost(this.editItem.communityPostResourceId)
+        getCommunityPostEditableData(this.editItem.communityPostResourceId)
           .then((response) => {
             const { data } = response
             this.uploadRespond = data.data.communityPostEmail
