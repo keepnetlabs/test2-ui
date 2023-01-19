@@ -123,6 +123,10 @@ export function getCommunityPostPreview(id) {
   return testRequest.get(`community-posts/${id}/preview`)
 }
 
+export function getCommunityPostEditableData(id) {
+  return testRequest.get(`community-posts/${id}/edit`)
+}
+
 export function getMyLastPosts() {
   return testRequest.get(`community-posts/my-last-posts`)
 }
