@@ -2,14 +2,14 @@
   <div class="proxy-settings">
     <company-settings-header title="Proxy Settings" sub-title="Configure proxy" />
     <new-proxy-settings
+      v-if="newProxyModalStatus"
       ref="newProxySettings"
       :status="newProxyModalStatus"
+      :resourceId="selectedEditProxySettings"
+      :isEdit="isEdit"
       @closeOverlay="toggleProxyModalStatus"
       @handleDelete="handleDeleteProxySettings"
       @closeOverlayWithUpdate="closeOverlayWithUpdate"
-      :resourceId="selectedEditProxySettings"
-      :isEdit="isEdit"
-      v-if="newProxyModalStatus"
     />
     <delete-proxy-settings
       :status="deleteProxyModalStatus"

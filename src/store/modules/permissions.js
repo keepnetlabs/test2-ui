@@ -905,16 +905,12 @@ const store = {
       return state?.etsAttackVectorPermissions?.EXPORT?.hasPermission
     },
     getEtsAttackVectorPermissionEnableDisable(state) {
-      if (state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE) {
-        return true
-      }
-      return false
+      return !!(
+        state?.etsAttackVectorPermissions?.ENABLE && state?.etsAttackVectorPermissions?.DISABLE
+      )
     },
     getEtsQuickScanReportPermissionStat(state) {
       return state?.etsQuickScanReportPermissions?.STATS?.hasPermission
-    },
-    getEtsQuickScanReportPermissionCount(state) {
-      return state?.etsQuickScanReportPermissions?.COUNT_AND_SCORE?.hasPermission
     },
     getEtsQuickScanReportPermissionSearch(state) {
       return state?.etsQuickScanReportPermissions?.SEARCH?.hasPermission

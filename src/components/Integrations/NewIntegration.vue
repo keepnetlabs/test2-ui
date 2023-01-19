@@ -1172,7 +1172,7 @@ export default {
   },
   methods: {
     handleCacheDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,3}$/.test(val)) {
         this.formValues.cacheDuration = Number(val)
       } else {
         this.$refs.refInputCacheDuration.initialValue = Number(this.formValues.cacheDuration)
@@ -1180,7 +1180,7 @@ export default {
       }
     },
     handleCacheQueryCountChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,7}$/.test(val)) {
         this.formValues.cacheQueryCount = Number(val)
       } else {
         this.$refs.refInputCacheQueryCount.initialValue = Number(this.formValues.cacheQueryCount)

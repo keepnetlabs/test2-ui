@@ -697,11 +697,10 @@ export default {
   },
   methods: {
     getMethodTypeDescription(method = '') {
-      return method === 'Click-Only'
-        ? 'See who fails for phishing links'
-        : method === 'Data Submission'
+      if (method === 'Click-Only') return 'See who fails for phishing links'
+      return method === 'Data Submission'
         ? 'Gather information from users'
-        : 'Send a trackable file '
+        : 'Send a trackable file'
     },
     getInitialEmailTemplateId(id) {
       this.initialFormValues.emailTemplateId = id
@@ -851,11 +850,9 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
-      let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
       }
       const payload = {
         ...this.formValues,
@@ -937,11 +934,8 @@ export default {
       return false
     },
     getModalTitle() {
-      return !this.isEdit
-        ? 'New Phishing Scenario'
-        : this.isDuplicate
-        ? 'Duplicate Phishing Scenario'
-        : 'Edit Phishing Scenario'
+      if (!this.isEdit) return 'New Phishing Scenario'
+      return this.isDuplicate ? 'Duplicate Phishing Scenario' : 'Edit Phishing Scenario'
     },
     getPhishingFile() {
       return this.summaryData?.emailTemplate?.phishingFileName

@@ -474,8 +474,8 @@ export default {
           this.listData = communitiesData.tableData
         }
       } else {
-        this.page = (communitiesData && communitiesData.searchValues.page) || 1
-        this.itemsPerPage = (communitiesData && communitiesData.searchValues.itemsPerPage) || 5
+        this.page = 1
+        this.itemsPerPage = 5
         this.getAllCommunitiesListData()
         this.getInvitationCount()
         this.setInitialCommunityValues()

@@ -36,7 +36,6 @@ export function getAvailableForValues(data) {
       resourceId = null
     } else if (type === 'AllCompanies') {
       resourceId = null
-      resourceId = null
     }
     return {
       resourceId: resourceId ? resourceId : id,

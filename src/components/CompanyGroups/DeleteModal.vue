@@ -14,10 +14,10 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        type="delete"
         :confirm-button-disabled="isActionButtonDisabled"
         cancel-button-id="btn-cancel--company-group-popup"
         confirm-button-id="btn-delete--company-group-popup"
-        type="delete"
         @handleClose="closeModal"
         @handleConfirm="confirmDelete"
       />
@@ -55,11 +55,12 @@ export default {
   },
   computed: {
     getContent() {
-      return this.isMultiple
-        ? `${this.groupCount} ${
-            this.groupCount > 1 ? 'company groups' : 'company group'
-          } will be deleted and all data will be lost.`
-        : `${this.selectedRow && this.selectedRow.name} will be deleted and all data will be lost.`
+      if (this.isMultiple) {
+        return `${this.groupCount} ${
+          this.groupCount > 1 ? 'company groups' : 'company group'
+        } will be deleted and all data will be lost.`
+      }
+      return `${this?.selectedRow?.name || ''} will be deleted and all data will be lost.`
     }
   },
   methods: {

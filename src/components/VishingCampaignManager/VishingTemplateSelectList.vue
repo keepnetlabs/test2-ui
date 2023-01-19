@@ -109,11 +109,6 @@
                   <div class="template-list--item__narrator">
                     <v-icon :size="16" color="#757575">mdi-web</v-icon>
                     <span class="template-list--item__language">{{ item.language }}</span>
-                    <!-- <span class="template-list--item__language">{{ item.languageShortCode }}</span>
-                    <span class="template-list--item__divider">|</span>
-                    <span class="template-list--item__narrator-gender">{{
-                      item.narratorGender
-                    }}</span> -->
                   </div>
                 </div>
               </div>

@@ -141,10 +141,7 @@ export default {
   },
   computed: {
     saveButtonStatus() {
-      if (this.formValues.domain.length === 0 || this.formValues.domain.length > 160) {
-        return true
-      }
-      return false
+      return this.formValues.domain.length === 0 || this.formValues.domain.length > 160
     }
   },
   created() {

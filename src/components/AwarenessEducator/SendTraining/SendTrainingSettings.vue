@@ -444,7 +444,7 @@ export default {
         this.formData.languageIds = []
       }
     },
-    'formData.enrollmentScheduler.scheduledDate'(val) {
+    'formData.enrollmentScheduler.scheduledDate'() {
       this.checkDateIsValid()
     },
     'formData.scheduleTypeId'(val) {
@@ -455,12 +455,15 @@ export default {
   },
   methods: {
     checkDateIsValid() {
-      this.isDateValid = this.formData
-        ? this.formData.scheduleTypeId === '2'
-          ? this.formData.enrollmentScheduler.scheduledDate &&
-            this.formData.enrollmentScheduler.scheduledDate.length > 0
-          : true
-        : false
+      let isDateValid = this.isDateValid
+      if (this.formData) {
+        isDateValid =
+          this.formData.scheduleTypeId === '2'
+            ? this.formData.enrollmentScheduler.scheduledDate &&
+              this.formData.enrollmentScheduler.scheduledDate.length > 0
+            : true
+      } else isDateValid = false
+      this.isDateValid = isDateValid
       return this.isDateValid
     },
     disabledEndDates(val) {

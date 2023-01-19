@@ -25,7 +25,6 @@ const rowColorHandler = {
   componentUpdated(el, binding, vNode) {
     if (vNode.context.selectedCluster) {
       timeout = setTimeout(() => {
-        const container = el.querySelector('.el-table__body-wrapper')
         setRowColors(el.querySelector('.el-table__body-wrapper'))
         setRowColors(el.querySelector('.el-table__fixed-body-wrapper'))
         setRowColors(el.querySelector('.el-table__fixed-right .el-table__fixed-body-wrapper'))

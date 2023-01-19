@@ -159,9 +159,8 @@ export default {
   methods: {
     getValidationErrorMessage(comparator) {
       let message = ''
-
-      for (let i = 0; i < this.textFieldRules.length; i++) {
-        const valid = this.textFieldRules[i](comparator)
+      for (const rule of this.textFieldRules) {
+        const valid = rule(comparator)
         if (valid === true) continue
         else {
           message = valid

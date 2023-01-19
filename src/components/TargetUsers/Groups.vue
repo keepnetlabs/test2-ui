@@ -505,33 +505,31 @@ export default {
     const storeOfGroupTable = this?.$store?.state['datatable']?.tables['Groups']
     const tableState = storeOfGroupTable && storeOfGroupTable.tableState
     if (this.isLoadState && tableState) {
-      if (tableState) {
-        this.serverSideProps = tableState.serverSideProps
-        const { filterValues = {} } = tableState
-        if (Object.keys(filterValues).length) {
-          for (const [key, value] of Object.entries(filterValues)) {
-            if (value.selectValue === 'between') {
-              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[0],
-                FieldName: key,
-                Operator: '>='
-              })
-              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[1],
-                FieldName: key,
-                Operator: '<='
-              })
-            } else {
-              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue,
-                FieldName: key,
-                Operator: value.selectValue
-              })
-            }
+      this.serverSideProps = tableState.serverSideProps
+      const { filterValues = {} } = tableState
+      if (Object.keys(filterValues).length) {
+        for (const [key, value] of Object.entries(filterValues)) {
+          if (value.selectValue === 'between') {
+            this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+              Value: value.textValue[0],
+              FieldName: key,
+              Operator: '>='
+            })
+            this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+              Value: value.textValue[1],
+              FieldName: key,
+              Operator: '<='
+            })
+          } else {
+            this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+              Value: value.textValue,
+              FieldName: key,
+              Operator: value.selectValue
+            })
           }
         }
-        this.tableState = { persistentState: tableState }
       }
+      this.tableState = { persistentState: tableState }
     }
     if (!this.isLoadState || !tableState) {
       this.callForTargetGroups()

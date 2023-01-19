@@ -150,8 +150,7 @@ export function getDataTableFieldLabel(field = '') {
 }
 
 export function isOwnerOrMember(membershipStatusId) {
-  if (membershipStatusId === 1) return true
-  if (membershipStatusId === 2) return true
+  if (membershipStatusId === 1 || membershipStatusId === 2) return true
   return false
 }
 

@@ -52,7 +52,7 @@ export default {
       default: false
     },
     pattern: {
-      default: () => /^[\d]+$/
+      default: () => /^\d+$/
     }
   },
   data() {

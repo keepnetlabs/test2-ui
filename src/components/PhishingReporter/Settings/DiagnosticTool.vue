@@ -273,7 +273,7 @@ export default {
       if (val.length) {
         const numberVal = Number(val)
         const newVal = isNaN(numberVal) ? '' : val
-        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.proxyPort
+        const renderedValue = /\d/gi.test(newVal) ? newVal : this.formValues.proxyPort
         this.formValues.proxyPort = renderedValue
         this.$refs.refTextField.lazyValue = renderedValue
       } else {

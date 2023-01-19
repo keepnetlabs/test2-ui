@@ -161,7 +161,7 @@
             </div>
           </div>
           <div class="bg-image" :style="[!isInvestigationsEmpty && { opacity: 0.4 }]">
-            <img src="../../../assets/img/ic-check-box.svg" />
+            <img src="../../../assets/img/ic-check-box.svg" alt="image-check" />
           </div>
         </div>
       </template>
@@ -218,7 +218,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../../assets/img/ic-insert-chart.svg" />
+            <img src="../../../assets/img/ic-insert-chart.svg" alt="image-chart" />
           </div>
         </div>
       </template>
