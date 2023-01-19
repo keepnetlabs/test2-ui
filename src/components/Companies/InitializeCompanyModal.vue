@@ -196,6 +196,7 @@ export default {
         name: '',
         description: '',
         industryResourceId: '',
+        timeZoneId: '',
         countryResourceId: '',
         preferredLanguageTypeResourceId: '',
         address: '',
