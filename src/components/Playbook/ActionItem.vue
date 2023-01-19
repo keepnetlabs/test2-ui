@@ -12,7 +12,7 @@
       subtitle-id="text--playbook-actions-engine-popup-subtitle"
       @changeStatus="closeEngineModal"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <div class="bg-white">
           <div class="">
             <v-text-field

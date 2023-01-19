@@ -66,12 +66,14 @@ import labels from '@/model/constants/labels'
 import { COMMON_PROPS } from '@/model/constants/commonConstants'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import infiniteScroll from '@/directives/infinite-scroll'
+import useDebounce from '@/hooks/useDebounce'
 export default {
   name: 'MakeAvailableFor.vue',
   components: {
     Treeselect,
     FormGroup
   },
+  mixins: [useDebounce],
   props: {
     value: Array,
     disabled: Boolean,
@@ -166,14 +168,6 @@ export default {
           })
         }, 500)
       }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     handleMenuOpen() {
       //this element is removing from DOM after closing. Because of that event is removing by garbage collector

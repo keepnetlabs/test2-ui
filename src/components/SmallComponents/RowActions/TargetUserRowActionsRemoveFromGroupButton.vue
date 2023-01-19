@@ -33,11 +33,9 @@ export default {
     }),
     getTooltipMessage() {
       const { row } = this.scope
-      return !row.isEditable
-        ? `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
-        : !this.getDisabledStatusOfAction
-        ? 'Remove from group'
-        : 'No Permission'
+      if (!row.isEditable)
+        return `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
+      return !this.getDisabledStatusOfAction ? 'Remove from group' : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

@@ -80,7 +80,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
@@ -100,7 +100,7 @@ export default {
   data() {
     return {
       isDeleting: false,
-      tableKey: 'key-table-company-group',
+      tableKey: `key-${createRandomCryptStringNumber()}`,
       loading: false,
       isMultipleDelete: false,
       tableData: [],
@@ -257,7 +257,7 @@ export default {
             }
 
             this.tableState = { persistentState: tableState }
-            this.tableKey = Math.random().toString().substring(0, 5)
+            this.tableKey = `key-${createRandomCryptStringNumber()}`
           })
           .finally(() => (this.loading = false))
       } else {
@@ -329,17 +329,15 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCompanyGroup(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Company Groups.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch(() => {})
+        exportCompanyGroup(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Company Groups.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleTableItemDelete(selectedItem) {

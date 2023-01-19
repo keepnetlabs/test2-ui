@@ -252,16 +252,6 @@
                   <span class="form-group-horizontal-content__label">
                     {{ formValues.distributionOverDays > 1 ? 'weeks' : 'week' }}
                   </span>
-                  <!-- <KSelect
-                    v-model="formValues.sendCallsOverType"
-                    style="max-width: 137px !important;"
-                    outlined
-                    dense
-                    hide-details
-                    position="bottom"
-                    :return-object="false"
-                    :items="sendCallsOverTypes"
-                  /> -->
                 </div>
                 <div class="vishing-campaign-modal__send-calls-on">
                   <div>
@@ -553,11 +543,8 @@ export default {
       }
     },
     getTitle() {
-      return !this.isEdit
-        ? 'New Vishing Campaign'
-        : this.isDuplicate
-        ? 'Duplicate Vishing Campaign'
-        : 'Edit Vishing Campaign'
+      if (!this.isEdit) return 'New Vishing Campaign'
+      return this.isDuplicate ? 'Duplicate Vishing Campaign' : 'Edit Vishing Campaign'
     },
     isScheduledTimeDisabled() {
       return this.formValues.scheduleType !== '3'

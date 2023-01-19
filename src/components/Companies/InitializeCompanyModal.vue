@@ -253,7 +253,8 @@ export default {
     },
     onFileChanged(file) {
       this.formData.logoUrl = ''
-      this.formData.file = Array.isArray(file) ? (file.length ? file : null) : file
+      if (Array.isArray(file)) this.formData.file = file.length ? file : null
+      else this.formData.file = file
     },
     handleClose() {
       this.$emit('on-close')

@@ -748,7 +748,7 @@ import SettingsModal from '@/components/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
-import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal.vue'
+import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
 
 export default {
   name: 'Main',

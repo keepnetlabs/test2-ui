@@ -87,7 +87,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
 import { createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
 import labels from '@/model/constants/labels'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -129,7 +129,7 @@ export default {
       saveDisable: false,
       open: [],
       showNoData: false,
-      treeViewKey: `scroll-key${Math.random().toString().substring(0, 5)}`,
+      treeViewKey: `scroll-key-${createRandomCryptStringNumber()}`,
       availableForRequests: [],
       initialFormValues: null,
       formValues: {
@@ -189,7 +189,7 @@ export default {
       items.forEach((item) => {
         this.open.push(item.permissionResourceId)
       })
-      this.treeViewKey = `scroll-key${Math.random().toString().substring(0, 5)}`
+      this.treeViewKey = `scroll-key-${createRandomCryptStringNumber()}`
     }
   },
   methods: {
@@ -215,10 +215,9 @@ export default {
         const { moduleName = '', groupName = '' } = item
         if (
           (moduleName && moduleName.toLowerCase().includes(this.search.toLowerCase())) ||
-          (groupName && groupName.toLowerCase().includes(this.search.toLowerCase()))
+          (groupName && groupName.toLowerCase().includes(this.search.toLowerCase())) ||
+          (item && item.children && item.children.length)
         ) {
-          acc.push(item)
-        } else if (item && item.children && item.children.length) {
           acc.push(item)
         }
         return acc

@@ -103,11 +103,9 @@ export default {
         this.width = width
         this.badges = badges
         let totalWidth = Math.floor(this.width) - 20
-
         let maximumRenderedBadgeCount = 0
         for (let text of this.badges) {
-          let multiplyBy =
-            text.length > 15 ? 7.5 : text.length > 5 ? 8.6 : text.length < 3 ? 15 : 11.5
+          let multiplyBy = this.getMultiplyBy(text)
           const itemWidth = Math.floor(text.length * multiplyBy) + 5
           if (itemWidth > totalWidth) {
             break
@@ -130,6 +128,12 @@ export default {
         this.unRenderedBadgeCount = 0
         this.maximumRenderedBadgeCount = 0
       }
+    },
+    getMultiplyBy(text = '') {
+      if (text.length > 15) return 7.5
+      else if (text.length > 5) return 8.6
+      else if (text.length < 3) return 15
+      else return 11.5
     }
   }
 }

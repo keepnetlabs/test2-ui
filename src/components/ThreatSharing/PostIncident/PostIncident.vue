@@ -1383,7 +1383,7 @@ export default {
       required: (v) => Validations.required(v),
       default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
       minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
@@ -1392,7 +1392,7 @@ export default {
       default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
       required: (v) => Validations.required(v),
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
         if (!v) return true

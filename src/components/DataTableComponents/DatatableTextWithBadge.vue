@@ -53,6 +53,7 @@
 
 <script>
 import Badge from '../Badge'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'DatatableTextWithBadge',
@@ -100,7 +101,7 @@ export default {
 
   methods: {
     getKey(index) {
-      return `${index}ab-${Math.random()}`
+      return `${index}ab-${createRandomCryptStringNumber()}`
     },
     mapper() {
       const arr = this.scope.row[this.col.property].filter(Boolean) || []

@@ -2326,8 +2326,7 @@ export default {
         let text
         if (cellValue) {
           if (typeof cellValue === 'object') {
-            text =
-              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+            text = Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
           }
 
           if (typeof cellValue === 'string') {

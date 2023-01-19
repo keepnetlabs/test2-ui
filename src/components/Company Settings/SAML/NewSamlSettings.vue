@@ -352,7 +352,6 @@ import {
 import { downloadExportedFile } from '@/utils/helperFunctions'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 import { mapGetters } from 'vuex'
@@ -401,7 +400,7 @@ export default {
       isCertificateTextDisabled: false,
       resourceId: null,
       certificateText: '',
-      roleSelectKey: 'key-akskasksak',
+      roleSelectKey: `key-${createRandomCryptStringNumber()}`,
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
@@ -536,7 +535,7 @@ export default {
                 (role) => role.name === labels.CompanyAdmin
               )?.resourceId
             }
-            this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+            this.roleSelectKey = `key-${createRandomCryptStringNumber()}`
             res()
           })
           .catch(() => rej('something went wrong'))
