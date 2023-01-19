@@ -58,7 +58,6 @@ export default {
       }
       if (item === COMMON_CONSTANTS.FILTER_OPTIONS[2]) {
         this.$emit('clear-filters')
-        return
       }
     }
   }

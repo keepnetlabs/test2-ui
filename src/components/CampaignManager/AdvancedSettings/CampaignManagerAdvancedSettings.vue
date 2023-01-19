@@ -30,16 +30,6 @@
         @focus="handleFocusOfSmtpSettingsInput"
         @focusout="handleFocusOutOfSmtpSettingsInput"
       >
-        <!--
-       <template #item="{ item }">
-         <div v-if="item.isHeader" class="campaign-manager-advanced-settings__smtp-select-header">
-           {{ item.header }}
-         </div>
-         <div v-else class="campaign-manager-advanced-settings__smtp-select-item">
-           {{ item.text }}
-         </div>
-       </template>
-       -->
       </KSelect>
       <v-btn
         :key="buttonKey"
@@ -373,8 +363,10 @@ export default {
       }
       minutes = minutes.toString()
       seconds = seconds.toString()
-      return `${minutes.length === 1 ? `0${minutes}` : `${minutes}`}:${
-        seconds.length === 1 ? `0${seconds}` : `${seconds}`
+      const singleDigitMinutes = `0${minutes}`
+      const singleDigitSeconds = `0${seconds}`
+      return `${minutes.length === 1 ? singleDigitMinutes : minutes}:${
+        seconds.length === 1 ? singleDigitSeconds : seconds
       }`
     },
     getSelectedSmtpDelayOverTimeType() {

@@ -480,12 +480,10 @@ export default {
       return !!this.isAllSelected
     },
     getCheckboxCheckedValue(item) {
-      if (
+      return !!(
         this.formData.languageIds.some((languageId) => languageId === item.value) ||
         this.isAllSelected
       )
-        return true
-      return false
     },
     callForContentLanguageItems() {
       AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(

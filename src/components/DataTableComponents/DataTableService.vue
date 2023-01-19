@@ -21,7 +21,6 @@
         src="../../assets/img/exchange@3x.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />
-      <!-- <span class="ml-2">{{ scope.row[col.property] }}</span> -->
     </span>
     <span v-else>
       {{ getEmptyText }}

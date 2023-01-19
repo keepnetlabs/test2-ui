@@ -677,10 +677,14 @@
     transition: max-height 0.25s ease-in;
     overflow: hidden;
 
+
     .comment-row {
       display: flex;
       flex-direction: row;
-      padding-top: 6px;
+      border-radius: 4px;
+      background-color: #f5f7fa;
+      padding: 16px;
+      margin-bottom: 8px;
 
       .comment-input {
         margin-top: 3px;
@@ -730,14 +734,6 @@
           padding-right: 8px;
         }
       }
-    }
-
-    .comment-row {
-      border-radius: 4px;
-      background-color: #f5f7fa;
-      display: flex;
-      padding: 16px;
-      margin-bottom: 8px;
 
       .user-wrapper {
         display: block;

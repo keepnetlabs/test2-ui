@@ -377,10 +377,11 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupErrorMessage() {
-      return this.formData.targetGroupResourceIds.length
-        ? this.isShowTargetGroupUsersError
-          ? 'Target groups must have at least 1 user'
-          : 'Required'
+      return this.formData.targetGroupResourceIds.length ? this.getTargetGroupErrorText : 'Required'
+    },
+    getTargetGroupErrorText() {
+      return this.isShowTargetGroupUsersError
+        ? 'Target groups must have at least 1 user'
         : 'Required'
     },
     isScheduledTimeDisabled() {

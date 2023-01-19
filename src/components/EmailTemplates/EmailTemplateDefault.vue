@@ -1,5 +1,5 @@
 <template>
-  <table style="width: 600px; margin: 0 auto;">
+  <table style="width: 600px; margin: 0 auto;" aria-label="email-template">
     <tbody>
       <tr
         style="

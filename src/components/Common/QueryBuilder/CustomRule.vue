@@ -10,9 +10,7 @@
       {{ $parent.query.logicalOperator }}
     </div>
     <v-row>
-      <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2">
-        <!-- List of operands (optional) -->
         <k-select
           v-model.trim="query.operand"
           :id="`input--query-builder-rule-operand-${index}-${getParentIndex}`"
@@ -32,7 +30,6 @@
           rule.operators.length > 1
         "
       >
-        <!-- List of operators (e.g. =, !=, >, <) -->
         <k-select
           v-model="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -44,7 +41,6 @@
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'AttachmentHash'">
-        <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -54,7 +50,6 @@
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
-        <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -65,7 +60,6 @@
       </v-col>
       <template v-if="isOperatorExists">
         <v-col md="2" v-if="query.operand === 'From'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -77,7 +71,6 @@
         </v-col>
 
         <v-col md="2" v-if="query.operand === 'To'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -88,7 +81,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'CC'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -99,7 +91,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'SenderIp'">
-          <!-- List of "From" operands-->
           <k-select
             v-model.trim="query.format"
             min-width-type="small"
@@ -110,7 +101,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'Analysis result'">
-          <!-- List of "Analysis result" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-operand-${index}-${getParentIndex}`"
@@ -133,7 +123,6 @@
           md=""
           sm="10"
         >
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -146,7 +135,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'SenderIp'">
-          <!-- Condition text input-->
           <InputIpAddress
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -165,7 +153,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'Subject'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -180,7 +167,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'Keyword'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -195,7 +181,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'AttachmentName'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -245,7 +230,6 @@
           padding-right: 18px !important;
         "
       >
-        <!-- Remove rule button -->
         <v-btn
           icon
           v-if="isDeleteRuleButton()"

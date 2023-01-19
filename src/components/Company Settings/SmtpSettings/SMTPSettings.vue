@@ -319,10 +319,6 @@ export default {
             const { results = [] } = data
             this.tableData = results
             this.tableData = data.results
-            // this.tableData = data.results.map((item) => ({
-            //   ...item,
-            //   isDefault: true,
-            // }));
             this.changeMultipleDeleteDisability()
           })
           .finally(() => {
