@@ -84,7 +84,7 @@ export default {
     return {
       axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
       serverSideProps: new ServerSideProps(),
-      confirmButtonDisabled: true,
+      confirmButtonDisabled: false,
       loading: false,
       tableData: [],
       tableOptions: {
@@ -154,7 +154,7 @@ export default {
   },
   computed: {
     getConfirmButtonDisabled() {
-      return !this.selectedTargetGroups.length
+      return !this.selectedTargetGroups.length || this.confirmButtonDisabled
     },
     getTitle() {
       let text = 'User'
@@ -230,6 +230,7 @@ export default {
       this.callForTargetGroups()
     },
     handleConfirm() {
+      this.confirmButtonDisabled = true
       const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
       const promises = this.selectedTargetGroups.reduce((acc, group) => {
         const payload = { targetUserResourceIds: selectedRowsResourceIds }
@@ -245,6 +246,7 @@ export default {
           })
         })
         .finally(() => {
+          this.confirmButtonDisabled = false
           this.$emit('closeOverlayWithUpdate')
         })
     },
