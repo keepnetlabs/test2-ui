@@ -62,18 +62,21 @@
         <span
           v-if="scope.column.property === 'riskFactor'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link d-flex justify-center"
+          class="datatable-link d-flex justify-center cursor-default"
         >
-          <div class="av-risk-factor py-1" :style="setStatusColor(scope.row.riskFactor)">
+          <div
+            class="av-risk-factor py-1 cursor-default"
+            :style="setStatusColor(scope.row.riskFactor)"
+          >
             {{ scope.row.riskFactor }}
           </div>
         </span>
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link d-flex justify-center"
+          class="datatable-link d-flex justify-center cursor-default"
         >
-          <div class="av-status py-1" :class="scope.row.status.toLowerCase()">
+          <div class="av-status py-1 cursor-default" :class="scope.row.status.toLowerCase()">
             {{ scope.row.status }}
           </div>
         </span>
