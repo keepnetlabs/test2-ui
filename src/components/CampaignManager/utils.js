@@ -97,7 +97,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'badge',
+    type: 'slot',
     width: 150,
     filterableType: 'select'
   },
@@ -143,4 +143,56 @@ export const ACTION_STATUSES = {
   CANCEL: 'Canceled',
   IDLE: 'Idle',
   ERROR: 'Error'
+}
+
+export function getStatusBadgeProps(status) {
+  if (status === 'Completed') {
+    return {
+      color: '#217124',
+      text: 'Completed'
+    }
+  }
+
+  if (status === 'Running') {
+    return {
+      color: '#1173C1',
+      text: 'Running'
+    }
+  }
+
+  if (status === 'Idle') {
+    return {
+      color: '#0198AC',
+      text: 'Idle'
+    }
+  }
+
+  if (status === 'Paused') {
+    return {
+      color: '#B6791D',
+      text: 'Paused'
+    }
+  }
+
+  if (status === 'Cancelled' || status === 'Canceled') {
+    return {
+      color: '#B6791D',
+      text: 'Cancelled'
+    }
+  }
+
+  if (status === 'Scheduled') {
+    return {
+      color: '#757575',
+      text: 'Scheduled'
+    }
+  }
+
+  if (status === 'Error') {
+    return {
+      color: '#F56C6C',
+      text: 'Error',
+      outline: false
+    }
+  }
 }
