@@ -359,6 +359,7 @@
             :isCreatedByAnalyzer="true"
             :investigateData="playbookActionInvestigationAnalyzeData"
             :act="act"
+            :actionType="actionsValues[index].val"
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
@@ -368,6 +369,7 @@
             :index="index"
             :ref="`refInvestigate-${index}`"
             :act="act"
+            :actionType="actionsValues[index].val"
           />
         </v-col>
       </v-row>
@@ -957,6 +959,7 @@ export default {
         this.playbookActionInvestigations[index] = {
           isCreatedByAnalyzer: false,
           scanTypes: [],
+          autoDetectFilters: false,
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
