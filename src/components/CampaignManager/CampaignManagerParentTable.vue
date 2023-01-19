@@ -327,7 +327,7 @@ export default {
     },
     getErrorMessage(row = {}) {
       if (row.status === 'Error') {
-        return row?.errorMessage || ''
+        return row?.jobResultMessage || ''
       }
       return ''
     },
@@ -338,7 +338,7 @@ export default {
       return getDataTableFieldLabel(status)
     },
     getTooltipDisabilityStatus(row = {}) {
-      return row?.status !== 'Error' || !row?.errorMessage
+      return row?.status !== 'Error' || !row?.jobResultMessage
     }
   }
 }
