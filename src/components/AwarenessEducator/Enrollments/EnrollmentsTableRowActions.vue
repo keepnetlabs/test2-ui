@@ -37,12 +37,21 @@
         @on-click="$emit('on-preview', scope.row)"
       />
       <DefaultMenuRowAction
+        v-if="!isScheduled"
         :id="rowActions[3].id"
         :scope="scope"
         :disabled="rowActions[3].disabled"
         :icon="rowActions[3].icon"
         :text="rowActions[3].name"
         @on-click="$emit('on-delete', scope.row)"
+      />
+      <DefaultMenuRowAction
+        v-else
+        id="btn-stop--row-actions-enrollments-list"
+        icon="mdi-stop"
+        text="Stop"
+        :scope="scope"
+        @on-click="$emit('on-stop', scope.row)"
       />
     </RowActionsMenu>
   </div>
@@ -73,6 +82,9 @@ export default {
       return [ENROLLMENT_STATUSES.AUTO_ENROLL, ENROLLMENT_STATUSES.SCHEDULED].includes(
         this.scope.row.status
       )
+    },
+    isScheduled() {
+      return this.scope.row.status === ENROLLMENT_STATUSES.SCHEDULED
     },
     isShowReport() {
       return [
