@@ -37,6 +37,22 @@
       @refreshAction="callForData"
       @downloadEvent="exportCampaignManagerItemList"
     >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="campaign-manager-item-table__status-column">
+          <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
+            <template v-slot:activator="{ on }">
+              <v-btn style="display: none;" />
+              <Badge
+                v-bind="getStatusBadgeProps(scope.row.status)"
+                :listeners="on"
+                size="medium"
+                :col="col"
+              />
+            </template>
+            <span>{{ getErrorMessage(scope.row) }}</span>
+          </v-tooltip>
+        </div>
+      </template>
       <template #table-search-left-side>
         <v-btn
           id="btn-back--campaign-manager-clustered-table"
@@ -68,7 +84,7 @@
 
 <script>
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManager/utils'
+import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -87,6 +103,7 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import Badge from '@/components/Badge'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -94,7 +111,7 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: { CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
+  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
   props: {
     item: {
       type: Object
@@ -262,6 +279,21 @@ export default {
       launchPhishingCampaign(row.resourceId).then(() => {
         this.callForData()
       })
+    },
+    getErrorMessage(row = {}) {
+      if (row.status === 'Error') {
+        return row?.jobResultMessage || ''
+      }
+      return ''
+    },
+    getStatusBadgeProps(status = '') {
+      return getStatusBadgeProps(status)
+    },
+    getDataTableFieldLabel(status = '') {
+      return getDataTableFieldLabel(status)
+    },
+    getTooltipDisabilityStatus(row = {}) {
+      return row?.status !== 'Error' || !row?.jobResultMessage
     }
   }
 }

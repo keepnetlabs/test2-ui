@@ -38,29 +38,46 @@
           :chartOptions="getChartOptionsForRow(scope.row)"
         />
       </template>
+      <template v-if="scope.column.property === 'status'">
+        <div class="enrollments__status-column">
+          <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
+            <template v-slot:activator="{ on }">
+              <v-btn style="display: none;" />
+              <Badge
+                v-bind="getStatusBadgeProps(scope.row.status)"
+                :listeners="on"
+                size="medium"
+                :col="col"
+              />
+            </template>
+            <span>{{ getErrorMessage(scope.row) }}</span>
+          </v-tooltip>
+        </div>
+      </template>
     </template>
   </DataTable>
 </template>
 
 <script>
 import DataTable from '@/components/DataTable'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from './utils'
+import { COLUMNS, getStatusBadgeProps } from './utils'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'
 import DataTableChart from '@/components/DataTableComponents/DataTableChart'
-
+import Badge from '@/components/Badge'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { callForCampaignReports, exportCampaignReports } from '@/api/phishingsimulator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+
 export default {
   name: 'CampaignReportsTable',
-  components: { DataTable, DataTableChart },
+  components: { DataTable, DataTableChart, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     justShowReportAction: {
@@ -241,6 +258,21 @@ export default {
     },
     handleDelete(row) {
       this.$emit('on-delete', row)
+    },
+    getErrorMessage(row = {}) {
+      if (row.status === 'Error') {
+        return row?.jobResultMessage || ''
+      }
+      return ''
+    },
+    getStatusBadgeProps(status = '') {
+      return getStatusBadgeProps(status)
+    },
+    getDataTableFieldLabel(status = '') {
+      return getDataTableFieldLabel(status)
+    },
+    getTooltipDisabilityStatus(row = {}) {
+      return row?.status !== 'Error' || !row?.jobResultMessage
     }
   }
 }
