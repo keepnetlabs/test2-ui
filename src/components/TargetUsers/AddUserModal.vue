@@ -195,7 +195,6 @@
 import { mail, maxLength, required } from '@/utils/validations'
 import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
 import AppModal from '../AppModal'
-import { scrollToComponent } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -207,7 +206,12 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
-import { getTimeZone, getTimeValueFormatZone, isDifferent } from '@/utils/functions'
+import {
+  getTimeZone,
+  getTimeValueFormatZone,
+  isDifferent,
+  scrollToComponent
+} from '@/utils/functions'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
 
 export default {

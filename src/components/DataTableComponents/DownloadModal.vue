@@ -120,7 +120,6 @@ export default {
         }
         if (index === 2) {
           downloadTypes.push('PDF')
-          return
         }
       })
       this.$emit('downloadEvent', downloadTypes)

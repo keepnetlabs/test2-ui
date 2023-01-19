@@ -249,9 +249,8 @@
 
 <script>
 import InputDate from '@/components/Common/Inputs/InputDate'
-import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/functions'
+import { createRandomCryptStringNumber, getTimeZoneForMoment, getTimeZone } from '@/utils/functions'
 import AppDialog from '@/components/AppDialog'
-import { getTimeZone } from '@/utils/functions'
 export default {
   name: 'DataTableFilter',
   components: { InputDate, AppDialog },

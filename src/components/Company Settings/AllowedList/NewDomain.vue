@@ -141,10 +141,7 @@ export default {
   },
   computed: {
     saveButtonStatus() {
-      if (this.formValues.domain.length === 0 || this.formValues.domain.length > 160) {
-        return true
-      }
-      return false
+      return this.formValues.domain.length === 0 || this.formValues.domain.length > 160
     }
   },
   created() {
@@ -186,17 +183,8 @@ export default {
           })
           .catch((error) => {
             const errorResponse = error.response.data
-            let msg = errorResponse.message
-            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
-              let msg = ''
-              for (let i = 0; i < errorResponse.validationMessages.length; i++) {
-                const listMsg = errorResponse.validationMessages[i]
-                msg += listMsg + ', '
-              }
-              msg = msg.slice(0, -1)
-            }
             this.$store.dispatch('common/createSnackBar', {
-              message: msg,
+              message: errorResponse?.message || '',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })

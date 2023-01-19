@@ -2,9 +2,9 @@
   <iframe
     v-if="src"
     allowfullscreen
-    frameborder="0"
+    title="Scorm Preview"
     :src="src"
-    style="width: 100vw; height: 100vh;"
+    style="width: 100vw; height: 100vh; border-width: 0;"
   ></iframe>
 </template>
 <script>

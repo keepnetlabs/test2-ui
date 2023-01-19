@@ -611,11 +611,6 @@ export default {
       if (componentString === 'Reporters') return Reporters
       if (componentString === 'TopRules') return TopRules
       if (componentString === 'TopPosts') return TopPosts
-      /*
-        if (componentString ===  'IncidentClusters')
-          return IncidentClusters
-
-         */
       if (componentString === 'RecentlyPostedThreats') return RecentlyPostedThreats
       if (componentString === 'RecentlyReportedIncidents') return RecentlyReportedIncidents
       if (componentString === 'ReportedEmailTrends') return ReportedEmailTrends

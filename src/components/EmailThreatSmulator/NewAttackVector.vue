@@ -1,24 +1,25 @@
 <template>
   <div class="new-attack-vector">
     <app-dialog
-      icon="mdi-power-standby"
-      title="Enable Attack Vectors?"
       v-if="showActiveStatusModal"
       :status="showActiveStatusModal"
+      icon="mdi-power-standby"
+      title="Enable Attack Vectors?"
+      @changeStatus="handleCloseStatusDialog(true)"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <span> Are you sure you want to enable these attack vectors?\ </span>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <app-dialog-footer
           type="confirm"
-          @handleClose=";(showActiveStatusModal = false), (formValues.isActive = false)"
-          @handleConfirm="showActiveStatusModal = false"
+          @handleClose="handleCloseStatusDialog(false)"
+          @handleConfirm="handleCloseStatusDialog(true)"
         />
       </template>
     </app-dialog>
     <app-modal :status="status" custom-icon="shield-icon.svg" :title="pageTitle">
-      <template v-slot:overlay-body>
+      <template #overlay-body>
         <v-form ref="refAttackVectorForm">
           <app-modal-body-header
             class="mt-8"
@@ -28,20 +29,20 @@
           <form-group title="Vector Name" hint>
             <InputEntityName
               v-model.trim="formValues.name"
-              entityName="name"
-              initialPlaceholder="Enter a name for the vector"
-              :initialRules="baseRules"
+              entity-name="name"
+              initial-placeholder="Enter a name for the vector"
+              :initial-rules="baseRules"
             />
           </form-group>
           <form-group title="Category" sub-title="Select type of the vector" hint>
             <KSelect
               v-model="formValues.categoryResourceId"
-              :items="categoryResources"
-              :hint="'*Required'"
               persistentHint
               item-text="name"
               item-value="resourceId"
               outlined
+              :items="categoryResources"
+              :hint="'*Required'"
             />
           </form-group>
           <form-group
@@ -51,9 +52,9 @@
           >
             <InputNumber
               v-model="formValues.riskFactor"
-              entityName="severity"
-              initialPlaceholder="Enter severity degree"
-              :initialRules="numberRangeRule"
+              entity-name="severity"
+              initial-placeholder="Enter severity degree"
+              :initial-rules="numberRangeRule"
             />
           </form-group>
           <form-group title="Upload file" sub-title="Upload attack vector file" hint>
@@ -71,7 +72,7 @@
             />
           </form-group>
           <form-group
-            className="mt-8"
+            className="mt-6"
             title="Status"
             sub-title="This attack vector will be included to continous scans and new scans."
             hint
@@ -92,7 +93,7 @@
           </form-group>
         </v-form>
       </template>
-      <template v-slot:overlay-footer>
+      <template #overlay-footer>
         <v-btn
           id="btn-cancel--add-or-edit-attack-vector-modal"
           class="add-user-overlay__footer-btn-cancel"
@@ -155,7 +156,7 @@ export default {
       saveDisable: false,
       categoryResources: [],
       labels,
-      Validations: Validations,
+      Validations,
       fileErrorText: '',
       formValues: {
         name: '',
@@ -188,7 +189,58 @@ export default {
       type: Object
     }
   },
-
+  watch: {
+    formValues: {
+      handler: function (value) {
+        this.isFormValuesChanged = true
+        if (this.formValues.riskFactor !== '') {
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  computed: {
+    pageTitle() {
+      return this.isEdit ? 'Edit Attack Vector' : 'Create Attack Vector'
+    },
+    isFileDeletable() {
+      return !!this.formValues?.content?.name
+    },
+    getFilePreviews() {
+      return this.formValues?.content || (this.formValues?.fileName && this.formValues?.extension)
+        ? [
+            {
+              name:
+                this.formValues?.content?.name ||
+                this.formValues?.fileName + this.formValues?.extension ||
+                ''
+            }
+          ]
+        : []
+    }
+  },
+  created() {
+    getLookupNameList().then((lookupNameList) => {
+      const lookups = lookupNameList.data.data.find((x) => x.name == 'PluginCategory')
+      getLookupListByTypeId(lookups.id).then((categories) => {
+        const categoryList = categories.data.data
+        this.categoryResources = categoryList
+        this.formValues.categoryResourceId = categoryList[0].resourceId
+        if (this.isEdit) {
+          getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
+            const details = response.data.data
+            this.formValues.categoryResourceId = categoryList.find(
+              (x) => x.resourceId == details.categoryResourceId
+            ).resourceId
+            details.isActive = details.status == 'Enabled' ? true : false
+            this.formValues = details
+          })
+        }
+      })
+    })
+  },
   methods: {
     setNumberRangeRule(isNeed) {
       if (isNeed) {
@@ -241,8 +293,9 @@ export default {
         const requestFunc = this.isEdit
           ? getAttackVectorUpdate(payload, this.attackVectorDetails.resourceId)
           : getAttackVectorCreate(payload)
+        this.saveDisable = true
         requestFunc
-          .then((response) => {
+          .then(() => {
             this.$store.dispatch('common/createSnackBar', {
               message: this.isEdit
                 ? 'Attack Vector successfully updated.'
@@ -254,20 +307,14 @@ export default {
           })
           .catch((error) => {
             const errorResponse = error.response.data
-            let msg = errorResponse.message
-            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
-              let msg = ''
-              for (let i = 0; i < errorResponse.validationMessages.length; i++) {
-                const listMsg = errorResponse.validationMessages[i]
-                msg += listMsg + ', '
-              }
-              msg = msg.slice(0, -1)
-            }
             this.$store.dispatch('common/createSnackBar', {
-              message: msg,
+              message: errorResponse?.message || '',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
+          })
+          .finally(() => {
+            this.saveDisable = false
           })
       }
     },
@@ -277,59 +324,11 @@ export default {
         formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key])
       }
       return formData
-    }
-  },
-  watch: {
-    formValues: {
-      handler: function (value) {
-        this.isFormValuesChanged = true
-        if (this.formValues.riskFactor != '') {
-          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  },
-  computed: {
-    pageTitle() {
-      return this.isEdit ? 'Edit Attack Vector' : 'Create Attack Vector'
     },
-    isFileDeletable() {
-      return !!this.formValues?.content?.name
-    },
-    getFilePreviews() {
-      return this.formValues?.content || (this.formValues?.fileName && this.formValues?.extension)
-        ? [
-            {
-              name:
-                this.formValues?.content?.name ||
-                this.formValues?.fileName + this.formValues?.extension ||
-                ''
-            }
-          ]
-        : []
+    handleCloseStatusDialog(status = false) {
+      this.formValues.isActive = status
+      this.showActiveStatusModal = false
     }
-  },
-  created() {
-    getLookupNameList().then((lookupNameList) => {
-      const lookups = lookupNameList.data.data.find((x) => x.name == 'PluginCategory')
-      getLookupListByTypeId(lookups.id).then((categories) => {
-        const categoryList = categories.data.data
-        this.categoryResources = categoryList
-        this.formValues.categoryResourceId = categoryList[0].resourceId
-        if (this.isEdit) {
-          getAttackVectorById(this.attackVectorDetails.resourceId).then((response) => {
-            const details = response.data.data
-            this.formValues.categoryResourceId = categoryList.find(
-              (x) => x.resourceId == details.categoryResourceId
-            ).resourceId
-            details.isActive = details.status == 'Enabled' ? true : false
-            this.formValues = details
-          })
-        }
-      })
-    })
   }
 }
 </script>

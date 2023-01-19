@@ -10,7 +10,7 @@
       :id="tableId"
       :class="['k-widget-list', className]"
       :style="getTableStyle"
-      aria-description="widget"
+      aria-label="widget"
     >
       <thead class="k-widget-list__header-container">
         <th

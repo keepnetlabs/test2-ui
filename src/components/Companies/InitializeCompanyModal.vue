@@ -144,6 +144,19 @@
         </FormGroup>
       </v-form>
     </template>
+    <template #overlay-footer>
+      <div class="w-100 d-flex justify-end">
+        <v-btn
+          class="add-user-overlay__footer-btn-save white--text"
+          color="#2196f3"
+          rounded
+          :disabled="isActionButtonDisabled"
+          @click="submit"
+        >
+          {{ labels.Start }}
+        </v-btn>
+      </div>
+    </template>
   </AppModal>
 </template>
 
@@ -196,6 +209,7 @@ export default {
         name: '',
         description: '',
         industryResourceId: '',
+        timeZoneId: '',
         countryResourceId: '',
         preferredLanguageTypeResourceId: '',
         address: '',

@@ -950,7 +950,7 @@ import {
   getDataTableFieldLabel,
   copyToClipboard
 } from '@/utils/functions'
-import { columnStandards } from '@/model/constants/commonConstants'
+import { columnStandards, COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -2095,10 +2095,6 @@ export default {
      */
     handleListBulletedClick() {
       this.selectedCluster = ''
-      /*
-      this.firstColFixed = true
-      this.lastColFixed = true
-       */
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()

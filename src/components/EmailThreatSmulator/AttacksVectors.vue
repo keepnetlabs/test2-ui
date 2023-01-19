@@ -62,18 +62,21 @@
         <span
           v-if="scope.column.property === 'riskFactor'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link d-flex justify-center"
+          class="datatable-link d-flex justify-center cursor-default"
         >
-          <div class="av-risk-factor py-1" :style="setStatusColor(scope.row.riskFactor)">
+          <div
+            class="av-risk-factor py-1 cursor-default"
+            :style="setStatusColor(scope.row.riskFactor)"
+          >
             {{ scope.row.riskFactor }}
           </div>
         </span>
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link d-flex justify-center"
+          class="datatable-link d-flex justify-center cursor-default"
         >
-          <div class="av-status py-1" :class="scope.row.status.toLowerCase()">
+          <div class="av-status py-1 cursor-default" :class="scope.row.status.toLowerCase()">
             {{ scope.row.status }}
           </div>
         </span>
@@ -297,6 +300,10 @@ export default {
       getEtsAttackVectorPermissionSearch: 'permissions/getEtsAttackVectorPermissionSearch'
     })
   },
+  mounted() {
+    this.callForLanguages('refAttacksVectorList')
+    this.callForData()
+  },
   methods: {
     setStatusColor(riskFactor) {
       let color = '#1173C1'
@@ -383,9 +390,8 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            for (let i = 0; i < results.length; i++) {
-              const data = results[i]
-              data.isActive = data.isActive ? 'Active' : 'Passive'
+            for (const row of results) {
+              row.isActive = row.isActive ? 'Active' : 'Passive'
             }
             this.tableData = results
           })
@@ -405,10 +411,6 @@ export default {
       this.selectedAttackVector = row
       this.showStatusModal = true
     }
-  },
-  mounted() {
-    this.callForLanguages('refAttacksVectorList')
-    this.callForData()
   }
 }
 </script>

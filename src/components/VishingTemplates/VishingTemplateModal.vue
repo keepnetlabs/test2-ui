@@ -420,11 +420,8 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit
-        ? 'New Vishing Template'
-        : this.isDuplicate
-        ? 'Duplicate Vishing Template'
-        : 'Edit Vishing Template'
+      if (!this.isEdit) return 'New Vishing Template'
+      return this.isDuplicate ? 'Duplicate Vishing Template' : 'Edit Vishing Template'
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled

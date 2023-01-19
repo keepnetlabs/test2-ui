@@ -59,13 +59,13 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
-      <template v-slot:datatable-custom-column="{ scope }">
+      <template #datatable-custom-column="{ scope }">
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link d-flex justify-center"
+          class="datatable-link d-flex justify-center cursor-default"
         >
-          <div class="qs-status py-1" :class="scope.row.status.toLowerCase()">
+          <div class="qs-status py-1 cursor-default" :class="scope.row.status.toLowerCase()">
             {{ scope.row.status.replace('InProgress', 'In Progress') }}
           </div>
         </span>
