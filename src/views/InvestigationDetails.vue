@@ -2094,9 +2094,8 @@ export default {
       if (this.$refs.refWarnForm.validate()) {
         let isArray = Array.isArray(this.soloWarningMessageValue)
         let data = []
-        isArray
-          ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
-          : data.push(this.soloWarningMessageValue.resourceId)
+        if (isArray) data = this.soloWarningMessageValue.map((item) => item.resourceId)
+        else data.push(this.soloWarningMessageValue.resourceId)
         this.warningButtonDisabled = true
         this.$store
           .dispatch('investigations/sendInvestigationWarningMessage', {
@@ -2173,7 +2172,7 @@ export default {
           .dispatch('investigations/deleteInvestigationDetailsItem', {
             data: {
               items: data,
-              isNotify: !!message,
+              isNotify: false,
               isPermanentDelete: val,
               selectAll: this.isInvestigationDeleteSelectAll,
               excludedItems: this.investigationDeleteExcludedResourceIdList,
@@ -2255,31 +2254,21 @@ export default {
       if (!this.deleteValue?.emailLastAction) {
         return false
       }
-
-      if (
+      return (
         this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
         this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
         this.deleteValue?.emailLastAction?.isPermanentDelete === false
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     isPermanentlyDeleteDisabled() {
       if (!this.deleteValue?.emailLastAction) {
         return false
       }
-
-      if (
+      return (
         this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
         this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
         this.deleteValue?.emailLastAction?.isPermanentDelete === true
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     itemStats() {
       return {

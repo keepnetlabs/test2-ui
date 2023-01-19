@@ -1,5 +1,9 @@
 .investigation-details-wrapper {
     .investigation-details__container__content--right-menu__summary__item--action-button-container {
+      display: flex;
+      @media (max-width: 1024px) {
+        flex-direction: column;
+      }
         .v-btn--icon {
             border: 1px solid #2196f3 !important;
             margin: 8px;
@@ -478,13 +482,6 @@
                                         min-width: 36px !important;
                                         justify-content: center;
                                         align-items: center;
-                                    }
-                                }
-
-                                &-container {
-                                    display: flex;
-                                    @media (max-width: 1024px) {
-                                        flex-direction: column;
                                     }
                                 }
                             }

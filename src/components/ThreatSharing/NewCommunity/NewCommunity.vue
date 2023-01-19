@@ -132,7 +132,7 @@
 </template>
 <script>
 import { createCommunity, listBusinessCategories, updateCommunity } from '@/api/threatSharing'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, createRandomCryptNumber } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
@@ -251,7 +251,11 @@ export default {
               const methodName = this.$route.name === 'Community' ? 'replace' : 'push'
               this.$router[methodName]({
                 name: 'Community',
-                params: { communityName: this.name, rnd: Math.random(), id: this.resourceId }
+                params: {
+                  communityName: this.name,
+                  rnd: createRandomCryptNumber(),
+                  id: this.resourceId
+                }
               }).catch(() => {})
               this.$store.dispatch('tableReload/setTableReload', true)
               setTimeout(() => {
@@ -270,7 +274,7 @@ export default {
                 name: 'Community',
                 params: {
                   communityName: this.name,
-                  rnd: Math.random(),
+                  rnd: createRandomCryptNumber(),
                   id: response.data.data.resourceId
                 }
               })

@@ -211,13 +211,13 @@ export default {
     getFilePreviews() {
       return this.formValues?.content || (this.formValues?.fileName && this.formValues?.extension)
         ? [
-            {
-              name:
-                this.formValues?.content?.name ||
-                this.formValues?.fileName + this.formValues?.extension ||
-                ''
-            }
-          ]
+          {
+            name:
+              this.formValues?.content?.name ||
+              this.formValues?.fileName + this.formValues?.extension ||
+              ''
+          }
+        ]
         : []
     }
   },

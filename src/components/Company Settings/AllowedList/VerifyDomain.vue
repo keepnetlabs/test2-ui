@@ -97,7 +97,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div>
           <v-card class="d-flex justify-end verify-button-container" flat>
             <v-card v-if="!verifyStartStatus" class="pa-2 later" @click="closeModal" flat>
@@ -121,15 +121,12 @@
 import AppDialog from '../../AppDialog'
 import { getAllowListListVerify } from '@/api/allowList'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { copyToClipboard } from '@/utils/functions'
 export default {
   name: 'VerifyDomain',
   components: {
     AppDialog,
     FormGroup
-    //AppDialogFooter
   },
   props: {
     status: {

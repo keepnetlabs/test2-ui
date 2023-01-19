@@ -33,6 +33,7 @@
       </div>
       <DataTable
         ref="refTable"
+        no-padding-bottom
         :showPagination="false"
         :options="false"
         :id="CONSTANTS.id"
@@ -179,8 +180,6 @@ export default {
             isEditable: true,
             isWithTooltip: true,
             filterableType: false
-            // filterableType: 'select',
-            // filterableItems: ['Running', 'Failed', 'Completed']
           }
         ],
         rowActions: [],
@@ -190,7 +189,6 @@ export default {
         iEmpty: {
           message: labels.EmptyJobDetailsLog
         },
-
         selectEvent: {
           clipboard: true
         }
@@ -210,8 +208,8 @@ export default {
           } = response
           const processResults = data.processResults.map((result) => result.processErrors)
           const resultArray = []
-          for (let i = 0; i < processResults.length; i++) {
-            const results = processResults[i]
+          for (const result of processResults) {
+            const results = result
               .map((result) => {
                 if (result?.inputData) {
                   const parsedData = JSON.parse(result.inputData)
