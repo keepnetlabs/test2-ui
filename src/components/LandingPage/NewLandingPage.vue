@@ -631,7 +631,7 @@ export default {
         if (activeVal === '3') {
           schema.disabled = false
         } else {
-          schema.disabled = !(domainRecord?.extraDatas[0]?.value === schema.value)
+          schema.disabled = domainRecord?.extraDatas[0]?.value !== schema.value
         }
         return schema
       })
@@ -821,11 +821,8 @@ export default {
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
     getTitle() {
-      return !this.isEdit
-        ? 'New Landing Page Template'
-        : this.isDuplicate
-        ? 'Duplicate Landing Page Template'
-        : 'Edit Landing Page Template'
+      if (!this.isEdit) return 'New Landing Page Template'
+      return this.isDuplicate ? 'Duplicate Landing Page Template' : 'Edit Landing Page Template'
     },
     isRenderMakeAvailableFor() {
       if (this.editItemsDisabled) {

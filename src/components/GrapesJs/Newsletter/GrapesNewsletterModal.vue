@@ -99,9 +99,8 @@ export default {
       url: {
         required: (v) => (v && v.length <= 256) || 'It must between 1 - 256 characters',
         format: (v) =>
-          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
-            v
-          ) || 'invalid url'
+          /(ftp|http|https):\/\/(\w+:?\w*@)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/gi.test(v) ||
+          'invalid url'
       },
       urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
     }
@@ -230,7 +229,7 @@ export default {
         const win = window.open('', 'Title')
         win.document.title = 'Mail Preview'
         win.document.body.innerHTML = this.getGrapesEditorContent().replace(
-          new RegExp('{COMPANYLOGO}', 'g'),
+          /{COMPANYLOGO}/g,
           this?.$store?.state?.whitelabel.mainLogoUrl || ''
         )
       })

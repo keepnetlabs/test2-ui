@@ -56,24 +56,25 @@ export default {
     changeDeleteGroupStatus(status) {
       this.$emit('changeDeleteGroupModalStatus', status)
     },
-    handleDelete() {
+    getActionName() {
       const constructorName = this.selectedRow.constructor.name
-      const action =
-        constructorName === 'Object'
-          ? 'handleDelete'
-          : constructorName === 'Array'
-          ? this.selectedRow.length === 1
-            ? 'handleDelete'
-            : 'handleMultipleDelete'
-          : 'handleDelete'
-      const data =
-        constructorName === 'Object'
-          ? this.selectedRow
-          : constructorName === 'Array' && this.selectedRow.length === 1
-          ? this.selectedRow[0]
-          : this.selectedRow
+      if (constructorName === 'Object') return 'handleDelete'
+      else if (constructorName === 'Array')
+        return this.selectedRow.length === 1 ? 'handleDelete' : 'handleMultipleDelete'
+      else return 'handleDelete'
+    },
+    getActionData() {
+      const constructorName = this.selectedRow.constructor.name
+      if (constructorName === 'Object') return this.selectedRow
+      else if (constructorName === 'Array' && this.selectedRow.length === 1)
+        return this.selectedRow[0]
+      else return this.selectedRow
+    },
+    handleDelete() {
+      const action = this.getActionName()
+      const data = this.getActionData()
       this.$emit(action, data)
-      this.$emit('changeDeleteGroupModalStatus', false)
+      this.changeDeleteGroupStatus(false)
     }
   }
 }

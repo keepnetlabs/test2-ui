@@ -8,10 +8,10 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ getContent }}
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <AppDialogFooter
         cancel-button-id="btn-cancel--vishing-campaign-popup"
         confirm-button-id="btn-delete--vishing-campaign-popup"

@@ -294,7 +294,6 @@ export default {
         ret = this.$refs.refAddInSettings.submit()
         if (ret) {
           this.addingSettings = ret
-          hasValidationError = false
         } else {
           hasValidationError = true
         }

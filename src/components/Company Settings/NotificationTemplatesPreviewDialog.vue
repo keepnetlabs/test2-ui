@@ -68,7 +68,7 @@ export default {
         .then((response) => {
           this.emailTemplate =
             response?.data?.data?.template?.replace(
-              new RegExp('{COMPANYLOGO}', 'g'),
+              /{COMPANYLOGO}/g,
               this?.$store?.state?.whitelabel.mainLogoUrl || ''
             ) || ''
         })

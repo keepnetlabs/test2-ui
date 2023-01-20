@@ -160,12 +160,14 @@ export default {
       return this.selectedUsers.length
     },
     isNextButtonDisabled() {
-      const comparator =
-        this.step1Step === 0
-          ? this.isLDAPGroupsValid
-          : this.serverSideSelectionParams?.isSelectedAllEver
+      let comparator
+      if (this.step1Step === 0) {
+        comparator = this.isLDAPGroupsValid
+      } else {
+        comparator = this.serverSideSelectionParams?.isSelectedAllEver
           ? this.serverSideSelectionParams?.isSelectedAllEver
           : !!this.selectedLDAPItems?.length
+      }
       return !comparator
     }
   },

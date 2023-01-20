@@ -143,7 +143,7 @@ import AppModal from '@/components/AppModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
-import { isDifferent } from '@/utils/functions'
+import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -190,9 +190,9 @@ export default {
       initialTemplate: null,
       labels,
       showGrapesModal: false,
-      grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
+      grapeJsKey: `${createRandomCryptStringNumber()}-key`,
       Validations,
-      attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`,
+      attachmentListKey: `${createRandomCryptStringNumber()}-key`,
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
@@ -216,7 +216,7 @@ export default {
   },
   watch: {
     activeBlockManagerComponents() {
-      this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
+      this.grapeJsKey = `${createRandomCryptStringNumber()}-key`
     },
     template: {
       handler(val) {

@@ -1045,9 +1045,6 @@ export default {
     getMini: {
       get() {
         if (this.mini == null) {
-          if (window.outerWidth > 767) {
-            return false
-          }
           return false
         }
         return this.mini

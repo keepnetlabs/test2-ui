@@ -257,6 +257,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CampaignManagerAdvancedSettings',
   components: {
@@ -303,7 +304,7 @@ export default {
         }
       },
       smtpItems: [],
-      buttonKey: Math.random().toString(),
+      buttonKey: createRandomCryptStringNumber(),
       defaultSmtpItems: [],
       responseOfSmtpItems: [],
       isShowSmtpInputError: false,
@@ -451,13 +452,13 @@ export default {
         return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
       } else {
         return (
-          !(this.totalTargetUserCount < val) ||
+          this.totalTargetUserCount >= val ||
           'This number cannot be higher than number of total target users.'
         )
       }
     },
     handleChangeSmtp() {
-      this.buttonKey = Math.random().toString()
+      this.buttonKey = createRandomCryptStringNumber()
       this.isTestMailSend = false
       this.isShowSmtpInputError = false
       this.testEmailErrorMessage = ''
