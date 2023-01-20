@@ -2132,14 +2132,10 @@ export default {
         return false
       }
 
-      if (
+      return (
         row.emailLastAction.actionType === 'Warning' &&
         row.emailLastAction.status !== 'CompletedWithError'
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     isWantToDeleteConfirm(val, message, hasForm = true) {
       if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {

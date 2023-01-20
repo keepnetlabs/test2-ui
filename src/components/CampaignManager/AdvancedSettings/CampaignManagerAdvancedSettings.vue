@@ -338,7 +338,7 @@ export default {
 
       if (seconds !== 0) {
         if (hours !== 0 || minutes !== 0) rightSideText = `and ${seconds} ${secondsText}`
-        else `${seconds} ${secondsText}`
+        else rightSideText = `${seconds} ${secondsText}`
       }
 
       return `${leftSideText}${rightSideText}`
