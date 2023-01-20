@@ -61,9 +61,7 @@
     <TargetUserAddToAnExistingGroupModal
       v-if="isShowingTargetUserAddToGroup"
       :status="isShowingTargetUserAddToGroup"
-      :selected-rows="getSelectedRow"
       :bulkImportPayload="bulkImportPayload"
-      :isBulkImport="isBulkImport"
       @closeOverlay="toggleShowingTargetUserAddToGroup"
       @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
     />
@@ -352,7 +350,6 @@ export default {
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       multipleTargetUserPayload: {},
-      isBulkImport: false,
       bulkImportPayload: {},
       isWantToShowDeleteUserModal: false,
       selectedRow: null,
@@ -593,6 +590,13 @@ export default {
     },
     handleAddUserToGroup(selectedRow = {}) {
       this.selectedUserToAddToGroup = selectedRow
+      this.bulkImportPayload = {
+        targetUserResourceIds: [selectedRow.resourceId],
+        selectAll: false,
+        excludedResourceIdList: [],
+        filter: this.payload.filter,
+        selectedRowCount: 1
+      }
       this.toggleShowingTargetUserAddToGroup()
     },
     handleConfirmAddUserToGroup(groups = []) {
@@ -613,8 +617,13 @@ export default {
     toggleShowingTargetUserAddToGroup() {
       if (this.isShowingTargetUserAddToGroup) {
         this.selectedUserToAddToGroup = null
-        this.isBulkImport = false
-        this.bulkImportPayload = {}
+        this.bulkImportPayload = {
+          targetUserResourceIds: [],
+          selectAll: false,
+          excludedResourceIdList: [],
+          filter: this.payload.filter,
+          selectedRowCount: 0
+        }
       }
       this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
     },
@@ -902,7 +911,6 @@ export default {
     },
     handleAddUsersSelectionClick() {
       this.selectedUserToAddToGroup = this.selection
-      this.isBulkImport = true
       const serverSideParams = this.$refs?.refPeopleTable?.getServerSideSelectionParams() || {
         isSelectedAllEver: false,
         excludedResourceIdList: []
@@ -913,7 +921,11 @@ export default {
           : this.selection.map((item) => item.resourceId),
         selectAll: serverSideParams?.isSelectedAllEver || false,
         excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
-        filter: this.payload.filter
+        filter: this.payload.filter,
+        selectedRowCount: serverSideParams?.isSelectedAllEver
+          ? this.serverSideProps.totalNumberOfRecords -
+            serverSideParams?.excludedResourceIdList.length
+          : this.selection.length
       }
       this.toggleShowingTargetUserAddToGroup()
     }

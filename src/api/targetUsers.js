@@ -112,6 +112,10 @@ export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = tru
   return testRequest.put(`/target-groups/${id}/users`, payload, config)
 }
 
+export function bulkImportTargetUsersToGroups(payload = {}) {
+  return testRequest.post(`/target-groups/users`, payload)
+}
+
 export function exportTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users/export`, payload, {
     responseType: 'blob'
