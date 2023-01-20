@@ -40,9 +40,12 @@
         <span
           v-if="scope.column.property === 'result'"
           :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link"
+          class="datatable-link cursor-default"
         >
-          <div class="report-result-btn py-1" :class="scope.row.result.toLowerCase()">
+          <div
+            class="report-result-btn py-1 cursor-default"
+            :class="scope.row.result.toLowerCase()"
+          >
             {{ scope.row.result }}
           </div>
         </span>

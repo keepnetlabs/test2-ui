@@ -80,9 +80,12 @@
         <span
           v-if="scope.column.property === 'status'"
           :id="`text-allow-list-status-${scope.$index}`"
-          class="datatable-link"
+          class="datatable-link cursor-default"
         >
-          <div class="allow-list-status py-1" :style="setStatusColor(scope.row.status)">
+          <div
+            class="allow-list-status py-1 cursor-default"
+            :style="setStatusColor(scope.row.status)"
+          >
             {{ scope.row.status }}
           </div>
         </span>
