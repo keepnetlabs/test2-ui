@@ -62,6 +62,8 @@
       v-if="isShowingTargetUserAddToGroup"
       :status="isShowingTargetUserAddToGroup"
       :selected-rows="getSelectedRow"
+      :bulkImportPayload="bulkImportPayload"
+      :isBulkImport="isBulkImport"
       @closeOverlay="toggleShowingTargetUserAddToGroup"
       @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
     />
@@ -350,6 +352,8 @@ export default {
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       multipleTargetUserPayload: {},
+      isBulkImport: false,
+      bulkImportPayload: {},
       isWantToShowDeleteUserModal: false,
       selectedRow: null,
       customFields: [],
@@ -609,6 +613,8 @@ export default {
     toggleShowingTargetUserAddToGroup() {
       if (this.isShowingTargetUserAddToGroup) {
         this.selectedUserToAddToGroup = null
+        this.isBulkImport = false
+        this.bulkImportPayload = {}
       }
       this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
     },
@@ -896,6 +902,19 @@ export default {
     },
     handleAddUsersSelectionClick() {
       this.selectedUserToAddToGroup = this.selection
+      this.isBulkImport = true
+      const serverSideParams = this.$refs?.refPeopleTable?.getServerSideSelectionParams() || {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
+      }
+      this.bulkImportPayload = {
+        targetUserResourceIds: serverSideParams?.isSelectedAllEver
+          ? []
+          : this.selection.map((item) => item.resourceId),
+        selectAll: serverSideParams?.isSelectedAllEver || false,
+        excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
+        filter: this.payload.filter
+      }
       this.toggleShowingTargetUserAddToGroup()
     }
   }

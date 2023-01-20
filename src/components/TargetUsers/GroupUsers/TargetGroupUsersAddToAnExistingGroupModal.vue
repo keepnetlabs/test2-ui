@@ -73,6 +73,12 @@ export default {
   },
   emits: ['closeOverlay', 'closeOverlayWithUpdate'],
   props: {
+    bulkImportPayload: {
+      type: Object
+    },
+    isBulkImport: {
+      type: Boolean
+    },
     status: {
       type: Boolean
     },
@@ -232,7 +238,10 @@ export default {
     handleConfirm() {
       const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
       const promises = this.selectedTargetGroups.reduce((acc, group) => {
-        const payload = { targetUserResourceIds: selectedRowsResourceIds }
+        let payload = { targetUserResourceIds: selectedRowsResourceIds }
+        if (this.isBulkImport) {
+          payload = this.bulkImportPayload
+        }
         acc.push(createTargetGroupUsers(group.resourceId, payload, false))
         return acc
       }, [])
