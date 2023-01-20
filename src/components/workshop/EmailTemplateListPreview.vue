@@ -394,20 +394,19 @@ export default {
             if (!emailTemplateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
-            if (isInitial) {
-              if (!!emailTemplateResourceId) {
-                const index = this.listData.findIndex(
-                  (item) => item.resourceId === emailTemplateResourceId
-                )
-                if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index, true)
-                  this.listData[index].selected = true
-                }
-              } else {
-                if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
+            if (!isInitial) return
+            if (!!emailTemplateResourceId) {
+              const index = this.listData.findIndex(
+                (item) => item.resourceId === emailTemplateResourceId
+              )
+              if (index > -1) {
+                this.setSelectedTemplate(this.listData[index], index, true)
+                this.listData[index].selected = true
               }
-              this.defaultListData = [...this.listData]
+            } else {
+              if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
             }
+            this.defaultListData = [...this.listData]
           }
         })
         .finally(() => {

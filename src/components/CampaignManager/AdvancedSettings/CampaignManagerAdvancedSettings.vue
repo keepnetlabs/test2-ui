@@ -327,16 +327,21 @@ export default {
       const minutesText = minutes > 1 ? 'minutes' : 'minute'
       const secondsText = seconds > 1 ? 'seconds' : 'second'
       const leftSideHours = `${hours} ${hoursText} `
+      let leftSideText = '',
+        rightSideText = ''
+      if (hours !== 0) {
+        leftSideText = leftSideHours
+      }
+      if (minutes !== 0) {
+        leftSideText += `${minutes} ${minutesText} `
+      }
 
-      return `${hours !== 0 ? leftSideHours : ''}${
-        minutes !== 0 ? `${minutes} ${minutesText} ` : ''
-      }${
-        seconds !== 0
-          ? hours !== 0 || minutes !== 0
-            ? `and ${seconds} ${secondsText}`
-            : `${seconds} ${secondsText}`
-          : ''
-      }`
+      if (seconds !== 0) {
+        if (hours !== 0 || minutes !== 0) rightSideText = `and ${seconds} ${secondsText}`
+        else `${seconds} ${secondsText}`
+      }
+
+      return `${leftSideText}${rightSideText}`
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers

@@ -518,28 +518,6 @@ export default {
       }
       return labels.Required
     },
-
-    getRecipientValueErrorMessage() {
-      if (this.formValues.isLimitRecipients) {
-        if (this.formValues.recipientType === 1) {
-          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
-            return 'Enter a number higher than 0'
-          }
-          if (this.formValues.recipientValue > 100) {
-            return 'This number cannot be higher than 100 percent'
-          }
-        } else {
-          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
-            return 'Enter a number higher than 0'
-          }
-          if (this.formValues.recipientValue > this.totalTargetUserCount) {
-            return 'This number cannot be higher than number of total target users'
-          }
-        }
-      }
-
-      return ''
-    },
     getDistributionOverDaysValueErrorMessage() {
       if (
         this.formValues.distributionOverDays === '' ||
@@ -691,19 +669,23 @@ export default {
       })
     },
     checkDateIsValid() {
-      this.isDateValid = this.formValues
-        ? this.formValues.scheduleType === '3'
-          ? this.formValues.scheduleDate && this.formValues.scheduleDate.length > 0
-          : true
-        : false
+      let isDateValid = false
+      if (this.formValues) {
+        if (this.formValues.scheduleType === '3') {
+          isDateValid = this.formValues.scheduleDate && this.formValues.scheduleDate.length > 0
+        } else isDateValid = true
+      }
+      this.isDateValid = isDateValid
       return this.isDateValid
     },
     checkTimezoneValid() {
-      this.isTimezoneValid = this.formValues
-        ? this.formValues.scheduleType === '3'
-          ? !!this.formValues.scheduledDateTimeZoneId
-          : true
-        : false
+      let isTimezoneValid = false
+      if (this.formValues) {
+        if (this.formValues.scheduleType === '3')
+          isTimezoneValid = !!this.formValues.scheduledDateTimeZoneId
+        else isTimezoneValid = true
+      }
+      this.isTimezoneValid = isTimezoneValid
       return this.isTimezoneValid
     },
     callForCampaign() {

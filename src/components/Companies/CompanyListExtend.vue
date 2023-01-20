@@ -293,7 +293,9 @@ export default {
       let t = this.tableHeight
       if (this.$el !== undefined) {
         e = this.$el.clientHeight
-        p = t > e ? (t > e + p ? p : t - e) : 0
+        if (t > e) {
+          p = t > e + p ? p : t - e
+        } else p = 0
       }
       return p
     },

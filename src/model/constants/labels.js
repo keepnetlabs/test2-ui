@@ -22,6 +22,7 @@ export const labels = {
   EmptyTrainingReportOpened: 'No one has opened the email, yet',
   EmptyTrainingReportClicked: 'No one has clicked the training link, yet',
   EmptyTrainingReportProgress: 'No one has training progress, yet',
+  EmptyPhishingTrends: 'You do not have any phishing campaign',
   Vished: 'Vished',
   Restore: 'Restore',
   Answered: 'Answered',

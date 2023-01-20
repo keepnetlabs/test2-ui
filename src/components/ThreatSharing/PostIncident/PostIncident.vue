@@ -1775,29 +1775,27 @@ export default {
             }
           })
           .finally(() => (this.isIncidentPreviewLoading = false))
-      } else {
-        if (selectedItem?.resourceId) {
-          this.isIncidentPreviewLoading = true
-          getSelectedEmailPreview(selectedItem.resourceId)
-            .then((response) => {
-              const { data } = response
-              this.uploadRespond = data.data
-              this.uploadRespond.initialBody = data.data.initialBody
-              this.uploadRespond.visibleBody = data.data.initialBody
-              this.uploadRespond.editableBody = response.data.data.initialBody
-              this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-              if (isInitial) {
-                this.initialFormValues = {
-                  ...this.initialFormValues,
-                  uploadRespond: {
-                    ...this.initialFormValues.uploadRespond,
-                    ...this.uploadRespond
-                  }
+      } else if (selectedItem?.resourceId) {
+        this.isIncidentPreviewLoading = true
+        getSelectedEmailPreview(selectedItem.resourceId)
+          .then((response) => {
+            const { data } = response
+            this.uploadRespond = data.data
+            this.uploadRespond.initialBody = data.data.initialBody
+            this.uploadRespond.visibleBody = data.data.initialBody
+            this.uploadRespond.editableBody = response.data.data.initialBody
+            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            if (isInitial) {
+              this.initialFormValues = {
+                ...this.initialFormValues,
+                uploadRespond: {
+                  ...this.initialFormValues.uploadRespond,
+                  ...this.uploadRespond
                 }
               }
-            })
-            .finally(() => (this.isIncidentPreviewLoading = false))
-        }
+            }
+          })
+          .finally(() => (this.isIncidentPreviewLoading = false))
       }
     },
     onCancelClicked() {

@@ -124,42 +124,41 @@ export default {
         .filter(Boolean)
     },
     getBadges() {
-      if (this.badges && this.badges.length > 0) {
-        let renderedCount = 0
-        const width = Math.floor(this.scope.column.width) || 40
-        let totalWidth = 0,
-          itemsTotalWidth = 0
-        for (let item of this.badges) {
-          let multiplyBy = this.getMultiplyBy(item)
-          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
-          itemsTotalWidth += itemWidth
+      if (this?.badges?.length <= 0) return
+      let renderedCount = 0
+      const width = Math.floor(this.scope.column.width) || 40
+      let totalWidth = 0,
+        itemsTotalWidth = 0
+      for (let item of this.badges) {
+        let multiplyBy = this.getMultiplyBy(item)
+        let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
+        itemsTotalWidth += itemWidth
+      }
+      totalWidth = width > itemsTotalWidth ? width : width - 40
+      for (let item of this.badges) {
+        let multiplyBy = this.getMultiplyBy(item)
+        let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
+        if (itemWidth > totalWidth) {
+          break
+        } else {
+          renderedCount++
+          totalWidth -= itemWidth
         }
-        totalWidth = width > itemsTotalWidth ? width : width - 40
-        for (let item of this.badges) {
-          let multiplyBy = this.getMultiplyBy(item)
-          let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
-          if (itemWidth > totalWidth) {
-            break
-          } else {
-            renderedCount++
-            totalWidth -= itemWidth
-          }
-        }
+      }
 
-        this.maximumRenderedBadgeCount = renderedCount
-        if (this.maximumRenderedBadgeCount > this.badges.length) {
-          this.maximumRenderedBadgeCount = this.badges.length
-        }
-        if (this.maximumRenderedBadgeCount < 0) {
-          this.maximumRenderedBadgeCount = 0
-        }
+      this.maximumRenderedBadgeCount = renderedCount
+      if (this.maximumRenderedBadgeCount > this.badges.length) {
+        this.maximumRenderedBadgeCount = this.badges.length
+      }
+      if (this.maximumRenderedBadgeCount < 0) {
+        this.maximumRenderedBadgeCount = 0
+      }
 
-        this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-        if (this.maximumRenderedBadgeCount === 0) {
-          if (this.scope.column.width > 100) {
-            this.maximumRenderedBadgeCount = 1
-            this.unRenderedBadgeCount -= 1
-          }
+      this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+      if (this.maximumRenderedBadgeCount === 0) {
+        if (this.scope.column.width > 100) {
+          this.maximumRenderedBadgeCount = 1
+          this.unRenderedBadgeCount -= 1
         }
       }
     },

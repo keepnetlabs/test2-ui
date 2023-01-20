@@ -30,6 +30,7 @@
                     id="img--login-main-logo"
                     style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
+                    :alt="loginWhiteLabel.mainLogoUrl ? 'main-logo-login' : ''"
                   />
                 </div>
               </v-card-title>

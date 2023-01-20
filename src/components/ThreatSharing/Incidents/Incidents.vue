@@ -294,39 +294,33 @@ export default {
     if (this.$route.query && this.$route.query.postId) {
       this.getSharedPost()
     } else {
-      if (this.isLoadState) {
-        const incidentsData = this.$store.state['incidents'].incidents.incidentsData
-        if (incidentsData) {
-          this.incidentList = incidentsData.tableData
-          this.incidentList = this.incidentList.map((item) => {
-            return { ...item, isToggle: false }
-          })
-          this.page = incidentsData.searchValues.page
-          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
-          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
-          this.itemsPerPage = incidentsData.searchValues.itemsPerPage
-          this.search = incidentsData.searchValues.search
-          this.companyValue = incidentsData.searchValues.companyValue
-          this.threats = incidentsData.searchValues.threats
-          this.incidentLoading = false
-          setTimeout(() => {
-            this.$emit('setLoadState')
-          }, 100)
-        } else {
-          this.getIncidentList()
-        }
-        if (this.isTableReload) {
-          this.page = 1
-          this.search = null
-          this.companyValue = []
-          this.threats = []
-          this.getIncidentList()
-          this.$store.dispatch('tableReload/setTableReload', false)
-        }
-      } else {
-        if (!this.isLoadState) {
-          this.getIncidentList()
-        }
+      const incidentsData = this.$store.state['incidents'].incidents.incidentsData
+      if (!this.isLoadState || !incidentsData) {
+        return this.getIncidentList()
+      }
+      this.incidentList = incidentsData.tableData
+      this.incidentList = this.incidentList.map((item) => {
+        return { ...item, isToggle: false }
+      })
+      this.page = incidentsData.searchValues.page
+      this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
+      this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
+      this.itemsPerPage = incidentsData.searchValues.itemsPerPage
+      this.search = incidentsData.searchValues.search
+      this.companyValue = incidentsData.searchValues.companyValue
+      this.threats = incidentsData.searchValues.threats
+      this.incidentLoading = false
+      setTimeout(() => {
+        this.$emit('setLoadState')
+      }, 100)
+
+      if (this.isTableReload) {
+        this.page = 1
+        this.search = null
+        this.companyValue = []
+        this.threats = []
+        this.getIncidentList()
+        this.$store.dispatch('tableReload/setTableReload', false)
       }
     }
   },

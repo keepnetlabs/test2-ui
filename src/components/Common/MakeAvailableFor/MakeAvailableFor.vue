@@ -138,36 +138,35 @@ export default {
   },
   methods: {
     loadOptions({ action, searchQuery, callback }) {
-      if (action === ASYNC_SEARCH) {
-        this.debounce(() => {
-          this.disableScroll = true
-          this.searchAvailableForPayload.name = searchQuery
-          this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
-          this.callForSearchAvailableFor(searchQuery).then(() => {
-            callback(null, this.treeSelectOptions)
-            if (this.isScrolling) {
-              const element = document
-                .getElementById('input--make-available-for')
-                .querySelector('.vue-treeselect__menu')
-              if (element) {
-                this.$nextTick(() => {
-                  element.scroll({ top: element.scrollHeight - 500 })
-                })
-              }
-            }
-            this.$nextTick(() => {
-              this.disableScroll = false
-              this.isScrolling = false
-            })
-            if (this?.$refs?.refTreeSelect?.remoteSearch) {
-              const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
-              keys.forEach((key) => {
-                this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
+      if (action !== ASYNC_SEARCH) return
+      this.debounce(() => {
+        this.disableScroll = true
+        this.searchAvailableForPayload.name = searchQuery
+        this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
+        this.callForSearchAvailableFor(searchQuery).then(() => {
+          callback(null, this.treeSelectOptions)
+          if (this.isScrolling) {
+            const element = document
+              .getElementById('input--make-available-for')
+              .querySelector('.vue-treeselect__menu')
+            if (element) {
+              this.$nextTick(() => {
+                element.scroll({ top: element.scrollHeight - 500 })
               })
             }
+          }
+          this.$nextTick(() => {
+            this.disableScroll = false
+            this.isScrolling = false
           })
-        }, 500)
-      }
+          if (this?.$refs?.refTreeSelect?.remoteSearch) {
+            const keys = Object.keys(this.$refs.refTreeSelect.remoteSearch)
+            keys.forEach((key) => {
+              this.$refs.refTreeSelect.remoteSearch[key].isLoading = false
+            })
+          }
+        })
+      }, 500)
     },
     handleMenuOpen() {
       //this element is removing from DOM after closing. Because of that event is removing by garbage collector

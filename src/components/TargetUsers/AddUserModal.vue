@@ -64,12 +64,19 @@
           />
         </form-group>
         <form-group
+          v-for="(item, index) in customFields"
           :title="item.name"
           :has-hint="item.isRequired"
           :key="index"
-          v-for="(item, index) in customFields"
         >
           <v-text-field
+            v-if="
+              item.fieldDataType === 'String' ||
+              item.fieldDataType === 'Number' ||
+              item.fieldDataType === 'Email'
+            "
+            v-bind="getCustomFieldItemProps(item)"
+            v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
             v-model.trim="customFieldsModels[item.resourceId]"
             :id="`input--target-user-custom-field-${item.name}`"
             outlined
@@ -77,13 +84,6 @@
             :placeholder="`Enter ${item.name}`"
             height="40"
             :key="item.name"
-            v-bind="getCustomFieldItemProps(item)"
-            v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
-            v-if="
-              item.fieldDataType === 'String' ||
-              item.fieldDataType === 'Number' ||
-              item.fieldDataType === 'Email'
-            "
           ></v-text-field>
           <div
             v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
@@ -94,6 +94,7 @@
             ]"
           >
             <InputDate
+              v-if="item.fieldDataType === 'DateTime'"
               v-model.trim="customFieldsModels[item.resourceId]"
               :id="`input--target-user-custom-field-${item.name}`"
               popper-class="filter__date-picker"
@@ -102,9 +103,9 @@
               :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
               :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
               :type="'datetime'"
-              v-if="item.fieldDataType === 'DateTime'"
             />
             <InputDate
+              v-if="item.fieldDataType === 'Date'"
               v-model.trim="customFieldsModels[item.resourceId]"
               :id="`input--target-user-custom-field-${item.name}`"
               popper-class="filter__date-picker"
@@ -113,7 +114,6 @@
               :format="getTimeZone(true) || 'yyyy/MM/dd'"
               :valueFormat="getTimeValueFormatZone(true) || `yyyy/MM/dd`"
               :type="'date'"
-              v-if="item.fieldDataType === 'Date'"
             />
             <template v-if="item.isRequired">
               <div class="v-text-field__details checkbox-error" v-if="validatePicker(item)">
@@ -182,8 +182,8 @@
         class="add-user-overlay__footer-btn-save white--text"
         color="#2196f3"
         rounded
-        @click="submit"
         :disabled="saveDisable"
+        @click="submit"
       >
         {{ labels.Save }}
       </v-btn>
@@ -323,7 +323,6 @@ export default {
     submit() {
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
-
       for (let key of keys) {
         if (
           !this.customFieldsModels[key] &&

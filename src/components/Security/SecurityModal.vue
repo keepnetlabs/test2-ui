@@ -12,7 +12,7 @@
     :max-height="true"
     @changeStatus="$emit('changePasswordChange')"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <div v-if="loadingSecurityModal">
         <PostCardLoading :loading="loadingSecurityModal" />
       </div>
@@ -268,6 +268,7 @@ import {
 import MFASetup from '@/components/MFA/MFASetup'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import * as Validations from '@/utils/validations'
 export default {
   name: 'SecurityModal',
   props: {
@@ -291,8 +292,7 @@ export default {
       step: 1,
       rules: {
         email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'Invalid e-mail.'
+          return Validations.email(value)
         },
         min: (v) => v.length >= 8 || 'Minimum 8 characters',
         max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',

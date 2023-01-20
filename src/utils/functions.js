@@ -407,9 +407,7 @@ export function passwordComplexity(pwd) {
     const arrCharsLen = arrChars.length
     for (let c = 0; c < arrCharsLen; c++) {
       let minVal = arrCharsIds[c] === 'nLength' ? parseInt(nMinPwdLen - 1) : 0
-      if (arrChars[c] === parseInt(minVal + 1)) {
-        nReqChar++
-      } else if (arrChars[c] > parseInt(minVal + 1)) {
+      if (arrChars[c] === parseInt(minVal + 1) || arrChars[c] > parseInt(minVal + 1)) {
         nReqChar++
       }
     }

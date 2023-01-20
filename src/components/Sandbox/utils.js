@@ -14,8 +14,7 @@ export const scanTypesEnum = [
   { name: 'Hash', value: 4 }
 ]
 
-export const createAxiosPayloadForSandboxStats = (company, integration, date) => {
-  const isArray = Array.isArray(date)
+const getCreateTimeObj = (isArray, date) => {
   let createTimeOperator, createTimeValue
   if (isArray) {
     createTimeOperator = date[0].Operator
@@ -24,6 +23,15 @@ export const createAxiosPayloadForSandboxStats = (company, integration, date) =>
     createTimeOperator = date ? date.Operator : 'Contains'
     createTimeValue = date ? date.Value : ''
   }
+  return {
+    FieldName: 'CreateTime',
+    Operator: createTimeOperator,
+    Value: createTimeValue
+  }
+}
+
+export const createAxiosPayloadForSandboxStats = (company, integration, date) => {
+  const isArray = Array.isArray(date)
   const axiosPayload = {
     pageNumber: 1,
     pageSize: 10,
@@ -91,11 +99,7 @@ export const createAxiosPayloadForSandboxStats = (company, integration, date) =>
               FieldName: 'ClientResourceId',
               Operator: company ? 'Include' : 'Contains'
             },
-            {
-              FieldName: 'CreateTime',
-              Operator: createTimeOperator,
-              Value: createTimeValue
-            }
+            getCreateTimeObj(isArray, date)
           ],
           FilterGroups: []
         }
@@ -139,11 +143,7 @@ export const createAxiosPayloadForSandboxLogs = (company, integration, date) => 
               FieldName: 'ClientResourceId',
               Operator: company ? 'Include' : 'Contains'
             },
-            {
-              FieldName: 'CreateTime',
-              Operator: isArray ? date[0].Operator : date ? date.Operator : 'Contains',
-              Value: isArray ? date[0].Value : date ? date.Value : ''
-            },
+            getCreateTimeObj(isArray, date),
             {
               FieldName: 'ScanType',
               Operator: 'Contains',

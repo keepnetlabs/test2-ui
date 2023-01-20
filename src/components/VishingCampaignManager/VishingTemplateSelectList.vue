@@ -330,22 +330,21 @@ export default {
             if (!templateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
-            if (isInitial) {
-              if (!!templateResourceId) {
-                const index = this.listData.findIndex(
-                  (item) => item.resourceId === templateResourceId
-                )
-                if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index, true)
-                  this.listData[index].selected = true
-                }
-              } else {
-                if (!templateResourceId) {
-                  this.setSelectedTemplate(this.listData[0], 0, true)
-                }
+            if (!isInitial) return
+            if (!!templateResourceId) {
+              const index = this.listData.findIndex(
+                (item) => item.resourceId === templateResourceId
+              )
+              if (index > -1) {
+                this.setSelectedTemplate(this.listData[index], index, true)
+                this.listData[index].selected = true
               }
-              this.defaultListData = [...this.listData]
+            } else {
+              if (!templateResourceId) {
+                this.setSelectedTemplate(this.listData[0], 0, true)
+              }
             }
+            this.defaultListData = [...this.listData]
           }
         })
         .finally(() => {

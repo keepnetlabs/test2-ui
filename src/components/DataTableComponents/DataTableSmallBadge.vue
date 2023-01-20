@@ -96,11 +96,7 @@ export default {
     getBadges() {
       const badges = this.scope.row[this.col.property].filter(Boolean) || []
       const width = this.scope.column.width
-      if (
-        badges &&
-        badges.length &&
-        (width !== this.width || JSON.stringify(badges) !== JSON.stringify(this.badges))
-      ) {
+      if (this.checkIsChanged(badges, width)) {
         this.width = width
         this.badges = badges
         let totalWidth = Math.floor(this.width) - 20
@@ -129,6 +125,13 @@ export default {
         this.unRenderedBadgeCount = 0
         this.maximumRenderedBadgeCount = 0
       }
+    },
+    checkIsChanged(badges, width) {
+      return (
+        badges &&
+        badges.length &&
+        (width !== this.width || JSON.stringify(badges) !== JSON.stringify(this.badges))
+      )
     },
     getMultiplyBy(text = '') {
       if (text.length > 15) return 7.5
