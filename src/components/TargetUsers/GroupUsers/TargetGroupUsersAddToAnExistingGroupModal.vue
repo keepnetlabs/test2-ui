@@ -245,36 +245,6 @@ export default {
         this.confirmButtonDisabled = false
         this.$emit('closeOverlayWithUpdate')
       })
-
-      // if (this.isBulkImport) {
-      //   bulkImportTargetUsersToGroups(this.bulkImportPayload)
-      // } else {
-      //   let payload = { targetUserResourceIds: selectedRowsResourceIds }
-      //   createTargetGroupUsers(group.resourceId, payload, true)
-      //   .finally(() => {
-      //     this.$emit('closeOverlayWithUpdate')
-      //   })
-      // }
-      // const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
-      // const promises = this.selectedTargetGroups.reduce((acc, group) => {
-      //   let payload = { targetUserResourceIds: selectedRowsResourceIds }
-      //   if (this.isBulkImport) {
-      //     payload = this.bulkImportPayload
-      //   }
-      //   acc.push(createTargetGroupUsers(group.resourceId, payload, false))
-      //   return acc
-      // }, [])
-      // Promise.all(promises)
-      //   .then(() => {
-      //     this.$store.dispatch('common/createSnackBar', {
-      //       message: `${selectedRowsResourceIds.length} target user(s) has been added to ${this.selectedTargetGroups.length} target group(s)`,
-      //       color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-      //       icon: 'mdi-check-circle'
-      //     })
-      //   })
-      //   .finally(() => {
-      //     this.$emit('closeOverlayWithUpdate')
-      //   })
     },
     handleSelectionChange(selection = []) {
       this.selectedTargetGroups = selection

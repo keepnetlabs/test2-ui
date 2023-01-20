@@ -113,7 +113,7 @@ export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = tru
 }
 
 export function bulkImportTargetUsersToGroups(payload = {}) {
-  return testRequest.post(`/target-groups/users`, payload)
+  return testRequest.put(`/target-groups/users`, payload, { snackbar: COMMON_SNACKBAR })
 }
 
 export function exportTargetGroupUsers(id = '', payload = {}) {
