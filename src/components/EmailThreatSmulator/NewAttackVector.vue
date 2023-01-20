@@ -194,7 +194,7 @@ export default {
       handler: function (value) {
         this.isFormValuesChanged = true
         if (this.formValues.riskFactor !== '') {
-          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/\D*/g, '')
         }
       },
       deep: true,
@@ -211,13 +211,13 @@ export default {
     getFilePreviews() {
       return this.formValues?.content || (this.formValues?.fileName && this.formValues?.extension)
         ? [
-          {
-            name:
-              this.formValues?.content?.name ||
-              this.formValues?.fileName + this.formValues?.extension ||
-              ''
-          }
-        ]
+            {
+              name:
+                this.formValues?.content?.name ||
+                this.formValues?.fileName + this.formValues?.extension ||
+                ''
+            }
+          ]
         : []
     }
   },

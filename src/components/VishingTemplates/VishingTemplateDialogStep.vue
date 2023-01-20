@@ -210,7 +210,7 @@ export default {
       this.$emit('removeStep')
     },
     onPauseDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', { ...this.value, duration: val.length ? parseInt(val) : null })
       }
     },
@@ -218,7 +218,7 @@ export default {
       this.$emit('input', { ...this.value, inputText: val })
     },
     onDigitCountChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', { ...this.value, inputDigit: val.length ? parseInt(val) : null })
       }
     },

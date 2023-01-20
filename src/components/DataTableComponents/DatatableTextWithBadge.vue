@@ -130,13 +130,13 @@ export default {
         let totalWidth = 0,
           itemsTotalWidth = 0
         for (let item of this.badges) {
-          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let multiplyBy = this.getMultiplyBy(item)
           let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
           itemsTotalWidth += itemWidth
         }
         totalWidth = width > itemsTotalWidth ? width : width - 40
         for (let item of this.badges) {
-          let multiplyBy = item.length > 25 ? 6.75 : item.length > 7 ? 7 : 11
+          let multiplyBy = this.getMultiplyBy(item)
           let itemWidth = Math.floor(item.length * multiplyBy) + this.col.cellPadding
           if (itemWidth > totalWidth) {
             break
@@ -162,6 +162,10 @@ export default {
           }
         }
       }
+    },
+    getMultiplyBy(item) {
+      if (item.length > 25) return 6.75
+      return item.length > 7 ? 7 : 11
     }
   }
 }

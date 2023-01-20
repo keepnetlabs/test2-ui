@@ -35,13 +35,11 @@ export default {
     getTooltipMessage() {
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      return !row.isEditable
-        ? `${indent}(${
-            indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
-          }) synced groups cannot be deleted`
-        : !this.getDisabledStatusOfAction
-        ? 'Delete'
-        : 'No Permission'
+      if (!row.isEditable)
+        return `${indent}(${
+          indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
+        }) synced groups cannot be deleted`
+      return !this.getDisabledStatusOfAction ? 'Delete' : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

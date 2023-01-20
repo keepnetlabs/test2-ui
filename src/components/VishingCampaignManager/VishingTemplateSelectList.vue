@@ -299,18 +299,16 @@ export default {
         this.getTemplates(true, this.templateResourceId, this.bodyData, true)
       }
     },
-    checkAndAddResourceIdToPayload(isInitial, bodyData) {
+    checkAndAddResourceIdToPayload() {
       this.loadingTemplates = true
       this.$emit('loading', true)
-      if (isInitial && this.templateResourceId && false) {
-        bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'resourceId',
-          Operator: 'Include',
-          value: this.templateResourceId
-        })
-      }
     },
-    getTemplates(isInitial, templateResourceId, bodyData = this.bodyData, isSearch) {
+    getTemplates(
+      isInitial = false,
+      templateResourceId = '',
+      bodyData = this.bodyData,
+      isSearch = false
+    ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       getVishingTemplates(bodyData)
         .then((response) => {

@@ -948,7 +948,8 @@ import {
   getBtnPriorityColor,
   getBtnStatusColor,
   getDataTableFieldLabel,
-  copyToClipboard
+  copyToClipboard,
+  createRandomCryptStringNumber
 } from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
@@ -3035,7 +3036,7 @@ export default {
     },
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
-      this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
+      this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
     }
   }
 }

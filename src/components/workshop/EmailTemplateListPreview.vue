@@ -11,10 +11,10 @@
       :subtitle="'Email Template Preview'"
       style="overflow: hidden;"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             class="pa-0 k-dialog__button"
@@ -367,7 +367,12 @@ export default {
         })
       }
     },
-    getTemplates(isInitial, emailTemplateResourceId, bodyData = this.bodyData, isSearch) {
+    getTemplates(
+      isInitial = false,
+      emailTemplateResourceId = '',
+      bodyData = this.bodyData,
+      isSearch = false
+    ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       getEmailTemplatesList(bodyData)
         .then((response) => {

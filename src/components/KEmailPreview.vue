@@ -73,8 +73,8 @@ export default {
         if (height > this.numberHeight && height > 300) {
           if (
             window.navigator &&
-            window.navigator.appVersion &&
-            window.navigator.appVersion.toLowerCase().includes('windows')
+            window.navigator.userAgent &&
+            window.navigator.userAgent.toLowerCase().includes('windows')
           ) {
             height += 20
           }

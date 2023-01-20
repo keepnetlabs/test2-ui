@@ -18,10 +18,10 @@
     </v-overlay>
     <delete-integration-modal
       :status="showDeleteModal"
+      :selected-integration="selectedIntegration"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
       @handleMultipleDelete="handleDeleteMultiple"
-      :selected-integration="selectedIntegration"
     />
 
     <data-table

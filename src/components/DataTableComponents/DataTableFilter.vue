@@ -396,7 +396,7 @@ export default {
       }
     },
     getFilterButtonDisabled() {
-      this.btnKeySafariFix = `btn-key${Math.random().toString().substring(0, 5)}`
+      this.btnKeySafariFix = `btn-key-${createRandomCryptStringNumber()}`
     }
   },
   created() {

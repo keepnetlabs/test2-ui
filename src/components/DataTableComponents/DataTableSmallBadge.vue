@@ -43,6 +43,7 @@
 
 <script>
 import Badge from '../Badge'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'DataTableSmallBadge',
@@ -90,7 +91,7 @@ export default {
 
   methods: {
     getKey(index) {
-      return `${index}ab-${Math.random()}`
+      return `${index}ab-${createRandomCryptStringNumber()}`
     },
     getBadges() {
       const badges = this.scope.row[this.col.property].filter(Boolean) || []

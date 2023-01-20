@@ -76,14 +76,16 @@
               v-if="!mini && drawer"
               class="page-nav__logo-wrapper__logo"
               :src="getMainLogo"
+              alt=""
               id="img--main-logo"
             />
             <div v-else>
               <img
                 v-if="!!getLogoImage"
-                :src="getLogoImage"
-                class="menu-mini-img"
                 id="img--main-mini-logo"
+                class="menu-mini-img"
+                alt="mini-logo-image"
+                :src="getLogoImage"
               />
             </div>
           </div>
@@ -114,7 +116,12 @@
                   >
                     <div class="user-name-dropdown-font__tooltip-wrapper">
                       <div class="user-name-dropdown__logo">
-                        <img v-if="!!getLogoImage" id="img--company-logo" :src="getLogoImage" />
+                        <img
+                          v-if="!!getLogoImage"
+                          id="img--company-logo"
+                          alt="company-logo-image"
+                          :src="getLogoImage"
+                        />
                       </div>
                       <div class="user-name-dropdown__details">
                         <v-tooltip
@@ -208,7 +215,12 @@
         <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">M</div>
         <div class="v-responsive">
           <div v-if="mini && drawer">
-            <img v-if="!!getMiniLogo" :src="getMiniLogo" class="menu-mini-img" />
+            <img
+              v-if="!!getMiniLogo"
+              :src="getMiniLogo"
+              class="menu-mini-img"
+              alt="menu-mini-logo-image"
+            />
           </div>
         </div>
       </div>
