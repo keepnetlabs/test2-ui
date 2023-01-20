@@ -200,10 +200,7 @@ export default {
         })
         .catch((error) => {
           this.checkApiConnectivity = 'error'
-          this.checkApiConnectivityMessage =
-            (error?.response?.data?.validationMessages &&
-              error?.response?.data?.validationMessages[0]) ||
-            error?.response?.data?.message
+          this.checkApiConnectivityMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkPrivileges(payload)
@@ -213,10 +210,7 @@ export default {
         })
         .catch((error) => {
           this.checkPrivileges = 'error'
-          this.checkPrivilegesMessage =
-            (error?.response?.data?.validationMessages &&
-              error?.response?.data?.validationMessages[0]) ||
-            error?.response?.data?.message
+          this.checkPrivilegesMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkAllUsersAccess(payload)
@@ -226,9 +220,7 @@ export default {
         })
         .catch((error) => {
           this.checkAllUsersAccess = 'error'
-          this.checkAllUsersAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkAllUsersAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkEmailAccess(payload)
@@ -238,9 +230,7 @@ export default {
         })
         .catch((error) => {
           this.checkEmailAccess = 'error'
-          this.checkEmailAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkEmailAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkCreateNewCategory(payload)
@@ -250,9 +240,7 @@ export default {
         })
         .catch((error) => {
           this.checkCreateNewCategory = 'error'
-          this.checkCreateNewCategoryMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkCreateNewCategoryMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
         .finally(() => {
@@ -263,10 +251,7 @@ export default {
             })
             .catch((error) => {
               this.checkUpdateCategory = 'error'
-              this.checkUpdateCategoryMessage =
-                (error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message
+              this.checkUpdateCategoryMessage = this.getAxiosErrorMessage(error)
             })
         })
       checkDeleteEmail(payload)
@@ -276,9 +261,7 @@ export default {
         })
         .catch((error) => {
           this.checkDeleteEmail = 'error'
-          this.checkDeleteEmailMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkDeleteEmailMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkInboxAccess(payload)
@@ -288,11 +271,16 @@ export default {
         })
         .catch((error) => {
           this.checkInboxAccess = 'error'
-          this.checkInboxAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkInboxAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
+    },
+    getAxiosErrorMessage(error) {
+      return (
+        (error?.response?.data?.validationMessages &&
+          error?.response?.data?.validationMessages[0]) ||
+        error?.response?.data?.message
+      )
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'

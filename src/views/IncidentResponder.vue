@@ -1258,7 +1258,8 @@ export default {
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
       )
-      return template && `${template.name} ${template.isDefault ? `(${labels.Default})` : ''}`
+      const rightSideText = template.isDefault ? `(${labels.Default})` : ''
+      return template && `${template.name} ${rightSideText}`
     }
   },
   watch: {
@@ -1453,7 +1454,7 @@ export default {
       selectedCluster = this.getClusteredField(selectedCluster)
       const { columns } = this.emails
       if (selectedCluster === PROPERTY_STORE.SUBJECT) {
-        if (!(columns[0].property === PROPERTY_STORE.SUBJECT)) {
+        if (columns[0].property !== PROPERTY_STORE.SUBJECT) {
           const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[2]))
           const copyOfReportedBy = JSON.parse(JSON.stringify(this.emails.reportedByColumn))
           this.$set(this.emails.columns, 0, {
@@ -1465,7 +1466,7 @@ export default {
           this.$set(this.emails.columns, 2, copyOfReportedBy)
         }
       } else if (selectedCluster === PROPERTY_STORE.REPORTEDBY) {
-        if (!(columns[0].property === PROPERTY_STORE.REPORTEDBY)) {
+        if (columns[0].property !== PROPERTY_STORE.REPORTEDBY) {
           const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[1]))
           const copyOfSubject = JSON.parse(JSON.stringify(this.emails.subjectColumn))
           this.$set(this.emails.columns, 0, {
@@ -1667,11 +1668,11 @@ export default {
     },
     togglePlaybookModal() {
       this.selectedPlaybookId = null
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.showPlaybookModal = !this.showPlaybookModal
     },
     togglePlaybookModalWithSelected(selectedPlaybookId) {
       this.selectedPlaybookId = selectedPlaybookId
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.showPlaybookModal = !this.showPlaybookModal
     },
     getDataTableFieldLabel(text) {
       return getDataTableFieldLabel(text)
@@ -1797,7 +1798,7 @@ export default {
         this.compareAndChangeExtendedViewParams(rows, allSelections)
       }
     },
-    compareAndChangeExtendedViewParams(rows = [], allSelections) {
+    compareAndChangeExtendedViewParams(rows, allSelections) {
       if (allSelections && allSelections.length !== rows.length) {
         rows = [...this.extendedViewValue, ...rows]
       }
