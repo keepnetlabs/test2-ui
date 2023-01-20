@@ -1,7 +1,7 @@
 <template>
   <div class="target-users-map table-box-shadow">
     <v-form ref="refMapTableForm">
-      <table class="table">
+      <table class="table" aria-label="map-table">
         <tr class="target-users-map__header">
           <th
             v-for="(header, index) in mapTableData && mapTableData.headers"

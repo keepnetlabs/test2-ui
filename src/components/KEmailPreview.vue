@@ -5,6 +5,7 @@
     class="k-email-preview"
     width="100%"
     sandbox="allow-same-origin"
+    title="Email Preview"
     :srcdoc="html"
     :style="{ height }"
     :height="height"
@@ -72,8 +73,8 @@ export default {
         if (height > this.numberHeight && height > 300) {
           if (
             window.navigator &&
-            window.navigator.appVersion &&
-            window.navigator.appVersion.toLowerCase().includes('windows')
+            window.navigator.userAgent &&
+            window.navigator.userAgent.toLowerCase().includes('windows')
           ) {
             height += 20
           }

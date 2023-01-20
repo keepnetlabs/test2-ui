@@ -850,9 +850,7 @@ export default {
               },
               type: 'communities'
             }
-            incidentsData = null
           } else if (this.$parent.$refs.tsIncidents) {
-            communitiesData = null
             incidentsData = {
               tableData: this.$parent.$refs.tsIncidents.incidentList,
               searchValues: {

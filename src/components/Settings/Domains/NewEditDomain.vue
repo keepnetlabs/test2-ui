@@ -300,17 +300,13 @@ export default {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
-        this.formValues.domain = res?.data?.data?.domain || ''
+        this.formValues.domain = res?.data?.data?.domain
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
         this.formValues.proxyStatusId = this.formValues.proxyStatusId?.toString()
         this.formValues.zoneId = this.formValues.zoneId?.toString()
         this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId?.toString()
         this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId?.toString()
-
-        if (this.formValues.recordTypeId) {
-          this.isShowCustomizeDnsRecordsDetail = true
-        }
-
+        if (this.formValues.recordTypeId) this.isShowCustomizeDnsRecordsDetail = true
         delete this.formValues.availableForList
         const availableForList = res?.data?.data?.availableForList
         if (this.$refs.refMakeAvailableFor && availableForList?.length) {

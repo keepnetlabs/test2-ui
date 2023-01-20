@@ -1354,57 +1354,56 @@ export default {
       }
     },
     checkIsEdit() {
-      if (this.isEdit) {
-        this.investigationName = this?.investigationDetailsData?.name || ''
-        this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
-          ({ mailConfigurationResourceId, type }) => ({
-            mailConfigurationResourceId,
-            type
-          })
+      if (!this.isEdit) return
+      this.investigationName = this?.investigationDetailsData?.name || ''
+      this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
+        ({ mailConfigurationResourceId, type }) => ({
+          mailConfigurationResourceId,
+          type
+        })
+      )
+      this.duration = 3
+      this.targetUserType = this.investigationDetailsData.targetUserType
+      if (this.investigationDetailsData.targetUserType === 'Groups') {
+        this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
+          return {
+            name: item.targetUser,
+            resourceId: item.targetGroupResourceId
+          }
+        })
+      } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
+        this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
+          (item) => item.targetUser
         )
-        this.duration = 3
-        this.targetUserType = this.investigationDetailsData.targetUserType
-        if (this.investigationDetailsData.targetUserType === 'Groups') {
-          this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
-            return {
-              name: item.targetUser,
-              resourceId: item.targetGroupResourceId
-            }
-          })
-        } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
-          this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
-            (item) => item.targetUser
-          )
-          const newItems = this.targetUsersValue.map((email) => ({ email }))
-          this.specificUserItems = [...this.specificUserItems, ...newItems]
-        }
-        const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
-          for (let [key, value] of Object.entries(item)) {
-            if (value && key !== 'resourceId') {
-              acc.push({ option: key, text: value })
-            }
-          }
-          return acc
-        }, [])
-        const body = this?.investigationDetailsData?.bodies?.reduce((acc, item) => {
-          for (let [key, value] of Object.entries(item)) {
-            if (value && key !== 'resourceId') {
-              acc.push({ option: key, text: value })
-            }
-          }
-          return acc
-        }, [])
-        const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
-          for (let [key, value] of Object.entries(item)) {
-            if (value && key != 'resourceId') {
-              acc.push({ option: key, text: value })
-            }
-          }
-          return acc
-        }, [])
-        this.selectedAction = 'NoAction'
-        this.filterList = [...headers, ...body, ...attachments]
+        const newItems = this.targetUsersValue.map((email) => ({ email }))
+        this.specificUserItems = [...this.specificUserItems, ...newItems]
       }
+      const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
+        for (let [key, value] of Object.entries(item)) {
+          if (value && key !== 'resourceId') {
+            acc.push({ option: key, text: value })
+          }
+        }
+        return acc
+      }, [])
+      const body = this?.investigationDetailsData?.bodies?.reduce((acc, item) => {
+        for (let [key, value] of Object.entries(item)) {
+          if (value && key !== 'resourceId') {
+            acc.push({ option: key, text: value })
+          }
+        }
+        return acc
+      }, [])
+      const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
+        for (let [key, value] of Object.entries(item)) {
+          if (value && key != 'resourceId') {
+            acc.push({ option: key, text: value })
+          }
+        }
+        return acc
+      }, [])
+      this.selectedAction = 'NoAction'
+      this.filterList = [...headers, ...body, ...attachments]
     }
   }
 }

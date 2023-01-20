@@ -155,115 +155,108 @@ export default {
     },
     testConnection(isSave) {
       this.isSave = isSave
-      if (this.isValidate()) {
-        this.isLoadingStarted = true
-        this.setLoadingStates()
-        let payload = {
-          Username: this.values.Username,
-          Password: this.values.Password,
-          ServiceUrl: this.values.ServiceUrl,
-          AccountType: this.values.AccountType,
-          Email: this.values.Email,
-          XAnchorMailbox: this.values.XAnchorMailBoxHeader,
-          ExchangeVersion: this.values.ExchangeVersionLookupResourceId,
-          ResourceId: null
-        }
-        if (this.isEdit) {
-          payload.ResourceId = this.isEdit.ResourceId
-        }
-        checkApiConnectivityEWS(payload)
-          .then(() => {
-            this.checkApiConnectivity = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkApiConnectivity = 'error'
-            this.checkApiConnectivityMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkPrivilegesEWS(payload)
-          .then(() => {
-            this.checkPrivileges = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkPrivileges = 'error'
-            this.checkPrivilegesMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkInboxAccessEWS(payload)
-          .then(() => {
-            this.checkInboxAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkInboxAccess = 'error'
-            this.checkInboxAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkEmailBodyAccessEWS(payload)
-          .then(() => {
-            this.checkEmailBodyAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkEmailBodyAccess = 'error'
-            this.checkEmailBodyAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkEmailHeaderAccessEWS(payload)
-          .then(() => {
-            this.checkEmailHeaderAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkEmailHeaderAccess = 'error'
-            this.checkEmailHeaderAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-          .finally(() => {
-            checkEmailMailFilterEWS(payload)
-              .then(() => {
-                this.checkEmailMailFilter = 'success'
-                this.checkIfAllSuccess(true)
-              })
-              .catch((error) => {
-                this.checkEmailMailFilter = 'error'
-                this.checkEmailMailFilterMessage =
-                  (error.response.data.validationMessages &&
-                    error.response.data.validationMessages[0]) ||
-                  error.response.data.message
-              })
-          })
-        checkInboxAccessEWS(payload)
-          .then(() => {
-            this.checkInboxAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkInboxAccess = 'error'
-            this.checkInboxAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
+      if (!this.isValidate()) return
+      this.isLoadingStarted = true
+      this.setLoadingStates()
+      let payload = {
+        Username: this.values.Username,
+        Password: this.values.Password,
+        ServiceUrl: this.values.ServiceUrl,
+        AccountType: this.values.AccountType,
+        Email: this.values.Email,
+        XAnchorMailbox: this.values.XAnchorMailBoxHeader,
+        ExchangeVersion: this.values.ExchangeVersionLookupResourceId,
+        ResourceId: null
       }
+      if (this.isEdit) {
+        payload.ResourceId = this.isEdit.ResourceId
+      }
+      checkApiConnectivityEWS(payload)
+        .then(() => {
+          this.checkApiConnectivity = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkApiConnectivity = 'error'
+          this.checkApiConnectivityMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkPrivilegesEWS(payload)
+        .then(() => {
+          this.checkPrivileges = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkPrivileges = 'error'
+          this.checkPrivilegesMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkInboxAccessEWS(payload)
+        .then(() => {
+          this.checkInboxAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkInboxAccess = 'error'
+          this.checkInboxAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkEmailBodyAccessEWS(payload)
+        .then(() => {
+          this.checkEmailBodyAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkEmailBodyAccess = 'error'
+          this.checkEmailBodyAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkEmailHeaderAccessEWS(payload)
+        .then(() => {
+          this.checkEmailHeaderAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkEmailHeaderAccess = 'error'
+          this.checkEmailHeaderAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+        .finally(() => {
+          checkEmailMailFilterEWS(payload)
+            .then(() => {
+              this.checkEmailMailFilter = 'success'
+              this.checkIfAllSuccess(true)
+            })
+            .catch((error) => {
+              this.checkEmailMailFilter = 'error'
+              this.checkEmailMailFilterMessage =
+                (error.response.data.validationMessages &&
+                  error.response.data.validationMessages[0]) ||
+                error.response.data.message
+            })
+        })
+      checkInboxAccessEWS(payload)
+        .then(() => {
+          this.checkInboxAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkInboxAccess = 'error'
+          this.checkInboxAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'

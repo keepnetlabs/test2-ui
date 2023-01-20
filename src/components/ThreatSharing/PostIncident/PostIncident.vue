@@ -1383,7 +1383,7 @@ export default {
       required: (v) => Validations.required(v),
       default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
       minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
@@ -1392,7 +1392,7 @@ export default {
       default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
       required: (v) => Validations.required(v),
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
         if (!v) return true
@@ -1775,29 +1775,27 @@ export default {
             }
           })
           .finally(() => (this.isIncidentPreviewLoading = false))
-      } else {
-        if (selectedItem?.resourceId) {
-          this.isIncidentPreviewLoading = true
-          getSelectedEmailPreview(selectedItem.resourceId)
-            .then((response) => {
-              const { data } = response
-              this.uploadRespond = data.data
-              this.uploadRespond.initialBody = data.data.initialBody
-              this.uploadRespond.visibleBody = data.data.initialBody
-              this.uploadRespond.editableBody = response.data.data.initialBody
-              this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-              if (isInitial) {
-                this.initialFormValues = {
-                  ...this.initialFormValues,
-                  uploadRespond: {
-                    ...this.initialFormValues.uploadRespond,
-                    ...this.uploadRespond
-                  }
+      } else if (selectedItem?.resourceId) {
+        this.isIncidentPreviewLoading = true
+        getSelectedEmailPreview(selectedItem.resourceId)
+          .then((response) => {
+            const { data } = response
+            this.uploadRespond = data.data
+            this.uploadRespond.initialBody = data.data.initialBody
+            this.uploadRespond.visibleBody = data.data.initialBody
+            this.uploadRespond.editableBody = response.data.data.initialBody
+            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            if (isInitial) {
+              this.initialFormValues = {
+                ...this.initialFormValues,
+                uploadRespond: {
+                  ...this.initialFormValues.uploadRespond,
+                  ...this.uploadRespond
                 }
               }
-            })
-            .finally(() => (this.isIncidentPreviewLoading = false))
-        }
+            }
+          })
+          .finally(() => (this.isIncidentPreviewLoading = false))
       }
     },
     onCancelClicked() {

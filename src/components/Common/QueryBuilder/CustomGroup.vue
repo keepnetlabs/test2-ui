@@ -154,7 +154,7 @@ export default {
         if (this.depth === 1) {
           const childrenWrap = this.$children[0]
           childrenWrap.$children.forEach((item, index) => {
-            item.getCustomBadgeRender = !(index === childrenWrap.$children.length - 1)
+            item.getCustomBadgeRender = index !== childrenWrap.$children.length - 1
           })
         }
       })

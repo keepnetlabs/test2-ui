@@ -9,15 +9,15 @@
     autocomplete="off"
     placeholder="Search for incident"
     style="max-width: 554px;"
-    :search-input.sync="searchIncident"
     :items="listData"
     :loading="isFindIncidentLoading"
     :hide-no-data="isFindIncidentLoading"
     :slots="{ selection: true, item: true, progress: true }"
+    :filter="querySelections"
     @focus="handleFocus"
     @change="handleChange"
   >
-    <template v-slot:selection="{ attrs, item }">
+    <template #selection="{ attrs, item }">
       <v-chip
         id="select-inc-chip"
         v-bind="attrs"
@@ -84,7 +84,6 @@ export default {
     return {
       listData: [],
       backupListData: [],
-      searchIncident: '',
       isFindIncidentLoading: true,
       showLoader: false
     }
@@ -97,11 +96,6 @@ export default {
       set(value) {
         this.$emit('input', value)
       }
-    }
-  },
-  watch: {
-    searchIncident(val) {
-      val !== this.select && this.querySelections(val)
     }
   },
   created() {
@@ -119,43 +113,27 @@ export default {
       searchNotifiedMail(payload)
         .then((response) => {
           const { data } = response
-          if (this.searchIncident) {
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-            this.$nextTick(() => {
-              this.listData = this.backupListData.reduce((acc, item) => {
-                Object.values(item).find((i) => {
-                  if (
-                    typeof i === 'string' &&
-                    i.toLocaleLowerCase().includes(this.searchIncident.toLocaleLowerCase())
-                  )
-                    return acc.push(item)
-                })
-                return acc
-              }, [])
-            })
-          } else {
-            this.listData = data.data.results
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-          }
+          this.listData = data.data.results
+          this.backupListData = JSON.parse(JSON.stringify(data.data.results))
         })
         .finally(() => {
           this.isFindIncidentLoading = false
           this.showLoader = false
         })
     },
-    querySelections(val) {
-      if (!val) {
-        this.listData = this.backupListData
+    querySelections(item, queryText) {
+      if (!queryText) {
+        return true
       } else {
-        if (this.listData && this.backupListData) {
-          this.listData = this.backupListData.reduce((acc, item) => {
-            Object.values(item).find((i) => {
-              if (typeof i === 'string' && i.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
-                return acc.push(item)
-            })
-            return acc
-          }, [])
+        for (const keyValue of Object.values(item)) {
+          if (
+            typeof keyValue === 'string' &&
+            keyValue.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+          ) {
+            return true
+          }
         }
+        return false
       }
     },
     handleFocus() {

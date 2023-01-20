@@ -150,8 +150,7 @@ export function getDataTableFieldLabel(field = '') {
 }
 
 export function isOwnerOrMember(membershipStatusId) {
-  if (membershipStatusId === 1 || membershipStatusId === 2) return true
-  return false
+  return membershipStatusId === 1 || membershipStatusId === 2
 }
 
 export function isOwner(membershipStatusId) {
@@ -273,7 +272,7 @@ export function passwordComplexity(pwd) {
         }
         nTmpAlphaLC = a
         nAlphaLC++
-      } else if (arrPwd[a].match(/[0-9]/g)) {
+      } else if (arrPwd[a].match(/\d/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
           nMidChar++
         }
@@ -285,7 +284,7 @@ export function passwordComplexity(pwd) {
         }
         nTmpNumber = a
         nNumber++
-      } else if (arrPwd[a].match(/[^a-zA-Z0-9_]/g)) {
+      } else if (arrPwd[a].match(/\W/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
           nMidChar++
         }
@@ -408,9 +407,7 @@ export function passwordComplexity(pwd) {
     const arrCharsLen = arrChars.length
     for (let c = 0; c < arrCharsLen; c++) {
       let minVal = arrCharsIds[c] === 'nLength' ? parseInt(nMinPwdLen - 1) : 0
-      if (arrChars[c] === parseInt(minVal + 1)) {
-        nReqChar++
-      } else if (arrChars[c] > parseInt(minVal + 1)) {
+      if (arrChars[c] === parseInt(minVal + 1) || arrChars[c] > parseInt(minVal + 1)) {
         nReqChar++
       }
     }
@@ -655,7 +652,12 @@ export function getDefaultAxiosPayload(props, defaultOrderBy = null) {
   })
 }
 
-export function getSelectSearchPayload(payload = {}, search, key = 'name', extraFilterItems = []) {
+export function getSelectSearchPayload(
+  payload = {},
+  search = '',
+  key = 'name',
+  extraFilterItems = []
+) {
   const copyOfPayload = JSON.parse(JSON.stringify(payload))
   copyOfPayload.pageSize = 100
   copyOfPayload.pageNumber = 1

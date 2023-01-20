@@ -130,8 +130,8 @@
             outlined
             persistent-hint
             hint="*Required"
-            :rules="getRules()"
             autocomplete="disabled"
+            :rules="getRules()"
           />
         </v-col>
         <v-col v-if="query.operand === 'SenderIp'">
@@ -314,57 +314,48 @@ export default {
   },
   methods: {
     getRules() {
-      if (this.query) {
-        const { format, operator } = this.query
-        if (format === 'Email') {
-          const emailValidationArray = [
-            (v) => this.validations.required(v, labels.Required),
-            (v) =>
-              this.validations.maxLength(
-                v,
-                320,
-                labels.getMaxLengthMessage(labels.EmailAddress, 320)
-              )
-          ]
-          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-            emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
-            emailValidationArray.push((v) => {
-              if (this.validations.email(v)) {
-                return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
-              }
-              return false
-            })
-          }
-          return emailValidationArray
+      if (!this.query) return []
+      const { format, operator } = this.query
+      if (format === 'Email') {
+        const emailValidationArray = [
+          (v) => this.validations.required(v, labels.Required),
+          (v) =>
+            this.validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320))
+        ]
+        if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+          emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+          emailValidationArray.push((v) => {
+            if (this.validations.email(v)) {
+              return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          })
         }
-
-        if (format === 'Domain') {
-          const domainValidationArray = [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
-          ]
-          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-            domainValidationArray.push((v) => this.validations.domain(v, labels.InvalidDomainName))
-          }
-          return domainValidationArray
-        }
-
-        if (format === 'Regex') {
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
-          ]
-        }
-
-        if (format === 'Group') {
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
-          ]
-        }
-
-        return [(v) => this.validations.required(v, labels.Required)]
+        return emailValidationArray
       }
+      if (format === 'Domain') {
+        const domainValidationArray = [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
+        ]
+        if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+          domainValidationArray.push((v) => this.validations.domain(v, labels.InvalidDomainName))
+        }
+        return domainValidationArray
+      }
+      if (format === 'Regex') {
+        return [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
+        ]
+      }
+      if (format === 'Group') {
+        return [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
+        ]
+      }
+      return [(v) => this.validations.required(v, labels.Required)]
     },
     getPlaceholder() {
       if (!this.query?.format) return 'Enter custom field value'

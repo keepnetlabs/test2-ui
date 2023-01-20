@@ -418,6 +418,7 @@
                 <a
                   href="https://doc.keepnetlabs.com/technical-guide/phishing-incident-responder/api-settings/gsuite-api-configuration-guide"
                   target="_blank"
+                  rel="noopener"
                   style="color: #1173c1; cursor: pointer; text-decoration: none;"
                   >{{ labels.HowToCredJSON }}</a
                 >
@@ -434,25 +435,25 @@
           </form-group>
           <form-group title="Credential JSON" has-hint>
             <v-textarea
-              placeholder="Enter Credential JSON"
+              v-model.trim="googleWorkSpaceForm.authJson"
+              id="input--mail-configuration-json-credential"
               outlined
               dense
-              v-model.trim="googleWorkSpaceForm.authJson"
-              :rules="[(v) => validations.required(v, labels.Required)]"
-              hint="*Required"
               persistent-hint
-              id="input--mail-configuration-json-credential"
-              rows="2"
               no-resize
+              hint="*Required"
+              placeholder="Enter Credential JSON"
+              rows="2"
               height="160"
+              :rules="[(v) => validations.required(v, labels.Required)]"
             ></v-textarea>
           </form-group>
           <form-group title="Test Email Address" has-hint>
             <v-text-field
+              v-model.trim="googleWorkSpaceForm.email"
               placeholder="user@company.com"
               outlined
               dense
-              v-model.trim="googleWorkSpaceForm.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),

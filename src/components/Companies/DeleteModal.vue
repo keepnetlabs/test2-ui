@@ -54,13 +54,13 @@ export default {
   },
   computed: {
     getContent() {
-      return this.isMultiple
-        ? `${this.companyCount} ${
-            this.companyCount > 1 ? 'companies' : 'company'
-          } will be deleted and all data will be lost.`
-        : `${
-            this.selectedRow && this.selectedRow.companyName
-          } will be deleted and all data will be lost.`
+      if (this.isMultiple) {
+        const companyText = this.companyCount > 1 ? 'companies' : 'company'
+        return `${this.companyCount} ${companyText} will be deleted and all data will be lost.`
+      }
+      return `${
+        this.selectedRow && this.selectedRow.companyName
+      } will be deleted and all data will be lost.`
     }
   },
   methods: {

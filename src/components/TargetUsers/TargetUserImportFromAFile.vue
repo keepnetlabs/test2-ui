@@ -974,7 +974,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.responsNumbers = response.data.data
           _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
-          let data = ({ data, status } = response.data.data.items.results)
+          let data = ({ status } = response.data.data.items.results)
           let customFields
           if (data.length) {
             customFields = data[0].customFields.map((item) => {

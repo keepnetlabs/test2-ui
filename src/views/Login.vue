@@ -30,6 +30,7 @@
                     id="img--login-main-logo"
                     style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
+                    :alt="loginWhiteLabel.mainLogoUrl ? 'main-logo-login' : ''"
                   />
                 </div>
               </v-card-title>
@@ -632,7 +633,8 @@ export default {
       recaptcha: APP_CONFIG.VUE_APP_RECAPTCHA_SITEKEY,
       validEmail: false,
       validPassword: false,
-      validReset: false
+      validReset: false,
+      isSessionExpired: false
     }
   },
   created() {
@@ -754,11 +756,8 @@ export default {
         : `Welcome To ${this.loginWhiteLabel.brandName}`
     },
     getLoginDescription() {
-      return this.isSessionExpired
-        ? 'Your session has been timed out. Please log in.'
-        : this.showPasswordField
-        ? `Enter password for ${this.email}`
-        : 'Please Login'
+      if (this.isSessionExpired) return 'Your session has been timed out. Please log in.'
+      return this.showPasswordField ? `Enter password for ${this.email}` : 'Please Login'
     },
     isBackButtonRendered() {
       return [2, 3, 5, 6, 7, 8, 9].includes(this.pageNumber) || this.showPasswordField
