@@ -62,7 +62,7 @@
         <span class="tooltip-span">Remove Users</span>
       </v-tooltip>
     </template>
-    <template v-if="hasRowActions" #datatable-row-actions="{scope}">
+    <template v-if="hasRowActions" #datatable-row-actions="{ scope }">
       <TargetUserRowActionsEditButton
         :id="tableOptions.rowActions[0].id"
         :scope="scope"
@@ -468,7 +468,17 @@ export default {
       this.$emit('handleCreateGroupWithUser', selectedRow)
     },
     handleAddUsersSelectionClick() {
-      this.$emit('handleAddUsersSelectionClick', this.selections)
+      const serverSideParams = this.$refs?.refTargetGroupUsersTable?.getServerSideSelectionParams() || {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
+      }
+      this.$emit(
+        'handleAddUsersSelectionClick',
+        this.selections,
+        this.axiosPayload.filter,
+        serverSideParams,
+        this.serverSideProps
+      )
     },
     handleEditTargetUsers(selectedRow = {}) {
       this.$emit('handleEditTargetUser', selectedRow)

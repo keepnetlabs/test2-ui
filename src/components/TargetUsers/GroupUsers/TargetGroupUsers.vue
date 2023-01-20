@@ -16,7 +16,7 @@
     />
     <TargetGroupUsersAddToAnExistingGroupModal
       v-if="showAddToAnExistingGroupModal"
-      :selected-rows="getSelectedRow"
+      :bulkImportPayload="bulkImportPayload"
       :status="showAddToAnExistingGroupModal"
       @closeOverlay="toggleShowAddToAnExistingGroupModal"
       @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
@@ -94,6 +94,7 @@ export default {
       showEditUserModal: false,
       bulkDeleteErrorMessage: '',
       selectedRow: null,
+      bulkImportPayload: {},
       showAddToAnExistingGroupModal: false,
       showAddUsersModal: false,
       showRemoveUserModal: false,
@@ -165,8 +166,24 @@ export default {
       this.toggleShowAddToAnExistingGroupModal()
       this.callForSearchTargetGroupUsers()
     },
-    handleAddUsersSelectionClick(selection = []) {
-      this.selectedRow = selection
+    handleAddUsersSelectionClick(
+      selection = [],
+      filter = {},
+      serverSideParams = {},
+      serverSideProps = {}
+    ) {
+      this.selectedUserToAddToGroup = selection
+      this.bulkImportPayload = {
+        targetUserResourceIds: serverSideParams?.isSelectedAllEver
+          ? []
+          : selection.map((item) => item.resourceId),
+        selectAll: serverSideParams?.isSelectedAllEver || false,
+        excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
+        filter,
+        selectedRowCount: serverSideParams?.isSelectedAllEver
+          ? serverSideProps.totalNumberOfRecords - serverSideParams?.excludedResourceIdList.length
+          : selection.length
+      }
       this.toggleShowAddToAnExistingGroupModal()
     },
     handleRemoveUsersSelectionClick(selection = []) {
@@ -218,6 +235,13 @@ export default {
     },
     handleCreateGroupWithUser(selectedRow = {}) {
       this.selectedUserToCreateGroupWith = selectedRow
+      this.bulkImportPayload = {
+        targetUserResourceIds: [selectedRow.resourceId],
+        selectAll: false,
+        excludedResourceIdList: [],
+        filter: this.payload.filter,
+        selectedRowCount: 1
+      }
       this.toggleShowingTargetUserCreateGroupWithUser()
     },
     handleConfirmCreateUserWithGroup(groupName = '') {
@@ -227,6 +251,13 @@ export default {
     toggleShowingTargetUserCreateGroupWithUser() {
       if (this.isShowingTargetUserCreateGroupWithUser) {
         this.selectedUserToCreateGroupWith = null
+        this.bulkImportPayload = {
+          targetUserResourceIds: [],
+          selectAll: false,
+          excludedResourceIdList: [],
+          filter: this.payload.filter,
+          selectedRowCount: 0
+        }
       }
       this.isShowingTargetUserCreateGroupWithUser = !this.isShowingTargetUserCreateGroupWithUser
     }
