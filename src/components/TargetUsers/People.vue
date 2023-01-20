@@ -234,13 +234,6 @@
             :icon="tableOptions.rowActions[2].icon"
             @on-click="handleAddUserToGroup(scope.row)"
           />
-          <!-- <DefaultMenuRowAction
-            :scope="scope"
-            :id="tableOptions.rowActions[4].id"
-            :text="tableOptions.rowActions[4].name"
-            :icon="tableOptions.rowActions[4].icon"
-            @on-click="handleCreateGroupWithUser(scope.row)"
-          /> -->
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
@@ -520,12 +513,6 @@ export default {
             action: 'viewUserGroups',
             id: 'btn-view--target-users-people-row-actions'
           }
-          // {
-          //   name: 'Create a group with user',
-          //   id: 'btn-create-group-with-user--target-users-people-row-actions',
-          //   icon: 'mdi-account-multiple',
-          //   action: 'create-group-with-user'
-          // },
         ]
       },
       addUsersItems: [

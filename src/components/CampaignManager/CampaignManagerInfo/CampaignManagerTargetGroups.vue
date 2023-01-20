@@ -133,11 +133,13 @@ export default {
   methods: {
     getTargetGroupUsersTableRenderStatus() {
       const { refGroupTable } = this.$refs
-      return refGroupTable
-        ? refGroupTable.tableData.length
+      let renderStatus = true
+      if (refGroupTable) {
+        renderStatus = refGroupTable.tableData.length
           ? true
           : !refGroupTable?.$refs?.refTable?.isColumnFilterActive
-        : true
+      }
+      return renderStatus
     },
     debounce(fn, delay) {
       if (this.timeout) {

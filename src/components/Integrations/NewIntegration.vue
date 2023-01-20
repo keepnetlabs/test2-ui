@@ -1531,13 +1531,10 @@ export default {
           this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION ||
           this.selectedIntegrationType.name === INTEGRATION_TYPES.SPAMHOUSE
         ) {
-          if (
+          return !(
             this.formValues.apiUrl.length > 0 &&
             typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
-          ) {
-            return false
-          }
-          return true
+          )
         } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.ROKSIT) {
           return !(
             this.formValues.apiKeys[0] &&

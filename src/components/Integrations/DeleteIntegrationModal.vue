@@ -59,23 +59,24 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      const constructorName = this.selectedIntegration.constructor.name
-      const action =
-        constructorName === 'Object'
-          ? 'handleDelete'
-          : constructorName === 'Array'
-          ? this.selectedIntegration.length === 1
-            ? 'handleDelete'
-            : 'handleMultipleDelete'
-          : 'handleDelete'
-      const data =
-        constructorName === 'Object'
-          ? this.selectedIntegration
-          : constructorName === 'Array' && this.selectedIntegration.length === 1
-          ? this.selectedIntegration[0]
-          : this.selectedIntegration
+      const action = this.getActionName()
+      const data = this.getActionData()
       this.$emit(action, data)
       this.closeModal()
+    },
+    getActionName() {
+      const constructorName = this.selectedIntegration.constructor.name
+      if (constructorName === 'Object') return 'handleDelete'
+      else if (constructorName === 'Array')
+        return this.selectedIntegration.length === 1 ? 'handleDelete' : 'handleMultipleDelete'
+      else return 'handleDelete'
+    },
+    getActionData() {
+      const constructorName = this.selectedIntegration.constructor.name
+      if (constructorName === 'Object') return this.selectedIntegration
+      else if (constructorName === 'Array' && this.selectedIntegration.length === 1)
+        return this.selectedIntegration[0]
+      else return this.selectedIntegration
     }
   }
 }

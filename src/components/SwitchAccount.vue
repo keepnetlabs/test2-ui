@@ -235,15 +235,12 @@ export default {
             }
             obj = obj[path[i]]
           }
-
           if (obj == null) return fallback
-
           return obj[path[last]] === undefined ? fallback : obj[path[last]]
         }
-
-        function filterTreeItem(item, search = '', textKey) {
+        function filterTreeItem(item, search, textKey) {
           const text = getObjectValueByPath(item, textKey)
-          return text && text.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1
+          return text && text.toLocaleLowerCase().indexOf(search?.toLocaleLowerCase()) > -1
         }
         function filterTreeItems(filter, item, search, idKey, textKey, childrenKey, excluded) {
           if (filter(item, search, textKey)) {
@@ -254,10 +251,8 @@ export default {
 
           if (children) {
             let match = false
-            for (let i = 0; i < children.length; i++) {
-              if (
-                filterTreeItems(filter, children[i], search, idKey, textKey, childrenKey, excluded)
-              ) {
+            for (const child of children) {
+              if (filterTreeItems(filter, child, search, idKey, textKey, childrenKey, excluded)) {
                 match = true
               }
             }
@@ -267,10 +262,10 @@ export default {
           excluded.add(getObjectValueByPath(item, idKey))
           return false
         }
-        for (let i = 0; i < defaultOrderedItems.length; i++) {
+        for (const defaultOrderedItem of defaultOrderedItems) {
           filterTreeItems(
             filterTreeItem,
-            defaultOrderedItems[i],
+            defaultOrderedItem,
             this.searchedCompanyText,
             'resourceId',
             'name',

@@ -63,7 +63,6 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxLog, getSandboxLog } from '@/api/sandbox'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   createAxiosPayloadForSandboxLogs,
   integrationTypesEnum,

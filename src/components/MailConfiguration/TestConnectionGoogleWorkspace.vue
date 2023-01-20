@@ -176,123 +176,105 @@ export default {
     },
     testConnection(isSave) {
       this.isSave = isSave
-      if (this.isValidate()) {
-        this.isLoadingStarted = true
-        this.setLoadingStates()
-        let payload = {
-          CredentialJson: this.values.authJson,
-          Email: this.values.email,
-          ResourceId: null
-        }
-        if (this.isEdit) {
-          payload.ResourceId = this.isEdit.resourceId
-        }
-        checkApiConnectivityGoogleWorkspace(payload)
-          .then(() => {
-            this.checkApiConnectivity = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkApiConnectivity = 'error'
-            this.checkApiConnectivityMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkPrivilegesGoogleWorkspace(payload)
-          .then(() => {
-            this.checkPrivileges = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkPrivileges = 'error'
-            this.checkPrivilegesMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkAllUsersAccessGoogleWorkspace(payload)
-          .then(() => {
-            this.checkAllUsersAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkAllUsersAccess = 'error'
-            this.checkAllUsersAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkEmailAccessGoogleWorkspace(payload)
-          .then(() => {
-            this.checkEmailAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkEmailAccess = 'error'
-            this.checkEmailAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkCreateNewCategoryGoogleWorkspace(payload)
-          .then(() => {
-            this.checkCreateNewCategory = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkCreateNewCategory = 'error'
-            this.checkCreateNewCategoryMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-          .finally(() => {
-            checkUpdateCategoryGoogleWorkspace(payload)
-              .then(() => {
-                this.checkUpdateCategory = 'success'
-                this.checkIfAllSuccess(true)
-              })
-              .catch((error) => {
-                this.checkUpdateCategory = 'error'
-                this.checkUpdateCategoryMessage =
-                  (error.response.data.validationMessages &&
-                    error.response.data.validationMessages[0]) ||
-                  error.response.data.message
-              })
-          })
-        checkDeleteEmailGoogleWorkspace(payload)
-          .then(() => {
-            this.checkDeleteEmail = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkDeleteEmail = 'error'
-            this.checkDeleteEmailMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkInboxAccessGoogleWorkspace(payload)
-          .then(() => {
-            this.checkInboxAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkInboxAccess = 'error'
-            this.checkInboxAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
+      if (!this.isValidate()) return
+      this.isLoadingStarted = true
+      this.setLoadingStates()
+      let payload = {
+        CredentialJson: this.values.authJson,
+        Email: this.values.email,
+        ResourceId: null
       }
+      if (this.isEdit) {
+        payload.ResourceId = this.isEdit.resourceId
+      }
+      checkApiConnectivityGoogleWorkspace(payload)
+        .then(() => {
+          this.checkApiConnectivity = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkApiConnectivity = 'error'
+          this.checkApiConnectivityMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+      checkPrivilegesGoogleWorkspace(payload)
+        .then(() => {
+          this.checkPrivileges = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkPrivileges = 'error'
+          this.checkPrivilegesMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+      checkAllUsersAccessGoogleWorkspace(payload)
+        .then(() => {
+          this.checkAllUsersAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkAllUsersAccess = 'error'
+          this.checkAllUsersAccessMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+      checkEmailAccessGoogleWorkspace(payload)
+        .then(() => {
+          this.checkEmailAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkEmailAccess = 'error'
+          this.checkEmailAccessMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+      checkCreateNewCategoryGoogleWorkspace(payload)
+        .then(() => {
+          this.checkCreateNewCategory = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkCreateNewCategory = 'error'
+          this.checkCreateNewCategoryMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+        .finally(() => {
+          checkUpdateCategoryGoogleWorkspace(payload)
+            .then(() => {
+              this.checkUpdateCategory = 'success'
+              this.checkIfAllSuccess(true)
+            })
+            .catch((error) => {
+              this.checkUpdateCategory = 'error'
+              this.checkUpdateCategoryMessage = this.getAxiosErrorMessage(error)
+            })
+        })
+      checkDeleteEmailGoogleWorkspace(payload)
+        .then(() => {
+          this.checkDeleteEmail = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkDeleteEmail = 'error'
+          this.checkDeleteEmailMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+      checkInboxAccessGoogleWorkspace(payload)
+        .then(() => {
+          this.checkInboxAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkInboxAccess = 'error'
+          this.checkInboxAccessMessage = this.getAxiosErrorMessage(error)
+          this.checkIfAllSuccess(false)
+        })
+    },
+    getAxiosErrorMessage(error) {
+      return (
+        (error?.response?.data?.validationMessages &&
+          error?.response?.data?.validationMessages[0]) ||
+        error?.response?.data?.message
+      )
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'

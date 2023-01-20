@@ -150,8 +150,7 @@ export function getDataTableFieldLabel(field = '') {
 }
 
 export function isOwnerOrMember(membershipStatusId) {
-  if (membershipStatusId === 1 || membershipStatusId === 2) return true
-  return false
+  return membershipStatusId === 1 || membershipStatusId === 2
 }
 
 export function isOwner(membershipStatusId) {
@@ -199,96 +198,16 @@ export function setGlobalUserData(userData) {
   return currentUserData
 }
 
+export function strReverse(oldString = '') {
+  let newString = ''
+  for (let s = 0; s < oldString.length; s++) {
+    newString = oldString.charAt(s) + newString
+  }
+  return newString
+}
+
 export function passwordComplexity(pwd) {
-  String.prototype.strReverse = function () {
-    var newstring = ''
-    for (var s = 0; s < this.length; s++) {
-      newstring = this.charAt(s) + newstring
-    }
-    return newstring
-    //strOrig = ' texttotrim ';
-    //strReversed = strOrig.revstring();
-  }
-  function initPwdChk(restart) {
-    /* Reset all form values to their default */
-    var arrZeros = [
-      'nLength',
-      'nAlphaUC',
-      'nAlphaLC',
-      'nNumber',
-      'nSymbol',
-      'nMidChar',
-      'nRequirements',
-      'nAlphasOnly',
-      'nNumbersOnly',
-      'nRepChar',
-      'nConsecAlphaUC',
-      'nConsecAlphaLC',
-      'nConsecNumber',
-      'nSeqAlpha',
-      'nSeqNumber',
-      'nSeqSymbol',
-      'nLengthBonus',
-      'nAlphaUCBonus',
-      'nAlphaLCBonus',
-      'nNumberBonus',
-      'nSymbolBonus',
-      'nMidCharBonus',
-      'nRequirementsBonus',
-      'nAlphasOnlyBonus',
-      'nNumbersOnlyBonus',
-      'nRepCharBonus',
-      'nConsecAlphaUCBonus',
-      'nConsecAlphaLCBonus',
-      'nConsecNumberBonus',
-      'nSeqAlphaBonus',
-      'nSeqNumberBonus',
-      'nSeqSymbolBonus'
-    ]
-    var arrPassPars = [
-      'nAlphasOnlyBonus',
-      'nNumbersOnlyBonus',
-      'nRepCharBonus',
-      'nConsecAlphaUCBonus',
-      'nConsecAlphaLCBonus',
-      'nConsecNumberBonus',
-      'nSeqAlphaBonus',
-      'nSeqNumberBonus',
-      'nSeqSymbolBonus'
-    ]
-    var arrPassDivs = [
-      'div_nAlphasOnly',
-      'div_nNumbersOnly',
-      'div_nRepChar',
-      'div_nConsecAlphaUC',
-      'div_nConsecAlphaLC',
-      'div_nConsecNumber',
-      'div_nSeqAlpha',
-      'div_nSeqNumber',
-      'div_nSeqSymbol'
-    ]
-    var arrFailPars = [
-      'nLengthBonus',
-      'nAlphaUCBonus',
-      'nAlphaLCBonus',
-      'nNumberBonus',
-      'nSymbolBonus',
-      'nMidCharBonus',
-      'nRequirementsBonus'
-    ]
-    var arrFailDivs = [
-      'div_nLength',
-      'div_nAlphaUC',
-      'div_nAlphaLC',
-      'div_nNumber',
-      'div_nSymbol',
-      'div_nMidChar',
-      'div_nRequirements'
-    ]
-  }
-  // Simultaneous variable declaration and value assignment aren't supported in IE apparently
-  // so I'm forced to assign the same value individually per var to support a crappy browser *sigh*
-  var nScore = 0,
+  let nScore = 0,
     nLength = 0,
     nAlphaUC = 0,
     nAlphaLC = 0,
@@ -296,8 +215,6 @@ export function passwordComplexity(pwd) {
     nSymbol = 0,
     nMidChar = 0,
     nRequirements = 0,
-    nAlphasOnly = 0,
-    nNumbersOnly = 0,
     nUnqChar = 0,
     nRepChar = 0,
     nRepInc = 0,
@@ -310,62 +227,33 @@ export function passwordComplexity(pwd) {
     nSeqNumber = 0,
     nSeqSymbol = 0,
     nSeqChar = 0,
-    nReqChar = 0,
-    nMultConsecCharType = 0
-  var nMultRepChar = 1,
-    nMultConsecSymbol = 1
-  var nMultMidChar = 2,
-    nMultRequirements = 2,
+    nReqChar = 0
+  let nMultMidChar = 2,
     nMultConsecAlphaUC = 2,
     nMultConsecAlphaLC = 2,
     nMultConsecNumber = 2
-  var nReqCharType = 3,
-    nMultAlphaUC = 3,
-    nMultAlphaLC = 3,
-    nMultSeqAlpha = 3,
+  let nMultSeqAlpha = 3,
     nMultSeqNumber = 3,
     nMultSeqSymbol = 3
-  var nMultLength = 4,
+  let nMultLength = 4,
     nMultNumber = 4
-  var nMultSymbol = 6
-  var nTmpAlphaUC = '',
+  let nMultSymbol = 6
+  let nTmpAlphaUC = '',
     nTmpAlphaLC = '',
     nTmpNumber = '',
     nTmpSymbol = ''
-  var sAlphaUC = '0',
-    sAlphaLC = '0',
-    sNumber = '0',
-    sSymbol = '0',
-    sMidChar = '0',
-    sRequirements = '0',
-    sAlphasOnly = '0',
-    sNumbersOnly = '0',
-    sRepChar = '0',
-    sConsecAlphaUC = '0',
-    sConsecAlphaLC = '0',
-    sConsecNumber = '0',
-    sSeqAlpha = '0',
-    sSeqNumber = '0',
-    sSeqSymbol = '0'
-  var sAlphas = 'abcdefghijklmnopqrstuvwxyz'
-  var sNumerics = '01234567890'
-  var sSymbols = ')!@#$%^&*()'
-  var sComplexity = 'Too Short'
-  var sStandards = 'Below'
-  var nMinPwdLen = 8
-  if (document.all) {
-    var nd = 0
-  } else {
-    var nd = 1
-  }
+  const sAlphas = 'abcdefghijklmnopqrstuvwxyz'
+  const sNumerics = '01234567890'
+  const sSymbols = ')!@#$%^&*()'
+  const nMinPwdLen = 8
   if (pwd) {
     nScore = parseInt(pwd.length * nMultLength)
     nLength = pwd.length
-    var arrPwd = pwd.replace(/\s+/g, '').split(/\s*/)
-    var arrPwdLen = arrPwd.length
+    let arrPwd = pwd.replace(/\s+/g, '').split(/\s*/)
+    let arrPwdLen = arrPwd.length
 
     /* Loop through password to check for Symbol, Numeric, Lowercase and Uppercase pattern matches */
-    for (var a = 0; a < arrPwdLen; a++) {
+    for (let a = 0; a < arrPwdLen; a++) {
       if (arrPwd[a].match(/[A-Z]/g)) {
         if (nTmpAlphaUC !== '') {
           if (nTmpAlphaUC + 1 == a) {
@@ -384,7 +272,7 @@ export function passwordComplexity(pwd) {
         }
         nTmpAlphaLC = a
         nAlphaLC++
-      } else if (arrPwd[a].match(/[0-9]/g)) {
+      } else if (arrPwd[a].match(/\d/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
           nMidChar++
         }
@@ -396,7 +284,7 @@ export function passwordComplexity(pwd) {
         }
         nTmpNumber = a
         nNumber++
-      } else if (arrPwd[a].match(/[^a-zA-Z0-9_]/g)) {
+      } else if (arrPwd[a].match(/\W/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
           nMidChar++
         }
@@ -410,8 +298,8 @@ export function passwordComplexity(pwd) {
         nSymbol++
       }
       /* Internal loop through password to check for repeat characters */
-      var bCharExists = false
-      for (var b = 0; b < arrPwdLen; b++) {
+      let bCharExists = false
+      for (let b = 0; b < arrPwdLen; b++) {
         if (arrPwd[a] == arrPwd[b] && a != b) {
           /* repeat character exists */
           bCharExists = true
@@ -432,212 +320,109 @@ export function passwordComplexity(pwd) {
     }
 
     /* Check for sequential alpha string patterns (forward and reverse) */
-    for (var s = 0; s < 23; s++) {
-      var sFwd = sAlphas.substring(s, parseInt(s + 3))
-      var sRev = sFwd.strReverse()
-      if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
+    for (let s = 0; s < 23; s++) {
+      let sFwd = sAlphas.substring(s, parseInt(s + 3))
+      let sRev = strReverse(sFwd)
+      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
         nSeqAlpha++
         nSeqChar++
       }
     }
-
     /* Check for sequential numeric string patterns (forward and reverse) */
-    for (var s = 0; s < 8; s++) {
-      var sFwd = sNumerics.substring(s, parseInt(s + 3))
-      var sRev = sFwd.strReverse()
-      if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
+    for (let s = 0; s < 8; s++) {
+      let sFwd = sNumerics.substring(s, parseInt(s + 3))
+      let sRev = strReverse(sFwd)
+      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
         nSeqNumber++
         nSeqChar++
       }
     }
-
     /* Check for sequential symbol string patterns (forward and reverse) */
-    for (var s = 0; s < 8; s++) {
-      var sFwd = sSymbols.substring(s, parseInt(s + 3))
-      var sRev = sFwd.strReverse()
-      if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
+    for (let s = 0; s < 8; s++) {
+      let sFwd = sSymbols.substring(s, parseInt(s + 3))
+      let sRev = strReverse(sFwd)
+      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
         nSeqSymbol++
         nSeqChar++
       }
     }
 
-    /* Modify overall score value based on usage vs requirements */
-
     /* General point assignment */
     if (nAlphaUC > 0 && nAlphaUC < nLength) {
       nScore = parseInt(nScore + (nLength - nAlphaUC) * 2)
-      sAlphaUC = '+ ' + parseInt((nLength - nAlphaUC) * 2)
     }
     if (nAlphaLC > 0 && nAlphaLC < nLength) {
       nScore = parseInt(nScore + (nLength - nAlphaLC) * 2)
-      sAlphaLC = '+ ' + parseInt((nLength - nAlphaLC) * 2)
     }
     if (nNumber > 0 && nNumber < nLength) {
       nScore = parseInt(nScore + nNumber * nMultNumber)
-      sNumber = '+ ' + parseInt(nNumber * nMultNumber)
     }
     if (nSymbol > 0) {
       nScore = parseInt(nScore + nSymbol * nMultSymbol)
-      sSymbol = '+ ' + parseInt(nSymbol * nMultSymbol)
     }
     if (nMidChar > 0) {
       nScore = parseInt(nScore + nMidChar * nMultMidChar)
-      sMidChar = '+ ' + parseInt(nMidChar * nMultMidChar)
     }
 
     /* Point deductions for poor practices */
     if ((nAlphaLC > 0 || nAlphaUC > 0) && nSymbol === 0 && nNumber === 0) {
       // Only Letters
       nScore = parseInt(nScore - nLength)
-      nAlphasOnly = nLength
-      sAlphasOnly = '- ' + nLength
     }
     if (nAlphaLC === 0 && nAlphaUC === 0 && nSymbol === 0 && nNumber > 0) {
       // Only Numbers
       nScore = parseInt(nScore - nLength)
-      nNumbersOnly = nLength
-      sNumbersOnly = '- ' + nLength
     }
     if (nRepChar > 0) {
       // Same character exists more than once
       nScore = parseInt(nScore - nRepInc)
-      sRepChar = '- ' + nRepInc
     }
     if (nConsecAlphaUC > 0) {
       // Consecutive Uppercase Letters exist
       nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC)
-      sConsecAlphaUC = '- ' + parseInt(nConsecAlphaUC * nMultConsecAlphaUC)
     }
     if (nConsecAlphaLC > 0) {
       // Consecutive Lowercase Letters exist
       nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC)
-      sConsecAlphaLC = '- ' + parseInt(nConsecAlphaLC * nMultConsecAlphaLC)
     }
     if (nConsecNumber > 0) {
       // Consecutive Numbers exist
       nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber)
-      sConsecNumber = '- ' + parseInt(nConsecNumber * nMultConsecNumber)
     }
     if (nSeqAlpha > 0) {
       // Sequential alpha strings exist (3 characters or more)
       nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha)
-      sSeqAlpha = '- ' + parseInt(nSeqAlpha * nMultSeqAlpha)
     }
     if (nSeqNumber > 0) {
       // Sequential numeric strings exist (3 characters or more)
       nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber)
-      sSeqNumber = '- ' + parseInt(nSeqNumber * nMultSeqNumber)
     }
     if (nSeqSymbol > 0) {
       // Sequential symbol strings exist (3 characters or more)
       nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol)
-      sSeqSymbol = '- ' + parseInt(nSeqSymbol * nMultSeqSymbol)
     }
-
     /* Determine if mandatory requirements have been met and set image indicators accordingly */
-    var arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol]
-    var arrCharsIds = ['nLength', 'nAlphaUC', 'nAlphaLC', 'nNumber', 'nSymbol']
-    var arrCharsLen = arrChars.length
-    for (var c = 0; c < arrCharsLen; c++) {
-      if (arrCharsIds[c] == 'nLength') {
-        var minVal = parseInt(nMinPwdLen - 1)
-      } else {
-        var minVal = 0
-      }
-      if (arrChars[c] == parseInt(minVal + 1)) {
+    const arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol]
+    const arrCharsIds = ['nLength', 'nAlphaUC', 'nAlphaLC', 'nNumber', 'nSymbol']
+    const arrCharsLen = arrChars.length
+    for (let c = 0; c < arrCharsLen; c++) {
+      let minVal = arrCharsIds[c] === 'nLength' ? parseInt(nMinPwdLen - 1) : 0
+      if (arrChars[c] === parseInt(minVal + 1) || arrChars[c] > parseInt(minVal + 1)) {
         nReqChar++
-      } else if (arrChars[c] > parseInt(minVal + 1)) {
-        nReqChar++
-      } else {
       }
     }
     nRequirements = nReqChar
-    if (pwd.length >= nMinPwdLen) {
-      var nMinReqChars = 3
-    } else {
-      var nMinReqChars = 4
-    }
+    let nMinReqChars = pwd.length >= nMinPwdLen ? 3 : 4
     if (nRequirements > nMinReqChars) {
-      // One or more required characters exist
       nScore = parseInt(nScore + nRequirements * 2)
-      sRequirements = '+ ' + parseInt(nRequirements * 2)
     }
-
-    /* Determine if additional bonuses need to be applied and set image indicators accordingly */
-    var arrChars = [nMidChar, nRequirements]
-    var arrCharsIds = ['nMidChar', 'nRequirements']
-    var arrCharsLen = arrChars.length
-    for (var c = 0; c < arrCharsLen; c++) {
-      if (arrCharsIds[c] == 'nRequirements') {
-        var minVal = nMinReqChars
-      } else {
-        var minVal = 0
-      }
-      if (arrChars[c] == parseInt(minVal + 1)) {
-      } else if (arrChars[c] > parseInt(minVal + 1)) {
-      } else {
-      }
-    }
-
-    /* Determine if suggested requirements have been met and set image indicators accordingly */
-    var arrChars = [
-      nAlphasOnly,
-      nNumbersOnly,
-      nRepChar,
-      nConsecAlphaUC,
-      nConsecAlphaLC,
-      nConsecNumber,
-      nSeqAlpha,
-      nSeqNumber,
-      nSeqSymbol
-    ]
-    var arrCharsIds = [
-      'nAlphasOnly',
-      'nNumbersOnly',
-      'nRepChar',
-      'nConsecAlphaUC',
-      'nConsecAlphaLC',
-      'nConsecNumber',
-      'nSeqAlpha',
-      'nSeqNumber',
-      'nSeqSymbol'
-    ]
-    var arrCharsLen = arrChars.length
-    for (var c = 0; c < arrCharsLen; c++) {
-      if (arrChars[c] > 0) {
-      } else {
-      }
-    }
-
-    var level = 'progress-bar-danger'
-
     /* Determine complexity based on overall score */
     if (nScore > 100) {
       nScore = 100
     } else if (nScore < 0) {
       nScore = 0
     }
-    if (nScore >= 0 && nScore < 20) {
-      sComplexity = 'Very Weak'
-    } else if (nScore >= 20 && nScore < 40) {
-      sComplexity = 'Weak'
-    } else if (nScore >= 40 && nScore < 60) {
-      sComplexity = 'Good'
-      level = 'progress-bar-warning'
-    } else if (nScore >= 60 && nScore < 80) {
-      sComplexity = 'Strong'
-      level = 'progress-bar-success'
-    } else if (nScore >= 80 && nScore <= 100) {
-      sComplexity = 'Very Strong'
-      level = 'progress-bar-info'
-    }
-
     return nScore
-
-    /* Display updated score criteria to client */
-  } else {
-    /* Display default score criteria to client */
-    initPwdChk()
   }
 }
 
@@ -867,7 +652,12 @@ export function getDefaultAxiosPayload(props, defaultOrderBy = null) {
   })
 }
 
-export function getSelectSearchPayload(payload = {}, search, key = 'name', extraFilterItems = []) {
+export function getSelectSearchPayload(
+  payload = {},
+  search = '',
+  key = 'name',
+  extraFilterItems = []
+) {
   const copyOfPayload = JSON.parse(JSON.stringify(payload))
   copyOfPayload.pageSize = 100
   copyOfPayload.pageNumber = 1

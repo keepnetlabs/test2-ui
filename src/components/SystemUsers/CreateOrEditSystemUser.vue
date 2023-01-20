@@ -198,13 +198,10 @@ export default {
     if (!this.selectedRow) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-
-    let allRoles = []
-    let availableRoles = []
-    const response = await getSystemUsersRole()
-    if (response) {
-      allRoles = response.data.data
-      availableRoles = allRoles
+    try {
+      const response = await getSystemUsersRole()
+      let allRoles = response.data.data
+      let availableRoles = allRoles
       if (this.selectedRow) {
         const {
           firstName,
@@ -252,7 +249,7 @@ export default {
         }
       }
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
+    } catch (e) {}
   }
 }
 </script>

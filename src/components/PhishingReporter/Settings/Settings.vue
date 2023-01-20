@@ -161,13 +161,10 @@ export default {
     },
     callForCreatePhishingReporter(updatedValues) {
       this.saveDisable = true
-      let addinSettings = this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
-      const emailSettings =
-        this.$refs.refEmailSettings && this.$refs.refEmailSettings.getFormValues()
-      const otherSettings =
-        this.$refs.refOtherSettings && this.$refs.refOtherSettings.getFormValues()
-      const diagnosticTool =
-        this.$refs.refDiagnosticTool && this.$refs.refDiagnosticTool.getFormValues()
+      let addinSettings = this?.$refs?.refAddinSettings?.getFormValues() || {}
+      const emailSettings = this?.$refs?.refEmailSettings?.getFormValues() || {}
+      const otherSettings = this?.$refs?.refOtherSettings?.getFormValues() || {}
+      const diagnosticTool = this?.$refs?.refDiagnosticTool?.getFormValues() || {}
 
       addinSettings = {
         ...addinSettings,

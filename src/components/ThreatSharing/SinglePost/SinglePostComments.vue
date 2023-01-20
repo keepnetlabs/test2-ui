@@ -2,10 +2,10 @@
   <div class="w-100">
     <app-dialog
       :status="isWantToDeleteComment"
-      @changeStatus="isWantToDeleteComment = false"
       icon="mdi-delete"
       title="Delete Comment?"
       body="This comment will be deleted from the post"
+      @changeStatus="isWantToDeleteComment = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -20,23 +20,22 @@
     </PostCardLoading>
     <div
       v-if="!commentsLoading"
-      class="preview-comments"
-      :class="{ 'open-comments': commentOpened }"
+      :class="{ 'preview-comments': true, 'open-comments': commentOpened }"
     >
       <v-form ref="refCommentForm" class="add-comment-row" onSubmit="return false;">
         <InputEntityName
           v-model.trim="addCommentValue"
           :id="'single-post-comment-' + post.communityPostResourceId"
           class="comment-input"
-          initialPlaceholder="Write your comment here"
-          :initialRules="commentRules"
+          initial-placeholder="Write your comment here"
+          :initial-rules="commentRules"
         />
         <v-btn
           :id="'single-post-send-comment' + post.communityPostResourceId"
-          @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
           class="send-btn"
           type="button"
           :disabled="!getCreateCommentPermission || isPostButtonDisabled"
+          @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
         >
           <v-icon>mdi-send</v-icon>
           SEND
@@ -59,14 +58,14 @@
                 <p class="the-comment">{{ com.comment }}</p>
               </div>
               <div
-                style="width: 20%; text-align: right;"
                 v-if="canDeleteOrEditComment('update') || canDeleteOrEditComment('delete')"
+                style="width: 20%; text-align: right;"
               >
                 <button
                   v-if="canDeleteOrEditComment('update')"
-                  @click="editRelativeComment(com)"
                   class="pr-4"
                   :disabled="!com.canEdit"
+                  @click="editRelativeComment(com)"
                 >
                   <v-icon class="close-icon" :disabled="!com.canEdit">mdi-pencil</v-icon>
                 </button>
@@ -87,9 +86,9 @@
                   v-model.trim="com.commentValue"
                   :id="'single-post-comment-' + com.resourceId"
                   class="comment-input"
+                  hide-details
                   initial-placeholder="Write your comment here"
                   :initial-rules="commentRules"
-                  hideDetails
                 />
                 <v-btn
                   class="send-btn"
@@ -101,7 +100,7 @@
                 </v-btn>
               </div>
               <div style="width: 20%; text-align: right;">
-                <button @click="editRelativeComment(com)" :disabled="!com.canDelete">
+                <button :disabled="!com.canDelete" @click="editRelativeComment(com)">
                   <v-icon class="close-icon" :disabled="!com.canDelete">mdi-close</v-icon>
                 </button>
               </div>
@@ -203,7 +202,10 @@ export default {
             this.postComments = []
           }
         })
-        .finally(() => ((this.isEditCommentButtonDisabled = false), (this.commentsLoading = false)))
+        .finally(() => {
+          this.isEditCommentButtonDisabled = false
+          this.commentsLoading = false
+        })
     },
     addPostComment(postId) {
       this.isPostButtonDisabled = true

@@ -59,7 +59,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
-      <template #datatable-custom-column="{ scope }">
+      <template v-slot:datatable-custom-column="{ scope }">
         <span
           v-if="scope.column.property === 'status'"
           :id="`text--send-attack-result-${scope.$index}`"

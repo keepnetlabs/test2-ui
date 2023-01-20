@@ -9,10 +9,6 @@
   cursor: pointer;
 }
 
-.cursor-default{
-  cursor:default;
-}
-
 .bg-image-incident-analysis {
   background-image: linear-gradient(to bottom, #f3a0a0, #f56c6c 99%);
 }
@@ -72,6 +68,10 @@
 }
 .position-relative {
   position: relative;
+}
+
+.cursor-default{
+  cursor:default !important;
 }
 
 .bg-white {

@@ -80,11 +80,7 @@ export default {
     handleTelChange(newVal) {
       if (newVal.split('+').length > 2) {
         this.setOldValueBySplitter('+', newVal)
-      } else if (
-        (this.$refs.refTelInput.phoneObject.regionCode === 'GB' ||
-          this.$refs.refTelInput.phoneObject.regionCode === 'TR') &&
-        newVal.includes('-')
-      ) {
+      } else if (this.isRegionGBOrTRAndHasHyphen(newVal)) {
         this.setOldValueBySplitter('-', newVal)
       } else if (
         newVal.length > 12 &&
@@ -112,6 +108,13 @@ export default {
         this.$refs.refTelInput.phone = newVal
         this.$emit('input', newVal)
       }
+    },
+    isRegionGBOrTRAndHasHyphen(val) {
+      return (
+        (this.$refs.refTelInput.phoneObject.regionCode === 'GB' ||
+          this.$refs.refTelInput.phoneObject.regionCode === 'TR') &&
+        val.includes('-')
+      )
     },
     handleTelBlur() {
       this.validatePhoneNumber()

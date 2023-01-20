@@ -704,11 +704,7 @@ export default {
       }
     },
     'formData.LicenseStartDate'(newVal, oldVal) {
-      if (oldVal && !newVal) {
-        this.startDateValidation = 'Start date should be picked'
-      } else {
-        this.startDateValidation = ''
-      }
+      this.startDateValidation = oldVal && !newVal ? 'Start date should be picked' : ''
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
       if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
         this.expiryPeriodChange()
@@ -964,7 +960,6 @@ export default {
         const [endFirstPart, endSecondPart, endThirdPart] = this.formData.LicenseEndDate.split(
           ' '
         )[0].split('/')
-
         let LicenseStartDate, LicenseEndDate
         if (this.dateFormat === 'YYYY/MM/DD') {
           LicenseStartDate = `${startFirstPart}-${startSecondPart}-${startThirdPart}`
@@ -972,9 +967,6 @@ export default {
         } else if (this.dateFormat === 'MM/DD/YYYY') {
           LicenseStartDate = `${startThirdPart}-${startFirstPart}-${startSecondPart}`
           LicenseEndDate = `${endThirdPart}-${endFirstPart}-${endSecondPart}`
-        } else if (this.dateFormat === 'DD/MM/YYYY') {
-          LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
-          LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`
         } else {
           LicenseStartDate = `${startThirdPart}-${startSecondPart}-${startFirstPart}`
           LicenseEndDate = `${endThirdPart}-${endSecondPart}-${endFirstPart}`

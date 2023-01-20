@@ -174,12 +174,9 @@ export default {
     },
     validateForm() {
       const serverSideSelectionParams = this.getServerSideSelectionParams()
-      const comparator =
-        this.selectedRadioGroupIndex === 1
-          ? serverSideSelectionParams?.isSelectedAllEver
-            ? true
-            : this?.selectedLDAPItems?.length
-          : true
+      let comparator = true
+      if (this.selectedRadioGroupIndex === 1 && !serverSideSelectionParams?.isSelectedAllEver)
+        comparator = this.selectedLDAPItems.length
       return this?.$refs?.refForm?.validate() && comparator
     },
     handleTableSelectionChange(selectedLDAPItems) {

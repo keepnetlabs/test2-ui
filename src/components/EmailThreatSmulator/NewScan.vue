@@ -63,9 +63,9 @@
                   <v-container fill-height fluid size="14">
                     <v-icon class="pa-2" size="24" marig color="#f56c6c"> mdi-close-circle </v-icon>
                     <strong
-                      class="pa-2"
                       v-if="submitError.isArray"
                       v-for="(error, index) in submitError.message"
+                      class="pa-2"
                       :key="index"
                     >
                       {{ error }}

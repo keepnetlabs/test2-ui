@@ -88,7 +88,7 @@ export default {
     return {
       axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
       serverSideProps: new ServerSideProps(),
-      confirmButtonDisabled: true,
+      confirmButtonDisabled: false,
       loading: false,
       tableData: [],
       tableOptions: {
@@ -158,7 +158,7 @@ export default {
   },
   computed: {
     getConfirmButtonDisabled() {
-      return !this.selectedTargetGroups.length
+      return !this.selectedTargetGroups.length || this.confirmButtonDisabled
     },
     getTitle() {
       let text = 'User'
@@ -234,6 +234,7 @@ export default {
       this.callForTargetGroups()
     },
     handleConfirm() {
+      this.confirmButtonDisabled = true
       const targetGroupResourceIds = this.selectedTargetGroups.map((group) => group.resourceId)
       const payload = {
         ...this.bulkImportPayload,
@@ -241,6 +242,7 @@ export default {
       }
       delete payload.selectedRowCount
       bulkImportTargetUsersToGroups(payload).finally(() => {
+        this.confirmButtonDisabled = false
         this.$emit('closeOverlayWithUpdate')
       })
 

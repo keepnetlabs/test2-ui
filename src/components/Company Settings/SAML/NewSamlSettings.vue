@@ -337,7 +337,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
-import { isDifferent, copyToClipboard } from '@/utils/functions'
+import { isDifferent, copyToClipboard, createRandomCryptStringNumber } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
@@ -352,7 +352,6 @@ import {
 import { downloadExportedFile } from '@/utils/helperFunctions'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 import { mapGetters } from 'vuex'
@@ -401,7 +400,7 @@ export default {
       isCertificateTextDisabled: false,
       resourceId: null,
       certificateText: '',
-      roleSelectKey: 'key-akskasksak',
+      roleSelectKey: `key-${createRandomCryptStringNumber()}`,
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
@@ -501,7 +500,7 @@ export default {
         if (this.certificateText) {
           this.isCertificateTextDisabled = true
         }
-        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+        this.roleSelectKey = `key-${createRandomCryptStringNumber()}`
         this.$refs.refDomainToAddForm.validate()
       })
     },
@@ -536,7 +535,7 @@ export default {
                 (role) => role.name === labels.CompanyAdmin
               )?.resourceId
             }
-            this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+            this.roleSelectKey = `key-${createRandomCryptStringNumber()}`
             res()
           })
           .catch(() => rej('something went wrong'))

@@ -249,73 +249,14 @@ import {
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
-import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
-import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
-import postDate from '@/components/GrapesJs/Newsletter/mergedTexts/postDate'
-import shareUserName from '@/components/GrapesJs/Newsletter/mergedTexts/shareUserName'
-import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
-import communityName from '@/components/GrapesJs/Newsletter/mergedTexts/communityName'
-import communityDescription from '@/components/GrapesJs/Newsletter/mergedTexts/communityDescription'
-import postTitle from '@/components/GrapesJs/Newsletter/mergedTexts/postTitle'
-import postDesc from '@/components/GrapesJs/Newsletter/mergedTexts/postDesc'
-import postUserName from '@/components/GrapesJs/Newsletter/mergedTexts/postUserName'
-import postCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/postCompanyName'
-import webUrl from '@/components/GrapesJs/Newsletter/mergedTexts/webUrl'
-import postUrl from '@/components/GrapesJs/Newsletter/mergedTexts/postUrl'
-import currentDate from '@/components/GrapesJs/Newsletter/mergedTexts/currentDate'
-import description from '@/components/GrapesJs/Newsletter/mergedTexts/description'
-import shareCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/shareCompanyName'
-import link from '@/components/GrapesJs/Newsletter/mergedTexts/link'
-import communityTitle from '@/components/GrapesJs/Newsletter/mergedTexts/communityTitle'
-import communityUser from '@/components/GrapesJs/Newsletter/mergedTexts/communityUser'
-import category from '@/components/GrapesJs/Newsletter/mergedTexts/category'
-import communityDesc from '@/components/GrapesJs/Newsletter/mergedTexts/communityDesc'
-import status from '@/components/GrapesJs/Newsletter/mergedTexts/status'
-import activeUsers from '@/components/GrapesJs/Newsletter/mergedTexts/activeUsers'
-import analysedEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysedEmail'
-import foundEmailCount from '@/components/GrapesJs/Newsletter/mergedTexts/foundEmailCount'
-import startedBy from '@/components/GrapesJs/Newsletter/mergedTexts/startedBy'
-import startDate from '@/components/GrapesJs/Newsletter/mergedTexts/startDate'
-import investigationName from '@/components/GrapesJs/Newsletter/mergedTexts/investigationName'
-import invitedUserName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedUserName'
-import invitedByCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedByCompanyName'
-import communityUrl from '@/components/GrapesJs/Newsletter/mergedTexts/communityUrl'
-import memberCount from '@/components/GrapesJs/Newsletter/mergedTexts/memberCount'
-import communityIndustry from '@/components/GrapesJs/Newsletter/mergedTexts/communityIndustry'
-import analysisEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysisEmail'
-import owner from '@/components/GrapesJs/Newsletter/mergedTexts/owner'
-import date from '@/components/GrapesJs/Newsletter/mergedTexts/date'
-import reportBy from '@/components/GrapesJs/Newsletter/mergedTexts/reportBy'
-import fromText from '@/components/GrapesJs/Newsletter/mergedTexts/from'
-import to from '@/components/GrapesJs/Newsletter/mergedTexts/to'
-import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
-import attachment from '@/components/GrapesJs/Newsletter/mergedTexts/attachment'
-import createDate from '@/components/GrapesJs/Newsletter/mergedTexts/createDate'
-import senderIP from '@/components/GrapesJs/Newsletter/mergedTexts/senderIP'
-import caseID from '@/components/GrapesJs/Newsletter/mergedTexts/caseID'
-import userEmail from '@/components/GrapesJs/Newsletter/mergedTexts/userEmail'
-import userAgent from '@/components/GrapesJs/Newsletter/mergedTexts/userAgent'
-import actionDate from '@/components/GrapesJs/Newsletter/mergedTexts/actionDate'
-import actionIP from '@/components/GrapesJs/Newsletter/mergedTexts/actionIP'
-import productName from '@/components/GrapesJs/Newsletter/mergedTexts/productName'
-import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/analysisDetailUrl'
-import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
-import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
-import emailMergedText from '@/components/GrapesJs/Newsletter/mergedTexts/emailMergedText'
-import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
-import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
-import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
-import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
-import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 
 export default {
   name: 'NewEmailTemplates',
@@ -559,12 +500,12 @@ export default {
       })
     },
     nextStep() {
-      let isValid = true
+      let isMakeAvailableForValid = true
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
-        isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
+        isMakeAvailableForValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
-      if (this.$refs.refFormStep1.validate() && isValid) {
+      if (this.$refs.refFormStep1.validate() && isMakeAvailableForValid) {
         this.step += 1
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
@@ -580,55 +521,57 @@ export default {
         return
       }
       this.isSubmitDisabled = true
-      let isValid = true
+      let isMakeAvailableForValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
+        isMakeAvailableForValid = refMakeAvailableFor.isAvailableForValid
       }
-      if (this.$refs.refEmailTemplateContent.validate() && isValid) {
-        let payload = {
-          ...this.formValues,
-          isDuplicated: this.isDuplicate,
-          duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
-          description: this.formValues.description || '',
-          attachmentFiles: [
-            ...this.formValues.attachmentFiles,
-            ...this.formValues.importedEmailAttachments
-          ],
-          isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
-          isPhishingFileModified: this.isPhishingFileModified,
-          isAddedNewPhishingFile: this.isAddedNewPhishingFile,
-          phishingFileName:
-            !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
-              ? this.formValues.attachmentFiles[0]?.fileName
-              : null,
-          availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
-            this.availableForRequests
-          )
-        }
-        delete payload.attachments
-        if (this.isEdit && !this.isDuplicate) {
-          updatePhishingEmailTemplate(payload, this.emailTemplateId)
-            .then(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
-            })
-            .finally(() => {
-              this.isSubmitDisabled = false
-            })
-        } else {
-          createPhishingEmailTemplate(payload)
-            .then(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
-            })
-            .finally(() => {
-              this.isSubmitDisabled = false
-            })
-        }
-      } else {
+      const isFormValid = this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
+      if (!isFormValid) {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
         this.isSubmitDisabled = false
+        return
+      }
+
+      let payload = {
+        ...this.formValues,
+        isDuplicated: this.isDuplicate,
+        duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
+        description: this.formValues.description || '',
+        attachmentFiles: [
+          ...this.formValues.attachmentFiles,
+          ...this.formValues.importedEmailAttachments
+        ],
+        isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
+        isPhishingFileModified: this.isPhishingFileModified,
+        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+        phishingFileName:
+          !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
+            ? this.formValues.attachmentFiles[0]?.fileName
+            : null,
+        availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
+          this.availableForRequests
+        )
+      }
+      delete payload.attachments
+      if (this.isEdit && !this.isDuplicate) {
+        updatePhishingEmailTemplate(payload, this.emailTemplateId)
+          .then(() => {
+            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      } else {
+        createPhishingEmailTemplate(payload)
+          .then(() => {
+            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
       }
     },
 
@@ -645,66 +588,7 @@ export default {
       })
     },
     getTagsComponent(item) {
-      if (item === '{FULLNAME}') return fullName
-      if (item === '{USERNAME}') return userName
-      if (item === '{PASSWORDURL}') return passwordURL
-      if (item === '{POSTDATE}') return postDate
-      if (item === '{SHAREUSERNAME}') return shareUserName
-      if (item === '{COMPANYNAME}') return companyName
-      if (item === '{COMMUNITYNAME}') return communityName
-      if (item === '{COMMUNITYDESCRIPTION}') return communityDescription
-      if (item === '{POSTTITLE}') return postTitle
-      if (item === '{POSTDESC}') return postDesc
-      if (item === '{POSTUSERNAME}') return postUserName
-      if (item === '{POSTCOMPANYNAME}') return postCompanyName
-      if (item === '{WEBURL}') return webUrl
-      if (item === '{POSTURL}') return postUrl
-      if (item === '{CURRENTDATE}') return currentDate
-      if (item === '{DESCRIPTION}') return description
-      if (item === '{SHARECOMPANYNAME}') return shareCompanyName
-      if (item === '{LINK}') return link
-      if (item === '{COMMUNITYTITLE}') return communityTitle
-      if (item === '{COMMUNITYUSER}') return communityUser
-      if (item === '{CATEGORY}') return category
-      if (item === '{COMMUNITYDESC}') return communityDesc
-      if (item === '{STATUS}') return status
-      if (item === '{ACTIVEUSERS}') return activeUsers
-      if (item === '{ANALYSEDEMAIL}') return analysedEmail
-      if (item === '{FOUNDEMAILCOUNT}') return foundEmailCount
-      if (item === '{STARTEDBY}') return startedBy
-      if (item === '{STARTDATE}') return startDate
-      if (item === '{INVESTIGATIONNAME}') return investigationName
-      if (item === '{INVITEDUSERNAME}') return invitedUserName
-      if (item === '{INVITEDBYCOMPANYNAME}') return invitedByCompanyName
-      if (item === '{COMMUNITYURL}') return communityUrl
-      if (item === '{MEMBERCOUNT}') return memberCount
-      if (item === '{COMMUNITYINDUSTRY}') return communityIndustry
-      if (item === '{ANALYSISEMAIL}') return analysisEmail
-      if (item === '{OWNER}') return owner
-      if (item === '{DATE}') return date
-      if (item === '{REPORTBY}') return reportBy
-      if (item === '{FROM}') return fromText
-      if (item === '{TO}') return to
-      if (item === '{SUBJECT}') return subject
-      if (item === '{ATTACHMENT}') return attachment
-      if (item === '{CREATEDATE}') return createDate
-      if (item === '{SENDERIP}') return senderIP
-      if (item === '{CASEID}') return caseID
-      if (item === '{USEREMAIL}') return userEmail
-      if (item === '{USERAGENT}') return userAgent
-      if (item === '{ACTIONDATE}') return actionDate
-      if (item === '{ACTIONIP}') return actionIP
-      if (item === '{PRODUCTNAME}') return productName
-      if (item === '{ANALYSISDETAILURL}') return analysisDetailUrl
-      if (item === '{INVESTIGATIONURL}') return investigationUrl
-      if (item === '{COMPANYLOGO}') return companyLogo
-      if (item === '{DATEMAILSENT}') return dateEmailSent
-      if (item === '{EMAIL}') return emailMergedText
-      if (item === '{FIRSTNAME}') return firstName
-      if (item === '{FROMEMAIL}') return fromEmail
-      if (item === '{FROMNAME}') return fromName
-      if (item === '{LASTNAME}') return lastName
-      if (item === '{PHISHINGURL}') return phishingUrl
+      return MERGED_TEXTS[item]
     },
     setActiveBlockManagerComponents(activeComponent = []) {
       this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {

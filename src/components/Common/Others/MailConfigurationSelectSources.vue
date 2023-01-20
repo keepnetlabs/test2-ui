@@ -109,14 +109,12 @@ export default {
   },
   methods: {
     getCheckboxCheckedValue(item) {
-      if (
-        !!this.value.some(
+      return !!(
+        this.value.some(
           (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
         ) ||
         (this.isAllSelected && item.statusName === 'Running')
       )
-        return true
-      return false
     },
     shouldRenderTooltip(item) {
       if (item.mailConfigurationResourceId === 'all') return false

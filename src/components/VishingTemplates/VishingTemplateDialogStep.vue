@@ -154,16 +154,15 @@ export default {
   },
   computed: {
     getTitle() {
-      switch (this.value.inputType) {
-        case 'TextToSpeech' || 1:
-          return `Step ${this.index + 1} - Text To Speech`
-        case 'FileUpload' || 2:
-          return `Step ${this.index + 1} - Upload Audio`
-        case 'Pause' || 3:
-          return `Step ${this.index + 1} - Pause`
-        default:
-          return ''
+      const { inputType } = this.value
+      if (inputType === 'TextToSpeech' || inputType === 1) {
+        return `Step ${this.index + 1} - Text To Speech`
+      } else if (inputType === 'FileUpload' || inputType === 2) {
+        return `Step ${this.index + 1} - Upload Audio`
+      } else if (inputType === 'Pause' || inputType === 3) {
+        return `Step ${this.index + 1} - Pause`
       }
+      return ''
     },
     getFileSrc() {
       if (this.value?.content) {
@@ -211,7 +210,7 @@ export default {
       this.$emit('removeStep')
     },
     onPauseDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', { ...this.value, duration: val.length ? parseInt(val) : null })
       }
     },
@@ -219,7 +218,7 @@ export default {
       this.$emit('input', { ...this.value, inputText: val })
     },
     onDigitCountChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', { ...this.value, inputDigit: val.length ? parseInt(val) : null })
       }
     },

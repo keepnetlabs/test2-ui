@@ -194,7 +194,7 @@ export default {
       handler: function (value) {
         this.isFormValuesChanged = true
         if (this.formValues.riskFactor !== '') {
-          this.formValues.riskFactor = value.riskFactor?.toString().replace(/[^0-9]*/g, '')
+          this.formValues.riskFactor = value.riskFactor?.toString().replace(/\D*/g, '')
         }
       },
       deep: true,

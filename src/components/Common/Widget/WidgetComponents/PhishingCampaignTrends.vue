@@ -23,11 +23,6 @@
           >
             <h2 v-if="empty.message">{{ empty.message }}</h2>
             <p v-if="empty.subMes">{{ empty.subMes }}</p>
-            <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
-              <!-- empty action -->
-              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-              {{ empty.btn }}
-            </v-btn>
           </div>
         </widget-body>
       </widget-container>
@@ -61,7 +56,7 @@ export default {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       empty: {
-        message: 'You do not have any phishing campaign'
+        message: labels.EmptyPhishingTrends
       },
       chartOptions: {},
       chartData: {}
@@ -85,7 +80,6 @@ export default {
     this.updatePhishingCampaignTrends(this.phishingCampaignTrends)
   },
   methods: {
-    onEmptyBtnClicked() {},
     updatePhishingCampaignTrends(data) {
       if (data.length) {
         let minDate = Date.now(),
@@ -94,8 +88,8 @@ export default {
           maxTrendCount = 0
         let itemTypes = ['attachmentOpenedCount', 'clickedCount', 'submittedCount']
         const newData = []
-        for (let i = 0; i < data.length; i++) {
-          let { attachmentOpenedCount, clickedCount, submittedCount, date } = data[i]
+        for (const row of data) {
+          let { attachmentOpenedCount, clickedCount, submittedCount, date } = row
           const splittedDate = date.split('-')
           const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
           if (timeStampOfDate < minDate) {

@@ -59,22 +59,22 @@ export default {
     handleCloseDialog() {
       this.$emit('closeOverlay')
     },
-    handleDelete() {
+    getActionName() {
       const constructorName = this.data.constructor.name
-      const action =
-        constructorName === 'Object'
-          ? 'handleDelete'
-          : constructorName === 'Array'
-          ? this.data.length === 1
-            ? 'handleDelete'
-            : 'handleMultipleDelete'
-          : 'handleDelete'
-      const data =
-        constructorName === 'Object'
-          ? this.data
-          : constructorName === 'Array' && this.data.length === 1
-          ? this.data[0]
-          : this.data
+      if (constructorName === 'Object') return 'handleDelete'
+      else if (constructorName === 'Array')
+        return this.data.length === 1 ? 'handleDelete' : 'handleMultipleDelete'
+      else return 'handleDelete'
+    },
+    getActionData() {
+      const constructorName = this.data.constructor.name
+      if (constructorName === 'Object') return this.data
+      else if (constructorName === 'Array' && this.data.length === 1) return this.data[0]
+      else return this.data
+    },
+    handleDelete() {
+      const action = this.getActionName()
+      const data = this.getActionData()
       this.$emit(action, data)
       this.handleCloseDialog()
     }

@@ -392,7 +392,12 @@ export default {
         })
       }
     },
-    getTemplates(isInitial, landingPageTemplateResourceId, bodyData = this.bodyData, isSearch) {
+    getTemplates(
+      isInitial = false,
+      landingPageTemplateResourceId = '',
+      bodyData = this.bodyData,
+      isSearch = false
+    ) {
       this.loadingTemplates = true
       this.$emit('loading', true)
       if (isInitial && this.landingPageTemplateResourceId) {
