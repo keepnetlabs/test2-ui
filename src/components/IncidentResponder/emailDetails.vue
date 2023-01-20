@@ -271,8 +271,8 @@
                         :download-button="{ show: false }"
                         @refreshAction="getPostDetails"
                       >
-                        <template v-slot:datatable-custom-column="{ scope }">
-                          <span @click="showPopupModal = true" style="cursor: pointer;">
+                        <template #datatable-custom-column="{ scope }">
+                          <span class="cursor-poineter">
                             <a
                               v-if="
                                 scope.row.analysisEnginePermalink &&
@@ -280,9 +280,10 @@
                                 scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
-                              :href="scope.row.analysisEnginePermalink"
-                              target="_blank"
                               class="attachments-table__link"
+                              target="_blank"
+                              rel="noopener"
+                              :href="scope.row.analysisEnginePermalink"
                               >See Details</a
                             >
                             <span v-else></span>

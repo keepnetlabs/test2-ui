@@ -948,9 +948,10 @@ import {
   getBtnPriorityColor,
   getBtnStatusColor,
   getDataTableFieldLabel,
-  copyToClipboard
+  copyToClipboard,
+  createRandomCryptStringNumber
 } from '@/utils/functions'
-import { columnStandards, COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -1305,11 +1306,8 @@ export default {
       return (tableData && tableData.length) || isColumnFilterActive || loading
     },
     getTableData() {
-      return this.isServerSide
-        ? this.tableData
-        : this.showfilteredData
-        ? this.filteredData
-        : this.tableData
+      if (this.isServerSide) return this.tableData
+      return this.showfilteredData ? this.filteredData : this.tableData
     },
     isExtendedViewRender() {
       return (
@@ -2329,8 +2327,7 @@ export default {
         let text
         if (cellValue) {
           if (typeof cellValue === 'object') {
-            text =
-              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+            text = Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
           }
 
           if (typeof cellValue === 'string') {
@@ -3039,7 +3036,7 @@ export default {
     },
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
-      this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
+      this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
     }
   }
 }

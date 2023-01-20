@@ -945,16 +945,12 @@ export default {
         : null
     },
     getLandingPageDifficultyColor() {
-      return this.scenarioDetailsLookup.difficultyTypes.find(
+      const difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
         (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
-      )?.text === 'Easy'
-        ? '#217124'
-        : this.scenarioDetailsLookup.difficultyTypes.find(
-            (item) =>
-              item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
-          )?.text === 'Medium'
-        ? '#2196F3'
-        : '#F56C6C'
+      )?.text
+      if (difficultyType === 'Easy') return '#217124'
+      else if (difficultyType === 'Medium') return '#2196F3'
+      else return '#F56C6C'
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled

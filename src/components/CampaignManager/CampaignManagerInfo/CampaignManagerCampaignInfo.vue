@@ -438,11 +438,11 @@ export default {
       this.formData.scheduledDateTimeZoneId = val
     },
     'formData.scheduledDate'(val) {
-      this.isDateValid = this.formData
-        ? this.formData.scheduleTypeId === '3'
-          ? val && val.length > 0
-          : true
-        : true
+      let isDateValid = true
+      if (this.formData) {
+        isDateValid = this.formData.scheduleTypeId === '3' ? val && val.length > 0 : true
+      }
+      this.isDateValid = isDateValid
     },
     'formData.scheduleTypeId'(val) {
       if (val !== '3') {

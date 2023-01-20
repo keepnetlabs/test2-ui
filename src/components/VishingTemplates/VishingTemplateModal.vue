@@ -466,8 +466,8 @@ export default {
     if (this.isEdit || this.isDuplicate) {
       getVishingTemplate(this.templateId).then((response) => {
         this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
-        for (let i = 0; i < this.formValues.steps.length; i++) {
-          this.formValues.steps[i]['isExpanded'] = false
+        for (const step of this.formValues.steps) {
+          step['isExpanded'] = false
         }
         const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
           (step) => step.order === 0
@@ -557,8 +557,8 @@ export default {
       }
     },
     onAddStep(type) {
-      for (let i = 0; i < this.formValues.steps.length; i++) {
-        this.formValues.steps[i].isExpanded = false
+      for (const step of this.formValues.steps) {
+        step.isExpanded = false
       }
       const order = this.formValues.steps.length + 1
       let newItem

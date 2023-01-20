@@ -80,7 +80,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
@@ -100,7 +100,7 @@ export default {
   data() {
     return {
       isDeleting: false,
-      tableKey: 'key-table-company-group',
+      tableKey: `key-${createRandomCryptStringNumber()}`,
       loading: false,
       isMultipleDelete: false,
       tableData: [],
@@ -192,80 +192,71 @@ export default {
     }
   },
   created() {
-    if (this.isLoadState) {
-      const tableState =
-        this.$store.state['datatable'].tables['CompanyGroups'] &&
-        this.$store.state['datatable'].tables['CompanyGroups'].tableState
-      if (tableState) {
-        this.serverSideProps = tableState.serverSideProps
-        const { filterValues = {} } = tableState
-        if (Object.keys(filterValues).length) {
-          for (const [key, value] of Object.entries(filterValues)) {
-            if (value.selectValue === 'between') {
-              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[0],
-                FieldName: key,
-                Operator: '>='
-              })
-              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[1],
-                FieldName: key,
-                Operator: '<='
-              })
-            } else {
-              this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue,
-                FieldName: key,
-                Operator: value.selectValue
-              })
-            }
-          }
-        }
-        this.loading = true
-        searchCompanyGroups(this.axiosPayload)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            tableState.initialData = data.results
+    if (!this.isLoadState) return this.callForData()
 
-            let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
-            if (maxPage > tableState.currentPage) {
-              maxPage = tableState.currentPage
-            }
-            tableState.tableData = tableState.initialData.slice(
-              (maxPage - 1) * tableState.rowCount,
-              maxPage * tableState.rowCount
-            )
-            tableState.multipleSelection = tableState.multipleSelection.reduce((acc, selection) => {
-              const index = tableState.initialData.findIndex(
-                (item) => item.resourceId === selection.resourceId
-              )
-              if (index === -1) {
-                acc.push(selection)
-              } else {
-                acc.push(tableState.initialData[index])
-              }
-              return acc
-            }, [])
-            if (tableState.search) {
-              tableState.filteredData = tableState.initialData.filter((row) => {
-                return tableState.filteredData.find((filteredRow) => {
-                  return filteredRow.resourceId === row.resourceId
-                })
-              })
-            }
-
-            this.tableState = { persistentState: tableState }
-            this.tableKey = Math.random().toString().substring(0, 5)
+    const tableState = this.getTableState()
+    if (!tableState) return this.callForData()
+    this.serverSideProps = tableState.serverSideProps
+    const { filterValues = {} } = tableState
+    if (Object.keys(filterValues).length) {
+      for (const [key, value] of Object.entries(filterValues)) {
+        if (value.selectValue === 'between') {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue[0],
+            FieldName: key,
+            Operator: '>='
           })
-          .finally(() => (this.loading = false))
-      } else {
-        this.callForData()
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue[1],
+            FieldName: key,
+            Operator: '<='
+          })
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue,
+            FieldName: key,
+            Operator: value.selectValue
+          })
+        }
       }
-    } else {
-      this.callForData()
     }
+    this.loading = true
+    searchCompanyGroups(this.axiosPayload)
+      .then((response) => {
+        const {
+          data: { data }
+        } = response
+        tableState.initialData = data.results
+        let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
+        if (maxPage > tableState.currentPage) {
+          maxPage = tableState.currentPage
+        }
+        tableState.tableData = tableState.initialData.slice(
+          (maxPage - 1) * tableState.rowCount,
+          maxPage * tableState.rowCount
+        )
+        tableState.multipleSelection = tableState.multipleSelection.reduce((acc, selection) => {
+          const index = tableState.initialData.findIndex(
+            (item) => item.resourceId === selection.resourceId
+          )
+          if (index === -1) {
+            acc.push(selection)
+          } else {
+            acc.push(tableState.initialData[index])
+          }
+          return acc
+        }, [])
+        if (tableState.search) {
+          tableState.filteredData = tableState.initialData.filter((row) => {
+            return tableState.filteredData.find((filteredRow) => {
+              return filteredRow.resourceId === row.resourceId
+            })
+          })
+        }
+        this.tableState = { persistentState: tableState }
+        this.tableKey = `key-${createRandomCryptStringNumber()}`
+      })
+      .finally(() => (this.loading = false))
   },
   beforeDestroy() {
     const tableState = {
@@ -293,6 +284,12 @@ export default {
           this.tableData = results
         })
         .finally(() => (this.loading = false))
+    },
+    getTableState() {
+      return (
+        this.$store.state['datatable'].tables['CompanyGroups'] &&
+        this.$store.state['datatable'].tables['CompanyGroups'].tableState
+      )
     },
     handleMultipleDeleteOfCompanyGroups(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
@@ -329,17 +326,15 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCompanyGroup(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Company Groups.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch(() => {})
+        exportCompanyGroup(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Company Groups.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleTableItemDelete(selectedItem) {

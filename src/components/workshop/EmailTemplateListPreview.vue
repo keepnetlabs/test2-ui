@@ -11,10 +11,10 @@
       :subtitle="'Email Template Preview'"
       style="overflow: hidden;"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             class="pa-0 k-dialog__button"
@@ -367,7 +367,12 @@ export default {
         })
       }
     },
-    getTemplates(isInitial, emailTemplateResourceId, bodyData = this.bodyData, isSearch) {
+    getTemplates(
+      isInitial = false,
+      emailTemplateResourceId = '',
+      bodyData = this.bodyData,
+      isSearch = false
+    ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       getEmailTemplatesList(bodyData)
         .then((response) => {
@@ -389,20 +394,19 @@ export default {
             if (!emailTemplateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
-            if (isInitial) {
-              if (!!emailTemplateResourceId) {
-                const index = this.listData.findIndex(
-                  (item) => item.resourceId === emailTemplateResourceId
-                )
-                if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index, true)
-                  this.listData[index].selected = true
-                }
-              } else {
-                if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
+            if (!isInitial) return
+            if (!!emailTemplateResourceId) {
+              const index = this.listData.findIndex(
+                (item) => item.resourceId === emailTemplateResourceId
+              )
+              if (index > -1) {
+                this.setSelectedTemplate(this.listData[index], index, true)
+                this.listData[index].selected = true
               }
-              this.defaultListData = [...this.listData]
+            } else {
+              if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
             }
+            this.defaultListData = [...this.listData]
           }
         })
         .finally(() => {

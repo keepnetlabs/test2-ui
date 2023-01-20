@@ -49,6 +49,7 @@ export default {
       default: true
     },
     hideDetails: {
+      type: Boolean,
       default: false
     },
     type: {

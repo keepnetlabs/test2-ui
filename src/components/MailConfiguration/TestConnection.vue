@@ -181,124 +181,118 @@ export default {
     testConnection(isSave) {
       this.isTesting = true
       this.isSave = isSave
-      if (this.isValidate()) {
-        this.isLoadingStarted = true
-        this.setLoadingStates()
-        let payload = {
-          applicationId: this.values.applicationId,
-          applicationSecret: this.values.applicationSecret,
-          directoryId: this.values.directoryId,
-          email: this.values.email
-        }
-        if (this.isEdit) {
-          payload.resourceId = this.isEdit.resourceId
-        }
-        checkApiConnectivity(payload)
-          .then(() => {
-            this.checkApiConnectivity = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkApiConnectivity = 'error'
-            this.checkApiConnectivityMessage =
-              (error?.response?.data?.validationMessages &&
-                error?.response?.data?.validationMessages[0]) ||
-              error?.response?.data?.message
-            this.checkIfAllSuccess(false)
-          })
-        checkPrivileges(payload)
-          .then(() => {
-            this.checkPrivileges = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkPrivileges = 'error'
-            this.checkPrivilegesMessage =
-              (error?.response?.data?.validationMessages &&
-                error?.response?.data?.validationMessages[0]) ||
-              error?.response?.data?.message
-            this.checkIfAllSuccess(false)
-          })
-        checkAllUsersAccess(payload)
-          .then(() => {
-            this.checkAllUsersAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkAllUsersAccess = 'error'
-            this.checkAllUsersAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkEmailAccess(payload)
-          .then(() => {
-            this.checkEmailAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkEmailAccess = 'error'
-            this.checkEmailAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkCreateNewCategory(payload)
-          .then(() => {
-            this.checkCreateNewCategory = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkCreateNewCategory = 'error'
-            this.checkCreateNewCategoryMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-          .finally(() => {
-            checkUpdateCategory(payload)
-              .then(() => {
-                this.checkUpdateCategory = 'success'
-                this.checkIfAllSuccess(true)
-              })
-              .catch((error) => {
-                this.checkUpdateCategory = 'error'
-                this.checkUpdateCategoryMessage =
-                  (error.response.data.validationMessages &&
-                    error.response.data.validationMessages[0]) ||
-                  error.response.data.message
-              })
-          })
-        checkDeleteEmail(payload)
-          .then(() => {
-            this.checkDeleteEmail = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkDeleteEmail = 'error'
-            this.checkDeleteEmailMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
-        checkInboxAccess(payload)
-          .then(() => {
-            this.checkInboxAccess = 'success'
-            this.checkIfAllSuccess(true)
-          })
-          .catch((error) => {
-            this.checkInboxAccess = 'error'
-            this.checkInboxAccessMessage =
-              (error.response.data.validationMessages &&
-                error.response.data.validationMessages[0]) ||
-              error.response.data.message
-            this.checkIfAllSuccess(false)
-          })
+      if (!this.isValidate()) return
+      this.isLoadingStarted = true
+      this.setLoadingStates()
+      let payload = {
+        applicationId: this.values.applicationId,
+        applicationSecret: this.values.applicationSecret,
+        directoryId: this.values.directoryId,
+        email: this.values.email
       }
+      if (this.isEdit) {
+        payload.resourceId = this.isEdit.resourceId
+      }
+      checkApiConnectivity(payload)
+        .then(() => {
+          this.checkApiConnectivity = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkApiConnectivity = 'error'
+          this.checkApiConnectivityMessage =
+            (error?.response?.data?.validationMessages &&
+              error?.response?.data?.validationMessages[0]) ||
+            error?.response?.data?.message
+          this.checkIfAllSuccess(false)
+        })
+      checkPrivileges(payload)
+        .then(() => {
+          this.checkPrivileges = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkPrivileges = 'error'
+          this.checkPrivilegesMessage =
+            (error?.response?.data?.validationMessages &&
+              error?.response?.data?.validationMessages[0]) ||
+            error?.response?.data?.message
+          this.checkIfAllSuccess(false)
+        })
+      checkAllUsersAccess(payload)
+        .then(() => {
+          this.checkAllUsersAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkAllUsersAccess = 'error'
+          this.checkAllUsersAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkEmailAccess(payload)
+        .then(() => {
+          this.checkEmailAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkEmailAccess = 'error'
+          this.checkEmailAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkCreateNewCategory(payload)
+        .then(() => {
+          this.checkCreateNewCategory = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkCreateNewCategory = 'error'
+          this.checkCreateNewCategoryMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+        .finally(() => {
+          checkUpdateCategory(payload)
+            .then(() => {
+              this.checkUpdateCategory = 'success'
+              this.checkIfAllSuccess(true)
+            })
+            .catch((error) => {
+              this.checkUpdateCategory = 'error'
+              this.checkUpdateCategoryMessage =
+                (error.response.data.validationMessages &&
+                  error.response.data.validationMessages[0]) ||
+                error.response.data.message
+            })
+        })
+      checkDeleteEmail(payload)
+        .then(() => {
+          this.checkDeleteEmail = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkDeleteEmail = 'error'
+          this.checkDeleteEmailMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
+      checkInboxAccess(payload)
+        .then(() => {
+          this.checkInboxAccess = 'success'
+          this.checkIfAllSuccess(true)
+        })
+        .catch((error) => {
+          this.checkInboxAccess = 'error'
+          this.checkInboxAccessMessage =
+            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
+            error.response.data.message
+          this.checkIfAllSuccess(false)
+        })
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'

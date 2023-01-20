@@ -43,13 +43,11 @@ export default {
     getTooltipMessage() {
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      return !row.isEditable
-        ? `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
-            this.type
-          } cannot be edited`
-        : !this.getDisabledStatusOfAction
-        ? this.name
-        : 'No Permission'
+      if (!row.isEditable)
+        return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
+          this.type
+        } cannot be edited`
+      else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

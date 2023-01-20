@@ -422,7 +422,7 @@ export default {
       if (DELETE.hasPermission) {
         let values = []
         if (this.totalSelectedItemsCount > 1) {
-          for (const [_, value] of Object.entries(this.deleteValues)) {
+          for (const value of Object.values(this.deleteValues)) {
             values.push(value)
           }
         } else {

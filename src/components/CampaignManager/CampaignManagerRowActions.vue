@@ -54,6 +54,7 @@
 import labels from '@/model/constants/labels'
 import { ACTION_STATUSES } from '@/components/CampaignManager/utils'
 import { mapGetters } from 'vuex'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerRowActions',
@@ -77,7 +78,7 @@ export default {
         'permissions/getCampaignManagerParentUpdatePermissions'
     }),
     getId() {
-      return `btn-preview--row-action-${Math.random().toString().substring(2)}`
+      return `btn-preview--row-action-${createRandomCryptStringNumber()}`
     },
     actionStatus() {
       return this.scope.row.status

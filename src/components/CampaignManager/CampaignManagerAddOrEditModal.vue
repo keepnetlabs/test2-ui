@@ -215,12 +215,10 @@ export default {
           ) || refCampaignManagerCampaignInfo.formData.phishingScenario
 
         const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
-        formData.selectedSchedule =
-          scheduleTypeId === '1'
-            ? 'Now'
-            : scheduleTypeId === '2'
-            ? 'Later'
-            : refCampaignManagerCampaignInfo.formData.scheduledDate
+        let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
+        if (scheduleTypeId === '1') selectedSchedule = 'Now'
+        else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        formData.selectedSchedule = selectedSchedule
         formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
           (item) => item.resourceId === formData.smtpSettingResourceId
         )

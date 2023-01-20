@@ -61,6 +61,7 @@
 import { ACTION_STATUSES } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerItemRowActions',
@@ -95,7 +96,7 @@ export default {
       if (iconName === 'mdi-text-box') idStart = 'view-report'
       else if (iconName === 'mdi-stop') idStart = 'stop'
       else idStart = 'send'
-      return `btn-${idStart}--row-action-${Math.random().toString().substring(2)}`
+      return `btn-${idStart}--row-action-${createRandomCryptStringNumber()}`
     },
     actionStatus() {
       return this.scope.row.status

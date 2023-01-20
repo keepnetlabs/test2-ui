@@ -396,7 +396,7 @@ export default {
       }
     },
     getFilterButtonDisabled() {
-      this.btnKeySafariFix = `btn-key${Math.random().toString().substring(0, 5)}`
+      this.btnKeySafariFix = `btn-key-${createRandomCryptStringNumber()}`
     }
   },
   created() {
@@ -464,8 +464,7 @@ export default {
         const value1 = this.$moment(val[0], getTimeZoneForMoment())
         const value2 = this.$moment(val[1], getTimeZoneForMoment())
         const diff = value2.diff(value1, 'days')
-        if (diff <= 14) {
-        } else if (this.defaultDate) {
+        if (diff > 14 && this.defaultDate) {
           this.status = true
           this.filteredDateRangeValue = [
             this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment()),

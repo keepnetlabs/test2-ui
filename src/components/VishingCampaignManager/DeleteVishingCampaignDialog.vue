@@ -8,10 +8,10 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       {{ getContent }}
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <AppDialogFooter
         cancel-button-id="btn-cancel--vishing-campaign-popup"
         confirm-button-id="btn-delete--vishing-campaign-popup"
@@ -59,15 +59,16 @@ export default {
   computed: {
     getTitle() {
       return this.isMultiple
-        ? `Delete ${this.selectedRowCount} ${this.selectedRowCount > 1 ? 'campaigns' : 'campaign'}?`
+        ? `Delete ${this.selectedRowCount} ${this.campaignText}?`
         : 'Delete Vishing Campaign?'
     },
     getContent() {
       return this.isMultiple
-        ? `Are you sure you want to delete all ${this.selectedRowCount} of the selected ${
-            this.selectedRowCount > 1 ? 'campaigns' : 'campaign'
-          }?`
+        ? `Are you sure you want to delete all ${this.selectedRowCount} of the selected ${this.campaignText}?`
         : `${this.selectedRow && this.selectedRow.name} will be deleted.`
+    },
+    campaignText() {
+      return this.selectedRowCount > 1 ? 'campaigns' : 'campaign'
     }
   },
   methods: {
