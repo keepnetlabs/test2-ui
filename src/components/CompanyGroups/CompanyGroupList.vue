@@ -193,33 +193,11 @@ export default {
   },
   created() {
     if (!this.isLoadState) return this.callForData()
-
     const tableState = this.getTableState()
     if (!tableState) return this.callForData()
     this.serverSideProps = tableState.serverSideProps
     const { filterValues = {} } = tableState
-    if (Object.keys(filterValues).length) {
-      for (const [key, value] of Object.entries(filterValues)) {
-        if (value.selectValue === 'between') {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-            Value: value.textValue[0],
-            FieldName: key,
-            Operator: '>='
-          })
-          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-            Value: value.textValue[1],
-            FieldName: key,
-            Operator: '<='
-          })
-        } else {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-            Value: value.textValue,
-            FieldName: key,
-            Operator: value.selectValue
-          })
-        }
-      }
-    }
+    this.addFiltersToPayload(filterValues)
     this.loading = true
     searchCompanyGroups(this.axiosPayload)
       .then((response) => {
@@ -290,6 +268,29 @@ export default {
         this.$store.state['datatable'].tables['CompanyGroups'] &&
         this.$store.state['datatable'].tables['CompanyGroups'].tableState
       )
+    },
+    addFiltersToPayload(filterValues) {
+      if (!Object.keys(filterValues).length) return
+      for (const [key, value] of Object.entries(filterValues)) {
+        if (value.selectValue === 'between') {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue[0],
+            FieldName: key,
+            Operator: '>='
+          })
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue[1],
+            FieldName: key,
+            Operator: '<='
+          })
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+            Value: value.textValue,
+            FieldName: key,
+            Operator: value.selectValue
+          })
+        }
+      }
     },
     handleMultipleDeleteOfCompanyGroups(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {

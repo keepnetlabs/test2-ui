@@ -2119,11 +2119,13 @@ export default {
       this.isInvestigationDeleteSelectAll = isSelectedAllEver
       this.investigationDeleteExcludedResourceIdList = excludedResourceIdList || []
       let isArray = Array.isArray(value)
-      this.totalSelectedItemsCount = isArray
-        ? isSelectedAllEver
-          ? this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
-          : value.length
-        : 1
+      let totalCount = 1
+      if (isArray) {
+        if (isSelectedAllEver)
+          totalCount = this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
+        else totalCount = value.length
+      }
+      this.totalSelectedItemsCount = totalCount
       this.isWantToDelete = true
       this.deleteValue = value
     },
@@ -2143,6 +2145,8 @@ export default {
       }
       let isArray = Array.isArray(this.deleteValue)
       let data = []
+      if (isArray) data = this.deleteValue.map((item) => item.resourceId)
+      else data.push(this.deleteValue.resourceId)
       isArray
         ? (data = this.deleteValue.map((item) => item.resourceId))
         : data.push(this.deleteValue.resourceId)
