@@ -329,7 +329,8 @@ export default {
       let text = ''
       const textOS = `OS version: ${osVersion ? osVersion : 'Unknown'}`
       const textHKLM = `HKLM: ${hklmLoadBehaviorValue || 'N/A'}\n`
-      const textBootTime = `Boot time: ${bootTime ? `${bootTime} ms` : 'N/A'}\n`
+      const bootTimeLeftExpression = `${bootTime} ms`
+      const textBootTime = `Boot time: ${bootTime ? bootTimeLeftExpression : 'N/A'}\n`
       const textOutlookVersion = `Outlook version: ${outlookVersion || 'N/A'}\n`
       const textOutlookArchitecture = `Outlook architecture: ${outlookArchitecture || 'N/A'}\n`
 
