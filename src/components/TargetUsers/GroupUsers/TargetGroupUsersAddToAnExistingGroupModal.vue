@@ -60,7 +60,11 @@ import {
   LABEL_STORE,
   PROPERTY_STORE
 } from '@/model/constants/commonConstants'
-import { createTargetGroupUsers, searchTargetGroups } from '@/api/targetUsers'
+import {
+  createTargetGroupUsers,
+  searchTargetGroups,
+  bulkImportTargetUsersToGroups
+} from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -73,11 +77,11 @@ export default {
   },
   emits: ['closeOverlay', 'closeOverlayWithUpdate'],
   props: {
+    bulkImportPayload: {
+      type: Object
+    },
     status: {
       type: Boolean
-    },
-    selectedRows: {
-      type: Array
     }
   },
   data() {
@@ -158,8 +162,8 @@ export default {
     },
     getTitle() {
       let text = 'User'
-      text += this.selectedRows.length > 1 ? 's' : ''
-      return `Add ${this.selectedRows.length} ${text} To User Groups`
+      text += this.bulkImportPayload.selectedRowCount > 1 ? 's' : ''
+      return `Add ${this.bulkImportPayload.selectedRowCount} ${text} To User Groups`
     }
   },
   created() {
@@ -231,24 +235,16 @@ export default {
     },
     handleConfirm() {
       this.confirmButtonDisabled = true
-      const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
-      const promises = this.selectedTargetGroups.reduce((acc, group) => {
-        const payload = { targetUserResourceIds: selectedRowsResourceIds }
-        acc.push(createTargetGroupUsers(group.resourceId, payload, false))
-        return acc
-      }, [])
-      Promise.all(promises)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: `${selectedRowsResourceIds.length} target user(s) has been added to ${this.selectedTargetGroups.length} target group(s)`,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .finally(() => {
-          this.confirmButtonDisabled = false
-          this.$emit('closeOverlayWithUpdate')
-        })
+      const targetGroupResourceIds = this.selectedTargetGroups.map((group) => group.resourceId)
+      const payload = {
+        ...this.bulkImportPayload,
+        targetGroupResourceIds
+      }
+      delete payload.selectedRowCount
+      bulkImportTargetUsersToGroups(payload).finally(() => {
+        this.confirmButtonDisabled = false
+        this.$emit('closeOverlayWithUpdate')
+      })
     },
     handleSelectionChange(selection = []) {
       this.selectedTargetGroups = selection
