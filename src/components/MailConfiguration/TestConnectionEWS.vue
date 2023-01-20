@@ -88,13 +88,14 @@
 <script>
 import {
   checkApiConnectivityEWS,
-  checkPrivilegesEWS,
-  checkInboxAccessEWS,
   checkEmailBodyAccessEWS,
   checkEmailHeaderAccessEWS,
-  checkEmailMailFilterEWS
+  checkEmailMailFilterEWS,
+  checkInboxAccessEWS,
+  checkPrivilegesEWS
 } from '@/api/mailConfiguration'
 import TestConnectivityStatus from './TestConnectivityStatus'
+
 export default {
   inheritAttrs: true,
   name: 'TestConnection',
@@ -136,15 +137,14 @@ export default {
       return !isLoading
     },
     isAllSuccess() {
-      let isSuccess =
+      return (
         this.checkApiConnectivity === 'success' &&
         this.checkPrivileges === 'success' &&
         this.checkInboxAccess === 'success' &&
         this.checkEmailBodyAccess === 'success' &&
         this.checkEmailHeaderAccess === 'success' &&
         this.checkEmailMailFilter === 'success'
-
-      return isSuccess
+      )
     }
   },
   methods: {
@@ -178,9 +178,7 @@ export default {
         })
         .catch((error) => {
           this.checkApiConnectivity = 'error'
-          this.checkApiConnectivityMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkApiConnectivityMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkPrivilegesEWS(payload)
@@ -190,9 +188,7 @@ export default {
         })
         .catch((error) => {
           this.checkPrivileges = 'error'
-          this.checkPrivilegesMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkPrivilegesMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkInboxAccessEWS(payload)
@@ -202,9 +198,7 @@ export default {
         })
         .catch((error) => {
           this.checkInboxAccess = 'error'
-          this.checkInboxAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkInboxAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkEmailBodyAccessEWS(payload)
@@ -214,9 +208,7 @@ export default {
         })
         .catch((error) => {
           this.checkEmailBodyAccess = 'error'
-          this.checkEmailBodyAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkEmailBodyAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
       checkEmailHeaderAccessEWS(payload)
@@ -226,9 +218,7 @@ export default {
         })
         .catch((error) => {
           this.checkEmailHeaderAccess = 'error'
-          this.checkEmailHeaderAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkEmailHeaderAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
         .finally(() => {
@@ -239,10 +229,7 @@ export default {
             })
             .catch((error) => {
               this.checkEmailMailFilter = 'error'
-              this.checkEmailMailFilterMessage =
-                (error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message
+              this.checkEmailMailFilterMessage = this.getAxiosErrorMessage(error)
             })
         })
       checkInboxAccessEWS(payload)
@@ -252,11 +239,16 @@ export default {
         })
         .catch((error) => {
           this.checkInboxAccess = 'error'
-          this.checkInboxAccessMessage =
-            (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
-            error.response.data.message
+          this.checkInboxAccessMessage = this.getAxiosErrorMessage(error)
           this.checkIfAllSuccess(false)
         })
+    },
+    getAxiosErrorMessage(error) {
+      return (
+        (error?.response?.data?.validationMessages &&
+          error?.response?.data?.validationMessages[0]) ||
+        error?.response?.data?.message
+      )
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'
