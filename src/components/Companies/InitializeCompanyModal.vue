@@ -9,7 +9,6 @@
     title-id="text--certificates-template-modal-title"
     :save-disable="isActionButtonDisabled"
     @closeOverlay="handleClose"
-    @submit="submit"
   >
     <template #overlay-body>
       <AppModalBodyHeader :title="labels.CompanyProfile" :sub-title="labels.CompanyProfileSub" />
@@ -143,6 +142,19 @@
           </KSelect>
         </FormGroup>
       </v-form>
+    </template>
+    <template #overlay-footer>
+      <div class="w-100 d-flex justify-end">
+        <v-btn
+          class="add-user-overlay__footer-btn-save white--text"
+          color="#2196f3"
+          rounded
+          :disabled="isActionButtonDisabled"
+          @click="submit"
+        >
+          {{ labels.Start }}
+        </v-btn>
+      </div>
     </template>
   </AppModal>
 </template>
