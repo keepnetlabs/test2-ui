@@ -9,7 +9,6 @@
     title-id="text--certificates-template-modal-title"
     :save-disable="isActionButtonDisabled"
     @closeOverlay="handleClose"
-    @submit="submit"
   >
     <template #overlay-body>
       <AppModalBodyHeader :title="labels.CompanyProfile" :sub-title="labels.CompanyProfileSub" />
