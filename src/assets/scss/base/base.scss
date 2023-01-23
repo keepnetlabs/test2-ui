@@ -258,3 +258,9 @@ input[type="number"]::-webkit-outer-spin-button {
 hr {
   border: 1px solid #e0e0e0;
 }
+
+.v-menu__content {
+  .v-list-item {
+    font-weight: 400 !important;
+  }
+}
