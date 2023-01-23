@@ -397,6 +397,13 @@ export function getStatusBadgeProps(status) {
     }
   }
 
+  if (status === 'Delivered') {
+    return {
+      color: '#217124',
+      text: 'Delivered'
+    }
+  }
+
   if (status === 'Processing') {
     return {
       color: '#1173C1',
