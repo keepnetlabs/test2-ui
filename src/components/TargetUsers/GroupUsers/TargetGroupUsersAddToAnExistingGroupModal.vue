@@ -54,17 +54,8 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '@/model/constants/commonConstants'
-import {
-  createTargetGroupUsers,
-  searchTargetGroups,
-  bulkImportTargetUsersToGroups
-} from '@/api/targetUsers'
+import { getStoreValue, LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { searchTargetGroups, bulkImportTargetUsersToGroups } from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
