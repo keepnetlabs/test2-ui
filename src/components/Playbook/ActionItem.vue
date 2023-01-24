@@ -1,10 +1,10 @@
 <template>
   <div class="action-items" id="playbook-action-items">
     <app-dialog
-      v-if="openEnginesModal"
       size="big"
       :status="openEnginesModal"
       icon="mdi-blur"
+      v-if="openEnginesModal"
       max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
@@ -12,7 +12,7 @@
       subtitle-id="text--playbook-actions-engine-popup-subtitle"
       @changeStatus="closeEngineModal"
     >
-      <template #app-dialog-body>
+      <template v-slot:app-dialog-body>
         <div class="bg-white">
           <div class="">
             <v-text-field
@@ -23,7 +23,7 @@
               outlined
               prepend-inner-icon="mdi-magnify"
               hide-details
-              @input="searchEnginesModel"
+              @keyup="searchEnginesModel()"
             />
             <div class="analyze__main__select-row-wrap check-all">
               <div class="checkbox-and-text">
@@ -359,7 +359,6 @@
             :isCreatedByAnalyzer="true"
             :investigateData="playbookActionInvestigationAnalyzeData"
             :act="act"
-            :actionType="actionsValues[index].val"
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
@@ -369,7 +368,6 @@
             :index="index"
             :ref="`refInvestigate-${index}`"
             :act="act"
-            :actionType="actionsValues[index].val"
           />
         </v-col>
       </v-row>
@@ -719,17 +717,13 @@ export default {
     searchEnginesModel() {
       if (this.searchEnginesModelInput) {
         this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
-          for (const keyValue of Object.values(item)) {
+          Object.values(item).find((i) => {
             if (
-              typeof keyValue === 'string' &&
-              keyValue
-                .toLocaleLowerCase()
-                .includes(this.searchEnginesModelInput.toLocaleLowerCase())
-            ) {
-              acc.push(item)
-              break
-            }
-          }
+              typeof i === 'string' &&
+              i.toLocaleLowerCase().includes(this.searchEnginesModelInput.toLocaleLowerCase())
+            )
+              return acc.push(item)
+          })
           return acc
         }, [])
       } else {
@@ -959,7 +953,6 @@ export default {
         this.playbookActionInvestigations[index] = {
           isCreatedByAnalyzer: false,
           scanTypes: [],
-          autoDetectFilters: false,
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -1146,6 +1139,14 @@ export default {
           }
         })
       }
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     },
     callForSearchEmailTemplate() {
       let payload = {
