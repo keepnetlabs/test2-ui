@@ -171,23 +171,7 @@
               subtitle="Set call options"
             />
             <v-form ref="refFormStep4">
-              <FormGroup
-                has-hint
-                class="mt-6"
-                title="Caller Phone Number"
-                sub-title="Select caller phone number for this campaign"
-              >
-                <KSelect
-                  v-model="formValues.callerPhoneNumber"
-                  outlined
-                  dense
-                  hint="*Required"
-                  persistent-hint
-                  placeholder="Select a phone number"
-                  :items="phoneNumbers"
-                  :rules="[(v) => Validations.required(v)]"
-                />
-              </FormGroup>
+              <InputCallerPhoneNumber v-model="formValues.callerPhoneNumber" />
               <FormGroup
                 title="Distribution"
                 subTitle="Call target users with over a specified time period. Set days and hours of calls."
@@ -364,7 +348,6 @@ import {
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import { searchTargetGroups } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
@@ -379,11 +362,11 @@ import {
 } from '@/components/VishingCampaignManager/utils'
 import {
   createVishingCampaign,
-  getPhoneNumbers,
   getVishingCampaign,
   updateVishingCampaign,
   getVishingCampaignDistributionCalculation
 } from '@/api/vishing'
+import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
 
 const initialFormValues = {
   name: '',
@@ -408,6 +391,7 @@ const initialFormValues = {
 export default {
   name: 'VishingCampaignModal',
   components: {
+    InputCallerPhoneNumber,
     AppModal,
     StepperFooter,
     ConfigureCompanyStepHeader,
@@ -418,7 +402,6 @@ export default {
     VishingTemplateSelectList,
     CampaignManagerTargetGroups,
     CustomError,
-    KSelect,
     CampaignManagerSummaryCard,
     VishingCampaignModalSummaryVishingTemplate
   },
@@ -468,7 +451,6 @@ export default {
       axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
       recipientTypes,
       distributionDays: 31,
-      phoneNumbers: [],
       sendCallsOverTypes,
       sendCallsOnDaysOptions,
       isActionButtonDisabled: false,
@@ -637,7 +619,6 @@ export default {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
     }
-    this.callForPhoneNumbers()
     this.callForTargetGroups()
   },
   methods: {
@@ -768,11 +749,6 @@ export default {
         )
       })
     },
-    callForPhoneNumbers() {
-      getPhoneNumbers().then((response) => {
-        this.phoneNumbers = response?.data || []
-      })
-    },
     handleTableSelectionChange(items) {
       this.selectedTargetGroups = items
       this.formValues.targetGroupResourceIds = items
@@ -807,19 +783,22 @@ export default {
     backStep() {
       this.step--
     },
+    showErrorMessage(form) {
+      this.$nextTick(() => {
+        if (form.querySelector('.error--text')) {
+          scrollToComponent(form.querySelector('.error--text'))
+        } else {
+          this.step++
+        }
+      })
+    },
     nextStep() {
       if (this.step === 1) {
         const { refFormStep1 } = this.$refs
         refFormStep1.validate()
         this.checkDateIsValid()
         this.checkTimezoneValid()
-        this.$nextTick(() => {
-          if (refFormStep1.$el.querySelector('.error--text')) {
-            scrollToComponent(refFormStep1.$el.querySelector('.error--text'))
-          } else {
-            this.step++
-          }
-        })
+        this.showErrorMessage(refFormStep1.$el)
       } else if (this.step === 3) {
         this.callForCalculateSendingInfo()
         if (this.formValues.targetGroupResourceIds.length) {

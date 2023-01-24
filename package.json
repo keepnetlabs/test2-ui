@@ -12,9 +12,10 @@
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
     "@riophae/vue-treeselect": "^0.4.0",
-    "@sentry/vue": "7.30.0",
     "@sentry/tracing": "7.30.0",
+    "@sentry/vue": "7.30.0",
     "@sum.cumo/vue-browserupdate": "^3.0.1",
+    "awesome-phonenumber": "2.69.0",
     "axios": "0.27.2",
     "babel-polyfill": "^6.26.0",
     "chart.js": "^2.9.3",

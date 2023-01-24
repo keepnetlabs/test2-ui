@@ -2147,9 +2147,6 @@ export default {
       let data = []
       if (isArray) data = this.deleteValue.map((item) => item.resourceId)
       else data.push(this.deleteValue.resourceId)
-      isArray
-        ? (data = this.deleteValue.map((item) => item.resourceId))
-        : data.push(this.deleteValue.resourceId)
       if (message) {
         const payload = {
           items: data,
@@ -2330,14 +2327,14 @@ export default {
     },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
+      const diffDaysText = `${diffDays === 0 ? 0 : diffDays} day(s) `
+      const totalHoursText = totalHours > 0 ? `${totalHours} hour(s) ` : ''
       if (this.loading) return 'Loading...'
       else if (this.statsAndMenuData.status === 'Finished') return 'Finished'
       else if (this.statsAndMenuData.status === 'Canceled') return 'Canceled'
       else if (this.statsAndMenuData.status === 'Expired') return 'Expired'
       else
-        return `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
-          totalHours > 0 ? `${totalHours} hour(s) ` : ''
-        }${totalMinutes} minute(s) left`
+        return `${diffDays > 0 ? diffDaysText : ''}${totalHoursText}${totalMinutes} minute(s) left`
     },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this
