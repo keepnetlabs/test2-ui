@@ -35,7 +35,7 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
-import { createTargetGroupUsers } from '@/api/targetUsers'
+import { bulkImportTargetUsersToGroups } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
 
 export default {
@@ -68,7 +68,13 @@ export default {
         message: labels.NoUsersToAdd
       },
       excludedResourceIdList: [],
-      isSelectedAllEver: false
+      isSelectedAllEver: false,
+      payload: {
+        selectAll: false,
+        excludedResourceIdList: [],
+        targetGroupResourceIds: [],
+        targetUserResourceIds: []
+      }
     }
   },
   computed: {
@@ -76,7 +82,9 @@ export default {
       return `Add Users To “${this.groupName}” Group`
     },
     getConfirmButtonDisabled() {
-      return this.saveDisable || !this.selectedUsers.length
+      return (
+        this.saveDisable || (!this.payload.targetUserResourceIds.length && !this.payload.selectAll)
+      )
     }
   },
   methods: {
@@ -85,22 +93,18 @@ export default {
     },
     submit() {
       this.saveDisable = true
-      const payload = {}
-      if (
-        this.isSelectedAllEver ||
-        this.$refs.refTargetGroupUsersTable.$refs.refTargetGroupUsersTable.isSelectedAllEver
-      ) {
-        payload.selectAll = {
-          filter: this.$refs.refTargetGroupUsersTable.axiosPayload.filter,
-          excludedResourceIdList: this.excludedResourceIdList
-        }
-        payload.targetUserResourceIds = []
-      } else {
-        payload.selectAll = null
-        payload.targetUserResourceIds = this.selectedUsers.map((item) => item.resourceId)
+      const serverSideParams = this.$refs?.refTargetGroupUsersTable?.$refs?.refTargetGroupUsersTable?.getServerSideSelectionParams() || {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
       }
-
-      createTargetGroupUsers(this.resourceId, payload)
+      this.payload = {
+        ...this.payload,
+        selectAll: serverSideParams?.isSelectedAllEver || false,
+        excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
+        targetGroupResourceIds: [this.resourceId],
+        targetUserResourceIds: serverSideParams?.isSelectedAllEver ? [] : this.selectedUsers
+      }
+      bulkImportTargetUsersToGroups(this.payload)
         .then(() => {
           this.$emit('closeOverlayWithUpdate')
         })
@@ -113,9 +117,14 @@ export default {
       excludedResourceIdList = [],
       isSelectedAllEver = false
     ) {
-      this.isSelectedAllEver = isSelectedAllEver
-      this.excludedResourceIdList = excludedResourceIdList
-      this.selectedUsers = selectedUsers
+      this.selectedUsers = selectedUsers.map((user) => user.resourceId)
+      this.payload = {
+        targetUserResourceIds: isSelectedAllEver ? [] : this.selectedUsers,
+        selectAll: isSelectedAllEver,
+        filter: this.$refs?.refTargetGroupUsersTable?.axiosPayload?.filter || {},
+        excludedResourceIdList,
+        targetGroupResourceIds: [this.resourceId]
+      }
     }
   }
 }
