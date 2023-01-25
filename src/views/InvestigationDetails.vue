@@ -2364,7 +2364,7 @@ export default {
           : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       } else if (statsAndMenuData.status === 'Finished') {
         style.boxShadow = '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-      } else if (statsAndMenuData.status === 'Expired') {
+      } else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled') {
         style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       }
       return style
@@ -2375,7 +2375,8 @@ export default {
       if (statsAndMenuData.status === 'Running') {
         return statsAndMenuData['onlineUserCount'] ? 'bg-turquoise' : 'bg-macaroni'
       } else if (statsAndMenuData.status === 'Finished') return 'bg-turquoise'
-      else if (statsAndMenuData.status === 'Expired') return 'bg-macaroni'
+      else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled')
+        return 'bg-macaroni'
       else return ''
     },
     getGoogleData() {
