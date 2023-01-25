@@ -264,3 +264,9 @@ hr {
     font-weight: 400;
   }
 }
+
+.v-select__selections {
+  input::placeholder {
+    font-weight: 400;
+  }
+}

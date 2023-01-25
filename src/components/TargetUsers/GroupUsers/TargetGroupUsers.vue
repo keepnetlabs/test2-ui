@@ -50,6 +50,7 @@
       has-selection-slot
       class="pb-0"
       :resource-id="resourceId"
+      :isServerSide="false"
       @handleAddAction="toggleAddUserModal"
       @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
       @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
