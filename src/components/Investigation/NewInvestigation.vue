@@ -460,6 +460,28 @@ export default {
         },
         shortcuts: [
           {
+            text: 'Today',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setHours(0, 0, 0, 0)
+              end.setHours(23, 59, 59)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'Yesterday',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setDate(start.getDate() - 1)
+              start.setHours(0, 0, 0, 0)
+              end.setDate(end.getDate() - 1)
+              end.setHours(23, 59, 59)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
             text: 'Last week',
             onClick(picker) {
               const end = new Date()
