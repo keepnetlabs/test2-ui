@@ -10,7 +10,7 @@
       subtitle="Do not use your real email accounts"
       body="We recommend creating a test account and even using virtual machine because of the potential security problems."
     >
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div class="d-flex flex-row flex-end">
             <v-btn
@@ -272,11 +272,7 @@
                               outlined
                               hint=""
                               placeholder="Sending Limit"
-                              :disabled="
-                                scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'
-                                  ? false
-                                  : true
-                              "
+                              :disabled="scanAndDeliveryValues.sendingLoopType.loopType !== 'SMTP'"
                             />
                           </div>
                           <div class="float-md-left right-input">
@@ -288,11 +284,7 @@
                               item-value="value"
                               outlined
                               required
-                              :disabled="
-                                scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'
-                                  ? false
-                                  : true
-                              "
+                              :disabled="scanAndDeliveryValues.sendingLoopType.loopType !== 'SMTP'"
                             />
                           </div>
                         </div>
@@ -314,11 +306,7 @@
                               outlined
                               hint=""
                               placeholder="Sending Limit"
-                              :disabled="
-                                scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'
-                                  ? true
-                                  : false
-                              "
+                              :disabled="scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'"
                             />
                           </div>
                           <div class="float-md-left right-input">
@@ -331,11 +319,7 @@
                               outlined
                               required
                               persistent-hint
-                              :disabled="
-                                scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'
-                                  ? true
-                                  : false
-                              "
+                              :disabled="scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP'"
                             />
                           </div>
                         </div>
@@ -768,6 +752,20 @@ export default {
     InputEntityName,
     InputNumber
   },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    scanDetails: {
+      required: true,
+      type: Object
+    }
+  },
   data() {
     return {
       selectedTab: '1',
@@ -835,18 +833,64 @@ export default {
       disableStartButtonStatus: false
     }
   },
-  props: {
-    status: {
-      type: Boolean,
-      default: false
+  watch: {
+    emailSettingsValues: {
+      handler: function (value, oldValue) {
+        this.isFormValuesChanged = true
+        if (value.scanType === 'Manual') {
+          this.emailSettingsValues.password = ''
+          this.emailSettingsValues.owa = false
+          this.emailSettingsValues.owaUrl = ''
+          this.emailSettingsValues.username = ''
+          this.passwordRules = []
+        } else {
+          this.passwordRules = this.baseRules
+        }
+
+        if (oldValue && value && value.scanType !== oldValue.scanType) {
+          this.$forceUpdate()
+        }
+      },
+      deep: true,
+      immediate: true
     },
-    isDuplicate: {
-      type: Boolean,
-      default: false
-    },
-    scanDetails: {
-      required: true,
-      type: Object
+    acceptRule(val) {
+      this.disableStartButtonStatus = val
+    }
+  },
+  computed: {
+    validateCheckbox() {
+      return [this.acceptRule === true || labels.Required]
+    }
+  },
+  created() {
+    if (this.isDuplicate) {
+      this.pageTitle = 'Duplicate Scan'
+      this.emailSettingsValues.email = this.scanDetails.email
+      this.emailSettingsValues.password = this.scanDetails.password
+      if (this.scanDetails.owaUrl !== '') {
+        this.emailSettingsValues.scanType = 'Automate'
+        this.emailSettingsValues.owa = true
+        this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl
+        this.emailSettingsValues.username = this.scanDetails.owaUsername
+      } else if (this.scanDetails.clientId === null && this.scanDetails.tenantId === null) {
+        this.emailSettingsValues.scanType = 'Manual'
+      } else {
+        this.emailSettingsValues.scanType = 'OAUTH'
+        this.emailSettingsValues.clientId = this.scanDetails.clientId
+        this.emailSettingsValues.tenantId = this.scanDetails.tenantId
+      }
+      this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan
+      this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit
+      if (this.scanDetails.distributeEmailOverMinutes > 0) {
+        this.scanAndDeliveryValues.sendingLoopType.loopType = 'DistributeEmails'
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeEmailOverMinutes
+        this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = 'minutes'
+      } else {
+        this.scanAndDeliveryValues.sendingLoopType.loopType = 'SMTP'
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute = this.scanDetails.delaySeconds
+        this.scanAndDeliveryValues.sendingLoopType.smtpTimeType = 'seconds'
+      }
     }
   },
   methods: {
@@ -924,138 +968,77 @@ export default {
       }
     },
     submit() {
-      if (this.$refs.refFormStep3.validate()) {
-        this.emailLoginStatus = false
-        const requestBody = {
-          email: '',
-          password: '',
-          mailTestType: '2',
-          owaUrl: '',
-          owaUsername: '',
-          isContinuousScan: false,
-          delaySeconds: 0,
-          sendingLimit: 0,
-          distributeEmailOverMinutes: 0,
-          clientId: '',
-          tenantId: ''
-        }
-
-        requestBody.email = this.emailSettingsValues.email
-        requestBody.password = this.emailSettingsValues.password
-        if (this.emailSettingsValues.scanType === 'Manual') {
-          requestBody.mailTestType = '0'
-        } else if (this.emailSettingsValues.scanType === 'Automate') {
-          requestBody.mailTestType = this.emailSettingsValues.owa ? '1' : '2'
-        } else {
-          requestBody.mailTestType = '1'
-        }
-        requestBody.owaUrl = this.emailSettingsValues.owaUrl
-        requestBody.owaUsername = this.emailSettingsValues.username
-        requestBody.isContinuousScan = this.scanAndDeliveryValues.continuousScan
-        requestBody.sendingLimit = this.scanAndDeliveryValues.sendingLimit
-
-        if (this.scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP') {
-          requestBody.distributeEmailOverMinutes = 0
-          requestBody.delaySeconds = this.calculateTimeType(
-            this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute,
-            this.scanAndDeliveryValues.sendingLoopType.smtpTimeType,
-            true
-          )
-        } else {
-          requestBody.sendingLimit = 0
-          requestBody.delaySeconds = 0
-          requestBody.distributeEmailOverMinutes = this.calculateTimeType(
-            this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute,
-            this.scanAndDeliveryValues.sendingLoopType.distributeTimeType,
-            false
-          )
-        }
-        requestBody.clientId = this.emailSettingsValues.clientId
-        requestBody.tenantId = this.emailSettingsValues.tenantId
-        this.disableStartButtonStatus = false
-        getQuickScanCreate(requestBody)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: this.isDuplicate ? 'Scan successfully updated.' : 'Scan successfully added.',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-            this.$emit('changeNewScanModalStatus', false, true)
-            this.disableStartButtonStatus = true
-          })
-          .catch((error) => {
-            this.disableStartButtonStatus = true
-            this.emailLoginStatus = true
-            const errorResponse = error.response.data
-            this.submitError.isArray = false
-            this.submitError.message = errorResponse?.message || ''
-            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
-              this.submitError.isArray = true
-              this.submitError.message = errorResponse?.validationMessages || []
-            }
-            this.step = 1
-          })
+      if (!this.$refs.refFormStep3.validate()) return
+      this.emailLoginStatus = false
+      const requestBody = {
+        email: '',
+        password: '',
+        mailTestType: '2',
+        owaUrl: '',
+        owaUsername: '',
+        isContinuousScan: false,
+        delaySeconds: 0,
+        sendingLimit: 0,
+        distributeEmailOverMinutes: 0,
+        clientId: '',
+        tenantId: ''
       }
-    }
-  },
-  watch: {
-    emailSettingsValues: {
-      handler: function (value, oldValue) {
-        this.isFormValuesChanged = true
-        if (value.scanType === 'Manual') {
-          this.emailSettingsValues.password = ''
-          this.emailSettingsValues.owa = false
-          this.emailSettingsValues.owaUrl = ''
-          this.emailSettingsValues.username = ''
-          this.passwordRules = []
-        } else {
-          this.passwordRules = this.baseRules
-        }
 
-        if (oldValue && value && value.scanType !== oldValue.scanType) {
-          this.$forceUpdate()
-        }
-      },
-      deep: true,
-      immediate: true
-    },
-    acceptRule(val) {
-      this.disableStartButtonStatus = val
-    }
-  },
-  computed: {
-    validateCheckbox() {
-      return [this.acceptRule === true || labels.Required]
-    }
-  },
-  created() {
-    if (this.isDuplicate) {
-      this.pageTitle = 'Duplicate Scan'
-      this.emailSettingsValues.email = this.scanDetails.email
-      this.emailSettingsValues.password = this.scanDetails.password
-      if (this.scanDetails.owaUrl !== '') {
-        this.emailSettingsValues.scanType = 'Automate'
-        this.emailSettingsValues.owa = true
-        this.emailSettingsValues.owaUrl = this.scanDetails.owaUrl
-        this.emailSettingsValues.username = this.scanDetails.owaUsername
-      } else if (this.scanDetails.clientId === null && this.scanDetails.tenantId === null) {
-        this.emailSettingsValues.scanType = 'Manual'
+      requestBody.email = this.emailSettingsValues.email
+      requestBody.password = this.emailSettingsValues.password
+      if (this.emailSettingsValues.scanType === 'Manual') {
+        requestBody.mailTestType = '0'
+      } else if (this.emailSettingsValues.scanType === 'Automate') {
+        requestBody.mailTestType = this.emailSettingsValues.owa ? '1' : '2'
       } else {
-        this.emailSettingsValues.scanType = 'OAUTH'
-        this.emailSettingsValues.clientId = this.scanDetails.clientId
-        this.emailSettingsValues.tenantId = this.scanDetails.tenantId
+        requestBody.mailTestType = '1'
       }
-      this.scanAndDeliveryValues.continuousScan = this.scanDetails.isContinuousScan
-      this.scanAndDeliveryValues.sendingLimit = this.scanDetails.sendingLimit
-      if (this.scanDetails.distributeEmailOverMinutes > 0) {
-        this.scanAndDeliveryValues.sendingLoopType.loopType = 'DistributeEmails'
-        this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute = this.scanDetails.distributeEmailOverMinutes
-        this.scanAndDeliveryValues.sendingLoopType.distributeTimeType = 'minutes'
+      requestBody.owaUrl = this.emailSettingsValues.owaUrl
+      requestBody.owaUsername = this.emailSettingsValues.username
+      requestBody.isContinuousScan = this.scanAndDeliveryValues.continuousScan
+      requestBody.sendingLimit = this.scanAndDeliveryValues.sendingLimit
+
+      if (this.scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP') {
+        requestBody.distributeEmailOverMinutes = 0
+        requestBody.delaySeconds = this.calculateTimeType(
+          this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute,
+          this.scanAndDeliveryValues.sendingLoopType.smtpTimeType,
+          true
+        )
       } else {
-        this.scanAndDeliveryValues.sendingLoopType.loopType = 'SMTP'
-        this.scanAndDeliveryValues.sendingLoopType.smtpTimeMinute = this.scanDetails.delaySeconds
-        this.scanAndDeliveryValues.sendingLoopType.smtpTimeType = 'seconds'
+        requestBody.sendingLimit = 0
+        requestBody.delaySeconds = 0
+        requestBody.distributeEmailOverMinutes = this.calculateTimeType(
+          this.scanAndDeliveryValues.sendingLoopType.distributeTimeMinute,
+          this.scanAndDeliveryValues.sendingLoopType.distributeTimeType,
+          false
+        )
       }
+      requestBody.clientId = this.emailSettingsValues.clientId
+      requestBody.tenantId = this.emailSettingsValues.tenantId
+      this.disableStartButtonStatus = false
+      getQuickScanCreate(requestBody)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: this.isDuplicate ? 'Scan successfully updated.' : 'Scan successfully added.',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+          this.$emit('changeNewScanModalStatus', false, true)
+          this.disableStartButtonStatus = true
+        })
+        .catch((error) => {
+          this.disableStartButtonStatus = true
+          this.emailLoginStatus = true
+          const errorResponse = error.response.data
+          this.submitError.isArray = false
+          this.submitError.message = errorResponse?.message || ''
+          if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
+            this.submitError.isArray = true
+            this.submitError.message = errorResponse?.validationMessages || []
+          }
+          this.step = 1
+        })
     }
   }
 }

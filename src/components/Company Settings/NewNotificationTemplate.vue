@@ -148,7 +148,6 @@ export default {
       loading: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       saveDisable: this.editItemsDisabled,
       Validations: Validations,
       commonRules: {
@@ -268,17 +267,8 @@ export default {
                       resourceId: null
                     }
                   ]
-                  this.nonEditableAvailableForRequests = [
-                    {
-                      id: 'MyCompanyOnly',
-                      label: 'My company only',
-                      type: 'MyCompanyOnly',
-                      resourceId: null
-                    }
-                  ]
                 } else {
                   this.formValues['availableForRequests'] = availableForListFromBackend
-                  this.nonEditableAvailableForRequests = availableForListFromBackend
                 }
               } else {
                 this.formValues['availableForRequests'] = [
@@ -294,9 +284,7 @@ export default {
             }
             this.formValues[key] = value
           }
-          if (this.isDuplicate) {
-            this.formValues.name = this.formValues.name + ' - COPY'
-          }
+          if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .finally(() => {

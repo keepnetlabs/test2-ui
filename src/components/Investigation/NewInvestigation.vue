@@ -1378,6 +1378,10 @@ export default {
         const newItems = this.targetUsersValue.map((email) => ({ email }))
         this.specificUserItems = [...this.specificUserItems, ...newItems]
       }
+      this.selectedAction = 'NoAction'
+      this.filterList = this.getEditedFilters()
+    },
+    getEditedFilters() {
       const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
         for (let [key, value] of Object.entries(item)) {
           if (value && key !== 'resourceId') {
@@ -1396,14 +1400,13 @@ export default {
       }, [])
       const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
         for (let [key, value] of Object.entries(item)) {
-          if (value && key != 'resourceId') {
+          if (value && key !== 'resourceId') {
             acc.push({ option: key, text: value })
           }
         }
         return acc
       }, [])
-      this.selectedAction = 'NoAction'
-      this.filterList = [...headers, ...body, ...attachments]
+      return [...headers, ...body, ...attachments]
     }
   }
 }
