@@ -240,7 +240,7 @@ export default {
     },
     setInitialTemplateData() {
       setTimeout(() => {
-        this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
+        this.initialTemplate = this.$refs?.grapesJsPostIncident?.getGrapesEditorContent?.() || ''
       }, 1000)
     },
     handleFileDelete(index) {
