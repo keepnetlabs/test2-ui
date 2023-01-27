@@ -182,10 +182,8 @@ export default {
       refSmtpSettings.checkIfCanCloseSmtpModal()
       next(false)
     } else if (
-      refNotificationTemplates &&
-      refNotificationTemplates.$refs.newNotificationTemplate &&
-      refNotificationTemplates.$refs.newNotificationTemplate.$refs.refEmailTemplate &&
-      refNotificationTemplates.$refs.newNotificationTemplate.$refs.refEmailTemplate.showGrapesModal
+      refNotificationTemplates?.$refs?.newNotificationTemplate?.$refs?.refEmailTemplate
+        ?.showGrapesModal
     ) {
       refNotificationTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
