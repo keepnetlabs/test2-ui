@@ -105,18 +105,15 @@ export default {
           if (vm?.$refs?.tsCommunities) vm.$refs.tsCommunities.subTabSelected('tab-2')
         }, 1250)
       }
-      if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) {
-        vm.$router.push('/')
-      }
-      if (from.name === 'Community') {
-        const incidentsData = vm.$store.state['incidents'].incidents
-        const communitiesData = vm.$store.state['communities'].communities
-        const isTableReload = vm.$store.state['tableReload'].tableReload
-        if (incidentsData.incidentsData || communitiesData.communitiesData) {
-          vm.tab = !incidentsData.incidentsData ? 1 : 0
-          vm.isLoadState = true
-          vm.isTableReload = isTableReload
-        }
+      if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) vm.$router.push('/')
+      if (from.name !== 'Community') return
+      const incidentsData = vm.$store.state['incidents'].incidents
+      const communitiesData = vm.$store.state['communities'].communities
+      const isTableReload = vm.$store.state['tableReload'].tableReload
+      if (incidentsData.incidentsData || communitiesData.communitiesData) {
+        vm.tab = !incidentsData.incidentsData ? 1 : 0
+        vm.isLoadState = true
+        vm.isTableReload = isTableReload
       }
     })
   },
@@ -154,32 +151,25 @@ export default {
     getSelectedTabData() {
       setTimeout(() => {
         if (this.tab === 0 && this.getCommunityPostsPermission) {
-          if (!this.isLoadState) {
-            if (this.$refs && this.$refs.tsIncidents) {
-              this.$refs.tsIncidents.getIncidentList()
-              this.$refs.tsIncidents.page = 1
-              this.$refs.tsIncidents.itemsPerPage = 5
-            }
-          }
+          if (this.isLoadState || !this?.$refs?.tsIncidents) return
+          this.$refs.tsIncidents.getIncidentList()
+          this.$refs.tsIncidents.page = 1
+          this.$refs.tsIncidents.itemsPerPage = 5
         } else {
-          if (this.getAllCommunitiesPermission) {
-            const communitiesDataGlobal =
-              this.$store.state['communities'].communities &&
-              this.$store.state['communities'].communities.communitiesData
-            this.page =
-              (communitiesDataGlobal &&
-                communitiesDataGlobal.searchValues &&
-                communitiesDataGlobal.searchValues.page) ||
-              1
-            if (!this.isLoadState) {
-              if (this.$refs.tsCommunities) {
-                this.$refs.tsCommunities.getAllCommunitiesListData()
-                this.$refs.tsCommunities.getInvitationCount()
-                this.$refs.tsCommunities.setInitialCommunityValues()
-                this.$refs.tsCommunities.isCommunity = false
-              }
-            }
-          }
+          if (!this.getAllCommunitiesPermission) return
+          const communitiesDataGlobal =
+            this.$store.state['communities'].communities &&
+            this.$store.state['communities'].communities.communitiesData
+          this.page =
+            (communitiesDataGlobal &&
+              communitiesDataGlobal.searchValues &&
+              communitiesDataGlobal.searchValues.page) ||
+            1
+          if (this.isLoadState || !this?.$refs?.tsCommunities) return
+          this.$refs.tsCommunities.getAllCommunitiesListData()
+          this.$refs.tsCommunities.getInvitationCount()
+          this.$refs.tsCommunities.setInitialCommunityValues()
+          this.$refs.tsCommunities.isCommunity = false
         }
       }, 50)
       setTimeout(() => {

@@ -241,7 +241,14 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     this.callForDatas()
-    if (this.selectedItem && this.selectedItem.resourceId) {
+    this.callForNotificationTemplate()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
+  methods: {
+    callForNotificationTemplate() {
+      if (!this?.selectedItem?.resourceId) return
       this.loading = true
       getEmailTemplate(this.selectedItem.resourceId)
         .then((response) => {
@@ -295,12 +302,7 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    }
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
-  },
-  methods: {
+    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response

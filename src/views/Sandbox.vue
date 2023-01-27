@@ -163,9 +163,9 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    @click="handleListItemClick(item)"
-                    :key="item"
                     v-for="item in listItems"
+                    :key="item"
+                    @click="handleListItemClick(item)"
                   >
                     <v-list-item-title>{{ item }}</v-list-item-title>
                   </v-list-item>
@@ -411,9 +411,7 @@ export default {
     handleListItemClick(value) {
       if (value === 'Set as default filter') {
         this.setFilterOptions()
-      }
-
-      if (value === 'Restore default filter') {
+      } else if (value === 'Restore default filter') {
         if (localStorage.getItem('sandboxCompany'))
           this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
         if (localStorage.getItem('sandboxIntegration'))
@@ -433,9 +431,7 @@ export default {
           this.filteredDateValue = dateValue
         }
         this.handleFilter()
-      }
-
-      if (value === 'Clear filters') {
+      } else if (value === 'Clear filters') {
         this.companyValue = ''
         this.analysisEngineTypeResourceId = null
         this.filteredDateValue = null
@@ -603,37 +599,37 @@ export default {
       )
       this.getSummaryData()
     },
+    getAnalysisEngineTypeResourceId() {
+      return this.analysisEngineTypeResourceId
+        ? this.analysisEngineTypeResourceId
+            .map((engineTypeValue) => {
+              return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
+            })
+            .toString()
+        : ''
+    },
+    getDateFilter() {
+      return this.filteredSelectValueDate !== 'between'
+        ? this.filteredDateValue || this.filteredDateValueSelect.value
+        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+    },
     changeCompanyData() {
       this.$set(
         this.summaryOptions.filter.FilterGroups[0].FilterItems[1],
         'Value',
         this.companyValue.toString() || ''
       )
+      const analysisEngineTypeResourceId = this.getAnalysisEngineTypeResourceId()
+      const dateFilter = this.getDateFilter()
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.getSummaryData()
     },
@@ -643,31 +639,17 @@ export default {
         'Value',
         this.analysisEngineTypeResourceId.toString() || ''
       )
+      const analysisEngineTypeResourceId = this.getAnalysisEngineTypeResourceId()
+      const dateFilter = this.getDateFilter()
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.getSummaryData()
     },

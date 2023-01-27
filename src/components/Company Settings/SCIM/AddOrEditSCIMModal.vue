@@ -288,29 +288,28 @@ export default {
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
         const { refStep1Form } = this.$refs
-        if (refStep1Form.validate()) {
-          this.step += 1
-          if (!this.isEdit) {
-            this.groupByItems = [
-              ...[{ text: 'Department', value: '9fd0afec416c' }],
-              ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
-                (acc, { customFieldResourceId, scimFieldResourceId }) => {
-                  if (!customFieldResourceId || !scimFieldResourceId) return acc
-                  const customField = this.defaultCustomFields.find(
-                    (customField) => customField.resourceId === customFieldResourceId
-                  )
-                  if (!customField) return acc
-                  if (customField.fieldDataType !== 'String') return acc
-                  acc.push({
-                    text: customField?.name,
-                    value: scimFieldResourceId
-                  })
-                  return acc
-                },
-                []
-              )
-            ]
-          }
+        if (!refStep1Form?.validate()) return
+        this.step += 1
+        if (!this.isEdit) {
+          this.groupByItems = [
+            ...[{ text: 'Department', value: '9fd0afec416c' }],
+            ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
+              (acc, { customFieldResourceId, scimFieldResourceId }) => {
+                if (!customFieldResourceId || !scimFieldResourceId) return acc
+                const customField = this.defaultCustomFields.find(
+                  (customField) => customField.resourceId === customFieldResourceId
+                )
+                if (!customField) return acc
+                if (customField.fieldDataType !== 'String') return acc
+                acc.push({
+                  text: customField?.name,
+                  value: scimFieldResourceId
+                })
+                return acc
+              },
+              []
+            )
+          ]
         }
       } else {
         this.step += flag

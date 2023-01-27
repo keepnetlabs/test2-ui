@@ -1477,7 +1477,7 @@ export default {
         })
         .finally(() => {
           this.isRoksitTestingConnection = false
-          this.loadingState.shift('loading')
+          this.loadingState.shift()
         })
     },
     handleTagItemChange(value) {
@@ -1671,13 +1671,7 @@ export default {
       }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
         .then((response) => {
-          if (response.data.status === 'FAILED') {
-            item.status = 'failed'
-            this.formValues.apiKeys[i].errorMessage = response.data.message
-          } else {
-            item.status = 'success'
-          }
-          item.status = 'success'
+          item.status = response.data.status === 'FAILED' ? 'failed' : 'success'
         })
         .catch((error) => {
           item.status = 'failed'
@@ -1687,7 +1681,7 @@ export default {
             item.errorMessage = error.response.data.message || error.response.data.Message
           }
         })
-        .finally(() => this.loadingState.shift('loading'))
+        .finally(() => this.loadingState.shift())
     },
     testConnection(isSave) {
       if (
@@ -1699,9 +1693,8 @@ export default {
           INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
-        for (let i = 0; i < this.formValues.apiKeys.length; i++) {
-          const item = this.formValues.apiKeys[i]
-          this.formValues.apiKeys[i].status = 'loading'
+        for (const item of this.formValues.apiKeys) {
+          item.status = 'loading'
           this.loadingState.push('loading')
           let payload = {
             apiUrl: this.formValues.apiUrl,
@@ -1711,31 +1704,26 @@ export default {
               resourceId: item.resourceId
             }
           }
-          if (this.isIbmXForce) {
-            payload['apiCredential']['password'] = this.formValues.apiKeys[i].password
-          }
+          if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
             .then((response) => {
               if (response.data.status === 'FAILED') {
-                this.formValues.apiKeys[i].status = 'failed'
-                this.formValues.apiKeys[i].errorMessage = response.data.message
-              } else {
-                this.formValues.apiKeys[i].status = 'success'
-              }
+                item.status = 'failed'
+                item.errorMessage = response.data.message
+              } else item.status = 'success'
               this.saveDisable = false
             })
             .catch((error) => {
               this.saveDisable = false
-              this.formValues.apiKeys[i].status = 'failed'
+              item.status = 'failed'
               if (error?.response?.data?.Message === 'Internal server error') {
-                this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
+                item.errorMessage = 'Error when testing connections!'
               } else {
-                this.formValues.apiKeys[i].errorMessage =
-                  error.response.data.message || error.response.data.Message
+                item.errorMessage = error.response.data.message || error.response.data.Message
               }
             })
             .finally(() => {
-              this.loadingState.shift('loading')
+              this.loadingState.shift()
               if (
                 isSave &&
                 !this.loadingState.length &&
@@ -1774,7 +1762,7 @@ export default {
               error.response.data.message || error.response.data.Message
           })
           .finally(() => {
-            this.loadingState.shift('loading')
+            this.loadingState.shift()
             if (isSave && !this.loadingState.length) this.saveIntegration()
             this.customIntegrationTestLoading = false
           })
@@ -1803,11 +1791,18 @@ export default {
               error.response.data.message || error.response.data.Message
           })
           .finally(() => {
-            this.loadingState.shift('loading')
+            this.loadingState.shift()
             if (isSave && !this.loadingState.length) this.saveIntegration()
             this.spamHouseTestLoading = false
           })
       }
+    },
+    resetApiKeysAndCredentials() {
+      if (!this.formValues.apiKeys) {
+        this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
+      }
+      this.formValues.userName = ''
+      this.formValues.password = ''
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
@@ -1834,29 +1829,15 @@ export default {
 
       if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
-        if (!this.formValues.apiKeys) {
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
-        }
-        this.formValues.userName = ''
-        this.formValues.password = ''
+        this.resetApiKeysAndCredentials()
       } else if (name === INTEGRATION_TYPES.GOOGLEWEBRISK) {
         this.formValues.apiUrl = 'https://webrisk.googleapis.com/v1'
-        if (!this.formValues.apiKeys) {
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
-        }
-        this.formValues.userName = ''
-        this.formValues.password = ''
+        this.resetApiKeysAndCredentials()
       } else if (name === INTEGRATION_TYPES.ROKSIT) {
         this.formValues.apiUrl = 'https://reputation.roksit.com/api/query/'
       } else if (name === INTEGRATION_TYPES.VMRAY) {
-        if (this.formValues) {
-          this.formValues.apiUrl = 'https://cloud.vmray.com'
-        }
-        if (!this.formValues.apiKeys) {
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
-        }
-        this.formValues.userName = ''
-        this.formValues.password = ''
+        this.formValues.apiUrl = 'https://cloud.vmray.com'
+        this.resetApiKeysAndCredentials()
       } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
         if (this.formValues) {
           this.formValues.apiUrl = 'https://exchange.xforce.ibmcloud.com'
