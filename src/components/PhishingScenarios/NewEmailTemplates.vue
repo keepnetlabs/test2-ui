@@ -457,7 +457,10 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        const fileExtension = file.name ? file.name.split('.').pop() : ''
+        let fileExtension = ''
+        if (file?.name.includes('.')) {
+          fileExtension = file.name.split('.').pop()
+        }
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
