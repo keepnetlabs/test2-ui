@@ -59,7 +59,7 @@
                   </v-col>
 
                   <v-col cols="12" md="5">
-                    <div class="copy-btn" @click="copyClipboard(selectedDomain.domain)">
+                    <div class="copy-btn" @click="copyToClipboard(selectedDomain.domain)">
                       Copy to clipboard
                     </div>
                   </v-col>
@@ -81,7 +81,7 @@
                   </v-col>
 
                   <v-col cols="12" md="5">
-                    <div class="copy-btn" @click="copyClipboard(selectedDomain.txtRecord)">
+                    <div class="copy-btn" @click="copyToClipboard(selectedDomain.txtRecord)">
                       Copy to clipboard
                     </div>
                   </v-col>
@@ -97,7 +97,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div>
           <v-card class="d-flex justify-end verify-button-container" flat>
             <v-card v-if="!verifyStartStatus" class="pa-2 later" @click="closeModal" flat>
@@ -121,14 +121,12 @@
 import AppDialog from '../../AppDialog'
 import { getAllowListListVerify } from '@/api/allowList'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { copyToClipboard } from '@/utils/functions'
 export default {
   name: 'VerifyDomain',
   components: {
     AppDialog,
     FormGroup
-    //AppDialogFooter
   },
   props: {
     status: {
@@ -167,14 +165,7 @@ export default {
     }
   },
   methods: {
-    copyClipboard(value) {
-      navigator.clipboard.writeText(value)
-      this.$store.dispatch('common/createSnackBar', {
-        message: labels.CopyToClipboard,
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-checkbox-marked-circle '
-      })
-    },
+    copyToClipboard,
     closeModal() {
       this.$emit('handleCloseModal')
       this.confirmText = ''

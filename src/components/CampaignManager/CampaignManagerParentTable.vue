@@ -47,6 +47,22 @@
           />
         </div>
       </template>
+      <template v-if="scope.column.property === 'status'">
+        <div class="campaign-manager-parent-table__status-column">
+          <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
+            <template v-slot:activator="{ on }">
+              <v-btn style="display: none;" />
+              <Badge
+                v-bind="getStatusBadgeProps(scope.row.status)"
+                :listeners="on"
+                size="medium"
+                :col="col"
+              />
+            </template>
+            <span>{{ getErrorMessage(scope.row) }}</span>
+          </v-tooltip>
+        </div>
+      </template>
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
@@ -68,7 +84,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManager/utils'
+import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -78,8 +94,10 @@ import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import Badge from '@/components/Badge'
+
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -96,7 +114,7 @@ const EMITS = {
 
 export default {
   name: 'CampaignManagerParentTable',
-  components: { TheRecordsButton, DataTable, CampaignManagerRowActions },
+  components: { TheRecordsButton, DataTable, CampaignManagerRowActions, Badge },
   props: {
     isLoading: {
       type: Boolean,
@@ -306,6 +324,21 @@ export default {
         payload,
         selectAll ? this.serverSideProps.totalNumberOfRecords : items.length
       )
+    },
+    getErrorMessage(row = {}) {
+      if (row.status === 'Error') {
+        return row?.jobResultMessage || ''
+      }
+      return ''
+    },
+    getStatusBadgeProps(status = '') {
+      return getStatusBadgeProps(status)
+    },
+    getDataTableFieldLabel(status = '') {
+      return getDataTableFieldLabel(status)
+    },
+    getTooltipDisabilityStatus(row = {}) {
+      return row?.status !== 'Error' || !row?.jobResultMessage
     }
   }
 }

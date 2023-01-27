@@ -30,6 +30,7 @@
                     id="img--login-main-logo"
                     style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
+                    :alt="loginWhiteLabel.mainLogoUrl ? 'main-logo-login' : ''"
                   />
                 </div>
               </v-card-title>
@@ -632,7 +633,8 @@ export default {
       recaptcha: APP_CONFIG.VUE_APP_RECAPTCHA_SITEKEY,
       validEmail: false,
       validPassword: false,
-      validReset: false
+      validReset: false,
+      isSessionExpired: false
     }
   },
   created() {
@@ -754,11 +756,8 @@ export default {
         : `Welcome To ${this.loginWhiteLabel.brandName}`
     },
     getLoginDescription() {
-      return this.isSessionExpired
-        ? 'Your session has been timed out. Please log in.'
-        : this.showPasswordField
-        ? `Enter password for ${this.email}`
-        : 'Please Login'
+      if (this.isSessionExpired) return 'Your session has been timed out. Please log in.'
+      return this.showPasswordField ? `Enter password for ${this.email}` : 'Please Login'
     },
     isBackButtonRendered() {
       return [2, 3, 5, 6, 7, 8, 9].includes(this.pageNumber) || this.showPasswordField
@@ -894,6 +893,9 @@ export default {
               const {
                 data: { data }
               } = response
+              const companyUpdateRequired = data?.companyUpdateRequired || false
+              if (companyUpdateRequired)
+                this.$store.dispatch('auth/setCompanyUpdateRequired', companyUpdateRequired)
               if (data.authenticationTypeId === 1) {
                 this.showPasswordField = true
               } else if (data.authenticationTypeId === 2) {
@@ -906,9 +908,13 @@ export default {
               this.$store.commit('common/SET_ERROR_STATE', true, {
                 root: true
               })
-              this.$store.commit('common/SET_ERROR_MESSAGE', e?.response?.data?.message || '', {
-                root: true
-              })
+              this.$store.commit(
+                'common/SET_ERROR_MESSAGE',
+                e?.response?.data?.message || labels.ServiceUnavailable,
+                {
+                  root: true
+                }
+              )
             })
         }
       }
@@ -1109,7 +1115,7 @@ export default {
               ? error.response.data.error_description
               : error.response.data.Message
               ? error.response.data.Message
-              : 'Unknown Error Occured !!!'
+              : labels.ServiceUnavailable
           this.$store.commit('common/SET_ERROR_MESSAGE', content, {
             root: true
           })

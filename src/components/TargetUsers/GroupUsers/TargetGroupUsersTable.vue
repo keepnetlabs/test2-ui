@@ -62,7 +62,7 @@
         <span class="tooltip-span">Remove Users</span>
       </v-tooltip>
     </template>
-    <template v-if="hasRowActions" #datatable-row-actions="{scope}">
+    <template v-if="hasRowActions" #datatable-row-actions="{ scope }">
       <TargetUserRowActionsEditButton
         :id="tableOptions.rowActions[0].id"
         :scope="scope"
@@ -77,14 +77,6 @@
           :text="tableOptions.rowActions[1].name"
           @on-click="handleAddToAnExistingGroup(scope.row)"
         />
-        <!-- <DefaultMenuRowAction
-          :id="tableOptions.rowActions[2].id"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[2].disabled"
-          :icon="tableOptions.rowActions[2].icon"
-          :text="tableOptions.rowActions[2].name"
-          @on-click="handleCreateGroupWithUser(scope.row)"
-        /> -->
         <TargetUserRowActionsRemoveFromGroupButton
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
@@ -463,12 +455,6 @@ export default {
               icon: 'mdi-account-multiple-plus',
               action: 'handleAddToAnExistingGroup'
             },
-            // {
-            //   name: 'Create a group with user',
-            //   id: 'btn-create-group-with-user--target-group-users-row-actions',
-            //   icon: 'mdi-account-multiple',
-            //   action: 'handleCreateGroupWithUser'
-            // },
             {
               name: 'Remove from group',
               id: 'btn-remove-from-group--target-group-users-row-actions',
@@ -482,7 +468,17 @@ export default {
       this.$emit('handleCreateGroupWithUser', selectedRow)
     },
     handleAddUsersSelectionClick() {
-      this.$emit('handleAddUsersSelectionClick', this.selections)
+      const serverSideParams = this.$refs?.refTargetGroupUsersTable?.getServerSideSelectionParams() || {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
+      }
+      this.$emit(
+        'handleAddUsersSelectionClick',
+        this.selections,
+        this.axiosPayload.filter,
+        serverSideParams,
+        this.serverSideProps
+      )
     },
     handleEditTargetUsers(selectedRow = {}) {
       this.$emit('handleEditTargetUser', selectedRow)

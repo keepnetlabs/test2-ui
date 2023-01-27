@@ -249,9 +249,8 @@
 
 <script>
 import InputDate from '@/components/Common/Inputs/InputDate'
-import { getTimeZoneForMoment } from '@/utils/functions'
+import { createRandomCryptStringNumber, getTimeZoneForMoment, getTimeZone } from '@/utils/functions'
 import AppDialog from '@/components/AppDialog'
-import { getTimeZone } from '@/utils/functions'
 export default {
   name: 'DataTableFilter',
   components: { InputDate, AppDialog },
@@ -318,7 +317,7 @@ export default {
       status: false,
       zIndex: '202',
       menu: null,
-      btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
+      btnKeySafariFix: `btn-key-${createRandomCryptStringNumber()}`,
       isFilterActive:
         this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
       filteredSelectValue: this.filterProps
@@ -397,7 +396,7 @@ export default {
       }
     },
     getFilterButtonDisabled() {
-      this.btnKeySafariFix = `btn-key${Math.random().toString().substring(0, 5)}`
+      this.btnKeySafariFix = `btn-key-${createRandomCryptStringNumber()}`
     }
   },
   created() {
@@ -465,8 +464,7 @@ export default {
         const value1 = this.$moment(val[0], getTimeZoneForMoment())
         const value2 = this.$moment(val[1], getTimeZoneForMoment())
         const diff = value2.diff(value1, 'days')
-        if (diff <= 14) {
-        } else if (this.defaultDate) {
+        if (diff > 14 && this.defaultDate) {
           this.status = true
           this.filteredDateRangeValue = [
             this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment()),
@@ -611,9 +609,7 @@ export default {
       if (this.filterOptionProps && this.filterOptionProps.length > 0) {
         return this.filterOptionProps
       }
-      return this.filterProps
-        ? this.filterProps.items && this.filterProps.items
-        : this.textFilterItems
+      return this.filterProps ? this.filterProps.items : this.textFilterItems
     },
     getWidth() {
       return this.filteredSelectValueDate === 'between' ? '450px' : '260px'

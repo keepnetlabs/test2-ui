@@ -49,6 +49,7 @@
 
 <script>
 import Badge from '@/components/Badge'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'ShowMoreTags',
   components: { Badge },
@@ -86,7 +87,7 @@ export default {
   },
   methods: {
     getKey(index) {
-      return `${index}ab-${Math.random()}`
+      return `${index}ab-${createRandomCryptStringNumber()}`
     },
     getBadgeText(text = '') {
       if (text.length > 25) {
@@ -95,36 +96,35 @@ export default {
       return text
     },
     getBadges() {
-      if (this.badges.length > 0) {
-        let renderedCount = 0
-        const maxWidth = 200
-        let totalWidth = this.unRenderedBadgeCount ? maxWidth - 40 : maxWidth
-        for (let item of this.badges) {
-          let itemWidth = item.length * 8 + 10
-          if (itemWidth > totalWidth) {
-            break
-          } else {
-            renderedCount++
-            totalWidth -= itemWidth
-          }
+      if (this.badges.length <= 0) return
+      let renderedCount = 0
+      const maxWidth = 200
+      let totalWidth = this.unRenderedBadgeCount ? maxWidth - 40 : maxWidth
+      for (let item of this.badges) {
+        let itemWidth = item.length * 8 + 10
+        if (itemWidth > totalWidth) {
+          break
+        } else {
+          renderedCount++
+          totalWidth -= itemWidth
         }
+      }
 
-        this.maximumRenderedBadgeCount = this.showMaximumBadgeCount
-          ? Math.min(this.showMaximumBadgeCount, renderedCount)
-          : renderedCount
-        if (this.maximumRenderedBadgeCount > this.badges.length) {
-          this.maximumRenderedBadgeCount = this.badges.length
-        }
-        if (this.maximumRenderedBadgeCount < 0) {
-          this.maximumRenderedBadgeCount = 0
-        }
+      this.maximumRenderedBadgeCount = this.showMaximumBadgeCount
+        ? Math.min(this.showMaximumBadgeCount, renderedCount)
+        : renderedCount
+      if (this.maximumRenderedBadgeCount > this.badges.length) {
+        this.maximumRenderedBadgeCount = this.badges.length
+      }
+      if (this.maximumRenderedBadgeCount < 0) {
+        this.maximumRenderedBadgeCount = 0
+      }
 
-        this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-        if (this.maximumRenderedBadgeCount === 0) {
-          if (maxWidth > 100) {
-            this.maximumRenderedBadgeCount = 1
-            this.unRenderedBadgeCount -= 1
-          }
+      this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+      if (this.maximumRenderedBadgeCount === 0) {
+        if (maxWidth > 100) {
+          this.maximumRenderedBadgeCount = 1
+          this.unRenderedBadgeCount -= 1
         }
       }
     }

@@ -1,6 +1,5 @@
-import { createLocalVue } from '@vue/test-utils'
+import { createLocalVue, mount } from '@vue/test-utils'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
-import { mount } from '@vue/test-utils'
 import CONSTANTS from '../Datatable/constants'
 import { customVuetify as vuetify } from '../utils'
 describe('Checkbox Unit cases', () => {

@@ -101,17 +101,6 @@
             class="black-placeholder"
             :disabled="isScheduledTimeDisabled"
           />
-          <!-- <template v-if="isReseller">
-            <span class="ml-2" style="font-size: 14px;">on every company’s own time zone</span>
-          </template>
-          <template v-else>
-            <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
-            <InputTimezone
-              v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
-              class="black-placeholder"
-              :disabled="isScheduledTimeDisabled"
-            />
-          </template> -->
         </div>
       </v-radio-group>
     </FormGroup>
@@ -399,12 +388,8 @@ export default {
   computed: {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone',
-      timezoneFormat: 'auth/getTimezoneFormat',
-      userRole: 'auth/getUserRole'
+      timezoneFormat: 'auth/getTimezoneFormat'
     }),
-    isReseller() {
-      return this.userRole ? this.userRole === 'Reseller' : false
-    },
     isAllSelected() {
       return this.formData.languageIds.some((item) => item === 'All')
     },
@@ -459,7 +444,7 @@ export default {
         this.formData.languageIds = []
       }
     },
-    'formData.enrollmentScheduler.scheduledDate'(val) {
+    'formData.enrollmentScheduler.scheduledDate'() {
       this.checkDateIsValid()
     },
     'formData.scheduleTypeId'(val) {
@@ -470,12 +455,15 @@ export default {
   },
   methods: {
     checkDateIsValid() {
-      this.isDateValid = this.formData
-        ? this.formData.scheduleTypeId === '2'
-          ? this.formData.enrollmentScheduler.scheduledDate &&
-            this.formData.enrollmentScheduler.scheduledDate.length > 0
-          : true
-        : false
+      let isDateValid
+      if (this.formData) {
+        isDateValid =
+          this.formData.scheduleTypeId === '2'
+            ? this.formData.enrollmentScheduler.scheduledDate &&
+              this.formData.enrollmentScheduler.scheduledDate.length > 0
+            : true
+      } else isDateValid = false
+      this.isDateValid = isDateValid
       return this.isDateValid
     },
     disabledEndDates(val) {
@@ -492,16 +480,13 @@ export default {
     },
     checkIsItemDisabled(item) {
       if (item.value === 'All') return false
-      if (this.isAllSelected) return true
-      return false
+      return !!this.isAllSelected
     },
     getCheckboxCheckedValue(item) {
-      if (
+      return !!(
         this.formData.languageIds.some((languageId) => languageId === item.value) ||
         this.isAllSelected
       )
-        return true
-      return false
     },
     callForContentLanguageItems() {
       AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(

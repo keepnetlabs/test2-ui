@@ -161,9 +161,8 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          for (let i = 0; i < results.length; i++) {
-            const data = results[i]
-            data.isActive = data.isActive ? 'Active' : 'Passive'
+          for (const row of results) {
+            row.isActive = row.isActive ? 'Active' : 'Passive'
           }
           this.tableData = results
         })

@@ -171,9 +171,8 @@ import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
 import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import labels from '@/model/constants/labels'
-import { isDifferent } from '@/utils/functions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -274,7 +273,7 @@ export default {
             { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ],
-          operatorSenderIP: [{ text: 'Ip Address', value: 'Ip' }, 'Regex'],
+          operatorSenderIP: [{ text: 'IP Address', value: 'Ip' }, 'Regex'],
           operandsAttachmentHash: [
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' }
@@ -356,7 +355,7 @@ export default {
       let playbookActionAnalyzers = []
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key) => {
+        keys.forEach((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             if (ref?.$refs[key][0].investigateData) {
               playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
@@ -446,7 +445,7 @@ export default {
       let playbookActionAnalyzers = []
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key) => {
+        keys.forEach((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             if (ref?.$refs[key][0].investigateData) {
               playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
@@ -585,8 +584,8 @@ export default {
           }
           let temp = []
           if (children.length > 1) {
-            children.map((item) => {
-              item.map((i) => {
+            children.forEach((item) => {
+              item.forEach((i) => {
                 temp.push(i)
               })
             })
@@ -614,7 +613,7 @@ export default {
     getQuery(children) {
       const conditionItems = []
       const conditionGroups = []
-      children.map((obj) => {
+      children.forEach((obj) => {
         if (obj.type === 'query-builder-group') {
           conditionGroups.push({
             operator: obj.query.logicalOperator,
@@ -639,7 +638,7 @@ export default {
     },
     findHasError(object) {
       const keys = Object.keys(object)
-      keys.map((key) => {
+      keys.forEach((key) => {
         if (object.hasOwnProperty(key)) {
           if (
             key === 'children' &&

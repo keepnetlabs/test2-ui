@@ -23,16 +23,17 @@
     <iframe
       v-if="activeTemplate"
       :key="iframeKey"
-      frameborder="0"
+      title="Training Preview"
       allowfullscreen
       :src="activeTemplate"
-      style="min-width: 1200px; min-height: 900px;"
+      style="min-width: 1200px; min-height: 900px; border-width: 0;"
     ></iframe>
   </div>
 </template>
 
 <script>
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'TrainingPreview',
   props: {
@@ -54,7 +55,7 @@ export default {
       activePage: 0,
       activeTemplate: null,
       srcs: [],
-      iframeKey: `key-${Math.random().toString()}`
+      iframeKey: `key-${createRandomCryptStringNumber()}`
     }
   },
   computed: {
@@ -95,7 +96,7 @@ export default {
             this.activePage
           ] = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
           this.activeTemplate = this.srcs[this.activePage]
-          this.iframeKey = `key-${Math.random().toString()}`
+          this.iframeKey = `key-${createRandomCryptStringNumber()}`
         })
         .finally(() => {
           this.$emit('update:isLoading', false)

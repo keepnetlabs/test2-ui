@@ -221,12 +221,12 @@
 
         .login-error-message {
             font-size: 14px;
-            font-weight: normal;
             font-stretch: normal;
             font-style: normal;
-            line-height: normal;
+            line-height: 21px;
             letter-spacing: normal;
-            color: #000000;
+            color: #383B41;
+            font-weight: 600;
         }
     }
 
@@ -280,7 +280,6 @@
     .forgot-password {
         align-items: center;
         text-decoration: none;
-        color: black;
         cursor: pointer;
         font-size: 11px;
         line-height: normal;

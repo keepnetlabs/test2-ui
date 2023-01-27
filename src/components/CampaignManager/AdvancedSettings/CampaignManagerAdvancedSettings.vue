@@ -30,16 +30,6 @@
         @focus="handleFocusOfSmtpSettingsInput"
         @focusout="handleFocusOutOfSmtpSettingsInput"
       >
-        <!--
-       <template #item="{ item }">
-         <div v-if="item.isHeader" class="campaign-manager-advanced-settings__smtp-select-header">
-           {{ item.header }}
-         </div>
-         <div v-else class="campaign-manager-advanced-settings__smtp-select-item">
-           {{ item.text }}
-         </div>
-       </template>
-       -->
       </KSelect>
       <v-btn
         :key="buttonKey"
@@ -106,82 +96,6 @@
           @change="callForCalculateSendingInfo"
         />
       </div>
-      <!-- <v-radio-group
-       v-model="formData.distributionTypeId"
-       class="campaign-manager-advanced-settings__distribution"
-       @change="callForCalculateSendingInfo"
-     >
-       <div class="campaign-manager-advanced-settings__distribution-item">
-         <v-radio
-           :id="`input--campaign-manager-radio-advanced-settings`"
-           class="mb-0"
-           label="Send emails with SMTP Delay every"
-           color="#2196f3"
-           value="1"
-         />
-         <v-text-field
-           v-model="formData.distributionSmtpDelayEvery"
-           v-mask="'###'"
-           id="input--campaign-manager-advanced-settings-time"
-           placeholder="Enter number"
-           outlined
-           class="edit-name-textfield edit-select standard-height ml-2"
-           hide-details
-           style="max-width: 48px"
-           :disabled="!distributionEmailOverTimeDisableStatus"
-           :rules="rules.number"
-           @input="callForCalculateSendingInfo"
-         ></v-text-field>
-         <KSelect
-           v-model.trim="formData.distributionSmtpDelayTimeTypeId"
-           id="input--campaign-manager-advanced-settings-time-type"
-           class="ml-2"
-           outlined
-           dense
-           hide-details
-           placeholder="Select a item"
-           style="max-width: 118px"
-           :items="formDetails['distributionSmtpDelayTimeTypes']"
-           :disabled="!distributionEmailOverTimeDisableStatus"
-           @change="callForCalculateSendingInfo"
-         />
-       </div>
-       <div class="campaign-manager-advanced-settings__distribution-item mt-2">
-         <v-radio
-           :id="`input--campaign-manager-radio-advanced-settings`"
-           value="2"
-           class="mb-0"
-           label="Distribute emails over"
-           color="#2196f3"
-         />
-         <v-text-field
-           v-model="formData.distributionEmailOver"
-           v-mask="'###'"
-           id="input--campaign-manager-advanced-settings-distribute-time"
-           placeholder="Enter number"
-           outlined
-           class="edit-name-textfield edit-select standard-height ml-2"
-           hide-details
-           style="max-width: 48px"
-           :disabled="distributionEmailOverTimeDisableStatus"
-           :rules="rules.number"
-           @change="callForCalculateSendingInfo"
-         ></v-text-field>
-         <KSelect
-           v-model.trim="formData.distributionEmailOverTimeTypeId"
-           id="input--campaign-manager-advanced-settings-distribute-time-type"
-           class="ml-2"
-           outlined
-           dense
-           hide-details
-           placeholder="Select a item"
-           style="max-width: 118px"
-           :disabled="distributionEmailOverTimeDisableStatus"
-           :items="formDetails['distributionEmailOverTimeTypes']"
-           @change="callForCalculateSendingInfo"
-         />
-       </div>
-     </v-radio-group> -->
     </FormGroup>
     <FormGroup :title="labels.SendingLimit" :sub-title="labels.SendingLimitSub">
       <v-text-field
@@ -265,9 +179,9 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
-import * as validations from '@/utils/validations'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CampaignManagerAdvancedSettings',
   components: {
@@ -314,7 +228,7 @@ export default {
         }
       },
       smtpItems: [],
-      buttonKey: Math.random().toString(),
+      buttonKey: createRandomCryptStringNumber(),
       defaultSmtpItems: [],
       responseOfSmtpItems: [],
       isShowSmtpInputError: false,
@@ -344,8 +258,8 @@ export default {
       },
       rules: {
         number: [
-          (v) => validations.required(v, 'Enter a number higher than 0'),
-          (v) => validations.startsWith(v, 'Cannot start with 0', 0),
+          (v) => Validations.required(v, 'Enter a number higher than 0'),
+          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       }
@@ -374,8 +288,10 @@ export default {
       }
       minutes = minutes.toString()
       seconds = seconds.toString()
-      return `${minutes.length === 1 ? `0${minutes}` : `${minutes}`}:${
-        seconds.length === 1 ? `0${seconds}` : `${seconds}`
+      const singleDigitMinutes = `0${minutes}`
+      const singleDigitSeconds = `0${seconds}`
+      return `${minutes.length === 1 ? singleDigitMinutes : minutes}:${
+        seconds.length === 1 ? singleDigitSeconds : seconds
       }`
     },
     getSelectedSmtpDelayOverTimeType() {
@@ -406,23 +322,26 @@ export default {
       if (minutes === 0 && hours === 0 && seconds === 0) {
         seconds = 1
       }
-      hours = hours.toString()
-      minutes = minutes.toString()
-      seconds = seconds.toString()
 
       const hoursText = hours > 1 ? 'hours' : 'hour'
       const minutesText = minutes > 1 ? 'minutes' : 'minute'
       const secondsText = seconds > 1 ? 'seconds' : 'second'
+      const leftSideHours = `${hours} ${hoursText} `
+      let leftSideText = '',
+        rightSideText = ''
+      if (hours !== 0) {
+        leftSideText = leftSideHours
+      }
+      if (minutes !== 0) {
+        leftSideText += `${minutes} ${minutesText} `
+      }
 
-      return `${hours !== '0' ? `${hours} ${hoursText} ` : ''}${
-        minutes !== '0' ? `${minutes} ${minutesText} ` : ''
-      }${
-        seconds !== '0'
-          ? hours !== '0' || minutes !== '0'
-            ? `and ${seconds} ${secondsText}`
-            : `${seconds} ${secondsText}`
-          : ''
-      }`
+      if (seconds !== 0) {
+        if (hours !== 0 || minutes !== 0) rightSideText = `and ${seconds} ${secondsText}`
+        else rightSideText = `${seconds} ${secondsText}`
+      }
+
+      return `${leftSideText}${rightSideText}`
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers
@@ -463,13 +382,13 @@ export default {
         return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
       } else {
         return (
-          !(this.totalTargetUserCount < val) ||
+          this.totalTargetUserCount >= val ||
           'This number cannot be higher than number of total target users.'
         )
       }
     },
     handleChangeSmtp() {
-      this.buttonKey = Math.random().toString()
+      this.buttonKey = createRandomCryptStringNumber()
       this.isTestMailSend = false
       this.isShowSmtpInputError = false
       this.testEmailErrorMessage = ''
@@ -488,10 +407,6 @@ export default {
             data: { data }
           } = response
           this.responseOfSmtpItems = data.results
-          // this.responseOfSmtpItems = data.results.map((item, index) => ({
-          //   ...item,
-          //   isDefault: index % 3 === 0 ? true : false,
-          // }));
           const defaultSmtpItems = this.responseOfSmtpItems.filter((item) => item.isDefault)
           this.smtpItems = this.responseOfSmtpItems
             .map((smtpItem) => {

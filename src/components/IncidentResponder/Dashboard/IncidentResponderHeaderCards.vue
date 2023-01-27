@@ -53,7 +53,7 @@
             style="bottom: 10px; right: -11px;"
             :style="[isPhishingEmpty && { opacity: 0.4 }]"
           >
-            <img src="../../../assets/img/ph-crone.svg" />
+            <img src="../../../assets/img/ph-crone.svg" alt="image-phishing" />
           </div>
         </div>
       </template>
@@ -101,7 +101,7 @@
             </div>
           </div>
           <div class="bg-image" :style="[isNotifiedEmailEmpty && { opacity: 0.3 }]">
-            <img src="../../../assets/img/ic-warning.svg" />
+            <img src="../../../assets/img/ic-warning.svg" alt="image-no-email-analysed" />
           </div>
         </div>
       </template>
@@ -161,7 +161,7 @@
             </div>
           </div>
           <div class="bg-image" :style="[!isInvestigationsEmpty && { opacity: 0.4 }]">
-            <img src="../../../assets/img/ic-check-box.svg" />
+            <img src="../../../assets/img/ic-check-box.svg" alt="image-check" />
           </div>
         </div>
       </template>
@@ -218,7 +218,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../../assets/img/ic-insert-chart.svg" />
+            <img src="../../../assets/img/ic-insert-chart.svg" alt="image-chart" />
           </div>
         </div>
       </template>

@@ -368,7 +368,7 @@ export default {
     },
     toggleRuleModal() {
       this.selectedPlaybookId = null
-      return (this.showRuleModal = !this.showRuleModal)
+      this.showRuleModal = !this.showRuleModal
     },
     handleEdit(row) {
       this.selectedPlaybookId = row.resourceId
@@ -422,7 +422,7 @@ export default {
       if (DELETE.hasPermission) {
         let values = []
         if (this.totalSelectedItemsCount > 1) {
-          for (const [_, value] of Object.entries(this.deleteValues)) {
+          for (const value of Object.values(this.deleteValues)) {
             values.push(value)
           }
         } else {
@@ -432,7 +432,7 @@ export default {
               : this.deleteValues
           values.push(value)
         }
-        values.map((item) => {
+        values.forEach((item) => {
           this.deleteButtonDisabled = true
           deletePlaybookRule(item.resourceId)
             .then(() => {

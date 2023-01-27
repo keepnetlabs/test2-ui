@@ -107,77 +107,10 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
-import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
-import message from '@/components/GrapesJs/Newsletter/mergedTexts/message'
-import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
-import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
-import postDate from '@/components/GrapesJs/Newsletter/mergedTexts/postDate'
-import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
-import shareUserName from '@/components/GrapesJs/Newsletter/mergedTexts/shareUserName'
-import postTitle from '@/components/GrapesJs/Newsletter/mergedTexts/postTitle'
-import postDesc from '@/components/GrapesJs/Newsletter/mergedTexts/postDesc'
-import postUserName from '@/components/GrapesJs/Newsletter/mergedTexts/postUserName'
-import postCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/postCompanyName'
-import webUrl from '@/components/GrapesJs/Newsletter/mergedTexts/webUrl'
-import postUrl from '@/components/GrapesJs/Newsletter/mergedTexts/postUrl'
-import currentDate from '@/components/GrapesJs/Newsletter/mergedTexts/currentDate'
-import description from '@/components/GrapesJs/Newsletter/mergedTexts/description'
-import shareCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/shareCompanyName'
-import link from '@/components/GrapesJs/Newsletter/mergedTexts/link'
-import communityTitle from '@/components/GrapesJs/Newsletter/mergedTexts/communityTitle'
-import communityUser from '@/components/GrapesJs/Newsletter/mergedTexts/communityUser'
-import category from '@/components/GrapesJs/Newsletter/mergedTexts/category'
-import communityDesc from '@/components/GrapesJs/Newsletter/mergedTexts/communityDesc'
-import status from '@/components/GrapesJs/Newsletter/mergedTexts/status'
-import activeUsers from '@/components/GrapesJs/Newsletter/mergedTexts/activeUsers'
-import analysedEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysedEmail'
-import foundEmailCount from '@/components/GrapesJs/Newsletter/mergedTexts/foundEmailCount'
-import startedBy from '@/components/GrapesJs/Newsletter/mergedTexts/startedBy'
-import startDate from '@/components/GrapesJs/Newsletter/mergedTexts/startDate'
-import investigationName from '@/components/GrapesJs/Newsletter/mergedTexts/investigationName'
-import invitedUserName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedUserName'
-import invitedByCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedByCompanyName'
-import communityUrl from '@/components/GrapesJs/Newsletter/mergedTexts/communityUrl'
-import memberCount from '@/components/GrapesJs/Newsletter/mergedTexts/memberCount'
-import communityIndustry from '@/components/GrapesJs/Newsletter/mergedTexts/communityIndustry'
-import communityDescription from '@/components/GrapesJs/Newsletter/mergedTexts/communityDescription'
-import analysisEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysisEmail'
-import communityName from '@/components/GrapesJs/Newsletter/mergedTexts/communityName'
-import owner from '@/components/GrapesJs/Newsletter/mergedTexts/owner'
-import date from '@/components/GrapesJs/Newsletter/mergedTexts/date'
-import reportBy from '@/components/GrapesJs/Newsletter/mergedTexts/reportBy'
-import fromText from '@/components/GrapesJs/Newsletter/mergedTexts/from'
-import to from '@/components/GrapesJs/Newsletter/mergedTexts/to'
-import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
-import attachment from '@/components/GrapesJs/Newsletter/mergedTexts/attachment'
-import createDate from '@/components/GrapesJs/Newsletter/mergedTexts/createDate'
-import senderIP from '@/components/GrapesJs/Newsletter/mergedTexts/senderIP'
-import caseID from '@/components/GrapesJs/Newsletter/mergedTexts/caseID'
-import userEmail from '@/components/GrapesJs/Newsletter/mergedTexts/userEmail'
-import userAgent from '@/components/GrapesJs/Newsletter/mergedTexts/userAgent'
-import actionDate from '@/components/GrapesJs/Newsletter/mergedTexts/actionDate'
-import actionIP from '@/components/GrapesJs/Newsletter/mergedTexts/actionIP'
-import productName from '@/components/GrapesJs/Newsletter/mergedTexts/productName'
-import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/analysisDetailUrl'
-import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
-import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
-import trainingName from '@/components/GrapesJs/Newsletter/mergedTexts/trainingName'
-import trainingDescription from '@/components/GrapesJs/Newsletter/mergedTexts/trainingDescription'
-import trainingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingUrl'
-import trainingLanguageSelection from '@/components/GrapesJs/Newsletter/mergedTexts/trainingLanguageSelection'
-import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
-import trainingEnrollDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingEnrollDate'
-import trainingReminderCount from '@/components/GrapesJs/Newsletter/mergedTexts/trainingReminderCount'
-import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
-import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
-import email from '@/components/GrapesJs/Newsletter/mergedTexts/email'
-import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
-import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
-import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
-import trainingCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCoverImageUrl'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { MERGED_TEXTS_MAP } from '@/components/Company Settings/utils'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -264,32 +197,35 @@ export default {
   },
   computed: {
     getModalId() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? 'duplicate-notification-template-modal'
-          : 'edit-notification-template-modal'
-        : 'new-notification-template-modal'
+      return this.selectedItem ? this.getSelectedItemTitleId : 'new-notification-template-modal'
+    },
+    getSelectedItemTitleId() {
+      return this.isDuplicate
+        ? 'duplicate-notification-template-modal'
+        : 'edit-notification-template-modal'
     },
     getModalTitle() {
-      return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplate
-          : labels.EditNotificationTemplate
-        : labels.NewNotificationTemplate
+      return this.selectedItem ? this.getSelectedItemModalTitle : labels.NewNotificationTemplate
+    },
+    getSelectedItemModalTitle() {
+      return this.isDuplicate
+        ? labels.DuplicateNotificationTemplate
+        : labels.EditNotificationTemplate
     },
     getBodyTitle() {
       return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplate
-          : labels.EditNotificationTemplate
+        ? this.getSelectedItemModalTitle
         : labels.CreateNewNotificationTemplate
     },
     getBodySubtitle() {
       return this.selectedItem
-        ? this.isDuplicate
-          ? labels.DuplicateNotificationTemplateSubtitle
-          : labels.EditNotificationTemplateSubtitle
+        ? this.getSelectedItemBodySubtitle
         : labels.NewNotificationTemplateSubtitle
+    },
+    getSelectedItemBodySubtitle() {
+      return this.isDuplicate
+        ? labels.DuplicateNotificationTemplateSubtitle
+        : labels.EditNotificationTemplateSubtitle
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
@@ -410,74 +346,7 @@ export default {
       })
     },
     getTagsComponent(item) {
-      if (item === '{FULLNAME}') return fullName
-      if (item === '{FIRSTNAME}') return firstName
-      if (item === '{LASTNAME}') return lastName
-      if (item === '{USERNAME}') return userName
-      if (item === '{PASSWORDURL}') return passwordURL
-      if (item === '{POSTDATE}') return postDate
-      if (item === '{EMAIL}') return email
-      if (item === '{SHAREUSERNAME}') return shareUserName
-      if (item === '{COMPANYNAME}') return companyName
-      if (item === '{COMMUNITYNAME}') return communityName
-      if (item === '{COMMUNITYDESCRIPTION}') return communityDescription
-      if (item === '{POSTTITLE}') return postTitle
-      if (item === '{POSTDESC}') return postDesc
-      if (item === '{POSTUSERNAME}') return postUserName
-      if (item === '{POSTCOMPANYNAME}') return postCompanyName
-      if (item === '{WEBURL}') return webUrl
-      if (item === '{POSTURL}') return postUrl
-      if (item === '{CURRENTDATE}') return currentDate
-      if (item === '{DESCRIPTION}') return description
-      if (item === '{SHARECOMPANYNAME}') return shareCompanyName
-      if (item === '{MESSAGE}') return message
-      if (item === '{LINK}') return link
-      if (item === '{COMMUNITYTITLE}') return communityTitle
-      if (item === '{COMMUNITYUSER}') return communityUser
-      if (item === '{CATEGORY}') return category
-      if (item === '{COMMUNITYDESC}') return communityDesc
-      if (item === '{STATUS}') return status
-      if (item === '{ACTIVEUSERS}') return activeUsers
-      if (item === '{ANALYSEDEMAIL}') return analysedEmail
-      if (item === '{FOUNDEMAILCOUNT}') return foundEmailCount
-      if (item === '{STARTEDBY}') return startedBy
-      if (item === '{STARTDATE}') return startDate
-      if (item === '{INVESTIGATIONNAME}') return investigationName
-      if (item === '{INVITEDUSERNAME}') return invitedUserName
-      if (item === '{INVITEDBYCOMPANYNAME}') return invitedByCompanyName
-      if (item === '{COMMUNITYURL}') return communityUrl
-      if (item === '{MEMBERCOUNT}') return memberCount
-      if (item === '{FROMEMAIL}') return fromEmail
-      if (item === '{FROMNAME}') return fromName
-      if (item === '{COMMUNITYINDUSTRY}') return communityIndustry
-      if (item === '{ANALYSISEMAIL}') return analysisEmail
-      if (item === '{OWNER}') return owner
-      if (item === '{DATE}') return date
-      if (item === '{REPORTBY}') return reportBy
-      if (item === '{FROM}') return fromText
-      if (item === '{TO}') return to
-      if (item === '{SUBJECT}') return subject
-      if (item === '{ATTACHMENT}') return attachment
-      if (item === '{CREATEDATE}') return createDate
-      if (item === '{SENDERIP}') return senderIP
-      if (item === '{CASEID}') return caseID
-      if (item === '{USEREMAIL}') return userEmail
-      if (item === '{USERAGENT}') return userAgent
-      if (item === '{ACTIONDATE}') return actionDate
-      if (item === '{ACTIONIP}') return actionIP
-      if (item === '{PRODUCTNAME}') return productName
-      if (item === '{ANALYSISDETAILURL}') return analysisDetailUrl
-      if (item === '{INVESTIGATIONURL}') return investigationUrl
-      if (item === '{COMPANYLOGO}') return companyLogo
-      if (item === '{TRAININGNAME}') return trainingName
-      if (item === '{TRAININGDESCRIPTION}') return trainingDescription
-      if (item === '{TRAININGURL}') return trainingUrl
-      if (item === '{TRAININGLANGUAGESELECTION}') return trainingLanguageSelection
-      if (item === '{DATEEMAILSENT}') return dateEmailSent
-      if (item === '{TRAININGENROLLDATE}') return trainingEnrollDate
-      if (item === '{TRAININGREMINDERCOUNT}') return trainingReminderCount
-      if (item === '{TRAININGCOMPLETEDATE}') return trainingCompleteDate
-      if (item === '{TRAININGCOVERIMAGEURL}') return trainingCoverImageUrl
+      return MERGED_TEXTS_MAP[item]
     },
     setActiveBlockManagerComponents(activeComponent = []) {
       this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {

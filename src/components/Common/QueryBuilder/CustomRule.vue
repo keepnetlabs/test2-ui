@@ -10,9 +10,7 @@
       {{ $parent.query.logicalOperator }}
     </div>
     <v-row>
-      <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2">
-        <!-- List of operands (optional) -->
         <k-select
           v-model.trim="query.operand"
           :id="`input--query-builder-rule-operand-${index}-${getParentIndex}`"
@@ -32,7 +30,6 @@
           rule.operators.length > 1
         "
       >
-        <!-- List of operators (e.g. =, !=, >, <) -->
         <k-select
           v-model="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -44,7 +41,6 @@
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'AttachmentHash'">
-        <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -54,7 +50,6 @@
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
-        <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
@@ -65,7 +60,6 @@
       </v-col>
       <template v-if="isOperatorExists">
         <v-col md="2" v-if="query.operand === 'From'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -77,7 +71,6 @@
         </v-col>
 
         <v-col md="2" v-if="query.operand === 'To'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -88,7 +81,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'CC'">
-          <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-format-${index}-${getParentIndex}`"
@@ -99,7 +91,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'SenderIp'">
-          <!-- List of "From" operands-->
           <k-select
             v-model.trim="query.format"
             min-width-type="small"
@@ -110,7 +101,6 @@
           />
         </v-col>
         <v-col md="2" v-if="query.operand === 'Analysis result'">
-          <!-- List of "Analysis result" operands-->
           <k-select
             min-width-type="small"
             :id="`input--query-builder-rule-operand-${index}-${getParentIndex}`"
@@ -133,7 +123,6 @@
           md=""
           sm="10"
         >
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -141,16 +130,15 @@
             outlined
             persistent-hint
             hint="*Required"
-            :rules="getRules()"
             autocomplete="disabled"
+            :rules="getRules()"
           />
         </v-col>
         <v-col v-if="query.operand === 'SenderIp'">
-          <!-- Condition text input-->
           <InputIpAddress
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
-            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter Regex'"
+            :placeholder="query.format === 'Ip' ? 'Enter IP address' : 'Enter regular expression'"
             :rules="
               query.format === 'Ip'
                 ? [
@@ -165,7 +153,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'Subject'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -180,7 +167,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'Keyword'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -195,7 +181,6 @@
           />
         </v-col>
         <v-col v-if="query.operand === 'AttachmentName'">
-          <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
             :id="`input--query-builder-value-${index}-${getParentIndex}`"
@@ -245,7 +230,6 @@
           padding-right: 18px !important;
         "
       >
-        <!-- Remove rule button -->
         <v-btn
           icon
           v-if="isDeleteRuleButton()"
@@ -265,6 +249,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -289,7 +274,11 @@ export default {
         newVal !== 'Exists' &&
         newVal !== 'DoesNotExists'
       ) {
-        this.query.format = 'Email'
+        if (this.query.operand === 'SenderIp') {
+          this.query.format = 'Ip'
+        } else {
+          this.query.format = 'Email'
+        }
       }
     },
     'query.operand'(newVal = '') {
@@ -318,64 +307,55 @@ export default {
     }
   },
   created() {
-    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
+    this.attachId = `id-${createRandomCryptStringNumber()}`
     if (!this.query.format) {
       this.query.format = 'Email'
     }
   },
   methods: {
     getRules() {
-      if (this.query) {
-        const { format, operator } = this.query
-        if (format === 'Email') {
-          const emailValidationArray = [
-            (v) => this.validations.required(v, labels.Required),
-            (v) =>
-              this.validations.maxLength(
-                v,
-                320,
-                labels.getMaxLengthMessage(labels.EmailAddress, 320)
-              )
-          ]
-          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-            emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
-            emailValidationArray.push((v) => {
-              if (this.validations.email(v)) {
-                return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
-              }
-              return false
-            })
-          }
-          return emailValidationArray
+      if (!this.query) return []
+      const { format, operator } = this.query
+      if (format === 'Email') {
+        const emailValidationArray = [
+          (v) => this.validations.required(v, labels.Required),
+          (v) =>
+            this.validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320))
+        ]
+        if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+          emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+          emailValidationArray.push((v) => {
+            if (this.validations.email(v)) {
+              return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          })
         }
-
-        if (format === 'Domain') {
-          const domainValidationArray = [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
-          ]
-          if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-            domainValidationArray.push((v) => this.validations.domain(v, labels.InvalidDomainName))
-          }
-          return domainValidationArray
-        }
-
-        if (format === 'Regex') {
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
-          ]
-        }
-
-        if (format === 'Group') {
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
-          ]
-        }
-
-        return [(v) => this.validations.required(v, labels.Required)]
+        return emailValidationArray
       }
+      if (format === 'Domain') {
+        const domainValidationArray = [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
+        ]
+        if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+          domainValidationArray.push((v) => this.validations.domain(v, labels.InvalidDomainName))
+        }
+        return domainValidationArray
+      }
+      if (format === 'Regex') {
+        return [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Regex', 256))
+        ]
+      }
+      if (format === 'Group') {
+        return [
+          (v) => this.validations.required(v, labels.Required),
+          (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
+        ]
+      }
+      return [(v) => this.validations.required(v, labels.Required)]
     },
     getPlaceholder() {
       if (!this.query?.format) return 'Enter custom field value'

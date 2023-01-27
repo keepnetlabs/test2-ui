@@ -61,7 +61,7 @@
     <TargetUserAddToAnExistingGroupModal
       v-if="isShowingTargetUserAddToGroup"
       :status="isShowingTargetUserAddToGroup"
-      :selected-rows="getSelectedRow"
+      :bulkImportPayload="bulkImportPayload"
       @closeOverlay="toggleShowingTargetUserAddToGroup"
       @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
     />
@@ -234,13 +234,6 @@
             :icon="tableOptions.rowActions[2].icon"
             @on-click="handleAddUserToGroup(scope.row)"
           />
-          <!-- <DefaultMenuRowAction
-            :scope="scope"
-            :id="tableOptions.rowActions[4].id"
-            :text="tableOptions.rowActions[4].name"
-            :icon="tableOptions.rowActions[4].icon"
-            @on-click="handleCreateGroupWithUser(scope.row)"
-          /> -->
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
@@ -350,6 +343,7 @@ export default {
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       multipleTargetUserPayload: {},
+      bulkImportPayload: {},
       isWantToShowDeleteUserModal: false,
       selectedRow: null,
       customFields: [],
@@ -519,12 +513,6 @@ export default {
             action: 'viewUserGroups',
             id: 'btn-view--target-users-people-row-actions'
           }
-          // {
-          //   name: 'Create a group with user',
-          //   id: 'btn-create-group-with-user--target-users-people-row-actions',
-          //   icon: 'mdi-account-multiple',
-          //   action: 'create-group-with-user'
-          // },
         ]
       },
       addUsersItems: [
@@ -589,15 +577,20 @@ export default {
     },
     handleAddUserToGroup(selectedRow = {}) {
       this.selectedUserToAddToGroup = selectedRow
+      this.bulkImportPayload = {
+        targetUserResourceIds: [selectedRow.resourceId],
+        selectAll: false,
+        excludedResourceIdList: [],
+        filter: this.payload.filter,
+        selectedRowCount: 1
+      }
       this.toggleShowingTargetUserAddToGroup()
     },
     handleConfirmAddUserToGroup(groups = []) {
-      // TODO: Insert add user to group(s) logic here
       this.selectedUserToAddToGroup = null
       this.toggleShowingTargetUserAddToGroup()
     },
     handleConfirmCreateUserWithGroup(groupName = '') {
-      // TODO: Insert create group with user logic here
       this.selectedUserToCreateGroupWith = null
       this.toggleShowingTargetUserCreateGroupWithUser()
     },
@@ -611,6 +604,13 @@ export default {
     toggleShowingTargetUserAddToGroup() {
       if (this.isShowingTargetUserAddToGroup) {
         this.selectedUserToAddToGroup = null
+        this.bulkImportPayload = {
+          targetUserResourceIds: [],
+          selectAll: false,
+          excludedResourceIdList: [],
+          filter: this.payload.filter,
+          selectedRowCount: 0
+        }
       }
       this.isShowingTargetUserAddToGroup = !this.isShowingTargetUserAddToGroup
     },
@@ -898,6 +898,22 @@ export default {
     },
     handleAddUsersSelectionClick() {
       this.selectedUserToAddToGroup = this.selection
+      const serverSideParams = this.$refs?.refPeopleTable?.getServerSideSelectionParams() || {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
+      }
+      this.bulkImportPayload = {
+        targetUserResourceIds: serverSideParams?.isSelectedAllEver
+          ? []
+          : this.selection.map((item) => item.resourceId),
+        selectAll: serverSideParams?.isSelectedAllEver || false,
+        excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
+        filter: this.payload.filter,
+        selectedRowCount: serverSideParams?.isSelectedAllEver
+          ? this.serverSideProps.totalNumberOfRecords -
+            serverSideParams?.excludedResourceIdList.length
+          : this.selection.length
+      }
       this.toggleShowingTargetUserAddToGroup()
     }
   }

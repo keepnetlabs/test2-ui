@@ -474,8 +474,8 @@ export default {
           this.listData = communitiesData.tableData
         }
       } else {
-        this.page = (communitiesData && communitiesData.searchValues.page) || 1
-        this.itemsPerPage = (communitiesData && communitiesData.searchValues.itemsPerPage) || 5
+        this.page = 1
+        this.itemsPerPage = 5
         this.getAllCommunitiesListData()
         this.getInvitationCount()
         this.setInitialCommunityValues()
@@ -505,17 +505,13 @@ export default {
     if (this.$route.params.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
         this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
-        getCommunityDetails(this.$route.params.communityId)
-          .then((response) => {
-            this.communityDetails = response.data.data
-            this.filter = response.data.data.name
-            setTimeout(() => {
-              this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
-            }, 250)
-          })
-          .catch((error) => {
-            error.response.data
-          })
+        getCommunityDetails(this.$route.params.communityId).then((response) => {
+          this.communityDetails = response.data.data
+          this.filter = response.data.data.name
+          setTimeout(() => {
+            this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
+          }, 250)
+        })
         this.$route.params.isCommunity = false
       } else {
         this.filter = this.$route.params.communityName

@@ -109,14 +109,12 @@ export default {
   },
   methods: {
     getCheckboxCheckedValue(item) {
-      if (
-        !!this.value.some(
+      return !!(
+        this.value.some(
           (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
         ) ||
         (this.isAllSelected && item.statusName === 'Running')
       )
-        return true
-      return false
     },
     shouldRenderTooltip(item) {
       if (item.mailConfigurationResourceId === 'all') return false
@@ -148,8 +146,7 @@ export default {
     checkIsItemDisabled(item) {
       if (item.mailConfigurationResourceId === 'all') return false
       if (item.statusName !== 'Running') return true
-      if (this.isAllSelected) return true
-      return false
+      return !!this.isAllSelected
     },
     getBtnStatusColor(type) {
       if (type === 'Running') return '#217124'

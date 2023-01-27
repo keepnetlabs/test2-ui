@@ -173,6 +173,7 @@ import { launchPhishingCampaign } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 import { isDifferent, getTimeZone } from '@/utils/functions'
 import * as validations from '@/utils/validations'
+import useDebounce from '@/hooks/useDebounce'
 
 const defaultFormValues = {
   targetGroupResourceIds: [],
@@ -197,6 +198,7 @@ export default {
     CustomError,
     InputDate
   },
+  mixins: [useDebounce],
   emits: EMITS,
   props: {
     status: {
@@ -270,9 +272,12 @@ export default {
     }),
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
-        ? this.isShowTargetGroupUsersError
-          ? 'Target groups must have at least 1 user'
-          : 'Required'
+        ? this.getTargetGroupErrorText
+        : 'Required'
+    },
+    getTargetGroupErrorText() {
+      return this.isShowTargetGroupUsersError
+        ? 'Target groups must have at least 1 user'
         : 'Required'
     },
     isScheduledTimeDisabled() {
@@ -300,11 +305,11 @@ export default {
       this.formValues.scheduledDateTimeZoneId = val
     },
     'formValues.scheduledDate'(val) {
-      this.isDateValid = this.formValues
-        ? this.formValues.scheduleTypeId === '3'
-          ? val && val.length > 0
-          : true
-        : false
+      let isDateValid
+      if (this.formValues) {
+        isDateValid = this.formValues.scheduleTypeId === '3' ? val && val.length > 0 : true
+      } else isDateValid = false
+      this.isDateValid = isDateValid
     },
     'formValues.scheduleTypeId'(val) {
       if (val !== '3') {
@@ -378,14 +383,6 @@ export default {
           selectedTableItems
         )
       }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     handleSearchInputChange(val) {
       this.debounce(() => {

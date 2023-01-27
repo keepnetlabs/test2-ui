@@ -212,7 +212,7 @@
         :rules="rules.days"
         @input="handleDurationChange"
       ></v-text-field>
-      <span style="position: absolute; top: 62px; left: 56px; font-size: 13px; color: #000;"
+      <span style="position: absolute; top: 65px; left: 56px; font-size: 13px; color: #000;"
         >Day(s)</span
       >
     </FormGroup>
@@ -377,10 +377,11 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupErrorMessage() {
-      return this.formData.targetGroupResourceIds.length
-        ? this.isShowTargetGroupUsersError
-          ? 'Target groups must have at least 1 user'
-          : 'Required'
+      return this.formData.targetGroupResourceIds.length ? this.getTargetGroupErrorText : 'Required'
+    },
+    getTargetGroupErrorText() {
+      return this.isShowTargetGroupUsersError
+        ? 'Target groups must have at least 1 user'
         : 'Required'
     },
     isScheduledTimeDisabled() {
@@ -437,11 +438,11 @@ export default {
       this.formData.scheduledDateTimeZoneId = val
     },
     'formData.scheduledDate'(val) {
-      this.isDateValid = this.formData
-        ? this.formData.scheduleTypeId === '3'
-          ? val && val.length > 0
-          : true
-        : true
+      let isDateValid = true
+      if (this.formData) {
+        isDateValid = this.formData.scheduleTypeId === '3' ? val && val.length > 0 : true
+      }
+      this.isDateValid = isDateValid
     },
     'formData.scheduleTypeId'(val) {
       if (val !== '3') {
@@ -492,7 +493,7 @@ export default {
       }
     },
     handleDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,3}$/.test(val)) {
         this.formData.duration = val
       } else {
         this.$refs.refDurationTextField.initialValue = this.formData.duration

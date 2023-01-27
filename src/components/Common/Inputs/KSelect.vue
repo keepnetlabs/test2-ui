@@ -32,6 +32,7 @@
 
 <script>
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'KSelect',
@@ -63,11 +64,12 @@ export default {
       default: undefined
     },
     persistentHint: {
+      type: Boolean,
       default: false
     }
   },
   created() {
-    this.uniqueSelector = `class-${Math.floor(Math.random() * 1000000).toString()}`
+    this.uniqueSelector = `class-${createRandomCryptStringNumber()}`
   },
   data() {
     return {

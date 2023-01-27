@@ -788,9 +788,9 @@
           <div class="empty-inline">
             <slot name="empty-table-inline">
               <h2
+                v-html="empty.message"
                 :id="`text--empty-message-${Math.random().toString().substring(2)}`"
                 class="text-center"
-                v-html="empty.message"
               ></h2>
               <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
                 {{ empty.subMes }}
@@ -948,12 +948,12 @@ import {
   getBtnPriorityColor,
   getBtnStatusColor,
   getDataTableFieldLabel,
-  copyToClipboard
+  copyToClipboard,
+  createRandomCryptStringNumber
 } from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
 import DataTableDefaultTemplate from '@/components/DataTableComponents/DataTableDefaultTemplate'
@@ -1306,11 +1306,8 @@ export default {
       return (tableData && tableData.length) || isColumnFilterActive || loading
     },
     getTableData() {
-      return this.isServerSide
-        ? this.tableData
-        : this.showfilteredData
-        ? this.filteredData
-        : this.tableData
+      if (this.isServerSide) return this.tableData
+      return this.showfilteredData ? this.filteredData : this.tableData
     },
     isExtendedViewRender() {
       return (
@@ -2096,10 +2093,6 @@ export default {
      */
     handleListBulletedClick() {
       this.selectedCluster = ''
-      /*
-      this.firstColFixed = true
-      this.lastColFixed = true
-       */
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
@@ -2334,8 +2327,7 @@ export default {
         let text
         if (cellValue) {
           if (typeof cellValue === 'object') {
-            text =
-              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+            text = Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
           }
 
           if (typeof cellValue === 'string') {
@@ -2383,10 +2375,10 @@ export default {
       if (this.isServerSide) return
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
-          acc.push(
-            new Date(item[sortProps.prop]) !== 'Invalid Date' &&
-              !isNaN(new Date(item[sortProps.prop]))
-          )
+          const date = new Date(item[sortProps.prop])
+          if (date instanceof Date && !isNaN(date)) {
+            acc.push(date)
+          }
           return acc
         }, [])
         return isDate.includes(false)
@@ -2547,13 +2539,15 @@ export default {
               acc[key] = item[key]
               return acc
             }, {})
-            Object.values(row).find((i) => {
+            for (const keyValue of Object.values(row)) {
               if (
-                typeof i === 'string' &&
-                i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-              )
-                return acc.push(item)
-            })
+                typeof keyValue === 'string' &&
+                keyValue.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+              ) {
+                acc.push(item)
+                break
+              }
+            }
             return acc
           }, [])
           if (!filteredData.length && this.showOverFlowTooltip) {
@@ -2949,16 +2943,7 @@ export default {
         })
         text += '\n'
       })
-
       copyToClipboard(text)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'COPIED TO CLIPBOARD',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        })
-        .catch(() => {})
     },
     unSelectRow(row) {
       this?.$refs?.elTableRef?.toggleRowSelection(row, false)
@@ -3051,7 +3036,7 @@ export default {
     },
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
-      this.filterKey = `filter-key${Math.random().toString().substring(0, 5)}`
+      this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
     }
   }
 }

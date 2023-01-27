@@ -1,5 +1,9 @@
 .investigation-details-wrapper {
     .investigation-details__container__content--right-menu__summary__item--action-button-container {
+      display: flex;
+      @media (max-width: 1024px) {
+        flex-direction: column;
+      }
         .v-btn--icon {
             border: 1px solid #2196f3 !important;
             margin: 8px;
@@ -247,8 +251,6 @@
 
                 .k-table__wrapper {
                     padding-bottom: 0;
-
-                    .pagination {}
                 }
 
                 &--left-menu {
@@ -482,14 +484,6 @@
                                         align-items: center;
                                     }
                                 }
-
-                                &-container {
-                                    display: flex;
-
-                                    @media (max-width: 1024px) {
-                                        flex-direction: column;
-                                    }
-                                }
                             }
                         }
                     }
@@ -594,12 +588,9 @@
         .card .table-wrapper .el-table td>.cell {
             padding-left: 10.5px !important;
         }
-
         .card .table-wrapper .el-table th>.cell.actions-label {
             margin-left: 0 !important;
         }
-
-        .card .table-wrapper .el-table th>.cell {}
     }
 }
 

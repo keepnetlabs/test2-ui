@@ -119,12 +119,12 @@
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
-          @click="submit"
           id="btn-save--target-users-custom-fields-people-modal"
           class="new-integration__footer-btn-save white--text"
           color="#2196f3"
           rounded
           :disabled="saveDisable"
+          @click="submit"
         >
           {{ labels.Save }}
         </v-btn>
@@ -265,45 +265,44 @@ export default {
       }, 0)
     },
     submit() {
-      if (this.$refs.refAppModal.$refs.refForm.validate()) {
-        this.addSortPropToCustomFields(this.customFields)
-        this.addSortPropToCustomFields(this.unActiveCustomFields)
-        const createdFields = []
-        const updatedFields = []
-        const allFields = [...this.customFields, ...this.unActiveCustomFields]
-        for (let field of allFields) {
-          if (field.isNew) {
-            createdFields.push(field)
-          } else {
-            updatedFields.push(field)
-          }
+      if (!this.$refs.refAppModal.$refs.refForm.validate()) return
+      this.addSortPropToCustomFields(this.customFields)
+      this.addSortPropToCustomFields(this.unActiveCustomFields)
+      const createdFields = []
+      const updatedFields = []
+      const allFields = [...this.customFields, ...this.unActiveCustomFields]
+      for (let field of allFields) {
+        if (field.isNew) {
+          createdFields.push(field)
+        } else {
+          updatedFields.push(field)
         }
-        if (createdFields.length) {
-          const promises = []
-          for (let newItem of createdFields) {
-            promises.push(createTargetUserCustomField(newItem))
-          }
-          this.loading = true
-          this.saveDisable = true
-          Promise.all(promises)
-            .then((responses) => {
-              responses.forEach((response, index) => {
-                const { resourceId } = response.data.data
-                createdFields[index]['resourceId'] = resourceId
-                updatedFields.push(createdFields[index])
-              })
-              this.isMakePost = true
-              this.callForUpdateCustomFields(updatedFields)
-            })
-            .catch(() => {
-              this.loading = false
-              this.saveDisable = false
-            })
-        } else if (updatedFields.length || this.copyOfCustomFields.length) {
-          this.callForUpdateCustomFields(updatedFields)
-        } else if (!updatedFields.length && !this.copyOfCustomFields.length) {
-          this.callForUpdateCustomFields([])
+      }
+      if (createdFields.length) {
+        const promises = []
+        for (let newItem of createdFields) {
+          promises.push(createTargetUserCustomField(newItem))
         }
+        this.loading = true
+        this.saveDisable = true
+        Promise.all(promises)
+          .then((responses) => {
+            responses.forEach((response, index) => {
+              const { resourceId } = response.data.data
+              createdFields[index]['resourceId'] = resourceId
+              updatedFields.push(createdFields[index])
+            })
+            this.isMakePost = true
+            this.callForUpdateCustomFields(updatedFields)
+          })
+          .catch(() => {
+            this.loading = false
+            this.saveDisable = false
+          })
+      } else if (updatedFields.length || this.copyOfCustomFields.length) {
+        this.callForUpdateCustomFields(updatedFields)
+      } else if (!updatedFields.length && !this.copyOfCustomFields.length) {
+        this.callForUpdateCustomFields([])
       }
     },
     callForUpdateCustomFields(updatedFields) {

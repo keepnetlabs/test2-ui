@@ -17,7 +17,6 @@
 </template>
 <script>
 import * as Validations from '@/utils/validations'
-import labels from '@/model/constants/labels'
 export default {
   name: 'InputNumber',
   props: {
@@ -53,7 +52,7 @@ export default {
       default: false
     },
     pattern: {
-      default: () => /^[\d]+$/
+      default: () => /^\d+$/
     }
   },
   data() {
@@ -68,9 +67,7 @@ export default {
       this.requiredProps = { hint: '*Required', persistentHint: true }
       this.rules.unshift((v) => Validations.required(v))
     }
-
     this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`
-
     this.rules = this.applyRules ? this.initialRules || this.rules : []
   }
 }

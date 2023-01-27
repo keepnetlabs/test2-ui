@@ -112,6 +112,10 @@ export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = tru
   return testRequest.put(`/target-groups/${id}/users`, payload, config)
 }
 
+export function bulkImportTargetUsersToGroups(payload = {}) {
+  return testRequest.put(`/target-groups/users`, payload, { snackbar: COMMON_SNACKBAR })
+}
+
 export function exportTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users/export`, payload, {
     responseType: 'blob'
@@ -144,7 +148,7 @@ export function importTmpUsers(payload, id) {
   return testRequest.post(`/target-users/${id}/import`, payload)
 }
 
-export function getTargetUserViewUserGroups(resourceId = '', payload) {
+export function getTargetUserViewUserGroups(resourceId = '', payload = {}) {
   return testRequest.post(`target-users/${resourceId}/groups`, payload)
 }
 

@@ -97,9 +97,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      if (vm.$route.query.detailsId) {
-        vm.tab = 1
-      } else if (vm.$route.params.isCommunity) {
+      if (vm.$route.query.detailsId || vm.$route.params.isCommunity) {
         vm.tab = 1
       } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
         vm.tab = 1
@@ -179,16 +177,6 @@ export default {
                 this.$refs.tsCommunities.getInvitationCount()
                 this.$refs.tsCommunities.setInitialCommunityValues()
                 this.$refs.tsCommunities.isCommunity = false
-              }
-            } else {
-              if (this.isLoadState) {
-              } else {
-                if (!this.isLoadState) {
-                  this.$refs.tsCommunities.getAllCommunitiesListData()
-                  this.$refs.tsCommunities.getInvitationCount()
-                  this.$refs.tsCommunities.setInitialCommunityValues()
-                  this.$refs.tsCommunities.isCommunity = false
-                }
               }
             }
           }

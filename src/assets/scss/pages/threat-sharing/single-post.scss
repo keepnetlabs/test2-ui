@@ -8,7 +8,6 @@
   0 3px 14px 2px rgba(255, 255, 255, 0.12);
 }
 .component-single-post {
-  // Threat sharing Content
   .threat-sharing-content {
     min-height: 200px;
     width: 100%;
@@ -49,8 +48,6 @@
       max-width: 70%;
     }
   }
-
-  // Threat sharing Content End
 
   .notification-wrapper {
     background-color: #fff;
@@ -240,7 +237,7 @@
     &__item{
       &:not(:first-child){
         margin-left: 4px;
-      };
+      }
       .TLP-GREEN{
         border-radius: 4px;
         background-color: #43a047;
@@ -680,10 +677,14 @@
     transition: max-height 0.25s ease-in;
     overflow: hidden;
 
+
     .comment-row {
       display: flex;
       flex-direction: row;
-      padding-top: 6px;
+      border-radius: 4px;
+      background-color: #f5f7fa;
+      padding: 16px;
+      margin-bottom: 8px;
 
       .comment-input {
         margin-top: 3px;
@@ -733,14 +734,6 @@
           padding-right: 8px;
         }
       }
-    }
-
-    .comment-row {
-      border-radius: 4px;
-      background-color: #f5f7fa;
-      display: flex;
-      padding: 16px;
-      margin-bottom: 8px;
 
       .user-wrapper {
         display: block;
@@ -826,7 +819,6 @@
     position: absolute;
     top: -55px;
     left: -35px;
-    border-radius: 4px;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
     padding: 8px;
 

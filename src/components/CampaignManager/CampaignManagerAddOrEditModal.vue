@@ -165,13 +165,8 @@ export default {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
     },
-    getLastStepText() {
-      return this.$refs.refCampaignManagerCampaignInfo.formData.scheduleTypeId === '1'
-        ? labels.Start
-        : labels.Save
-    },
     getSaveButtonText() {
-      return [1, 2].includes(this.step) ? labels.Next : this.getLastStepText
+      return [1, 2].includes(this.step) ? labels.Next : labels.Launch
     },
     getSelectedPhishingScenario() {
       let selectedScenario = {}
@@ -220,12 +215,10 @@ export default {
           ) || refCampaignManagerCampaignInfo.formData.phishingScenario
 
         const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
-        formData.selectedSchedule =
-          scheduleTypeId === '1'
-            ? 'Now'
-            : scheduleTypeId === '2'
-            ? 'Later'
-            : refCampaignManagerCampaignInfo.formData.scheduledDate
+        let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
+        if (scheduleTypeId === '1') selectedSchedule = 'Now'
+        else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        formData.selectedSchedule = selectedSchedule
         formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
           (item) => item.resourceId === formData.smtpSettingResourceId
         )
@@ -535,7 +528,6 @@ export default {
             })
             .finally(this.setActionButtonDisability)
         }
-        return
       }
     }
   }

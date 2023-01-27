@@ -1618,27 +1618,10 @@ export default {
         tooltipText: tooltipText,
         text: text
       }
-      //exampple
-      //status = 'CompletedWithError'
-      //actionType = 'Warning'
-      //isPermanentDelete = false
       if (['Idle', 'Running'].includes(status)) {
-        if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          } else {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          }
-        } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          } else {
-            returnValue.icon = null
-            returnValue.color = '#fff'
-          }
+        if (actionType === 'Delete' || actionType === 'DeleteAndNotify') {
+          returnValue.icon = null
+          returnValue.color = '#fff'
         } else if (actionType === 'Warning') {
           returnValue.icon = 'mdi-check-circle'
           returnValue.color = '#43a047'
@@ -1646,44 +1629,23 @@ export default {
       }
       if (status === 'Completed') {
         if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          } else {
-            returnValue.icon = 'mdi-delete'
-            returnValue.color = '#6d6d6d'
-          }
+          returnValue.color = '#6d6d6d'
+          if (isPermanentDelete) returnValue.icon = 'mdi-close-circle'
+          else returnValue.icon = 'mdi-delete'
         } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          } else {
-            returnValue.icon = 'mdi-close-circle'
-            returnValue.color = '#6d6d6d'
-          }
+          returnValue.icon = 'mdi-close-circle'
+          returnValue.color = '#6d6d6d'
         } else if (actionType === 'Warning') {
           returnValue.icon = 'mdi-check-underline-circle'
           returnValue.color = '#43a047'
         }
       }
       if (status === 'CompletedWithError') {
-        if (actionType === 'Delete') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          } else {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          }
-        } else if (actionType === 'DeleteAndNotify') {
-          if (isPermanentDelete) {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          } else {
-            returnValue.icon = 'mdi-alert-circle'
-            returnValue.color = '#f56c6c'
-          }
-        } else if (actionType === 'Warning') {
+        if (
+          actionType === 'Delete' ||
+          actionType === 'DeleteAndNotify' ||
+          actionType === 'Warning'
+        ) {
           returnValue.icon = 'mdi-alert-circle'
           returnValue.color = '#f56c6c'
         }
@@ -1695,11 +1657,8 @@ export default {
       return returnValue
     },
     getProgressText(scope) {
-      return scope.row.status === 'Completed'
-        ? 'Completed'
-        : scope.row.progress === 100
-        ? 'Completed'
-        : `${scope.row.progress}%`
+      if (scope.row.status === 'Completed' || scope.row.progress === 100) return 'Completed'
+      return `${scope.row.progress}%`
     },
     getProgressValue(scope) {
       if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
@@ -1858,15 +1817,11 @@ export default {
       this.isWantToStop = true
     },
     iconType() {
-      this.statsAndMenuData.status === 'Running'
-        ? (this.statusIcon = 'mdi-play')
-        : this.statsAndMenuData.status === 'Finished'
-        ? (this.statusIcon = 'mdi-check')
-        : this.statsAndMenuData.status === 'Expired'
-        ? (this.statusIcon = 'mdi-clock')
-        : this.statsAndMenuData.status === 'Canceled'
-        ? (this.statusIcon = 'mdi-close-circle')
-        : (this.statusIcon = 'mdi-close')
+      if (this.statsAndMenuData.status === 'Running') this.statusIcon = 'mdi-play'
+      else if (this.statsAndMenuData.status === 'Finished') this.statusIcon = 'mdi-check'
+      else if (this.statsAndMenuData.status === 'Expired') this.statusIcon = 'mdi-clock'
+      else if (this.statsAndMenuData.status === 'Canceled') this.statusIcon = 'mdi-close-circle'
+      else this.statusIcon = 'mdi-close'
     },
     getStatusText(section, val) {
       if (val == null) val = 0
@@ -1964,10 +1919,7 @@ export default {
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
-        const {
-          data: {}
-        } = response
-        const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+        const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response?.data?.data || {}
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
         this.serverSideProps.totalNumberOfPages = totalNumberOfPages
         this.serverSideProps.pageNumber = pageNumber
@@ -2029,9 +1981,6 @@ export default {
                   if (this.autoRefreshInterval) {
                     clearInterval(this.autoRefreshInterval)
                   }
-                  // this.timeoutId = setTimeout(() => {
-                  //   this.handleClearFilters(this.isAutoRefreshActive)
-                  // }, 15000)
                 })
             })
         })
@@ -2096,9 +2045,6 @@ export default {
                     if (this.autoRefreshInterval) {
                       clearInterval(this.autoRefreshInterval)
                     }
-                    // this.timeoutId = setTimeout(() => {
-                    //   this.handleClearFilters(this.isAutoRefreshActive)
-                    // }, 15000)
                   }
                 })
             })
@@ -2148,9 +2094,8 @@ export default {
       if (this.$refs.refWarnForm.validate()) {
         let isArray = Array.isArray(this.soloWarningMessageValue)
         let data = []
-        isArray
-          ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
-          : data.push(this.soloWarningMessageValue.resourceId)
+        if (isArray) data = this.soloWarningMessageValue.map((item) => item.resourceId)
+        else data.push(this.soloWarningMessageValue.resourceId)
         this.warningButtonDisabled = true
         this.$store
           .dispatch('investigations/sendInvestigationWarningMessage', {
@@ -2174,11 +2119,13 @@ export default {
       this.isInvestigationDeleteSelectAll = isSelectedAllEver
       this.investigationDeleteExcludedResourceIdList = excludedResourceIdList || []
       let isArray = Array.isArray(value)
-      this.totalSelectedItemsCount = isArray
-        ? isSelectedAllEver
-          ? this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
-          : value.length
-        : 1
+      let totalCount = 1
+      if (isArray) {
+        if (isSelectedAllEver)
+          totalCount = this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
+        else totalCount = value.length
+      }
+      this.totalSelectedItemsCount = totalCount
       this.isWantToDelete = true
       this.deleteValue = value
     },
@@ -2187,14 +2134,10 @@ export default {
         return false
       }
 
-      if (
+      return (
         row.emailLastAction.actionType === 'Warning' &&
         row.emailLastAction.status !== 'CompletedWithError'
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     isWantToDeleteConfirm(val, message, hasForm = true) {
       if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
@@ -2202,6 +2145,8 @@ export default {
       }
       let isArray = Array.isArray(this.deleteValue)
       let data = []
+      if (isArray) data = this.deleteValue.map((item) => item.resourceId)
+      else data.push(this.deleteValue.resourceId)
       isArray
         ? (data = this.deleteValue.map((item) => item.resourceId))
         : data.push(this.deleteValue.resourceId)
@@ -2227,7 +2172,7 @@ export default {
           .dispatch('investigations/deleteInvestigationDetailsItem', {
             data: {
               items: data,
-              isNotify: !!message,
+              isNotify: false,
               isPermanentDelete: val,
               selectAll: this.isInvestigationDeleteSelectAll,
               excludedItems: this.investigationDeleteExcludedResourceIdList,
@@ -2298,7 +2243,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // get table data via vuex.
       tableData: 'investigations/getInvestigationDetailsListGetter', // for using getters,
       statsAndMenuData: 'investigations/statsAndMenuGetter', // for stats getters,
       investigationDetailsData: 'investigations/investigationDetailsDataGetter', // for stats getters,
@@ -2310,31 +2254,21 @@ export default {
       if (!this.deleteValue?.emailLastAction) {
         return false
       }
-
-      if (
+      return (
         this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
         this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
         this.deleteValue?.emailLastAction?.isPermanentDelete === false
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     isPermanentlyDeleteDisabled() {
       if (!this.deleteValue?.emailLastAction) {
         return false
       }
-
-      if (
+      return (
         this.deleteValue?.emailLastAction?.actionType === 'Delete' &&
         this.deleteValue?.emailLastAction?.status !== 'CompletedWithError' &&
         this.deleteValue?.emailLastAction?.isPermanentDelete === true
-      ) {
-        return true
-      }
-
-      return false
+      )
     },
     itemStats() {
       return {
@@ -2396,60 +2330,53 @@ export default {
     },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
-      return this.loading
-        ? 'Loading...'
-        : this.statsAndMenuData.status === 'Finished'
-        ? 'Finished'
-        : this.statsAndMenuData.status === 'Canceled'
-        ? 'Canceled'
-        : this.statsAndMenuData.status === 'Expired'
-        ? 'Expired'
-        : `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
-            totalHours > 0 ? `${totalHours} hour(s) ` : ''
-          }${totalMinutes} minute(s) left`
+      if (this.loading) return 'Loading...'
+      else if (this.statsAndMenuData.status === 'Finished') return 'Finished'
+      else if (this.statsAndMenuData.status === 'Canceled') return 'Canceled'
+      else if (this.statsAndMenuData.status === 'Expired') return 'Expired'
+      else
+        return `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
+          totalHours > 0 ? `${totalHours} hour(s) ` : ''
+        }${totalMinutes} minute(s) left`
     },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this
-      const style = {}
-      style.boxShadow = statsAndMenuData
-        ? statsAndMenuData.status === 'Running'
-          ? '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Finished'
-          ? '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : (statsAndMenuData && statsAndMenuData.status === 'Expired') ||
-            (statsAndMenuData && statsAndMenuData.status === 'Canceled')
-          ? '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-        : ''
+      const style = { boxShadow: '' }
+      if (!statsAndMenuData) {
+        return style
+      } else if (statsAndMenuData.status === 'Running') {
+        style.boxShadow = '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Finished') {
+        style.boxShadow = '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled') {
+        style.boxShadow = '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       return style
     },
     getHeaderCardBoxShadowSecond() {
       const { statsAndMenuData } = this
-      const style = {}
-      style.boxShadow = statsAndMenuData
-        ? statsAndMenuData.status === 'Running'
-          ? statsAndMenuData['onlineUserCount']
-            ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-            : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Finished'
+      const style = { boxShadow: '' }
+      if (!statsAndMenuData) {
+        return style
+      } else if (statsAndMenuData.status === 'Running') {
+        style.boxShadow = statsAndMenuData['onlineUserCount']
           ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : statsAndMenuData && statsAndMenuData.status === 'Expired'
-          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-        : ''
+      } else if (statsAndMenuData.status === 'Finished') {
+        style.boxShadow = '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      } else if (statsAndMenuData.status === 'Expired') {
+        style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+      }
       return style
     },
     getHeaderCardBoxClassSecond() {
       const { statsAndMenuData } = this
-      return statsAndMenuData && statsAndMenuData.status === 'Running'
-        ? statsAndMenuData['onlineUserCount']
-          ? 'bg-turquoise'
-          : 'bg-macaroni'
-        : statsAndMenuData && statsAndMenuData.status === 'Finished'
-        ? 'bg-turquoise'
-        : statsAndMenuData && statsAndMenuData.status === 'Expired'
-        ? 'bg-macaroni'
-        : 'bg-macaroni'
+      if (!statsAndMenuData) return ''
+      if (statsAndMenuData.status === 'Running') {
+        return statsAndMenuData['onlineUserCount'] ? 'bg-turquoise' : 'bg-macaroni'
+      } else if (statsAndMenuData.status === 'Finished') return 'bg-turquoise'
+      else if (statsAndMenuData.status === 'Expired') return 'bg-macaroni'
+      else return ''
     },
     getGoogleData() {
       return (

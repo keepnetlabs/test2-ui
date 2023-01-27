@@ -42,10 +42,10 @@ export default class MFACantLogin {
               'Password must be at least 8 characters with 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
             )
           },
-          equalToNewPassword: (v, t) => {
+          equalToNewPassword: (v) => {
             return v === this.reNewPassword || "'New password' and 'Confirm password' do not match"
           },
-          equalToConfirmPassword: (v, t) => {
+          equalToConfirmPassword: (v) => {
             return v === this.newPassword || "'New password' and 'Confirm password' do not match"
           }
         },

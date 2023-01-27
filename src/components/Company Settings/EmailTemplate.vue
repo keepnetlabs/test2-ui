@@ -143,7 +143,7 @@ import AppModal from '@/components/AppModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
-import { isDifferent } from '@/utils/functions'
+import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -190,9 +190,9 @@ export default {
       initialTemplate: null,
       labels,
       showGrapesModal: false,
-      grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
+      grapeJsKey: `${createRandomCryptStringNumber()}-key`,
       Validations,
-      attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`,
+      attachmentListKey: `${createRandomCryptStringNumber()}-key`,
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
@@ -216,15 +216,12 @@ export default {
   },
   watch: {
     activeBlockManagerComponents() {
-      this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
+      this.grapeJsKey = `${createRandomCryptStringNumber()}-key`
     },
     template: {
       handler(val) {
         this.previewTemplate =
-          val?.replace(
-            new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.whitelabel.mainLogoUrl || ''
-          ) || ''
+          val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
       },
       immediate: true
     }
@@ -262,36 +259,33 @@ export default {
       this.$emit('update:template', this.defaultTemplate)
     },
     toggleShowGrapesModal(isSubmitted = false) {
-      if (this.showGrapesModal) {
-        if (this.$refs.grapesJsPostIncident) {
-          const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-          const isChanged = isDifferent(currentTemplate, this.initialTemplate)
-          if (!isChanged || isSubmitted) {
-            if (this.$refs.grapesJsPostIncident) {
-              this.$refs.grapesJsPostIncident.destroyEditor()
-            }
-            this.showGrapesModal = !this.showGrapesModal
-          } else {
-            this.$store.dispatch('common/setIsShowLeavingDialog', {
-              show: true,
-              callback: () => {
-                if (this.$refs.grapesJsPostIncident) {
-                  this.$refs.grapesJsPostIncident.destroyEditor()
-                }
-                this.showGrapesModal = !this.showGrapesModal
-              }
-            })
-          }
-        } else {
-          if (this.$refs.grapesJsPostIncident) {
-            this.$refs.grapesJsPostIncident.destroyEditor()
-          }
-          this.showGrapesModal = !this.showGrapesModal
-        }
-      } else {
-        this.showGrapesModal = !this.showGrapesModal
+      if (!this.showGrapesModal) {
+        this.changeGrapesModalStatus()
         this.setInitialTemplateData()
+        return
       }
+      if (!this.$refs.grapesJsPostIncident) {
+        return this.changeGrapesModalStatus()
+      }
+      const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      const isChanged = isDifferent(currentTemplate, this.initialTemplate)
+      if (!isChanged || isSubmitted) {
+        this.destroyPostIncidentEditor()
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.destroyPostIncidentEditor()
+          }
+        })
+      }
+    },
+    destroyPostIncidentEditor() {
+      this?.$refs?.grapesJsPostIncident?.destroyEditor()
+      this.changeGrapesModalStatus()
+    },
+    changeGrapesModalStatus() {
+      this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())

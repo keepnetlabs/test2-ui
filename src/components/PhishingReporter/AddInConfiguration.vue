@@ -294,7 +294,6 @@ export default {
         ret = this.$refs.refAddInSettings.submit()
         if (ret) {
           this.addingSettings = ret
-          hasValidationError = false
         } else {
           hasValidationError = true
         }
@@ -361,10 +360,9 @@ export default {
         isProcessAttachmentOnTheFly: true
       }
       const formData = new FormData()
-      Object.keys(payload).map((key) => {
+      Object.keys(payload).forEach((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
       })
-
       createPhishingReporter(formData).then(() => {
         this.showModal = true
       })

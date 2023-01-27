@@ -61,6 +61,8 @@
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
               :text="scope.row[col.property]"
+              :col="col"
+              size="medium"
             />
           </template>
           <span>{{ scope.row.tooltipText }}</span>
@@ -113,7 +115,6 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
@@ -246,7 +247,13 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 240,
+            minWidth: 220,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            },
+            overrideWidth: true,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.emailStatusEnum.map((status) => ({

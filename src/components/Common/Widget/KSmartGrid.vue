@@ -28,6 +28,7 @@
 
 <script>
 import { GridLayout, GridItem } from 'vue-grid-layout'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'KSmartGrid',
@@ -84,7 +85,7 @@ export default {
         useCssTransforms: false,
         responsive: true
       },
-      keyGrid: `key-${Math.random()}`
+      keyGrid: `key-${createRandomCryptStringNumber()}`
     }
   },
   created() {
@@ -126,7 +127,7 @@ export default {
       this.$emit('breakpointChanged', { newBreakpoint, newLayout })
     },
     forceRenderGrid() {
-      this.keyGrid = `key-${Math.random()}`
+      this.keyGrid = `key-${createRandomCryptStringNumber()}`
     }
   }
 }

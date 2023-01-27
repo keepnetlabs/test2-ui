@@ -3,16 +3,19 @@
     :key="iframeKey"
     ref="iframe"
     class="k-email-preview"
+    width="100%"
+    sandbox="allow-same-origin"
+    title="Email Preview"
     :srcdoc="html"
     :style="{ height }"
-    width="100%"
     :height="height"
-    sandbox="allow-same-origin"
     @load="resizeIframe"
   />
 </template>
 
 <script>
+import { createRandomCryptStringNumber } from '@/utils/functions'
+
 export default {
   name: 'KEmailPreview',
   props: {
@@ -28,7 +31,7 @@ export default {
     return {
       height: 300,
       defaultHeight: 300,
-      iframeKey: `key-${Math.random().toString().substring(8)}`,
+      iframeKey: `key-${createRandomCryptStringNumber()}`,
       animationFrame: null,
       isBodyHeightUsed: false,
       stopCalculateFrame: false,
@@ -38,10 +41,9 @@ export default {
   },
   watch: {
     html() {
-      this.iframeKey = `key-${Math.random().toString().substring(8)}`
+      this.iframeKey = `key-${createRandomCryptStringNumber()}`
       this.resizeIframe()
-    },
-    height(val) {}
+    }
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
@@ -71,8 +73,8 @@ export default {
         if (height > this.numberHeight && height > 300) {
           if (
             window.navigator &&
-            window.navigator.appVersion &&
-            window.navigator.appVersion.toLowerCase().includes('windows')
+            window.navigator.userAgent &&
+            window.navigator.userAgent.toLowerCase().includes('windows')
           ) {
             height += 20
           }

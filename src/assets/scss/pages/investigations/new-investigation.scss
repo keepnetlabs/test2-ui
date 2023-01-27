@@ -71,10 +71,6 @@
                 font-size: 11px;
                 color: rgba(0, 0, 0, 0.72) !important;
             }
-
-            i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {}
-
-            i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {}
         }
 
         .v-application {
@@ -119,12 +115,17 @@
             max-width: 554px;
             align-items: center;
             text-align: center;
-            // justify-content: center;
             position: relative;
-
             &__delete-button {
                 opacity: 0;
-
+              width: 44px;
+              height: 40px;
+              color: #757575;
+              position: absolute;
+              right: -40px;
+              top: 0;
+              justify-content: center;
+              display: flex;
                 &:hover {
                     opacity: 1;
                 }
@@ -170,17 +171,6 @@
                 &:focus-within {
                     outline: 0 !important;
                 }
-            }
-
-            &__delete-button {
-                width: 44px;
-                height: 40px;
-                color: #757575;
-                position: absolute;
-                right: -40px;
-                top: 0px;
-                justify-content: center;
-                display: flex;
             }
 
             &__file-size {
@@ -293,7 +283,6 @@
         position: absolute;
         top: -55px;
         left: -35px;
-        border-radius: 4px;
         box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
         padding: 8px;
 
@@ -486,7 +475,6 @@
         line-height: 1.71;
         letter-spacing: normal;
         text-align: center;
-        color: #ffffff;
     }
 }
 

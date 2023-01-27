@@ -86,10 +86,6 @@
             width: auto;
         }
 
-        .v-tab--active {
-            color: #2196f3 !important;
-        }
-
         .v-tabs-bar {
             height: 48px !important;
             border-radius: 0 !important;
@@ -479,25 +475,19 @@
     }
 
     .malicious-style {
-        //edit
         color: #bb2a45 !important;
         border-bottom: 1px solid #bb2a45 !important;
         background-color: #f3e1e5 !important;
-
         text-decoration: none !important;
-        border-bottom: 1px solid;
         position: relative;
         text-indent: 0;
+        .red-malicious-alert:not(:first-child) {
+        display: block !important;
+        }
     }
 
     .red-malicious-alert::before {
         border: unset !important;
-    }
-
-    .malicious-style {
-        .red-malicious-alert:not(:first-child) {
-            display: block !important;
-        }
     }
 
     .k-table__wrapper .card .table-wrapper .el-table th>.cell {

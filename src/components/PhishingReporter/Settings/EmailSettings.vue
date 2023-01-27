@@ -37,7 +37,7 @@
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
             :hint="recipientEmailHint"
-            :rules="recipientEamilRules"
+            :rules="recipientEmailRules"
             :readonly="!showForm"
           />
         </v-list-item-content>
@@ -92,6 +92,7 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">Email Message</label>
           <v-textarea
+            v-model.trim="formValues.content"
             placeholder="Please investigate the attached email"
             id="input--phishing-reporter-recipient-email-message"
             outlined
@@ -101,7 +102,6 @@
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
             :hint="recipientEmailHint"
-            v-model.trim="formValues.content"
             :rules="emailMessageRules"
             :readonly="!showForm"
           ></v-textarea>
@@ -187,11 +187,12 @@ export default {
       return this.showForm ? !!this.formValues.isSendInformationEmail : false
     },
     recipientEmailHint() {
-      return this.showForm ? (this.formValues.isSendInformationEmail ? '*Required' : null) : null
+      if (this.showForm) return this.formValues.isSendInformationEmail ? '*Required' : null
+      return null
     },
-    recipientEamilRules() {
-      return this.showForm
-        ? this.formValues.isSendInformationEmail
+    recipientEmailRules() {
+      if (this.showForm) {
+        return this.formValues.isSendInformationEmail
           ? [
               (v) => validations.mail(v, labels.InvalidEmailAddress),
               (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
@@ -203,7 +204,8 @@ export default {
               (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
               (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
             ]
-        : []
+      }
+      return []
     },
     ccEmailRules() {
       return this.showForm
@@ -215,24 +217,26 @@ export default {
         : []
     },
     emailSubjectRules() {
-      return this.showForm
-        ? this.formValues.isSendInformationEmail
+      if (this.showForm) {
+        return this.formValues.isSendInformationEmail
           ? [
               (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
               (v) => validations.required(v, labels.Required)
             ]
           : [(v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))]
-        : []
+      }
+      return []
     },
     emailMessageRules() {
-      return this.showForm
-        ? this.formValues.isSendInformationEmail
+      if (this.showForm) {
+        return this.formValues.isSendInformationEmail
           ? [
               (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Message', 256)),
               (v) => this.validations.required(v, labels.Required)
             ]
           : [(v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Message', 256))]
-        : []
+      }
+      return []
     }
   },
   methods: {

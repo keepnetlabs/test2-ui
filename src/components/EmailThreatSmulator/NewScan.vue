@@ -63,9 +63,9 @@
                   <v-container fill-height fluid size="14">
                     <v-icon class="pa-2" size="24" marig color="#f56c6c"> mdi-close-circle </v-icon>
                     <strong
-                      class="pa-2"
                       v-if="submitError.isArray"
                       v-for="(error, index) in submitError.message"
+                      class="pa-2"
                       :key="index"
                     >
                       {{ error }}
@@ -745,7 +745,7 @@ import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import {

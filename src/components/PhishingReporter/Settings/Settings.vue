@@ -161,13 +161,10 @@ export default {
     },
     callForCreatePhishingReporter(updatedValues) {
       this.saveDisable = true
-      let addinSettings = this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
-      const emailSettings =
-        this.$refs.refEmailSettings && this.$refs.refEmailSettings.getFormValues()
-      const otherSettings =
-        this.$refs.refOtherSettings && this.$refs.refOtherSettings.getFormValues()
-      const diagnosticTool =
-        this.$refs.refDiagnosticTool && this.$refs.refDiagnosticTool.getFormValues()
+      let addinSettings = this?.$refs?.refAddinSettings?.getFormValues() || {}
+      const emailSettings = this?.$refs?.refEmailSettings?.getFormValues() || {}
+      const otherSettings = this?.$refs?.refOtherSettings?.getFormValues() || {}
+      const diagnosticTool = this?.$refs?.refDiagnosticTool?.getFormValues() || {}
 
       addinSettings = {
         ...addinSettings,
@@ -184,14 +181,12 @@ export default {
         ...diagnosticTool,
         ...updatedValues
       }
-
       //this is added for previewing and deleting obj key on sending
       if (!newFormData?.file?.name) {
         delete newFormData.file
       }
-
       const formData = new FormData()
-      Object.keys(newFormData).map((key) => {
+      Object.keys(newFormData).forEach((key) => {
         formData.append(
           key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
           newFormData[key] === null || newFormData[key] === undefined ? '' : newFormData[key]

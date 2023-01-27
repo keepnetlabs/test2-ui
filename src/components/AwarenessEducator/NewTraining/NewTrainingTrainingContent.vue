@@ -82,7 +82,7 @@ export default {
   },
   computed: {
     isRenderAddLanguage() {
-      return !(this?.languages?.length === this?.formData?.contentByLanguage?.length)
+      return this?.languages?.length !== this?.formData?.contentByLanguage?.length
     },
     languages() {
       return (

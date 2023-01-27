@@ -1172,7 +1172,7 @@ export default {
   },
   methods: {
     handleCacheDurationChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,3}$/.test(val)) {
         this.formValues.cacheDuration = Number(val)
       } else {
         this.$refs.refInputCacheDuration.initialValue = Number(this.formValues.cacheDuration)
@@ -1180,7 +1180,7 @@ export default {
       }
     },
     handleCacheQueryCountChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /^\d{1,7}$/.test(val)) {
         this.formValues.cacheQueryCount = Number(val)
       } else {
         this.$refs.refInputCacheQueryCount.initialValue = Number(this.formValues.cacheQueryCount)
@@ -1531,13 +1531,10 @@ export default {
           this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION ||
           this.selectedIntegrationType.name === INTEGRATION_TYPES.SPAMHOUSE
         ) {
-          if (
+          return !(
             this.formValues.apiUrl.length > 0 &&
             typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
-          ) {
-            return false
-          }
-          return true
+          )
         } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.ROKSIT) {
           return !(
             this.formValues.apiKeys[0] &&
@@ -1616,7 +1613,6 @@ export default {
           response.data.data.password = response['data'].data['apiCredentials'].length
             ? response['data'].data['apiCredentials'][0].password
             : ''
-          response.data.data.proxyResourceId = response['data'].data.proxyResourceId
         }
       } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET) {
         const { userName, password, resourceId, proxyResourceId } = response['data'].data[

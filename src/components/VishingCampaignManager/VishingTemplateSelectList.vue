@@ -109,11 +109,6 @@
                   <div class="template-list--item__narrator">
                     <v-icon :size="16" color="#757575">mdi-web</v-icon>
                     <span class="template-list--item__language">{{ item.language }}</span>
-                    <!-- <span class="template-list--item__language">{{ item.languageShortCode }}</span>
-                    <span class="template-list--item__divider">|</span>
-                    <span class="template-list--item__narrator-gender">{{
-                      item.narratorGender
-                    }}</span> -->
                   </div>
                 </div>
               </div>
@@ -304,18 +299,16 @@ export default {
         this.getTemplates(true, this.templateResourceId, this.bodyData, true)
       }
     },
-    checkAndAddResourceIdToPayload(isInitial, bodyData) {
+    checkAndAddResourceIdToPayload() {
       this.loadingTemplates = true
       this.$emit('loading', true)
-      if (isInitial && this.templateResourceId && false) {
-        bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'resourceId',
-          Operator: 'Include',
-          value: this.templateResourceId
-        })
-      }
     },
-    getTemplates(isInitial, templateResourceId, bodyData = this.bodyData, isSearch) {
+    getTemplates(
+      isInitial = false,
+      templateResourceId = '',
+      bodyData = this.bodyData,
+      isSearch = false
+    ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       getVishingTemplates(bodyData)
         .then((response) => {
@@ -337,22 +330,21 @@ export default {
             if (!templateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
-            if (isInitial) {
-              if (!!templateResourceId) {
-                const index = this.listData.findIndex(
-                  (item) => item.resourceId === templateResourceId
-                )
-                if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index, true)
-                  this.listData[index].selected = true
-                }
-              } else {
-                if (!templateResourceId) {
-                  this.setSelectedTemplate(this.listData[0], 0, true)
-                }
+            if (!isInitial) return
+            if (!!templateResourceId) {
+              const index = this.listData.findIndex(
+                (item) => item.resourceId === templateResourceId
+              )
+              if (index > -1) {
+                this.setSelectedTemplate(this.listData[index], index, true)
+                this.listData[index].selected = true
               }
-              this.defaultListData = [...this.listData]
+            } else {
+              if (!templateResourceId) {
+                this.setSelectedTemplate(this.listData[0], 0, true)
+              }
             }
+            this.defaultListData = [...this.listData]
           }
         })
         .finally(() => {

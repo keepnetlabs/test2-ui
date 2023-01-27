@@ -6,15 +6,16 @@
       :content="overFlowTooltipContent"
     />
     <table
+      v-if="getTableStatus"
+      :id="tableId"
       :class="['k-widget-list', className]"
       :style="getTableStyle"
-      :id="tableId"
-      v-if="getTableStatus"
+      aria-label="widget"
     >
       <thead class="k-widget-list__header-container">
         <th
-          :key="col.label"
           v-for="col in columns"
+          :key="col.label"
           :class="[
             'k-widget-list__header',
             `k-widget-list__th-${col.label.split(' ').join('').toLowerCase()}`
@@ -75,6 +76,7 @@
 
 <script>
 import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'WidgetList',
   components: {
@@ -117,7 +119,7 @@ export default {
       showOverFlowTooltip: false,
       overFlowTooltipStyle: {},
       overFlowTooltipContent: '',
-      tableId: `table-${Math.random()}`
+      tableId: `table-${createRandomCryptStringNumber()}`
     }
   },
   computed: {
@@ -156,7 +158,6 @@ export default {
     onEmptyBtnClicked() {
       this.$emit('onEmptyBtnClicked')
     }
-  },
-  created() {}
+  }
 }
 </script>

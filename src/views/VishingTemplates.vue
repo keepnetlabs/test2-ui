@@ -78,13 +78,7 @@
             :text="tableOptions.rowActions[1].name"
             @on-click="handleEdit(scope.row, false)"
           />
-          <!-- <DefaultMenuRowAction
-            :scope="scope"
-            :disabled="tableOptions.rowActions[2].disabled"
-            :icon="tableOptions.rowActions[2].icon"
-            :text="tableOptions.rowActions[2].name"
-            @on-click="handleFastLaunch(scope.row, false)"
-          /> -->
+
           <DefaultMenuRowAction
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"

@@ -48,10 +48,10 @@
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
     >
-      <template v-slot:datatable-custom-column="{ scope }">
+      <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-users__status-column">
           <v-btn style="display: none;" />
-          <Badge v-bind="getStatusBadgeProps(scope.row.status)" size="medium" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
         </div>
       </template>
       <template #datatable-row-actions="{ scope }">
@@ -215,6 +215,12 @@ export default {
             show: true,
             type: 'slot',
             width: 200,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            },
+            overrideWidth: true,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({

@@ -49,13 +49,16 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import { createSystemUser, sendInformationEmail, updateSystemUser } from '@/api/systemUsers'
-import { scrollToComponent } from '@/utils/functions'
-import { getSystemUsersRole } from '@/api/systemUsers'
+import {
+  createSystemUser,
+  sendInformationEmail,
+  updateSystemUser,
+  getSystemUsersRole
+} from '@/api/systemUsers'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import jwt_decode from 'jwt-decode'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
-import { isDifferent } from '@/utils/functions'
 import CookieKeys from '@/model/constants/cookieKeys'
 
 export default {
@@ -195,14 +198,10 @@ export default {
     if (!this.selectedRow) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-
-    let allRoles = []
-    let availableRoles = []
-    const response = await getSystemUsersRole()
-    if (response) {
-      allRoles = response.data.data
-      availableRoles = []
-      availableRoles = allRoles
+    try {
+      const response = await getSystemUsersRole()
+      let allRoles = response.data.data
+      let availableRoles = allRoles
       if (this.selectedRow) {
         const {
           firstName,
@@ -250,7 +249,7 @@ export default {
         }
       }
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
+    } catch (e) {}
   }
 }
 </script>

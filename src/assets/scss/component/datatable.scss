@@ -316,15 +316,12 @@
           font-weight: 600;
           line-height: 1.3rem;
           color: #383B41;
-          //min-height: 21px;
           padding-left: 12px !important;
 
           .el-checkbox__input.is-indeterminate .el-checkbox__inner {
             background-color: #2196f3;
             border-color: #2196f3 !important;
           }
-
-          .el-checkbox:first-child {}
 
           .el-checkbox__input.is-checked .el-checkbox__inner {
             background-color: #2196f3;
@@ -583,9 +580,6 @@
 
         .btn-next {
           order: 3;
-        }
-
-        .btn-next {
           padding-left: 0 !important;
         }
 
@@ -1035,7 +1029,6 @@
       }
 
        */
-      .cell {}
 
       &--first {
         padding-right: 25px !important;
@@ -1180,9 +1173,7 @@
   @media (min-width:2400px) {
     border-bottom: 1px solid #EBEEF5 !important;
   }
-
   border-bottom: none !important;
-  ;
 }
 
 .k-table-header {
@@ -1445,7 +1436,8 @@
     justify-content: flex-end;
     position: sticky;
     bottom: 0;
-
+    background: #fff;
+    padding: 10px 0;
     &-button {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -1467,10 +1459,6 @@
     background-color: #ffffff;
   }
 
-  &__footer {
-    background: #fff;
-    padding: 10px 0;
-  }
 }
 
 ::v-deep {
@@ -1520,7 +1508,7 @@
   &__text {
     margin-left: 4px !important;
     font-size: 14px;
-    font-weight: normal;
+    font-weight: 600;
     line-height: 1.8;
     letter-spacing: normal;
     color: #383b41;

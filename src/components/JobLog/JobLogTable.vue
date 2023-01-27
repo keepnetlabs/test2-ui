@@ -28,6 +28,22 @@
     @refreshAction="callForData"
     @handleDetailsClick="handleDetailsClick($event)"
   >
+    <template #datatable-custom-column="{ scope, col }">
+      <div class="job-log__status-column">
+        <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
+          <template v-slot:activator="{ on }">
+            <v-btn style="display: none;" />
+            <Badge
+              v-bind="getStatusBadgeProps(scope.row.status)"
+              :listeners="on"
+              size="medium"
+              :col="col"
+            />
+          </template>
+          <span>{{ getErrorMessage(scope.row) }}</span>
+        </v-tooltip>
+      </div>
+    </template>
     <template v-slot:datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :id="rowActions[0].id"
@@ -54,10 +70,13 @@ import {
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getAllJobs } from '@/api/targetUsers'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import { getDataTableFieldLabel } from '@/utils//functions'
+import Badge from '@/components/Badge'
+import { getStatusBadgeProps } from './utils'
 
 export default {
   name: 'JobLogTable',
-  components: { DataTable, DefaultButtonRowAction },
+  components: { DataTable, DefaultButtonRowAction, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     justShowReportAction: {
@@ -124,26 +143,12 @@ export default {
             fixed: false,
             hideSort: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             isEditable: true,
             isWithTooltip: true,
             width: 150,
             filterableType: false
-            // filterableType: 'select',
-            // filterableItems: ['Running', 'Failed', 'Completed']
           }
-          //   {
-          //     property: 'createdBy',
-          //     align: 'left',
-          //     label: 'Created By',
-          //     fixed: false,
-          //     hideSort: true,
-          //     show: true,
-          //     type: 'text',
-          //     width: 180,
-          //     isEditable: true,
-          //     filterableType: false
-          //   }
         ],
         addButton: {
           show: false
@@ -187,35 +192,29 @@ export default {
     getStatusName(status) {
       if (status === 0) return 'Waiting'
       if (status === 1) return 'Started'
-      if (status === 2) return 'Working'
-      if (status === 3) return 'Finished'
+      if (status === 2) return 'Running'
+      if (status === 3) return 'Completed'
       if (status === 4) return 'Failed'
       return ''
     },
-    exportJobLogData(downloadTypes) {
-      //   downloadTypes.exportTypes.forEach((item) => {
-      //     let payload = {
-      //       pageNumber: downloadTypes.pageNumber,
-      //       pageSize: downloadTypes.pageSize,
-      //       orderBy: this.axiosPayload.orderBy,
-      //       ascending: this.axiosPayload.ascending,
-      //       reportAllPages: downloadTypes.reportAllPages,
-      //       exportType: item === "XLS" ? "Excel" : item,
-      //       filter: this.axiosPayload.filter,
-      //     };
-      //     exportCampaignReports(payload).then((response) => {
-      //       const { data } = response;
-      //       const link = document.createElement("a");
-      //       link.href = window.URL.createObjectURL(data);
-      //       link.download = `Campaign-Manager-Report.${
-      //         item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
-      //       }`;
-      //       link.click();
-      //     });
-      //   });
-    },
+    exportJobLogData(downloadTypes) {},
     handleDetailsClick(row = {}) {
       this.$emit('onDetails', row)
+    },
+    getErrorMessage(row = {}) {
+      if (row.status === 'Failed') {
+        return row?.errorMessage || ''
+      }
+      return ''
+    },
+    getStatusBadgeProps(status = '') {
+      return getStatusBadgeProps(status)
+    },
+    getDataTableFieldLabel(status = '') {
+      return getDataTableFieldLabel(status)
+    },
+    getTooltipDisabilityStatus(row = {}) {
+      return row?.status !== 'Failed' || !row?.errorMessage
     }
   }
 }

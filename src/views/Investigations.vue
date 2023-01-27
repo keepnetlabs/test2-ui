@@ -438,11 +438,11 @@ export default {
     },
     togglePlaybookModal() {
       this.selectedPlaybookId = null
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.showPlaybookModal = !this.showPlaybookModal
     },
     togglePlaybookModalWithSelected(selectedPlaybookId) {
       this.selectedPlaybookId = selectedPlaybookId
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.showPlaybookModal = !this.showPlaybookModal
     },
     refreshDatatable() {
       this.loading = true

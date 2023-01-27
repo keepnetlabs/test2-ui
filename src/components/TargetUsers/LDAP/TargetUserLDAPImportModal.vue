@@ -160,12 +160,14 @@ export default {
       return this.selectedUsers.length
     },
     isNextButtonDisabled() {
-      const comparator =
-        this.step1Step === 0
-          ? this.isLDAPGroupsValid
-          : this.serverSideSelectionParams?.isSelectedAllEver
+      let comparator
+      if (this.step1Step === 0) {
+        comparator = this.isLDAPGroupsValid
+      } else {
+        comparator = this.serverSideSelectionParams?.isSelectedAllEver
           ? this.serverSideSelectionParams?.isSelectedAllEver
           : !!this.selectedLDAPItems?.length
+      }
       return !comparator
     }
   },
@@ -228,23 +230,23 @@ export default {
         }
       } else callback()
     },
-    submit(importType) {
-      this.isSubmitDisabled = true
-      const isSchedule = [1, 2].includes(this?.$refs?.refStep2?.step2Step) || this.isEdit
-      let filter
+    getPayloadFilter() {
       if (this.isEdit) {
-        filter =
-          this.step2Step === 0
-            ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
-            : getDefaultAxiosPayload().filter
+        return this.step2Step === 0
+          ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+          : getDefaultAxiosPayload().filter
       } else {
-        filter =
-          this.step2Step === 1
-            ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
-            : this.step2Step === 2
+        if (this.step2Step === 1) return this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+        else
+          return this.step2Step === 2
             ? getDefaultAxiosPayload().filter
             : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
       }
+    },
+    submit(importType) {
+      this.isSubmitDisabled = true
+      const isSchedule = [1, 2].includes(this?.$refs?.refStep2?.step2Step) || this.isEdit
+      const filter = this.getPayloadFilter()
       const payload = {
         ldapSettingResourceId: this.resourceId,
         targetGroupResourceId: this?.$refs?.refStep1?.targetGroupResourceId || '',

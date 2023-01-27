@@ -37,7 +37,7 @@
                     </v-col>
 
                     <v-col cols="12" md="5">
-                      <div class="copy-btn" @click="copyClipboard(formValues.domain)">
+                      <div class="copy-btn" @click="copyToClipboard(formValues.domain)">
                         Copy to clipboard
                       </div>
                     </v-col>
@@ -59,7 +59,7 @@
                     </v-col>
 
                     <v-col cols="12" md="5">
-                      <div class="copy-btn" @click="copyClipboard(formValues.txtRecord)">
+                      <div class="copy-btn" @click="copyToClipboard(formValues.txtRecord)">
                         Copy to clipboard
                       </div>
                     </v-col>
@@ -101,6 +101,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { createTxtRecord, createAllowListList } from '@/api/allowList'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { copyToClipboard } from '@/utils/functions'
 
 export default {
   name: 'Newdomain',
@@ -140,24 +141,14 @@ export default {
   },
   computed: {
     saveButtonStatus() {
-      if (this.formValues.domain.length === 0 || this.formValues.domain.length > 160) {
-        return true
-      }
-      return false
+      return this.formValues.domain.length === 0 || this.formValues.domain.length > 160
     }
   },
   created() {
     this.getTxtRecord()
   },
   methods: {
-    copyClipboard(value) {
-      navigator.clipboard.writeText(value)
-      this.$store.dispatch('common/createSnackBar', {
-        message: labels.CopyToClipboard,
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-checkbox-marked-circle '
-      })
-    },
+    copyToClipboard,
     commonRules(isNeed) {
       if (isNeed) {
         return this.baseRules
@@ -192,17 +183,8 @@ export default {
           })
           .catch((error) => {
             const errorResponse = error.response.data
-            let msg = errorResponse.message
-            if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
-              let msg = ''
-              for (let i = 0; i < errorResponse.validationMessages.length; i++) {
-                const listMsg = errorResponse.validationMessages[i]
-                msg += listMsg + ', '
-              }
-              msg = msg.slice(0, -1)
-            }
             this.$store.dispatch('common/createSnackBar', {
-              message: msg,
+              message: errorResponse?.message || '',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })

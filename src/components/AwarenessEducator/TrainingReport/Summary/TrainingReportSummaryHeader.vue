@@ -67,25 +67,8 @@ export default {
     toggleShowResendDialog() {
       this.isShowResendDialog = !this.isShowResendDialog
     },
-    handleOnConfirmResend(types) {
-      //   this.isActionButtonDisabled = true
-      //   resendPhishingCampaignToUsers({ Types: types }, this.id).finally(() => {
-      //     this.isActionButtonDisabled = false
-      //     this.toggleShowResendDialog()
-      //   })
-    },
-    handleDownloadReport() {
-      //   this.isDownloadReportDisabled = true
-      //   exportPhishingCampaignJob(this.id)
-      //     .then((response) => {
-      //       const { data } = response
-      //       const link = document.createElement('a')
-      //       link.href = window.URL.createObjectURL(data)
-      //       link.download = `Training-Report.xlsx`
-      //       link.click()
-      //     })
-      //     .finally(() => (this.isDownloadReportDisabled = false))
-    }
+    handleOnConfirmResend(types) {},
+    handleDownloadReport() {}
   }
 }
 </script>

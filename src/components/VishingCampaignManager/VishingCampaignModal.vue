@@ -163,45 +163,6 @@
               @handle-selection-change="handleTableSelectionChange"
             />
             <CustomError v-if="!isTargetGroupsValid" :error-message="getTargetGroupErrorMessage" />
-            <template v-if="false">
-              <FormGroup class="mt-6" title="Limit Recipients" />
-              <div class="d-flex" style="align-items: center; gap: 8px;">
-                <v-checkbox v-model="formValues.isLimitRecipients" hide-details color="#2196f3">
-                  <template #label> </template>
-                </v-checkbox>
-                <span class="form-group-horizontal-content__label">
-                  Send this campaign to randomly selected
-                </span>
-                <div style="position: relative;">
-                  <v-text-field
-                    ref="refRecipientValue"
-                    :value="formValues.recipientValue"
-                    :disabled="!formValues.isLimitRecipients"
-                    style="max-width: 64px !important;"
-                    outlined
-                    placeholder=""
-                    hide-details
-                    :error="!!getRecipientValueErrorMessage"
-                    @input="handleRecipientValueChange"
-                  />
-                  <CustomError
-                    style="position: absolute; bottom: -16px; left: -8px; width: 500px;"
-                    :error-message="getRecipientValueErrorMessage"
-                  />
-                </div>
-                <KSelect
-                  v-model="formValues.recipientType"
-                  style="max-width: 120px !important;"
-                  outlined
-                  dense
-                  hide-details
-                  :return-object="false"
-                  :items="recipientTypes"
-                  :disabled="!formValues.isLimitRecipients"
-                />
-                <span class="form-group-horizontal-content__label"> of target users</span>
-              </div>
-            </template>
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content vishing-campaign" :step="4">
             <ConfigureCompanyStepHeader
@@ -252,16 +213,6 @@
                   <span class="form-group-horizontal-content__label">
                     {{ formValues.distributionOverDays > 1 ? 'weeks' : 'week' }}
                   </span>
-                  <!-- <KSelect
-                    v-model="formValues.sendCallsOverType"
-                    style="max-width: 137px !important;"
-                    outlined
-                    dense
-                    hide-details
-                    position="bottom"
-                    :return-object="false"
-                    :items="sendCallsOverTypes"
-                  /> -->
                 </div>
                 <div class="vishing-campaign-modal__send-calls-on">
                   <div>
@@ -553,42 +504,19 @@ export default {
       }
     },
     getTitle() {
-      return !this.isEdit
-        ? 'New Vishing Campaign'
-        : this.isDuplicate
-        ? 'Duplicate Vishing Campaign'
-        : 'Edit Vishing Campaign'
+      if (!this.isEdit) return 'New Vishing Campaign'
+      return this.isDuplicate ? 'Duplicate Vishing Campaign' : 'Edit Vishing Campaign'
     },
     isScheduledTimeDisabled() {
       return this.formValues.scheduleType !== '3'
     },
     getTargetGroupErrorMessage() {
-      return this.formValues.targetGroupResourceIds.length
-        ? this.isShowTargetGroupUsersError
+      if (this.formValues.targetGroupResourceIds.length) {
+        return this.isShowTargetGroupUsersError
           ? 'Target groups must have at least 1 user with phone number'
-          : 'Required'
-        : 'Required'
-    },
-    getRecipientValueErrorMessage() {
-      if (this.formValues.isLimitRecipients) {
-        if (this.formValues.recipientType === 1) {
-          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
-            return 'Enter a number higher than 0'
-          }
-          if (this.formValues.recipientValue > 100) {
-            return 'This number cannot be higher than 100 percent'
-          }
-        } else {
-          if (this.formValues.recipientValue === '' || this.formValues.recipientValue <= 0) {
-            return 'Enter a number higher than 0'
-          }
-          if (this.formValues.recipientValue > this.totalTargetUserCount) {
-            return 'This number cannot be higher than number of total target users'
-          }
-        }
+          : labels.Required
       }
-
-      return ''
+      return labels.Required
     },
     getDistributionOverDaysValueErrorMessage() {
       if (
@@ -741,19 +669,23 @@ export default {
       })
     },
     checkDateIsValid() {
-      this.isDateValid = this.formValues
-        ? this.formValues.scheduleType === '3'
-          ? this.formValues.scheduleDate && this.formValues.scheduleDate.length > 0
-          : true
-        : false
+      let isDateValid = false
+      if (this.formValues) {
+        if (this.formValues.scheduleType === '3') {
+          isDateValid = this.formValues.scheduleDate && this.formValues.scheduleDate.length > 0
+        } else isDateValid = true
+      }
+      this.isDateValid = isDateValid
       return this.isDateValid
     },
     checkTimezoneValid() {
-      this.isTimezoneValid = this.formValues
-        ? this.formValues.scheduleType === '3'
-          ? !!this.formValues.scheduledDateTimeZoneId
-          : true
-        : false
+      let isTimezoneValid = false
+      if (this.formValues) {
+        if (this.formValues.scheduleType === '3')
+          isTimezoneValid = !!this.formValues.scheduledDateTimeZoneId
+        else isTimezoneValid = true
+      }
+      this.isTimezoneValid = isTimezoneValid
       return this.isTimezoneValid
     },
     callForCampaign() {
@@ -769,7 +701,6 @@ export default {
           scheduleDate,
           scheduleType,
           scheduledDateTimeZoneId,
-          targetGroupResourceIds = [],
           templateResourceId = '',
           targetGroups
         } = response?.data?.data || {}
@@ -852,16 +783,8 @@ export default {
           extraDatas: item
         }))
     },
-    handleRecipientValueChange(val) {
-      if (!val || /\d+$/.test(val)) {
-        this.formValues.recipientValue = val
-      } else {
-        this.$refs.refRecipientValue.initialValue = this.formValues.recipientValue
-        this.$refs.refRecipientValue.lazyValue = this.formValues.recipientValue
-      }
-    },
     handleSendOverCallsValueChange(val) {
-      if (!val || /\d+$/.test(val)) {
+      if (!val || /\d$/.test(val)) {
         this.formValues.distributionOverDays = val
       } else {
         this.$refs.refSendCallsOver.initialValue = this.formValues.distributionOverDays
@@ -930,7 +853,6 @@ export default {
         excludeFromReports,
         targetGroupResourceIds,
         callerPhoneNumber,
-        distributionOverDays,
         distributionStartTime,
         distributionEndTime,
         templateResourceId

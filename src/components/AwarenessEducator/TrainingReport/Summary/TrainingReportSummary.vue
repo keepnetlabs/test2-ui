@@ -317,10 +317,8 @@ export default {
         createdBy: companyName,
         description,
         template:
-          template?.replace(
-            new RegExp('{COMPANYLOGO}', 'g'),
-            this?.$store?.state?.whitelabel.mainLogoUrl || ''
-          ) || ''
+          template?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') ||
+          ''
       }
     },
     getTrainingMaterialData() {

@@ -141,8 +141,12 @@ export default {
       getLDAPSettingUpdatePermission: 'permissions/getLDAPSettingUpdatePermission'
     }),
     getTestConnectionButtonStyle() {
+      let width = ''
+      if (this.isTestingConnection) width = '210px'
+      else if (this.isTestConnectionValid) width = '185px'
+      else width = '160px'
       return {
-        width: this.isTestingConnection ? '210px' : this.isTestConnectionValid ? '185px' : '160px',
+        width,
         ...this.getDisabledStyle
       }
     },

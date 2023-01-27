@@ -271,8 +271,8 @@
                         :download-button="{ show: false }"
                         @refreshAction="getPostDetails"
                       >
-                        <template v-slot:datatable-custom-column="{ scope }">
-                          <span @click="showPopupModal = true" style="cursor: pointer;">
+                        <template #datatable-custom-column="{ scope }">
+                          <span class="cursor-poineter">
                             <a
                               v-if="
                                 scope.row.analysisEnginePermalink &&
@@ -280,9 +280,10 @@
                                 scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
-                              :href="scope.row.analysisEnginePermalink"
-                              target="_blank"
                               class="attachments-table__link"
+                              target="_blank"
+                              rel="noopener"
+                              :href="scope.row.analysisEnginePermalink"
                               >See Details</a
                             >
                             <span v-else></span>
@@ -309,7 +310,7 @@ import Badge from '@/components/Badge'
 import Datatable from '@/components/DataTable'
 import DownloadModal from '@/components/IncidentResponder/DownloadModal'
 import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
@@ -318,7 +319,6 @@ import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/f
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
-import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 export default {
   components: {
     KEmailPreview,

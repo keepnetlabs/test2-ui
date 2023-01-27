@@ -291,6 +291,7 @@ import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 
 const initialFormValues = {
   resourceId: null,
@@ -419,11 +420,8 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit
-        ? 'New Vishing Template'
-        : this.isDuplicate
-        ? 'Duplicate Vishing Template'
-        : 'Edit Vishing Template'
+      if (!this.isEdit) return 'New Vishing Template'
+      return this.isDuplicate ? 'Duplicate Vishing Template' : 'Edit Vishing Template'
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
@@ -468,8 +466,8 @@ export default {
     if (this.isEdit || this.isDuplicate) {
       getVishingTemplate(this.templateId).then((response) => {
         this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
-        for (let i = 0; i < this.formValues.steps.length; i++) {
-          this.formValues.steps[i]['isExpanded'] = false
+        for (const step of this.formValues.steps) {
+          step['isExpanded'] = false
         }
         const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
           (step) => step.order === 0
@@ -544,9 +542,8 @@ export default {
             (item) => item.text === 'Turkish - Female'
           )
           if (englishFemaleIndex) {
-            this.formValues.vishingLanguageResourceId = this.vishingLanguageItems[
-              englishFemaleIndex
-            ].value
+            const vishingItem = this.vishingLanguageItems[englishFemaleIndex]
+            this.formValues.vishingLanguageResourceId = vishingItem?.value || ''
           }
         }
       }
@@ -560,8 +557,8 @@ export default {
       }
     },
     onAddStep(type) {
-      for (let i = 0; i < this.formValues.steps.length; i++) {
-        this.formValues.steps[i].isExpanded = false
+      for (const step of this.formValues.steps) {
+        step.isExpanded = false
       }
       const order = this.formValues.steps.length + 1
       let newItem
@@ -601,6 +598,7 @@ export default {
             order,
             isExpanded: true
           }
+          break
         default:
           break
       }
@@ -758,7 +756,7 @@ export default {
       this.isVishingStepSelected = this.validateFailStep()
       if (!this.isVishingStepSelected) {
         this.$store.dispatch('common/createSnackBar', {
-          message: 'One step should be chosen as Vishing Step.',
+          message: 'One step should be chosen as vishing step.',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert'
         })

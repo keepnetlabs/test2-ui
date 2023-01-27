@@ -110,6 +110,7 @@
 import DataContainerWithSearchItem from '@/components/Common/Others/DataContainerWithSearchItem'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'DataContainerWithSearch',
@@ -230,7 +231,7 @@ export default {
       this.setOptions('push', true)
       this.checkAllValid()
       this.$nextTick(() => {
-        this.scrollKey = `scroll-key${Math.random().toString().substring(0, 5)}`
+        this.scrollKey = `scroll-key-${createRandomCryptStringNumber()}`
       })
     }
   },
@@ -238,13 +239,13 @@ export default {
     this.setOptions('push')
   },
   methods: {
-    handleInputChange(newVal = '', oldVal, index) {
+    handleInputChange(newVal = '', oldVal = '', index = 0) {
       const item = this.getItems[index]
       item.val = newVal
       const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
       this.value[indexOfOldValue] = newVal
       this.$set(item, 'isEdit', false)
-      item.key = Math.random().toString(8)
+      item.key = createRandomCryptStringNumber()
 
       if (this.removeDuplicates) {
         const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))
@@ -268,9 +269,8 @@ export default {
       if (reset) {
         this.options = []
       }
-      for (let i = 0; i < this.value.length; i++) {
-        if (!this.options.find((item) => item.val === this.value[i]))
-          this.addItemToOptions(this.value[i], funcName)
+      for (const row of this.value) {
+        if (!this.options.find((item) => item.val === row)) this.addItemToOptions(row, funcName)
       }
     },
     resetOptions() {
@@ -279,7 +279,7 @@ export default {
     addItemToOptions(val, funcName = 'unshift') {
       this.options[funcName]({
         val,
-        key: Math.random().toString(8),
+        key: createRandomCryptStringNumber(),
         isEdit: false,
         isEditable: this.getEditability(val),
         disabledTooltipText: this.disabledTooltipText,
@@ -298,17 +298,8 @@ export default {
       this.checkAllValid()
     },
     handleFilter() {
-      if (this.isFilterChecked) {
-        this.isFilterActive = true
-      } else {
-        this.isFilterActive = false
-      }
-
-      if (this.isCustomFilterChecked) {
-        this.isCustomFilterActive = true
-      } else {
-        this.isCustomFilterActive = false
-      }
+      this.isFilterActive = this.isFilterChecked
+      this.isCustomFilterActive = this.isCustomFilterChecked
       this.isMenuOpen = false
     },
     clearFilter() {
@@ -316,14 +307,6 @@ export default {
       this.isCustomFilterChecked = false
       this.isFilterActive = false
       this.isCustomFilterActive = false
-      this.isMenuOpen = false
-    },
-    setCommonProperties(val = false) {
-      if (val === false) {
-        this.isFilterChecked = false
-        this.isCustomFilterChecked = false
-      }
-      this.isFilterActive = val
       this.isMenuOpen = false
     }
   }
