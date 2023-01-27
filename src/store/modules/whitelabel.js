@@ -158,7 +158,7 @@ const whitelabel = {
           }
         }
         context.commit('SET_SYSTEM_VERSION', versionInfo?.data?.version || '')
-        if (payload.checkExceedDialog) {
+        if (payload.checkExceedDialog && typeof companyLicense.data === 'object') {
           const { isLicenseExceeded, isLimited } = companyLicense.data
           context.commit('SET_COMPANY_LICENSE', companyLicense?.data || '')
           if (isLimited && isLicenseExceeded) {
