@@ -843,21 +843,29 @@ export default {
         const assetManager = this.editor.AssetManager
         const container = assetManager.getContainer()
         const header = container.querySelector('.gjs-am-assets-header')
-        const searchField = document.createElement('input')
-        if (header.querySelector('form + input')) return
-        searchField.style.cssText = 'background:#fff;outline:none;width:240px;padding:4px'
-        searchField.setAttribute('placeholder', 'Search')
-        searchField.addEventListener('input', (e) => {
-          const { value } = e.target
-          const assets = assetManager.getAll()
-          this.renderAssetsToAssetsManager(
-            assets.filter((asset) => {
-              return asset.attributes.name.toLowerCase().includes(value.toLowerCase())
-            })
-          )
-        })
-        header.appendChild(searchField)
+        const renderedSearchField = header.querySelector('form + input')
+        if (renderedSearchField) {
+          renderedSearchField.value = ''
+          return
+        }
+        //this code means there is no search field
+        header.appendChild(this.createImageAssetSearchField())
       })
+    },
+    createImageAssetSearchField() {
+      const searchField = document.createElement('input')
+      searchField.style.cssText = 'background:#fff;outline:none;width:237px;padding:4px'
+      searchField.setAttribute('placeholder', 'Search')
+      searchField.addEventListener('input', (e) => {
+        const { value } = e.target
+        const assets = this.editor.AssetManager.getAll()
+        this.renderAssetsToAssetsManager(
+          assets.filter((asset) => {
+            return asset.attributes.name.toLowerCase().includes(value.toLowerCase())
+          })
+        )
+      })
+      return searchField
     },
     getGrapesEditorContent() {
       const { editor } = this
