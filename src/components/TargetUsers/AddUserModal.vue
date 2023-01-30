@@ -9,7 +9,7 @@
     subtitle-id="text--target-users-people-create-user-modal-subtitle"
     @closeOverlay="status = false"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <target-users-check-license-dialog
         v-if="showLicenseExceededDialog"
         :status="showLicenseExceededDialog"

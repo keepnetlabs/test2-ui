@@ -62,10 +62,10 @@
               >
                 <div class="checkbox-and-text">
                   <v-checkbox
+                    v-model="engine.selected"
                     class="k-checkbox"
                     :id="`input--anaysis-engine-${index}`"
                     color="#2196f3"
-                    v-model="engine.selected"
                     hide-details
                     @change="analysisEnginesChange(engine, index)"
                   />
