@@ -1093,17 +1093,17 @@ export default {
           })
         } else {
           this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-          let content =
-            error && error.response && error.response.data && error.response.data.error_description
-              ? error.response.data.error_description
-              : error.response.data.Message
-              ? error.response.data.Message
-              : labels.ServiceUnavailable
-          this.$store.commit('common/SET_ERROR_MESSAGE', content, {
+          this.$store.commit('common/SET_ERROR_MESSAGE', this.getLoginErrorMessage(error), {
             root: true
           })
         }
       }
+    },
+    getLoginErrorMessage(error) {
+      if (error?.response?.data?.error_description) return error?.response?.data?.error_description
+      return error?.response?.data?.Message
+        ? error.response.data.Message
+        : labels.ServiceUnavailable
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false

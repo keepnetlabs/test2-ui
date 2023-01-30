@@ -291,10 +291,10 @@ export default {
     },
     callForImages() {
       getUploadedFiles().then((res) => {
-        const am = this.editor.AssetManager
         const {
           data: { data }
         } = res
+        const assetManager = this.editor.AssetManager
         const assets = data.map((img) => {
           const obj = {
             src: '',
@@ -305,9 +305,12 @@ export default {
           obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img['previewLink']
           return obj
         })
-        am.add(assets)
-        am.render()
+        assetManager.add(assets)
+        this.renderAssetsToAssetsManager(data)
       })
+    },
+    renderAssetsToAssetsManager(data = []) {
+      this.editor.AssetManager.render(data)
     },
     destroyEditor() {
       this.editor.destroy()
@@ -824,24 +827,54 @@ export default {
           codeViewer.setContent(html)
           viewer.refresh()
         })
-        this.editor.on('asset:upload:end', (images) => {
-          if (images?.data?.[0]) {
-            const url = images.data[0].src
-            fetch(url)
-              .then((res) => res.blob())
-              .then((blob) => {
-                const file = new File([blob], images.data[0].name, { type: blob.type })
-                const formData = new FormData()
-                formData.append('Files', file)
-                uploadFiles(formData)
-              })
-          }
-        })
-        this.editor.on('asset:remove', (props) => {
-          const { attributes } = props
-          deleteFiles([attributes.resourceId])
-        })
+        this.handleAssetUploadEvents()
       })
+    },
+    handleAssetUploadEvents() {
+      this.editor.on('asset:upload:end', (images) => {
+        if (images?.data?.[0]) {
+          const url = images.data[0].src
+          fetch(url)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], images.data[0].name, { type: blob.type })
+              const formData = new FormData()
+              formData.append('Files', file)
+              uploadFiles(formData)
+            })
+        }
+      })
+      this.editor.on('asset:remove', (props) => {
+        const { attributes } = props
+        deleteFiles([attributes.resourceId])
+      })
+      this.editor.on('asset:open', () => {
+        const assetManager = this.editor.AssetManager
+        const container = assetManager.getContainer()
+        const header = container.querySelector('.gjs-am-assets-header')
+        const renderedSearchField = header.querySelector('form + input')
+        if (renderedSearchField) {
+          renderedSearchField.value = ''
+          return
+        }
+        //this code means there is no search field
+        header.appendChild(this.createImageAssetSearchField())
+      })
+    },
+    createImageAssetSearchField() {
+      const searchField = document.createElement('input')
+      searchField.style.cssText = 'background:#fff;outline:none;width:237px;padding:4px'
+      searchField.setAttribute('placeholder', 'Search')
+      searchField.addEventListener('input', (e) => {
+        const { value } = e.target
+        const assets = this.editor.AssetManager.getAll()
+        this.renderAssetsToAssetsManager(
+          assets.filter((asset) => {
+            return asset.attributes.name.toLowerCase().includes(value.toLowerCase())
+          })
+        )
+      })
+      return searchField
     },
     getGrapesEditorContent() {
       const { editor } = this

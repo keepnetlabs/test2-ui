@@ -444,11 +444,13 @@ export default {
       this.menuOpen = false
       this.filteredDateValueSelect = { name: 'All Time', value: '' }
     },
+    getFilteredDateValue() {
+      return this.filteredSelectValueDate !== 'between'
+        ? this.filteredDateValue || this.filteredDateValueSelect.value
+        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+    },
     handleFilter() {
-      let value =
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      let value = this.getFilteredDateValue()
       if (this.filteredDateValueSelect.value === 'custom')
         this.filteredDateValueSelectValues[5].name = value
       this.menuOpen = false
