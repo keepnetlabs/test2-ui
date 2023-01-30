@@ -852,16 +852,16 @@
                             <v-checkbox
                               v-model="url.isHidden"
                               id="input--threat-sharing-incident-is-url-hidden"
-                              @change="urlSwitchChange(url, ind)"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="urlSwitchChange(url, ind)"
                             ></v-checkbox>
                             <v-tooltip bottom opacity="1" z-index="9999">
-                              <template v-slot:activator="{ on }">
+                              <template #activator="{ on }">
                                 <label
-                                  v-on="on"
                                   v-if="filterOpened"
+                                  v-on="on"
                                   class="investigation-filters__area--filter--label"
                                   >{{ url.name || url.url }}
                                   <span class="url-badge">{{ url.orderNumber }}</span></label

@@ -435,9 +435,8 @@ export default {
         return labels.InvalidURL
       }
       return value
-        ? /[(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
-            value
-          ) || labels.InvalidURL
+        ? /[(w{3}.)?A-Z0-9@:%_\+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_\+.~#?&/=]*)/gi.test(value) ||
+            labels.InvalidURL
         : true
     },
     onMenuLogoChange(file) {

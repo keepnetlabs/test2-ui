@@ -134,10 +134,12 @@ export default {
     this.isCompaniesLoading = true
     getMyCompanies()
       .then((response) => {
-        this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
-        this.orderedAccounts = response.data.data
-        if (this.searchedCompanyText) {
-          this.handleSearchText()
+        if (response?.data?.data) {
+          this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
+          this.orderedAccounts = response.data.data
+          if (this.searchedCompanyText) {
+            this.handleSearchText()
+          }
         }
       })
       .finally(() => {

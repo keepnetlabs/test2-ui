@@ -121,6 +121,9 @@
           />
           <DefaultMenuRowAction
             v-if="['Scheduled', 'Idle'].includes(scope.row.status)"
+            class-name="vishing-templates__menu-row-action-tooltip"
+            show-tooltip
+            disabled-tooltip-text="You are not authorized to edit this campaign"
             :scope="scope"
             :icon="tableOptions.rowActions[2].icon"
             :disabled="tableOptions.rowActions[2].disabled"
@@ -146,9 +149,9 @@
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
-            disabledTooltipText="You are not authorized to delete this template"
-            className="vishing-templates__menu-row-action-tooltip"
-            showTooltip
+            class-name="vishing-templates__menu-row-action-tooltip"
+            show-tooltip
+            disabled-tooltip-text="You are not authorized to delete this campaign"
             :scope="scope"
             :disabled="tableOptions.rowActions[4].disabled"
             :icon="tableOptions.rowActions[4].icon"

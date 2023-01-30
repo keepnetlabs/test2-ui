@@ -148,7 +148,6 @@ export default {
       loading: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       saveDisable: this.editItemsDisabled,
       Validations: Validations,
       commonRules: {
@@ -241,7 +240,14 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     this.callForDatas()
-    if (this.selectedItem && this.selectedItem.resourceId) {
+    this.callForNotificationTemplate()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
+  methods: {
+    callForNotificationTemplate() {
+      if (!this?.selectedItem?.resourceId) return
       this.loading = true
       getEmailTemplate(this.selectedItem.resourceId)
         .then((response) => {
@@ -261,17 +267,8 @@ export default {
                       resourceId: null
                     }
                   ]
-                  this.nonEditableAvailableForRequests = [
-                    {
-                      id: 'MyCompanyOnly',
-                      label: 'My company only',
-                      type: 'MyCompanyOnly',
-                      resourceId: null
-                    }
-                  ]
                 } else {
                   this.formValues['availableForRequests'] = availableForListFromBackend
-                  this.nonEditableAvailableForRequests = availableForListFromBackend
                 }
               } else {
                 this.formValues['availableForRequests'] = [
@@ -287,20 +284,13 @@ export default {
             }
             this.formValues[key] = value
           }
-          if (this.isDuplicate) {
-            this.formValues.name = this.formValues.name + ' - COPY'
-          }
+          if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .finally(() => {
           this.loading = false
         })
-    }
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
-  },
-  methods: {
+    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response

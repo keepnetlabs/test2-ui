@@ -482,7 +482,8 @@ export default {
           }, [])
 
           this.newItemY = this.layout.reduce((acc, item) => {
-            return (acc += item.h)
+            acc += item.h
+            return acc
           }, 0)
           setTimeout(() => {
             this.handleDeleteShadows()
@@ -501,7 +502,7 @@ export default {
   methods: {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
-      const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
+      const bdCol = this.getBdCol(newBreakpoint)
       let x = 0,
         xValue = 0,
         y = 0
@@ -531,6 +532,10 @@ export default {
 
         return { ...item, w: itemWidth, x: xValue, y }
       })
+    },
+    getBdCol(newBreakpoint = '') {
+      if (newBreakpoint === 'xs') return 6
+      return newBreakpoint === 'xxs' ? 2 : 12
     },
     layoutUpdated(newLayout) {},
     togglePlaybookModal() {
@@ -604,23 +609,42 @@ export default {
     },
 
     getComponent(componentString) {
-      if (componentString === 'RecentInvestigations') return RecentInvestigations
-      if (componentString === 'RecentCampaigns') return RecentCampaigns
-      if (componentString === 'MostPhishedUsers') return MostPhishedUsers
-      if (componentString === 'MostEngagedCampaigns') return MostEngagedCampaigns
-      if (componentString === 'Reporters') return Reporters
-      if (componentString === 'TopRules') return TopRules
-      if (componentString === 'TopPosts') return TopPosts
-      if (componentString === 'RecentlyPostedThreats') return RecentlyPostedThreats
-      if (componentString === 'RecentlyReportedIncidents') return RecentlyReportedIncidents
-      if (componentString === 'ReportedEmailTrends') return ReportedEmailTrends
-      if (componentString === 'PhishingCampaignTrends') return PhishingCampaignTrends
-      if (componentString === 'PhishingReporterIrHeader') return PhishingReporterIrHeader
-      if (componentString === 'IncidentAnalysisIrHeader') return IncidentAnalysisIrHeader
-      if (componentString === 'InvestigationsIrHeader') return InvestigationsIrHeader
-      if (componentString === 'ROISummaryIrHeader') return RoiSummaryIrHeader
-      if (componentString === 'TopPhishingSimulationReporters')
-        return TopPhishingSimulationReporters
+      switch (componentString) {
+        case 'RecentInvestigations':
+          return RecentInvestigations
+        case 'RecentCampaigns':
+          return RecentCampaigns
+        case 'MostPhishedUsers':
+          return MostPhishedUsers
+        case 'MostEngagedCampaigns':
+          return MostEngagedCampaigns
+        case 'Reporters':
+          return Reporters
+        case 'TopRules':
+          return TopRules
+        case 'TopPosts':
+          return TopPosts
+        case 'RecentlyPostedThreats':
+          return RecentlyPostedThreats
+        case 'RecentlyReportedIncidents':
+          return RecentlyReportedIncidents
+        case 'ReportedEmailTrends':
+          return ReportedEmailTrends
+        case 'PhishingCampaignTrends':
+          return PhishingCampaignTrends
+        case 'PhishingReporterIrHeader':
+          return PhishingReporterIrHeader
+        case 'IncidentAnalysisIrHeader':
+          return IncidentAnalysisIrHeader
+        case 'InvestigationsIrHeader':
+          return InvestigationsIrHeader
+        case 'ROISummaryIrHeader':
+          return RoiSummaryIrHeader
+        case 'TopPhishingSimulationReporters':
+          return TopPhishingSimulationReporters
+        default:
+          return
+      }
     },
     handleDeleteShadows() {
       document.querySelectorAll('.smartwidget').forEach((item) => {
