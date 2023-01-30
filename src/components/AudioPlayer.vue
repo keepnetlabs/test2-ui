@@ -85,6 +85,8 @@ export default {
     src(newSrc) {
       if (this.type === 'client') {
         this.url = newSrc || null
+        this.onChangeCurrentTime(1)
+        this.onPause()
       }
     }
   },

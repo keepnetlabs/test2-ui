@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    :is-server-side-selection="isServerSide"
     :loading="loading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -149,6 +150,9 @@ export default {
     hasSelectionSlot: {
       type: Boolean,
       default: false
+    },
+    isServerSide: {
+      default: true
     }
   },
   emits: [
