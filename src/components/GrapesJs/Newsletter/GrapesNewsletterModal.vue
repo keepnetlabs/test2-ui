@@ -281,6 +281,14 @@ export default {
         { at: 1 }
       )
     },
+    addFonts() {
+      let styleManager = this.editor.StyleManager
+      let fontProperty = styleManager.getProperty('typography', 'font-family')
+      if (fontProperty) {
+        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'sans-serif' })
+      }
+      styleManager.render()
+    },
     callForImages() {
       getUploadedFiles().then((res) => {
         const {
@@ -766,6 +774,7 @@ export default {
             .setAttribute('title', 'Clear canvas')
         } catch (e) {}
         this.addCustomProperties()
+        this.addFonts()
         document.querySelector('.fa-code').addEventListener('click', () => {
           const editor = this.editor
           const html = editor.runCommand('get-html-juiced')
