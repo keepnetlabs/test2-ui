@@ -444,7 +444,6 @@ export default {
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       labels,
       step: 1,
       Validations: Validations,
@@ -829,9 +828,6 @@ export default {
               resourceId: null
             }
           ]
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })

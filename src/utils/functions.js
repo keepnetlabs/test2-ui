@@ -780,3 +780,25 @@ export function createRandomCryptNumber() {
 export function createRandomCryptStringNumber() {
   return createRandomCryptNumber().toString()
 }
+
+export function cancellableAxiosRequest(fn) {
+  let isAborted = false
+  let controller = new AbortController()
+  return (...params) => {
+    //that means if there is next call without resolving it would be aborted
+    if (isAborted) {
+      controller.abort()
+      controller = new AbortController()
+    }
+    isAborted = true
+    return fn(...params, {
+      signal: controller.signal
+    }).then((response) => {
+      if (Object.keys(response).length) {
+        isAborted = false
+        controller = new AbortController()
+      }
+      return response
+    })
+  }
+}

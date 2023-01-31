@@ -106,7 +106,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -256,30 +256,7 @@ export default {
           } = response
           for (let [key, value] of Object.entries(data)) {
             if (key === 'availableForList') {
-              if (value.length) {
-                const availableForListFromBackend = getAvailableForListFromBackend(value)
-                if (!availableForListFromBackend.length) {
-                  this.formValues['availableForRequests'] = [
-                    {
-                      id: 'MyCompanyOnly',
-                      label: 'My company only',
-                      type: 'MyCompanyOnly',
-                      resourceId: null
-                    }
-                  ]
-                } else {
-                  this.formValues['availableForRequests'] = availableForListFromBackend
-                }
-              } else {
-                this.formValues['availableForRequests'] = [
-                  {
-                    id: 'MyCompanyOnly',
-                    label: 'My company only',
-                    type: 'MyCompanyOnly',
-                    resourceId: null
-                  }
-                ]
-              }
+              this.formValues['availableForRequests'] = getAvailableForValueFromList(value)
               continue
             }
             this.formValues[key] = value
