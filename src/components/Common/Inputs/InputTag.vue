@@ -98,18 +98,19 @@ export default {
               this.tags.push(tag.trim().substring(0, 20))
             }
           })
-        } else {
-          if (!newTags.includes(tagSearch)) {
-            this.tags.push(tagSearch.trim().substring(0, 20))
-          }
+        } else if (!newTags.includes(tagSearch)) {
+          this.tags.push(tagSearch.trim().substring(0, 20))
         }
-        this.$nextTick(() => {
-          if (this.$refs.refTags.$refs.refComponent) {
-            this.$refs.refTags.$refs.refComponent.initialValue = this.tags
-            this.$refs.refTags.$refs.refComponent.lazyValue = this.tags
-          }
-        })
+        this.setInitialAndLazyValue()
       }
+    },
+    setInitialAndLazyValue() {
+      this.$nextTick(() => {
+        if (this.$refs.refTags.$refs.refComponent) {
+          this.$refs.refTags.$refs.refComponent.initialValue = this.tags
+          this.$refs.refTags.$refs.refComponent.lazyValue = this.tags
+        }
+      })
     }
   }
 }

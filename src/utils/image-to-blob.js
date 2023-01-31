@@ -70,7 +70,7 @@ export default function imageToBlob(img, options, callback) {
 }
 
 function dataURItoBlob(uri) {
-  let byteString, mimeString, ia
+  let byteString, mimeString
 
   if (uri.split(',')[0].indexOf('base64') >= 0) {
     //atob(uri.split(',')[1])
