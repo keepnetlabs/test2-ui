@@ -773,6 +773,10 @@ export default {
             .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-trash')
             .setAttribute('title', 'Clear canvas')
         } catch (e) {}
+        //removing default button
+        document.querySelector(
+          '.gjs-block-categories .gjs-blocks-c div[title="Button"]'
+        ).style.display = 'none'
         this.addCustomProperties()
         this.addFonts()
         document.querySelector('.fa-code').addEventListener('click', () => {

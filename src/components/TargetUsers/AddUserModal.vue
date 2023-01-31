@@ -356,16 +356,15 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          if (this.companyLicense) {
-            const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
-            if (
-              isLimited &&
-              (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
-            ) {
-              this.toggleShowLicenseExceededDialog()
-            } else {
-              this.callForCreateTargetUser()
-            }
+          if (!this.companyLicense) return
+          const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
+          if (
+            isLimited &&
+            (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
+          ) {
+            this.toggleShowLicenseExceededDialog()
+          } else {
+            this.callForCreateTargetUser()
           }
         }
       }
