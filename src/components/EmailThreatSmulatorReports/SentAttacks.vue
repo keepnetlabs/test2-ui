@@ -37,18 +37,14 @@
       @searchChangedEvent="handleSearchChange"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span
-          v-if="scope.column.property === 'result'"
-          :id="`text--send-attack-result-${scope.$index}`"
-          class="datatable-link cursor-default"
-        >
+        <div class="d-flex align-center justify-center">
           <div
             class="report-result-btn py-1 cursor-default"
             :class="scope.row.result.toLowerCase()"
           >
             {{ scope.row.result }}
           </div>
-        </span>
+        </div>
       </template>
     </data-table>
   </div>
@@ -137,7 +133,7 @@ export default {
           },
           {
             property: 'deliveryStatus',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
@@ -149,7 +145,7 @@ export default {
           },
           {
             property: 'result',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: 'Result',
             sortable: true,
