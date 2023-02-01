@@ -1,8 +1,8 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-0 mr-2 email-settings__header-container"
       v-if="showHeader"
+      class="px-0 email-settings__list-item mt-0 mr-2 email-settings__header-container"
     >
       <v-list-item-content>
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
@@ -31,9 +31,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">Recipient Email Address</label>
           <InputEmail
-            class="k-textfield mt-2"
             v-model.trim="formValues.to"
             id="input--phishing-reporter-recipient-email-address"
+            class="k-textfield mt-2"
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
             :hint="recipientEmailHint"
@@ -46,9 +46,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">CC</label>
           <InputEmail
-            class="k-textfield mt-2"
-            id="input--phishing-reporter-cc-email-address"
             v-model.trim="formValues.cc"
+            id="input--phishing-reporter-cc-email-address"
+            class="k-textfield mt-2"
             :persistent-hint="false"
             :required="false"
             :hint="null"
@@ -61,9 +61,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">BCC</label>
           <InputEmail
-            class="k-textfield mt-2"
-            id="input--phishing-reporter-bcc-email-address"
             v-model.trim="formValues.bcc"
+            id="input--phishing-reporter-bcc-email-address"
+            class="k-textfield mt-2"
             :readonly="!showForm"
             :persistent-hint="false"
             :required="false"
@@ -136,10 +136,10 @@
       </v-list-item>
       <phishing-settings-footer
         v-if="showFooter"
+        class-name="mt-3"
+        :save-disable="saveDisable"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
-        class-name="mt-3"
-        :saveDisable="saveDisable"
       />
     </v-form>
   </v-container>

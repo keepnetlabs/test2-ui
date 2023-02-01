@@ -29,9 +29,9 @@
               <div class="checkbox-and-text">
                 <v-checkbox
                   v-model="getAllCheckboxSelection"
+                  id="input--is-all-analysis"
                   class="k-checkbox"
                   color="#2196f3"
-                  id="input--is-all-analysis"
                   hide-details
                   @change="acceptAllAnalysisEnginesClick"
                 />
@@ -78,35 +78,35 @@
                 </div>
                 <div class="analyze__main__select-row-inline">
                   <span
+                    v-bind="getDynamicCheckboxProps(engine, index, 'hash')"
                     :id="`input--anaysis-engine-${index}-hash`"
                     class="analyze__main__select-row-inline__button"
-                    v-bind="getDynamicCheckboxProps(engine, index, 'hash')"
                     @click="hashChange(engine.isCheckHash, index)"
                   >
                     Hash
                   </span>
                   <span
+                    v-bind="getDynamicCheckboxProps(engine, index, 'file')"
                     :id="`input--anaysis-engine-${index}-file`"
                     class="analyze__main__select-row-inline__button"
-                    v-bind="getDynamicCheckboxProps(engine, index, 'file')"
                     @click="fileChange(engine.isCheckFile, index)"
                   >
                     File
                   </span>
                   <span
+                    v-bind="getDynamicCheckboxProps(engine, index, 'url')"
                     :id="`input--anaysis-engine-${index}-url`"
                     style="cursor: pointer;"
                     class="analyze__main__select-row-inline__button"
-                    v-bind="getDynamicCheckboxProps(engine, index, 'url')"
                     @click="urlChange(engine.isCheckUrl, index)"
                   >
                     Url
                   </span>
                   <span
+                    v-bind="getDynamicCheckboxProps(engine, index, 'sendIp')"
                     :id="`input--anaysis-engine-${index}-sender-ip`"
                     style="cursor: pointer;"
                     class="analyze__main__select-row-inline__button"
-                    v-bind="getDynamicCheckboxProps(engine, index, 'sendIp')"
                     @click="sendIpChange(engine.isCheckSenderIP, index)"
                   >
                     IP
@@ -127,252 +127,315 @@
       </template>
     </app-dialog>
     <v-form ref="refForm" v-model="isFormValid" lazy-validation>
-      <v-row v-for="(action, index) in actions" :key="index" class="vqb-rule action-items__item">
-        <v-col md="2">
-          <k-select
-            :value="actionsValues[index]"
-            :items="act.actionTypes"
-            :id="`input--action-value-${index}`"
-            :return-object="true"
-            outlined
-            placeholder="Select Action Type"
-            height="40"
-            item-text="name"
-            item-value="val"
-            @input="setAvailableItems($event, actionsValues[index], index)"
-            @click="handleActionSelectClick(actionsValues[index])"
-          />
-        </v-col>
-        <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
-          <k-select
-            v-model="playbookAction.markType"
-            :id="`input--action-mark-type-${index}`"
-            :items="act.markAsOpts"
-            outlined
-            hide-details
-            height="40"
-          />
-        </v-col>
-        <v-col v-if="actionsValues[index].val === 'status'" md="2">
-          <k-select
-            v-model="playbookActionStatus.actionStatusType"
-            :id="`input--action-status-type-${index}`"
-            :items="act.statusOpts"
-            outlined
-            hide-details
-            height="40"
-          />
-        </v-col>
-        <v-col
-          v-if="actionsValues[index].val === 'analyze'"
-          md="auto"
-          class="flex-grow-1 d-flex col-md-auto col analyze__main"
-        >
-          <v-text-field
-            :id="`input--action-selected-integrations-${index}`"
-            outlined
-            :placeholder="`${getSelectedIntegrations()} integrations selected `"
-            height="40"
-            :rules="[validateIntegrations]"
-            @click="openEngineModalFunc"
-            class="analysis-engines-select"
-          >
-          </v-text-field>
+      <div v-for="(action, index) in actions" :key="index" class="vqb-rule action-items__item">
+        <v-row :style="getActionRowStyle(actionsValues[index].val)">
           <v-col
-            class="analyze__main-checkbox"
-            style="padding: 4px 0 0 0 !important; margin-left: 24px;"
+            md="2"
+            :style="actionsValues[index].val === 'notify' ? 'max-width:11%;flex: 0 0 11%;' : ''"
           >
-            <v-checkbox
-              class="k-checkbox"
-              color="#2196f3"
-              id="input--action-is-analyze-with-investigation"
-              v-model="analyzeCheckbox"
+            <k-select
+              :value="actionsValues[index]"
+              :items="act.actionTypes"
+              :id="`input--action-value-${index}`"
+              :return-object="true"
+              outlined
+              placeholder="Select Action Type"
+              height="40"
+              item-text="name"
+              item-value="val"
+              @input="setAvailableItems($event, actionsValues[index], index)"
+              @click="handleActionSelectClick(actionsValues[index])"
             />
-            <span class="checkbox-text">Investigate according to analyze results</span>
           </v-col>
-        </v-col>
-
-        <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
-          <k-select
-            type="combobox"
-            :id="`input--action-tags-${index}`"
-            v-model="playbookAction.tags"
-            :items="[]"
-            chips
-            deletable-chips
-            :rules="[(v) => v.length > 0 || 'Required']"
-            outlined
-            class="hide-caret"
-            multiple
-            dense
-            persistent-hint
-            small-chips
-            :return-object="false"
-            @input="handleTagItemChange"
-            placeholder="Enter tags and press enter key"
-            required
-          />
-        </v-col>
-        <v-col v-if="actionsValues[index].val === 'notify'" md="2">
-          <k-select
-            v-model="targetUserType[index]"
-            :id="`input--action-notify-${index}`"
-            :items="getNotifyTypes()"
-            outlined
-            @input="tarUsers[index] = []"
-            :rules="[(v) => validations.required(v, 'Required')]"
-          />
-        </v-col>
-        <v-col
-          v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
-          md="5"
-        >
-          <k-select
-            v-infinite-scroll="{
-              target: `#input--action-system-users-${index} .k-select__menu`,
-              callback: callForSystemUsers
-            }"
-            v-select-search-handler="{
-              callback: callForSearchSystemUsers,
-              isLoadingKey: 'isSystemUsersLoading'
-            }"
-            v-model="tarUsers[index]"
-            key="systemUsers"
-            type="autocomplete"
-            :id="`input--action-system-users-${index}`"
-            :items="systemUsersItems"
-            placeholder="Select system users"
-            outlined
-            class="edit-select target-users-select-multi"
-            item-text="email"
-            item-value="email"
-            multiple
-            dense
-            deletable-chips
-            auto-select-first
-            :return-object="false"
-            persistent-hint
-            small-chips
-            hide-details
-            :rules="[(v) => validations.required(v)]"
-            :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
-          />
-        </v-col>
-        <v-col
-          v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
-          md="5"
-        >
-          <k-select
-            key="groups"
-            v-infinite-scroll="{
-              target: `#input--action-target-groups-${index} .k-select__menu`,
-              callback: callForTargetGroups
-            }"
-            v-select-search-handler="{
-              callback: callForSearchTargetGroups,
-              isLoadingKey: 'isUserGroupsLoading'
-            }"
-            type="autocomplete"
-            :id="`input--action-target-groups-${index}`"
-            :items="userGroupsItems"
-            placeholder="Select user groups"
-            outlined
-            class="edit-select target-users-select-multi"
-            v-model="tarUsers[index]"
-            item-text="name"
-            item-value="resourceId"
-            multiple
-            dense
-            deletable-chips
-            :return-object="false"
-            auto-select-first
-            persistent-hint
-            :rules="[(v) => validations.required(v)]"
-            small-chips
-            hide-details
-            :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
-            :slots="{ selection: true, item: false }"
+          <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
+            <k-select
+              v-model="playbookAction.markType"
+              :id="`input--action-mark-type-${index}`"
+              :items="act.markAsOpts"
+              outlined
+              hide-details
+              height="40"
+            />
+          </v-col>
+          <v-col v-if="actionsValues[index].val === 'status'" md="2">
+            <k-select
+              v-model="playbookActionStatus.actionStatusType"
+              :id="`input--action-status-type-${index}`"
+              :items="act.statusOpts"
+              outlined
+              hide-details
+              height="40"
+            />
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'analyze'"
+            md="auto"
+            class="flex-grow-1 d-flex col-md-auto col analyze__main"
           >
-            <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
-              <v-chip
-                :key="JSON.stringify(data.item)"
-                v-bind="data.attrs"
-                :input-value="data.selected"
-                small
-              >
-                {{
-                  userGroupsItems.find((item) => {
-                    return item.resourceId === data.item.resourceId
-                  }).name
-                }}
-                <v-icon
-                  right
-                  @click="data.parent.selectItem(data.item.resourceId)"
-                  style="font-size: 18px;"
-                  >mdi-close-circle</v-icon
+            <v-text-field
+              :id="`input--action-selected-integrations-${index}`"
+              outlined
+              :placeholder="`${getSelectedIntegrations()} integrations selected `"
+              height="40"
+              :rules="[validateIntegrations]"
+              @click="openEngineModalFunc"
+              class="analysis-engines-select"
+            >
+            </v-text-field>
+            <v-col
+              class="analyze__main-checkbox"
+              style="padding: 4px 0 0 0 !important; margin-left: 24px;"
+            >
+              <v-checkbox
+                class="k-checkbox"
+                color="#2196f3"
+                id="input--action-is-analyze-with-investigation"
+                v-model="analyzeCheckbox"
+              />
+              <span class="checkbox-text">Investigate according to analyze results</span>
+            </v-col>
+          </v-col>
+          <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
+            <k-select
+              type="combobox"
+              :id="`input--action-tags-${index}`"
+              v-model="playbookAction.tags"
+              :items="[]"
+              chips
+              deletable-chips
+              :rules="[(v) => v.length > 0 || 'Required']"
+              outlined
+              class="hide-caret"
+              multiple
+              dense
+              persistent-hint
+              small-chips
+              :return-object="false"
+              @input="handleTagItemChange"
+              placeholder="Enter tags and press enter key"
+              required
+            />
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify'"
+            style="max-width: 12%; flex: 0 0 12%;"
+            md="1"
+          >
+            <k-select
+              v-model="targetUserType[index]"
+              outlined
+              :id="`input--action-notify-${index}`"
+              :items="getNotifyTypes()"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              @input="tarUsers[index] = []"
+            />
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
+            :md="isShowAnalysisResults[index] ? 3 : 4"
+          >
+            <k-select
+              v-infinite-scroll="{
+                target: `#input--action-system-users-${index} .k-select__menu`,
+                callback: callForSystemUsers
+              }"
+              v-select-search-handler="{
+                callback: callForSearchSystemUsers,
+                isLoadingKey: 'isSystemUsersLoading'
+              }"
+              v-model="tarUsers[index]"
+              key="systemUsers"
+              type="autocomplete"
+              nudge-width="40"
+              :id="`input--action-system-users-${index}`"
+              placeholder="Select system users"
+              outlined
+              class="edit-select target-users-select-multi"
+              item-text="email"
+              item-value="email"
+              multiple
+              dense
+              deletable-chips
+              auto-select-first
+              :return-object="false"
+              persistent-hint
+              small-chips
+              hide-details
+              :items="systemUsersItems"
+              :rules="[(v) => validations.required(v)]"
+              :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
+            />
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
+            :md="isShowAnalysisResults[index] ? 3 : 4"
+          >
+            <k-select
+              key="groups"
+              v-infinite-scroll="{
+                target: `#input--action-target-groups-${index} .k-select__menu`,
+                callback: callForTargetGroups
+              }"
+              v-select-search-handler="{
+                callback: callForSearchTargetGroups,
+                isLoadingKey: 'isUserGroupsLoading'
+              }"
+              v-model="tarUsers[index]"
+              type="autocomplete"
+              :id="`input--action-target-groups-${index}`"
+              :items="userGroupsItems"
+              nudge-width="40"
+              placeholder="Select user groups"
+              outlined
+              class="edit-select target-users-select-multi"
+              item-text="name"
+              item-value="resourceId"
+              multiple
+              dense
+              deletable-chips
+              auto-select-first
+              persistent-hint
+              small-chips
+              hide-details
+              :return-object="false"
+              :rules="[(v) => validations.required(v)]"
+              :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
+              :slots="{ selection: true, item: false }"
+            >
+              <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
+                <v-chip
+                  v-bind="data.attrs"
+                  :key="JSON.stringify(data.item)"
+                  :input-value="data.selected"
+                  small
                 >
-              </v-chip>
-            </template>
-          </k-select>
-        </v-col>
-        <v-col
-          v-if="actionsValues[index].val === 'notify'"
-          md="2"
-          @mouseover="handleMouseOverOnNotifyTemplates($event, index)"
-          @mouseleave="handleMouseOutNotifyTemplates"
-        >
-          <k-select
-            ref="refNotifyTemplatesSelect"
-            v-model="notifyTemplates[index]"
-            :id="`input--action-notify-templates-${index}`"
-            :items="act.notifyTemplates"
-            item-value="resourceId"
-            item-text="name"
-            outlined
-            min-width-type="ultra"
-            nudge-width="40"
-            hide-details
-          />
-          <data-table-tooltip
-            v-if="showOverFlowTooltip"
-            :tooltip-style="overFlowTooltipStyle"
-            :content="overFlowTooltipContent"
-          />
-        </v-col>
-        <v-col class="text-right" v-if="actionsValues.length > 1">
-          <!-- Remove act button -->
-          <v-btn
-            :id="`btn--action-close-${index}`"
-            icon
-            @click="removeAction(index, actionsValues[index].val)"
+                  {{
+                    userGroupsItems.find((item) => {
+                      return item.resourceId === data.item.resourceId
+                    }).name
+                  }}
+                  <v-icon
+                    right
+                    style="font-size: 18px;"
+                    @click="data.parent.selectItem(data.item.resourceId)"
+                    >mdi-close-circle</v-icon
+                  >
+                </v-chip>
+              </template>
+            </k-select>
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify'"
+            md="2"
+            @mouseover="handleMouseOverOnNotifyTemplates($event, index)"
+            @mouseleave="handleMouseOutNotifyTemplates"
           >
-            <v-icon>mdi-close-circle</v-icon>
-          </v-btn>
-        </v-col>
-        <v-col
-          md="12"
-          v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'"
-          style="padding-top: 12px; !important;"
-        >
-          <investigate
-            :id="`playbook-action-investigate-analyze-${index}`"
-            :isCreatedByAnalyzer="true"
-            :investigateData="playbookActionInvestigationAnalyzeData"
-            :act="act"
-            :actionType="actionsValues[index].val"
-          />
-        </v-col>
-        <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
-          <investigate
-            :id="`playbook-action-investigate-${index}`"
-            :investigate-data="playbookActionInvestigations[index]"
-            :index="index"
-            :ref="`refInvestigate-${index}`"
-            :act="act"
-            :actionType="actionsValues[index].val"
-          />
-        </v-col>
-      </v-row>
+            <k-select
+              ref="refNotifyTemplatesSelect"
+              v-model="notifyTemplates[index]"
+              :id="`input--action-notify-templates-${index}`"
+              :items="act.notifyTemplates"
+              item-value="resourceId"
+              item-text="name"
+              outlined
+              min-width-type="ultra"
+              nudge-width="40"
+              hide-details
+            />
+            <data-table-tooltip
+              v-if="showOverFlowTooltip"
+              :tooltip-style="overFlowTooltipStyle"
+              :content="overFlowTooltipContent"
+            />
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
+            class="action-items__item-analysis-result"
+            :style="getAnalysisResultStyle(index)"
+            md="1"
+          >
+            <span class="action-items__item-analysis-result-text">If analysis result</span>
+          </v-col>
+          <v-col
+            v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
+            md="2"
+            style="max-width: 20%; flex: 0 0 20%;"
+          >
+            <k-select
+              v-model="analysisResults[index]"
+              key="analysisResult"
+              type="autocomplete"
+              :id="`input--action-analysis-result-${index}`"
+              placeholder="Select results"
+              outlined
+              class="edit-select target-users-select-multi"
+              multiple
+              dense
+              deletable-chips
+              auto-select-first
+              persistent-hint
+              small-chips
+              hide-details
+              :return-object="false"
+              :items="analysisResultItems"
+              :rules="[(v) => validations.required(v)]"
+              :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
+            />
+          </v-col>
+          <v-col class="text-right" v-if="actionsValues.length > 1">
+            <!-- Remove act button -->
+            <v-btn
+              :id="`btn--action-close-${index}`"
+              icon
+              @click="removeAction(index, actionsValues[index].val)"
+            >
+              <v-icon>mdi-close-circle</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col
+            v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'"
+            md="12"
+            style="padding-top: 12px; !important;"
+          >
+            <investigate
+              :id="`playbook-action-investigate-analyze-${index}`"
+              :isCreatedByAnalyzer="true"
+              :investigateData="playbookActionInvestigationAnalyzeData"
+              :act="act"
+              :actionType="actionsValues[index].val"
+            />
+          </v-col>
+          <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
+            <investigate
+              :id="`playbook-action-investigate-${index}`"
+              :investigate-data="playbookActionInvestigations[index]"
+              :index="index"
+              :ref="`refInvestigate-${index}`"
+              :act="act"
+              :actionType="actionsValues[index].val"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="actionsValues[index].val === 'notify'" class="mb-2">
+          <v-col>
+            <v-tooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on" style="max-width: 275px;">
+                  <v-switch
+                    v-model="isShowAnalysisResults[index]"
+                    id="input--action-item-notify-result-status"
+                    class="action-items__item-analysis-result-switch"
+                    label="Notify according to analysis result"
+                    color="#2196f3"
+                    @change="handleAnalysisResultChange($event, index)"
+                  />
+                </div>
+              </template>
+              <span>It cannot be chosen without adding an analyze action</span>
+            </v-tooltip>
+          </v-col>
+        </v-row>
+      </div>
     </v-form>
     <v-btn
       id="btn-add--playbook-action"
@@ -435,6 +498,7 @@ export default {
   data() {
     return {
       labels,
+      isShowAnalysisResults: [],
       showOverFlowTooltip: false,
       overFlowTooltipStyle: {},
       overFlowTooltipContent: '',
@@ -446,6 +510,7 @@ export default {
       search: [],
       timeout: null,
       systemUsersItems: [],
+      analysisResultItems: ['Phishing', 'Malicious', 'Undetected', 'Simulation'],
       validations: {
         required
       },
@@ -463,6 +528,7 @@ export default {
       notifyTemplates: [],
       targetUsers: [],
       tarUsers: [],
+      analysisResults: [],
       investigationFilter: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
       investigationDuration: '3 days',
@@ -606,6 +672,10 @@ export default {
         })
         .finally(() => (this.isSystemUsersLoading = false))
     },
+    handleAnalysisResultChange(value = false, index = 0) {
+      this.analysisResults[index] = []
+      this.isShowAnalysisResults[index] = value
+    },
     handleMouseOverOnNotifyTemplates(e, index) {
       e.stopPropagation()
       if (this.$refs.refNotifyTemplatesSelect[0].$refs.refComponent.$_menuProps.value) {
@@ -629,10 +699,28 @@ export default {
         this.showOverFlowTooltip = true
       }
     },
+    getAnalysisResultStyle(index = 0) {
+      const style = {
+        marginTop: window.innerWidth <= 1640 ? '0' : '6px'
+      }
+      if (['Groups', 'Users'].includes(this.targetUserType[index])) {
+        style.maxWidth = '7%'
+        style.flex = '0 0 7%'
+      }
+      return style
+    },
     handleMouseOutNotifyTemplates(e) {
       e.stopPropagation()
       this.overFlowTooltipStyle = {}
       this.showOverFlowTooltip = false
+    },
+    getActionRowStyle(val = '') {
+      const style = { paddingTop: '16px', marginBottom: '8px' }
+      if (val === 'notify') {
+        style.borderBottom = '1px solid #E0E0E0'
+        style.paddingBottom = '8px'
+      }
+      return style
     },
     setSystemUsers(response) {
       const { data: { data = [] } = [] } = response
@@ -1070,6 +1158,8 @@ export default {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
         this.notifyTemplates.splice(index, 1)
+        this.analysisResults.splice(index, 1)
+        this.isShowAnalysisResults.splice(index, 1)
       } else {
         for (let j = 0; j <= this.targetUserType.length - 1; j++) {
           if (j > index) {
