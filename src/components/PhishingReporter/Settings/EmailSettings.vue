@@ -27,26 +27,22 @@
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label class="email-settings__list-item--header">Recipient Email Address</label>
-          <InputEmail
-            class="k-textfield mt-2"
-            v-model.trim="formValues.to"
-            id="input--phishing-reporter-recipient-email-address"
-            :required="isRecipientEmailRequired"
-            :persistent-hint="isRecipientEmailRequired"
-            :hint="recipientEmailHint"
-            :rules="recipientEmailRules"
-            :readonly="!showForm"
-          />
-        </v-list-item-content>
-      </v-list-item>
+      <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
+        <InputEmail
+          v-model.trim="formValues.to"
+          id="input--phishing-reporter-recipient-email-address"
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="recipientEmailRules"
+          :readonly="!showForm"
+        />
+      </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">CC</label>
           <InputEmail
-            class="k-textfield mt-2"
+            class="mt-2"
             id="input--phishing-reporter-cc-email-address"
             v-model.trim="formValues.cc"
             :persistent-hint="false"
@@ -61,9 +57,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">BCC</label>
           <InputEmail
+            v-model.trim="formValues.bcc"
             class="k-textfield mt-2"
             id="input--phishing-reporter-bcc-email-address"
-            v-model.trim="formValues.bcc"
             :readonly="!showForm"
             :persistent-hint="false"
             :required="false"
@@ -72,22 +68,22 @@
           />
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label class="email-settings__list-item--header">Email Subject</label>
-          <InputEmail
-            placeholder="Suspicious Email"
-            class="k-textfield mt-2"
-            id="input--phishing-reporter-email-subject"
-            v-model.trim="formValues.subject"
-            :required="isRecipientEmailRequired"
-            :persistent-hint="isRecipientEmailRequired"
-            :hint="recipientEmailHint"
-            :rules="emailSubjectRules"
-            :readonly="!showForm"
-          ></InputEmail>
-        </v-list-item-content>
-      </v-list-item>
+      <FormGroup
+        title="Email Subject"
+        sub-title="Define a subject for reported email notifications. Use {SUBJECT} merge tag as a variable for reported emails' subject"
+        :has-hint="isRecipientEmailRequired"
+      >
+        <InputEmail
+          v-model.trim="formValues.subject"
+          id="input--phishing-reporter-email-subject"
+          placeholder="Suspicious Email: {SUBJECT}"
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="emailSubjectRules"
+          :readonly="!showForm"
+        />
+      </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">Email Message</label>
@@ -124,9 +120,11 @@ import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettin
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
+import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 export default {
   name: 'EmailSettings',
   components: {
+    FormGroup,
     InputEmail,
     PhishingSettingsFooter
   },
@@ -171,6 +169,7 @@ export default {
   data() {
     return {
       labels,
+      validations,
       formValues: {
         to: '',
         cc: '',
@@ -178,8 +177,7 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null
-      },
-      validations: validations
+      }
     }
   },
   computed: {
