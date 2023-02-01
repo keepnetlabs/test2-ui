@@ -24,6 +24,7 @@
       <v-btn
         icon
         color="#ffffff"
+        class="audio-player__play-pause-button"
         :style="getButtonStyles"
         :disabled="!canPlay"
         @click="onTogglePlay"
