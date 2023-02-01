@@ -291,28 +291,31 @@ export default {
         if (!refStep1Form?.validate()) return
         this.step += 1
         if (this.isEdit) return
-        this.groupByItems = [
-          ...[{ text: 'Department', value: '9fd0afec416c' }],
-          ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
-            (acc, { customFieldResourceId, scimFieldResourceId }) => {
-              if (!customFieldResourceId || !scimFieldResourceId) return acc
-              const customField = this.defaultCustomFields.find(
-                (customField) => customField.resourceId === customFieldResourceId
-              )
-              if (!customField) return acc
-              if (customField.fieldDataType !== 'String') return acc
-              acc.push({
-                text: customField?.name,
-                value: scimFieldResourceId
-              })
-              return acc
-            },
-            []
-          )
-        ]
+        this.setDefaultGroupByFields()
       } else {
         this.step += flag
       }
+    },
+    setDefaultGroupByFields() {
+      this.groupByItems = [
+        ...[{ text: 'Department', value: '9fd0afec416c' }],
+        ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
+          (acc, { customFieldResourceId, scimFieldResourceId }) => {
+            if (!customFieldResourceId || !scimFieldResourceId) return acc
+            const customField = this.defaultCustomFields.find(
+              (customField) => customField.resourceId === customFieldResourceId
+            )
+            if (!customField) return acc
+            if (customField.fieldDataType !== 'String') return acc
+            acc.push({
+              text: customField?.name,
+              value: scimFieldResourceId
+            })
+            return acc
+          },
+          []
+        )
+      ]
     },
     handleClose() {
       const isChanged = isDifferent(this.formData, this.initialFormData)

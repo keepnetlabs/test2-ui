@@ -1,9 +1,10 @@
 const outlookButton = {
-  label: 'Outlook Button',
+  label: 'Button',
   category: 'Basic',
   id: 'outlook-button',
   attributes: {
-    class: 'gjs-fonts gjs-f-button gjs-block gjs-one-bg gjs-four-color-h'
+    class: 'gjs-fonts gjs-f-button gjs-block gjs-one-bg gjs-four-color-h outlook-button',
+    style: 'order:-1'
   },
   content:
     '<span class="outlook-button-span-id">\n' +

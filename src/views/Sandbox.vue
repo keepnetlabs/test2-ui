@@ -417,13 +417,13 @@ export default {
         if (localStorage.getItem('sandboxIntegration'))
           this.analysisEngineTypeResourceId =
             localStorage.getItem('sandboxIntegration').split(',') || ''
-        if (localStorage.getItem('sandboxDateValue'))
+        if (localStorage.getItem('sandboxDateValue')) {
           this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
-        if (localStorage.getItem('sandboxDateValue'))
           this.filteredDateValueSelect = {
             name: localStorage.getItem('sandboxDateOption'),
             value: 'custom'
           }
+        }
         let dateValue = localStorage.getItem('sandboxDateOption')
         if (this.filteredSelectValueDate === 'between') {
           this.filteredDateValueRange = dateValue.split(',')
@@ -523,25 +523,7 @@ export default {
         }
       }
 
-      const dateFilterValueForTables =
-        this.filteredSelectValueDate === 'between'
-          ? [
-              {
-                FieldName: 'CreateTime',
-                Operator: '>=',
-                Value: value[0]
-              },
-              {
-                FieldName: 'CreateTime',
-                Operator: '<=',
-                Value: value[1]
-              }
-            ]
-          : {
-              FieldName: 'CreateTime',
-              Operator: this.filteredSelectValueDate,
-              Value: value
-            }
+      const dateFilterValueForTables = this.getDateFilterForTable(value)
 
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue ? this.companyValue.toString() : '',
@@ -566,6 +548,26 @@ export default {
         dateFilterValueForTables
       )
       this.getSummaryData()
+    },
+    getDateFilterForTable(value) {
+      return this.filteredSelectValueDate === 'between'
+        ? [
+            {
+              FieldName: 'CreateTime',
+              Operator: '>=',
+              Value: value[0]
+            },
+            {
+              FieldName: 'CreateTime',
+              Operator: '<=',
+              Value: value[1]
+            }
+          ]
+        : {
+            FieldName: 'CreateTime',
+            Operator: this.filteredSelectValueDate,
+            Value: value
+          }
     },
     changeBlurValue(e) {
       if (e.currentPlacement !== 'bottom-start') this.menuOpen = !!e.relatedTarget

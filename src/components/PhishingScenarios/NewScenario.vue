@@ -594,6 +594,7 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 
 export default {
   name: 'NewScenarios',
@@ -1003,32 +1004,7 @@ export default {
           this.formValues.tags = this.formValues.tags || []
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-          if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
-            const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-              availableForList
-            )
-            if (!availableForListFromBackend.length) {
-              this.availableForRequests = [
-                {
-                  id: 'MyCompanyOnly',
-                  label: 'My company only',
-                  type: 'MyCompanyOnly',
-                  resourceId: null
-                }
-              ]
-            } else {
-              this.availableForRequests = availableForListFromBackend
-            }
-          } else {
-            this.availableForRequests = [
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ]
-          }
+          this.availableForRequests = getAvailableForValueFromList(availableForList)
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isFetched = true
         })

@@ -551,22 +551,20 @@ export function getTimeZone(isDate, fallback) {
     if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd`
     //timeZone = `yyyy-MM-dd HH:mm:ss`
   } else {
-    if (timeZone === 'DD/MM/YYYY')
-      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
+    if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'MM/DD/YYYY')
-      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
 
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'YYYY/MM/DD')
-      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+    if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
     //timeZone = `yyyy-MM-dd HH:mm:ss`
   }
 
   return timeZone
 }
 
-export function getTimeValueFormatZone(isDate) {
+export function getTimeValueFormatZone() {
   let timeZone = localStorage.getItem('selectedDateFormat')
   let timeFormat = localStorage.getItem('selectedTimeFormat')
   let is12H = timeFormat === '12h'
@@ -576,18 +574,16 @@ export function getTimeValueFormatZone(isDate) {
   } else {
     timeFormat = 'HH'
   }
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
 
-  if (timeZone === 'DD/MM/YYYY')
-    timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  if (timeZone === 'MM/DD/YYYY')
-    timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
 
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  if (timeZone === 'YYYY/MM/DD')
-    timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
   return timeZone
@@ -779,4 +775,26 @@ export function createRandomCryptNumber() {
 
 export function createRandomCryptStringNumber() {
   return createRandomCryptNumber().toString()
+}
+
+export function cancellableAxiosRequest(fn) {
+  let isAborted = false
+  let controller = new AbortController()
+  return (...params) => {
+    //that means if there is next call without resolving it would be aborted
+    if (isAborted) {
+      controller.abort()
+      controller = new AbortController()
+    }
+    isAborted = true
+    return fn(...params, {
+      signal: controller.signal
+    }).then((response) => {
+      if (Object.keys(response).length) {
+        isAborted = false
+        controller = new AbortController()
+      }
+      return response
+    })
+  }
 }
