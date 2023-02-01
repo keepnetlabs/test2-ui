@@ -27,26 +27,22 @@
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label class="email-settings__list-item--header">Recipient Email Address</label>
-          <InputEmail
-            class="k-textfield mt-2"
-            v-model.trim="formValues.to"
-            id="input--phishing-reporter-recipient-email-address"
-            :required="isRecipientEmailRequired"
-            :persistent-hint="isRecipientEmailRequired"
-            :hint="recipientEmailHint"
-            :rules="recipientEmailRules"
-            :readonly="!showForm"
-          />
-        </v-list-item-content>
-      </v-list-item>
+      <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
+        <InputEmail
+          v-model.trim="formValues.to"
+          id="input--phishing-reporter-recipient-email-address"
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="recipientEmailRules"
+          :readonly="!showForm"
+        />
+      </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">CC</label>
           <InputEmail
-            class="k-textfield mt-2"
+            class="mt-2"
             id="input--phishing-reporter-cc-email-address"
             v-model.trim="formValues.cc"
             :persistent-hint="false"
@@ -61,9 +57,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">BCC</label>
           <InputEmail
+            v-model.trim="formValues.bcc"
             class="k-textfield mt-2"
             id="input--phishing-reporter-bcc-email-address"
-            v-model.trim="formValues.bcc"
             :readonly="!showForm"
             :persistent-hint="false"
             :required="false"
@@ -72,49 +68,22 @@
           />
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 email-settings__list-item" style="max-width: 800px !important;">
-        <v-list-item-content>
-          <label class="email-settings__list-item--header">Email Subject</label>
-          <div class="d-flex">
-            <InputEmail
-              v-model.trim="formValues.subject"
-              id="input--phishing-reporter-email-subject"
-              :class="['k-textfield mt-2', getSubjectTextFieldOrder]"
-              style="max-width: 430px;"
-              placeholder="Suspicious Email"
-              :required="isRecipientEmailRequired"
-              :persistent-hint="isRecipientEmailRequired"
-              :hint="recipientEmailHint"
-              :rules="emailSubjectRules"
-              :readonly="!showForm"
-            />
-            <div :class="['email-settings__subject mt-n3', getSubjectMergeTagOrder]">
-              <span>{SUBJECT}</span>
-              <v-tooltip bottom>
-                <template #activator="{ on }">
-                  <v-icon v-on="on">mdi-information</v-icon>
-                </template>
-                <span>The merge tag for a reported email’s subject.</span>
-              </v-tooltip>
-            </div>
-            <div
-              v-if="!isShowSubjectSaveButton"
-              class="email-settings__change-order order-2"
-              @click="handleChangeOrder"
-            >
-              <v-icon class="cursor-pointer" color="#2196f3">mdi-swap-horizontal</v-icon>
-              <div class="ml-2 new-integration__api-key__text">Change order</div>
-            </div>
-            <div
-              v-else
-              class="ml-6 email-settings__change-order order-2"
-              @click="handleSubjectSave"
-            >
-              <div class="new-integration__api-key__text">Save</div>
-            </div>
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+      <FormGroup
+        title="Email Subject"
+        sub-title="Define a subject for reported email notifications. Use {SUBJECT} merge tag as a variable for reported emails' subject"
+        :has-hint="isRecipientEmailRequired"
+      >
+        <InputEmail
+          v-model.trim="formValues.subject"
+          id="input--phishing-reporter-email-subject"
+          placeholder="Suspicious Email: {SUBJECT}"
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="emailSubjectRules"
+          :readonly="!showForm"
+        />
+      </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">Email Message</label>
@@ -151,9 +120,11 @@ import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettin
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
+import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 export default {
   name: 'EmailSettings',
   components: {
+    FormGroup,
     InputEmail,
     PhishingSettingsFooter
   },
@@ -206,18 +177,10 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null
-      },
-      isShowSubjectSaveButton: false,
-      subjectIndex: 1
+      }
     }
   },
   computed: {
-    getSubjectTextFieldOrder() {
-      return this.subjectIndex === 1 ? 'order-1' : 'order-0'
-    },
-    getSubjectMergeTagOrder() {
-      return this.subjectIndex === 1 ? 'mr-2 order-0' : 'ml-2 order-1'
-    },
     isRecipientEmailRequired() {
       return this.showForm ? !!this.formValues.isSendInformationEmail : false
     },
@@ -295,16 +258,6 @@ export default {
       } else {
         return false
       }
-    },
-    handleChangeOrder() {
-      this.subjectIndex = Number(!this.subjectIndex)
-      this.toggleShowSubjectSaveButtonStatus()
-    },
-    toggleShowSubjectSaveButtonStatus() {
-      this.isShowSubjectSaveButton = !this.isShowSubjectSaveButton
-    },
-    handleSubjectSave() {
-      this.toggleShowSubjectSaveButtonStatus()
     }
   },
   created() {
