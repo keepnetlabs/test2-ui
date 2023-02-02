@@ -67,6 +67,7 @@ export default {
       return `Step ${this.index + 1} - ${this.getBeautifedStepType}`
     },
     getBeautifedStepType() {
+      if (!this.step?.inputType) return 'Text to Speech'
       if (this.step.inputType === 'TextToSpeech') return 'Text to Speech'
       if (this.step.inputType === 'FileUpload') return 'Upload Audio'
       if (this.step.inputType === 'Pause') return 'Pause'
