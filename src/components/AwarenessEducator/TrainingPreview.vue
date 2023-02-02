@@ -16,9 +16,7 @@
     </div>
     <div>
       <span class="landing-page-template-preview__text--title">Language: </span>
-      <span class="landing-page-template-preview__text--body">{{
-        languages[activePage].name
-      }}</span>
+      <span class="landing-page-template-preview__text--body">{{ getLanguageName }}</span>
     </div>
     <iframe
       v-if="activeTemplate"
@@ -64,6 +62,9 @@ export default {
     },
     hasNext() {
       return this.languages.length - 1 > this.activePage
+    },
+    getLanguageName() {
+      return this.languages[this.activePage].name
     }
   },
   created() {
