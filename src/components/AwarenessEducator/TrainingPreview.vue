@@ -64,7 +64,7 @@ export default {
       return this.languages.length - 1 > this.activePage
     },
     getLanguageName() {
-      return this.languages[this.activePage].name
+      return this.languages?.[this.activePage]?.name || ''
     }
   },
   created() {
