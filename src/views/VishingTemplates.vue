@@ -401,7 +401,6 @@ export default {
               pageNumber = 1,
               results = []
             } = response.data.data
-            console.log('results', results)
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
