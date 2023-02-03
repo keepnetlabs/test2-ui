@@ -1,8 +1,8 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-0 mr-2 email-settings__header-container"
       v-if="showHeader"
+      class="px-0 email-settings__list-item mt-0 mr-2 email-settings__header-container"
     >
       <v-list-item-content>
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
@@ -42,9 +42,9 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header">CC</label>
           <InputEmail
-            class="mt-2"
-            id="input--phishing-reporter-cc-email-address"
             v-model.trim="formValues.cc"
+            id="input--phishing-reporter-cc-email-address"
+            class="k-textfield mt-2"
             :persistent-hint="false"
             :required="false"
             :hint="null"
@@ -58,8 +58,8 @@
           <label class="email-settings__list-item--header">BCC</label>
           <InputEmail
             v-model.trim="formValues.bcc"
-            class="k-textfield mt-2"
             id="input--phishing-reporter-bcc-email-address"
+            class="k-textfield mt-2"
             :readonly="!showForm"
             :persistent-hint="false"
             :required="false"
@@ -105,10 +105,10 @@
       </v-list-item>
       <phishing-settings-footer
         v-if="showFooter"
+        class-name="mt-3"
+        :save-disable="saveDisable"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
-        class-name="mt-3"
-        :saveDisable="saveDisable"
       />
     </v-form>
   </v-container>

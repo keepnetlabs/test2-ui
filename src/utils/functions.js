@@ -599,15 +599,13 @@ export function getTimeZoneForMoment(fallback) {
   } else {
     timeFormat = 'HH'
   }
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
 
-  if (timeZone === 'DD/MM/YYYY')
-    timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'DD/MM/YYYY') timeZone = `DD/MM/YYYY ${timeZoneRightText}`
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'MM/DD/YYYY')
-    timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/DD/YYYY ${timeZoneRightText}`
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'YYYY/MM/DD')
-    timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+  if (timeZone === 'YYYY/MM/DD') timeZone = `YYYY/MM/DD ${timeZoneRightText}`
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
   return timeZone
