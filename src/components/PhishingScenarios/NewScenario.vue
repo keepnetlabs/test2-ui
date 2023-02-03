@@ -832,7 +832,7 @@ export default {
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
               )?.description
               this.emailDifficultyChipColor = this.getDifficultyColor(
-                this.selectedEmailTemplate.difficultyName
+                this.selectedEmailTemplate?.difficultyName || ''
               )
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
