@@ -7,7 +7,7 @@
     title-id="text--create-new-instance__title"
     confirm-button-id="btn-save--campaign-manager-new-instance-modal"
     cancel-button-id="btn-cancel--campaign-manager-new-instance-modal"
-    confirm-button-text="CREATE"
+    :confirm-button-text="labels.Launch"
     :confirm-button-style="{ width: '80px' }"
     :save-disable="isActionButtonDisabled"
     @closeOverlay="closeOverlay"
