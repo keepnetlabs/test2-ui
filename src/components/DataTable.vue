@@ -1779,11 +1779,7 @@ export default {
       if (storedTableSettings) {
         this.setStoredTableSettings(storedTableSettings)
       } else {
-        if (!firstColFixed) {
-          if (this.columns && this.columns[0]) {
-            this.columns[0].fixed = false
-          }
-        }
+        if (!firstColFixed && this.columns && this.columns[0]) this.columns[0].fixed = false
         if (!lastColFixed) this.actionFixed = false
         //setting rendered columns
         if (!renderedColumns.length) {

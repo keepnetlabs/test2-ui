@@ -14,7 +14,7 @@
     >
       <template #app-dialog-body>
         <div class="bg-white">
-          <div class="">
+          <div>
             <v-text-field
               v-model="searchEnginesModelInput"
               id="input--playbook-search-engines"
@@ -63,8 +63,9 @@
                 <div class="checkbox-and-text">
                   <v-checkbox
                     v-model="engine.selected"
-                    class="k-checkbox"
                     :id="`input--anaysis-engine-${index}`"
+                    class="k-checkbox"
+                    style="margin-left: -2px;"
                     color="#2196f3"
                     hide-details
                     @change="analysisEnginesChange(engine, index)"
@@ -117,7 +118,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <app-dialog-footer
           confirm-button-id="btn-confirm--playbook-engine-popup"
           cancel-button-id="btn-cancel--playbook-engine-popup"
@@ -197,23 +198,23 @@
           </v-col>
           <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
             <k-select
+              v-model="playbookAction.tags"
               type="combobox"
               :id="`input--action-tags-${index}`"
-              v-model="playbookAction.tags"
               :items="[]"
               chips
               deletable-chips
-              :rules="[(v) => v.length > 0 || 'Required']"
               outlined
               class="hide-caret"
               multiple
               dense
               persistent-hint
               small-chips
-              :return-object="false"
-              @input="handleTagItemChange"
               placeholder="Enter tags and press enter key"
               required
+              :return-object="false"
+              :rules="[(v) => v.length > 0 || 'Required']"
+              @input="handleTagItemChange"
             />
           </v-col>
           <v-col
@@ -224,6 +225,7 @@
             <k-select
               v-model="targetUserType[index]"
               outlined
+              placeholder="User selection"
               :id="`input--action-notify-${index}`"
               :items="getNotifyTypes()"
               :rules="[(v) => validations.required(v, 'Required')]"
@@ -331,10 +333,11 @@
             @mouseleave="handleMouseOutNotifyTemplates"
           >
             <k-select
-              ref="refNotifyTemplatesSelect"
               v-model="notifyTemplates[index]"
+              ref="refNotifyTemplatesSelect"
               :id="`input--action-notify-templates-${index}`"
               :items="act.notifyTemplates"
+              placeholder="Select notification template"
               item-value="resourceId"
               item-text="name"
               outlined
@@ -373,12 +376,10 @@
               dense
               deletable-chips
               auto-select-first
-              persistent-hint
               small-chips
-              hide-details
               :return-object="false"
               :items="analysisResultItems"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[(v) => !!v.length || 'An analysis result should be selected']"
               :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
             />
           </v-col>
@@ -427,6 +428,7 @@
                     class="action-items__item-analysis-result-switch"
                     label="Notify according to analysis result"
                     color="#2196f3"
+                    :disabled="isShowAnalysisResultDisabled"
                     @change="handleAnalysisResultChange($event, index)"
                   />
                 </div>
@@ -456,7 +458,6 @@ import Investigate from './Investigate'
 import { required } from '@/utils/validations'
 import { searchTargetGroups } from '@/api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { searchEmailTemplate } from '@/api/company'
 import { getDefaultAxiosPayload, getSelectSearchPayload } from '@/utils/functions'
@@ -484,22 +485,11 @@ export default {
     'infinite-scroll': InfiniteScroll,
     'select-search-handler': SelectSearchHandler
   },
-  computed: {
-    getAllCheckboxSelection: {
-      get() {
-        const data = this.searchEnginesModelInput ? this.searchEnginesData : this.analysisEngines
-        return data.length && data.every((item) => item.selected)
-      },
-      set(val) {
-        this.acceptAllAnalysisEngines = val
-      }
-    }
-  },
   data() {
     return {
-      labels,
       isShowAnalysisResults: [],
       showOverFlowTooltip: false,
+      isShowAnalysisResultDisabled: false,
       overFlowTooltipStyle: {},
       overFlowTooltipContent: '',
       isSystemUsersLoading: false,
@@ -659,6 +649,17 @@ export default {
       isUserGroupsLoading: false
     }
   },
+  computed: {
+    getAllCheckboxSelection: {
+      get() {
+        const data = this.searchEnginesModelInput ? this.searchEnginesData : this.analysisEngines
+        return data.length && data.every((item) => item.selected)
+      },
+      set(val) {
+        this.acceptAllAnalysisEngines = val
+      }
+    }
+  },
   methods: {
     callForSystemUsers(addPage) {
       if (addPage) {
@@ -718,7 +719,6 @@ export default {
       const style = { paddingTop: '16px', marginBottom: '8px' }
       if (val === 'notify') {
         style.borderBottom = '1px solid #E0E0E0'
-        style.paddingBottom = '8px'
       }
       return style
     },
@@ -1063,8 +1063,16 @@ export default {
           emailDateRangeType: 'ThreeDays'
         }
       }
+      this.checkIsShowAnalysisResultDisabled()
       this.checkMarkAsAndAnalyzeDisability()
       this.$forceUpdate()
+    },
+    checkIsShowAnalysisResultDisabled() {
+      this.isShowAnalysisResultDisabled = !this.actions.some((action) => action.val === 'analyze')
+      if (this.isShowAnalysisResultDisabled) {
+        this.analysisResults = []
+        this.isShowAnalysisResults = []
+      }
     },
     getCurrentActions() {
       return this.actions
@@ -1089,7 +1097,11 @@ export default {
         }
       })
 
-      if (nextAvailableAction.val === 'markAs') this.playbookAction.markType = 'Undetected'
+      if (nextAvailableAction.val === 'markAs') {
+        let markType =
+          this.playbookAction.markType === 'Unknown' ? 'Undetected' : this.playbookAction.markType
+        this.playbookAction.markType = markType || 'Undetected'
+      }
 
       if (nextAvailableAction.val === 'investigate') {
         this.playbookActionInvestigations[this.actions.length] = {
@@ -1116,6 +1128,7 @@ export default {
       const length = this.actions.length
       this.actionsValues[length - 1] = nextAvailableAction
       this.checkMarkAsAndAnalyzeDisability()
+      this.checkIsShowAnalysisResultDisabled()
       this.$forceUpdate()
       return this.actions.length
     },
@@ -1168,6 +1181,11 @@ export default {
             this.tarUsers[j] = null
             this.targetUserType[j] = null
             this.notifyTemplates[j - 1] = this.notifyTemplates[j]
+            this.notifyTemplates[j] = null
+            this.analysisResults[j - 1] = this.analysisResults[j]
+            this.analysisResults[j] = null
+            this.isShowAnalysisResults[j - 1] = this.isShowAnalysisResults[j]
+            this.isShowAnalysisResults[j] = null
           }
         }
       }
@@ -1216,6 +1234,7 @@ export default {
         this.actions.splice(newIndex, 1)
         this.actionsValues.splice(index, 1)
       }
+      this.checkIsShowAnalysisResultDisabled()
       this.checkMarkAsAndAnalyzeDisability()
     },
     updateAnalysisEngines() {
@@ -1332,6 +1351,10 @@ export default {
         if (item.val === 'notify') {
           this.targetUserType[index] = val[valIndex].targetUserType
           this.tarUsers[index] = val[valIndex].targetUsers
+          if (val[valIndex]?.analysisResultFilters?.length) {
+            this.analysisResults[index] = val[valIndex].analysisResultFilters
+            this.isShowAnalysisResults[index] = true
+          }
           valIndex++
         }
       })

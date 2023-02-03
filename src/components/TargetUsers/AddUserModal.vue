@@ -332,7 +332,7 @@ export default {
         this.isPickersValidated[item.resourceId]
       )
     },
-    submit() {
+    validateAllPickers() {
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
       for (let key of keys) {
@@ -344,6 +344,10 @@ export default {
           isPickersValid = false
         }
       }
+      return isPickersValid
+    },
+    submit() {
+      let isPickersValid = this.validateAllPickers()
       this.$forceUpdate()
       this.$refs.refPhone.validatePhoneNumber()
       const isNumberValid = this.$refs.refPhone.isPhoneNumberValid
