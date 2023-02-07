@@ -2,17 +2,23 @@
   <div class="vishing-template-preview-step">
     <v-btn style="display: none;" />
     <span class="vishing-template-preview-step__title">{{ getStepTitle }}</span>
-    <span v-if="(isTextToSpeechStep && step.inputText)" class="vishing-template-preview-step__text">
+    <span v-if="isTextToSpeechStep && step.inputText" class="vishing-template-preview-step__text">
       {{ step.inputText }}
     </span>
     <template v-if="isFileUploadStep">
       <span
-        v-if="(isFileUploadStep && step.inputUrl)"
+        v-if="isFileUploadStep && step.inputUrl"
         class="vishing-template-preview-step__file-name"
       >
         {{ getFileName(step.inputUrl) }}
       </span>
-      <AudioPlayer v-if="step.inputUrl" :src="step.inputUrl" />
+      <AudioPlayer
+        v-if="step.inputUrl"
+        ref="refAudioPlayer"
+        :src="step.inputUrl"
+        @play="handleAudioPlay"
+        @pause="handleAudioPause"
+      />
     </template>
     <div v-if="hasTags" class="vishing-template-preview-step__tags">
       <Badge
@@ -83,6 +89,12 @@ export default {
         return fileName
       }
       return url
+    },
+    handleAudioPlay() {
+      this.$emit('play')
+    },
+    handleAudioPause() {
+      this.$emit('pause')
     }
   }
 }
