@@ -287,7 +287,7 @@ export default {
       let styleManager = this.editor.StyleManager
       let fontProperty = styleManager.getProperty('typography', 'font-family')
       if (fontProperty) {
-        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'sans-serif' })
+        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'Sans-serif' })
       }
       styleManager.render()
     },
