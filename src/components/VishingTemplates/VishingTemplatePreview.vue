@@ -26,7 +26,12 @@
         <h3 class="template-preview__steps__header">Steps</h3>
         <div class="template-preview__steps">
           <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
-            <VishingTemplatePreviewStep :step="step" :index="index" />
+            <VishingTemplatePreviewStep
+              :ref="`refStep${index}`"
+              :step="step"
+              :index="index"
+              @play="handleAudioPlay(index)"
+            />
             <hr
               v-if="index !== templateData.steps.length - 1"
               class="template-preview__steps__separator"
@@ -121,6 +126,12 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handleAudioPlay(index) {
+      for (let i = 0; i < this.templateData.steps.length; i++) {
+        if (i === index || this.templateData.steps[i].inputType !== 'FileUpload') continue
+        this.$refs?.[`refStep${i}`]?.[0]?.$refs?.refAudioPlayer?.onPauseAudio()
+      }
     }
   }
 }
