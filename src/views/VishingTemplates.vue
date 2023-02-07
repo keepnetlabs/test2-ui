@@ -61,17 +61,17 @@
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
+          :check-is-owner-property="false"
           :icon="tableOptions.rowActions[0].icon"
           :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
-          :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
           <DefaultMenuRowAction
-            disabledTooltipText="You are not authorized to edit this template"
-            className="vishing-templates__menu-row-action-tooltip"
-            showTooltip
+            show-tooltip
+            disabled-tooltip-text="You are not authorized to edit this template"
+            class-name="vishing-templates__menu-row-action-tooltip"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled"
             :icon="tableOptions.rowActions[1].icon"
@@ -81,16 +81,16 @@
 
           <DefaultMenuRowAction
             :scope="scope"
+            :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[3].disabled"
             :icon="tableOptions.rowActions[3].icon"
             :text="tableOptions.rowActions[3].name"
-            :checkIsOwnerProperty="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
-            disabledTooltipText="You are not authorized to delete this template"
-            className="vishing-templates__menu-row-action-tooltip"
-            showTooltip
+            show-tooltip
+            class-name="vishing-templates__menu-row-action-tooltip"
+            disabled-tooltip-text="You are not authorized to delete this template"
             :scope="scope"
             :disabled="tableOptions.rowActions[4].disabled"
             :icon="tableOptions.rowActions[4].icon"
@@ -211,8 +211,6 @@ export default {
             width: 175,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
             filterableType: 'text'
-            // filterableType: 'select',
-            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -233,11 +231,9 @@ export default {
             fixed: false,
             sortable: false,
             hideSort: true,
-            filtarable: false,
             show: true,
             type: 'number',
-            width: 100,
-            isEditable: true
+            width: 100
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -321,6 +317,15 @@ export default {
     ...mapGetters({
       getVishingTemplatesSearchPermissions: 'permissions/getVishingTemplatesSearchPermissions'
     })
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refVishingTemplateModal } = this.$refs
+    if (refVishingTemplateModal && refVishingTemplateModal.status) {
+      refVishingTemplateModal.changeVishingTemplateModalStatus()
+      next(false)
+    } else {
+      next()
+    }
   },
   mounted() {
     this.callForData()
@@ -438,15 +443,6 @@ export default {
     },
     handleFastLaunch(row) {
       this.selectedTemplate = row
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    const { refVishingTemplateModal } = this.$refs
-    if (refVishingTemplateModal && refVishingTemplateModal.status) {
-      refVishingTemplateModal.changeVishingTemplateModalStatus()
-      next(false)
-    } else {
-      next()
     }
   }
 }

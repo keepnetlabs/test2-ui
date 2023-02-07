@@ -178,32 +178,30 @@ export default {
       refScimSettings,
       refAllowedList
     } = this.$refs
-    if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
+    if (refSmtpSettings?.newSmtpModalStatus) {
       refSmtpSettings.checkIfCanCloseSmtpModal()
       next(false)
     } else if (
-      refNotificationTemplates &&
-      refNotificationTemplates.$refs.newNotificationTemplate &&
-      refNotificationTemplates.$refs.newNotificationTemplate.$refs.refEmailTemplate &&
-      refNotificationTemplates.$refs.newNotificationTemplate.$refs.refEmailTemplate.showGrapesModal
+      refNotificationTemplates?.$refs?.newNotificationTemplate?.$refs?.refEmailTemplate
+        ?.showGrapesModal
     ) {
       refNotificationTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refNotificationTemplates && refNotificationTemplates.newNotificationTemplateStatus) {
+    } else if (refNotificationTemplates?.newNotificationTemplateStatus) {
       refNotificationTemplates.checkIfCanCloseNotificationTemplateModal()
       next(false)
-    } else if (refCustomApi && refCustomApi.showNewCustomApi) {
+    } else if (refCustomApi?.showNewCustomApi) {
       refCustomApi.checkIfCanCloseCustomApiModal()
       next(false)
-    } else if (refProxySettings && refProxySettings.newProxyModalStatus) {
+    } else if (refProxySettings?.newProxyModalStatus) {
       refProxySettings.checkIfCanCloseProxyModal()
       next(false)
-    } else if (refSamlSettings && refSamlSettings.isEditOrNewModalOpen) {
+    } else if (refSamlSettings?.isEditOrNewModalOpen) {
       refSamlSettings.checkIfCanCloseSamlSettingsModal()
       next(false)
-    } else if (refScimSettings && refScimSettings.isShowAddOrEditModal) {
+    } else if (refScimSettings?.isShowAddOrEditModal) {
       refScimSettings.checkIfCanCloseScimAddOrEditModal()
-    } else if (refAllowedList && refAllowedList.modalStatus) {
+    } else if (refAllowedList?.modalStatus) {
       refAllowedList.checkIfCanCLoseNewModal()
     } else {
       next()

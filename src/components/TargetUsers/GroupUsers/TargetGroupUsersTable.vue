@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    :is-server-side-selection="isServerSide"
     :loading="loading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -113,6 +114,7 @@ import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActi
 import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsRemoveFromGroupButton'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import { getValue } from '@/utils/validations'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -149,6 +151,9 @@ export default {
     hasSelectionSlot: {
       type: Boolean,
       default: false
+    },
+    isServerSide: {
+      default: true
     }
   },
   emits: [
@@ -408,7 +413,7 @@ export default {
               } else if (['Date', 'DateTime'].includes(dataType)) {
                 item[name] = timestampValue
               } else {
-                item[name] = value !== null && value !== undefined ? value : ''
+                item[name] = getValue(value)
               }
             }
             return item

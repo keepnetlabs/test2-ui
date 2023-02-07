@@ -280,45 +280,47 @@ export default {
       this.$refs.refTreeSelect.handleRemoteSearch()
     },
     handleInputChange(newVal) {
+      if (!newVal) return
       let oldVal = this.value
       let emittedVal = newVal
-      if (newVal) {
-        if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
-          if (
-            oldVal &&
-            oldVal.some((item) => item.type === 'MyCompanyOnly') &&
-            newVal.some((item) => item.type === 'AllCompanies')
-          ) {
-            emittedVal = [this.treeSelectOptions[1]]
-          } else if (newVal.length > 1) {
-            emittedVal = [this.treeSelectOptions[0]]
-          }
-          this.treeSelectionStatus = true
-          this.setTreeSelectOptions(this.treeSelectionStatus)
-        } else if (newVal.some((item) => item.type === 'AllCompanies')) {
-          if (newVal.length > 1) {
-            emittedVal = [this.treeSelectOptions[1]]
-          }
-          this.treeSelectionStatus = true
-          this.setTreeSelectOptions(this.treeSelectionStatus)
-        } else {
-          //that means it is deleted
-          this.$emit('input', emittedVal)
-          this.treeSelectionStatus = false
-          this.setTreeSelectOptions(this.treeSelectionStatus)
+      if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
+        if (
+          oldVal &&
+          oldVal.some((item) => item.type === 'MyCompanyOnly') &&
+          newVal.some((item) => item.type === 'AllCompanies')
+        ) {
+          emittedVal = [this.treeSelectOptions[1]]
+        } else if (newVal.length > 1) {
+          emittedVal = [this.treeSelectOptions[0]]
         }
+        this.treeSelectionStatus = true
+        this.setTreeSelectOptions(this.treeSelectionStatus)
+      } else if (newVal.some((item) => item.type === 'AllCompanies')) {
+        if (newVal.length > 1) {
+          emittedVal = [this.treeSelectOptions[1]]
+        }
+        this.treeSelectionStatus = true
+        this.setTreeSelectOptions(this.treeSelectionStatus)
+      } else {
+        //that means it is deleted
+        this.$emit('input', emittedVal)
+        this.treeSelectionStatus = false
+        this.setTreeSelectOptions(this.treeSelectionStatus)
+      }
 
-        if (emittedVal && emittedVal[0]) {
-          this.$emit('input', emittedVal)
-          if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
-            if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
-              this?.menuElement?.scroll({ top: 0 })
-              this.$refs.refTreeSelect['menu'].isOpen = false
-              this.$refs.refTreeSelect.trigger.searchQuery = ''
-            }
-          }
+      if (emittedVal && emittedVal[0]) {
+        this.$emit('input', emittedVal)
+        if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
+          this.closeMenuAndResetStatus()
         }
-        this.validateAvailableFor(newVal)
+      }
+      this.validateAvailableFor(newVal)
+    },
+    closeMenuAndResetStatus() {
+      if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
+        this?.menuElement?.scroll({ top: 0 })
+        this.$refs.refTreeSelect['menu'].isOpen = false
+        this.$refs.refTreeSelect.trigger.searchQuery = ''
       }
     },
     setTreeSelectOptions(isDisabled = false) {

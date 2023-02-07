@@ -196,6 +196,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getCompanyListForThreatSharing } from '@/api/company'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import useDebounce from '@/hooks/useDebounce'
+import { getIncidentListPayload } from '@/components/ThreatSharing/Incidents/utils'
 
 export default {
   components: {
@@ -403,55 +404,13 @@ export default {
     },
     getIncidentList(memberId, companyId, isSearch) {
       let companyResourceId = Array.isArray(this.companyValue) ? null : this.companyValue
-      const payload = {
-        postedCompanyResourceId: companyId || companyResourceId,
-        pageNumber: isSearch ? 1 : this.page,
-        pageSize: this.itemsPerPage,
-        orderBy: 'PostedTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  Value: this.search,
-                  FieldName: 'Title',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: this.search,
-                  FieldName: 'Description',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: this.search,
-                  FieldName: 'DiscoveryAndDetection',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: this.search,
-                  FieldName: 'Scope',
-                  Operator: 'Contains'
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include',
-                  Value: this.threats.toString()
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
+      const payload = getIncidentListPayload(
+        companyId || companyResourceId,
+        isSearch ? 1 : this.page,
+        this.itemsPerPage,
+        this.search,
+        this.threats
+      )
       this.incidentLoading = true
       this.incidentList = []
       if (memberId) {
@@ -482,11 +441,7 @@ export default {
             })
             .catch((error) => {
               this.incidentLoading = false
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.message === 'No permission to access resource'
-              ) {
+              if (error?.response?.data?.message === 'No permission to access resource') {
                 this.$router
                   .push({
                     name: 'Threat Sharing',

@@ -189,7 +189,7 @@ export default {
       Object.keys(newFormData).forEach((key) => {
         formData.append(
           key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
-          newFormData[key] === null || newFormData[key] === undefined ? '' : newFormData[key]
+          this.getFormDataValue(newFormData[key])
         )
       })
 
@@ -213,6 +213,9 @@ export default {
             this.activateLoader(-1)
           }
         })
+    },
+    getFormDataValue(value = '') {
+      return value === null || value === undefined ? '' : value
     }
   }
 }

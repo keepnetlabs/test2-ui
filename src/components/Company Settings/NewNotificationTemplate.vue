@@ -106,7 +106,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -148,7 +148,6 @@ export default {
       loading: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       saveDisable: this.editItemsDisabled,
       Validations: Validations,
       commonRules: {
@@ -241,7 +240,14 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     this.callForDatas()
-    if (this.selectedItem && this.selectedItem.resourceId) {
+    this.callForNotificationTemplate()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
+  methods: {
+    callForNotificationTemplate() {
+      if (!this?.selectedItem?.resourceId) return
       this.loading = true
       getEmailTemplate(this.selectedItem.resourceId)
         .then((response) => {
@@ -250,57 +256,18 @@ export default {
           } = response
           for (let [key, value] of Object.entries(data)) {
             if (key === 'availableForList') {
-              if (value.length) {
-                const availableForListFromBackend = getAvailableForListFromBackend(value)
-                if (!availableForListFromBackend.length) {
-                  this.formValues['availableForRequests'] = [
-                    {
-                      id: 'MyCompanyOnly',
-                      label: 'My company only',
-                      type: 'MyCompanyOnly',
-                      resourceId: null
-                    }
-                  ]
-                  this.nonEditableAvailableForRequests = [
-                    {
-                      id: 'MyCompanyOnly',
-                      label: 'My company only',
-                      type: 'MyCompanyOnly',
-                      resourceId: null
-                    }
-                  ]
-                } else {
-                  this.formValues['availableForRequests'] = availableForListFromBackend
-                  this.nonEditableAvailableForRequests = availableForListFromBackend
-                }
-              } else {
-                this.formValues['availableForRequests'] = [
-                  {
-                    id: 'MyCompanyOnly',
-                    label: 'My company only',
-                    type: 'MyCompanyOnly',
-                    resourceId: null
-                  }
-                ]
-              }
+              this.formValues['availableForRequests'] = getAvailableForValueFromList(value)
               continue
             }
             this.formValues[key] = value
           }
-          if (this.isDuplicate) {
-            this.formValues.name = this.formValues.name + ' - COPY'
-          }
+          if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .finally(() => {
           this.loading = false
         })
-    }
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
-  },
-  methods: {
+    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response

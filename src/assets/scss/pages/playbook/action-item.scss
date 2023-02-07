@@ -28,6 +28,24 @@
         .v-list-item__content .bottom-margin {
             margin-bottom: 0 !important;
         }
+      &-analysis-result{
+        text-align: center;
+        &-text{
+          font-style: normal;
+          font-weight: 400;
+          font-size: 12px;
+          line-height: 19px;
+          color: #757575;
+        }
+        &-switch{
+          label{
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 19px;
+            color: #383B41;
+          }
+        }
+      }
     }
 
     .v-select .v-select__selection--disabled {

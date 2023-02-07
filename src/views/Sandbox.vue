@@ -163,9 +163,9 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    @click="handleListItemClick(item)"
-                    :key="item"
                     v-for="item in listItems"
+                    :key="item"
+                    @click="handleListItemClick(item)"
                   >
                     <v-list-item-title>{{ item }}</v-list-item-title>
                   </v-list-item>
@@ -411,21 +411,19 @@ export default {
     handleListItemClick(value) {
       if (value === 'Set as default filter') {
         this.setFilterOptions()
-      }
-
-      if (value === 'Restore default filter') {
+      } else if (value === 'Restore default filter') {
         if (localStorage.getItem('sandboxCompany'))
           this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
         if (localStorage.getItem('sandboxIntegration'))
           this.analysisEngineTypeResourceId =
             localStorage.getItem('sandboxIntegration').split(',') || ''
-        if (localStorage.getItem('sandboxDateValue'))
+        if (localStorage.getItem('sandboxDateValue')) {
           this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
-        if (localStorage.getItem('sandboxDateValue'))
           this.filteredDateValueSelect = {
             name: localStorage.getItem('sandboxDateOption'),
             value: 'custom'
           }
+        }
         let dateValue = localStorage.getItem('sandboxDateOption')
         if (this.filteredSelectValueDate === 'between') {
           this.filteredDateValueRange = dateValue.split(',')
@@ -433,9 +431,7 @@ export default {
           this.filteredDateValue = dateValue
         }
         this.handleFilter()
-      }
-
-      if (value === 'Clear filters') {
+      } else if (value === 'Clear filters') {
         this.companyValue = ''
         this.analysisEngineTypeResourceId = null
         this.filteredDateValue = null
@@ -448,11 +444,13 @@ export default {
       this.menuOpen = false
       this.filteredDateValueSelect = { name: 'All Time', value: '' }
     },
+    getFilteredDateValue() {
+      return this.filteredSelectValueDate !== 'between'
+        ? this.filteredDateValue || this.filteredDateValueSelect.value
+        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+    },
     handleFilter() {
-      let value =
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      let value = this.getFilteredDateValue()
       if (this.filteredDateValueSelect.value === 'custom')
         this.filteredDateValueSelectValues[5].name = value
       this.menuOpen = false
@@ -525,25 +523,7 @@ export default {
         }
       }
 
-      const dateFilterValueForTables =
-        this.filteredSelectValueDate === 'between'
-          ? [
-              {
-                FieldName: 'CreateTime',
-                Operator: '>=',
-                Value: value[0]
-              },
-              {
-                FieldName: 'CreateTime',
-                Operator: '<=',
-                Value: value[1]
-              }
-            ]
-          : {
-              FieldName: 'CreateTime',
-              Operator: this.filteredSelectValueDate,
-              Value: value
-            }
+      const dateFilterValueForTables = this.getDateFilterForTable(value)
 
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue ? this.companyValue.toString() : '',
@@ -568,6 +548,26 @@ export default {
         dateFilterValueForTables
       )
       this.getSummaryData()
+    },
+    getDateFilterForTable(value) {
+      return this.filteredSelectValueDate === 'between'
+        ? [
+            {
+              FieldName: 'CreateTime',
+              Operator: '>=',
+              Value: value[0]
+            },
+            {
+              FieldName: 'CreateTime',
+              Operator: '<=',
+              Value: value[1]
+            }
+          ]
+        : {
+            FieldName: 'CreateTime',
+            Operator: this.filteredSelectValueDate,
+            Value: value
+          }
     },
     changeBlurValue(e) {
       if (e.currentPlacement !== 'bottom-start') this.menuOpen = !!e.relatedTarget
@@ -603,37 +603,37 @@ export default {
       )
       this.getSummaryData()
     },
+    getAnalysisEngineTypeResourceId() {
+      return this.analysisEngineTypeResourceId
+        ? this.analysisEngineTypeResourceId
+            .map((engineTypeValue) => {
+              return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
+            })
+            .toString()
+        : ''
+    },
+    getDateFilter() {
+      return this.filteredSelectValueDate !== 'between'
+        ? this.filteredDateValue || this.filteredDateValueSelect.value
+        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+    },
     changeCompanyData() {
       this.$set(
         this.summaryOptions.filter.FilterGroups[0].FilterItems[1],
         'Value',
         this.companyValue.toString() || ''
       )
+      const analysisEngineTypeResourceId = this.getAnalysisEngineTypeResourceId()
+      const dateFilter = this.getDateFilter()
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.getSummaryData()
     },
@@ -643,31 +643,17 @@ export default {
         'Value',
         this.analysisEngineTypeResourceId.toString() || ''
       )
+      const analysisEngineTypeResourceId = this.getAnalysisEngineTypeResourceId()
+      const dateFilter = this.getDateFilter()
       this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
-        this.analysisEngineTypeResourceId
-          ? this.analysisEngineTypeResourceId
-              .map((engineTypeValue) => {
-                return this.integrationTypesEnum.find((item) => item.name === engineTypeValue).value
-              })
-              .toString()
-          : '',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        analysisEngineTypeResourceId,
+        dateFilter
       )
       this.getSummaryData()
     },

@@ -1,15 +1,15 @@
 <template>
   <div class="emailTemplatePreview">
     <app-dialog
+      style="overflow: hidden;"
       custom-size="1600"
       max-height
       max-height-size="900"
+      icon="mdi-eye"
+      subtitle="Email Template Preview"
+      :title="selectedTemplateHeader"
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
-      icon="mdi-eye"
-      :title="selectedTemplateHeader"
-      :subtitle="'Email Template Preview'"
-      style="overflow: hidden;"
     >
       <template #app-dialog-body>
         <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
@@ -34,11 +34,10 @@
               <div class="d-flex">
                 <div>
                   <v-text-field
-                    @mouseover.native="hover = true"
+                    v-model.trim="search"
                     placeholder="Search"
                     outlined
                     class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
-                    v-model.trim="search"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
                     style="
@@ -51,11 +50,11 @@
                 </div>
                 <div>
                   <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     item-value="value"
                     outlined
                     persistent-hint
@@ -78,8 +77,8 @@
               @scroll="handleScroll"
             >
               <div
-                class="template-list"
                 v-for="(item, index) in listData"
+                class="template-list"
                 :key="item.name + index"
                 :class="{ 'template-list--selected': item['selected'] }"
                 @click="setSelectedTemplate(item, index)"

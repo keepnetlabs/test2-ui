@@ -329,29 +329,33 @@ export default {
       getPermissionAll().then((response) => {
         let sortedPermissions = []
         response.data.data.map((item) => {
-          if (item.moduleName === 'Threat Sharing') {
-            sortedPermissions[0] = item
-          }
-          if (item.moduleName === 'Phishing Simulation') {
-            sortedPermissions[1] = item
-          }
-          if (item.moduleName === 'Awareness Educator') {
-            sortedPermissions[2] = item
-          }
-          if (item.moduleName === 'Incident Responder') {
-            sortedPermissions[3] = item
-          }
-          if (item.moduleName === 'Phishing Reporter Add-In') {
-            sortedPermissions[4] = item
-          }
-          if (item.moduleName === 'Email Threat Simulator') {
-            sortedPermissions[5] = item
-          }
-          if (item.moduleName === 'Company') {
-            sortedPermissions[6] = item
-          }
-          if (item.moduleName === 'Vishing') {
-            sortedPermissions[7] = item
+          switch (item.moduleName) {
+            case 'Threat Sharing':
+              sortedPermissions[0] = item
+              break
+            case 'Phishing Simulation':
+              sortedPermissions[1] = item
+              break
+            case 'Awareness Educator':
+              sortedPermissions[2] = item
+              break
+            case 'Incident Responder':
+              sortedPermissions[3] = item
+              break
+            case 'Phishing Reporter Add-In':
+              sortedPermissions[4] = item
+              break
+            case 'Email Threat Simulator':
+              sortedPermissions[5] = item
+              break
+            case 'Company':
+              sortedPermissions[6] = item
+              break
+            case 'Vishing':
+              sortedPermissions[7] = item
+              break
+            default:
+              break
           }
         })
         this.permissions = sortedPermissions.filter((item) => item)

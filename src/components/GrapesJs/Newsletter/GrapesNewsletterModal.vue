@@ -172,22 +172,24 @@ export default {
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (droppedComponent && block.attributes && block.attributes.customId === 'grapesForm') {
           droppedComponent.components().forEach((inner) => {
-            if (!inner?.find('label')?.[0]?.view) return
-            if (inner.find('label')[0].view.el.textContent === 'Name') {
-              inner.find('input')[0].addAttributes({ name: 'Name' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Email') {
-              inner.find('input')[0].addAttributes({ name: 'Email' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Gender') {
-              inner.find('input')[0].addAttributes({ name: 'Male' })
-              inner.find('input')[1].addAttributes({ name: 'Female' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Message') {
-              inner.find('textarea')[0].addAttributes({ name: 'Message' })
+            const view = inner?.find('label')?.[0]?.view
+            if (!view) return
+            switch (view.el.textContent) {
+              case 'Name':
+                inner.find('input')[0].addAttributes({ name: 'Name' })
+                break
+              case 'Email':
+                inner.find('input')[0].addAttributes({ name: 'Email' })
+                break
+              case 'Gender':
+                inner.find('input')[0].addAttributes({ name: 'Male' })
+                inner.find('input')[1].addAttributes({ name: 'Female' })
+                break
+              case 'Message':
+                inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                break
+              default:
+                break
             }
           })
         }
@@ -281,12 +283,20 @@ export default {
         { at: 1 }
       )
     },
+    addFonts() {
+      let styleManager = this.editor.StyleManager
+      let fontProperty = styleManager.getProperty('typography', 'font-family')
+      if (fontProperty) {
+        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'sans-serif' })
+      }
+      styleManager.render()
+    },
     callForImages() {
       getUploadedFiles().then((res) => {
-        const am = this.editor.AssetManager
         const {
           data: { data }
         } = res
+        const assetManager = this.editor.AssetManager
         const assets = data.map((img) => {
           const obj = {
             src: '',
@@ -297,9 +307,12 @@ export default {
           obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img['previewLink']
           return obj
         })
-        am.add(assets)
-        am.render()
+        assetManager.add(assets)
+        this.renderAssetsToAssetsManager(data)
       })
+    },
+    renderAssetsToAssetsManager(data = []) {
+      this.editor.AssetManager.render(data)
     },
     destroyEditor() {
       this.editor.destroy()
@@ -762,7 +775,12 @@ export default {
             .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-trash')
             .setAttribute('title', 'Clear canvas')
         } catch (e) {}
+        //removing default button
+        document.querySelector(
+          '.gjs-block-categories .gjs-blocks-c div[title="Button"]'
+        ).style.display = 'none'
         this.addCustomProperties()
+        this.addFonts()
         document.querySelector('.fa-code').addEventListener('click', () => {
           const editor = this.editor
           const html = editor.runCommand('get-html-juiced')
@@ -815,24 +833,54 @@ export default {
           codeViewer.setContent(html)
           viewer.refresh()
         })
-        this.editor.on('asset:upload:end', (images) => {
-          if (images?.data?.[0]) {
-            const url = images.data[0].src
-            fetch(url)
-              .then((res) => res.blob())
-              .then((blob) => {
-                const file = new File([blob], images.data[0].name, { type: blob.type })
-                const formData = new FormData()
-                formData.append('Files', file)
-                uploadFiles(formData)
-              })
-          }
-        })
-        this.editor.on('asset:remove', (props) => {
-          const { attributes } = props
-          deleteFiles([attributes.resourceId])
-        })
+        this.handleAssetUploadEvents()
       })
+    },
+    handleAssetUploadEvents() {
+      this.editor.on('asset:upload:end', (images) => {
+        if (images?.data?.[0]) {
+          const url = images.data[0].src
+          fetch(url)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], images.data[0].name, { type: blob.type })
+              const formData = new FormData()
+              formData.append('Files', file)
+              uploadFiles(formData)
+            })
+        }
+      })
+      this.editor.on('asset:remove', (props) => {
+        const { attributes } = props
+        deleteFiles([attributes.resourceId])
+      })
+      this.editor.on('asset:open', () => {
+        const assetManager = this.editor.AssetManager
+        const container = assetManager.getContainer()
+        const header = container.querySelector('.gjs-am-assets-header')
+        const renderedSearchField = header.querySelector('form + input')
+        if (renderedSearchField) {
+          renderedSearchField.value = ''
+          return
+        }
+        //this code means there is no search field
+        header.appendChild(this.createImageAssetSearchField())
+      })
+    },
+    createImageAssetSearchField() {
+      const searchField = document.createElement('input')
+      searchField.style.cssText = 'background:#fff;outline:none;width:237px;padding:4px'
+      searchField.setAttribute('placeholder', 'Search')
+      searchField.addEventListener('input', (e) => {
+        const { value } = e.target
+        const assets = this.editor.AssetManager.getAll()
+        this.renderAssetsToAssetsManager(
+          assets.filter((asset) => {
+            return asset.attributes.name.toLowerCase().includes(value.toLowerCase())
+          })
+        )
+      })
+      return searchField
     },
     getGrapesEditorContent() {
       const { editor } = this

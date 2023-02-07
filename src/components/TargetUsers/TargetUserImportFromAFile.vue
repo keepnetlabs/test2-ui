@@ -366,8 +366,8 @@
             style="color: white;"
             rounded
             color="#2196f3"
-            @click="nextStep"
             :disabled="isNextStepDisabled"
+            @click="nextStep"
           >
             {{ labels.Next }}
           </v-btn>
@@ -1108,9 +1108,8 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
+        const { FieldName } = filter
+        if (FieldName !== 'Status') {
           requestBody.push(elem)
         }
       }

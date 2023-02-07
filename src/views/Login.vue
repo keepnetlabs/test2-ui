@@ -876,47 +876,40 @@ export default {
       if (this.showPasswordField) {
         this.onLoginClicked()
       } else {
-        if (this.$refs.email.validate()) {
-          const payload = {
-            username: this.email
-          }
-          if (
-            this.$route.query &&
-            this.$route.query.bypasssaml &&
-            this.$route.query.bypasssaml === 'true'
-          ) {
-            payload.bypassSaml = true
-          }
-          loginWithUsername(payload)
-            .then((response) => {
-              this.clearError()
-              const {
-                data: { data }
-              } = response
-              const companyUpdateRequired = data?.companyUpdateRequired || false
-              if (companyUpdateRequired)
-                this.$store.dispatch('auth/setCompanyUpdateRequired', companyUpdateRequired)
-              if (data.authenticationTypeId === 1) {
-                this.showPasswordField = true
-              } else if (data.authenticationTypeId === 2) {
-                const anchor = document.createElement('a')
-                anchor.href = data.redirectUrl
-                anchor.click()
-              }
-            })
-            .catch((e) => {
-              this.$store.commit('common/SET_ERROR_STATE', true, {
-                root: true
-              })
-              this.$store.commit(
-                'common/SET_ERROR_MESSAGE',
-                e?.response?.data?.message || labels.ServiceUnavailable,
-                {
-                  root: true
-                }
-              )
-            })
+        if (!this.$refs.email.validate()) return
+        const payload = {
+          username: this.email
         }
+        if (this?.$route?.query?.bypasssaml === 'true') payload.bypassSaml = true
+        loginWithUsername(payload)
+          .then((response) => {
+            this.clearError()
+            const {
+              data: { data }
+            } = response
+            const companyUpdateRequired = data?.companyUpdateRequired || false
+            if (companyUpdateRequired)
+              this.$store.dispatch('auth/setCompanyUpdateRequired', companyUpdateRequired)
+            if (data.authenticationTypeId === 1) {
+              this.showPasswordField = true
+            } else if (data.authenticationTypeId === 2) {
+              const anchor = document.createElement('a')
+              anchor.href = data.redirectUrl
+              anchor.click()
+            }
+          })
+          .catch((e) => {
+            this.$store.commit('common/SET_ERROR_STATE', true, {
+              root: true
+            })
+            this.$store.commit(
+              'common/SET_ERROR_MESSAGE',
+              e?.response?.data?.message || labels.ServiceUnavailable,
+              {
+                root: true
+              }
+            )
+          })
       }
     },
     onCantLoginButtonClick() {
@@ -1087,19 +1080,9 @@ export default {
       }
     },
     onErrorLogin(payload, error) {
-      if (
-        error &&
-        error.response.data &&
-        error.response.data.mfa &&
-        error.response.data.mfa.StatusId === 1
-      ) {
+      if (error?.response?.data?.mfa?.StatusId === 1) {
         this.pageNumber = 8
-      } else if (
-        error &&
-        error.response.data &&
-        error.response.data.mfa &&
-        error.response.data.mfa.StatusId === 0
-      ) {
+      } else if (error?.response?.data?.mfa?.StatusId === 0) {
         this.mfaDetails = error.response.data.mfa
         this.pageNumber = 6
       } else {
@@ -1110,17 +1093,17 @@ export default {
           })
         } else {
           this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-          let content =
-            error && error.response && error.response.data && error.response.data.error_description
-              ? error.response.data.error_description
-              : error.response.data.Message
-              ? error.response.data.Message
-              : labels.ServiceUnavailable
-          this.$store.commit('common/SET_ERROR_MESSAGE', content, {
+          this.$store.commit('common/SET_ERROR_MESSAGE', this.getLoginErrorMessage(error), {
             root: true
           })
         }
       }
+    },
+    getLoginErrorMessage(error) {
+      if (error?.response?.data?.error_description) return error?.response?.data?.error_description
+      return error?.response?.data?.Message
+        ? error.response.data.Message
+        : labels.ServiceUnavailable
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false

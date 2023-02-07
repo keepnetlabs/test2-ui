@@ -959,17 +959,17 @@
                     <span class="d-flex align-center">
                       <span class="ml-2">
                         <v-tooltip
+                          v-if="getActionStatusOptions(scope.row.emailLastAction).isTooltip"
                           bottom
                           max-width="250"
                           content-class="investigation-details__tooltip"
-                          v-if="getActionStatusOptions(scope.row.emailLastAction).isTooltip"
                         >
                           <template v-slot:activator="{ on }">
                             <div class="d-flex" v-on="on">
                               <v-icon
+                                v-if="getActionStatusOptions(scope.row.emailLastAction).icon"
                                 small
                                 class="mr-1"
-                                v-if="getActionStatusOptions(scope.row.emailLastAction).icon"
                                 :color="getActionStatusOptions(scope.row.emailLastAction).color"
                                 >{{
                                   getActionStatusOptions(scope.row.emailLastAction).icon
@@ -1668,20 +1668,28 @@ export default {
     },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       let fileName = 'Investigation Details '
-      if (this.activeMenu === 'SentItems') {
-        fileName += 'Sent'
-      } else if (this.activeMenu === 'DeletedItems') {
-        fileName += 'Deleted Items'
-      } else if (this.activeMenu === 'JunkEmail') {
-        fileName += 'Junk'
-      } else if (this.activeMenu === 'Drafts') {
-        fileName += 'Draft'
-      } else if (this.activeMenu === 'Others') {
-        fileName += 'Others'
-      } else if (this.activeMenu === 'Stored') {
-        fileName += 'Stored'
-      } else {
-        fileName += 'Inbox'
+      switch (this.activeMenu) {
+        case 'SentItems':
+          fileName += 'Sent'
+          break
+        case 'DeletedItems':
+          fileName += 'Deleted Items'
+          break
+        case 'JunkEmail':
+          fileName += 'Junk'
+          break
+        case 'Drafts':
+          fileName += 'Draft'
+          break
+        case 'Others':
+          fileName += 'Others'
+          break
+        case 'Stored':
+          fileName += 'Stored'
+          break
+        default:
+          fileName += 'Inbox'
+          break
       }
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.investigationListBodyData.filter)),
@@ -2147,9 +2155,6 @@ export default {
       let data = []
       if (isArray) data = this.deleteValue.map((item) => item.resourceId)
       else data.push(this.deleteValue.resourceId)
-      isArray
-        ? (data = this.deleteValue.map((item) => item.resourceId))
-        : data.push(this.deleteValue.resourceId)
       if (message) {
         const payload = {
           items: data,
@@ -2330,14 +2335,14 @@ export default {
     },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
+      const diffDaysText = `${diffDays === 0 ? 0 : diffDays} day(s) `
+      const totalHoursText = totalHours > 0 ? `${totalHours} hour(s) ` : ''
       if (this.loading) return 'Loading...'
       else if (this.statsAndMenuData.status === 'Finished') return 'Finished'
       else if (this.statsAndMenuData.status === 'Canceled') return 'Canceled'
       else if (this.statsAndMenuData.status === 'Expired') return 'Expired'
       else
-        return `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
-          totalHours > 0 ? `${totalHours} hour(s) ` : ''
-        }${totalMinutes} minute(s) left`
+        return `${diffDays > 0 ? diffDaysText : ''}${totalHoursText}${totalMinutes} minute(s) left`
     },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this
@@ -2364,7 +2369,7 @@ export default {
           : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       } else if (statsAndMenuData.status === 'Finished') {
         style.boxShadow = '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-      } else if (statsAndMenuData.status === 'Expired') {
+      } else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled') {
         style.boxShadow = '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
       }
       return style
@@ -2375,7 +2380,8 @@ export default {
       if (statsAndMenuData.status === 'Running') {
         return statsAndMenuData['onlineUserCount'] ? 'bg-turquoise' : 'bg-macaroni'
       } else if (statsAndMenuData.status === 'Finished') return 'bg-turquoise'
-      else if (statsAndMenuData.status === 'Expired') return 'bg-macaroni'
+      else if (statsAndMenuData.status === 'Expired' || statsAndMenuData.status === 'Canceled')
+        return 'bg-macaroni'
       else return ''
     },
     getGoogleData() {

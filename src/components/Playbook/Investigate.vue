@@ -160,7 +160,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="3" style="margin-bottom: -16px;">
+      <v-col v-if="actionType === 'investigate'" md="3" style="margin-bottom: -16px;">
         <k-select
           v-model="investigateData.filters"
           :id="`input--action-investigate-filters-${getParentIndex}`"
@@ -173,6 +173,47 @@
           :menu-props="{ offsetY: true }"
           :rules="[(v) => v.length || labels.Required]"
         />
+      </v-col>
+      <v-col v-if="actionType === 'analyze'" md="6" style="margin-bottom: -16px;">
+        <v-radio-group
+          v-model="investigateData.autoDetectFilters"
+          :id="`input--action-investigate-has-filters-${getParentIndex}`"
+          :mandatory="true"
+          hide-details
+          @change="handleAutoDetectFiltersChange"
+        >
+          <v-radio
+            :value="true"
+            class="mb-2"
+            label="Auto-detect malicious and phishing attributes"
+            color="#2196f3"
+          ></v-radio>
+          <v-radio :value="false" class="align-start" color="#2196f3">
+            <template #label>
+              <div class="d-flex" style="width: 100%;">
+                <span class="mr-2" style="flex-basis: 225px; flex-shrink: 0;">
+                  Select attributes to investigate
+                </span>
+                <k-select
+                  v-model="investigateData.filters"
+                  style="width: 100%; margin-top: -6px;"
+                  :id="`input--action-investigate-filters-${getParentIndex}`"
+                  :items="act.investigateFilters"
+                  :disabled="investigateData.autoDetectFilters"
+                  :menu-props="{ offsetY: true }"
+                  :rules="
+                    !investigateData.autoDetectFilters ? [(v) => v.length || labels.Required] : []
+                  "
+                  placeholder="Select Filters"
+                  outlined
+                  multiple
+                  small-chips
+                  deletable-chips
+                />
+              </div>
+            </template>
+          </v-radio>
+        </v-radio-group>
       </v-col>
     </v-row>
     <v-row align="center" class="mb-4">
@@ -195,10 +236,10 @@
         <k-select
           v-model="investigateData.emailDateRangeType"
           :id="`input--action-investigate-ranges-${getParentIndex}`"
-          :items="act.investigateRanges"
           outlined
-          :menu-props="{ offsetY: true }"
           hide-details
+          :menu-props="{ offsetY: true }"
+          :items="act.investigateRanges"
         />
       </v-col>
     </v-row>
@@ -242,10 +283,10 @@
         <k-select
           v-model="investigateData.durationType"
           :id="`input--action-investigate-sources-${getParentIndex}-${index}`"
-          :items="act.investigateDurations"
           outlined
-          :menu-props="{ offsetY: true }"
           hide-details
+          :menu-props="{ offsetY: true }"
+          :items="act.investigateDurations"
         />
       </v-col>
     </v-row>
@@ -285,12 +326,12 @@
           </v-col>
           <v-col v-if="investigateData.autoAction.type === 'Warning'">
             <v-text-field
+              v-model="investigateData.autoAction.warningMessage"
               placeholder="Message"
               :id="`input--action-investigate-auto-action-warning-${getParentIndex}`"
               outlined
               dense
               no-resize
-              v-model="investigateData.autoAction.warningMessage"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) =>
@@ -301,9 +342,9 @@
           ><v-col v-if="false">
             <k-select
               v-model="investigateData.actionNotifyTargetUserType"
-              :items="act.investigateActionNotifications"
               outlined
               hide-details
+              :items="act.investigateActionNotifications"
             />
           </v-col>
           <v-col style="padding-right: 0 !important ;" v-if="false">
@@ -312,9 +353,9 @@
               :items="act.notifyTemplates"
               item-text="label"
               item-value="value"
-              outlined
               min-width-type="big"
               nudge-width="170"
+              outlined
               hide-details
             />
           </v-col>
@@ -342,6 +383,9 @@ export default {
     'select-search-handler': SelectSearchHandler
   },
   props: {
+    actionType: {
+      type: String
+    },
     act: {
       type: Object
     },
@@ -357,6 +401,7 @@ export default {
         return {
           isCreatedByAnalyzer: false,
           scanTypes: [],
+          autoDetectFilters: false,
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -496,13 +541,10 @@ export default {
       const { data: { data = [] } = [] } = response
       this.specificUserItems = [...this.specificUserItems, ...data.results]
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
+    handleAutoDetectFiltersChange(value) {
+      if (value) {
+        this.investigateData.filters = []
       }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     handleRadioGroup() {
       this.investigateData.targetUsers = []

@@ -460,6 +460,28 @@ export default {
         },
         shortcuts: [
           {
+            text: 'Today',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setHours(0, 0, 0, 0)
+              end.setHours(23, 59, 59)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'Yesterday',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setDate(start.getDate() - 1)
+              start.setHours(0, 0, 0, 0)
+              end.setDate(end.getDate() - 1)
+              end.setHours(23, 59, 59)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
             text: 'Last week',
             onClick(picker) {
               const end = new Date()
@@ -1378,6 +1400,10 @@ export default {
         const newItems = this.targetUsersValue.map((email) => ({ email }))
         this.specificUserItems = [...this.specificUserItems, ...newItems]
       }
+      this.selectedAction = 'NoAction'
+      this.filterList = this.getEditedFilters()
+    },
+    getEditedFilters() {
       const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
         for (let [key, value] of Object.entries(item)) {
           if (value && key !== 'resourceId') {
@@ -1396,14 +1422,13 @@ export default {
       }, [])
       const attachments = this?.investigationDetailsData?.attachments?.reduce((acc, item) => {
         for (let [key, value] of Object.entries(item)) {
-          if (value && key != 'resourceId') {
+          if (value && key !== 'resourceId') {
             acc.push({ option: key, text: value })
           }
         }
         return acc
       }, [])
-      this.selectedAction = 'NoAction'
-      this.filterList = [...headers, ...body, ...attachments]
+      return [...headers, ...body, ...attachments]
     }
   }
 }
