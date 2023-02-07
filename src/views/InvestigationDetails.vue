@@ -1711,6 +1711,7 @@ export default {
       exportTypes.map((exportType) => {
         const payload = {
           ...sortFilter,
+          ascending: this.investigationListBodyData.ascending,
           pageNumber: pageNumber,
           pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
           reportAllPages,
@@ -1749,6 +1750,7 @@ export default {
       exportTypes.map((exportType) => {
         const payload = {
           ...sortFilter,
+          ascending: this.investigationTargetUsersListBodyData.ascending,
           pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
           reportAllPages,
