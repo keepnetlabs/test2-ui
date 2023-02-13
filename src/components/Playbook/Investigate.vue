@@ -236,10 +236,10 @@
         <k-select
           v-model="investigateData.emailDateRangeType"
           :id="`input--action-investigate-ranges-${getParentIndex}`"
-          :items="act.investigateRanges"
           outlined
-          :menu-props="{ offsetY: true }"
           hide-details
+          :menu-props="{ offsetY: true }"
+          :items="act.investigateRanges"
         />
       </v-col>
     </v-row>
@@ -283,10 +283,10 @@
         <k-select
           v-model="investigateData.durationType"
           :id="`input--action-investigate-sources-${getParentIndex}-${index}`"
-          :items="act.investigateDurations"
           outlined
-          :menu-props="{ offsetY: true }"
           hide-details
+          :menu-props="{ offsetY: true }"
+          :items="act.investigateDurations"
         />
       </v-col>
     </v-row>
@@ -326,12 +326,12 @@
           </v-col>
           <v-col v-if="investigateData.autoAction.type === 'Warning'">
             <v-text-field
+              v-model="investigateData.autoAction.warningMessage"
               placeholder="Message"
               :id="`input--action-investigate-auto-action-warning-${getParentIndex}`"
               outlined
               dense
               no-resize
-              v-model="investigateData.autoAction.warningMessage"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) =>
@@ -342,9 +342,9 @@
           ><v-col v-if="false">
             <k-select
               v-model="investigateData.actionNotifyTargetUserType"
-              :items="act.investigateActionNotifications"
               outlined
               hide-details
+              :items="act.investigateActionNotifications"
             />
           </v-col>
           <v-col style="padding-right: 0 !important ;" v-if="false">
@@ -353,9 +353,9 @@
               :items="act.notifyTemplates"
               item-text="label"
               item-value="value"
-              outlined
               min-width-type="big"
               nudge-width="170"
+              outlined
               hide-details
             />
           </v-col>
@@ -540,14 +540,6 @@ export default {
     setTargetUsers(response) {
       const { data: { data = [] } = [] } = response
       this.specificUserItems = [...this.specificUserItems, ...data.results]
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     handleAutoDetectFiltersChange(value) {
       if (value) {

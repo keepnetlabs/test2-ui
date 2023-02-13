@@ -9,7 +9,7 @@
     subtitle-id="text--target-users-people-create-user-modal-subtitle"
     @closeOverlay="status = false"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <target-users-check-license-dialog
         v-if="showLicenseExceededDialog"
         :status="showLicenseExceededDialog"
@@ -293,6 +293,18 @@ export default {
         : 'btn-save--target-users-add-user-to-people-modal'
     }
   },
+  created() {
+    if (!this.editData) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    for (let field of this.customFields) {
+      const { fieldDataType, resourceId } = field
+      if (fieldDataType === 'Date' || fieldDataType === 'DateTime') {
+        this.$set(this.isPickersValidated, resourceId, false)
+      }
+    }
+    this.setEditData()
+  },
   methods: {
     getTimeZone(isDate) {
       return getTimeZone(isDate)
@@ -320,7 +332,7 @@ export default {
         this.isPickersValidated[item.resourceId]
       )
     },
-    submit() {
+    validateAllPickers() {
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
       for (let key of keys) {
@@ -332,6 +344,10 @@ export default {
           isPickersValid = false
         }
       }
+      return isPickersValid
+    },
+    submit() {
+      let isPickersValid = this.validateAllPickers()
       this.$forceUpdate()
       this.$refs.refPhone.validatePhoneNumber()
       const isNumberValid = this.$refs.refPhone.isPhoneNumberValid
@@ -344,6 +360,7 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
+          if (!this.companyLicense) return
           const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
           if (
             isLimited &&
@@ -479,37 +496,29 @@ export default {
       getTargetGroups().then(() => {
         //const { data } = response.data
       })
-    }
-  },
-  created() {
-    if (!this.editData) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
-    for (let field of this.customFields) {
-      const { fieldDataType, resourceId } = field
-      if (fieldDataType === 'Date' || fieldDataType === 'DateTime') {
-        this.$set(this.isPickersValidated, resourceId, false)
-      }
-    }
-    if (this.editData) {
-      const editedData = { ...this.editData }
-      const customFieldProp = 'customFieldValues'
-      const customFields = editedData[customFieldProp]
-      for (let { resourceId, value, name, dataType, timestampValue } of customFields) {
-        if (dataType === 'Boolean') {
-          value = this.getBooleanValue(value)
-        } else if (['Date', 'DateTime'].includes(dataType)) {
-          value = timestampValue
+    },
+    setEditData() {
+      if (this.editData) {
+        const editedData = { ...this.editData }
+        const customFieldProp = 'customFieldValues'
+        const customFields = editedData[customFieldProp]
+        for (let { resourceId, value, name, dataType, timestampValue } of customFields) {
+          let newVal = value
+          if (dataType === 'Boolean') {
+            newVal = this.getBooleanValue(value)
+          } else if (['Date', 'DateTime'].includes(dataType)) {
+            newVal = timestampValue
+          }
+          this.$set(this.customFieldsModels, resourceId, newVal)
+          delete editedData[name]
         }
-        this.$set(this.customFieldsModels, resourceId, value)
-        delete editedData[name]
+        delete editedData[customFieldProp]
+        this.formValues = {
+          ...editedData,
+          isActive: editedData.status === 'Active'
+        }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       }
-      delete editedData[customFieldProp]
-      this.formValues = {
-        ...editedData,
-        isActive: editedData.status === 'Active'
-      }
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
   }
 }

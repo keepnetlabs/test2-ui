@@ -1013,20 +1013,26 @@ export default {
       ) {
         this.isGoogleWorkSpaceButtonDisabled = true
         this.$refs.testConnectionGoogleWorkspace.testConnection(true)
-        this.$nextTick(() => {
-          let el = this.$el.querySelector('.test-connection__testing-content__item')
-          if (el) {
-            scrollToComponent(el)
-          }
-        })
+        this.scrollToTestConnectionButton()
       } else {
-        this.$nextTick(() => {
-          const el = this?.$refs?.ewsMailConfiguration?.$el
-          if (el) {
-            scrollToComponent(el)
-          }
-        })
+        this.scrollToEWSMailConfiguration()
       }
+    },
+    scrollToTestConnectionButton() {
+      this.$nextTick(() => {
+        let el = this.$el.querySelector('.test-connection__testing-content__item')
+        if (el) {
+          scrollToComponent(el)
+        }
+      })
+    },
+    scrollToEWSMailConfiguration() {
+      this.$nextTick(() => {
+        const el = this?.$refs?.ewsMailConfiguration?.$el
+        if (el) {
+          scrollToComponent(el)
+        }
+      })
     },
     resetEWSForm() {
       this.ewsFormValues = {

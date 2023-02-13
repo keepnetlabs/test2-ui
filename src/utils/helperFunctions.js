@@ -44,6 +44,21 @@ export function getAvailableForValues(data) {
   })
 }
 
+export function getAvailableForValueFromList(list = []) {
+  let makeAvailableForValue = [
+    {
+      id: 'MyCompanyOnly',
+      label: 'My company only',
+      type: 'MyCompanyOnly',
+      resourceId: null
+    }
+  ]
+  if (list.length) {
+    const availableForListFromBackend = getAvailableForListFromBackend(list)
+    if (availableForListFromBackend.length) makeAvailableForValue = availableForListFromBackend
+  }
+  return makeAvailableForValue
+}
 export function columnFilterChanged(filter = {}, axiosPayload = {}) {
   let items = []
   let requestBody = axiosPayload.filter.FilterGroups[0].FilterItems

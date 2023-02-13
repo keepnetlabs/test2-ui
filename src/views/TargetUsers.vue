@@ -8,23 +8,23 @@
     />
     <el-tabs v-model="tab">
       <el-tab-pane
+        v-if="getTargetUsersSearchPermissions"
+        id="target-users--people-content"
         label="People"
         name="target-users--people"
-        id="target-users--people-content"
-        v-if="getTargetUsersSearchPermissions"
         ><people
-          ref="refPeople"
           v-if="tab === 'target-users--people'"
+          ref="refPeople"
           :company-license="companyLicense"
           @call-for-company-licenses="callForLicenseCheck"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getTargetGroupsSearchPermissions"
+        id="target-users--group-content"
         label="Groups"
         name="target-users--group"
-        id="target-users--group-content"
-        v-if="getTargetGroupsSearchPermissions"
       >
-        <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
+        <groups v-if="tab === 'target-users--group'" ref="groups" :isLoadState="isLoadState"
       /></el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -105,7 +105,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
-    if (refs && refs.refPeople) {
+    if (refs?.refPeople) {
       const refPeople = refs.refPeople
       if (refPeople.isWantToShowDeleteUserModal) {
         refPeople.changeDeleteModalStatus(false)

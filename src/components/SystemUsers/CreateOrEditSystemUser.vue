@@ -105,7 +105,70 @@ export default {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
   },
+  async created() {
+    if (!this.selectedRow) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    try {
+      const response = await getSystemUsersRole()
+      let allRoles = response.data.data
+      let availableRoles = allRoles
+      if (this.selectedRow) {
+        const {
+          firstName,
+          lastName,
+          phoneNumber,
+          roles,
+          statusName,
+          email,
+          statusId
+        } = this.selectedRow
+        this.formValues.firstName = firstName
+        this.formValues.lastName = lastName
+        this.formValues.statusName = statusName
+        this.formValues.email = email
+        this.formValues.statusId = statusId
+        this.formValues.phoneNumber =
+          typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
+        const resourceId =
+          allRoles?.find((item) => {
+            return item.name === roles
+          })?.resourceId || ''
+        if (resourceId) this.formValues.roleResourceIdList = resourceId
+        availableRoles = allRoles
+        this.setRoleItems(availableRoles)
+      } else {
+        this.setRoleItems(availableRoles)
+        this.setDefaultRole(availableRoles)
+      }
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    } catch (e) {}
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.refForm.resetValidation()
+    })
+    let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
+    let tokenData = jwt_decode(token)
+    this.role = tokenData.role
+  },
   methods: {
+    setRoleItems(availableRoles = []) {
+      this.roleItems = availableRoles.map((item) => {
+        return {
+          name: item.name,
+          resourceId: item.resourceId
+        }
+      })
+    },
+    setDefaultRole(availableRoles = []) {
+      if (availableRoles && availableRoles.length) {
+        const roleIndex = availableRoles.findIndex((role) => role.name === 'Company Admin')
+        if (roleIndex !== -1 && availableRoles[roleIndex].resourceId) {
+          this.formValues.roleResourceIdList = availableRoles[roleIndex].resourceId
+        }
+      }
+    },
     callForSendInformationEmail(resourceId = '') {
       this.sendInformationEmailDisabled = true
       sendInformationEmail(resourceId).finally(() => {
@@ -184,72 +247,6 @@ export default {
         })
         .catch(() => (this.saveDisable = false))
     }
-  },
-
-  mounted() {
-    this.$nextTick(() => {
-      this.$refs.refForm.resetValidation()
-    })
-    let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
-    let tokenData = jwt_decode(token)
-    this.role = tokenData.role
-  },
-  async created() {
-    if (!this.selectedRow) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
-    try {
-      const response = await getSystemUsersRole()
-      let allRoles = response.data.data
-      let availableRoles = allRoles
-      if (this.selectedRow) {
-        const {
-          firstName,
-          lastName,
-          phoneNumber,
-          roles,
-          statusName,
-          email,
-          statusId
-        } = this.selectedRow
-        this.formValues.firstName = firstName
-        this.formValues.lastName = lastName
-        this.formValues.statusName = statusName
-        this.formValues.email = email
-        this.formValues.statusId = statusId
-        this.formValues.phoneNumber =
-          typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
-        const resourceId =
-          allRoles &&
-          allRoles.find((item) => {
-            return item.name === roles
-          })?.resourceId
-        if (resourceId) {
-          this.formValues.roleResourceIdList = resourceId
-        }
-        availableRoles = allRoles
-        this.roleItems = availableRoles.map((item) => {
-          return {
-            name: item.name,
-            resourceId: item.resourceId
-          }
-        })
-      } else {
-        this.roleItems = availableRoles.map((item) => {
-          return {
-            name: item.name,
-            resourceId: item.resourceId
-          }
-        })
-        if (availableRoles && availableRoles.length) {
-          const roleIndex = availableRoles.findIndex((role) => role.name === 'Company Admin')
-          if (roleIndex !== -1 && availableRoles[roleIndex].resourceId) {
-            this.formValues.roleResourceIdList = availableRoles[roleIndex].resourceId
-          }
-        }
-      }
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    } catch (e) {}
   }
 }
 </script>

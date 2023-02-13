@@ -250,7 +250,7 @@ import {
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
@@ -289,7 +289,6 @@ export default {
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       availableForRequests: [],
       tagSearch: '',
       labels,
@@ -457,7 +456,10 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        const fileExtension = file.name ? file.name.split('.').pop() : ''
+        let fileExtension = ''
+        if (file?.name.includes('.')) {
+          fileExtension = file.name.split('.').pop()
+        }
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
@@ -638,37 +640,10 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
-        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor && availableForList.length) {
-          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            availableForList
-          )
-          if (!availableForListFromBackend.length) {
-            this.availableForRequests = [
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
-          }
-        } else {
-          this.availableForRequests = [
-            {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
-              resourceId: null
-            }
-          ]
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        }
+        this.availableForRequests = getAvailableForValueFromList(
+          response?.data?.data?.availableForList
+        )
         if (this.formValues.attachments) {
           this.formValues.importedEmailAttachments = this.formValues.attachments.map((item) => ({
             ...item,

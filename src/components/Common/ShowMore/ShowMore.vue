@@ -95,18 +95,7 @@ export default {
   },
   methods: {
     getChips() {
-      let containerWidth = 0
-      if (this.unRenderedBadgeCount === 0) {
-        containerWidth =
-          Math.floor(
-            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
-          ) - 60 || 0
-      } else {
-        containerWidth =
-          Math.floor(
-            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
-          ) || 0
-      }
+      let containerWidth = this.getContainerWidth()
 
       let renderedCount = 0
       if (this.computedData.length === 1) {
@@ -137,6 +126,21 @@ export default {
         }
         this.unRenderedBadgeCount = this.computedData.length - this.renderedBadgeCount
       }
+    },
+    getContainerWidth() {
+      let containerWidth
+      if (this.unRenderedBadgeCount === 0) {
+        containerWidth =
+          Math.floor(
+            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
+          ) - 60 || 0
+      } else {
+        containerWidth =
+          Math.floor(
+            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
+          ) || 0
+      }
+      return containerWidth
     },
     produceData() {
       this.computedData = this.data.reduce((acc, item) => {

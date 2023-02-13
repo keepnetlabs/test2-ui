@@ -31,7 +31,7 @@ import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
 import { searchTargetGroupUsers } from '@/api/targetUsers'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
   components: { DataTable },
@@ -122,18 +122,22 @@ export default {
     this.callForData()
   },
   methods: {
+    cancellableSearchTargetGroupUsers: cancellableAxiosRequest(searchTargetGroupUsers),
     callForData() {
       if (!this.resourceId) return
       this.setLoading(true)
-      searchTargetGroupUsers(this.resourceId, this.axiosPayload)
+      this.cancellableSearchTargetGroupUsers(this.resourceId, this.axiosPayload)
         .then((response) => {
+          if (!Object.keys(response).length) return
           const {
             data: { data }
           } = response
+
           this.totalUserCount = data.totalNumberOfRecords
           this.tableData = data.results || []
+          this.setLoading(false)
         })
-        .finally(this.setLoading)
+        .catch(this.setLoading)
     },
     setLoading(flag = false) {
       this.isLoading = flag

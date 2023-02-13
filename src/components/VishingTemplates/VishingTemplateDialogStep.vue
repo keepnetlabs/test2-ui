@@ -43,6 +43,7 @@
         >
           <v-text-field
             v-model.number="value.duration"
+            class="vishing-template-dialog-step__duration-input"
             placeholder="Enter pause duration"
             type="number"
             style="max-width: 205px;"
@@ -67,6 +68,7 @@
           </div>
           <KFileUpload
             hint="*Required (Only MP3 files. Max. file size 1MB)"
+            class="vishing-template-dialog-step__audio-file-input"
             :extensions="['mp3']"
             :size="1"
             :filePreviews="getFilePreviews"
@@ -91,6 +93,7 @@
           <InputDescription
             :value="value.inputText"
             :max-length="500"
+            class="vishing-template-dialog-step__text-to-speech-input"
             entity-name="Text to speech"
             initialPlaceholder="Enter text here"
             required
@@ -107,6 +110,7 @@
           <v-text-field
             v-model.number="value.inputDigit"
             placeholder="Enter pause duration"
+            class="vishing-template-dialog-step__input-digit"
             type="number"
             style="max-width: 205px;"
             outlined
