@@ -87,7 +87,7 @@ export default {
       this.$emit('update:isLoading', true)
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.trainingId,
-        this.languages[this.activePage].id
+        this.languages?.[this.activePage]?.id
       )
         .then((response) => {
           const {
