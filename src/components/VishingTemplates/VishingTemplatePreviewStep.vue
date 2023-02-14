@@ -70,9 +70,9 @@ export default {
   },
   computed: {
     getStepTitle() {
-      return `Step ${this.index + 1} - ${this.getBeautifedStepType}`
+      return `Step ${this.index + 1} - ${this.getBeautifiedStepType}`
     },
-    getBeautifedStepType() {
+    getBeautifiedStepType() {
       if (!this.step?.inputType) return 'Text to Speech'
       if (this.step.inputType === 'TextToSpeech') return 'Text to Speech'
       if (this.step.inputType === 'FileUpload') return 'Upload Audio'
@@ -80,16 +80,16 @@ export default {
       return ''
     },
     isTextToSpeechStep() {
-      return this.step.inputType === 'TextToSpeech'
+      return this.step?.inputType === 'TextToSpeech'
     },
     isFileUploadStep() {
-      return this.step.inputType === 'FileUpload'
+      return this.step?.inputType === 'FileUpload'
     },
     hasTags() {
       return this.hasRequiredDigitCount || this.step.isVishingStep
     },
     hasRequiredDigitCount() {
-      return !!this.step.inputDigit
+      return !!this.step?.inputDigit
     },
     getRequiredDigitCountTagText() {
       return this.hasRequiredDigitCount ? `Required ${this.step.inputDigit} digits input` : ''

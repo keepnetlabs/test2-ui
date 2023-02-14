@@ -12,6 +12,7 @@ const CONSTANTS = {
     "Cannot read properties of null (reading 'CodeMirror')",
     "Cannot read properties of undefined (reading 'get')",
     "Cannot read properties of undefined (reading '__trgEv')",
+    "Cannot read properties of undefined (reading 'allComponents')",
     'this.em.trigger is not a function',
     "Cannot read properties of undefined (reading 'lastComponent')",
     'this.model.get is not a function',
