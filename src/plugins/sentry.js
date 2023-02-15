@@ -48,7 +48,8 @@ const CONSTANTS = {
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
     'Redirected when going from "/login" to "/" via a navigation guard.',
-    'Navigation aborted from "/login?'
+    'Navigation aborted from "/login?',
+    'Avoided redundant navigation to current location: /threat-sharing'
   ],
   ANIMATION_FRAME: [
     'window.requestAnimationFrame is not a function',
