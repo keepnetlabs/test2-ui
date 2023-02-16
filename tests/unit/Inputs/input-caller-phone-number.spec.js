@@ -36,6 +36,6 @@ describe('Input caller phone number component', () => {
         value: '+905372086061'
       }
     })
-    expect(wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)).toBe('TR')
+    expect(wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)).toBe('Turkey')
   })
 })
