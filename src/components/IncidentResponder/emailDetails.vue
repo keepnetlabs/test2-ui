@@ -25,6 +25,7 @@
             </template>
           </el-tab-pane>
           <el-tab-pane label="Header" name="second" id="email-details-header-content">
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-if="mailDetails">
               <div class="email-details__header">
                 <v-card light class="email-details__header-card">
@@ -122,6 +123,7 @@
             </template>
           </el-tab-pane>
           <el-tab-pane label="URLs" name="fourth" id="email-details-urls-content">
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-if="mailDetails">
               <email-details-url
                 :mailDetails="mailDetails"
@@ -131,6 +133,7 @@
             </template>
           </el-tab-pane>
           <el-tab-pane label="Attachments" name="fifth" id="email-details-attachment-content">
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-if="mailDetails">
               <DownloadAttachmentModal
                 v-if="downloadAttachmentModalStatus"
