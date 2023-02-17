@@ -132,6 +132,12 @@
           </el-tab-pane>
           <el-tab-pane label="Attachments" name="fifth" id="email-details-attachment-content">
             <template v-if="mailDetails">
+              <DownloadAttachmentModal
+                v-if="downloadAttachmentModalStatus"
+                :status="downloadAttachmentModalStatus"
+                :id="selectedAttachment.resourceId"
+                @changeDownloadModalStatus="handleCloseDownloadAttachmentModal"
+              />
               <v-expansion-panels :multiple="true" v-model="panel">
                 <v-expansion-panel
                   v-for="(attachment, index) in mailDetails.attachments"
@@ -309,6 +315,7 @@
 import Badge from '@/components/Badge'
 import Datatable from '@/components/DataTable'
 import DownloadModal from '@/components/IncidentResponder/DownloadModal'
+import DownloadAttachmentModal from '@/components/IncidentResponder/DownloadAttachmentModal'
 import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
 import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
@@ -329,6 +336,7 @@ export default {
     PreviewHeaderForSinglePost,
     Datatable,
     DownloadModal,
+    DownloadAttachmentModal,
     Badge
   },
   props: {},
@@ -409,6 +417,8 @@ export default {
       ]
     },
     downloadModalStatus: false,
+    downloadAttachmentModalStatus: false,
+    selectedAttachment: null,
     headersTable: {
       data: [],
       iEmpty: {
@@ -632,13 +642,12 @@ export default {
       }
     },
     handleDownloadAttachment(attachment) {
-      downloadAttachment(attachment.resourceId).then((response) => {
-        const { data } = response
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(data)
-        link.download = attachment.name
-        link.click()
-      })
+      this.selectedAttachment = attachment
+      this.downloadAttachmentModalStatus = true
+    },
+    handleCloseDownloadAttachmentModal() {
+      this.selectedAttachment = null
+      this.downloadAttachmentModalStatus = false
     },
     getPostDetails() {
       this.isLoading = true

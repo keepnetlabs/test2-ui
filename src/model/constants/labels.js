@@ -707,7 +707,13 @@ export const labels = {
   VishingTemplate: 'Vishing Template',
   EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
   AllowedDomain: 'Allowed Domains',
-  Method: 'Method'
+  Method: 'Method',
+  DownloadEmailTitle: 'Download Email',
+  DownloadEmailSubtitle:
+    'This email file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.',
+  DownloadAttachmentTitle: 'Download File',
+  DownloadAttachmentSubtitle:
+    'This file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.'
 }
 
 export default labels
