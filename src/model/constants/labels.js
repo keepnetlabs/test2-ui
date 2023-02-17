@@ -42,6 +42,8 @@ export const labels = {
   ExcludedURLTooltipText: 'This URL is excluded by system to prevent false positive reporting.',
   TargetUserGroups: 'Target User Groups',
   UserWhoOpenedEmail: 'Users who opened the e-mail',
+  EwsScanErrorMessage:
+    'Timeout occurred for your request as it took so long to respond. Please try again.',
   TargetUserGroupsSub: 'Select user groups below to send the training exercise',
   TrainingName: 'Training Name',
   UserWhoClickedEmail: 'Users who clicked the phishing link',
