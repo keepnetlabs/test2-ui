@@ -5,7 +5,6 @@ import Vue from 'vue'
 
 describe('Vishing template dialog step', () => {
   const localVue = createLocalVue()
-
   it('should render TextToSpeech variant successfully', () => {
     const wrapper = mount(VishingTemplateDialogStep, {
       localVue,
