@@ -37,7 +37,6 @@ describe('Map Custom Fields Suit', () => {
     expect(wrapper.vm.isEmptyMessageRendered).toBe(false)
     //checking empty state to be false
     expect(wrapper.text().includes('You do not have any custom field')).toBe(false)
-    console.log('iam html', wrapper.html())
     //checking is item rendered
     expect(wrapper.find('.map-custom-and-scim-fields-item').exists()).toBe(true)
   })
