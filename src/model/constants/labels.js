@@ -706,7 +706,8 @@ export const labels = {
   TryAgain: 'Try Again',
   VishingTemplate: 'Vishing Template',
   EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
-  AllowedDomain: 'Allowed Domains'
+  AllowedDomain: 'Allowed Domains',
+  Method: 'Method'
 }
 
 export default labels
