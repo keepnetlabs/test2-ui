@@ -1,7 +1,7 @@
 export function getStatusBadgeProps(status) {
   if (status === 'Not Responded' || status === 'NotResponded') {
     return {
-      color: '#383B41',
+      color: '#757575',
       text: 'Not Responded'
     }
   }

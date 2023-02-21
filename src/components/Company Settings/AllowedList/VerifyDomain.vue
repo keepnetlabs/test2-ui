@@ -148,7 +148,7 @@ export default {
       if (this.isVerified) {
         popupTitle = 'Verify domain'
       }
-      if (this.selectedDomain.status === 'Verified') {
+      if (this.selectedDomain?.status === 'Verified') {
         popupTitle = 'Verified domain'
       }
       return popupTitle
@@ -158,7 +158,7 @@ export default {
       if (!this.isVerified) {
         icon = 'mdi-alert-circle'
       }
-      if (this.selectedDomain.status === 'Verified') {
+      if (this.selectedDomain?.status === 'Verified') {
         icon = 'mdi-check-circle '
       }
       return icon
