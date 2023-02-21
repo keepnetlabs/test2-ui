@@ -109,43 +109,8 @@ export function getVishingReportUsers(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/users/search`, payload)
 }
 
-export function getVishingReportUsersInteractions(payload = {}, resourceId = '') {
-  // return vishingRequest.post(`/vishing-report/${resourceId}/users/interactions/search`, payload)
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      res({
-        data: [
-          {
-            status: 'Not Responded',
-            isAnsweredByMachine: true,
-            callDate: '31.05.2021 16:33:12',
-            callDuration: null
-          },
-          {
-            status: 'Not Responded',
-            isAnsweredByMachine: false,
-            callDate: '31.05.2021 16:33:12',
-            callDuration: null
-          },
-          {
-            status: 'Vished',
-            callDate: '31.05.2021 16:33:12',
-            callDuration: '00:03:42'
-          },
-          {
-            status: 'Answered',
-            callDate: '31.05.2021 16:33:12',
-            callDuration: '00:03:42'
-          },
-          {
-            status: 'In Queue',
-            callDate: '31.05.2021 16:33:12',
-            callDuration: null
-          }
-        ]
-      })
-    }, 1000)
-  })
+export function getVishingReportUsersInteractions(payload = {}) {
+  return vishingRequest.post(`/vishing-report/user/answer-detail`, payload)
 }
 
 export function exportVishingUsers(payload = {}, resourceId = '') {

@@ -44,14 +44,9 @@
             <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium">
               <template #content>
                 <div class="d-flex align-center">
-                  {{ scope.row.status }}
+                  {{ getStatusBadgeProps(scope.row.status).text }}
 
-                  <v-tooltip
-                    v-if="scope.row.status === 'Not Responded' && scope.row.isAnsweredByMachine"
-                    right
-                    :max-width="230"
-                    :disabled="!scope.row.isAnsweredByMachine"
-                  >
+                  <v-tooltip v-if="getIsAnsweredByMachine(scope.row)" right :max-width="230">
                     <template v-slot:activator="{ on }">
                       <v-icon v-on="on" class="ml-2" color="#757575" size="21">
                         mdi-information-outline
@@ -117,7 +112,7 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CallDate' }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
@@ -183,11 +178,23 @@ export default {
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     },
+    getIsAnsweredByMachine(row = {}) {
+      return (
+        row?.status === 'NotResponded' &&
+        row?.answeredBy &&
+        row?.answeredBy === 'Answered By A Machine'
+      )
+    },
     callForData() {
       this.setLoading(true)
-      getVishingReportUsersInteractions(this.axiosPayload.filter, this.item.resourceId)
+      const payload = {
+        resourceId: this.item.resourceId,
+        pagination: this.axiosPayload
+      }
+      delete payload.pagination.filter
+      getVishingReportUsersInteractions(payload)
         .then((response) => {
-          this.tableData = response?.data || []
+          this.tableData = response?.data?.data?.results || []
         })
         .finally(this.setLoading)
     },
