@@ -707,6 +707,10 @@ export const labels = {
   VishingTemplate: 'Vishing Template',
   EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
   AllowedDomain: 'Allowed Domains',
+  CallDate: 'Call Date',
+  CallDuration: 'Call Duration',
+  AllInteractions: 'All Interactions',
+  AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
   Method: 'Method'
 }
 
