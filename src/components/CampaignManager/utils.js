@@ -131,6 +131,12 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Click Only', value: 'Click-Only' },
+      { text: 'Data Submission', value: 'Data Submission' },
+      { text: 'Attachment', value: 'Attachment' }
+    ],
     width: 160
   },
   LAST_LAUNCH: {
