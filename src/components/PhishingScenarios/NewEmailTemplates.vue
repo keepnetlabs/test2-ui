@@ -250,7 +250,7 @@ import {
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
@@ -272,6 +272,25 @@ export default {
     InputEntityName,
     InputDescription
   },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    },
+    editableFormValues: {
+      required: false
+    },
+    isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    emailTemplateId: {
+      type: String
+    }
+  },
   data() {
     return {
       footerButtonsIds: {
@@ -289,7 +308,6 @@ export default {
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       availableForRequests: [],
       tagSearch: '',
       labels,
@@ -380,26 +398,75 @@ export default {
       ]
     }
   },
-  props: {
-    status: {
-      type: Boolean,
-      default: false
+  computed: {
+    getTitle() {
+      if (this.isEdit && this.isDuplicate) {
+        return 'Duplicate Email Template'
+      }
+
+      if (this.isEdit) {
+        return 'Edit Email Template'
+      }
+
+      return 'New Email Template'
     },
-    editableFormValues: {
-      required: false
+    isAttachmentBasedTemplate() {
+      return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
     },
-    isEdit: {
-      type: Boolean
-    },
-    isDuplicate: {
-      type: Boolean,
-      default: false
-    },
-    emailTemplateId: {
-      type: String
+    isRenderMakeAvailableFor() {
+      return !this.editItemsDisabled
+    }
+  },
+  created() {
+    this.setFooterButtonIds()
+    this.callForMergedTags()
+    this.callForLanguages()
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    if (this.isEdit) {
+      getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+        this.formValues = {
+          ...response.data.data,
+          description: response.data.data.description || '',
+          attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
+        }
+        this.formValues.name = `${this.formValues.name}`
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+        this.availableForRequests = getAvailableForValueFromList(
+          response?.data?.data?.availableForList
+        )
+        if (this.formValues.attachments) {
+          this.formValues.importedEmailAttachments = this.formValues.attachments.map((item) => ({
+            ...item,
+            isDeletable: true
+          }))
+          this.formValues.attachmentFilesFromApi = JSON.parse(
+            JSON.stringify(this.formValues.attachments)
+          )
+        }
+        if (response.data.data.phishingFileName) {
+          this.formValues.attachmentFiles = [
+            {
+              fileName: response.data.data.phishingFileName,
+              url: response.data.data.phishingFileUrl
+            }
+          ]
+        }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      })
     }
   },
   methods: {
+    setFooterButtonIds() {
+      if (!this.isDuplicate) return
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
+        backButton: 'btn-duplicate-back--email-templates-modal',
+        nextButton: 'btn-duplicate-next--email-templates-modal',
+        saveButton: 'btn-duplicate-save--email-templates-modal'
+      }
+    },
     handleDeleteAttachment() {
       this.formValues.attachmentFiles = []
       this.isAddedNewPhishingFile = false
@@ -598,99 +665,6 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
-    }
-  },
-  computed: {
-    getTitle() {
-      if (this.isEdit && this.isDuplicate) {
-        return 'Duplicate Email Template'
-      }
-
-      if (this.isEdit) {
-        return 'Edit Email Template'
-      }
-
-      return 'New Email Template'
-    },
-    isAttachmentBasedTemplate() {
-      return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
-    },
-    isRenderMakeAvailableFor() {
-      return !this.editItemsDisabled
-    }
-  },
-  created() {
-    if (this.isDuplicate) {
-      this.footerButtonsIds = {
-        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
-        backButton: 'btn-duplicate-back--email-templates-modal',
-        nextButton: 'btn-duplicate-next--email-templates-modal',
-        saveButton: 'btn-duplicate-save--email-templates-modal'
-      }
-    }
-    this.callForMergedTags()
-    this.callForLanguages()
-    if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
-    if (this.isEdit) {
-      getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
-        this.formValues = {
-          ...response.data.data,
-          description: response.data.data.description || '',
-          attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
-        }
-        this.formValues.name = `${this.formValues.name}`
-        const availableForList = response?.data?.data?.availableForList
-        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor && availableForList.length) {
-          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            availableForList
-          )
-          if (!availableForListFromBackend.length) {
-            this.availableForRequests = [
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
-          }
-        } else {
-          this.availableForRequests = [
-            {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
-              resourceId: null
-            }
-          ]
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        }
-        if (this.formValues.attachments) {
-          this.formValues.importedEmailAttachments = this.formValues.attachments.map((item) => ({
-            ...item,
-            isDeletable: true
-          }))
-          this.formValues.attachmentFilesFromApi = JSON.parse(
-            JSON.stringify(this.formValues.attachments)
-          )
-        }
-        if (response.data.data.phishingFileName) {
-          this.formValues.attachmentFiles = [
-            {
-              fileName: response.data.data.phishingFileName,
-              url: response.data.data.phishingFileUrl
-            }
-          ]
-        }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      })
     }
   }
 }

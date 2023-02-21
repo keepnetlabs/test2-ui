@@ -291,7 +291,7 @@ import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 
 const initialFormValues = {
   resourceId: null,
@@ -373,7 +373,6 @@ export default {
       },
       initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
       formValues: JSON.parse(JSON.stringify(initialFormValues)),
-      nonEditableAvailableForRequests: [],
       addStepItems: [
         {
           value: 'TextToSpeech',
@@ -495,35 +494,9 @@ export default {
         delete this.formValues.createTime
         delete this.formValues.vishingLanguage
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor && response?.data?.data?.availableForList?.length) {
-          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-          if (!availableForListFromBackend.length) {
-            this.formValues.availableForRequests = [
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ]
-          } else {
-            this.formValues.availableForRequests = availableForListFromBackend
-          }
-        } else {
-          this.formValues.availableForRequests = [
-            {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
-              resourceId: null
-            }
-          ]
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        }
+        this.formValues.availableForRequests = getAvailableForValueFromList(
+          response?.data?.data?.availableForList
+        )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }

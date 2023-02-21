@@ -332,7 +332,7 @@ export default {
         this.isPickersValidated[item.resourceId]
       )
     },
-    submit() {
+    validateAllPickers() {
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
       for (let key of keys) {
@@ -344,6 +344,10 @@ export default {
           isPickersValid = false
         }
       }
+      return isPickersValid
+    },
+    submit() {
+      let isPickersValid = this.validateAllPickers()
       this.$forceUpdate()
       this.$refs.refPhone.validatePhoneNumber()
       const isNumberValid = this.$refs.refPhone.isPhoneNumberValid
@@ -356,16 +360,15 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          if (this.companyLicense) {
-            const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
-            if (
-              isLimited &&
-              (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
-            ) {
-              this.toggleShowLicenseExceededDialog()
-            } else {
-              this.callForCreateTargetUser()
-            }
+          if (!this.companyLicense) return
+          const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
+          if (
+            isLimited &&
+            (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
+          ) {
+            this.toggleShowLicenseExceededDialog()
+          } else {
+            this.callForCreateTargetUser()
           }
         }
       }

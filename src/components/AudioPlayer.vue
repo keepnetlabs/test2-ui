@@ -15,15 +15,14 @@
         <v-icon left>
           {{ audio.playing ? 'mdi-pause' : 'mdi-play' }}
         </v-icon>
-        <span class="audio-player__preview-text">
-          Preview
-        </span>
+        <span class="audio-player__preview-text"> Preview </span>
       </v-btn>
     </div>
     <div v-else class="audio-player">
       <v-btn
         icon
         color="#ffffff"
+        class="audio-player__play-pause-button"
         :style="getButtonStyles"
         :disabled="!canPlay"
         @click="onTogglePlay"
@@ -111,9 +110,11 @@ export default {
     },
     onPlayAudio() {
       this.$refs.refAudio.play()
+      this.$emit('play')
     },
     onPauseAudio() {
       this.$refs.refAudio.pause()
+      this.$emit('pause')
     },
     onPlay() {
       this.audio.playing = true

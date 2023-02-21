@@ -172,22 +172,24 @@ export default {
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (droppedComponent && block.attributes && block.attributes.customId === 'grapesForm') {
           droppedComponent.components().forEach((inner) => {
-            if (!inner?.find('label')?.[0]?.view) return
-            if (inner.find('label')[0].view.el.textContent === 'Name') {
-              inner.find('input')[0].addAttributes({ name: 'Name' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Email') {
-              inner.find('input')[0].addAttributes({ name: 'Email' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Gender') {
-              inner.find('input')[0].addAttributes({ name: 'Male' })
-              inner.find('input')[1].addAttributes({ name: 'Female' })
-              return
-            }
-            if (inner.find('label')[0].view.el.textContent === 'Message') {
-              inner.find('textarea')[0].addAttributes({ name: 'Message' })
+            const view = inner?.find('label')?.[0]?.view
+            if (!view) return
+            switch (view.el.textContent) {
+              case 'Name':
+                inner.find('input')[0].addAttributes({ name: 'Name' })
+                break
+              case 'Email':
+                inner.find('input')[0].addAttributes({ name: 'Email' })
+                break
+              case 'Gender':
+                inner.find('input')[0].addAttributes({ name: 'Male' })
+                inner.find('input')[1].addAttributes({ name: 'Female' })
+                break
+              case 'Message':
+                inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                break
+              default:
+                break
             }
           })
         }
@@ -285,7 +287,7 @@ export default {
       let styleManager = this.editor.StyleManager
       let fontProperty = styleManager.getProperty('typography', 'font-family')
       if (fontProperty) {
-        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'sans-serif' })
+        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'Sans-serif' })
       }
       styleManager.render()
     },
@@ -773,6 +775,10 @@ export default {
             .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-trash')
             .setAttribute('title', 'Clear canvas')
         } catch (e) {}
+        //removing default button
+        document.querySelector(
+          '.gjs-block-categories .gjs-blocks-c div[title="Button"]'
+        ).style.display = 'none'
         this.addCustomProperties()
         this.addFonts()
         document.querySelector('.fa-code').addEventListener('click', () => {

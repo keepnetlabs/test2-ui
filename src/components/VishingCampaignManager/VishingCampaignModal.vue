@@ -367,6 +367,7 @@ import {
   getVishingCampaignDistributionCalculation
 } from '@/api/vishing'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
+import useDebounce from '@/hooks/useDebounce'
 
 const initialFormValues = {
   name: '',
@@ -405,6 +406,7 @@ export default {
     CampaignManagerSummaryCard,
     VishingCampaignModalSummaryVishingTemplate
   },
+  mixins: [useDebounce],
   props: {
     status: {
       type: Boolean,
@@ -534,7 +536,7 @@ export default {
     timeZones: {
       deep: true,
       immediate: true,
-      handler(val) {
+      handler() {
         this.setTimezoneId()
       }
     },
@@ -610,7 +612,7 @@ export default {
     companyObject: {
       deep: true,
       immediate: true,
-      handler(val) {
+      handler() {
         this.setTimezoneId()
       }
     }
@@ -730,14 +732,6 @@ export default {
             response?.data?.data?.delayBetweenEachCallInMinutes || 0
         })
       }, 500)
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     selectTableItems(items) {
       this.$nextTick(() => {

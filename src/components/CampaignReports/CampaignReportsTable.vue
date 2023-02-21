@@ -105,6 +105,7 @@ export default {
           COLUMNS.LAST_LAUNCH,
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
+          COLUMNS.METHOD,
           COLUMNS.CREATEDBY,
           COLUMNS.DATE_CREATED,
           COLUMNS.USER_STATS,

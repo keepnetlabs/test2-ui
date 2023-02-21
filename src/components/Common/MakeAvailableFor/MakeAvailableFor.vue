@@ -311,14 +311,17 @@ export default {
       if (emittedVal && emittedVal[0]) {
         this.$emit('input', emittedVal)
         if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
-          if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
-            this?.menuElement?.scroll({ top: 0 })
-            this.$refs.refTreeSelect['menu'].isOpen = false
-            this.$refs.refTreeSelect.trigger.searchQuery = ''
-          }
+          this.closeMenuAndResetStatus()
         }
       }
       this.validateAvailableFor(newVal)
+    },
+    closeMenuAndResetStatus() {
+      if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
+        this?.menuElement?.scroll({ top: 0 })
+        this.$refs.refTreeSelect['menu'].isOpen = false
+        this.$refs.refTreeSelect.trigger.searchQuery = ''
+      }
     },
     setTreeSelectOptions(isDisabled = false) {
       if (!this.treeSelectOptions) {

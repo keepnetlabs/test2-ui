@@ -409,7 +409,6 @@ import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
@@ -417,6 +416,7 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
+import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 
 export default {
   name: 'NewEmailTemplates',
@@ -444,7 +444,6 @@ export default {
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
-      nonEditableAvailableForRequests: [],
       labels,
       step: 1,
       Validations: Validations,
@@ -802,37 +801,10 @@ export default {
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
         this.handleChangeDomainRecord(this.formValues.domainRecordId)
-        const availableForList = response?.data?.data?.availableForList
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor && availableForList.length) {
-          const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            availableForList
-          )
-          if (!availableForListFromBackend.length) {
-            this.availableForRequests = [
-              {
-                id: 'MyCompanyOnly',
-                label: 'My company only',
-                type: 'MyCompanyOnly',
-                resourceId: null
-              }
-            ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
-          }
-        } else {
-          this.availableForRequests = [
-            {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
-              resourceId: null
-            }
-          ]
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        }
+        this.availableForRequests = getAvailableForValueFromList(
+          response?.data?.data?.availableForList
+        )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }

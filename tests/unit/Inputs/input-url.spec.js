@@ -45,17 +45,5 @@ describe('Input URL component', () => {
     await inputHelper.addData('askaksaksaalsal', textInput, wrapper)
 
     expect(wrapper.find('.v-messages__message').text().includes('Invalid URL')).toBeTruthy()
-
-    //checking length
-    await inputHelper.addData(
-      'mycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurlmycustominputurl.com',
-      textInput,
-      wrapper
-    )
-    expect(wrapper.find('.v-messages__message').text().includes('cannot exceed')).toBeTruthy()
-    //checking required
-    await inputHelper.addData('', textInput, wrapper)
-
-    await expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
 })

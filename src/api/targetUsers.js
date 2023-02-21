@@ -99,8 +99,8 @@ export function searchTmp(payload, id) {
   return testRequest.post(`/target-users/${id}/search`, payload)
 }
 
-export function searchTargetGroupUsers(id = '', payload = {}) {
-  return testRequest.post(`/target-groups/${id}/users`, payload)
+export function searchTargetGroupUsers(id = '', payload = {}, options = {}) {
+  return testRequest.post(`/target-groups/${id}/users`, payload, options)
 }
 
 export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = true) {

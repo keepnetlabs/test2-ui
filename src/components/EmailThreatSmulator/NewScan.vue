@@ -58,19 +58,20 @@
                   dense
                   color="rgba(245, 108, 108, 0.2)"
                   class="mt-8"
-                  max-width="600"
+                  max-width="700"
                 >
-                  <v-container fill-height fluid size="14">
+                  <v-container fill-height fluid size="14" style="flex-wrap: nowrap;">
                     <v-icon class="pa-2" size="24" marig color="#f56c6c"> mdi-close-circle </v-icon>
                     <strong
                       v-if="submitError.isArray"
                       v-for="(error, index) in submitError.message"
                       class="pa-2"
+                      style="font-weight: 600;"
                       :key="index"
                     >
                       {{ error }}
                     </strong>
-                    <strong class="pa-2" v-if="!submitError.isArray">{{
+                    <strong v-if="!submitError.isArray" class="pa-2" style="font-weight: 600;">{{
                       submitError.message
                     }}</strong>
                   </v-container>
@@ -1032,10 +1033,12 @@ export default {
           this.emailLoginStatus = true
           const errorResponse = error.response.data
           this.submitError.isArray = false
-          this.submitError.message = errorResponse?.message || ''
+          this.submitError.message = errorResponse?.message || labels.EwsScanErrorMessage
           if (errorResponse?.validationMessages && errorResponse.validationMessages.length > 0) {
             this.submitError.isArray = true
-            this.submitError.message = errorResponse?.validationMessages || []
+            this.submitError.message = errorResponse?.validationMessages || [
+              labels.EwsScanErrorMessage
+            ]
           }
           this.step = 1
         })

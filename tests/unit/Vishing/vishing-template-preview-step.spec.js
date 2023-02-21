@@ -1,0 +1,153 @@
+import { createLocalVue, mount } from '@vue/test-utils'
+import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import { customVuetify as vuetify } from '../utils'
+
+describe('Vishing template preview step', () => {
+  const localVue = createLocalVue()
+
+  it('should render TextToSpeech variant successfully', () => {
+    const step = {
+      inputType: 'TextToSpeech',
+      inputText: 'Text to speech text',
+      inputUrl: null,
+      inputDigit: 10,
+      duration: 0,
+      isVishingStep: true
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      localVue,
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step').exists()).toBeTruthy()
+    expect(wrapper.find('.vishing-template-preview-step__title').text()).toEqual(
+      'Step 1 - Text to Speech'
+    )
+    expect(wrapper.find('.vishing-template-preview-step__text-to-speech-text').text()).toEqual(
+      step.inputText
+    )
+    expect(wrapper.find('.vishing-template-preview-step__tags__required-digit-tag').text()).toEqual(
+      `Required ${step.inputDigit} digits input`
+    )
+    expect(
+      wrapper.find('.vishing-template-preview-step__tags__vishing-step-tag').exists()
+    ).toBeTruthy()
+  })
+
+  it('should render FileUpload variant successfully', () => {
+    const step = {
+      inputType: 'FileUpload',
+      inputText: null,
+      inputUrl:
+        'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA==',
+      inputDigit: 0,
+      duration: 0,
+      isVishingStep: false
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      localVue,
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step').exists()).toBeTruthy()
+    expect(wrapper.find('.vishing-template-preview-step__title').text()).toEqual(
+      'Step 1 - Upload Audio'
+    )
+    expect(wrapper.find('.audio-player__wrapper').exists()).toBeTruthy()
+    expect(wrapper.find('audio').attributes('src')).toEqual(step.inputUrl)
+  })
+
+  it('should render Pause variant successfully', () => {
+    const step = {
+      inputType: 'Pause',
+      inputText: null,
+      inputUrl: null,
+      inputDigit: 0,
+      duration: 10,
+      isVishingStep: false
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      localVue,
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step').exists()).toBeTruthy()
+    expect(wrapper.find('.vishing-template-preview-step__title').text()).toEqual('Step 1 - Pause')
+    expect(wrapper.find('.vishing-template-preview-step__pause-duration-text').text()).toEqual(
+      `Pause for ${step.duration} seconds`
+    )
+  })
+
+  it('should not render required digit and vishing step tags', () => {
+    const step = {
+      inputType: 'TextToSpeech',
+      inputText: 'Text to speech text',
+      inputUrl: null,
+      inputDigit: 0,
+      duration: 0,
+      isVishingStep: false
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      localVue,
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step').exists()).toBeTruthy()
+    expect(wrapper.find('.vishing-template-preview-step__title').text()).toEqual(
+      'Step 1 - Text to Speech'
+    )
+    expect(wrapper.find('.vishing-template-preview-step__text-to-speech-text').text()).toEqual(
+      step.inputText
+    )
+    expect(
+      wrapper.find('.vishing-template-preview-step__tags__required-digit-tag').exists()
+    ).toBeFalsy()
+    expect(
+      wrapper.find('.vishing-template-preview-step__tags__vishing-step-tag').exists()
+    ).toBeFalsy()
+  })
+
+  //   it('should play and pause audio successfully', async () => {
+  //     const step = {
+  //       inputType: 'FileUpload',
+  //       inputText: null,
+  //       inputUrl:
+  //         'https://keepnetlabsvishing.s3.eu-west-2.amazonaws.com/VishingDEV/kBh4ckZ1PVnZ-2.mp3',
+  //       inputDigit: 0,
+  //       duration: 0,
+  //       isVishingStep: false
+  //     }
+  //     const wrapper = mount(VishingTemplatePreviewStep, {
+  //       localVue,
+  //       vuetify,
+  //       propsData: {
+  //         step: step,
+  //         index: 0
+  //       }
+  //     })
+
+  //     expect(wrapper.find('.audio-player .mdi-play').exists()).toBeTruthy()
+  //     wrapper.vm.$refs.refAudioPlayer.onLoadedmetadata({ target: { duration: 100 } })
+  //     await wrapper.vm.$nextTick()
+  //     const playPauseButton = wrapper.find('.audio-player__play-pause-button')
+  //     await playPauseButton.trigger('click')
+  //     await wrapper.vm.$nextTick()
+  //     expect(wrapper.find('.audio-player .mdi-pause').exists()).toBeTruthy()
+  //   })
+})

@@ -204,7 +204,7 @@ export default {
             property: 'method',
             align: 'left',
             editable: false,
-            label: 'Method',
+            label: labels.Method,
             sortable: true,
             show: true,
             type: 'text',

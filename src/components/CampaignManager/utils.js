@@ -123,6 +123,16 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  METHOD: {
+    property: PROPERTY_STORE.METHOD,
+    align: 'left',
+    label: labels.Method,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160
+  },
   LAST_LAUNCH: {
     property: PROPERTY_STORE.LASTLAUNCH,
     align: 'left',

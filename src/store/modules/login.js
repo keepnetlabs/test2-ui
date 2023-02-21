@@ -84,7 +84,6 @@ const login = {
     setPageNumber({ commit }, payload) {
       commit('SET_PAGE_NUMBER', payload)
     },
-    loginAction({ commit, dispatch }, payload) {},
     getWhiteLabelByUrl({ commit }) {
       const formData = new FormData()
       formData.append('DomainUrl', window.location.origin)
