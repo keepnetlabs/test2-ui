@@ -170,211 +170,119 @@
               <v-list-item class="mt-4">
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
-                    <form-group
-                      title="Phishing Link"
-                      class-name="email-template mt-2 p-4"
-                      sub-title="Create a phishing link for users to click and be directed to the landing page"
+                    <InputPhishingLink
+                      ref="refInputPhishingLink"
+                      v-model="formValues.phishingLink"
+                      :url-schema-types="getUrlSchemaTypes"
+                      :domain-records="getDomainRecordTypes"
+                      :extension-types="getExtensionTypes"
+                      :parameter-types="getParameterTypes"
+                      :path-types="getPathTypes"
+                    />
+                    <el-tabs
+                      v-model="tab"
+                      class="landing-page-tab-content"
+                      id="landing-page-tab-content"
                     >
-                      <div class="d-flex" style="max-width: 980px;">
-                        <v-select
-                          v-model="formValues.urlSchemaTypeId"
-                          item-disabled="disabled"
-                          item-text="text"
-                          item-value="value"
-                          outlined
-                          persistent-hint
-                          class="same-width"
-                          style="max-width: 102px;"
-                          placeholder="Select URL schema"
-                          :menu-props="{ offsetY: true }"
-                          :items="landingPageData.urlSchemaTypes"
-                          @change="changeDisabledLabel"
-                        ></v-select>
-                        <v-text-field
-                          v-model.trim="formValues.subDomain"
-                          ref="refSubdomain"
-                          required
-                          placeholder="Enter subdomain"
-                          hint="*Required"
-                          outlined
-                          dense
-                          persistent-hint
-                          class="same-width"
-                          :rules="subdomainRules"
-                          @input="changeDisabledLabel"
-                        />
-                        <v-select
-                          v-model="formValues.domainRecordId"
-                          item-disabled="disabled"
-                          item-text="text"
-                          item-value="value"
-                          outlined
-                          persistent-hint
-                          label="Domain"
-                          class="same-width"
-                          placeholder="Select domain record"
-                          required
-                          :menu-props="{ offsetY: true }"
-                          :items="landingPageData.domainRecords"
-                          :rules="[(v) => validations.required(v, labels.Required)]"
-                          @change="handleChangeDomainRecord"
-                        ></v-select>
-                        <v-select
-                          v-model="formValues.pathTypeId"
-                          item-disabled="disabled"
-                          item-text="text"
-                          item-value="value"
-                          outlined
-                          persistent-hint
-                          class="same-width"
-                          placeholder="Select path type"
-                          :items="landingPageData.pathTypes"
-                          :menu-props="{ offsetY: true }"
-                          @input="changeDisabledLabel"
-                        ></v-select>
-                        <v-select
-                          v-model="formValues.extensionTypeId"
-                          item-disabled="disabled"
-                          item-text="text"
-                          item-value="value"
-                          outlined
-                          persistent-hint
-                          class="same-width"
-                          placeholder="Select extension type"
-                          :items="landingPageData.extensionTypes"
-                          :menu-props="{ offsetY: true }"
-                          @input="changeDisabledLabel"
-                        ></v-select>
-                        <v-select
-                          v-model="formValues.parameterTypeId"
-                          item-disabled="disabled"
-                          item-text="text"
-                          item-value="value"
-                          outlined
-                          persistent-hint
-                          label="Parameter"
-                          class="same-width"
-                          placeholder="Select Parameter"
-                          :items="landingPageData.parameterTypes"
-                          :menu-props="{ offsetY: true }"
-                          @change="changeDisabledLabel"
-                        ></v-select>
-                      </div>
-                      <div style="max-width: 980px;">
-                        <v-text-field
-                          outlined
-                          dense
-                          persistent-hint
-                          v-model="disabledLabel"
-                          disabled
-                          label="Your link is"
-                        />
-                      </div>
-                      <el-tabs
-                        v-model="tab"
-                        class="landing-page-tab-content"
-                        id="landing-page-tab-content"
+                      <el-tab-pane
+                        v-for="(page, index) in formValues.landingPages"
+                        :key="`page-${index + 1}`"
+                        :label="`Page ${index + 1}`"
+                        :name="`page${index + 1}`"
+                        :id="`landingPage-content-${index + 1}`"
                       >
-                        <el-tab-pane
-                          v-for="(page, index) in formValues.landingPages"
-                          :key="`page-${index + 1}`"
-                          :label="`Page ${index + 1}`"
-                          :name="`page${index + 1}`"
-                          :id="`landingPage-content-${index + 1}`"
-                        >
-                          <template #label>
-                            <div
-                              style="display: flex;"
-                              :style="formValues.landingPages.length > 1 && { width: '68px' }"
-                            >
-                              <span class="landing-page-tab__label">
-                                {{ `Page ${index + 1}` }}
-                              </span>
-                              <v-menu
-                                v-if="formValues.landingPages.length > 1"
-                                :min-width="128"
-                                :offset-y="true"
-                                nudge-left="50"
-                                bottom
-                              >
-                                <template v-slot:activator="{ on }">
-                                  <v-icon
-                                    v-ripple="false"
-                                    v-on="on"
-                                    class="landing-page-tab-content__button"
-                                    >mdi-dots-horizontal</v-icon
-                                  >
-                                </template>
-                                <v-list>
-                                  <v-list-item
-                                    style="cursor: pointer;"
-                                    @click="handleDeleteLandingPage(index)"
-                                  >
-                                    <v-list-item-title>Delete</v-list-item-title>
-                                  </v-list-item>
-                                </v-list>
-                              </v-menu>
-                            </div>
-                          </template>
-                          <email-template
-                            ref="refEmailTemplate"
-                            template-type="landing"
-                            :active-block-manager-components="activeBlockManagerComponents"
-                            :edit-items-disabled="editItemsDisabled"
-                            :template.sync="page.content"
-                            :is-edit="!!isEdit"
-                            :is-phishing-template="true"
-                            :onlyGrapes="true"
-                            @setAttachmentFile="setAttachmentFile"
-                          />
-                        </el-tab-pane>
-                        <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
-                          <template #label>
+                        <template #label>
+                          <div
+                            style="display: flex;"
+                            :style="formValues.landingPages.length > 1 && { width: '68px' }"
+                          >
+                            <span class="landing-page-tab__label">
+                              {{ `Page ${index + 1}` }}
+                            </span>
                             <v-menu
+                              v-if="formValues.landingPages.length > 1"
                               :min-width="128"
-                              :nudge-right="83"
-                              :nudge-bottom="240"
-                              id="add-page-menu"
-                              attach="#landing-page-tab-content"
-                              :z-index="10000"
+                              :offset-y="true"
+                              nudge-left="50"
+                              bottom
                             >
-                              <template v-slot:activator="{ on: menu }">
-                                <v-btn v-on="menu" text color="#2196f3">
-                                  <v-icon class="mr-2" size="18" color="#2196f3"
-                                    >mdi-plus-circle-outline</v-icon
-                                  >
-                                  <span class="landing-page-tab__label">
-                                    Add page
-                                  </span>
-                                </v-btn>
+                              <template v-slot:activator="{ on }">
+                                <v-icon
+                                  v-ripple="false"
+                                  v-on="on"
+                                  class="landing-page-tab-content__button"
+                                  >mdi-dots-horizontal</v-icon
+                                >
                               </template>
                               <v-list>
                                 <v-list-item
-                                  class="px-4"
                                   style="cursor: pointer;"
-                                  @click="handleAddBlankPage"
+                                  @click="handleDeleteLandingPage(index)"
                                 >
-                                  <v-list-item-title>Blank page</v-list-item-title>
+                                  <v-list-item-title>Delete</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item
-                                  class="px-4"
-                                  style="cursor: pointer;"
-                                  @click="handleUploadHTML"
-                                >
-                                  <v-list-item-title>Upload HTML</v-list-item-title>
-                                </v-list-item>
-                                <input
-                                  v-show="false"
-                                  ref="refHtmlFile"
-                                  type="file"
-                                  @change="handleHTMLUploadChange"
-                                />
                               </v-list>
                             </v-menu>
-                          </template>
-                        </el-tab-pane>
-                      </el-tabs>
-                    </form-group>
+                          </div>
+                        </template>
+                        <email-template
+                          ref="refEmailTemplate"
+                          template-type="landing"
+                          :active-block-manager-components="activeBlockManagerComponents"
+                          :edit-items-disabled="editItemsDisabled"
+                          :template.sync="page.content"
+                          :is-edit="!!isEdit"
+                          :is-phishing-template="true"
+                          :onlyGrapes="true"
+                          @setAttachmentFile="setAttachmentFile"
+                        />
+                      </el-tab-pane>
+                      <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
+                        <template #label>
+                          <v-menu
+                            :min-width="128"
+                            :nudge-right="83"
+                            :nudge-bottom="240"
+                            id="add-page-menu"
+                            attach="#landing-page-tab-content"
+                            :z-index="10000"
+                          >
+                            <template v-slot:activator="{ on: menu }">
+                              <v-btn v-on="menu" text color="#2196f3">
+                                <v-icon class="mr-2" size="18" color="#2196f3"
+                                  >mdi-plus-circle-outline</v-icon
+                                >
+                                <span class="landing-page-tab__label">
+                                  Add page
+                                </span>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                class="px-4"
+                                style="cursor: pointer;"
+                                @click="handleAddBlankPage"
+                              >
+                                <v-list-item-title>Blank page</v-list-item-title>
+                              </v-list-item>
+                              <v-list-item
+                                class="px-4"
+                                style="cursor: pointer;"
+                                @click="handleUploadHTML"
+                              >
+                                <v-list-item-title>Upload HTML</v-list-item-title>
+                              </v-list-item>
+                              <input
+                                v-show="false"
+                                ref="refHtmlFile"
+                                type="file"
+                                @change="handleHTMLUploadChange"
+                              />
+                            </v-list>
+                          </v-menu>
+                        </template>
+                      </el-tab-pane>
+                    </el-tabs>
                   </v-form>
                 </v-list-item-content>
               </v-list-item>
@@ -407,7 +315,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
-import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -417,10 +325,12 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
+import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
+    InputPhishingLink,
     KSelect,
     StepperFooter,
     AppModal,
@@ -429,64 +339,6 @@ export default {
     EmailTemplate,
     InputSelectLanguage,
     InputTag
-  },
-  data() {
-    return {
-      footerButtonsIds: {
-        cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
-        backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
-        nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
-        saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
-      },
-      languageOptions: [],
-      disabledLabel: null,
-      tab: 'page1',
-      isSubmitDisabled: false,
-      activeBlockManagerComponents: {},
-      blockManagerComponents: {},
-      labels,
-      step: 1,
-      Validations: Validations,
-      validations: Validations,
-      availableForRequests: [],
-      initialFormValues: {},
-      formValues: {
-        name: null,
-        description: null,
-        methodTypeId: null,
-        difficultyTypeId: null,
-        urlSchemaTypeId: null,
-        subDomain: null,
-        domainRecordId: null,
-        pathTypeId: null,
-        extensionTypeId: null,
-        parameterTypeId: null,
-        tags: [],
-        landingPages: [{ name: 'landing-page', content: '', order: 1 }],
-        languageTypeResourceId: '862249c19aad'
-      },
-      commonRules: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
-      },
-      subdomainRules: [],
-      httpRules: [
-        (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainBlacklist(v),
-        (v) =>
-          Validations.subdomainDashDot(v, 'Only (-) and (.)  are allowed as special characters')
-      ],
-      httpsRules: [
-        (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainBlacklist(v),
-        (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character')
-      ],
-      editItemsDisabled: false
-    }
   },
   props: {
     status: {
@@ -507,7 +359,54 @@ export default {
       type: String
     },
     landingPageData: {
-      retuired: false
+      type: Object
+    }
+  },
+  data() {
+    return {
+      footerButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
+        backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
+        nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
+        saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
+      },
+      languageOptions: [],
+      disabledLabel: null,
+      tab: 'page1',
+      isSubmitDisabled: false,
+      activeBlockManagerComponents: {},
+      blockManagerComponents: {},
+      labels,
+      step: 1,
+      Validations,
+      availableForRequests: [],
+      initialFormValues: {},
+      formValues: {
+        phishingLink: {
+          urlSchemaTypeId: '',
+          subDomain: '',
+          domainRecordId: '',
+          pathTypeId: '',
+          extensionTypeId: '',
+          parameterTypeId: ''
+        },
+        name: null,
+        description: null,
+        methodTypeId: null,
+        difficultyTypeId: null,
+        tags: [],
+        landingPages: [{ name: 'landing-page', content: '', order: 1 }],
+        languageTypeResourceId: '862249c19aad'
+      },
+      commonRules: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
+      },
+      editItemsDisabled: false
     }
   },
   methods: {
@@ -564,44 +463,6 @@ export default {
       }
       reader.readAsText(file)
     },
-    handleChangeDomainRecord(value) {
-      const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
-      this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
-        const activeVal = domainRecord?.extraDatas[0]?.value
-        if (activeVal === '3') {
-          schema.disabled = false
-        } else {
-          schema.disabled = domainRecord?.extraDatas[0]?.value !== schema.value
-        }
-        return schema
-      })
-      this.formValues.urlSchemaTypeId =
-        domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value
-      this.changeDisabledLabel()
-    },
-    changeDisabledLabel() {
-      this.disabledLabel = `${
-        this.landingPageData.urlSchemaTypes.find(
-          (item) => item.value === this.formValues.urlSchemaTypeId?.toString() || ''
-        )?.text
-      }${this.formValues.subDomain || 'subDomain'}.${
-        this.landingPageData.domainRecords.find(
-          (item) => item.value === this.formValues.domainRecordId?.toString() || ''
-        )?.text || 'noDomain'
-      }/${
-        this.landingPageData.pathTypes.find(
-          (item) => item.value === this.formValues.pathTypeId?.toString() || ''
-        )?.text || 'noPath'
-      }${
-        this.landingPageData.extensionTypes.find(
-          (item) => item.value === this.formValues.extensionTypeId?.toString() || ''
-        )?.text || 'noExtension'
-      }?${
-        this.landingPageData.parameterTypes.find(
-          (item) => item.value === this.formValues.parameterTypeId?.toString() || ''
-        )?.text
-      }=${createRandomCryptStringNumber()}`
-    },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = file
     },
@@ -647,8 +508,13 @@ export default {
         isValid = refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
-        let payload = {
-          ...this.formValues,
+        const formValues = {
+          ...this.formValues.phishingLink,
+          ...this.formValues
+        }
+        delete formValues.phishingLink
+        const payload = {
+          ...formValues,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
@@ -700,6 +566,21 @@ export default {
   },
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    getUrlSchemaTypes() {
+      return this.landingPageData?.urlSchemaTypes || []
+    },
+    getDomainRecordTypes() {
+      return this.landingPageData?.domainRecords || []
+    },
+    getExtensionTypes() {
+      return this.landingPageData?.extensionTypes || []
+    },
+    getParameterTypes() {
+      return this.landingPageData?.parameterTypes || []
+    },
+    getPathTypes() {
+      return this.landingPageData?.pathTypes || []
+    },
     getTitle() {
       if (!this.isEdit) return 'New Landing Page Template'
       return this.isDuplicate ? 'Duplicate Landing Page Template' : 'Edit Landing Page Template'
@@ -717,56 +598,6 @@ export default {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
-  watch: {
-    'formValues.urlSchemaTypeId'(val) {
-      if (val === '1') {
-        this.subdomainRules = this.httpRules
-      } else {
-        this.subdomainRules = this.httpsRules
-      }
-      this.$nextTick(() => {
-        if (this.$refs.refSubdomain) {
-          this.$refs.refSubdomain.validate()
-        }
-      })
-    }
-  },
-  mounted() {
-    this.$watch(
-      (vm) => [
-        vm.formValues.urlSchemaTypeId,
-        vm.formValues.domainRecordId,
-        vm.formValues.parameterTypeId
-      ],
-      () => {
-        this.disabledLabel = `${
-          this.landingPageData.urlSchemaTypes.find(
-            (item) => item.value == this.formValues.urlSchemaTypeId?.toString() || ''
-          )?.text
-        }${this.formValues.subDomain || 'subDomain'}.${
-          this.landingPageData.domainRecords.find(
-            (item) => item.value == this.formValues.domainRecordId.toString()
-          )?.text || 'noDomain'
-        }/${
-          this.landingPageData.pathTypes.find(
-            (item) => item.value == this.formValues.pathTypeId.toString()
-          )?.text || 'noPath'
-        }${
-          this.landingPageData.extensionTypes.find(
-            (item) => item.value == this.formValues.extensionTypeId.toString()
-          )?.text || 'noExtension'
-        }?${
-          this.landingPageData.parameterTypes.find(
-            (item) => item.value == this.formValues.parameterTypeId.toString()
-          ).text
-        }=${createRandomCryptStringNumber()}`
-      },
-      {
-        immediate: true, // run immediately
-        deep: true // detects changes inside objects. not needed here, but maybe in other cases
-      }
-    )
-  },
   created() {
     if (this.isDuplicate) {
       this.footerButtonsIds = {
@@ -776,11 +607,6 @@ export default {
         saveButton: 'btn-duplicate-save--landing-page-templates-modal'
       }
     }
-    this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0]?.value || ''
-    this.formValues.domainRecordId = this.landingPageData.domainRecords[0]?.value || ''
-    this.formValues.pathTypeId = this.landingPageData.pathTypes[0]?.value || ''
-    this.formValues.extensionTypeId = this.landingPageData.extensionTypes[0]?.value || ''
-    this.formValues.parameterTypeId = this.landingPageData.parameterTypes[0]?.value || ''
     if (!this.isEdit)
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     this.formValues.difficultyTypeId = '1'
@@ -791,16 +617,27 @@ export default {
     }
     if (this.isEdit) {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
-        this.formValues = response.data.data
+        const { data: { data = {} } = {} } = response || {}
+        const phishingLink = {
+          subDomain: data.subDomain,
+          urlSchemaTypeId: data.urlSchemaTypeId.toString(),
+          pathTypeId: data.pathTypeId.toString(),
+          extensionTypeId: data.extensionTypeId.toString(),
+          parameterTypeId: data.parameterTypeId.toString(),
+          domainRecordId: data.domainRecordId.toString()
+        }
+        delete data.urlSchemaTypeId
+        delete data.pathTypeId
+        delete data.extensionTypeId
+        delete data.parameterTypeId
+        delete data.domainRecordId
+        delete data.subDomain
+        this.formValues = data
+        this.$set(this.formValues, 'phishingLink', phishingLink)
+        this.$refs.refInputPhishingLink.checkSchemaTypes(phishingLink.domainRecordId)
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-        this.formValues.domainRecordId = response.data.data.domainRecordId.toString()
-        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId.toString()
-        this.formValues.pathTypeId = this.formValues.pathTypeId.toString()
-        this.formValues.extensionTypeId = this.formValues.extensionTypeId.toString()
-        this.formValues.parameterTypeId = this.formValues.parameterTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
-        this.handleChangeDomainRecord(this.formValues.domainRecordId)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList

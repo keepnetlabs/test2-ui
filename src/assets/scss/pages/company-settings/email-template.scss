@@ -174,6 +174,33 @@
             }
         }
     }
+  &.input-phishing-link{
+    .v-input{
+      border-radius:0 !important;
+      &:first-child{
+        border-top-left-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+      }
+      &:last-child{
+        max-width:120px;
+        border-top-right-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+      &:nth-child(5){
+        max-width: 150px;
+      }
+      &:nth-child(4){
+        max-width: 180px;
+      }
+    }
+    .v-input--is-label-active{
+      label + .v-select__selections{
+        .v-select__selection.v-select__selection--comma{
+          margin-bottom:0 !important;
+        }
+      }
+    }
+  }
 }
 
 .grapesjs-reset-css {
