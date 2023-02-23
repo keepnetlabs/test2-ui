@@ -48,7 +48,12 @@
 
                   <v-tooltip v-if="getCanRenderTooltip(scope.row)" right :max-width="230">
                     <template v-slot:activator="{ on }">
-                      <v-icon v-on="on" class="ml-2" color="#757575" size="21">
+                      <v-icon
+                        v-on="on"
+                        class="ml-2"
+                        :color="getStatusBadgeProps(scope.row.status).color"
+                        size="21"
+                      >
                         mdi-information-outline
                       </v-icon>
                     </template>
