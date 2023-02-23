@@ -9,10 +9,15 @@ export const ACTION_TYPES = {
   MoveToTrash: 'MoveToTrash',
   Delete: 'Delete'
 }
+export const DURATION_TYPES = {
+  OneDay: 1,
+  ThreeDays: 3,
+  SevenDays: 7
+}
 export const durations = [
-  { durationLabel: '1 Day', durationValue: 1 },
-  { durationLabel: '3 Days', durationValue: 3 },
-  { durationLabel: '7 Days', durationValue: 7 }
+  { durationLabel: '1 Day', durationValue: DURATION_TYPES.OneDay },
+  { durationLabel: '3 Days', durationValue: DURATION_TYPES.ThreeDays },
+  { durationLabel: '7 Days', durationValue: DURATION_TYPES.SevenDays }
 ]
 
 export const actions = [

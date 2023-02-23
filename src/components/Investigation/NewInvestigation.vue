@@ -62,17 +62,13 @@
 
 <script>
 import AppModal from '../AppModal'
-import {
-  getTimeZoneForMoment,
-  scrollToComponent,
-  isDifferent,
-  createRandomCryptStringNumber
-} from '@/utils/functions'
+import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
 import NewInvestigationSettings from '@/components/Investigation/NewInvestigationSettings.vue'
 import StepperFooter from '@/components/Stepper/StepperFooter.vue'
+import { ACTION_TYPES, TARGET_USER_TYPES, DURATION_TYPES } from '@/components/Investigation/utils'
 export default {
   components: {
     StepperFooter,
@@ -80,19 +76,36 @@ export default {
     ConfigureCompanyStepHeader,
     AppModal
   },
-  props: [
-    'isEdit',
-    'ísDuplicate',
-    'investigationDetailsData',
-    'status',
-    'selectedMail',
-    'isTs',
-    'isIr'
-  ],
+  props: {
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    investigationDetailsData: {
+      type: Object,
+      default: null
+    },
+    status: {
+      type: Boolean,
+      default: false
+    },
+    selectedMail: {
+      type: Object,
+      default: null
+    },
+    isTs: {
+      type: Boolean,
+      default: false
+    },
+    isIr: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       step: 1,
-      initialFormValues: null,
+      initialFormData: null,
       isActionButtonDisabled: false,
       labels,
       errorMessages: [],
@@ -164,124 +177,44 @@ export default {
       this.checkAllSingularity()
     }
   },
-  created() {
-    this.checkIsEdit()
-    if (this.selectedMail) {
-      this.filterList = []
-      const isTs = this.isTs
-      const isIR = this.isIr
-      if (isIR) {
-        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
-        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
-      }
-      this.selectedMail.attachments &&
-        this.selectedMail.attachments.map((item) => {
-          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (attachmentCase)
-            this.filterList.push({
-              option: 'md5',
-              text: item.md5,
-              isFlagged: item.isFlagged,
-              label: 'Malicious'
-            })
-          if (attachmentCase)
-            this.filterList.push({
-              option: 'sha512',
-              text: item.sha512,
-              isFlagged: item.isFlagged,
-              label: 'Malicious'
-            })
-        })
-      const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
-      this.selectedMail.bcc &&
-        bccCase &&
-        this.selectedMail.bcc.map((item) => {
-          this.filterList.push({
-            option: 'bcc',
-            text: item,
-            isFlagged: this.selectedMail.isBccFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
-      this.selectedMail.cc &&
-        ccCase &&
-        this.selectedMail.cc.map((item) => {
-          this.filterList.push({
-            option: 'cc',
-            text: item,
-            isFlagged: this.selectedMail.isCcFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      const fromCase = isTs
-        ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
-        : true
-      this.selectedMail.from &&
-        fromCase &&
-        this.filterList.push({
-          option: 'from',
-          text: this.selectedMail.from,
-          isFlagged: this.selectedMail.isFromFlagged,
-          label: 'Harmful sender'
-        })
-      const subjectCase = isTs
-        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
-        : true
-      this.selectedMail.subject &&
-        subjectCase &&
-        this.filterList.push({
-          option: 'subject',
-          text: this.selectedMail.subject,
-          isFlagged: this.selectedMail.isSubjectFlagged,
-          label: 'Harmful sender'
-        })
-      const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
-      this.selectedMail.to &&
-        toCase &&
-        !isIR &&
-        this.selectedMail.to.map((item) => {
-          this.filterList.push({
-            option: 'to',
-            text: item,
-            isFlagged: this.selectedMail.isToFlagged,
-            label: 'Harmful sender'
-          })
-        })
-      this.selectedMail.urls &&
-        this.selectedMail.urls.map((item) => {
-          const urlCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (urlCase)
-            this.filterList.push({
-              option: 'url',
-              text: item.url,
-              isFlagged: item.isFlagged,
-              label: 'Phishing'
-            })
-        })
-      if (!this.filterList.length) {
-        this.filterList.push({})
-      }
-      this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
-        getTimeZoneForMoment()
-      )}`
-    }
+  mounted() {
+    this.checkIsDuplicate()
+    this.checkIsSelectedMail()
     this.setInitialFormData()
   },
   methods: {
     setInitialFormData() {
-      this.initialFormValues = {
-        investigationName: this.investigationName,
-        targetUsers: this.targetUsers,
-        filterList: this.filterList,
-        date: this.date,
-        scanTypes: this.scanTypes,
-        duration: this.duration,
-        selectedAction: this.selectedAction
+      this.initialFormData = this.getCurrentFormData()
+    },
+    getStepOneFormData() {
+      const { refNewInvestigationSettings } = this.$refs
+      const { formData = {} } = refNewInvestigationSettings || {}
+      return {
+        investigationName: formData.investigationName,
+        targetUsers: formData.targetUsers,
+        emailDateRange: formData.date,
+        scanTypes: formData.scanTypes,
+        duration: formData.duration,
+        action: formData.action,
+        filterList: this.filterList
+      }
+    },
+    getCurrentFormData() {
+      return {
+        ...this.getStepOneFormData(),
+        filterList: this.filterList
       }
     },
     changeStep(flag = 1) {
-      this.step += flag
+      if (this.step === 1 && flag === 1) {
+        const { refNewInvestigationSettings } = this.$refs
+        if (refNewInvestigationSettings.validateForm()) this.step += flag
+        return this.$nextTick(() => {
+          const refFormEl = refNewInvestigationSettings.$refs.refForm.$el
+          const el = refFormEl.querySelector('.error--text') || refFormEl.querySelector('.date-row')
+          scrollToComponent(el)
+        })
+      } else this.step += flag
     },
     checkAllSingularity() {
       this.filterList.forEach((item, index) => this.checkSingularity(item, index))
@@ -422,19 +355,8 @@ export default {
       })
     },
     handleClose() {
-      const currentFormValues = {
-        investigationName: this.investigationName,
-        targetUsers: this.targetUsers,
-        filterList: this.filterList,
-        date: this.date,
-        scanTypes: this.scanTypes,
-        duration: this.duration,
-        selectedAction: this.selectedAction
-      }
-      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
-      if (!isChanged) {
+      if (!isDifferent(this.getCurrentFormData(), this.initialFormData))
         return this.$emit('closeAdd')
-      }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
@@ -457,19 +379,7 @@ export default {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
 
-      if (this.date.length < 1) {
-        this.isDateValid = false
-      }
       if (this.$refs.form.validate()) {
-        if (!this.isDateValid || this.errorMessages.some((item) => item)) {
-          this.$nextTick(() => {
-            const el = this.$refs.form.$el.querySelector('.date-row')
-            scrollToComponent(el)
-          })
-
-          return false
-        }
-
         if (!this.filterList.every((filter) => filter.text && filter.option)) {
           this.$nextTick(() => {
             const el = this.$refs.form.$el.querySelector('.error--text')
@@ -815,33 +725,156 @@ export default {
         })
       }
     },
-    checkIsEdit() {
-      if (!this.isEdit) return
-      this.investigationName = this?.investigationDetailsData?.name || ''
-      this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
-        ({ mailConfigurationResourceId, type }) => ({
-          mailConfigurationResourceId,
-          type
-        })
-      )
-      this.duration = 3
-      this.targetUserType = this.investigationDetailsData.targetUserType
-      if (this.investigationDetailsData.targetUserType === 'Groups') {
-        this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
-          return {
-            name: item.targetUser,
-            resourceId: item.targetGroupResourceId
+    checkIsDuplicate() {
+      if (!this.isDuplicate) return
+      const duplicatedNewInvestigationSettings = {
+        investigationName: this?.investigationDetailsData?.name || '',
+        scanTypes: this.investigationDetailsData.scanConfigurationDetails.map(
+          ({ mailConfigurationResourceId, type }) => ({
+            mailConfigurationResourceId,
+            type
+          })
+        ),
+        duration: this.investigationDetailsData.duration || DURATION_TYPES.OneDay,
+        targetUserType: this.investigationDetailsData.targetUserType,
+        selectedAction: ACTION_TYPES.NoAction,
+        targetUsersValue: ''
+      }
+
+      if (this.investigationDetailsData.targetUserType === TARGET_USER_TYPES.Groups) {
+        duplicatedNewInvestigationSettings.targetUsersValue = this.investigationDetailsData.targetUsers.map(
+          (item) => {
+            return {
+              name: item.targetUser,
+              resourceId: item.targetGroupResourceId
+            }
           }
-        })
-      } else if (this.investigationDetailsData.targetUserType === 'SpecificUsers') {
-        this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
+        )
+      } else if (this.investigationDetailsData.targetUserType === TARGET_USER_TYPES.Users) {
+        duplicatedNewInvestigationSettings.targetUsersValue = this.investigationDetailsData.targetUsers.map(
           (item) => item.targetUser
         )
-        const newItems = this.targetUsersValue.map((email) => ({ email }))
-        this.specificUserItems = [...this.specificUserItems, ...newItems]
       }
-      this.selectedAction = 'NoAction'
+      this.$refs.refNewInvestigationSettings.setFormData(duplicatedNewInvestigationSettings)
       this.filterList = this.getEditedFilters()
+    },
+    checkIsSelectedMail() {
+      if (!this.selectedMail) return
+      const filterList = []
+      if (this.isIr) {
+        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
+        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
+      }
+      filterList.push(this.getSelectedMailFromFilter())
+      filterList.push(this.getSelectedMailSubjectFilter())
+      filterList.push(...this.getSelectedMailAttachmentFilter())
+      filterList.push(...this.getSelectedMailBccFilter())
+      filterList.push(...this.getSelectedMailCcFilter())
+      filterList.push(...this.getSelectedMailToFilter())
+      filterList.push(...this.getSelectedMailUrlFilter())
+      if (!this.filterList.length) this.filterList.push({})
+    },
+    getSelectedMailAttachmentFilter() {
+      if (!this.selectedMail.attachments) return []
+      const filterList = []
+      this.selectedMail.attachments.forEach((item) => {
+        const attachmentCase = this.isTs ? !item.isHidden && item.isFlagged : true
+        if (!attachmentCase) return
+        filterList.push({
+          option: 'md5',
+          text: item.md5,
+          isFlagged: item.isFlagged,
+          label: 'Malicious'
+        })
+        filterList.push({
+          option: 'sha512',
+          text: item.sha512,
+          isFlagged: item.isFlagged,
+          label: 'Malicious'
+        })
+      })
+      return filterList
+    },
+    getSelectedMailBccFilter() {
+      const bccCase = this.isTs
+        ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged
+        : true
+      if (!bccCase || !this.selectedMail.bcc) return []
+      return this.selectedMail.bcc.map((item) => {
+        return {
+          option: 'bcc',
+          text: item,
+          isFlagged: this.selectedMail.isBccFlagged,
+          label: 'Harmful sender'
+        }
+      })
+    },
+    getSelectedMailCcFilter() {
+      const ccCase = this.isTs
+        ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged
+        : true
+      if (!ccCase || !this.selectedMail.cc) return []
+      return this.selectedMail.cc.map((item) => {
+        return {
+          option: 'cc',
+          text: item,
+          isFlagged: this.selectedMail.isCcFlagged,
+          label: 'Harmful sender'
+        }
+      })
+    },
+    getSelectedMailFromFilter() {
+      const fromCase = this.isTs
+        ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
+        : true
+      if (!fromCase || !this.selectedMail.from) return []
+      return {
+        option: 'from',
+        text: this.selectedMail.from,
+        isFlagged: this.selectedMail.isFromFlagged,
+        label: 'Harmful sender'
+      }
+    },
+    getSelectedMailSubjectFilter() {
+      const subjectCase = this.isTs
+        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
+        : true
+      if (!subjectCase || !this.selectedMail.subject) return []
+      return {
+        option: 'subject',
+        text: this.selectedMail.subject,
+        isFlagged: this.selectedMail.isSubjectFlagged,
+        label: 'Harmful sender'
+      }
+    },
+    getSelectedMailToFilter() {
+      const toCase = this.isTs
+        ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged
+        : true
+      if (!toCase || !this.selectedMail.to || this.isIr) return []
+      return this.selectedMail.to.map((item) => {
+        return {
+          option: 'to',
+          text: item,
+          isFlagged: this.selectedMail.isToFlagged,
+          label: 'Harmful sender'
+        }
+      })
+    },
+    getSelectedMailUrlFilter() {
+      if (!this.selectedMail.urls) return []
+      const filterList = []
+      this.selectedMail.urls.forEach((item) => {
+        const urlCase = this.isTs ? !item.isHidden && item.isFlagged : true
+        if (!urlCase) return
+        filterList.push({
+          option: 'url',
+          text: item.url,
+          isFlagged: item.isFlagged,
+          label: 'Phishing'
+        })
+      })
+      return filterList
     },
     getEditedFilters() {
       const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {

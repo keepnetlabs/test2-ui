@@ -52,6 +52,7 @@
         <InputTargetGroup
           v-if="isTargetUserTypeGroups"
           v-model.trim="formData.targetUsersValue"
+          ref="refInputTargetGroups"
           multiple
           dense
           persistent-hint
@@ -59,11 +60,13 @@
           small-chips
           deletable-chips
           item-text="name"
+          :default-items="defaultTargetGroups"
           :rules="targetGroupsValidation"
         />
         <InputTargetUsers
           v-if="isTargetUserTypeUsers"
           v-model.trim="formData.targetUsersValue"
+          ref="refInputTargetUsers"
           multiple
           dense
           persistent-hint
@@ -72,6 +75,7 @@
           small-chips
           item-text="email"
           item-value="email"
+          :default-items="defaultTargetUsers"
           :rules="targetGroupsValidation"
         />
       </div>
@@ -154,6 +158,7 @@ import labels from '@/model/constants/labels'
 import {
   TARGET_USER_TYPES,
   ACTION_TYPES,
+  DURATION_TYPES,
   durations,
   actions
 } from '@/components/Investigation/utils'
@@ -183,8 +188,10 @@ export default {
       durations,
       actions,
       formData: {
-        investigationName: '',
-        duration: 1,
+        investigationName: `Manual Investigation - ${this.$moment(Date.now()).format(
+          getTimeZoneForMoment()
+        )}`,
+        duration: DURATION_TYPES.OneDay,
         targetUserType: TARGET_USER_TYPES.AllUsers,
         targetUsersValue: '',
         warningMessage: '',
@@ -264,7 +271,9 @@ export default {
             }
           }
         ]
-      }
+      },
+      defaultTargetGroups: [],
+      defaultTargetUsers: []
     }
   },
   computed: {
@@ -316,11 +325,28 @@ export default {
     },
     actionChanged() {
       this.formData.warningMessage = ''
-      if (this.formData.action !== 'Warning') return
+      if (this.formData.action !== ACTION_TYPES.Warning) return
       this.$nextTick(() => {
         const el = this.$refs.refForm.$el.querySelector('.warning-message')
         if (el) scrollToComponent(el)
       })
+    },
+    setFormData(data = {}) {
+      for (const [key, value] of Object.entries(data)) {
+        if (!this.formData.hasOwnProperty(key)) continue
+        this.formData[key] = value
+      }
+      if (this.isTargetUserTypeGroups) {
+        this.defaultTargetGroups = this.formData.targetUsersValue
+      } else if (this.isTargetUserTypeUsers) {
+        this.defaultTargetUsers = this.formData.targetUsersValue.map((email) => ({
+          email
+        }))
+      }
+    },
+    validateForm() {
+      if (!this.formData.emailDateRange.length) this.isDateValid = false
+      return this.$refs.refForm.validate() && this.isDateValid
     }
   }
 }
