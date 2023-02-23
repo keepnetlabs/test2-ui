@@ -46,14 +46,14 @@
                 <div class="d-flex align-center">
                   {{ getStatusBadgeProps(scope.row.status).text }}
 
-                  <v-tooltip v-if="getIsAnsweredByMachine(scope.row)" right :max-width="230">
+                  <v-tooltip v-if="getCanRenderTooltip(scope.row)" right :max-width="230">
                     <template v-slot:activator="{ on }">
                       <v-icon v-on="on" class="ml-2" color="#757575" size="21">
                         mdi-information-outline
                       </v-icon>
                     </template>
                     <span class="tooltip-span">
-                      {{ labels.AnsweredByMachineTooltipText }}
+                      {{ getTooltipContent(scope.row) }}
                     </span>
                   </v-tooltip>
                 </div>
@@ -178,12 +178,31 @@ export default {
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     },
-    getIsAnsweredByMachine(row = {}) {
-      return (
+    getCanRenderTooltip(row = {}) {
+      if (
         row?.status === 'NotResponded' &&
         row?.answeredBy &&
         row?.answeredBy === 'Answered By A Machine'
-      )
+      ) {
+        return true
+      }
+      if (
+        row?.status === 'Answered' &&
+        row?.answeredBy &&
+        row?.answeredBy !== 'Answered By A Human'
+      ) {
+        return true
+      }
+      return false
+    },
+    getTooltipContent(row = {}) {
+      if (row?.status === 'NotResponded') {
+        return labels.AnsweredByMachineTooltipText
+      }
+      if (row?.status === 'Answered') {
+        return labels.AnsweredByUnknownTooltipText
+      }
+      return ''
     },
     callForData() {
       this.setLoading(true)
