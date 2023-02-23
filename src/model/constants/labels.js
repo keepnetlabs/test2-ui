@@ -711,6 +711,8 @@ export const labels = {
   CallDuration: 'Call Duration',
   AllInteractions: 'All Interactions',
   AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
+  AnsweredByUnknownTooltipText:
+    'The call was answered, but it could not determine who answered the call. It’s unknown.',
   Method: 'Method'
 }
 
