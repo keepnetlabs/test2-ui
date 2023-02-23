@@ -562,3 +562,11 @@
         padding-left: 16px !important;
     }
 }
+
+.new-investigation-settings{
+  .v-select__selections{
+    .v-chip {
+      margin: 4px !important;
+    }
+  }
+}

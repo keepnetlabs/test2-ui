@@ -28,7 +28,7 @@
       <KSelect
         v-model.trim="targetGroupResourceId"
         type="autocomplete"
-        id="input--target-user-groups"
+        id="input--target-user-groups-ldap"
         custom-menu-class="target-user-ldap__target-groups"
         outlined
         clearable

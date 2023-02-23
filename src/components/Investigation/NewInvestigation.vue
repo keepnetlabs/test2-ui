@@ -2,514 +2,100 @@
   <app-modal
     :status="status"
     title-id="text--incident-responder-new-investigation-modal-title"
-    icon-name="mdi-magnify"
-    title="Start New Manual Investigation"
+    icon-name="$book-search"
+    :title="labels.StartNewManualInvestigation"
+    @closeOverlay="handleClose"
   >
     <template #overlay-body>
-      <div class="new-investigation-wrapper">
-        <v-card flat light style="max-width: 554px;">
-          <app-modal-body-header
-            title="Start New Investigation"
-            sub-title="Select filters and date options to start an investigation"
-          />
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-list-item class="edit-name-area 0 pa-0 investigation-name">
-              <FormGroup id="label--investigation-name" :title="labels.InvestigationName" has-hint>
-                <InputEntityName
-                  v-model.trim="investigationName"
-                  id="input--investigation-name"
-                  initial-placeholder="Enter an investigation name"
-                />
-              </FormGroup>
-            </v-list-item>
-            <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
-              <v-list-item-content class>
-                <label id="label--investigation-target-users" class="edit-labels">{{
-                  labels.TargetUsers
-                }}</label>
-                <label id="label--investigation-target-users-sub" class="edit-sub-labels">{{
-                  labels.InvestigateSubLabel
-                }}</label>
-                <div class="target-users-select__radio-group">
-                  <v-radio-group
-                    v-model="targetUserType"
-                    id="input--investigation-target-user-type"
-                    :mandatory="false"
-                    @change="handleTargetUserTypeChange"
-                    row
-                  >
-                    <v-radio
-                      id="input--investigation-target-user-type-all-users"
-                      value="AllUsers"
-                      label="All Users"
-                      color="#2196f3"
-                    ></v-radio>
-                    <v-radio
-                      id="input--investigation-target-user-type-user-groups"
-                      value="Groups"
-                      label="User Groups"
-                      color="#2196f3"
-                    ></v-radio>
-                    <v-radio
-                      id="input--investigation-target-user-type-specific-users"
-                      value="SpecificUsers"
-                      label="Specific Users"
-                      color="#2196f3"
-                    ></v-radio>
-                  </v-radio-group>
-                </div>
-                <div class="target-users-select__input-area">
-                  <v-text-field
-                    v-if="targetUserType === 'AllUsers'"
-                    id="input--investigation-target-user-all-users"
-                    placeholder="All Users"
-                    outlined
-                    dense
-                    disabled
-                  />
-                  <k-select
-                    v-if="targetUserType === 'Groups'"
-                    key="groups"
-                    v-infinite-scroll="{
-                      target: '#input--investigation-target-user-groups .k-select__menu',
-                      callback: callForTargetGroups
-                    }"
-                    v-select-search-handler="{
-                      callback: callForSearchTargetGroups,
-                      isLoadingKey: 'isUserGroupsLoading'
-                    }"
-                    type="autocomplete"
-                    id="input--investigation-target-user-groups"
-                    custom-menu-class="menu--investigation-target-user-groups"
-                    :items="userGroupsItems"
-                    :placeholder="
-                      targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
-                    "
-                    outlined
-                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-                    v-model.trim="targetUsersValue"
-                    :rules="[targetUsers.required]"
-                    item-text="name"
-                    multiple
-                    dense
-                    persistent-hint
-                    auto-select-first
-                    small-chips
-                    deletable-chips
-                    :return-object="true"
-                    autocomplete="disabled"
-                    :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
-                  />
-                  <k-select
-                    v-if="targetUserType === 'SpecificUsers'"
-                    key="users"
-                    v-infinite-scroll="{
-                      target: '#input--investigation-target-user-specific-users .k-select__menu',
-                      callback: callForTargetUsers
-                    }"
-                    v-select-search-handler="{
-                      callback: callForSearchTargetUsers,
-                      isLoadingKey: 'isTargetUsersLoading'
-                    }"
-                    v-model.trim="targetUsersValue"
-                    type="autocomplete"
-                    id="input--investigation-target-user-specific-users"
-                    custom-menu-class="menu--investigation-target-user-specific-users"
-                    :items="specificUserItems"
-                    placeholder="Select target users"
-                    item-text="email"
-                    item-value="email"
-                    multiple
-                    dense
-                    persistent-hint
-                    auto-select-first
-                    deletable-chips
-                    autocomplete="disabled"
-                    small-chips
-                    :return-object="false"
-                    :rules="[targetUsers.required]"
-                    :no-data-text="
-                      isTargetUsersLoading ? 'Loading...' : 'No specific user available'
-                    "
-                    outlined
-                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-                  />
-                </div>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="edit-industry-area pb-4 pa-0">
-              <v-list-item-content class="filter-container">
-                <label id="label--investigation-search-criteria" class="edit-labels">{{
-                  labels.Filters
-                }}</label>
-                <label id="label--investigation-search-criteria-sub" class="edit-sub-labels"
-                  >Define filters for the investigation</label
-                >
-                <div
-                  class="filter-item"
-                  v-for="(list, index) in filterList"
-                  :key="`${list.renderKey}-${index}`"
-                >
-                  <div class="filter-item__selectbox">
-                    <Treeselect
-                      disable-branch-nodes
-                      open-direction="below"
-                      v-model="list.option"
-                      :key="`${list.renderKey}-${index}`"
-                      :id="`input--investigation-search-criteria-${list.option}-${index}`"
-                      :class="[
-                        'filter-list-select',
-                        'k-treeselect',
-                        { 'k-treeselect--error': isSubmitted && !list.option }
-                      ]"
-                      :clearable="false"
-                      :options="filterListOption"
-                      :max-height="320"
-                    />
-                    <div
-                      v-if="isSubmitted && !list.option"
-                      class="v-text-field__details checkbox-error"
-                      style="left: 2px !important; bottom: -17px !important;"
-                    >
-                      <transition appear name="bounce">
-                        <div class="v-messages theme--light error--text" role="alert">
-                          <div class="v-messages__wrapper">
-                            <div class="v-messages__message" style="padding-left: 10px;">
-                              Required
-                            </div>
-                          </div>
-                        </div>
-                      </transition>
-                    </div>
-                  </div>
-                  <div
-                    :class="{
-                      'filter-item__input': list.option !== 'size',
-                      'filter-item__file-size-option-input': list.option === 'size'
-                    }"
-                  >
-                    <v-text-field
-                      v-model.trim="list.text"
-                      :key="`${list.renderKey}-${index}`"
-                      :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
-                      :placeholder="
-                        placeholders[list.option]
-                          ? placeholders[list.option]
-                          : 'Select filter for investigation'
-                      "
-                      outlined
-                      :class="[
-                        'edit-name-textfield edit-select standard-height',
-                        { 'edit-name-textfield__flagged': list.isFlagged }
-                      ]"
-                      :rules="getSearchCriteriaItemRules(list.option)"
-                      :label="list.isFlagged ? list.label : ''"
-                      :error-messages="errorMessages[index]"
-                      @input="handleInputSingularityChange(list, index)"
-                    ></v-text-field>
-                  </div>
-                  <div class="filter-item__delete-button">
-                    <v-icon
-                      :id="`btn-close--investigation-search-criteria-${list.option}-${index}`"
-                      medium
-                      left
-                      class="ml-2"
-                      v-if="filterList.length > 1"
-                      @click="handleDeleteListItem(index)"
-                      >mdi-close</v-icon
-                    >
-                  </div>
-                </div>
-                <button
-                  id="btn-add--investigation-search-criteria"
-                  class="filter-item__button"
-                  type="button"
-                  @click="addNewFilterListOption()"
-                >
-                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
-                </button>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="edit-industry-area pb-4 pa-0">
-              <v-list-item-content class>
-                <label id="label--investigation-email-date-range" class="edit-labels"
-                  >Email Date Range</label
-                >
-                <label id="label--investigation-email-date-range-sub" class="edit-sub-labels"
-                  >Select range of emails’ sending date</label
-                >
-                <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
-                  <InputDate
-                    v-model="date"
-                    id="input--investigation-email-date-range"
-                    type="datetimerange"
-                    ref="refPicker"
-                    :format="parsedFormat"
-                    :valueFormat="parsedFormat"
-                    :picker-options="pickerOptions"
-                    :rules="[]"
-                    :defaultTime="['00:00:00', '23:59:00']"
-                    :prefix-icon="'el-icon-date'"
-                  />
-                  <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                    <transition appear name="bounce">
-                      <div class="v-messages theme--light error--text" role="alert">
-                        <div class="v-messages__wrapper">
-                          <div class="v-messages__message" style="padding-left: 10px;">
-                            Date is required
-                          </div>
-                        </div>
-                      </div>
-                    </transition>
-                  </div>
-                </div>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="mt-2 pb-0 pa-0">
-              <v-list-item-content class>
-                <label id="label--investigation-select-sources" class="edit-labels"
-                  >Select Sources</label
-                >
-                <label id="label--investigation-select-sources-sub" class="edit-sub-labels"
-                  >Select mail configurations to conduct this investigation in</label
-                >
-                <MailConfigurationSelectSources v-model="scanTypes" />
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="edit-industry-area mt-2 pb-4 pa-0">
-              <v-list-item-content class>
-                <label id="label--investigation-duration" class="edit-labels">Duration</label>
-                <label id="label--investigation-duration-sub" class="edit-sub-labels"
-                  >Select how many days the investigation will run</label
-                >
-                <k-select
-                  id="input--investigation-duration"
-                  custom-menu-class="menu--investigation-duration"
-                  :items="durations"
-                  outlined
-                  class="input-select standard-height"
-                  v-model.trim="duration"
-                  :rules="[(v) => !!v || 'Duration is required']"
-                  item-text="durationLabel"
-                  item-value="durationValue"
-                  placeholder="3 Days"
-                ></k-select>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="edit-industry-area mt-2 pa-0">
-              <v-list-item-content class>
-                <label id="label--investigation-action" class="edit-labels">Action</label>
-                <label id="label--investigation-action-sub" class="edit-sub-labels"
-                  >Select action to be executed if email is found</label
-                >
-                <k-select
-                  id="input--investigation-action"
-                  :items="actions"
-                  custom-menu-class="menu--investigation-action"
-                  outlined
-                  class="input-select standard-height"
-                  v-model.trim="selectedAction"
-                  :rules="[(v) => !!v || 'Action is required']"
-                  item-text="actionLabel"
-                  item-value="actionValue"
-                  position="top"
-                  placeholder="Select an action"
-                  @change="actionChanged"
-                ></k-select>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item
-              v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
-              class="edit-industry-area mt-2 pa-0"
-            >
-              <v-list-item-content class>
-                <label id="label--investigation-message" class="edit-labels">Message</label>
-                <v-text-field
-                  v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
-                  id="input--investigation-message"
-                  placeholder="Enter a message"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height warning-message"
-                  v-model.trim="warningMessage"
-                  :rules="[messageRules.required, messageRules.empty, messageRules.maxLength]"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-          </v-form>
-        </v-card>
-      </div>
+      <v-stepper v-model="step" class="k-stepper">
+        <v-stepper-header class="k-stepper__header">
+          <v-stepper-step
+            id="step--investigation-add-or-edit-modal-settings"
+            class="k-stepper__step"
+            :complete="step > 1"
+            :step="1"
+            >{{ labels.Settings }}
+          </v-stepper-step>
+          <v-divider class="k-stepper__divider" />
+          <v-stepper-step
+            id="step--investigation-add-or-edit-modal-filters"
+            class="k-stepper__step"
+            :complete="step > 2"
+            :step="2"
+            >{{ labels.Filters }}
+          </v-stepper-step>
+        </v-stepper-header>
+        <v-stepper-items class="k-stepper__items">
+          <v-stepper-content class="k-stepper__content" :step="1">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              :title="labels.Settings"
+              :subtitle="labels.NewInvestigationSub"
+            />
+            <NewInvestigationSettings ref="refNewInvestigationSettings" />
+          </v-stepper-content>
+        </v-stepper-items>
+      </v-stepper>
     </template>
     <template #overlay-footer>
-      <div class="new-investigation-footer">
-        <v-btn
-          class="k-overlay__btn-cancel"
-          id="btn-cancel--investigation-modal"
-          rounded
-          @click="onCancelClicked"
-          >{{ labels.Cancel }}</v-btn
-        >
-        <v-btn
-          :disabled="saveDisable"
-          id="btn-save--investigation-modal"
-          class="k-overlay__btn-save white--text"
-          style="width: auto;"
-          rounded
-          color="#2196f3"
-          @click="onCreateClicked"
-          >{{ labels.StartInvestigation }}</v-btn
-        >
-      </div>
+      <StepperFooter
+        max-step="2"
+        :ids="{
+          cancelButton: 'btn-cancel--add-or-edit-investigation-modal',
+          backButton: 'btn-back--add-or-edit-investigation-modal',
+          nextButton: 'btn-next--add-or-edit-investigation-modal',
+          saveButton: 'btn-save--add-or-edit-investigation-modal'
+        }"
+        :step="step"
+        :disabled-statuses="{
+          nextButton: isActionButtonDisabled,
+          submitButton: isActionButtonDisabled
+        }"
+        @on-cancel="handleClose"
+        @on-back="changeStep(-1)"
+        @on-next="changeStep()"
+        @on-submit="handleSubmit"
+      />
     </template>
   </app-modal>
 </template>
 
 <script>
-import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
-import { getTargetUsers, searchTargetGroups } from '@/api/targetUsers'
-import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import {
-  getDefaultAxiosPayload,
-  getSelectSearchPayload,
   getTimeZoneForMoment,
   scrollToComponent,
   isDifferent,
-  getTimeZone,
   createRandomCryptStringNumber
 } from '@/utils/functions'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
-import InputDate from '@/components/Common/Inputs/InputDate'
 import * as Validations from '@/utils/validations'
-import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
-import InfiniteScroll from '@/directives/infinite-scroll'
-import SelectSearchHandler from '@/directives/select-search-handler'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import { mapGetters } from 'vuex'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
+import NewInvestigationSettings from '@/components/Investigation/NewInvestigationSettings.vue'
+import StepperFooter from '@/components/Stepper/StepperFooter.vue'
 export default {
   components: {
-    FormGroup,
-    InputEntityName,
-    MailConfigurationSelectSources,
-    KSelect,
-    AppModalBodyHeader,
-    AppModal,
-    InputDate,
-    Treeselect
+    StepperFooter,
+    NewInvestigationSettings,
+    ConfigureCompanyStepHeader,
+    AppModal
   },
-  directives: {
-    'infinite-scroll': InfiniteScroll,
-    'select-search-handler': SelectSearchHandler
-  },
-  watch: {
-    timezoneFormat: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.parsedFormat = getTimeZone(false, val)
-          const parsedFormatForMoment = getTimeZoneForMoment(val)
-          this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
-            parsedFormatForMoment
-          )}`
-        }
-      }
-    },
-    date(val) {
-      this.isDateValid = val && val.length > 0
-    },
-    targetUsersValue(newVal) {
-      if (newVal[0] === '') {
-        newVal.splice(0, 1)
-      }
-    },
-    filterList() {
-      this.checkAllSingularity()
-    }
-  },
-  computed: {
-    ...mapGetters({
-      timezoneFormat: 'auth/getTimezoneFormat'
-    })
-  },
+  props: [
+    'isEdit',
+    'ísDuplicate',
+    'investigationDetailsData',
+    'status',
+    'selectedMail',
+    'isTs',
+    'isIr'
+  ],
   data() {
     return {
-      parsedFormat: getTimeZone(false),
+      step: 1,
       initialFormValues: null,
-      warningMessage: null,
-      saveDisable: false,
-      isSubmitted: false,
-      targetGroupsAxiosPayload: getDefaultAxiosPayload(),
-      targetUsersAxiosPayload: getDefaultAxiosPayload(),
-      totalNumberOfPagesOfTargetGroups: 1,
-      totalNumberOfPagesOfTargetUsers: 1,
+      isActionButtonDisabled: false,
       labels,
-      timeout: null,
-      specificUserItems: [],
       errorMessages: [],
-      isUserGroupsLoading: false,
-      isTargetUsersLoading: false,
-      pickerOptions: {
-        onPick: (date) => {
-          const { minDate, maxDate } = date
-          const refPicker = this.$refs.refPicker
-          if (maxDate && minDate) {
-            this.date = refPicker.formatToValue([minDate, maxDate])
-          }
-        },
-        shortcuts: [
-          {
-            text: 'Today',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setHours(0, 0, 0, 0)
-              end.setHours(23, 59, 59)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Yesterday',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setDate(start.getDate() - 1)
-              start.setHours(0, 0, 0, 0)
-              end.setDate(end.getDate() - 1)
-              end.setHours(23, 59, 59)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Last week',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Last month',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Last 3 months',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-              picker.$emit('pick', [start, end])
-            }
-          }
-        ]
-      },
       placeholders: {
         ip: 'Enter an ip address ',
         from: 'Enter an email address',
@@ -527,37 +113,6 @@ export default {
         extension: 'Enter an file extension',
         regex: 'Enter a regular expression'
       },
-      scanTypes: [],
-      checkboxError: false,
-      investigationName: `Manual Investigation - ${this.$moment(Date.now()).format(
-        getTimeZoneForMoment()
-      )}`,
-      isDateValid: true,
-      targetUserType: 'AllUsers',
-      targetUsersValue: '',
-      date: [],
-      startDate: '',
-      endDate: '',
-      duration: 1,
-      selectedAction: 'NoAction',
-      name: '',
-      description: '',
-      privacy: false,
-      categories: [],
-      selectedCategory: '',
-      isAllSelected: false,
-      userGroupsItems: [],
-      durations: [
-        { durationLabel: '1 Day', durationValue: 1 },
-        { durationLabel: '3 Days', durationValue: 3 },
-        { durationLabel: '7 Days', durationValue: 7 }
-      ],
-      actions: [
-        { actionLabel: 'No action', actionValue: 'NoAction' },
-        { actionLabel: 'Notify user only', actionValue: 'Warning' },
-        { actionLabel: 'Move to trash', actionValue: 'MoveToTrash' },
-        { actionLabel: 'Delete email', actionValue: 'Delete' }
-      ],
       filterList: [
         {
           renderKey: `column-key-${createRandomCryptStringNumber()}`,
@@ -601,45 +156,15 @@ export default {
             { label: 'MD5', id: 'md5' }
           ]
         }
-      ],
-      valid: false,
-      investigationNameRules: {
-        required: (v) => Validations.required(v),
-        empty: (v) => Validations.startsWithSpace(v),
-        maxLength: (v) =>
-          Validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.InvestigationName, 300))
-      },
-      messageRules: {
-        required: (v) => Validations.required(v),
-        empty: (v) => Validations.startsWithSpace(v),
-        maxLength: (v) =>
-          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Message, 64))
-      },
-      filterSelectRules: {
-        required: (v) => Validations.required(v),
-        format: (v) => Validations.startsWithSpace(v)
-      },
-      targetUsers: {
-        required: (v) => {
-          return v.length ? Validations.required(v) : labels.Required
-        }
-      }
+      ]
     }
   },
-  props: [
-    'isEdit',
-    'ísDuplicate',
-    'statsAndMenuData',
-    'investigationDetailsTargetUsersListData',
-    'investigationDetailsData',
-    'status',
-    'selectedMail',
-    'isTs',
-    'isIr'
-  ],
+  watch: {
+    filterList() {
+      this.checkAllSingularity()
+    }
+  },
   created() {
-    this.callForTargetUsers()
-    this.callForTargetGroups()
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
@@ -741,90 +266,22 @@ export default {
         getTimeZoneForMoment()
       )}`
     }
-    const pageNav = document.querySelector('.page-nav')
-    if (pageNav) {
-      pageNav.style.zIndex = 8
-    }
-    this.initialFormValues = {
-      investigationName: this.investigationName,
-      targetUsers: this.targetUsers,
-      filterList: this.filterList,
-      date: this.date,
-      scanTypes: this.scanTypes,
-      duration: this.duration,
-      selectedAction: this.selectedAction
-    }
-  },
-  beforeDestroy() {
-    const pageNav = document.querySelector('.page-nav')
-    if (pageNav) {
-      pageNav.style.zIndex = 19
-    }
+    this.setInitialFormData()
   },
   methods: {
-    callForTargetGroups(addPage) {
-      if (addPage) {
-        this.targetGroupsAxiosPayload.pageNumber += 1
-        if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
-      }
-      searchTargetGroups(this.targetGroupsAxiosPayload)
-        .then((response) => {
-          this.setTargetGroups(response)
-          this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
-        })
-        .finally(() => (this.isUserGroupsLoading = false))
-    },
-    setTargetGroups(response) {
-      const { data: { data = [] } = [] } = response
-      this.userGroupsItems = [...this.userGroupsItems, ...data.results]
-    },
-    callForSearchTargetGroups(search = '') {
-      if (search) {
-        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
-          .then(this.setTargetGroups)
-          .finally(() => {
-            this.isUserGroupsLoading = false
-          })
-      } else {
-        this.callForTargetGroups()
+    setInitialFormData() {
+      this.initialFormValues = {
+        investigationName: this.investigationName,
+        targetUsers: this.targetUsers,
+        filterList: this.filterList,
+        date: this.date,
+        scanTypes: this.scanTypes,
+        duration: this.duration,
+        selectedAction: this.selectedAction
       }
     },
-    callForTargetUsers(addPage) {
-      if (addPage) {
-        this.targetUsersAxiosPayload.pageNumber += 1
-        if (this.targetUsersAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetUsers) return
-      }
-      getTargetUsers(this.targetUsersAxiosPayload)
-        .then((response) => {
-          this.setTargetUsers(response)
-          this.totalNumberOfPagesOfTargetUsers = response.data.data.totalNumberOfPages
-        })
-        .finally(() => {
-          this.isTargetUsersLoading = false
-        })
-    },
-    callForSearchTargetUsers(search = '') {
-      if (search) {
-        getTargetUsers(getSelectSearchPayload(this.targetUsersAxiosPayload, search, 'Email'))
-          .then(this.setTargetUsers)
-          .finally(() => {
-            this.isTargetUsersLoading = false
-          })
-      } else {
-        this.callForTargetUsers()
-      }
-    },
-    setTargetUsers(response) {
-      const { data: { data = [] } = [] } = response
-      const newItems = data.results
-        .map((item) => {
-          if (this.targetUsersValue.includes(item.email)) return undefined
-          return {
-            email: item.email
-          }
-        })
-        .filter(Boolean)
-      this.specificUserItems = [...this.specificUserItems, ...newItems]
+    changeStep(flag = 1) {
+      this.step += flag
     },
     checkAllSingularity() {
       this.filterList.forEach((item, index) => this.checkSingularity(item, index))
@@ -852,19 +309,6 @@ export default {
       )
         message = `There is already ${list.option} with same value`
       this.$set(this.errorMessages, index, message)
-    },
-    actionChanged() {
-      this.warningMessage = ''
-      if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'Warning') {
-        setTimeout(() => {
-          const el = this.$refs.form.$el.querySelector('.warning-message')
-          scrollToComponent(el)
-        }, 250)
-      }
-    },
-    handleTargetUserTypeChange() {
-      this.targetUsersValue = []
-      this.$refs.form.resetValidation()
     },
     getSearchCriteriaItemRules(option = '') {
       const rules = []
@@ -977,28 +421,26 @@ export default {
         text: ''
       })
     },
-    onCancelClicked() {
-      if (!this.isSubmitted) {
-        const currentFormValues = {
-          investigationName: this.investigationName,
-          targetUsers: this.targetUsers,
-          filterList: this.filterList,
-          date: this.date,
-          scanTypes: this.scanTypes,
-          duration: this.duration,
-          selectedAction: this.selectedAction
-        }
-        const isChanged = isDifferent(currentFormValues, this.initialFormValues)
-        if (!isChanged) {
-          return this.$emit('closeAdd')
-        }
-        this.$store.dispatch('common/setIsShowLeavingDialog', {
-          show: true,
-          callback: () => {
-            this.$emit('closeAdd')
-          }
-        })
+    handleClose() {
+      const currentFormValues = {
+        investigationName: this.investigationName,
+        targetUsers: this.targetUsers,
+        filterList: this.filterList,
+        date: this.date,
+        scanTypes: this.scanTypes,
+        duration: this.duration,
+        selectedAction: this.selectedAction
       }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeAdd')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('closeAdd')
+        }
+      })
     },
     filterData(data = []) {
       return data.reduce((acc, item) => {
@@ -1011,11 +453,10 @@ export default {
         return acc
       }, [])
     },
-    onCreateClicked() {
+    handleSubmit() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
 
-      this.isSubmitted = true
       if (this.date.length < 1) {
         this.isDateValid = false
       }
@@ -1025,7 +466,7 @@ export default {
             const el = this.$refs.form.$el.querySelector('.date-row')
             scrollToComponent(el)
           })
-          this.isSubmitted = false
+
           return false
         }
 
@@ -1034,7 +475,7 @@ export default {
             const el = this.$refs.form.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
-          this.isSubmitted = false
+
           return false
         }
         let headersData = [
@@ -1354,22 +795,21 @@ export default {
             warningMessage: this.warningMessage
           }
         }
-        this.saveDisable = true
+        this.isActionButtonDisabled = true
         // post request with body data
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {
-            this.saveDisable = false
+            this.isActionButtonDisabled = false
           })
           .then((resp) => {
-            this.saveDisable = false
+            this.isActionButtonDisabled = false
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
       } else {
-        this.isSubmitted = false
         return this.$nextTick(() => {
-          this.saveDisable = false
+          this.isActionButtonDisabled = false
           const el = this.$refs.form.$el.querySelector('.error--text')
           scrollToComponent(el)
         })

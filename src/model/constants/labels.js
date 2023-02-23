@@ -11,9 +11,15 @@ export const labels = {
   DuplicateCertificate: 'Duplicate Certificate',
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
+  SelectSources: 'Select Sources',
+  Action: 'Action',
+  ActionSub: 'Select action to be executed if email is found',
+  SelectSourcesSub: 'Select mail configurations to conduct this investigation in',
   CompanyProfileSub: 'Set up your company profile first to start',
   Website: 'Website',
   Method: 'Method',
+  EmailDateRange: 'Email Date Range',
+  EmailDateRangeSub: 'Select range of emails’ sending date',
   ServiceUnavailable: 'The service is unavailable, please contact our support team.',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
   EmptyVishingReportAnswered: 'You do not have any users who answered the call',
@@ -24,6 +30,7 @@ export const labels = {
   EmptyTrainingReportClicked: 'No one has clicked the training link, yet',
   EmptyTrainingReportProgress: 'No one has training progress, yet',
   EmptyPhishingTrends: 'You do not have any phishing campaign',
+  NewInvestigationSub: 'Define settings for this investigation',
   Vished: 'Vished',
   Restore: 'Restore',
   Answered: 'Answered',
@@ -283,6 +290,7 @@ export const labels = {
   SmtpSub: 'Select SMTP configuration for this campaign',
   Duration: 'Duration',
   DurationSub: 'Select the time period you want to keep this campaign active',
+  InvestigationDurationSub: 'Select how many days the investigation will run',
   PhishingScenariosSub: 'Select scenario to use in this campaign',
   PhishingCampaignInfo: 'Phishing Campaign Info',
   PhishingCampaignInfoSub: 'Enter basic information about this campaign',
@@ -589,6 +597,7 @@ export const labels = {
   NoInvestigationStarted: 'No investigation has been started, yet',
   NoInvestigation: 'You do not have any investigations',
   StartNewInvestigation: 'START A NEW INVESTIGATION',
+  StartNewManualInvestigation: 'Start New Manual Investigation',
   StartNow: 'Start Now',
   InProgress: 'In Progress',
   FalsePositive: 'False Positive',
@@ -710,8 +719,7 @@ export const labels = {
   CallDate: 'Call Date',
   CallDuration: 'Call Duration',
   AllInteractions: 'All Interactions',
-  AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
-  Method: 'Method'
+  AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`
 }
 
 export default labels

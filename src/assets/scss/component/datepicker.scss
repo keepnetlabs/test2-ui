@@ -41,6 +41,11 @@
     }
   }
 }
+.el-date-editor--datetimerange {
+  span.el-range-separator{
+    white-space: nowrap;
+  }
+}
 
 .el-picker-panel__link-btn.el-button--default{
   background-color:#409EFF !important;
