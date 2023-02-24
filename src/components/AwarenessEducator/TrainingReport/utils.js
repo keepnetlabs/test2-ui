@@ -73,7 +73,7 @@ export function getStatusBadgeProps(status) {
       outline: true
     }
   }
-  if (trimmedStatus === 'Not Delivered') {
+  if (trimmedStatus === 'NotDelivered') {
     return {
       color: '#B83A3A',
       text: 'Not Delivered',
