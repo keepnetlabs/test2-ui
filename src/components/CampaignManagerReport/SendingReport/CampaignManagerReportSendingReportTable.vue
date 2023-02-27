@@ -236,12 +236,8 @@ export default {
       const { events = [] } = this.extendedViewValue[0] || { events: [] }
       return events
         ? events.map((event) => ({
-            status:
-              event?.eventName === 'bounce'
-                ? event?.bounceType?.substring(0, 1)?.toUpperCase() +
-                  event?.bounceType?.substring(1)
-                : event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
-            date: event.processedDate,
+            status: event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
+            date: event.timestamp,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
           }))
