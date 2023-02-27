@@ -182,21 +182,21 @@ export default {
         title: labels.EmailInformation,
         col: [
           {
-            property: PROPERTY_STORE.SUBJECT,
+            property: 'subject',
             label: labels.Subject,
             isEditable: false,
             type: 'text',
             show: true
           },
           {
-            property: PROPERTY_STORE.TOEMAIL,
+            property: 'to',
             label: labels.To,
             isEditable: false,
             type: 'text',
             show: true
           },
           {
-            property: PROPERTY_STORE.FROMEMAIL,
+            property: 'from',
             label: labels.From,
             isEditable: false,
             type: 'text',
@@ -210,7 +210,7 @@ export default {
             show: true
           },
           {
-            property: 'outboundIP',
+            property: 'senderIp',
             label: labels.SenderIP,
             isEditable: false,
             type: 'text',
