@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="refForm" class="new-investigation-settings">
+  <VForm ref="refForm" class="new-investigation-settings">
     <FormGroup id="label--investigation-name" :title="labels.InvestigationName" has-hint>
       <InputEntityName
         v-model.trim="formData.investigationName"
@@ -148,7 +148,7 @@
         :rules="warningMessageRules"
       />
     </FormGroup>
-  </v-form>
+  </VForm>
 </template>
 
 <script>

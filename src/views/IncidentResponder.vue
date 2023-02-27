@@ -2101,7 +2101,7 @@ export default {
       if (to.name === 'Investigation Details') {
         return next()
       }
-      refNewInvestigation.onCancelClicked()
+      refNewInvestigation.handleClose()
       next(false)
     } else {
       next(true)

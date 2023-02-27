@@ -34,6 +34,14 @@
             />
             <NewInvestigationSettings ref="refNewInvestigationSettings" />
           </v-stepper-content>
+          <v-stepper-content class="k-stepper__content" :step="2">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              :title="labels.Filters"
+              :subtitle="labels.NewInvestigationFiltersSub"
+            />
+            <NewInvestigationFilters ref="refNewInvestigationFilters" />
+          </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
     </template>
@@ -62,15 +70,17 @@
 
 <script>
 import AppModal from '../AppModal'
-import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
 import NewInvestigationSettings from '@/components/Investigation/NewInvestigationSettings.vue'
 import StepperFooter from '@/components/Stepper/StepperFooter.vue'
 import { ACTION_TYPES, TARGET_USER_TYPES, DURATION_TYPES } from '@/components/Investigation/utils'
+import NewInvestigationFilters from '@/components/Investigation/NewInvestigationFilters.vue'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   components: {
+    NewInvestigationFilters,
     StepperFooter,
     NewInvestigationSettings,
     ConfigureCompanyStepHeader,
@@ -108,73 +118,7 @@ export default {
       initialFormData: null,
       isActionButtonDisabled: false,
       labels,
-      errorMessages: [],
-      placeholders: {
-        ip: 'Enter an ip address ',
-        from: 'Enter an email address',
-        to: 'Enter an email address',
-        cc: 'Enter an email address',
-        bcc: 'Enter an email address',
-        subject: 'Enter a subject',
-        senderName: 'Enter a from name',
-        url: 'Enter a domain name',
-        keyword: 'Enter a keyword',
-        size: 'Enter file size(byte)',
-        name: 'Enter a file name(case sensitive)',
-        sha512: 'Enter a sha512 key',
-        md5: 'Enter a md5 key',
-        extension: 'Enter an file extension',
-        regex: 'Enter a regular expression'
-      },
-      filterList: [
-        {
-          renderKey: `column-key-${createRandomCryptStringNumber()}`,
-          text: ''
-        }
-      ],
-      filterListOption: [
-        {
-          label: 'Header',
-          id: 'header',
-          isDefaultExpanded: true,
-          children: [
-            { label: 'Subject', id: 'subject' },
-            { label: 'From', id: 'from' },
-            { label: 'To', id: 'to' },
-            { label: 'CC', id: 'cc' },
-            { label: 'BCC', id: 'bcc' },
-            { label: 'Sender Name', id: 'senderName' },
-            { label: 'IP Address', id: 'ip' }
-          ]
-        },
-        {
-          label: 'Body',
-          id: 'body',
-          isDefaultExpanded: true,
-          children: [
-            { label: 'Keyword', id: 'keyword' },
-            { label: 'URL', id: 'url' },
-            { label: 'Regex', id: 'regex' }
-          ]
-        },
-        {
-          label: 'Attachment',
-          id: 'attachment',
-          isDefaultExpanded: true,
-          children: [
-            { label: 'File Name', id: 'name' },
-            { label: 'File Size', id: 'size' },
-            { label: 'File Extension', id: 'extension' },
-            { label: 'SHA512', id: 'sha512' },
-            { label: 'MD5', id: 'md5' }
-          ]
-        }
-      ]
-    }
-  },
-  watch: {
-    filterList() {
-      this.checkAllSingularity()
+      errorMessages: []
     }
   },
   mounted() {
@@ -208,150 +152,13 @@ export default {
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
         const { refNewInvestigationSettings } = this.$refs
-        if (refNewInvestigationSettings.validateForm()) this.step += flag
-        return this.$nextTick(() => {
-          const refFormEl = refNewInvestigationSettings.$refs.refForm.$el
-          const el = refFormEl.querySelector('.error--text') || refFormEl.querySelector('.date-row')
-          scrollToComponent(el)
-        })
+        if (refNewInvestigationSettings.validateForm()) return (this.step += flag)
+        return this.scrollToErrorMessage(refNewInvestigationSettings.$refs.refForm.$el)
       } else this.step += flag
     },
-    checkAllSingularity() {
-      this.filterList.forEach((item, index) => this.checkSingularity(item, index))
-    },
-    handleInputSingularityChange(list, index) {
-      this.checkSingularity({ ...list }, index)
-      this.checkAllSingularity()
-    },
-    handleDeleteListItem(index) {
-      this.filterList.splice(index, 1)
-      this.errorMessages.splice(index, 1)
-    },
-    checkSingularity(list = {}, index = 0) {
-      if (!list.option && !list.text) return
-      let message = ''
-      if (
-        this.filterList.find(
-          (item, itemIndex) =>
-            item.text &&
-            item.text === list.text &&
-            item.option === list.option &&
-            index !== itemIndex &&
-            itemIndex < index
-        )
-      )
-        message = `There is already ${list.option} with same value`
-      this.$set(this.errorMessages, index, message)
-    },
-    getSearchCriteriaItemRules(option = '') {
-      const rules = []
-      if (!option) {
-        return rules
-      }
-      if (['from', 'to', 'cc', 'bcc'].includes(option)) {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.email(v),
-          (v) =>
-            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
-          (v) => {
-            if (Validations.email(v)) {
-              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
-            }
-            return false
-          }
-        )
-        return rules
-      } else if (option === 'ip') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.ip(v),
-          (v) => Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
-        )
-        return rules
-      } else if (option === 'subject') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
-        )
-        return rules
-      } else if (option === 'senderName') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
-        )
-        return rules
-      } else if (option === 'url') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
-          (v) => Validations.urlOrIpAddress(v)
-        )
-        return rules
-      } else if (option === 'keyword') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
-        )
-        return rules
-      } else if (option === 'size') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.isNumber(v),
-          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))
-        )
-        return rules
-      } else if (option === 'name') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
-        )
-        return rules
-      } else if (option === 'sha512') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.minLength(v, 128, labels.getMinLengthMessage(labels.SHA512, 128)),
-          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512, 128))
-        )
-        return rules
-      } else if (option === 'md5') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 32, labels.getMaxLengthMessage(labels.MD5, 32)),
-          (v) => Validations.minLength(v, 32, labels.getMinLengthMessage(labels.MD5, 32))
-        )
-        return rules
-      } else if (option === 'extension') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.minLength(v, 3, labels.getMinLengthMessage(labels.Extension, 3)),
-          (v) => Validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Extension, 10)),
-          (v) => Validations.extension(v, labels.InvalidExtension),
-          (v) => Validations.isFileExtensionSpecialCharacter(v, labels.InvalidExtension)
-        )
-        return rules
-      } else if (option === 'regex') {
-        rules.push(
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.Regex, 10))
-        )
-      }
-      return rules
-    },
-    addNewFilterListOption() {
-      this.filterList.push({
-        renderKey: `column-key-${createRandomCryptStringNumber()}`,
-        text: ''
+    scrollToErrorMessage(el = {}) {
+      this.$nextTick(() => {
+        scrollToComponent(el.querySelector('.error--text') || el.querySelector('.date-row'))
       })
     },
     handleClose() {
@@ -378,7 +185,35 @@ export default {
     handleSubmit() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
-
+      const { refNewInvestigationFilters } = this.$refs
+      const { formValid, queryValid, filtersValid } = refNewInvestigationFilters.validateForm()
+      if (formValid && queryValid && filtersValid.ipValid && filtersValid.fromValid) {
+      } else if (!formValid) {
+        return this.scrollToErrorMessage(this.$refs.refNewInvestigationFilters.$refs.refForm.$el)
+      } else if (!filtersValid.ipValid || !filtersValid.fromValid) {
+        if (!filtersValid.fromValid) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: labels.ErrorDuplicateFilterFrom,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        }
+        if (!filtersValid.ipValid) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: labels.ErrorDuplicateFilterIp,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        }
+        return
+      } else {
+        const message = refNewInvestigationFilters.getErrorMessage()
+        this.$store.dispatch('common/createSnackBar', {
+          message,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+      }
       if (this.$refs.form.validate()) {
         if (!this.filterList.every((filter) => filter.text && filter.option)) {
           this.$nextTick(() => {
@@ -717,12 +552,6 @@ export default {
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
-      } else {
-        return this.$nextTick(() => {
-          this.isActionButtonDisabled = false
-          const el = this.$refs.form.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
       }
     },
     checkIsDuplicate() {
