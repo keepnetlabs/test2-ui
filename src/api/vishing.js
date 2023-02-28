@@ -109,6 +109,10 @@ export function getVishingReportUsers(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/users/search`, payload)
 }
 
+export function getVishingReportUsersInteractions(payload = {}) {
+  return vishingRequest.post(`/vishing-report/user/answer-detail`, payload)
+}
+
 export function exportVishingUsers(payload = {}, resourceId = '') {
   return vishingRequest.post(`/vishing-report/${resourceId}/users/search/export`, payload, {
     responseType: 'blob'

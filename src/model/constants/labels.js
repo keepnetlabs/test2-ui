@@ -13,6 +13,7 @@ export const labels = {
   CompanyProfile: 'Company Profile',
   CompanyProfileSub: 'Set up your company profile first to start',
   Website: 'Website',
+  Method: 'Method',
   ServiceUnavailable: 'The service is unavailable, please contact our support team.',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
   EmptyVishingReportAnswered: 'You do not have any users who answered the call',
@@ -41,6 +42,8 @@ export const labels = {
   ExcludedURLTooltipText: 'This URL is excluded by system to prevent false positive reporting.',
   TargetUserGroups: 'Target User Groups',
   UserWhoOpenedEmail: 'Users who opened the e-mail',
+  EwsScanErrorMessage:
+    'Timeout occurred for your request as it took so long to respond. Please try again.',
   TargetUserGroupsSub: 'Select user groups below to send the training exercise',
   TrainingName: 'Training Name',
   UserWhoClickedEmail: 'Users who clicked the phishing link',
@@ -703,7 +706,14 @@ export const labels = {
   TryAgain: 'Try Again',
   VishingTemplate: 'Vishing Template',
   EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
-  AllowedDomain: 'Allowed Domains'
+  AllowedDomain: 'Allowed Domains',
+  CallDate: 'Call Date',
+  CallDuration: 'Call Duration',
+  AllInteractions: 'All Interactions',
+  AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
+  AnsweredByUnknownTooltipText:
+    'The call was answered, but it could not determine who answered the call. It’s unknown.',
+  Method: 'Method'
 }
 
 export default labels

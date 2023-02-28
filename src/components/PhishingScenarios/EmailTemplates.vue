@@ -314,7 +314,7 @@ export default {
             property: PROPERTY_STORE.CATEGORYNAME,
             align: 'left',
             editable: false,
-            label: labels.Category,
+            label: labels.Method,
             sortable: true,
             show: true,
             type: 'text',

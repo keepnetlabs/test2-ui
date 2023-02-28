@@ -403,7 +403,7 @@ export default {
                 this.listData[index].selected = true
               }
             } else {
-              if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
+              this.setSelectedTemplate(this.listData[0], 0, true)
             }
             this.defaultListData = [...this.listData]
           }

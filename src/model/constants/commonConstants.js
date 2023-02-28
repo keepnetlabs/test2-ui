@@ -174,6 +174,7 @@ export const PROPERTY_STORE = {
   TRAINING_NAME: 'trainingName',
   START_DATE: 'startDate',
   TARGET_AUDIENCE: 'targetAudience',
+  METHOD: 'method',
   TAGS: 'tags',
   COUNT: 'count',
   ENROLLED_BY: 'enrolledBy',

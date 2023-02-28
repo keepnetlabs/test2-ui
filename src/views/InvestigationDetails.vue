@@ -727,7 +727,7 @@
                       <div
                         class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
                       >
-                        {{ investigationDetailsData.investigationType }}
+                        {{ getInvestigationType }}
                       </div>
                     </div>
                     <div
@@ -1963,7 +1963,6 @@ export default {
       this.leftMenuLoading = true
       this.topMenuLoading = true
       this.loading = true
-
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
@@ -2257,6 +2256,12 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    getInvestigationType() {
+      const { investigationType = '', matchingPlaybookName = '' } =
+        this.investigationDetailsData || {}
+      const autoText = matchingPlaybookName || 'Auto'
+      return investigationType.toLowerCase() === 'auto' ? autoText : investigationType
+    },
     isMoveToTrashDisabled() {
       if (!this.deleteValue?.emailLastAction) {
         return false

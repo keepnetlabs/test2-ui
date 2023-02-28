@@ -5,6 +5,12 @@
       title="Target Users"
       subtitle="List of target users of this campaign"
     />
+    <VishingReportUserInteractionsModal
+      v-if="isShowInteractionsModal"
+      :status="isShowInteractionsModal"
+      :item="selectedRow"
+      @on-close="toggleIsShowInteractionsModal"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -33,6 +39,7 @@
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportVishingReportUsers"
       @refreshAction="callForData"
+      @on-interactions="handleInteractions"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="vishing-report-users__status-column">
@@ -49,6 +56,16 @@
             <span>{{ getErrorMessage(scope.row) }}</span>
           </v-tooltip>
         </div>
+      </template>
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          :checkIsOwnerProperty="false"
+          @on-click="handleInteractions(scope.row)"
+        />
       </template>
     </DataTable>
   </div>
@@ -69,9 +86,18 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { exportVishingUsers, getVishingReportUsers } from '@/api/vishing'
 import { getStatusBadgeProps } from '@/components/VishingReport/utils'
 import Badge from '@/components/Badge'
+import VishingReportUserInteractionsModal from '@/components/VishingReport/VishingReportUserInteractionsModal.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   name: 'VishingReportUsers',
-  components: { DataTable, CampaignManagerReportHeader, Badge },
+  components: {
+    DataTable,
+    CampaignManagerReportHeader,
+    Badge,
+    VishingReportUserInteractionsModal,
+    DefaultButtonRowAction
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -80,6 +106,8 @@ export default {
   },
   data() {
     return {
+      selectedRow: null,
+      isShowInteractionsModal: false,
       CONSTANTS: {
         id: 'vishing-report-users-data-table'
       },
@@ -192,7 +220,14 @@ export default {
         iEmpty: {
           message: labels.EmptyTrainingReportUsers
         },
-        rowActions: []
+        rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-vishing-report-users',
+            icon: '$custom-details',
+            action: 'on-interactions'
+          }
+        ]
       },
       tableData: []
     }
@@ -202,6 +237,7 @@ export default {
   },
   methods: {
     callForData() {
+      // this.tableData = [{}]
       this.isLoading = true
       getVishingReportUsers(this.axiosPayload, this.id)
         .then((response) => {
@@ -246,6 +282,16 @@ export default {
     },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
+    },
+    handleInteractions(row) {
+      this.selectedRow = row
+      this.toggleIsShowInteractionsModal()
+    },
+    toggleIsShowInteractionsModal() {
+      if (this.isShowInteractionsModal) {
+        this.selectedRow = null
+      }
+      this.isShowInteractionsModal = !this.isShowInteractionsModal
     }
   }
 }
