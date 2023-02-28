@@ -713,7 +713,12 @@ export const labels = {
   AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
   AnsweredByUnknownTooltipText:
     'The call was answered, but it could not determine who answered the call. It’s unknown.',
-  Method: 'Method'
+  Method: 'Method',
+  UnverifiedDomains: 'Unverified Domains',
+  SeeDomains: 'See Domains',
+  SeeDomain: 'See Domain',
+  VerifyDomains: 'Verify Domains',
+  VerifyDomain: 'Verify Domain'
 }
 
 export default labels
