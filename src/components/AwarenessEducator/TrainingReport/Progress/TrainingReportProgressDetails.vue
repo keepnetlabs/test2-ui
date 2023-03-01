@@ -3,7 +3,7 @@
     title-id="text--training-report-progress-details-popup-title"
     subtitle-id="text--training-report-progress-details-popup-subtitle"
     :maxHeightSize="'665'"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     :icon="CONSTANTS.icon"
     title="Details of the user’s progress"
     :subtitle="getSubtitle"

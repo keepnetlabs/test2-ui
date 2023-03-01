@@ -5,7 +5,7 @@
     subtitle-id="text--vishing-report-user-interactions-popup-subtitle"
     maxHeightSize="665"
     :title="labels.AllInteractions"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     :icon="CONSTANTS.icon"
     :subtitle="getSubtitle"
     :status="status"
