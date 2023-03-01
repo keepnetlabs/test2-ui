@@ -1,6 +1,7 @@
 <template>
   <VueQueryBuilder
     v-model="query"
+    :key="queryBuilderKey"
     id="investigation-query-builder"
     class="w-100"
     :max-depth="4"
@@ -26,6 +27,7 @@ import QueryBuilderGroup from '@/components/Investigation/InvestigationQueryGrou
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'NewInvestigationFilters',
   components: {
@@ -185,7 +187,8 @@ export default {
       query: {
         logicalOperator: 'AND',
         children: []
-      }
+      },
+      queryBuilderKey: `key-${createRandomCryptStringNumber()}`
     }
   },
   methods: {
@@ -219,6 +222,10 @@ export default {
         state.ipValid = false
 
       return state
+    },
+    setQuery(query = {}) {
+      this.query = query
+      this.queryBuilderKey = `key-${createRandomCryptStringNumber()}`
     }
   }
 }

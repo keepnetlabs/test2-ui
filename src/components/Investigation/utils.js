@@ -26,3 +26,41 @@ export const actions = [
   { actionLabel: 'Move to trash', actionValue: ACTION_TYPES.MoveToTrash },
   { actionLabel: 'Delete email', actionValue: ACTION_TYPES.Delete }
 ]
+
+export const createHeaderDataFactory = (params = {}) => {
+  return {
+    ip: null,
+    from: null,
+    to: null,
+    cc: null,
+    bcc: null,
+    subject: null,
+    senderName: null,
+    ...params
+  }
+}
+export const createBodyDataFactory = (params = {}) => {
+  return {
+    url: null,
+    keyword: null,
+    regex: null,
+    ...params
+  }
+}
+
+export const createAttachmentDataFactory = (params = {}) => {
+  return {
+    size: null,
+    name: null,
+    md5: null,
+    sha512: null,
+    extension: null,
+    ...params
+  }
+}
+
+export const HEADER_KEYS = ['ip', 'from', 'to', 'cc', 'bcc', 'subject', 'senderName']
+
+export const BODY_KEYS = ['url', 'keyword', 'regex']
+
+export const ATTACHMENT_KEYS = ['size', 'name', 'md5', 'sha512', 'extension']

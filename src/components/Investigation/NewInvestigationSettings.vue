@@ -60,6 +60,7 @@
           small-chips
           deletable-chips
           item-text="name"
+          item-value="resourceId"
           :default-items="defaultTargetGroups"
           :rules="targetGroupsValidation"
         />
@@ -338,6 +339,9 @@ export default {
       }
       if (this.isTargetUserTypeGroups) {
         this.defaultTargetGroups = this.formData.targetUsersValue
+        this.formData.targetUsersValue = this.formData.targetUsersValue.map(
+          (group) => group.resourceId
+        )
       } else if (this.isTargetUserTypeUsers) {
         this.defaultTargetUsers = this.formData.targetUsersValue.map((email) => ({
           email
