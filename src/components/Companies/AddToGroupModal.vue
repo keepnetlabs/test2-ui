@@ -4,7 +4,7 @@
     icon="mdi-account-multiple-plus"
     :title="title"
     subtitle="Select groups to add companies to"
-    custom-size="900"
+    custom-size="800"
     max-height-size="auto"
     class-name="add-to-group-modal"
     title-id="text--company-add-to-group-popup-title"
