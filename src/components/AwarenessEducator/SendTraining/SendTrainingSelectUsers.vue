@@ -142,12 +142,12 @@ export default {
   },
   computed: {
     getTargetGroupErrorMessage() {
-      return this.formData.targetGroupResourceIds.length ? this.getTargetGroupErrorText : 'Required'
+      return this.formData.targetGroupResourceIds.length
+        ? this.getTargetGroupErrorText
+        : labels.TargetGroupSelectionRequiredError
     },
     getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError
-        ? 'Target groups must have at least 1 user'
-        : 'Required'
+      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
     },
     getErrorText() {
       if (this.targetUserCheckboxSelectionError) {
