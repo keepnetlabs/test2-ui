@@ -300,13 +300,17 @@ export default {
         this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
         this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
       }
-      filterList.push(this.getSelectedMailFromFilter())
-      filterList.push(this.getSelectedMailSubjectFilter())
+      filterList.push(...this.getSelectedMailFromFilter())
+      filterList.push(...this.getSelectedMailSubjectFilter())
       filterList.push(...this.getSelectedMailAttachmentFilter())
       filterList.push(...this.getSelectedMailBccFilter())
       filterList.push(...this.getSelectedMailCcFilter())
       filterList.push(...this.getSelectedMailToFilter())
       filterList.push(...this.getSelectedMailUrlFilter())
+      this.$refs.refNewInvestigationFilters.setQuery({
+        logicalOperator: 'AND',
+        children: filterList
+      })
     },
     getSelectedMailAttachmentFilter() {
       if (!this.selectedMail.attachments) return []
@@ -315,16 +319,12 @@ export default {
         const attachmentCase = this.isTs ? !item.isHidden && item.isFlagged : true
         if (!attachmentCase) return
         filterList.push({
-          option: 'md5',
-          text: item.md5,
-          isFlagged: item.isFlagged,
-          label: 'Malicious'
+          query: { operand: 'md5', value: item.md5, rule: 'conditions' },
+          type: 'query-builder-rule'
         })
         filterList.push({
-          option: 'sha512',
-          text: item.sha512,
-          isFlagged: item.isFlagged,
-          label: 'Malicious'
+          query: { operand: 'sha512', value: item.sha512, rule: 'conditions' },
+          type: 'query-builder-rule'
         })
       })
       return filterList
@@ -334,12 +334,10 @@ export default {
         ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged
         : true
       if (!bccCase || !this.selectedMail.bcc) return []
-      return this.selectedMail.bcc.map((item) => {
+      return this.selectedMail.bcc.map((value) => {
         return {
-          option: 'bcc',
-          text: item,
-          isFlagged: this.selectedMail.isBccFlagged,
-          label: 'Harmful sender'
+          query: { operand: 'bcc', value, rule: 'conditions' },
+          type: 'query-builder-rule'
         }
       })
     },
@@ -348,12 +346,10 @@ export default {
         ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged
         : true
       if (!ccCase || !this.selectedMail.cc) return []
-      return this.selectedMail.cc.map((item) => {
+      return this.selectedMail.cc.map((value) => {
         return {
-          option: 'cc',
-          text: item,
-          isFlagged: this.selectedMail.isCcFlagged,
-          label: 'Harmful sender'
+          query: { operand: 'cc', value, rule: 'conditions' },
+          type: 'query-builder-rule'
         }
       })
     },
@@ -363,10 +359,8 @@ export default {
         : true
       if (!fromCase || !this.selectedMail.from) return []
       return {
-        option: 'from',
-        text: this.selectedMail.from,
-        isFlagged: this.selectedMail.isFromFlagged,
-        label: 'Harmful sender'
+        query: { operand: 'from', value: this.selectedMail.from, rule: 'conditions' },
+        type: 'query-builder-rule'
       }
     },
     getSelectedMailSubjectFilter() {
@@ -375,10 +369,8 @@ export default {
         : true
       if (!subjectCase || !this.selectedMail.subject) return []
       return {
-        option: 'subject',
-        text: this.selectedMail.subject,
-        isFlagged: this.selectedMail.isSubjectFlagged,
-        label: 'Harmful sender'
+        query: { operand: 'subject', value: this.selectedMail.subject, rule: 'conditions' },
+        type: 'query-builder-rule'
       }
     },
     getSelectedMailToFilter() {
@@ -386,12 +378,10 @@ export default {
         ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged
         : true
       if (!toCase || !this.selectedMail.to || this.isIr) return []
-      return this.selectedMail.to.map((item) => {
+      return this.selectedMail.to.map((value) => {
         return {
-          option: 'to',
-          text: item,
-          isFlagged: this.selectedMail.isToFlagged,
-          label: 'Harmful sender'
+          query: { operand: 'to', value, rule: 'conditions' },
+          type: 'query-builder-rule'
         }
       })
     },
@@ -402,10 +392,8 @@ export default {
         const urlCase = this.isTs ? !item.isHidden && item.isFlagged : true
         if (!urlCase) return
         filterList.push({
-          option: 'url',
-          text: item.url,
-          isFlagged: item.isFlagged,
-          label: 'Phishing'
+          query: { operand: 'url', value: item.url, rule: 'conditions' },
+          type: 'query-builder-rule'
         })
       })
       return filterList

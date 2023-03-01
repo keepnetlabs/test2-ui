@@ -90,4 +90,12 @@
       margin: 4px !important;
     }
   }
+  #input--investigation-target-user-type .v-label{
+    font-size:14px;
+  }
+  .mail-configuration-select-sources__item-container {
+    .v-btn.v-btn--is-elevated.k-badge.mail-configuration-select-sources__badge  {
+      height:24px !important;
+    }
+  }
 }
