@@ -26,7 +26,6 @@ import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '@/components/Investigation/InvestigationQueryGroup'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'NewInvestigationFilters',

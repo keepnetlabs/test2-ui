@@ -165,7 +165,10 @@ export default {
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
         const { refNewInvestigationSettings } = this.$refs
-        if (refNewInvestigationSettings.validateForm()) return (this.step += flag)
+        if (refNewInvestigationSettings.validateForm()) {
+          this.step += flag
+          return
+        }
         return this.scrollToErrorMessage(refNewInvestigationSettings.$refs.refForm.$el)
       } else this.step += flag
     },
