@@ -338,6 +338,7 @@ export default {
       isCampaignLoading: false,
       totalCampaignGroups: 0,
       isAttachmentBasedScenario: false,
+      methodTypeId: 1,
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageTemplates: null,
@@ -489,6 +490,7 @@ export default {
         const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
         const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
         this.isAttachmentBasedScenario = methodTypeId === 3
+        this.methodTypeId = methodTypeId
         this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
         this.emailTemplateParams = {
           name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
@@ -599,27 +601,41 @@ export default {
           if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#757575', '#E6A23C', '#F56C6C', '#217124', '#43A047'],
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#F56C6C', '#757575'],
               labels: [
                 labels.NoResponse,
                 labels.Opened,
+                labels.ReportedAsSuspicious,
                 labels.OpenedAttachment,
-                labels.NotDelivered,
-                labels.ReportedAsSuspicious
+                labels.NotDelivered
+              ],
+              showTooltipLine: true
+            }
+          }
+          if (this.methodTypeId === 2) {
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
+              labels: [
+                labels.NoResponse,
+                labels.OpenedEmail,
+                labels.ReportedAsSuspicious,
+                labels.ClickedThePhishingLink,
+                labels.SubmittedData,
+                labels.NotDelivered
               ],
               showTooltipLine: true
             }
           } else {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#757575', '#B6791D', '#E6A23C', '#B83A3A', '#217124', '#43A047'],
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#757575'],
               labels: [
                 labels.NoResponse,
-                labels.ClickedThePhishingLink,
                 labels.OpenedEmail,
-                labels.SubmittedData,
-                labels.NotDelivered,
-                labels.ReportedAsSuspicious
+                labels.ReportedAsSuspicious,
+                labels.ClickedThePhishingLink,
+                labels.NotDelivered
               ],
               showTooltipLine: true
             }
@@ -635,12 +651,12 @@ export default {
           } = data?.scenarioStats
           const pieData = []
           pieData.push(noResponseEmail)
-          if (!this.isAttachmentBasedScenario) pieData.push(clickedEmail)
           pieData.push(openedEmail)
-          if (!this.isAttachmentBasedScenario) pieData.push(submittedEmail)
-          else pieData.push(attachmentOpenedEmail)
-          pieData.push(notDelivered)
           pieData.push(reportedEmail)
+          if (this.methodTypeId !== 3) pieData.push(clickedEmail)
+          if (this.methodTypeId === 2) pieData.push(submittedEmail)
+          if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)
+          pieData.push(notDelivered)
           this.pieData = JSON.parse(JSON.stringify(pieData))
         })
         .finally(() => {

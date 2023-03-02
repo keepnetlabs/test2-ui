@@ -7,6 +7,7 @@
     size="ultraMaximum"
     class-name="matching-modal"
     maxHeightSize="665"
+    customSize="800"
     @changeStatus="closeOverlay"
   >
     <template #app-dialog-body>
