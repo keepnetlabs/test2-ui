@@ -387,8 +387,6 @@ export default {
     industryValue: [],
     privacyList,
     privacyValue: [],
-    cancelRequestCommunityName: null,
-    cancelRequestCommunityId: null,
     openNotificationModal: false,
     leaveCommunityName: null,
     isWantToToLeaveFromCommunity: false,
@@ -605,7 +603,6 @@ export default {
           .then((response) => {
             this.invitationsCount = response.data.data.count
           })
-
           .catch((error) => {
             if (
               error.response &&
@@ -702,10 +699,8 @@ export default {
           })
       }
     },
-    getAllCommunitiesListData(isSearch) {
-      this.listData = []
-      this.communityLoading = true
-      const payload = {
+    getCommunityPayload(isSearch) {
+      return {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
         orderBy: 'createTime',
@@ -716,7 +711,11 @@ export default {
           this.privacyValue.toString() || ''
         )
       }
-      getAllCommunityList(payload)
+    },
+    getAllCommunitiesListData(isSearch) {
+      this.listData = []
+      this.communityLoading = true
+      getAllCommunityList(this.getCommunityPayload(isSearch))
         .then((response) => {
           const { data } = response
           if (isSearch) {
@@ -751,56 +750,7 @@ export default {
     getMyCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
-      const payload = {
-        pageNumber: isSearch ? 1 : this.page,
-        pageSize: this.itemsPerPage,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'CommunityName',
-                  Operator: 'Contains',
-                  Value: this.filter
-                },
-                {
-                  FieldName: 'CommunityDescription',
-                  Operator: 'Contains',
-                  Value: this.filter
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'IndustryResourceId',
-                  Operator: 'Include',
-                  Value: this.industryValue.map((item) => item.resourceId).toString() || ''
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'PrivacyStatusId',
-                  Operator: 'Include',
-                  Value: this.privacyValue.toString() || ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      getMyCommunityList(payload)
+      getMyCommunityList(this.getCommunityPayload(isSearch))
         .then((response) => {
           if (isSearch) {
             this.page = 1
@@ -840,15 +790,7 @@ export default {
           },
           type: 'community'
         }
-        this.$store.dispatch('communities/setCommunities', {
-          key: 'communities',
-          communitiesData
-        })
-        let incidentsData = null
-        this.$store.dispatch('incidents/setIncidents', {
-          key: 'incidents',
-          incidentsData
-        })
+        this.setCommunitiesAndIncidentsToStore(communitiesData)
         this.$router.push({
           name: `Community`,
           params: { id: item.communityResourceId, item: item, communityName: item.communityName }
@@ -856,6 +798,16 @@ export default {
       } else {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId === 1 ? 'owner' : 'member')
       }
+    },
+    setCommunitiesAndIncidentsToStore(communitiesData = null, incidentsData = null) {
+      this.$store.dispatch('communities/setCommunities', {
+        key: 'communities',
+        communitiesData
+      })
+      this.$store.dispatch('incidents/setIncidents', {
+        key: 'incidents',
+        incidentsData
+      })
     },
     updateCommunities() {
       this.$route.params.isCommunity = false
@@ -898,15 +850,7 @@ export default {
               },
               type: 'community'
             }
-            this.$store.dispatch('communities/setCommunities', {
-              key: 'communities',
-              communitiesData
-            })
-            let incidentsData = null
-            this.$store.dispatch('incidents/setIncidents', {
-              key: 'incidents',
-              incidentsData
-            })
+            this.setCommunitiesAndIncidentsToStore(communitiesData)
             this.$router.push({
               path: `/threat-sharing/community/${communityId}`,
               params: { communityName: communityName }
