@@ -728,7 +728,6 @@ export const labels = {
   AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
   AnsweredByUnknownTooltipText:
     'The call was answered, but it could not determine who answered the call. It’s unknown.',
-  Method: 'Method',
   TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
   TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
   VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
