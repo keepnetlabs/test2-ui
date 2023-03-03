@@ -14,6 +14,11 @@ export const labels = {
   CompanyProfileSub: 'Set up your company profile first to start',
   Website: 'Website',
   Method: 'Method',
+  DirectEmailCreationTitle: 'Direct Email Creation',
+  EmptyDirectEmailCreation: 'You do not have any direct email delivery configuration, yet',
+  CreateNow: 'Create Now',
+  DirectEmailCreationSubTitle:
+    'Manage direct email creation settings to send emails to target users with API permissions.',
   ServiceUnavailable: 'The service is unavailable, please contact our support team.',
   EmptyTrainingReportUsers: 'You do not have any target user in this report',
   EmptyVishingReportAnswered: 'You do not have any users who answered the call',
@@ -101,6 +106,7 @@ export const labels = {
   UploadCoverImageForTheTraining: 'Upload a cover image for the training',
   AddTraining: 'Add Training',
   CreateNewTraining: 'Create New Training',
+  CreateDirectEmailCreation: 'Create New Direct Email Integration',
   ContentType: 'Content Type',
   CoverImage: 'Cover Image',
   CoverImageTrainingUrl: 'Upload a cover image for the training',
@@ -713,7 +719,6 @@ export const labels = {
   AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
   AnsweredByUnknownTooltipText:
     'The call was answered, but it could not determine who answered the call. It’s unknown.',
-  Method: 'Method',
   TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
   TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
   VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
