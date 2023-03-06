@@ -84,7 +84,9 @@ import {
   ATTACHMENT_KEYS,
   createHeaderDataFactory,
   createBodyDataFactory,
-  createAttachmentDataFactory
+  createAttachmentDataFactory,
+  OPERATORS,
+  TEXT_OPERATORS
 } from '@/components/Investigation/utils'
 import NewInvestigationFilters from '@/components/Investigation/NewInvestigationFilters.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -221,22 +223,23 @@ export default {
             type: formData.action,
             isPermanentDelete: formData.action === ACTION_TYPES.Delete,
             warningMessage: formData.warningMessage
-          }
+          },
+          logicalOperator:
+            query.logicalOperator === TEXT_OPERATORS.AND ? OPERATORS.AND : OPERATORS.OR
         }
         console.log('payload', payload)
         this.isActionButtonDisabled = true
         this.$store
           .dispatch('investigations/createInvestigation', payload)
           .then((resp) => {
-            this.isActionButtonDisabled = false
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
-          .catch(() => {
+          .finally(() => {
             this.isActionButtonDisabled = false
           })
       } else if (!formValid) {
-        return this.scrollToErrorMessage(this.$refs.refNewInvestigationFilters.$refs.refForm.$el)
+        this.scrollToErrorMessage(this.$refs.refNewInvestigationFilters.$refs.refForm.$el)
       } else if (!filtersValid.ipValid || !filtersValid.fromValid) {
         if (!filtersValid.fromValid) {
           this.$store.dispatch('common/createSnackBar', {
@@ -253,7 +256,7 @@ export default {
           })
         }
       } else {
-        return this.$store.dispatch('common/createSnackBar', {
+        this.$store.dispatch('common/createSnackBar', {
           message: refNewInvestigationFilters.getErrorMessage(),
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert-circle'
@@ -291,10 +294,10 @@ export default {
         )
       }
       this.$refs.refNewInvestigationSettings.setFormData(duplicatedNewInvestigationSettings)
-      this.$refs.refNewInvestigationFilters.setQuery({
-        logicalOperator: 'AND',
-        children: this.getEditedFilters()
-      })
+      this.setFormQuery(
+        this.investigationDetailsData.logicalOperator || OPERATORS.AND,
+        this.getEditedFilters()
+      )
     },
     checkIsSelectedMail() {
       if (!this.selectedMail) return
@@ -310,9 +313,12 @@ export default {
       filterList.push(...this.getSelectedMailCcFilter())
       filterList.push(...this.getSelectedMailToFilter())
       filterList.push(...this.getSelectedMailUrlFilter())
+      this.setFormQuery(this.selectedEmail.logicalOperator || OPERATORS.AND, filterList)
+    },
+    setFormQuery(logicalOperator = OPERATORS.AND, children = []) {
       this.$refs.refNewInvestigationFilters.setQuery({
-        logicalOperator: 'AND',
-        children: filterList
+        logicalOperator: logicalOperator === OPERATORS.AND ? TEXT_OPERATORS.AND : TEXT_OPERATORS.OR,
+        children
       })
     },
     getSelectedMailAttachmentFilter() {

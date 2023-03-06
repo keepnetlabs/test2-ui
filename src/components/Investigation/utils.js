@@ -64,3 +64,13 @@ export const HEADER_KEYS = ['ip', 'from', 'to', 'cc', 'bcc', 'subject', 'senderN
 export const BODY_KEYS = ['url', 'keyword', 'regex']
 
 export const ATTACHMENT_KEYS = ['size', 'name', 'md5', 'sha512', 'extension']
+
+export const OPERATORS = {
+  OR: 0,
+  AND: 1
+}
+
+export const TEXT_OPERATORS = {
+  OR: 'OR',
+  AND: 'AND'
+}
