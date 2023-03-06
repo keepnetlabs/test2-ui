@@ -2,7 +2,7 @@
   <AppDialog
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     maxHeightSize="665"
     :icon="CONSTANTS.icon"
     :title="getTitle"

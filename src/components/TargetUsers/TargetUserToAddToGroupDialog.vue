@@ -5,7 +5,7 @@
     title="Add User To User Groups"
     subtitle="Select groups to add users to"
     maxHeightSize="665"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     :icon="CONSTANTS.icon"
     :status="status"
     @changeStatus="handleClose"

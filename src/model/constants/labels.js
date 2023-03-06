@@ -713,7 +713,17 @@ export const labels = {
     'This email file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.',
   DownloadAttachmentTitle: 'Download File',
   DownloadAttachmentSubtitle:
-    'This file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.'
+    'This file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.',
+  CallDate: 'Call Date',
+  CallDuration: 'Call Duration',
+  AllInteractions: 'All Interactions',
+  AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
+  AnsweredByUnknownTooltipText:
+    'The call was answered, but it could not determine who answered the call. It’s unknown.',
+  Method: 'Method',
+  TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
+  TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
+  VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
 }
 
 export default labels

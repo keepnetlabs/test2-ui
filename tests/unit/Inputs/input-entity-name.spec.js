@@ -14,10 +14,8 @@ describe('Input entity name', () => {
         id: 'input-entity-name'
       }
     })
-
     expect(wrapper.find('#input-entity-name').exists()).toBeTruthy()
   })
-
   it('should render props successfully', () => {
     const props = {
       id: 'input-entity-name',

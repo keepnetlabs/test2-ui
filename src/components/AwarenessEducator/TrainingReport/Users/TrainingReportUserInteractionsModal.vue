@@ -4,7 +4,7 @@
     title="Details"
     subtitle-id="text--training-report-user-interactions-popup-subtitle"
     maxHeightSize="665"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     :icon="CONSTANTS.icon"
     :subtitle="getSubtitle"
     :status="status"

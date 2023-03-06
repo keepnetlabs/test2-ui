@@ -273,12 +273,10 @@ export default {
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
         ? this.getTargetGroupErrorText
-        : 'Required'
+        : labels.TargetGroupSelectionRequiredError
     },
     getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError
-        ? 'Target groups must have at least 1 user'
-        : 'Required'
+      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
     },
     isScheduledTimeDisabled() {
       return this.formValues.scheduleTypeId !== '3'
