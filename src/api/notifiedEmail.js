@@ -3,8 +3,8 @@ const API_URL = 'notified-emails'
 export function getNotifiedEmail(id, loading = false) {
   return testRequest.get(`${API_URL}/${id}`, { loading })
 }
-export function downloadAttachment(attachmentId) {
-  return testRequest.get(`/notified-emails/attachments/${attachmentId}`, {
+export function downloadAttachment(payload) {
+  return testRequest.post(`/notified-emails/attachments`, payload, {
     responseType: 'blob'
   })
 }
@@ -15,8 +15,8 @@ export function exportNotifiedEmails(payload) {
   })
 }
 
-export function downloadMsgFiles(id, zipPassword) {
-  return testRequest.get(`/notified-emails/msg-files/${id}?zipPassword=${zipPassword}`, {
+export function downloadMsgFiles(payload) {
+  return testRequest.post(`/notified-emails/msg-files`, payload, {
     responseType: 'blob'
   })
 }
