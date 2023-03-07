@@ -63,6 +63,9 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'DownloadAttachmentModal',
   props: {
+    attachment: {
+      type: Object
+    },
     status: {
       type: Boolean,
       default: false
@@ -94,7 +97,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = attachment.name
+          link.download = `attachment-${this.attachment.name}.zip`
           link.click()
           this.$emit('changeDownloadModalStatus', false)
         }

@@ -139,6 +139,7 @@
                 v-if="downloadAttachmentModalStatus"
                 :status="downloadAttachmentModalStatus"
                 :id="selectedAttachment.resourceId"
+                :attachment="selectedAttachment"
                 @changeDownloadModalStatus="handleCloseDownloadAttachmentModal"
               />
               <v-expansion-panels :multiple="true" v-model="panel">
