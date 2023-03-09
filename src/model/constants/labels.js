@@ -14,9 +14,15 @@ export const labels = {
   CompanyProfileSub: 'Set up your company profile first to start',
   Website: 'Website',
   Method: 'Method',
+  Microsoft365InitialError:
+    'You cannot save before setting up the connection with your Microsoft 365 account.',
+  TestEmail: 'Test Email',
+  TestEmailSub: 'Send an email to test configuration',
   DirectEmailCreationTitle: 'Direct Email Creation',
   EmptyDirectEmailCreation: 'You do not have any direct email delivery configuration, yet',
   CreateNow: 'Create Now',
+  Domains: 'Domains',
+  DomainsSub: 'You can select multiple domains to use with this configuration',
   DirectEmailCreationSubTitle:
     'Manage direct email creation settings to send emails to target users with API permissions.',
   ServiceUnavailable: 'The service is unavailable, please contact our support team.',
@@ -649,6 +655,13 @@ export const labels = {
   NewSMTPSetting: 'New SMTP Setting',
   EditSMTPSetting: 'Edit SMTP Setting',
   CancelUserImport: 'Cancel user import?',
+  CreateMicrosoft365Configuration: 'Create Microsoft 365 Configuration',
+  NewMicrosoft365Configuration: 'New Microsoft 365 Configuration',
+  EditMicrosoft365Configuration: 'Edit Microsoft 365 Configuration',
+  NewMicrosoft365ConfigurationSubtitle:
+    'Create a new Microsoft 365 configuration for direct email creation(DEC).',
+  EditMicrosoft365ConfigurationSubtitle:
+    'Edit Microsoft 365 configuration for direct email creation(DEC).',
   CancelUserImportSubtitle: 'Operation will be abondened',
   CancelUserImportBody: 'You will lose all progress and users will not be imported',
   EmptyCustomApiMessage: 'You do not have any Rest API',

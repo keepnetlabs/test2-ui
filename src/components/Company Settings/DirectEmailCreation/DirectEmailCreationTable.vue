@@ -64,6 +64,7 @@ import labels from '@/model/constants/labels'
 import { COLUMNS, EMITS } from './utils'
 import DataTable from '@/components/DataTable'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import DirectCreationService from '@/api/direct-creation'
 export default {
   name: 'DirectEmailCreationTable',
   components: { DefaultButtonRowAction, DataTable },
@@ -124,7 +125,11 @@ export default {
     }
   },
   methods: {
-    callForData() {},
+    callForData() {
+      DirectCreationService.searchEmailCreations().then((domains) => {
+        this.domainItems = domains
+      })
+    },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
     },

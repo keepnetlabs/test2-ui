@@ -4,7 +4,7 @@
     icon="mdi-send"
     title="Send Test Email"
     class-name="smtp-settings-test-email"
-    subtitle="Test SMTP settings"
+    subtitle="Test Configuration"
     custom-size="600"
     max-height-size="516px"
     id="smtp-settings-delete-popup"

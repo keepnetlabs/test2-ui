@@ -221,6 +221,10 @@ export default {
     },
     changeTabByRoute() {
       const { $route: { query } = {} } = this
+      if (query?.tenant || (query?.error && query?.error_description)) {
+        this.tab = 'direct-email-creation'
+        return
+      }
       if (!query || !query.tab) return
       this.tab = query.tab
       this.$nextTick(() => {
