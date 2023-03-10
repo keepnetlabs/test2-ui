@@ -57,3 +57,10 @@ export function exportAllowList(payload) {
     'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
   })
 }
+
+export function getUnverifiedDomains() {
+  return testRequest.get(`/allow-list/search/unverified`, {
+    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+  })
+}
