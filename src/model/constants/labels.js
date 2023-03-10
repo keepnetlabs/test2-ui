@@ -721,6 +721,11 @@ export const labels = {
   AnsweredByUnknownTooltipText:
     'The call was answered, but it could not determine who answered the call. It’s unknown.',
   Method: 'Method',
+  UnverifiedDomains: 'Unverified Domains',
+  SeeDomains: 'See Domains',
+  SeeDomain: 'See Domain',
+  VerifyDomains: 'Verify Domains',
+  VerifyDomain: 'Verify Domain',
   TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
   TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
   VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
