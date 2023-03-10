@@ -6,7 +6,7 @@
     icon="mdi-account-multiple-plus"
     max-height-size="auto"
     class-name="add-to-group-modal"
-    custom-size="900"
+    custom-size="800"
     :title="getTitle"
     :subtitle="labels.AddCompaniesToCompanyGroupSubtitle"
     @changeStatus="closeOverlay"

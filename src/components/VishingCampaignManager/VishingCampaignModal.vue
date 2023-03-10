@@ -497,10 +497,10 @@ export default {
     getTargetGroupErrorMessage() {
       if (this.formValues.targetGroupResourceIds.length) {
         return this.isShowTargetGroupUsersError
-          ? 'Target groups must have at least 1 user with phone number'
+          ? labels.VishingTargetGroupUserRequiredError
           : labels.Required
       }
-      return labels.Required
+      return labels.TargetGroupSelectionRequiredError
     },
     getDistributionOverDaysValueErrorMessage() {
       if (
