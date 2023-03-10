@@ -969,7 +969,7 @@ export default {
       this.isUnverifiedDomainsLoading = true
       getUnverifiedDomains()
         .then((response) => {
-          this.unverifiedDomains = response.data?.data?.results
+          this.unverifiedDomains = response?.data?.data || []
         })
         .finally(() => {
           this.isUnverifiedDomainsLoading = false

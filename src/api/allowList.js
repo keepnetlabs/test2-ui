@@ -59,19 +59,8 @@ export function exportAllowList(payload) {
 }
 
 export function getUnverifiedDomains() {
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        data: {
-          data: {
-            results: ['www.google.com', 'www.facebook.com']
-          }
-        }
-      })
-    }, 1000)
+  return testRequest.get(`/allow-list/search/unverified`, {
+    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
   })
-  // return testRequest.get(`/allow-list/unverified`, {
-  //   'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
-  //   'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
-  // })
 }
