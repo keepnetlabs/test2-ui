@@ -841,7 +841,7 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(this.getUnverifiedDomains)
     },
     callForGetTargetUserCustomFieldsByCompanyId(forceUpdate = false) {
       this.loading = true
