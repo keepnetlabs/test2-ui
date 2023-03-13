@@ -591,7 +591,6 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.getUnverifiedDomains()
     if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   methods: {
@@ -841,7 +840,10 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          this.loading = false
+        })
+      this.getUnverifiedDomains()
     },
     callForGetTargetUserCustomFieldsByCompanyId(forceUpdate = false) {
       this.loading = true
