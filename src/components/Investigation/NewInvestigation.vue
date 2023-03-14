@@ -311,7 +311,7 @@ export default {
       filterList.push(...this.getSelectedMailCcFilter())
       filterList.push(...this.getSelectedMailToFilter())
       filterList.push(...this.getSelectedMailUrlFilter())
-      this.setFormQuery(this.selectedEmail.logicalOperator ?? OPERATORS.AND, filterList)
+      this.setFormQuery(this?.selectedEmail?.logicalOperator ?? OPERATORS.AND, filterList)
     },
     setFormQuery(logicalOperator = OPERATORS.AND, children = []) {
       this.$refs.refNewInvestigationFilters.setQuery({
@@ -365,20 +365,24 @@ export default {
         ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
         : true
       if (!fromCase || !this.selectedMail.from) return []
-      return {
-        query: { operand: 'from', value: this.selectedMail.from, rule: 'conditions' },
-        type: 'query-builder-rule'
-      }
+      return [
+        {
+          query: { operand: 'from', value: this.selectedMail.from, rule: 'conditions' },
+          type: 'query-builder-rule'
+        }
+      ]
     },
     getSelectedMailSubjectFilter() {
       const subjectCase = this.isTs
         ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
         : true
       if (!subjectCase || !this.selectedMail.subject) return []
-      return {
-        query: { operand: 'subject', value: this.selectedMail.subject, rule: 'conditions' },
-        type: 'query-builder-rule'
-      }
+      return [
+        {
+          query: { operand: 'subject', value: this.selectedMail.subject, rule: 'conditions' },
+          type: 'query-builder-rule'
+        }
+      ]
     },
     getSelectedMailToFilter() {
       const toCase = this.isTs
