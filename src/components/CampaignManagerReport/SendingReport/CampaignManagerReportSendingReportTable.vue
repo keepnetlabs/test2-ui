@@ -95,10 +95,8 @@ import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'

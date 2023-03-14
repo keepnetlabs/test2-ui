@@ -1030,8 +1030,8 @@ export default {
       //set token
       AuthenticationService.setToken(
         response.data.access_token,
-        response.data.expiredIn || 9999999999999,
-        response.data.status || 1
+        response.data.expiredIn,
+        response.data.status
       )
       if (this.checkQueryHasCommunityPostId()) {
         this.redirectToCommunityPost()

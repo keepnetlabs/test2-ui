@@ -52,6 +52,6 @@ describe('Input company component', () => {
     //checking required
     await inputHelper.addData('', textInput, wrapper)
 
-    await expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
+    expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
 })

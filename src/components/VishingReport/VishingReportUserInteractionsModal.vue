@@ -191,14 +191,11 @@ export default {
       ) {
         return true
       }
-      if (
+      return !!(
         row?.status === 'Answered' &&
         row?.answeredBy &&
         row?.answeredBy !== 'Answered By A Human'
-      ) {
-        return true
-      }
-      return false
+      )
     },
     getTooltipContent(row = {}) {
       if (row?.status === 'NotResponded') {
