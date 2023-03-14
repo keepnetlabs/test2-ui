@@ -31,8 +31,18 @@ const getDomains = () => {
 const searchEmailCreations = (payload = {}) => {
   return Promise.resolve([])
 }
+
+const deleteEmailCreation = (resourceId = '') => {
+  return Promise.resolve()
+}
+
+const getDirectEmailCreation = (resourceId = '') => {
+  return Promise.resolve()
+}
 export default {
   getClientId,
   getDomains,
-  searchEmailCreations
+  searchEmailCreations,
+  deleteEmailCreation,
+  getDirectEmailCreation
 }

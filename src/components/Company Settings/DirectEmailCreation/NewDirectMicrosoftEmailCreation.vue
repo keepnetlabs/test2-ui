@@ -104,7 +104,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import DirectCreationService from '@/api/direct-creation'
 export default {
-  name: 'NewDirectEmailCreation',
+  name: 'NewDirectMicrosoftEmailCreation',
   components: {
     TestEmailErrorDialog,
     TestEmailDialog,
@@ -126,6 +126,10 @@ export default {
     isInitial: {
       type: Boolean,
       default: true
+    },
+    selectedRow: {
+      type: Object,
+      default: () => ({})
     }
   },
   emits: ['on-close'],
@@ -173,8 +177,15 @@ export default {
   created() {
     this.callForDomains()
     this.callForClientId()
+    this.callForSelectedEmail()
   },
   methods: {
+    callForSelectedEmail() {
+      if (!this.isEdit) return
+      DirectCreationService.getDirectEmailCreation(
+        this.selectedRow.resourceId
+      ).then((response) => {})
+    },
     callForDomains() {
       if (this.isInitial && !this.isEdit) return
       DirectCreationService.getDomains().then((domains) => {

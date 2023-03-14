@@ -5,6 +5,7 @@
     subtitle-id="text--direct-email-creation-dialog-delete-popup-subtitle"
     :icon="CONSTANTS.icon"
     :title="CONSTANTS.title"
+    :subtitle="getSubtitle"
     :status="status"
     @changeStatus="handleClose"
   >
@@ -26,7 +27,8 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { EMITS } from '@/components/AwarenessEducator/utils'
+import { EMITS } from './utils'
+import DirectCreationService from '@/api/direct-creation'
 
 export default {
   name: 'DeleteDirectEmailCreationDialog',
@@ -48,11 +50,25 @@ export default {
       isActionButtonDisabled: false
     }
   },
+  computed: {
+    getSubtitle() {
+      return this?.selectedRow?.name || ''
+    }
+  },
   methods: {
     handleClose(forceUpdate = false) {
       this.$emit(EMITS.ON_CLOSE, forceUpdate)
     },
-    handleDelete() {}
+    handleDelete() {
+      this.isActionButtonDisabled = true
+      DirectCreationService.deleteEmailCreation(this.selectedRow.resourceId)
+        .then(() => {
+          this.handleClose(true)
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
+    }
   }
 }
 </script>

@@ -1,33 +1,54 @@
 <template>
   <div id="direct-email-creation">
-    <NewDirectEmailCreation
-      v-if="isShowDirectEmailCreationModal"
-      :status="isShowDirectEmailCreationModal"
+    <NewDirectMicrosoftEmailCreation
+      v-if="isShowDirectMicrosoftEmailCreationModal"
+      :status="isShowDirectMicrosoftEmailCreationModal"
       :is-initial="isMicrosoftEmailCreationInitial"
+      :is-edit="isEdit"
       @on-close="toggleNewDirectEmailCreationModal"
+    />
+    <DeleteDirectEmailCreationDialog
+      v-if="isShowDeleteDirectEmailCreationDialog"
+      :status="isShowDeleteDirectEmailCreationDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleDeleteDirectEmailCreationDialog"
     />
     <CompanySettingsHeader
       :title="labels.DirectEmailCreationTitle"
       :sub-title="labels.DirectEmailCreationSubTitle"
     />
-    <DirectEmailCreationTable @on-add="toggleNewDirectEmailCreationModal" />
+    <DirectEmailCreationTable
+      ref="refTable"
+      @on-add="toggleNewDirectEmailCreationModal"
+      @on-edit="handleEditRowClick"
+      @on-action-delete="handleDeleteRowClick"
+    />
   </div>
 </template>
 
 <script>
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import labels from '@/model/constants/labels'
-import DirectEmailCreationTable from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreationTable.vue'
-import NewDirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/NewDirectEmailCreation.vue'
+import DirectEmailCreationTable from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreationTable'
+import NewDirectMicrosoftEmailCreation from '@/components/Company Settings/DirectEmailCreation/NewDirectMicrosoftEmailCreation'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DeleteDirectEmailCreationDialog from '@/components/Company Settings/DirectEmailCreation/DeleteDirectEmailCreationDialog'
 export default {
   name: 'DirectEmailCreation',
-  components: { NewDirectEmailCreation, DirectEmailCreationTable, CompanySettingsHeader },
+  components: {
+    DeleteDirectEmailCreationDialog,
+    NewDirectMicrosoftEmailCreation,
+    DirectEmailCreationTable,
+    CompanySettingsHeader
+  },
   data() {
     return {
       labels,
-      isShowDirectEmailCreationModal: false,
-      isMicrosoftEmailCreationInitial: true
+      isEdit: false,
+      isShowDirectMicrosoftEmailCreationModal: false,
+      isShowDeleteDirectEmailCreationDialog: false,
+      isMicrosoftEmailCreationInitial: true,
+      selectedRow: null
     }
   },
   created() {
@@ -48,10 +69,29 @@ export default {
           })
         }
         this.toggleNewDirectEmailCreationModal()
+        this.$router.replace('/company/company-settings')
       }
     },
     toggleNewDirectEmailCreationModal() {
-      this.isShowDirectEmailCreationModal = !this.isShowDirectEmailCreationModal
+      if (this.isShowDirectMicrosoftEmailCreationModal) {
+        this.isMicrosoftEmailCreationInitial = true
+        this.isEdit = false
+      }
+      this.isShowDirectMicrosoftEmailCreationModal = !this.isShowDirectMicrosoftEmailCreationModal
+    },
+    toggleDeleteDirectEmailCreationDialog(forceUpdate = false) {
+      if (forceUpdate) this.$refs.refTable.callForData()
+      this.isShowDeleteDirectEmailCreationDialog = !this.isShowDeleteDirectEmailCreationDialog
+    },
+    handleDeleteRowClick(row = null) {
+      this.selectedRow = row
+      this.toggleDeleteDirectEmailCreationDialog()
+    },
+    handleEditRowClick(row = null) {
+      this.selectedRow = row
+      this.isEdit = true
+      this.isMicrosoftEmailCreationInitial = false
+      this.toggleNewDirectEmailCreationModal()
     }
   }
 }

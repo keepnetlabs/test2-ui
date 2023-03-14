@@ -12,15 +12,20 @@
     subtitle-id="text--smtp-settings-test-email-popup-subtitle"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <v-form ref="refForm" lazy-validation>
         <form-group title="Send Test Email To" has-hint>
-          <input-email v-model.trim="formValues.to" id="input--smtp-settings-test-email-to" />
+          <input-email
+            v-model.trim="formValues.to"
+            id="input--smtp-settings-test-email-to"
+            placeholder="email@example.com"
+          />
         </form-group>
         <form-group title="Sender Email Address" has-hint>
           <input-email
             v-model.trim="formValues.from"
             id="input--smtp-settings-test-email-sender-email"
+            placeholder="Enter a sender email address"
           />
         </form-group>
         <form-group title="Sender Name" has-hint>
@@ -31,7 +36,7 @@
             dense
             persistent-hint
             hint="*Required"
-            placeholder="Enter sender name"
+            placeholder="Enter a sender name"
             :rules="[
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),
@@ -50,7 +55,7 @@
             outlined
             hint="*Required"
             persistent-hint
-            placeholder="Enter message"
+            placeholder="Your message"
             :rules="[
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),
@@ -60,7 +65,7 @@
         </form-group>
       </v-form>
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <app-dialog-footer
         cancel-button-id="btn-cancel--smtp-settings-test-email-popup"
         confirm-button-id="btn-confirm--smtp-settings-test-email-popup"

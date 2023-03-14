@@ -124,11 +124,29 @@ export default {
       }
     }
   },
+  mounted() {
+    this.callForData()
+  },
   methods: {
     callForData() {
-      DirectCreationService.searchEmailCreations().then((domains) => {
-        this.domainItems = domains
-      })
+      this.setLoading(true)
+      DirectCreationService.searchEmailCreations()
+        .then((response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const {
+            results = [],
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1
+          } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     handleEdit(row) {
       this.$emit(EMITS.ON_EDIT, row)
