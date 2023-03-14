@@ -1,0 +1,25 @@
+.alert-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(230, 162, 60, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+
+  &__default-content {
+    display: flex;
+    align-items: center;
+
+    & p {
+      margin: 0;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

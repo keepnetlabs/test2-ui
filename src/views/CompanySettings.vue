@@ -147,7 +147,10 @@ export default {
   created() {
     this.tab = [
       { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
-      { permission: this.getNotificationTemplatesSearchPermissions, name: 'notification-template' },
+      {
+        permission: this.getNotificationTemplatesSearchPermissions,
+        name: 'notification-template'
+      },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
       { permission: this.getWhiteLabelingGetPermissions, name: 'white-labeling' },
       { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
@@ -216,7 +219,7 @@ export default {
       if (!query || !query.tab) return
       this.tab = query.tab
       this.$nextTick(() => {
-        this.$router.replace(this.$route.fullPath.replace('tab=notification-template', ''))
+        this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
       })
     }
   }
