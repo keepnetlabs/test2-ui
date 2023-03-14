@@ -227,7 +227,6 @@ export default {
           logicalOperator:
             query.logicalOperator === TEXT_OPERATORS.AND ? OPERATORS.AND : OPERATORS.OR
         }
-        console.log('payload', payload)
         this.isActionButtonDisabled = true
         this.$store
           .dispatch('investigations/createInvestigation', payload)
@@ -265,7 +264,6 @@ export default {
     },
     checkIsDuplicate() {
       if (!this.isDuplicate) return
-      console.log('this.investigationDetailsData', this.investigationDetailsData)
       const duplicatedNewInvestigationSettings = {
         investigationName: this?.investigationDetailsData?.name || '',
         scanTypes: this.investigationDetailsData.scanConfigurationDetails.map(
@@ -295,7 +293,7 @@ export default {
       }
       this.$refs.refNewInvestigationSettings.setFormData(duplicatedNewInvestigationSettings)
       this.setFormQuery(
-        this.investigationDetailsData.logicalOperator || OPERATORS.AND,
+        this.investigationDetailsData.logicalOperator ?? OPERATORS.AND,
         this.getEditedFilters()
       )
     },
@@ -313,7 +311,7 @@ export default {
       filterList.push(...this.getSelectedMailCcFilter())
       filterList.push(...this.getSelectedMailToFilter())
       filterList.push(...this.getSelectedMailUrlFilter())
-      this.setFormQuery(this.selectedEmail.logicalOperator || OPERATORS.AND, filterList)
+      this.setFormQuery(this.selectedEmail.logicalOperator ?? OPERATORS.AND, filterList)
     },
     setFormQuery(logicalOperator = OPERATORS.AND, children = []) {
       this.$refs.refNewInvestigationFilters.setQuery({
