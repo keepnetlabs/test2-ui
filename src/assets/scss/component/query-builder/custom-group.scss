@@ -128,14 +128,11 @@
 }
 
 .vqb-rule {
-    //margin-top: 15px;
-    //margin-bottom: 15px;
     background-color: #f5f5f5;
     border-color: #ddd;
-    //padding: 21px 24px 0 24px;
     position: relative;
-    border-radius: 8px;
-
+    margin-top:24px;
+    border-radius:20px;
     .row {
         margin-left: 0 !important;
         padding-left: 24px !important;
@@ -151,10 +148,6 @@
 
         .v-text-field.v-text-field--enclosed .v-text-field__details {
             margin-bottom: 2px;
-        }
-
-        &:first-child {
-            //padding-left: 24px !important;
         }
     }
 }
@@ -290,6 +283,14 @@
     &:first-child:before {
         display: none;
     }
+}
+
+.vue-query-builder .vqb-group.investigation-query-group {
+  margin-left: 0 !important;
+
+  &:first-child:before {
+    display: none;
+  }
 }
 
 .vue-query-builder .vqb-hide-first-group-header .elevation-1 {

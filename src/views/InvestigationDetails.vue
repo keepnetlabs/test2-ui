@@ -7,11 +7,9 @@
       <div class="investigation-details__container">
         <new-investigation
           v-if="isWantToAddNewInvestigation"
-          :isEdit="true"
-          :statsAndMenuData="statsAndMenuData"
+          :is-duplicate="true"
           :status="isWantToAddNewInvestigation"
-          :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
-          :investigationDetailsData="investigationDetailsData"
+          :investigation-details-data="investigationDetailsData"
           @closeWithRoute="onAddClose"
           @closeAdd="isWantToAddNewInvestigation = false"
         />

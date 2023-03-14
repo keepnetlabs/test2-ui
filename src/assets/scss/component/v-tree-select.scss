@@ -63,7 +63,12 @@
       }
       &__option{
         &--disabled{
+          background-color:#fff;
+          &.vue-treeselect__option--selected{
+            background-color:  #e3f2fd;
+          }
           .vue-treeselect__label{
+            cursor:default;
             color: rgba(0, 0, 0, 0.25);
           }
         }

@@ -247,6 +247,27 @@ export default {
       selectedPreviousIndex: 0
     }
   },
+  watch: {
+    search(newVal, oldVal) {
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
+          this.getTemplates(true)
+        } else {
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.templateResourceId
+          }))
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
+      }
+    }
+  },
   mounted() {
     this.getTemplates(true, this.templateResourceId)
   },
@@ -340,9 +361,7 @@ export default {
                 this.listData[index].selected = true
               }
             } else {
-              if (!templateResourceId) {
-                this.setSelectedTemplate(this.listData[0], 0, true)
-              }
+              this.setSelectedTemplate(this.listData[0], 0, true)
             }
             this.defaultListData = [...this.listData]
           }
@@ -398,35 +417,6 @@ export default {
         .finally(() => {
           this.loadingTemplatePreview = false
         })
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    }
-  },
-  watch: {
-    search(newVal, oldVal) {
-      if (!newVal) {
-        if (
-          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
-          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
-        ) {
-          this.getTemplates(true)
-        } else {
-          this.listData = [...this.defaultListData].map((item) => ({
-            ...item,
-            selected: item.resourceId === this.templateResourceId
-          }))
-        }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
-      }
     }
   }
 }

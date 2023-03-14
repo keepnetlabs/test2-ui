@@ -427,24 +427,22 @@ export default {
             if (!landingPageTemplateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
-            if (isInitial) {
-              if (!!landingPageTemplateResourceId) {
-                const index = this.listData.findIndex(
-                  (item) => item.resourceId === landingPageTemplateResourceId
-                )
-                if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index, true)
-                  this.listData[index].selected = true
-                } else {
-                  this.setSelectedTemplate(this.listData[0], 0, true)
-                  this.listData[0].selected = true
-                }
+            if (!isInitial) return
+            if (!!landingPageTemplateResourceId) {
+              const index = this.listData.findIndex(
+                (item) => item.resourceId === landingPageTemplateResourceId
+              )
+              if (index > -1) {
+                this.setSelectedTemplate(this.listData[index], index, true)
+                this.listData[index].selected = true
               } else {
-                if (!landingPageTemplateResourceId)
-                  this.setSelectedTemplate(this.listData[0], 0, true)
+                this.setSelectedTemplate(this.listData[0], 0, true)
+                this.listData[0].selected = true
               }
-              this.defaultListData = [...this.listData]
+            } else {
+              this.setSelectedTemplate(this.listData[0], 0, true)
             }
+            this.defaultListData = [...this.listData]
           }
         })
         .finally(() => {
