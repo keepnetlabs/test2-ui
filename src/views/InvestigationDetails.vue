@@ -1139,6 +1139,7 @@ import ClientTableExportHelper from '@/helper-classes/client-table-export-helper
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import { OPERATORS, TEXT_OPERATORS } from '@/components/Investigation/utils'
 
 export default {
   components: {
@@ -2568,6 +2569,12 @@ export default {
       })
 
       this.criteriaChips = [
+        {
+          criteria:
+            this?.investigationDetailsData?.logicalOperator === OPERATORS.AND
+              ? TEXT_OPERATORS.And
+              : TEXT_OPERATORS.Or
+        },
         ...headers,
         ...(this.investigationDetailsData?.bodies || []),
         ...attachments
