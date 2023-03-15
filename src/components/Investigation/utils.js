@@ -71,6 +71,8 @@ export const OPERATORS = {
 }
 
 export const TEXT_OPERATORS = {
+  Or: 'Or',
+  And: 'And',
   OR: 'OR',
   AND: 'AND'
 }
