@@ -578,9 +578,9 @@ export default {
       if (this.unverifiedDomains?.length) {
         return `There ${this.unverifiedDomains.length > 1 ? 'are' : 'is'} ${
           this.unverifiedDomains.length > 1 ? this.unverifiedDomains.length : ''
-        } ${this.unverifiedDomains.length > 1 ? 'different' : 'an'} unverified ${
+        } unverified ${
           this.unverifiedDomains.length > 1 ? 'domains' : 'domain'
-        }. Please verify the domains in order to send emails.`
+        }. Please verify the domains in the next 30 days.`
       }
 
       return ''
