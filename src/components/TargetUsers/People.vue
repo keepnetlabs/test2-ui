@@ -71,6 +71,29 @@
       @onConfirm="handleConfirmCreateUserWithGroup"
       @onClose="toggleShowingTargetUserCreateGroupWithUser"
     />
+    <UnverifiedDomainsModal
+      v-if="isUnverifiedDomainsModalVisible"
+      :status="isUnverifiedDomainsModalVisible"
+      :domains="unverifiedDomains"
+      @closeOverlay="changeUnverifiedDomainsModalStatus(false)"
+    />
+    <AlertBox
+      v-if="canRenderAlertbox"
+      class="mb-6"
+      :text="getUnverifiedDomainsText"
+      :slots="{ primaryAction: true, secondaryAction: true }"
+    >
+      <template #secondaryAction>
+        <v-btn class="people__alert-box__secondary-action" rounded @click="handleSecondaryAction">
+          {{ unverifiedDomains.length > 1 ? labels.SeeDomains : labels.SeeDomain }}</v-btn
+        >
+      </template>
+      <template #primaryAction>
+        <v-btn class="people__alert-box__primary-action" rounded @click="handlePrimaryAction">
+          {{ unverifiedDomains.length > 1 ? labels.VerifyDomains : labels.VerifyDomain }}</v-btn
+        >
+      </template>
+    </AlertBox>
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -220,7 +243,7 @@
           </div>
         </div>
       </template>
-      <template #datatable-row-actions="{scope}">
+      <template #datatable-row-actions="{ scope }">
         <TargetUserRowActionsEditButton
           :scope="scope"
           :id="tableOptions.rowActions[0].id"
@@ -290,12 +313,15 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import TargetUserLDAPImportModal from '@/components/TargetUsers/LDAP/TargetUserLDAPImportModal'
 import LDAPService from '@/api/ldap'
+import { getUnverifiedDomains } from '@/api/allowList'
 import {
   defaultFieldMappings,
   getDefaultFieldMappingsWithCurrent
 } from '@/components/Company Settings/LDAP/utils'
 import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
+import AlertBox from '@/components//AlertBox'
+import UnverifiedDomainsModal from '@/components/TargetUsers/UnverifiedDomainsModal'
 
 export default {
   name: 'People',
@@ -313,7 +339,9 @@ export default {
     AddUserModal,
     TargetUserImportFromAFile,
     TargetUserCreateGroupWithUserDialog,
-    TargetUserAddToAnExistingGroupModal: TargetGroupUsersAddToAnExistingGroupModal
+    TargetUserAddToAnExistingGroupModal: TargetGroupUsersAddToAnExistingGroupModal,
+    AlertBox,
+    UnverifiedDomainsModal
   },
   props: {
     companyLicense: {
@@ -323,6 +351,9 @@ export default {
   emits: ['call-for-company-licenses'],
   data() {
     return {
+      isUnverifiedDomainsLoading: true,
+      unverifiedDomains: [],
+      isUnverifiedDomainsModalVisible: false,
       selection: [],
       labels,
       ldapResourceId: '',
@@ -517,7 +548,10 @@ export default {
       },
       addUsersItems: [
         { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
-        { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' },
+        {
+          text: 'Import from a file',
+          id: 'btn-add-users-import-from-file--target-users-people'
+        },
         {
           text: 'Import from LDAP',
           id: 'btn-add-users-import-from-ldap--target-users-people',
@@ -539,6 +573,19 @@ export default {
         return this.selectedUserToAddToGroup
       }
       return [this.selectedUserToAddToGroup]
+    },
+    getUnverifiedDomainsText() {
+      if (this.unverifiedDomains?.length) {
+        return `There ${this.unverifiedDomains.length > 1 ? 'are' : 'is'} ${
+          this.unverifiedDomains.length > 1 ? this.unverifiedDomains.length : ''
+        } unverified ${
+          this.unverifiedDomains.length > 1 ? 'domains' : 'domain'
+        }. Please verify the domains in the next 30 days.`
+      }
+      return ''
+    },
+    canRenderAlertbox() {
+      return !this.isUnverifiedDomainsLoading && this.unverifiedDomains?.length > 0
     }
   },
   created() {
@@ -792,7 +839,10 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          this.loading = false
+        })
+      this.getUnverifiedDomains()
     },
     callForGetTargetUserCustomFieldsByCompanyId(forceUpdate = false) {
       this.loading = true
@@ -915,6 +965,25 @@ export default {
           : this.selection.length
       }
       this.toggleShowingTargetUserAddToGroup()
+    },
+    getUnverifiedDomains() {
+      this.isUnverifiedDomainsLoading = true
+      getUnverifiedDomains()
+        .then((response) => {
+          this.unverifiedDomains = response?.data?.data || []
+        })
+        .finally(() => {
+          this.isUnverifiedDomainsLoading = false
+        })
+    },
+    changeUnverifiedDomainsModalStatus(status = false) {
+      this.isUnverifiedDomainsModalVisible = status
+    },
+    handleSecondaryAction() {
+      this.changeUnverifiedDomainsModalStatus(true)
+    },
+    handlePrimaryAction() {
+      this.$router.push('/company/company-settings?tab=allowed-list')
     }
   }
 }

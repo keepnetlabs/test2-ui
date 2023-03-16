@@ -38,7 +38,9 @@ export default {
       type: Array
     },
     value: {
-      type: String
+      validate(value) {
+        return Array.isArray(value) || typeof value === 'string'
+      }
     },
     manipulateItems: {
       type: Function

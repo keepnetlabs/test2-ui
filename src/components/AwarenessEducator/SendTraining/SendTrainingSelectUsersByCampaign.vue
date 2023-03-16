@@ -362,7 +362,7 @@ export default {
       return (
         this?.getLanguages()?.map((language) => ({
           text: language.name,
-          value: language.code
+          value: language.id
         })) || []
       )
     },
@@ -396,8 +396,7 @@ export default {
       return this?.landingPageTemplates?.[0]?.content || ''
     },
     isFilterOrSearchActive() {
-      const { search } = this
-      return search
+      return this.search || this.language || this.scenarioType
     }
   },
   watch: {
@@ -409,17 +408,17 @@ export default {
           { FieldName: 'createdBy', Operator: 'Contains', Value: val },
           { FieldName: 'createTime', Operator: 'Contains', Value: val },
           { FieldName: 'lastLaunch', Operator: 'Contains', Value: val },
-          { FieldName: 'methodType', Operator: 'Contains', Value: val },
-          { FieldName: 'languageShortCode', Operator: 'Contains', Value: val }
+          { FieldName: 'method', Operator: 'Contains', Value: val },
+          { FieldName: 'languageTypeResourceId', Operator: 'Contains', Value: val }
         ]
         this.callForData(true)
       }, 500)
     },
     language(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'languageShortCode'
+        (item) => item.FieldName === 'languageTypeResourceId'
       )
-      const obj = { Value: val || '', FieldName: 'languageShortCode', Operator: 'Include' }
+      const obj = { Value: val || '', FieldName: 'languageTypeResourceId', Operator: 'Include' }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -429,9 +428,9 @@ export default {
     },
     scenarioType(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'methodType'
+        (item) => item.FieldName === 'method'
       )
-      const obj = { Value: val || '', FieldName: 'methodType', Operator: 'Include' }
+      const obj = { Value: val || '', FieldName: 'method', Operator: 'Include' }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {

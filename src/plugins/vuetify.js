@@ -9,6 +9,7 @@ import RadioUnchecked from '@/components/CustomIcons/RadioUnchecked'
 import RefreshLeft from '@/components/CustomIcons/RefreshLeft'
 import Domain from '@/components/CustomIcons/Domain'
 import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
+import BookSearch from '@/components/CustomIcons/BookSearch'
 
 Vue.use(Vuetify)
 
@@ -44,6 +45,9 @@ export default new Vuetify({
       },
       'threat-intelligence': {
         component: ThreatIntelligenceIcon
+      },
+      'book-search': {
+        component: BookSearch
       }
     }
   }

@@ -940,34 +940,32 @@ export default {
     analysisEnginesChange(engine, index) {
       if (this.searchEnginesData) {
         let item = this.analysisEngines.find(
-          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+          (item) => item.resourceId === this.searchEnginesData[index].resourceId
         )
         item.isCheckUrl = engine.selected
         item.isCheckHash = engine.selected
         item.isCheckFile = engine.selected
         item.isCheckSenderIP = engine.selected
         this.checkAllDataChecked(index, item)
+      } else if (engine['analysisEngineType']) {
+        const { analysisEngineType } = engine
+        this.analysisEngines[index].isCheckUrl = engine.selected
+          ? analysisEngineType.isSendUrl
+          : engine.selected
+        this.analysisEngines[index].isCheckHash = engine.selected
+          ? analysisEngineType.isSendFileHash
+          : engine.selected
+        this.analysisEngines[index].isCheckFile = engine.selected
+          ? analysisEngineType.isSendFile
+          : engine.selected
+        this.analysisEngines[index].isCheckSenderIP = engine.selected
+          ? analysisEngineType.isSendIp
+          : engine.selected
       } else {
-        if (engine['analysisEngineType']) {
-          const { analysisEngineType } = engine
-          this.analysisEngines[index].isCheckUrl = engine.selected
-            ? analysisEngineType.isSendUrl
-            : engine.selected
-          this.analysisEngines[index].isCheckHash = engine.selected
-            ? analysisEngineType.isSendFileHash
-            : engine.selected
-          this.analysisEngines[index].isCheckFile = engine.selected
-            ? analysisEngineType.isSendFile
-            : engine.selected
-          this.analysisEngines[index].isCheckSenderIP = engine.selected
-            ? analysisEngineType.isSendIp
-            : engine.selected
-        } else {
-          this.analysisEngines[index].isCheckUrl = engine.selected
-          this.analysisEngines[index].isCheckHash = engine.selected
-          this.analysisEngines[index].isCheckFile = engine.selected
-          this.analysisEngines[index].isCheckSenderIP = engine.selected
-        }
+        this.analysisEngines[index].isCheckUrl = engine.selected
+        this.analysisEngines[index].isCheckHash = engine.selected
+        this.analysisEngines[index].isCheckFile = engine.selected
+        this.analysisEngines[index].isCheckSenderIP = engine.selected
       }
     },
     getAnalysisEngine() {

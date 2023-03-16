@@ -1,16 +1,17 @@
 <template>
   <app-dialog
     :status="status"
+    :title="labels.DownloadEmailTitle"
     icon="mdi-download"
-    title="Download Email"
-    subtitle="This email file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that "
-    @changeStatus="$emit('changeDownloadModalStatus', false)"
     size="maximum"
     class-name="email-details__download-modal"
     title-id="text--incident-responder-email-details-download-email-title"
-    subtitle-id="text--incident-responder-email-details-download-email-subtitle"
+    @changeStatus="$emit('changeDownloadModalStatus', false)"
   >
     <template v-slot:app-dialog-body>
+      <p id="text--incident-responder-email-details-download-email-subtitle">
+        {{ labels.DownloadEmailSubtitle }}
+      </p>
       <v-list-item class="px-0 py-0">
         <v-list-item-content class="py-0">
           <label
@@ -57,6 +58,7 @@
 import AppDialog from '../AppDialog'
 import { required } from '@/utils/validations'
 import { downloadMsgFiles } from '@/api/notifiedEmail'
+import labels from '@/model/constants/labels'
 export default {
   name: 'DownloadModal',
   props: {
@@ -70,6 +72,7 @@ export default {
   },
   data() {
     return {
+      labels,
       zipPassword: 'infected',
       validations: {
         required
@@ -81,9 +84,13 @@ export default {
   },
   methods: {
     handleDownload() {
-      downloadMsgFiles(this.id, this.zipPassword).then((response) => {
-        const { data } = response
+      const payload = {
+        resourceId: this.id,
+        zipPassword: this.zipPassword
+      }
+      downloadMsgFiles(payload).then((response) => {
         if (response?.data && response?.data instanceof Blob) {
+          const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
           link.download = `mail-${this.id}.zip`
