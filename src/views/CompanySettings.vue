@@ -10,7 +10,7 @@
         <SMTPSettings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
       /></el-tab-pane>
       <el-tab-pane
-        v-if="getSMTPSettingsSearchPermissions"
+        v-if="getDirectEmailCreationSearchPermissions"
         label="Direct Email Creation"
         name="direct-email-creation"
         id="direct-email-creation-content"
@@ -148,14 +148,15 @@ export default {
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
-      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
+      getDirectEmailCreationSearchPermissions: 'permissions/getDirectEmailCreationSearchPermissions'
     })
   },
   created() {
     this.tab = [
       { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
       {
-        permission: this.getSMTPSettingsSearchPermissions,
+        permission: this.getDirectEmailCreationSearchPermissions,
         name: 'direct-email-creation'
       },
       {

@@ -11,6 +11,9 @@ const ENUMS = {
   SIEM_INTEGRATION: {
     ROOT_URL: 'companies/siem-settings'
   },
+  DIRECT_EMAIL_CREATION: {
+    ROOT_URL: 'companies/direct-email-settings'
+  },
   METHODS: {
     POST: 'POST',
     GET: 'GET',
@@ -1401,6 +1404,38 @@ export default {
     },
     EXPORT: {
       url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  DIRECT_EMAIL_CREATION_PERMISSIONS: {
+    CREATE: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `${ENUMS.DIRECT_EMAIL_CREATION.ROOT_URL}/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

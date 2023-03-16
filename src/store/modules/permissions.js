@@ -53,7 +53,8 @@ const {
   ETS_ATTACK_VECTOR_PERMISSIONS,
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
-  ALLOW_LIST_PERMISSIONS
+  ALLOW_LIST_PERMISSIONS,
+  DIRECT_EMAIL_CREATION_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -110,7 +111,8 @@ const defaultState = {
   etsAttackVectorPermissions: ETS_ATTACK_VECTOR_PERMISSIONS,
   etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS,
-  allowListPermissions: ALLOW_LIST_PERMISSIONS
+  allowListPermissions: ALLOW_LIST_PERMISSIONS,
+  directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -579,7 +581,8 @@ const store = {
         getters?.getProxySettingsSearchPermissions ||
         getters?.getSAMLIntegrationSearchPermissions ||
         getters?.getSCIMSettingsSearchPermissions ||
-        getters?.getSIEMIntegrationSearchPermissions
+        getters?.getSIEMIntegrationSearchPermissions ||
+        getters?.getDirectEmailCreationSearchPermissions
       )
     },
     getSMTPSettingsSearchPermissions(state) {
@@ -599,6 +602,21 @@ const store = {
     },
     getSMTPSettingsExportPermissions(state) {
       return state?.smtpSettingsPermissions?.EXPORT?.hasPermission
+    },
+    getDirectEmailCreationSearchPermissions(state) {
+      return state?.directEmailCreationPermissions?.SEARCH?.hasPermission
+    },
+    getDirectEmailCreatePermissions(state) {
+      return state?.directEmailCreationPermissions?.CREATE?.hasPermission
+    },
+    getDirectEmailUpdatePermissions(state) {
+      return state?.directEmailCreationPermissions?.UPDATE?.hasPermission
+    },
+    getDirectEmailDeletePermissions(state) {
+      return state?.directEmailCreationPermissions?.DELETE?.hasPermission
+    },
+    getDirectEmailExportPermissions(state) {
+      return state?.directEmailCreationPermissions?.EXPORT?.hasPermission
     },
     getNotificationTemplatesSearchPermissions(state) {
       return state?.notificationTemplatesPermissions?.SEARCH?.hasPermission
@@ -1049,7 +1067,8 @@ const store = {
         'etsAttackVectorPermissions',
         'etsQuickScanReportPermissions',
         'threatIntelligencePermissions',
-        'allowListPermissions'
+        'allowListPermissions',
+        'directEmailCreationPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

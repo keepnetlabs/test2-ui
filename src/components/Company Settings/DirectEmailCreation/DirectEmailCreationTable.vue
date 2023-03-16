@@ -93,31 +93,31 @@ export default {
           subMes: labels.CreateNow,
           icon: 'mdi-plus',
           id: 'btn-empty--direct-email-creation-list',
-          disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
+          disabled: !this.$store.getters['permissions/getDirectEmailCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'add-item',
           tooltip: labels.CreateDirectEmailCreation,
           id: 'btn-add--direct-email-creation',
-          disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
+          disabled: !this.$store.getters['permissions/getDirectEmailCreatePermissions']
         },
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getExportTrainingPermission']
+          disabled: !this.$store.getters['permissions/getDirectEmailExportPermissions']
         },
         rowActions: [
           {
             id: 'btn-edit--row-actions-direct-email-creation-list',
             name: labels.Edit,
             icon: 'mdi-pencil',
-            disabled: !this.$store.getters['permissions/getUpdateTrainingPermission']
+            disabled: !this.$store.getters['permissions/getDirectEmailUpdatePermissions']
           },
           {
             id: 'btn-delete--row-actions-direct-email-creation-list',
             name: labels.Delete,
             icon: 'mdi-delete',
-            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
+            disabled: !this.$store.getters['permissions/getDirectEmailDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
