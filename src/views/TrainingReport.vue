@@ -92,9 +92,10 @@ export default {
           id: 'training-report-exam-results-content',
           label: labels.ExamResults,
           component: TrainingReportExamResults,
-          isVisible: this.$store.getters[
-            'permissions/getCampaignReportsPhishingReporterPermissions'
-          ]
+          // isVisible: this.$store.getters[
+          //   'permissions/getCampaignReportsPhishingReporterPermissions'
+          // ],
+          isVisible: true
         },
         {
           name: labels.NoResponse,
