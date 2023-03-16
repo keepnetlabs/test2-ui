@@ -86,7 +86,7 @@ export default {
           delete: false,
           download: false
         },
-        columns: [COLUMNS.NAME],
+        columns: [COLUMNS.NAME, COLUMNS.PLATFORM, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
         iEmpty: {
           btn: labels.CreateDirectEmailCreation,
           message: labels.EmptyDirectEmailCreation,
@@ -130,7 +130,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      DirectCreationService.searchEmailCreations()
+      DirectCreationService.searchEmailCreations(this.axiosPayload)
         .then((response) => {
           const {
             data: { data = {} }
@@ -168,6 +168,15 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
+        DirectCreationService.exportDirectEmailCreation(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Direct-Email-Creations.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     }
   }

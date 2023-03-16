@@ -14,27 +14,16 @@ export const COLUMNS = {
     width: 200
   },
   PLATFORM: {
-    property: PROPERTY_STORE.PLATFORM,
+    property: PROPERTY_STORE.TYPE,
     align: 'left',
-    label: labels.Name,
+    label: labels.Platforms,
     fixed: false,
     sortable: true,
     show: true,
-    filterableType: 'text',
+    filterableType: 'select',
+    filterableItems: [{ text: 'Microsoft 365', value: 'Microsoft365' }],
     type: 'text',
     width: 180
-  },
-  EMAIL: {
-    property: PROPERTY_STORE.EMAIL,
-    align: 'left',
-    label: labels.Email,
-    fixed: false,
-    sortable: true,
-    show: true,
-    type: 'text',
-    width: 180,
-    isEditable: false,
-    filterableType: 'text'
   },
   STATUS: {
     property: PROPERTY_STORE.STATUS,
@@ -44,7 +33,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'status',
-    width: 160,
+    width: 180,
     filterableType: 'select',
     filterableItems: ['Running', 'Failed']
   },

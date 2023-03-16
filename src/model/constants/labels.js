@@ -12,6 +12,7 @@ export const labels = {
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
   SelectSources: 'Select Sources',
+  Platforms: 'Platforms',
   Action: 'Action',
   ActionSub: 'Select action to be executed if email is found',
   SelectSourcesSub: 'Select mail configurations to conduct this investigation in',
@@ -22,13 +23,13 @@ export const labels = {
     'You cannot save before setting up the connection with your Microsoft 365 account.',
   TestEmail: 'Test Email',
   TestEmailSub: 'Send an email to test configuration',
-  DirectEmailCreationTitle: 'Direct Email Creation',
+  DirectEmailCreationTitle: 'Direct Email Creation (DEC)',
   EmptyDirectEmailCreation: 'You do not have any direct email creation configuration, yet',
   CreateNow: 'Create Now',
   Domains: 'Domains',
   DomainsSub: 'You can select multiple domains to use with this configuration',
   DirectEmailCreationSubTitle:
-    'Manage direct email creation settings to send emails to target users with API permissions.',
+    'Manage direct email creation configurations to send emails to target users with API permissions.',
   ErrorDuplicateFilterFrom: 'For the “and” option, the email filter could only have one value.',
   ErrorDuplicateFilterIp: 'For the “and” option, the IP address filter could only have one value.',
   EmptyFilterMultipleError:
