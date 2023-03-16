@@ -3,8 +3,10 @@
     <NewDirectMicrosoftEmailCreation
       v-if="isShowDirectMicrosoftEmailCreationModal"
       :status="isShowDirectMicrosoftEmailCreationModal"
+      :tenant-id="tenantId"
       :is-initial="isMicrosoftEmailCreationInitial"
       :is-edit="isEdit"
+      :selected-row="selectedRow"
       @on-close="toggleNewDirectEmailCreationModal"
     />
     <DeleteDirectEmailCreationDialog
@@ -48,7 +50,8 @@ export default {
       isShowDirectMicrosoftEmailCreationModal: false,
       isShowDeleteDirectEmailCreationDialog: false,
       isMicrosoftEmailCreationInitial: true,
-      selectedRow: null
+      selectedRow: null,
+      tenantId: ''
     }
   },
   created() {
@@ -68,20 +71,27 @@ export default {
             icon: 'mdi-alert-circle'
           })
         }
+        this.tenantId = tenant
         this.toggleNewDirectEmailCreationModal()
         this.$router.replace('/company/company-settings')
       }
     },
-    toggleNewDirectEmailCreationModal() {
+    toggleNewDirectEmailCreationModal(forceUpdate = false) {
       if (this.isShowDirectMicrosoftEmailCreationModal) {
         this.isMicrosoftEmailCreationInitial = true
         this.isEdit = false
+        this.tenantId = ''
       }
+      this.callForTableData(forceUpdate)
       this.isShowDirectMicrosoftEmailCreationModal = !this.isShowDirectMicrosoftEmailCreationModal
     },
     toggleDeleteDirectEmailCreationDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      this.callForTableData(forceUpdate)
       this.isShowDeleteDirectEmailCreationDialog = !this.isShowDeleteDirectEmailCreationDialog
+    },
+    callForTableData(forceUpdate = false) {
+      if (!forceUpdate) return
+      this.$refs.refTable.callForData()
     },
     handleDeleteRowClick(row = null) {
       this.selectedRow = row
