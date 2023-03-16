@@ -1,0 +1,175 @@
+<template>
+  <DataTable
+    :id="CONSTANTS.id"
+    ref="refTable"
+    selectable
+    filterable
+    options
+    is-server-side
+    :loading="isLoading"
+    :table="tableData"
+    :columns="tableOptions.columns"
+    :empty="tableOptions.iEmpty"
+    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+    :server-side-props="serverSideProps"
+    :server-side-events="tableOptions.serverSideEvents"
+    :select-event="tableOptions.selectEvent"
+    :row-actions="tableOptions.rowActions"
+    :add-button="tableOptions.addButton"
+    :download-button="tableOptions.downloadButton"
+    :axios-payload.sync="axiosPayload"
+    @columnFilterChanged="columnFilterChanged"
+    @columnFilterCleared="columnFilterCleared"
+    @server-side-page-number-changed="serverSidePageNumberChanged"
+    @server-side-size-changed="serverSideSizeChanged"
+    @sortChangedEvent="sortChanged"
+    @searchChangedEvent="handleSearchChange"
+    @refreshAction="callForData"
+    @onEmptyBtnClicked="handleAdd"
+    @add-item="handleAdd"
+    @downloadEvent="exportDirectEmailCreationList"
+  >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[0].id"
+        :icon="tableOptions.rowActions[0].icon"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled"
+        @on-click="handleEdit(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[1].id"
+        :icon="tableOptions.rowActions[1].icon"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        @on-click="handleActionDelete(scope.row)"
+      />
+    </template>
+  </DataTable>
+</template>
+
+<script>
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
+import { COLUMNS, EMITS } from './utils'
+import DataTable from '@/components/DataTable'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import DirectCreationService from '@/api/direct-creation'
+export default {
+  name: 'DirectEmailCreationTable',
+  components: { DefaultButtonRowAction, DataTable },
+  mixins: [useLoading, useDefaultTableFunctions],
+  data() {
+    return {
+      CONSTANTS: {
+        id: 'awareness-educator-training-list-data-table'
+      },
+      axiosPayload: getDefaultAxiosPayload(),
+      tableData: [],
+      serverSideProps: new ServerSideProps(),
+      tableOptions: {
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DIRECT_EMAIL_CREATION,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DIRECT_EMAIL_CREATION,
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        columns: [COLUMNS.NAME],
+        iEmpty: {
+          btn: labels.CreateDirectEmailCreation,
+          message: labels.EmptyDirectEmailCreation,
+          subMes: labels.CreateNow,
+          icon: 'mdi-plus',
+          id: 'btn-empty--direct-email-creation-list',
+          disabled: !this.$store.getters['permissions/getDirectEmailCreatePermissions']
+        },
+        addButton: {
+          show: true,
+          action: 'add-item',
+          tooltip: labels.CreateDirectEmailCreation,
+          id: 'btn-add--direct-email-creation',
+          disabled: !this.$store.getters['permissions/getDirectEmailCreatePermissions']
+        },
+        downloadButton: {
+          show: true,
+          disabled: !this.$store.getters['permissions/getDirectEmailExportPermissions']
+        },
+        rowActions: [
+          {
+            id: 'btn-edit--row-actions-direct-email-creation-list',
+            name: labels.Edit,
+            icon: 'mdi-pencil',
+            disabled: !this.$store.getters['permissions/getDirectEmailUpdatePermissions']
+          },
+          {
+            id: 'btn-delete--row-actions-direct-email-creation-list',
+            name: labels.Delete,
+            icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDirectEmailDeletePermissions']
+          }
+        ],
+        serverSideEvents: { pagination: true, search: true, sort: true }
+      }
+    }
+  },
+  mounted() {
+    this.callForData()
+  },
+  methods: {
+    callForData() {
+      this.setLoading(true)
+      DirectCreationService.searchEmailCreations()
+        .then((response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const {
+            results = [],
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1
+          } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
+    handleEdit(row) {
+      this.$emit(EMITS.ON_EDIT, row)
+    },
+    handleActionDelete(row) {
+      this.$emit(EMITS.ON_ACTION_DELETE, row)
+    },
+    handleAdd() {
+      this.$emit(EMITS.ON_ADD)
+    },
+    exportDirectEmailCreationList(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+      })
+    }
+  }
+}
+</script>
