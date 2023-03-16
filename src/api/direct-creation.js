@@ -33,7 +33,7 @@ const searchEmailCreations = (payload = {}) => {
 }
 
 const deleteEmailCreation = (resourceId = '') => {
-  return Promise.resolve()
+  return testRequest.delete(`${API_URL}/${resourceId}`, { snackbar: COMMON_SNACKBAR })
 }
 
 const getDirectEmailCreation = (resourceId = '') => {

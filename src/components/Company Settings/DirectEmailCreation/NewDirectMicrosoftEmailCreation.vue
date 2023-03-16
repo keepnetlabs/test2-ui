@@ -103,7 +103,7 @@ import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmai
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import DirectCreationService from '@/api/direct-creation'
-import { PLATFORM_TYPES } from '@/components/Company Settings/DirectEmailCreation/utils'
+import { PLATFORM_TYPES, EMITS } from '@/components/Company Settings/DirectEmailCreation/utils'
 export default {
   name: 'NewDirectMicrosoftEmailCreation',
   components: {
@@ -137,7 +137,7 @@ export default {
       default: ''
     }
   },
-  emits: ['on-close'],
+  emits: [EMITS.ON_CLOSE],
   data() {
     return {
       labels,
@@ -210,7 +210,7 @@ export default {
       })
     },
     handleClose(forceUpdate = false) {
-      this.$emit('on-close', forceUpdate)
+      this.$emit(EMITS.ON_CLOSE, forceUpdate)
     },
     submit() {
       if (this.isInitial) {
