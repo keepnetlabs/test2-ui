@@ -58,19 +58,7 @@
           />
         </FormGroup>
         <FormGroup has-hint :title="labels.Domains" :sub-title="labels.DomainsSub">
-          <KSelect
-            v-bind="getDomainProps"
-            :value="formData.domains"
-            id="input--direct-email-creation-domains"
-            outlined
-            dense
-            persistent-hint
-            multiple
-            hint="*Required"
-            placeholder="Select a item"
-            :items="domainItems"
-            @change="handleDomainChange"
-          />
+          <InputDomain v-model="formData.domains" :items="domainItems" />
         </FormGroup>
         <FormGroup :title="labels.TestEmail" :sub-title="labels.TestEmailSub">
           <VBtn
@@ -98,18 +86,18 @@ import labels from '@/model/constants/labels'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import DirectCreationService from '@/api/direct-creation'
 import { PLATFORM_TYPES, EMITS } from '@/components/Company Settings/DirectEmailCreation/utils'
+import InputDomain from '@/components/Common/Inputs/InputDomain.vue'
 export default {
   name: 'NewDirectMicrosoftEmailCreation',
   components: {
+    InputDomain,
     TestEmailErrorDialog,
     TestEmailDialog,
-    KSelect,
     InputEntityName,
     FormGroup,
     AppModalBodyHeader,
@@ -170,14 +158,6 @@ export default {
       return this.isEdit
         ? labels.EditMicrosoft365ConfigurationSubtitle
         : labels.NewMicrosoft365ConfigurationSubtitle
-    },
-    getDomainProps() {
-      return this.formData.domains.includes('All')
-        ? {}
-        : {
-            smallChips: true,
-            deletableChips: true
-          }
     }
   },
   created() {
@@ -249,25 +229,35 @@ export default {
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
     },
-    handleDomainChange(val = []) {
-      const isValIncludes = val.includes('All')
-      this.formData.domains = isValIncludes ? ['All'] : val
-      this.setDomainItemsDisability(isValIncludes)
-    },
-    setDomainItemsDisability(val = false) {
-      this.domainItems.forEach((item) => {
-        if (item.value !== 'All') {
-          item.disabled = val
-        }
-      })
-    },
     toggleShowTestEmailDialog() {
       this.isShowTestEmailDialog = !this.isShowTestEmailDialog
     },
     toggleShowTestEmailErrorDialog() {
       this.isShowTestEmailErrorDialog = !this.isShowTestEmailErrorDialog
     },
-    callForTestEmail() {},
+    callForTestEmail(data = {}) {
+      this.isTestEmailActionDisabled = true
+      const payload = {
+        ...data,
+        tenantId: this.tenantId
+      }
+      if (this.isEdit) {
+        payload.tenantId = this.editedTenantId
+        payload.resourceId = this.selectedRow.resourceId
+      }
+      DirectCreationService.testDirectEmailCreation(payload)
+        .then(() => {
+          this.toggleShowTestEmailDialog()
+        })
+        .catch((error) => {
+          const { response } = error
+          this.testEmailErrorMessage = response?.data?.message
+          this.toggleShowTestEmailErrorDialog()
+        })
+        .finally(() => {
+          this.isTestEmailActionDisabled = false
+        })
+    },
     handleConnectAccount() {
       window.location.href = this.connectionUrl
     }
