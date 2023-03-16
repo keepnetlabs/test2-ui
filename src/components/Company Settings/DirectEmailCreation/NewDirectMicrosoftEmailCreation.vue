@@ -8,7 +8,7 @@
     cancel-button-id="btn-cancel--direct-email-creation-template-modal"
     title-id="text--certificates-direct-email-creation-modal-title"
     :save-disable="isActionButtonDisabled"
-    @closeOverlay="handleClose"
+    @closeOverlay="handleClose()"
     @submit="submit"
   >
     <template #overlay-body>
@@ -103,6 +103,7 @@ import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmai
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import DirectCreationService from '@/api/direct-creation'
+import { PLATFORM_TYPES } from '@/components/Company Settings/DirectEmailCreation/utils'
 export default {
   name: 'NewDirectMicrosoftEmailCreation',
   components: {
@@ -130,6 +131,10 @@ export default {
     selectedRow: {
       type: Object,
       default: () => ({})
+    },
+    tenantId: {
+      type: String,
+      default: ''
     }
   },
   emits: ['on-close'],
@@ -146,7 +151,8 @@ export default {
         name: '',
         domains: []
       },
-      domainItems: []
+      domainItems: [],
+      editedTenantId: null
     }
   },
   computed: {
@@ -176,15 +182,19 @@ export default {
   },
   created() {
     this.callForDomains()
-    this.callForClientId()
+    this.callForApplicationId()
     this.callForSelectedEmail()
   },
   methods: {
     callForSelectedEmail() {
       if (!this.isEdit) return
-      DirectCreationService.getDirectEmailCreation(
-        this.selectedRow.resourceId
-      ).then((response) => {})
+      DirectCreationService.getDirectEmailCreation(this.selectedRow.resourceId).then((response) => {
+        const { data: { data = {} } = {} } = response || {}
+        const { name = '', allowedDomains = [], tenantId = '' } = data
+        this.editedTenantId = tenantId
+        this.formData.name = name
+        this.formData.domains = allowedDomains
+      })
     },
     callForDomains() {
       if (this.isInitial && !this.isEdit) return
@@ -192,14 +202,15 @@ export default {
         this.domainItems = domains
       })
     },
-    callForClientId() {
+    callForApplicationId() {
       if (!this.isInitial) return
-      DirectCreationService.getClientId().then((clientId) => {
-        this.connectionUrl = `https://login.microsoftonline.com/common/adminconsent?client_id=${clientId}&redirect_uri=${window.location.href}`
+      DirectCreationService.getApplicationId().then((response) => {
+        const { data: { data = '' } = {} } = response
+        this.connectionUrl = `https://login.microsoftonline.com/common/adminconsent?client_id=${data}&redirect_uri=${window.location.href}`
       })
     },
-    handleClose() {
-      this.$emit('on-close')
+    handleClose(forceUpdate = false) {
+      this.$emit('on-close', forceUpdate)
     },
     submit() {
       if (this.isInitial) {
@@ -209,7 +220,34 @@ export default {
           icon: 'mdi-alert-circle'
         })
       } else {
+        const { name, domains } = this.formData
+        const payload = {
+          name,
+          allowedDomains: domains.includes('All')
+            ? this.domainItems.map((dItem) => dItem.value)
+            : domains,
+          tenantId: this.tenantId,
+          type: PLATFORM_TYPES.Microsoft365
+        }
+        this.setActionButtonDisability(true)
+        if (this.isEdit) {
+          payload.tenantId = this.editedTenantId
+          DirectCreationService.updateDirectEmailCreation(this.selectedRow.resourceId, payload)
+            .then(() => {
+              this.handleClose(true)
+            })
+            .finally(this.setActionButtonDisability)
+        } else {
+          DirectCreationService.createDirectEmailCreation(payload)
+            .then(() => {
+              this.handleClose(true)
+            })
+            .finally(this.setActionButtonDisability)
+        }
       }
+    },
+    setActionButtonDisability(flag = false) {
+      this.isActionButtonDisabled = flag
     },
     handleDomainChange(val = []) {
       const isValIncludes = val.includes('All')

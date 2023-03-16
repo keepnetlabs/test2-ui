@@ -1,30 +1,28 @@
 import testRequest from '@/utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = '/companies/direct-email-settings'
-const getClientId = () => {
-  return Promise.resolve('ad19edeb-e902-49c6-8bb0-55bdd14b35d2')
-}
 const getDomains = () => {
   return Promise.resolve([
     { text: 'All', value: 'All', disabled: false },
     { divider: true },
     {
       text: 'Kobe',
-      value: 'Kobe',
+      value: 'dRM96CUw9EY5',
       disabled: false
     },
     {
       text: 'Lebron',
-      value: 'Lebron',
+      value: 'dRM96CUw9EY5',
       disabled: false
     },
     {
       text: 'George',
-      value: 'George',
+      value: 'dRM96CUw9EY5',
       disabled: false
     },
     {
       text: 'Carmelo',
-      value: 'Carmelo',
+      value: 'dRM96CUw9EY5',
       disabled: false
     }
   ])
@@ -39,7 +37,7 @@ const deleteEmailCreation = (resourceId = '') => {
 }
 
 const getDirectEmailCreation = (resourceId = '') => {
-  return Promise.resolve()
+  return testRequest.get(`${API_URL}/${resourceId}`)
 }
 
 const exportDirectEmailCreation = (payload = {}) => {
@@ -47,11 +45,24 @@ const exportDirectEmailCreation = (payload = {}) => {
     responseType: 'blob'
   })
 }
+const createDirectEmailCreation = (payload = {}) => {
+  return testRequest.post(`${API_URL}`, payload, { snackbar: COMMON_SNACKBAR })
+}
+const updateDirectEmailCreation = (resourceId = '', payload = {}) => {
+  return testRequest.put(`${API_URL}/${resourceId}`, payload, { snackbar: COMMON_SNACKBAR })
+}
+
+const getApplicationId = () => {
+  return testRequest.get(`${API_URL}/application-id`)
+}
+
 export default {
-  getClientId,
+  getApplicationId,
   getDomains,
   searchEmailCreations,
   deleteEmailCreation,
   getDirectEmailCreation,
-  exportDirectEmailCreation
+  exportDirectEmailCreation,
+  createDirectEmailCreation,
+  updateDirectEmailCreation
 }

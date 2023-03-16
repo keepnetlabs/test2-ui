@@ -50,6 +50,12 @@ export const COLUMNS = {
   }
 }
 
+export const PLATFORM_TYPES = {
+  Microsoft365: 1,
+  GoogleWorkspace: 2,
+  EWS: 3
+}
+
 export const EMITS = {
   ON_ADD: 'on-add',
   ON_PREVIEW: 'on-preview',
