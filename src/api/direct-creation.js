@@ -3,7 +3,7 @@ import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = '/companies/direct-email-settings'
 const getDomains = () => {
   return Promise.resolve([
-    { text: 'All', value: 'All', disabled: false },
+    { text: 'All Domains', value: 'All Domains', disabled: false },
     { divider: true },
     {
       text: 'Kobe',
@@ -52,6 +52,15 @@ const updateDirectEmailCreation = (resourceId = '', payload = {}) => {
   return testRequest.put(`${API_URL}/${resourceId}`, payload, { snackbar: COMMON_SNACKBAR })
 }
 
+const testDirectEmailCreation = (payload) => {
+  return testRequest.post(`${API_URL}/test`, payload, {
+    snackbar: {
+      ...COMMON_SNACKBAR,
+      hideError: true
+    }
+  })
+}
+
 const getApplicationId = () => {
   return testRequest.get(`${API_URL}/application-id`)
 }
@@ -60,6 +69,7 @@ export default {
   getApplicationId,
   getDomains,
   searchEmailCreations,
+  testDirectEmailCreation,
   deleteEmailCreation,
   getDirectEmailCreation,
   exportDirectEmailCreation,
