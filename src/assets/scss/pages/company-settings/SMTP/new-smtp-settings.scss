@@ -12,3 +12,17 @@
         }
     }
 }
+.new-direct-email-creation-info{
+  background: #F1F8FE;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  max-width:554px;
+  &__text {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 21px;
+    color: #383B41;
+  }
+}

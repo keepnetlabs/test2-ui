@@ -7,7 +7,15 @@
         name="smtp-settings"
         id="smtp-settings-content"
       >
-        <s-m-t-p-settings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
+        <SMTPSettings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getDirectEmailCreationSearchPermissions"
+        label="Direct Email Creation"
+        name="direct-email-creation"
+        id="direct-email-creation-content"
+      >
+        <DirectEmailCreation v-if="tab === 'direct-email-creation'" ref="refDirectEmailCreation"
       /></el-tab-pane>
       <el-tab-pane
         v-if="getNotificationTemplatesSearchPermissions"
@@ -104,10 +112,12 @@ import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
+import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 
 export default {
   name: 'CompanySettings',
   components: {
+    DirectEmailCreation,
     LDAP,
     KContainer,
     SIEMIntegrations,
@@ -123,10 +133,7 @@ export default {
   data() {
     return {
       tab: 'smtp-settings',
-      labels,
-      ENUM: {
-        COMPANYSETTINGS: 'Company Settings'
-      }
+      labels
     }
   },
   computed: {
@@ -141,12 +148,17 @@ export default {
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
-      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
+      getDirectEmailCreationSearchPermissions: 'permissions/getDirectEmailCreationSearchPermissions'
     })
   },
   created() {
     this.tab = [
       { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
+      {
+        permission: this.getDirectEmailCreationSearchPermissions,
+        name: 'direct-email-creation'
+      },
       {
         permission: this.getNotificationTemplatesSearchPermissions,
         name: 'notification-template'
@@ -216,6 +228,10 @@ export default {
     },
     changeTabByRoute() {
       const { $route: { query } = {} } = this
+      if (query?.tenant || (query?.error && query?.error_description)) {
+        this.tab = 'direct-email-creation'
+        return
+      }
       if (!query || !query.tab) return
       this.tab = query.tab
       this.$nextTick(() => {
