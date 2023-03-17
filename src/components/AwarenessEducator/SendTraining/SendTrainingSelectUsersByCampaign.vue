@@ -362,7 +362,7 @@ export default {
       return (
         this?.getLanguages()?.map((language) => ({
           text: language.name,
-          value: language.id
+          value: language.code
         })) || []
       )
     },
@@ -409,16 +409,16 @@ export default {
           { FieldName: 'createTime', Operator: 'Contains', Value: val },
           { FieldName: 'lastLaunch', Operator: 'Contains', Value: val },
           { FieldName: 'method', Operator: 'Contains', Value: val },
-          { FieldName: 'languageTypeResourceId', Operator: 'Contains', Value: val }
+          { FieldName: 'languageShortCode', Operator: 'Contains', Value: val }
         ]
         this.callForData(true)
       }, 500)
     },
     language(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'languageTypeResourceId'
+        (item) => item.FieldName === 'languageShortCode'
       )
-      const obj = { Value: val || '', FieldName: 'languageTypeResourceId', Operator: 'Include' }
+      const obj = { Value: val || '', FieldName: 'languageShortCode', Operator: 'Include' }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
