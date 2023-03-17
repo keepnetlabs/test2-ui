@@ -707,13 +707,28 @@ export const labels = {
   VishingTemplate: 'Vishing Template',
   EmptyTIGridMsg: 'You do not have any Thereat Intelligence',
   AllowedDomain: 'Allowed Domains',
+  Method: 'Method',
+  DownloadEmailTitle: 'Download Email',
+  DownloadEmailSubtitle:
+    'This email file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.',
+  DownloadAttachmentTitle: 'Download File',
+  DownloadAttachmentSubtitle:
+    'This file may be deleted by your anti-virus software. Setting a .zip password is suggested to prevent that.',
   CallDate: 'Call Date',
   CallDuration: 'Call Duration',
   AllInteractions: 'All Interactions',
   AnsweredByMachineTooltipText: `The call was answered by a machine, but the status of the call still counts as "not responded" since the user herself/himself hasn't had any interaction with the call.`,
   AnsweredByUnknownTooltipText:
     'The call was answered, but it could not determine who answered the call. It’s unknown.',
-  Method: 'Method'
+  Method: 'Method',
+  UnverifiedDomains: 'Unverified Domains',
+  SeeDomains: 'See Domains',
+  SeeDomain: 'See Domain',
+  VerifyDomains: 'Verify Domains',
+  VerifyDomain: 'Verify Domain',
+  TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
+  TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
+  VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
 }
 
 export default labels

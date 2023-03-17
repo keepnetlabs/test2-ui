@@ -1,94 +1,108 @@
 .people {
-    &__no-data {
-        &__header {
-            font-size: 24px !important;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.29 !important;
-            letter-spacing: normal !important;
-            color: rgba(0, 0, 0, 0.87);
-            text-align: center;
-        }
-
-        &__body {
-            font-size: 14px !important;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.5;
-            letter-spacing: normal !important;
-            color: rgba(0, 0, 0, 0.87);
-            text-align: center;
-        }
-
-        &__buttons {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 24px;
-
-            &--button {
-                border-radius: 18px;
-                box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
-                border: solid 1px #2196f3;
-                background-color: #2196f3;
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                padding: 6px 16px;
-                cursor: pointer;
-                color: white;
-                font-size: 14px;
-
-                &:last-child {
-                    margin-left: 16px;
-                }
-
-                img {
-                    margin-left: 8px;
-                    height: 24px;
-                }
-            }
-        }
+  &__no-data {
+    &__header {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29 !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
     }
 
-    .add-users__title {
-        font-size: 14px;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
+    &__body {
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
     }
 
-    .edit-fields {
-        display: flex;
-        justify-content: flex-end;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.71;
-        letter-spacing: normal;
-        margin-top: 10px;
-        cursor: pointer;
-        color: #2196f3;
-    }
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
 
-    .btn-add {
-        width: 36px;
-        height: 36px;
+      &--button {
         border-radius: 18px;
-        box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        border: solid 1px #2196f3;
         background-color: #2196f3;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        padding: 6px 16px;
+        cursor: pointer;
         color: white;
+        font-size: 14px;
 
-        .v-icon {
-            font-size: 18px !important;
-            color: white;
+        &:last-child {
+          margin-left: 16px;
         }
+
+        img {
+          margin-left: 8px;
+          height: 24px;
+        }
+      }
     }
+  }
+
+  .add-users__title {
+    font-size: 14px;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .edit-fields {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    margin-top: 10px;
+    cursor: pointer;
+    color: #2196f3;
+  }
+
+  .btn-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+    background-color: #2196f3;
+    color: white;
+
+    .v-icon {
+      font-size: 18px !important;
+      color: white;
+    }
+  }
+
+  &__alert-box__primary-action,
+  &__alert-box__secondary-action {
+    color: #383b41 !important;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    text-transform: none;
+    box-shadow: none;
+  }
+
+  &__alert-box__primary-action {
+    border: 1px solid #383b41 !important;
+  }
 }
 
 .ldap-import-table {
-    .v-list-item__content,
-    .k-form-group__content {
-        width: 100%;
-    }
+  .v-list-item__content,
+  .k-form-group__content {
+    width: 100%;
+  }
 }

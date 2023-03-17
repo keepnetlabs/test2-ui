@@ -3,7 +3,7 @@
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
     maxHeightSize="665"
-    :custom-size="'1200'"
+    :custom-size="'800'"
     :icon="CONSTANTS.icon"
     :title="getTitle"
     :subtitle="getSubtitle"

@@ -18,7 +18,7 @@
           :class="[maxHeight && 'k-dialog__header-max-height']"
         >
           <div :class="getIconWrapperClass" v-if="icon">
-            <v-icon :color="getIconColor" class="ml-2" left medium>
+            <v-icon :color="getIconColor" :class="getIconClass" left medium>
               {{ icon }}
             </v-icon>
           </div>
@@ -83,6 +83,9 @@ export default {
     iconColor: {
       type: String,
       default: 'blue'
+    },
+    iconClassName: {
+      type: String
     },
     hideOverlay: {
       type: Boolean,
@@ -171,6 +174,11 @@ export default {
     getIconWrapperClass() {
       const className = ['v-btn v-cart-icon-wrapper']
       if (this.isDelete) className.push('k-dialog__delete-icon-wrapper')
+      return className
+    },
+    getIconClass() {
+      const className = ['ml-2']
+      if (this.iconClassName) className.push(this.iconClassName)
       return className
     }
   },

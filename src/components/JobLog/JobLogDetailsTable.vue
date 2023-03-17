@@ -4,7 +4,7 @@
     subtitle-id="text--job-log-details-popup-subtitle"
     class="job-log-details"
     maxHeightSize="665"
-    :custom-size="'1000'"
+    :custom-size="'800'"
     icon="mdi-text-box-multiple"
     title="Job Details"
     :subtitle="selectedRow.name"

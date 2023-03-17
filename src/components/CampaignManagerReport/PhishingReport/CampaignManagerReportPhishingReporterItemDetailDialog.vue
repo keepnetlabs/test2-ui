@@ -6,7 +6,7 @@
     :title="getTitle"
     :subtitle="getSubtitle"
     :status="status"
-    custom-size="796"
+    custom-size="800"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
