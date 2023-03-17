@@ -60,9 +60,11 @@ export default {
   methods: {
     checkUrlForMicrosoft() {
       const { query = {} } = this.$route
-      const { tenant = '', error = '', error_description = '' } = query
+      const { tenant = '', error = '', error_description = '', error_subcode = '' } = query
       this.isMicrosoftEmailCreationInitial = !tenant
-      const errorMessage = error && error_description
+      const errorSubCodeMessage =
+        error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
+      const errorMessage = error && (error_description || errorSubCodeMessage)
       if (!this.isMicrosoftEmailCreationInitial || errorMessage) {
         if (errorMessage) {
           this.$store.dispatch('common/createSnackBar', {
