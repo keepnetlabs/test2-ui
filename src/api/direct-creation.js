@@ -1,31 +1,8 @@
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = '/companies/direct-email-settings'
-const getDomains = () => {
-  return Promise.resolve([
-    { text: 'All Domains', value: 'All Domains', disabled: false },
-    { divider: true },
-    {
-      text: 'Kobe',
-      value: 'dRM96CUw9EY5',
-      disabled: false
-    },
-    {
-      text: 'Lebron',
-      value: 'dRM96CUw9EY5',
-      disabled: false
-    },
-    {
-      text: 'George',
-      value: 'dRM96CUw9EY5',
-      disabled: false
-    },
-    {
-      text: 'Carmelo',
-      value: 'dRM96CUw9EY5',
-      disabled: false
-    }
-  ])
+const getDomains = (payload = {}) => {
+  return testRequest.post(`${API_URL}/domain-list`, payload)
 }
 
 const searchEmailCreations = (payload = {}) => {

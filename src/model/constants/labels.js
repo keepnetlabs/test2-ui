@@ -276,6 +276,7 @@ export const labels = {
   TimesOpened: 'Times Opened',
   UserAgent: 'User Agent',
   Opened: 'Opened',
+  AllDomains: 'All Domains',
   ScenarioStats: 'Scenario Stats',
   Stats: 'Stats',
   DownloadReport: 'Download Report',
