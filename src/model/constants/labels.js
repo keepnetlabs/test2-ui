@@ -124,6 +124,7 @@ export const labels = {
   UploadPngJpgOrPdf: 'Upload png, jpg or pdf',
   UploadCoverImageForTheTraining: 'Upload a cover image for the training',
   AddTraining: 'Add Training',
+  ErrorMicrosoftCreationMessage: 'User declined to consent to access the app.',
   CreateNewTraining: 'Create New Training',
   CreateDirectEmailCreation: 'Create New Direct Email Configuration',
   ContentType: 'Content Type',

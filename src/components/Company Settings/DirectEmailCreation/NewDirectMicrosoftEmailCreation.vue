@@ -191,11 +191,12 @@ export default {
         const domains = data.map((item) => ({
           text: item,
           value: item,
-          disabled: this.formData.domains.includes(labels.AllDomains)
+          disabled: this.isEdit ? this.formData.domains.includes(labels.AllDomains) : true
         }))
         domains.unshift({ text: labels.AllDomains, value: labels.AllDomains, disabled: false })
         domains.splice(1, 0, { divider: true })
         this.domainItems = domains
+        if (!this.isEdit) this.formData.domains = [labels.AllDomains]
       })
     },
     callForApplicationId() {
