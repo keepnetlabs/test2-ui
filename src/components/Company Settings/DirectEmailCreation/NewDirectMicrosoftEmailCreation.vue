@@ -58,7 +58,7 @@
           />
         </FormGroup>
         <FormGroup has-hint :title="labels.Domains" :sub-title="labels.DomainsSub">
-          <InputDomain v-model="formData.domains" :items="domainItems" />
+          <InputDomain v-model="formData.domains" :items="domainItems" :rules="domainRules" />
         </FormGroup>
         <FormGroup :title="labels.TestEmail" :sub-title="labels.TestEmailSub">
           <VBtn
@@ -91,7 +91,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import DirectCreationService from '@/api/direct-creation'
 import { PLATFORM_TYPES, EMITS } from '@/components/Company Settings/DirectEmailCreation/utils'
-import InputDomain from '@/components/Common/Inputs/InputDomain.vue'
+import InputDomain from '@/components/Common/Inputs/InputDomain'
 export default {
   name: 'NewDirectMicrosoftEmailCreation',
   components: {
@@ -140,7 +140,8 @@ export default {
         domains: []
       },
       domainItems: [],
-      editedTenantId: null
+      editedTenantId: null,
+      domainRules: [(v) => !!v.length || labels.Required]
     }
   },
   computed: {
@@ -161,9 +162,9 @@ export default {
     }
   },
   created() {
-    this.callForDomains()
-    this.callForApplicationId()
     this.callForSelectedEmail()
+    this.callForApplicationId()
+    this.callForDomains()
   },
   methods: {
     callForSelectedEmail() {
@@ -178,7 +179,22 @@ export default {
     },
     callForDomains() {
       if (this.isInitial && !this.isEdit) return
-      DirectCreationService.getDomains().then((domains) => {
+      const payload = {
+        tenantId: this.tenantId
+      }
+      if (this.isEdit) {
+        payload.tenantId = this.editedTenantId
+        payload.resourceId = this.selectedRow.resourceId
+      }
+      DirectCreationService.getDomains(payload).then((response) => {
+        const { data: { data = [] } = {} } = response
+        const domains = data.map((item) => ({
+          text: item,
+          value: item,
+          disabled: this.formData.domains.includes(labels.AllDomains)
+        }))
+        domains.unshift({ text: labels.AllDomains, value: labels.AllDomains, disabled: false })
+        domains.splice(1, 0, { divider: true })
         this.domainItems = domains
       })
     },
@@ -200,6 +216,7 @@ export default {
           icon: 'mdi-alert-circle'
         })
       } else {
+        if (!this.$refs.refForm.validate()) return
         const { name, domains } = this.formData
         const payload = {
           name,

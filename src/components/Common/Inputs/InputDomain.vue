@@ -20,6 +20,7 @@
 
 <script>
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'InputDomain',
@@ -44,13 +45,14 @@ export default {
   },
   methods: {
     handleDomainChange(val = []) {
-      const isValIncludes = val.includes('All')
-      this.$emit('input', isValIncludes ? ['All'] : val)
+      console.log('val', val)
+      const isValIncludes = val.includes(labels.AllDomains)
+      this.$emit('input', isValIncludes ? [labels.AllDomains] : val)
       this.setDomainItemsDisability(isValIncludes)
     },
     setDomainItemsDisability(val = false) {
-      this.domainItems.forEach((item) => {
-        if (item.value !== 'All') {
+      this.items.forEach((item) => {
+        if (item.value !== labels.AllDomains) {
           item.disabled = val
         }
       })
