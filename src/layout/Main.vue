@@ -549,7 +549,7 @@
             :prepend-icon="iconPaths.mdiEqualizer"
             :append-icon="iconPaths.mdiChevronDown"
           >
-            <template v-slot:activator>
+            <template #activator>
               <v-list-item-content class="menu-list-item">
                 <v-list-item-title>Reports</v-list-item-title>
               </v-list-item-content>
@@ -558,10 +558,22 @@
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/reports/campaign-reports"
-                  id="btn--link-navigator-menu-reports"
+                  id="btn--link-navigator-menu-campaign-reports"
                   route-name="Campaign Reports"
                   :active-class-comparator="
                     () => routerName === 'Campaign Reports' || routerName === 'Campaign Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/advanced-reports"
+                  id="btn--link-navigator-menu-advanced-reports"
+                  route-name="Advanced Reports"
+                  :active-class-comparator="
+                    () => routerName === 'Advanced Reports' || routerName === 'Advanced Report'
                   "
                 />
               </v-list-item-content>
@@ -920,7 +932,8 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' || routerName === 'Campaign Report'
+        routerName === 'Campaign Reports' || routerName === 'Campaign Report',
+        routerName === 'Advanced Reports'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]

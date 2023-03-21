@@ -12,6 +12,7 @@ export const labels = {
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
   SelectSources: 'Select Sources',
+  Reports: 'Reports',
   Platforms: 'Platforms',
   Action: 'Action',
   ActionSub: 'Select action to be executed if email is found',
