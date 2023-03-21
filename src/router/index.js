@@ -45,6 +45,7 @@ import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
 import VishingReport from '@/views/VishingReport'
 import AdvancedReports from '@/views/AdvancedReports'
+import AdvancedReport from '@/views/AdvancedReport'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -324,7 +325,7 @@ const router = new Router({
         {
           path: '/reports/advanced-reports/advanced-report/:id',
           name: 'Advanced Report',
-          component: CampaignManagerReport,
+          component: AdvancedReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Advanced Reports',

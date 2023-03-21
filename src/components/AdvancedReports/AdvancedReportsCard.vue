@@ -40,10 +40,20 @@ export default {
     buttonText: {
       type: String,
       default: 'CREATE REPORT'
+    },
+    resourceId: {
+      type: String,
+      default: ''
+    },
+    reportType: {
+      type: String,
+      default: ''
     }
   },
   methods: {
-    handleActionButtonClick() {}
+    handleActionButtonClick() {
+      this.$emit('on-action-button-click', this.resourceId)
+    }
   }
 }
 </script>

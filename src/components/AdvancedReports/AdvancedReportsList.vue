@@ -1,7 +1,15 @@
 <template>
   <div>
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
-    <AdvancedReportsCard v-else />
+    <AdvancedReportsCard
+      v-else
+      v-for="report in reports"
+      :key="report.name"
+      :title="report.name"
+      :description="report.description"
+      :resource-id="report.resourceId"
+      @on-action-button-click="handleActionButtonClick"
+    />
   </div>
 </template>
 
@@ -20,10 +28,21 @@ export default {
       reports: []
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
     callForData() {
       this.setLoading(true)
-      ReportsService.getReports().then((response) => {})
+      ReportsService.getReports()
+        .then((response) => {
+          const { data: { data = [] } = {} } = response || {}
+          this.reports = data
+        })
+        .finally(this.setLoading)
+    },
+    handleActionButtonClick(resourceId = '') {
+      this.$router.push(`/reports/advanced-reports/advanced-report/${resourceId}`)
     }
   }
 }
