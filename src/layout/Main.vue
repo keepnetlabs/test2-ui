@@ -554,7 +554,10 @@
                 <v-list-item-title>Reports</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getCampaignReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/reports/campaign-reports"
@@ -566,7 +569,10 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getAdvancedReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/reports/advanced-reports"
@@ -912,7 +918,9 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getEnrollmentsSearchPermission: 'permissions/getEnrollmentsSearchPermission',
       getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
-      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
+      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
+      getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
+      getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
@@ -933,7 +941,7 @@ export default {
       return [
         'menu-with-item menu-link-default',
         routerName === 'Campaign Reports' || routerName === 'Campaign Report',
-        routerName === 'Advanced Reports'
+        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]

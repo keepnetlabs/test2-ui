@@ -46,6 +46,7 @@ import JobLog from '@/views/JobLog'
 import VishingReport from '@/views/VishingReport'
 import AdvancedReports from '@/views/AdvancedReports'
 import AdvancedReport from '@/views/AdvancedReport'
+import Reports from '@/views/Reports'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -484,6 +485,18 @@ const router = new Router({
           props: true,
           params: true
         },
+
+        {
+          path: '/reports',
+          name: 'Reports',
+          component: Reports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+
         {
           path: '/reports/campaign-reports',
           name: 'Campaign Reports',

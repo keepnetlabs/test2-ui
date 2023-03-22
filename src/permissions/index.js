@@ -736,6 +736,18 @@ export default {
       url: `phishing-simulator/phishing-campaign-job-report/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    ADVANCED_REPORTS_SEARCH: {
+      url: `pbi/reports/{companyResourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  ADVANCED_REPORTS_PERMISSIONS: {
+    SEARCH: {
+      url: `pbi/reports/{companyResourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   },
   CAMPAIGN_REPORTS_PERMISSIONS: {
