@@ -3,7 +3,7 @@
     v-if="status"
     :status="status"
     :title="getModalTitle"
-    icon-name="mdi-plus-circle"
+    :icon-name="getModalIcon"
     confirm-button-id="btn-save--direct-email-creation-template-modal"
     cancel-button-id="btn-cancel--direct-email-creation-template-modal"
     title-id="text--certificates-direct-email-creation-modal-title"
@@ -26,8 +26,8 @@
         :error-message="testEmailErrorMessage"
         @closeDialog="toggleShowTestEmailErrorDialog"
       />
+      <AppModalBodyHeader :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <template v-if="isInitial">
-        <AppModalBodyHeader :title="getBodyTitle" :sub-title="getBodySubtitle" />
         <div class="new-direct-email-creation-info">
           <VIcon color="#2196F3">mdi-information</VIcon>
           <div class="new-direct-email-creation-info__text ml-2">
@@ -58,7 +58,14 @@
           />
         </FormGroup>
         <FormGroup has-hint :title="labels.Domains" :sub-title="labels.DomainsSub">
-          <InputDomain v-model="formData.domains" :items="domainItems" :rules="domainRules" />
+          <InputDomain
+            v-model="formData.domains"
+            :items="domainItems"
+            :is-loading="isDomainsLoading"
+            :show-loader="isShowDomainsLoader"
+            :rules="domainRules"
+            @on-focus="handleDomainFocus"
+          />
         </FormGroup>
         <FormGroup :title="labels.TestEmail" :sub-title="labels.TestEmailSub">
           <VBtn
@@ -135,25 +142,31 @@ export default {
       isTestEmailActionDisabled: false,
       testEmailErrorMessage: '',
       connectionUrl: '',
+      isDomainsLoading: false,
+      isShowDomainsLoader: false,
       formData: {
         name: '',
         domains: []
       },
       domainItems: [],
       editedTenantId: null,
-      domainRules: [(v) => !!v.length || labels.Required]
+      domainRules: [(v) => !!v.length || labels.Required],
+      timeoutId: null
     }
   },
   computed: {
     getModalTitle() {
       return this.isEdit
         ? labels.EditMicrosoft365Configuration
-        : labels.NewMicrosoft365Configuration
+        : labels.CreateMicrosoft365Configuration
+    },
+    getModalIcon() {
+      return this.isEdit ? 'mdi-pencil' : 'mdi-plus-circle'
     },
     getBodyTitle() {
       return this.isEdit
-        ? labels.CreateMicrosoft365Configuration
-        : labels.CreateMicrosoft365Configuration
+        ? labels.EditMicrosoft365Configuration
+        : labels.NewMicrosoft365Configuration
     },
     getBodySubtitle() {
       return this.isEdit
@@ -165,6 +178,9 @@ export default {
     this.callForSelectedEmail()
     this.callForApplicationId()
     this.callForDomains()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
   },
   methods: {
     callForSelectedEmail() {
@@ -186,18 +202,28 @@ export default {
         payload.tenantId = this.editedTenantId
         payload.resourceId = this.selectedRow.resourceId
       }
-      DirectCreationService.getDomains(payload).then((response) => {
-        const { data: { data = [] } = {} } = response
-        const domains = data.map((item) => ({
-          text: item,
-          value: item,
-          disabled: this.isEdit ? this.formData.domains.includes(labels.AllDomains) : true
-        }))
-        domains.unshift({ text: labels.AllDomains, value: labels.AllDomains, disabled: false })
-        domains.splice(1, 0, { divider: true })
-        this.domainItems = domains
-        if (!this.isEdit) this.formData.domains = [labels.AllDomains]
-      })
+      this.isDomainsLoading = true
+      DirectCreationService.getDomains(payload)
+        .then((response) => {
+          const { data: { data = [] } = {} } = response
+          const domains = data.map((item) => ({
+            text: item,
+            value: item,
+            disabled: this.isEdit ? this.formData.domains.includes(labels.AllDomains) : true
+          }))
+          domains.unshift({ text: labels.AllDomains, value: labels.AllDomains, disabled: false })
+          domains.splice(1, 0, { divider: true })
+          this.domainItems = domains
+          if (!this.isEdit) this.formData.domains = [labels.AllDomains]
+          this.isDomainsLoading = false
+          this.isShowDomainsLoader = false
+        })
+        .catch(() => {
+          if (this.timeoutId) clearTimeout(this.timeoutId)
+          this.timeoutId = setTimeout(() => {
+            this.callForDomains()
+          }, 1000)
+        })
     },
     callForApplicationId() {
       if (!this.isInitial) return
@@ -278,6 +304,9 @@ export default {
     },
     handleConnectAccount() {
       window.location.href = this.connectionUrl
+    },
+    handleDomainFocus() {
+      this.isShowDomainsLoader = this.isDomainsLoading
     }
   }
 }
