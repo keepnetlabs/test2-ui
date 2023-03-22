@@ -54,7 +54,8 @@ const {
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
-  DIRECT_EMAIL_CREATION_PERMISSIONS
+  DIRECT_EMAIL_CREATION_PERMISSIONS,
+  ADVANCED_REPORTS_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -112,7 +113,8 @@ const defaultState = {
   etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS,
   allowListPermissions: ALLOW_LIST_PERMISSIONS,
-  directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS
+  directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS,
+  advancedReportsPermissions: ADVANCED_REPORTS_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -458,6 +460,13 @@ const store = {
     },
     getReportsLeftMenuPermissions(state) {
       return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getAdvancedReportsSearchPermissions(state) {
+      console.log(
+        'state?.advancedReportsPermissions?.SEARCH?.hasPermission',
+        state?.advancedReportsPermissions?.SEARCH?.hasPermission
+      )
+      return state?.advancedReportsPermissions?.SEARCH?.hasPermission
     },
     getCampaignReportsSearchPermissions(state) {
       return state?.campaignReportsPermissions?.SEARCH?.hasPermission
@@ -1068,7 +1077,8 @@ const store = {
         'etsQuickScanReportPermissions',
         'threatIntelligencePermissions',
         'allowListPermissions',
-        'directEmailCreationPermissions'
+        'directEmailCreationPermissions',
+        'advancedReportsPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }
