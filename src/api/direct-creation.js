@@ -2,7 +2,11 @@ import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = '/companies/direct-email-settings'
 const getDomains = (payload = {}) => {
-  return testRequest.post(`${API_URL}/domain-list`, payload)
+  return testRequest.post(`${API_URL}/domain-list`, payload, {
+    snackbar: {
+      hideError: true
+    }
+  })
 }
 
 const searchEmailCreations = (payload = {}) => {

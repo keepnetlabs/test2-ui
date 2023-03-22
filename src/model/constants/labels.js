@@ -127,7 +127,7 @@ export const labels = {
   AddTraining: 'Add Training',
   ErrorMicrosoftCreationMessage: 'User declined to consent to access the app.',
   CreateNewTraining: 'Create New Training',
-  CreateDirectEmailCreation: 'Create New Direct Email Configuration',
+  CreateDirectEmailCreation: 'Create New DEC Configuration',
   ContentType: 'Content Type',
   CoverImage: 'Cover Image',
   CoverImageTrainingUrl: 'Upload a cover image for the training',
