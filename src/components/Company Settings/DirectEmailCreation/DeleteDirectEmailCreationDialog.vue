@@ -10,7 +10,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      This setting will be deleted permanently. Are you sure to delete it?
+      This configuration will be deleted permanently. Are you sure to delete it?
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
