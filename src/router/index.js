@@ -44,6 +44,9 @@ import EmailThreatSimulatorReports from '@/views/EmailThreatSimulatorReports'
 import ThreatIntelligence from '@/views/ThreatIntelligence'
 import JobLog from '@/views/JobLog'
 import VishingReport from '@/views/VishingReport'
+import AdvancedReports from '@/views/AdvancedReports'
+import AdvancedReport from '@/views/AdvancedReport'
+import Reports from '@/views/Reports'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -321,6 +324,18 @@ const router = new Router({
           params: true
         },
         {
+          path: '/reports/advanced-reports/advanced-report/:id',
+          name: 'Advanced Report',
+          component: AdvancedReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Advanced Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
           path: '/incident-responder',
           name: 'Incident Responder',
           component: IncidentResponder,
@@ -470,10 +485,32 @@ const router = new Router({
           props: true,
           params: true
         },
+
+        {
+          path: '/reports',
+          name: 'Reports',
+          component: Reports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+
         {
           path: '/reports/campaign-reports',
           name: 'Campaign Reports',
           component: CampaignReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/advanced-reports',
+          name: 'Advanced Reports',
+          component: AdvancedReports,
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',

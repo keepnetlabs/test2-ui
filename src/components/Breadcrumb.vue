@@ -6,8 +6,11 @@
         :key="index"
         :to="{ name: item }"
         :style="[
-          ['Company', 'Phishing Simulator', 'Awareness Educator'].includes(item) && {
-            pointerEvents: 'none'
+          ['Company', 'Phishing Simulator', 'Reports', 'Awareness Educator', 'Vishing'].includes(
+            item
+          ) && {
+            pointerEvents: 'none',
+            opacity: 0.7
           }
         ]"
       >

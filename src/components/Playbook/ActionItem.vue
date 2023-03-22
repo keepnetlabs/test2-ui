@@ -702,7 +702,7 @@ export default {
     },
     getAnalysisResultStyle(index = 0) {
       const style = {
-        marginTop: window.innerWidth <= 1640 ? '0' : '6px'
+        marginTop: '6px'
       }
       if (['Groups', 'Users'].includes(this.targetUserType[index])) {
         style.maxWidth = '7%'
