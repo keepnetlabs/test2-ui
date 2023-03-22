@@ -19,15 +19,8 @@
 </template>
 
 <script>
-import button from 'element-ui/packages/button'
-
 export default {
   name: 'AdvancedReportsCard',
-  computed: {
-    button() {
-      return button
-    }
-  },
   props: {
     title: {
       type: String,
