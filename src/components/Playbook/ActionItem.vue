@@ -569,17 +569,7 @@ export default {
           { text: 'In Progress', value: 'InProgress' },
           { text: 'False Positive', value: 'FalsePositive' }
         ],
-        notifyTemplates: [
-          { label: 'IR User Notification', value: '18' },
-          { label: 'IR Delete Action Notification', value: '41' },
-          { label: 'Incident Investigation', value: '46' },
-          { label: 'About to Expire', value: '2282' },
-          { label: 'Incident Investigation Progress Report', value: '2311' },
-          {
-            label: 'Incident Investigation Suspicious Email Analysis Report',
-            value: '2320'
-          }
-        ],
+        notifyTemplates: [],
         investigateFilters: [
           'From',
           'To',

@@ -1,4 +1,7 @@
 require('regenerator-runtime')
+jest.mock('powerbi-client-vue-js', () => ({
+  get: Promise.resolve({})
+}))
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import ElementUI from 'element-ui'

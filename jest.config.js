@@ -1,7 +1,5 @@
 const path = require('path')
 const axios = require('axios')
-
-const { defaults } = require('jest-config')
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
   globals: {
@@ -38,7 +36,7 @@ module.exports = {
   },
   transform: {
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
-    '^.+\\.js$': 'babel-jest',
+    '\\.[jt]s?$': 'babel-jest',
     '.*\\.(vue)$': 'vue-jest'
   },
   transformIgnorePatterns: [
