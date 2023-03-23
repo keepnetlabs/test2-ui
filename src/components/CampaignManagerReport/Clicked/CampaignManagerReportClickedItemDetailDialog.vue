@@ -38,7 +38,11 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope }">
+          <CampaignManagerReportUserAgentColumn :scope="scope" />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -65,9 +69,10 @@ import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulato
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
-  components: { DataTable, AppDialog },
+  components: { CampaignManagerReportUserAgentColumn, DataTable, AppDialog },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -91,7 +96,7 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.DATE_CLICKED,
-          COLUMNS.USER_AGENT,
+          COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP

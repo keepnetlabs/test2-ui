@@ -19,6 +19,7 @@
         options
         is-server-side
         no-padding-bottom
+        is-custom-overflowed-column
         :show-filter-options="false"
         :is-settings-popup="false"
         :loading="isLoading"
@@ -31,6 +32,8 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="tableOptions.countRow"
+        :cell-padding="32"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -38,7 +41,11 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope }">
+          <CampaignManagerReportUserAgentColumn :scope="scope" />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -65,9 +72,10 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { searchCampaignJobUserEmailOpenedDetails } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
-  components: { DataTable, AppDialog },
+  components: { CampaignManagerReportUserAgentColumn, DataTable, AppDialog },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -85,12 +93,12 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime', pageSize: 5 }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.DATE_OPENED,
-          COLUMNS.USER_AGENT,
+          COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP
@@ -104,7 +112,8 @@ export default {
         rowActions: [],
         downloadButton: {
           show: false
-        }
+        },
+        countRow: 5
       },
       tableData: []
     }
@@ -118,6 +127,7 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
     this.callForData()
   },
   methods: {

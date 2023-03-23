@@ -940,8 +940,10 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' || routerName === 'Campaign Report',
-        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
+        routerName === 'Campaign Reports' ||
+        routerName === 'Campaign Report' ||
+        routerName === 'Advanced Reports' ||
+        routerName === 'Advanced Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]

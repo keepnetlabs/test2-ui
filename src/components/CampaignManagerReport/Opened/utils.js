@@ -188,7 +188,19 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 230,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  USER_AGENT_SLOT: {
+    property: PROPERTY_STORE.USERAGENT,
+    align: 'left',
+    label: labels.UserAgent,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 230,
     isEditable: false,
     filterableType: 'text'
   },
@@ -212,7 +224,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 250,
     isEditable: false,
     filterableType: 'text'
   },
@@ -410,4 +422,8 @@ export function getStatusBadgeProps(status) {
       text: 'Processing'
     }
   }
+}
+
+export const UNUSUAL_TYPES = {
+  UNUSUAL_IP: 1
 }
