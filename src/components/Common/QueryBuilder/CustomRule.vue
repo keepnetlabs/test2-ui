@@ -385,9 +385,9 @@ export default {
     },
     getAttachmentExtensionRules() {
       return [
-        (v) => this.validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
+        (v) => this.validations.minLength(v, 1, 'Extension must have at least 1 character'),
         (v) => this.validations.extension(v, labels.InvalidExtension),
-        (v) => this.validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
+        (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Extension', 64))
       ]
     },
     getAttachmentHashRules() {
