@@ -31,6 +31,7 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="tableOptions.countRow"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -89,7 +90,7 @@ export default {
         id: 'campaign-manager-clicked-detail-item-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime', pageSize: 5 }),
       isLoading: false,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -110,7 +111,8 @@ export default {
         rowActions: [],
         downloadButton: {
           show: false
-        }
+        },
+        countRow: 5
       },
       tableData: []
     }
@@ -124,6 +126,7 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
     this.callForData()
   },
   methods: {
