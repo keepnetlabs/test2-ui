@@ -351,14 +351,13 @@
               :content="overFlowTooltipContent"
             />
           </v-col>
-          <v-col
+          <div
             v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
-            class="action-items__item-analysis-result"
+            class="action-items__item-analysis-result mr-2"
             :style="getAnalysisResultStyle(index)"
-            md="1"
           >
             <span class="action-items__item-analysis-result-text">If analysis result</span>
-          </v-col>
+          </div>
           <v-col
             v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
             md="2"
