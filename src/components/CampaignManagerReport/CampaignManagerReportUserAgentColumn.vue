@@ -9,7 +9,7 @@
           >mdi-information</v-icon
         >
       </template>
-      <span>Unusual IP Interaction: This user had no interaction with the email.</span>
+      <span>Unusual User Agent: This user had no interaction with the email.</span>
     </v-tooltip>
     {{ scope.row.userAgent }}
   </span>
