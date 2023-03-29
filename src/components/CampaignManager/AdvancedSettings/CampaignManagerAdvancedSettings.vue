@@ -32,7 +32,7 @@
       >
       </KSelect>
       <v-btn
-        v-if="isTestConnectionButtonRendered"
+        v-if="isSelectedEmailDeliveryIsSmtp"
         :key="buttonKey"
         class="ml-4"
         text
@@ -66,7 +66,11 @@
         </template>
       </v-btn>
     </FormGroup>
-    <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
+    <FormGroup
+      v-if="isSelectedEmailDeliveryIsSmtp"
+      :title="labels.Distribution"
+      :sub-title="labels.DistributionSub"
+    >
       <div class="campaign-manager-advanced-settings__distribution-item">
         <label for="input--campaign-manager-advanced-settings-time"
           >Send emails with SMTP Delay every
@@ -98,7 +102,11 @@
         />
       </div>
     </FormGroup>
-    <FormGroup :title="labels.SendingLimit" :sub-title="labels.SendingLimitSub">
+    <FormGroup
+      v-if="isSelectedEmailDeliveryIsSmtp"
+      :title="labels.SendingLimit"
+      :sub-title="labels.SendingLimitSub"
+    >
       <v-text-field
         v-model="formData.sendingLimit"
         v-mask="'###########'"
@@ -117,7 +125,11 @@
     >
       {{ getDistributionText }}
     </div>
-    <FormGroup class="mt-6" :title="labels.OtherSettings" style="max-width: 640px;">
+    <FormGroup
+      style="max-width: 640px;"
+      :class="isSelectedEmailDeliveryIsSmtp ? 'mt-6' : ''"
+      :title="labels.OtherSettings"
+    >
       <div>
         <v-checkbox
           v-model="formData.excludeFromReports"
@@ -181,7 +193,11 @@ import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
-import { calculateSendingInfo, getEmailDeliveries } from '@/api/phishingsimulator'
+import {
+  calculateSendingInfo,
+  getDefaultCompanySmtpSetting,
+  getEmailDeliveries
+} from '@/api/phishingsimulator'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
@@ -254,7 +270,7 @@ export default {
     }
   },
   computed: {
-    isTestConnectionButtonRendered() {
+    isSelectedEmailDeliveryIsSmtp() {
       if (!this.emailDelivery) return false
       return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
     },
@@ -294,6 +310,7 @@ export default {
         : ''
     },
     getDistributionTextRenderStatus() {
+      if (!this.isSelectedEmailDeliveryIsSmtp) return
       return this.formData.distributionTypeId === '1'
         ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
         : this.formData.sendingLimit && this.formData.distributionEmailOver
@@ -314,7 +331,6 @@ export default {
       if (minutes === 0 && hours === 0 && seconds === 0) {
         seconds = 1
       }
-
       const hoursText = hours > 1 ? 'hours' : 'hour'
       const minutesText = minutes > 1 ? 'minutes' : 'minute'
       const secondsText = seconds > 1 ? 'seconds' : 'second'
@@ -365,6 +381,7 @@ export default {
     }
   },
   created() {
+    this.callForDefaultSmtpSetting()
     this.callForEmailDeliveries()
   },
   methods: {
@@ -431,6 +448,22 @@ export default {
           deliveries.push(...directEmailItems)
         }
         this.emailDeliveryItems = deliveries
+        this.$nextTick(() => {
+          //setting default smtp setting
+          if (this.isEdit || !this.formData.smtpSettingResourceId) return
+          this.emailDelivery =
+            deliveries.find((item) => item.resourceId === this.formData.smtpSettingResourceId) || {}
+        })
+      })
+    },
+    callForDefaultSmtpSetting() {
+      if (this.isEdit) return
+      getDefaultCompanySmtpSetting().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.formData.smtpSettingResourceId = data.resourceId
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
       })
     },
     callForCalculateSendingInfo() {
