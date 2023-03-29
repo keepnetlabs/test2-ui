@@ -443,3 +443,7 @@ export function postExcludedIPAddresses(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getEmailDeliveries() {
+  return testRequest.get(`/phishing-simulator/phishing-campaign/email-delivery-setting-list`)
+}
