@@ -59,6 +59,7 @@
               :form-details="getAdvancedSettingsFormDetails"
               :default-values="getDefaultValuesOfAdvancedSettings"
               :selected-phishing-scenario="getSelectedPhishingScenario"
+              :is-edit="!!selectedRow"
               @on-increment-step="step++"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -116,6 +117,7 @@ import {
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -219,9 +221,7 @@ export default {
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
         formData.selectedSchedule = selectedSchedule
-        formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
-          (item) => item.resourceId === formData.smtpSettingResourceId
-        )
+        formData.selectedEmailDelivery = refCampaignManagerAdvancedSettings?.emailDelivery
       }
       return formData
     },
@@ -274,7 +274,9 @@ export default {
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId,
-        smtpSetting
+        smtpSetting,
+        directEmailSetting,
+        emailDeliverySettingType
       } = this.selectedRowFormData
       return {
         smtpSetting,
@@ -287,6 +289,8 @@ export default {
         excludeFromReports,
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
+        emailDeliverySettingType,
+        directEmailSetting,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
       }
     }
@@ -389,6 +393,11 @@ export default {
       const { refCampaignManagerAdvancedSettings, refCampaignManagerCampaignInfo } = this.$refs
       if (this.step === 2 && flag === 1) {
         if (
+          refCampaignManagerAdvancedSettings.emailDelivery.type ===
+          EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        )
+          return this.step++
+        if (
           refCampaignManagerAdvancedSettings &&
           refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
           !refCampaignManagerAdvancedSettings.isTestMailSend
@@ -428,7 +437,6 @@ export default {
           acc += item?.userCount || 0
           return acc
         }, 0)
-
         refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
         refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
         if (totalUserCount) {
@@ -512,7 +520,9 @@ export default {
           sendRandomlyUsersCount: advancedSettingsFormData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId:
             advancedSettingsFormData.sendRandomlyUsersCalculateTypeId,
-          smtpSettingResourceId: advancedSettingsFormData.smtpSettingResourceId
+          smtpSettingResourceId: advancedSettingsFormData.smtpSettingResourceId,
+          directEmailSettingResourceId: advancedSettingsFormData.directEmailSettingResourceId,
+          emailDeliverySettingType: advancedSettingsFormData.emailDeliverySettingType
         }
         this.setActionButtonDisability(true)
         if (this.isEdit) {
