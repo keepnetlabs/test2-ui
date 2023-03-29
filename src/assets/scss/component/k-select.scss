@@ -1,6 +1,5 @@
 .v-menu__content.k-select__menu {
     z-index: 999999999 !important;
-
     .v-list.v-select-list {
         .v-list-item {
             padding: 0 16px !important;
@@ -14,7 +13,6 @@
                     overflow: visible !important;
                 }
             }
-
             .v-list-item__action {
                 .v-simple-checkbox {
                     .mdi {
@@ -25,35 +23,27 @@
                 }
             }
         }
+      .v-subheader{
+        color:#1173C1 !important;
+      }
     }
 
-  &--super{
+    &--super{
     min-width: 450px !important;
-  }
-
+    }
     &--ultra {
         min-width: 400px !important;
     }
-
     &--huge {
         min-width: 350px !important;
     }
-
     &--big {
-        // @media (max-width: 1400px) and (min-width: 1) {
         min-width: 300px !important;
-        // }
     }
-
     &--medium {
-        // @media (max-width: 1400px) {
         min-width: 250px !important;
-        // }
     }
-
     &--small {
-        // @media (max-width: 1400px) {
         min-width: 190px !important;
-        // }
     }
 }
