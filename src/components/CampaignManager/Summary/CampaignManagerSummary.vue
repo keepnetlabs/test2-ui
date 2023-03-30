@@ -188,6 +188,7 @@ import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getDifficultyBadgeColor } from '@/utils/functions'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -311,11 +312,13 @@ export default {
       }, 0)
     },
     getSettingsItems() {
-      const { selectedSmtpSetting = {}, sendingLimit, selectedSchedule } = this.formData
+      const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
       return {
         Starting: selectedSchedule,
         'Sending Limit': sendingLimit,
-        SMTP: selectedSmtpSetting.name
+        'Email Delivery': `${
+          selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
+        } - ${selectedEmailDelivery.name}`
       }
     },
     getOtherSettingsItems() {

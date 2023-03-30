@@ -149,6 +149,7 @@ export default {
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
           COLUMNS.METHOD,
+          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATEDBY,
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
