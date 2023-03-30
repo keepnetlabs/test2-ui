@@ -106,6 +106,7 @@ export default {
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
           COLUMNS.METHOD,
+          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATEDBY,
           COLUMNS.DATE_CREATED,
           COLUMNS.USER_STATS,
