@@ -170,6 +170,7 @@ export const PROPERTY_STORE = {
   RECIPIENT_TYPE: 'recipientType',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
+  EMAIL_DELIVERY: 'emailDelivery',
   AUDIENCE: 'audience',
   TRAINING_NAME: 'trainingName',
   START_DATE: 'startDate',
