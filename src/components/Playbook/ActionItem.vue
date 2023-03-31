@@ -351,14 +351,13 @@
               :content="overFlowTooltipContent"
             />
           </v-col>
-          <v-col
+          <div
             v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
-            class="action-items__item-analysis-result"
+            class="action-items__item-analysis-result mr-2"
             :style="getAnalysisResultStyle(index)"
-            md="1"
           >
             <span class="action-items__item-analysis-result-text">If analysis result</span>
-          </v-col>
+          </div>
           <v-col
             v-if="actionsValues[index].val === 'notify' && isShowAnalysisResults[index]"
             md="2"
@@ -569,17 +568,7 @@ export default {
           { text: 'In Progress', value: 'InProgress' },
           { text: 'False Positive', value: 'FalsePositive' }
         ],
-        notifyTemplates: [
-          { label: 'IR User Notification', value: '18' },
-          { label: 'IR Delete Action Notification', value: '41' },
-          { label: 'Incident Investigation', value: '46' },
-          { label: 'About to Expire', value: '2282' },
-          { label: 'Incident Investigation Progress Report', value: '2311' },
-          {
-            label: 'Incident Investigation Suspicious Email Analysis Report',
-            value: '2320'
-          }
-        ],
+        notifyTemplates: [],
         investigateFilters: [
           'From',
           'To',
@@ -702,7 +691,7 @@ export default {
     },
     getAnalysisResultStyle(index = 0) {
       const style = {
-        marginTop: window.innerWidth <= 1640 ? '0' : '6px'
+        marginTop: '6px'
       }
       if (['Groups', 'Users'].includes(this.targetUserType[index])) {
         style.maxWidth = '7%'
@@ -940,34 +929,32 @@ export default {
     analysisEnginesChange(engine, index) {
       if (this.searchEnginesData) {
         let item = this.analysisEngines.find(
-          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+          (item) => item.resourceId === this.searchEnginesData[index].resourceId
         )
         item.isCheckUrl = engine.selected
         item.isCheckHash = engine.selected
         item.isCheckFile = engine.selected
         item.isCheckSenderIP = engine.selected
         this.checkAllDataChecked(index, item)
+      } else if (engine['analysisEngineType']) {
+        const { analysisEngineType } = engine
+        this.analysisEngines[index].isCheckUrl = engine.selected
+          ? analysisEngineType.isSendUrl
+          : engine.selected
+        this.analysisEngines[index].isCheckHash = engine.selected
+          ? analysisEngineType.isSendFileHash
+          : engine.selected
+        this.analysisEngines[index].isCheckFile = engine.selected
+          ? analysisEngineType.isSendFile
+          : engine.selected
+        this.analysisEngines[index].isCheckSenderIP = engine.selected
+          ? analysisEngineType.isSendIp
+          : engine.selected
       } else {
-        if (engine['analysisEngineType']) {
-          const { analysisEngineType } = engine
-          this.analysisEngines[index].isCheckUrl = engine.selected
-            ? analysisEngineType.isSendUrl
-            : engine.selected
-          this.analysisEngines[index].isCheckHash = engine.selected
-            ? analysisEngineType.isSendFileHash
-            : engine.selected
-          this.analysisEngines[index].isCheckFile = engine.selected
-            ? analysisEngineType.isSendFile
-            : engine.selected
-          this.analysisEngines[index].isCheckSenderIP = engine.selected
-            ? analysisEngineType.isSendIp
-            : engine.selected
-        } else {
-          this.analysisEngines[index].isCheckUrl = engine.selected
-          this.analysisEngines[index].isCheckHash = engine.selected
-          this.analysisEngines[index].isCheckFile = engine.selected
-          this.analysisEngines[index].isCheckSenderIP = engine.selected
-        }
+        this.analysisEngines[index].isCheckUrl = engine.selected
+        this.analysisEngines[index].isCheckHash = engine.selected
+        this.analysisEngines[index].isCheckFile = engine.selected
+        this.analysisEngines[index].isCheckSenderIP = engine.selected
       }
     },
     getAnalysisEngine() {

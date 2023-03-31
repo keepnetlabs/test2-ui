@@ -1,0 +1,16 @@
+.input-domain{
+  &__menu {
+    .v-list-item{
+      &:first-child{
+        .v-list-item__action{
+          display: none;
+        }
+      }
+      &--disabled{
+        .v-list-item__action{
+          opacity:.5;
+        }
+      }
+    }
+  }
+}

@@ -31,6 +31,7 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="tableOptions.countRow"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -38,7 +39,11 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope }">
+          <CampaignManagerReportUserAgentColumn :scope="scope" />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -65,9 +70,10 @@ import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulato
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
-  components: { DataTable, AppDialog },
+  components: { CampaignManagerReportUserAgentColumn, DataTable, AppDialog },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -84,14 +90,14 @@ export default {
         id: 'campaign-manager-clicked-detail-item-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime', pageSize: 5 }),
       isLoading: false,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.DATE_CLICKED,
-          COLUMNS.USER_AGENT,
+          COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP
@@ -105,7 +111,8 @@ export default {
         rowActions: [],
         downloadButton: {
           show: false
-        }
+        },
+        countRow: 5
       },
       tableData: []
     }
@@ -119,6 +126,7 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
     this.callForData()
   },
   methods: {

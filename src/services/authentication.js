@@ -35,7 +35,7 @@ const AuthenticationService = {
       return null
     }
   },
-  setToken(token, expired, status) {
+  setToken(token, expired = 9999999999999, status = 1) {
     localStorage.setItem(
       CookieKeys.AUTH_KEY,
       JSON.stringify({

@@ -92,6 +92,7 @@
                     :href="scope.row['analysisEnginePermalink']"
                     target="_blank"
                     class="attachments-table__link"
+                    rel="noopener"
                     >See Details</a
                   >
                   <span v-else></span>

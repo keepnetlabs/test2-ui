@@ -582,7 +582,6 @@ export default {
           this.unverifiedDomains.length > 1 ? 'domains' : 'domain'
         }. Please verify the domains in the next 30 days.`
       }
-
       return ''
     },
     canRenderAlertbox() {
