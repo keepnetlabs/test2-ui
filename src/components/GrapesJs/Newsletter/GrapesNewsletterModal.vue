@@ -872,7 +872,8 @@ export default {
     },
     createImageAssetSearchField() {
       const searchField = document.createElement('input')
-      searchField.style.cssText = 'background:#fff;outline:none;width:237px;padding:4px'
+      searchField.style.cssText =
+        'background:#fff;outline:none;width:100%;border-radius:2px;margin-top:16px;margin-bottom:4px;padding:4px'
       searchField.setAttribute('placeholder', 'Search')
       searchField.addEventListener('input', (e) => {
         const { value } = e.target
