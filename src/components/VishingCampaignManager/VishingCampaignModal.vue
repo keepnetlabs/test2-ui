@@ -694,7 +694,7 @@ export default {
           .slice(0, 2)
           .join(':')
         this.formValues.sendCallsOnDays = getSendCallOnDays(distributionDays)
-        this.formValues.distributionOverDays = distributionOverDays
+        this.formValues.distributionOverDays = distributionOverDays / 7
         this.formValues.excludeFromReports = excludeFromReports
         this.formValues.name = this.isDuplicate ? `${name} - Copy` : name
         this.formValues.scheduleDate = scheduleDate
