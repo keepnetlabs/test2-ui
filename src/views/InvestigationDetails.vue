@@ -2531,8 +2531,8 @@ export default {
     },
     investigationDetailsData(val) {
       const tempArr = []
-      if (val && val.targetUsers) {
-        if (val.targetUserType && val.targetUserType === 'Groups') {
+      if (val?.targetUsers) {
+        if (val?.targetUserType === 'Groups') {
           for (let user of val.targetUsers) {
             tempArr.push({ Group: user.targetUser })
           }
