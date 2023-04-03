@@ -145,6 +145,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.DATE_SENT,
           COLUMNS.DELIVERY_STATUS
         ],

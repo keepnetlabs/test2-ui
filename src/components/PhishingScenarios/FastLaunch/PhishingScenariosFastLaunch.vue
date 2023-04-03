@@ -88,6 +88,7 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { isDifferent, scrollToComponent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 export default {
   name: 'PhishingScenariosFastLaunch',
   components: {
@@ -140,13 +141,12 @@ export default {
           landingPageTemplates: this.landingPageTemplate,
           landingPageParams: this.landingPageParams
         }
-
         formData.selectedPhishingScenario = this.selectedScenario
-
         formData.selectedSchedule = 'Now'
-        formData.selectedSmtpSetting = {
+        formData.selectedEmailDelivery = {
           resourceId: this.smtpSettingResourceId,
-          name: 'Default'
+          name: 'Default',
+          type: EMAIL_DELIVERY_TYPES.SMTP
         }
       }
       return formData
