@@ -181,6 +181,22 @@ export default {
             width: 150
           },
           {
+            property: 'verifiedType',
+            align: 'left',
+            editable: false,
+            label: 'Verification',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'By Primary Domain Rule', value: '0' },
+              { text: 'By DNS TXT Record', value: '1' },
+              { text: 'By System', value: '2' },
+              { text: 'By Reseller', value: '3' }
+            ]
+          },
+          {
             property: 'createTime',
             align: 'left',
             editable: false,
@@ -283,14 +299,18 @@ export default {
         getAllowListList(this.axiosPayload)
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+              results
+            } = response?.data?.data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((row, index) => ({
+              ...row,
+              verifiedType: this.getVerifiedTypeText(index)
+            }))
             if (resourceId !== null) {
               this.selectedDomain = results.find((x) => x.allowListResourceId === resourceId)
               this.verifyPopupStatus = true
@@ -303,6 +323,12 @@ export default {
       } else {
         this.$router.push('/')
       }
+    },
+    getVerifiedTypeText(index) {
+      if (index % 4 === 0) return 'By Primary Domain Rule'
+      if (index % 4 === 1) return 'By DNS TXT Record'
+      if (index % 4 === 2) return 'By System'
+      if (index % 4 === 3) return 'By Reseller'
     },
     setStatusColor(status) {
       let color = '#B6791D'
