@@ -642,6 +642,19 @@
               </div>
             </div>
           </form-group>
+          <form-group
+            v-if="isVirusTotal"
+            title="Detection Threshold"
+            sub-title="Set the minimum number of required analysis engines that return a positive result to mark an email as malicious"
+            hint
+            class="my-3"
+          >
+            <InputNumber
+              v-model="formValues.detectionThreshold"
+              entity-name="Detection Threshold"
+              initial-placeholder="Enter a number"
+            />
+          </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label"> Tags </v-list-item-title>
@@ -1001,6 +1014,7 @@ import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputNumber from '@/components/Common/Inputs/InputNumber'
 export default {
   name: 'NewIntegration',
   components: {
@@ -1010,7 +1024,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    InputNumber
   },
   props: {
     showModal: {
@@ -1125,6 +1140,9 @@ export default {
     }
   },
   computed: {
+    isVirusTotal() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL
+    },
     isFortiNet() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET
     },
@@ -1702,6 +1720,12 @@ export default {
             apiCredential: {
               apiKey: item.value,
               resourceId: item.resourceId
+            }
+          }
+          if (this.isVirusTotal) {
+            payload = {
+              ...payload,
+              detectionThreshold: parseInt(this.formValues.detectionThreshold)
             }
           }
           if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
