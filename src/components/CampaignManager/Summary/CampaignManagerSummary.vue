@@ -313,13 +313,16 @@ export default {
     },
     getSettingsItems() {
       const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
-      return {
-        Starting: selectedSchedule,
-        'Sending Limit': sendingLimit,
-        'Email Delivery': `${
-          selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
-        } - ${selectedEmailDelivery.name}`
+      const obj = {
+        Starting: selectedSchedule
       }
+      if (selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
+        obj['Sending Limit'] = sendingLimit
+      }
+      obj['Email Delivery'] = `${
+        selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
+      } - ${selectedEmailDelivery.name}`
+      return obj
     },
     getOtherSettingsItems() {
       const { excludeFromReports, sendOnlyActiveUsers, sendRandomlyUsers } = this.formData
