@@ -317,7 +317,9 @@ export default {
           sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
           sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
-          smtpSettingResourceId: this.smtpSettingResourceId
+          smtpSettingResourceId: this.smtpSettingResourceId,
+          directEmailSettingResourceId: '',
+          emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP
         }
         createCampaignManager(payload)
           .then(() => {
