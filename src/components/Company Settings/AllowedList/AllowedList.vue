@@ -181,7 +181,7 @@ export default {
             width: 150
           },
           {
-            property: 'verifiedType',
+            property: 'verifyType',
             align: 'left',
             editable: false,
             label: 'Verification',
@@ -190,10 +190,10 @@ export default {
             type: 'text',
             filterableType: 'select',
             filterableItems: [
-              { text: 'By Primary Domain Rule', value: '0' },
               { text: 'By DNS TXT Record', value: '1' },
               { text: 'By System', value: '2' },
-              { text: 'By Reseller', value: '3' }
+              { text: 'By Primary Domain Rule', value: '3' },
+              { text: 'By Reseller', value: '4' }
             ]
           },
           {
@@ -299,17 +299,17 @@ export default {
         getAllowListList(this.axiosPayload)
           .then((response) => {
             const {
-              totalNumberOfRecords,
-              totalNumberOfPages,
-              pageNumber,
-              results
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 1,
+              pageNumber = 1,
+              results = []
             } = response?.data?.data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            this.tableData = results.map((row, index) => ({
+            this.tableData = results.map((row) => ({
               ...row,
-              verifiedType: this.getVerifiedTypeText(index)
+              verifyType: this.getVerifyTypeText(row)
             }))
             if (resourceId !== null) {
               this.selectedDomain = results.find((x) => x.allowListResourceId === resourceId)
@@ -324,11 +324,12 @@ export default {
         this.$router.push('/')
       }
     },
-    getVerifiedTypeText(index) {
-      if (index % 4 === 0) return 'By Primary Domain Rule'
-      if (index % 4 === 1) return 'By DNS TXT Record'
-      if (index % 4 === 2) return 'By System'
-      if (index % 4 === 3) return 'By Reseller'
+    getVerifyTypeText(row) {
+      if (row.status === 'Unverified') return ''
+      if (row.verifyType === 1) return 'By DNS TXT Record'
+      if (row.verifyType === 2) return 'By System'
+      if (row.verifyType === 2) return 'By Primary Domain Rule'
+      if (row.verifyType === 4) return 'By Reseller'
     },
     setStatusColor(status) {
       let color = '#B6791D'
