@@ -17,6 +17,23 @@
         :items="getSettingItems"
       />
     </div>
+    <div class="campaign-manager-last-step__target-users mt-4">
+      <CampaignManagerSummaryCard
+        detailable
+        icon="mdi-account-multiple"
+        :show-body-detail.sync="isShowTargetUserDetail"
+        :title="labels.TargetUsers"
+      >
+        <template #body>
+          <div class="campaign-manager-last-step__target-users-body pb-4">
+            <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
+          </div>
+          <div v-if="isShowTargetUserDetail">
+            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.selectedTargetGroups" />
+          </div>
+        </template>
+      </CampaignManagerSummaryCard>
+    </div>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
@@ -172,9 +189,15 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
+import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
+
 export default {
   name: 'SendTrainingSummary',
-  components: { KEmailPreview, CampaignManagerSummaryCard },
+  components: {
+    KEmailPreview,
+    CampaignManagerSummaryCard,
+    CampaignManagerTargetGroupsAndUserSummaryInfo
+  },
   props: {
     formData: {
       type: Object
@@ -186,10 +209,26 @@ export default {
       isShowEnrollmentEmail: false,
       isShowTrainingEmail: false,
       isShowCertificate: false,
-      isShowReminderEmail: false
+      isShowReminderEmail: false,
+      isShowTargetUserDetail: false
     }
   },
   computed: {
+    getTotalTargetGroupsAndUsersCount() {
+      let text = ''
+      if (Object.keys(this.formData)?.length && this.formData?.selectedTargetGroups) {
+        const { selectedTargetGroups } = this.formData
+        text = `${this.getTotalActiveUsers} active user(s) from ${selectedTargetGroups.length} group(s)`
+      }
+      return text
+    },
+    getTotalActiveUsers() {
+      const { selectedTargetGroups } = this.formData
+      return selectedTargetGroups.reduce((acc, item) => {
+        acc += item?.activeUserCount
+        return acc
+      }, 0)
+    },
     getEnrollmentTemplate() {
       return this.formData?.enrollmentData?.template || ''
     },
@@ -202,7 +241,7 @@ export default {
         this?.formData?.trainingInfo.Languages.includes('All Languages')
       ) {
         return {
-          ...this?.formData?.trainingInfo,
+          'Content Type': this?.formData?.trainingInfo?.['Content Type'],
           Languages: 'All Languages'
         }
       }
@@ -222,6 +261,12 @@ export default {
     }
   },
   watch: {
+    formData: {
+      deep: true,
+      handler(val) {
+        console.log(val)
+      }
+    },
     isShowTrainingEmail(val) {
       if (val) {
         this.$emit('on-show-training-summary')

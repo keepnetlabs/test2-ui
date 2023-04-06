@@ -4,11 +4,18 @@
       v-if="!isLoading && !isTargetGroupEmpty && !isTargetGroupLoading"
       class="campaign-manager-target-user-groups-header"
     >
-      <v-icon color="#000000">mdi-account-multiple</v-icon>
-      <span class="campaign-manager-target-user-groups-header__text">{{ groupName }}</span>
-      <span class="campaign-manager-target-user-groups-header__badge"
-        >{{ totalUserCount }} users</span
-      >
+      <div>
+        <v-icon color="#000000">mdi-account-multiple</v-icon>
+        <span class="campaign-manager-target-user-groups-header__text">{{ groupName }}</span>
+      </div>
+      <div>
+        <span class="campaign-manager-target-user-groups-header__badge"
+          >Total {{ totalUserCount }} users:
+          <span class="campaign-manager-target-user-groups-header__active-and-inactive-users"
+            >{{ activeUserCount }} active, {{ inactiveUserCount }} inactive</span
+          ></span
+        >
+      </div>
     </div>
     <div>
       <DataTable
@@ -60,6 +67,8 @@ export default {
     return {
       axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
+      activeUserCount: 0,
+      inactiveUserCount: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -134,6 +143,8 @@ export default {
           } = response
 
           this.totalUserCount = data.totalNumberOfRecords
+          this.activeUserCount = data?.activeUserCount
+          this.inactiveUserCount = data?.inactiveUserCount
           this.tableData = data.results || []
           this.setLoading(false)
         })

@@ -188,6 +188,7 @@ export default {
             )
             .join(', ')
         }
+        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.settings = {
           'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest

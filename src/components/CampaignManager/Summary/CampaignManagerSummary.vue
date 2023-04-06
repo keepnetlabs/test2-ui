@@ -281,14 +281,14 @@ export default {
           sendRandomlyUsersCalculateTypeId,
           sendRandomlyUsersCount
         } = this.formData
-        let totalUsers = this.getTotalUsers
+        let totalActiveUsers = this.getTotalActiveUsers
         const totalGroupLength = targetGroupResourceIds.length
-        if (totalGroupLength && totalUsers === 0) {
-          totalUsers = 1
+        if (totalGroupLength && totalActiveUsers === 0) {
+          totalActiveUsers = 1
         }
 
         if (sendRandomlyUsersCalculateTypeId === '1') {
-          const total = Math.floor(totalUsers / Number(sendRandomlyUsersCount))
+          const total = Math.floor(totalActiveUsers / Number(sendRandomlyUsersCount))
           text = `Randomly selected %${sendRandomlyUsersCount} (${total || 1} users) from`
         } else {
           text = `Randomly selected ${Number(sendRandomlyUsersCount)} users from`
@@ -300,7 +300,7 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalUsers} user(s) from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsers} active user(s) from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
@@ -308,6 +308,13 @@ export default {
       const { selectedTargetGroups } = this.formData
       return selectedTargetGroups.reduce((acc, item) => {
         acc += item.userCount
+        return acc
+      }, 0)
+    },
+    getTotalActiveUsers() {
+      const { selectedTargetGroups } = this.formData
+      return selectedTargetGroups.reduce((acc, item) => {
+        acc += item?.activeUserCount
         return acc
       }, 0)
     },
