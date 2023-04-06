@@ -1,17 +1,17 @@
 <template>
   <div class="landingPagePreview">
     <app-dialog
+      style="overflow: hidden;"
+      subtitle="Landing Page Template Preview"
       custom-size="1600"
       max-height
       max-height-size="900"
-      :status="isTemplateDetails"
-      @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
+      :status="isTemplateDetails"
       :title="getSelectedTemplateHeader"
-      :subtitle="'Landing Page Template Preview'"
-      style="overflow: hidden;"
+      @changeStatus="isTemplateDetails = false"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <KEmailPreview v-if="!!getSelectedTemplateDetails" :html="getSelectedTemplateDetails" />
       </template>
       <template v-slot:app-dialog-footer>
@@ -182,6 +182,7 @@
                     <KEmailPreview
                       v-if="!!template.content"
                       :html="template.content"
+                      :key="template.content"
                       is-extra-height
                     />
                   </div>
@@ -191,11 +192,11 @@
                 <div class="template-preview">
                   <div class="template-preview__icon">
                     <v-btn
+                      v-if="!!getSingleTemplateDetails"
                       :color="'#2196f3'"
                       icon
                       outlined
                       @click="isTemplateDetails = true"
-                      v-if="!!getSingleTemplateDetails"
                     >
                       <v-icon color="#2196f3" medium>
                         {{ 'mdi-fullscreen' }}
@@ -216,6 +217,7 @@
                   <KEmailPreview
                     v-if="!!getSingleTemplateDetails"
                     :html="getSingleTemplateDetails"
+                    :key="getLandingPageHtmlKey"
                     is-extra-height
                   />
                 </div>
@@ -322,6 +324,9 @@ export default {
     },
     getSingleTemplateDetails() {
       return this.landingPageTemplates?.[0]?.content || ''
+    },
+    getLandingPageHtmlKey() {
+      return `${this.getSingleTemplateDetails}-${this.templateName}`
     }
   },
   mounted() {
