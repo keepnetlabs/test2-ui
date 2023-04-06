@@ -1,6 +1,6 @@
 <template>
   <app-modal :status="status" icon-name="mdi-hook" :title="getModalTitle">
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -145,8 +145,8 @@
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
-                    :scenarioDetailsLookup="scenarioDetailsLookup"
                     ref="RefEmailTemplateListPreview"
+                    :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
@@ -282,6 +282,7 @@
                         </div>
                         <div class="d-flex" v-if="!!summaryData">
                           <v-chip
+                            v-if="!!summaryData && !!summaryData.emailTemplate"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -291,7 +292,6 @@
                               font-size: 12px;
                             "
                             :color="emailDifficultyChipColor"
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
                           >
                             {{
                               difficulties.find(
@@ -340,8 +340,8 @@
                       </div>
                     </div>
                     <div
-                      class="summary-content summary-content__collapsable"
                       v-if="showTemplate1"
+                      class="summary-content summary-content__collapsable"
                       style="border: none;"
                     >
                       <div class="summary-template">
@@ -479,6 +479,7 @@
                         </div>
                         <div class="d-flex" v-if="!!summaryData">
                           <v-chip
+                            v-if="!!summaryData"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -488,7 +489,6 @@
                               font-size: 12px;
                             "
                             :color="getLandingPageDifficultyColor"
-                            v-if="!!summaryData"
                           >
                             {{
                               scenarioDetailsLookup.difficultyTypes.find(
@@ -539,14 +539,15 @@
                       </div>
                     </div>
                     <div
-                      class="summary-content summary-content__collapsable"
                       v-if="showTemplate2"
+                      class="summary-content summary-content__collapsable"
                       style="border: none;"
                     >
                       <div class="summary-template">
                         <KEmailPreview
                           v-if="!!getCurrentLandingPageTemplate"
                           :html="getCurrentLandingPageTemplate"
+                          :key="getCurrentLandingPageTemplate"
                           is-extra-height
                         />
                       </div>
