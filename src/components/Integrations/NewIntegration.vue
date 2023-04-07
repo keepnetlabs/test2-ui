@@ -642,6 +642,19 @@
               </div>
             </div>
           </form-group>
+          <form-group
+            v-if="isVirusTotal"
+            title="Detection Threshold"
+            sub-title="Set the minimum number of required analysis engines that return a positive result to mark an email as malicious"
+            hint
+            class="my-3"
+          >
+            <InputNumber
+              v-model="formValues.detectionThreshold"
+              entity-name="Detection Threshold"
+              initial-placeholder="Enter a number"
+            />
+          </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label"> Tags </v-list-item-title>
@@ -1001,6 +1014,7 @@ import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputNumber from '@/components/Common/Inputs/InputNumber'
 export default {
   name: 'NewIntegration',
   components: {
@@ -1010,7 +1024,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    InputNumber
   },
   props: {
     showModal: {
@@ -1053,6 +1068,7 @@ export default {
         analysisEngineTypeResourceId: null,
         cacheDuration: 4,
         cacheQueryCount: 4,
+        detectionThreshold: '1',
         tags: [],
         isActive: true,
         isSendUrl: false,
@@ -1125,6 +1141,9 @@ export default {
     }
   },
   computed: {
+    isVirusTotal() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL
+    },
     isFortiNet() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET
     },
@@ -1338,7 +1357,7 @@ export default {
       }
     },
     saveIntegration() {
-      const data = { ...this.formValues }
+      let data = { ...this.formValues }
       if (!this.isVmrayOrVirusTotal) {
         delete data.isCachingEnabled
         delete data.cacheDuration
@@ -1354,6 +1373,15 @@ export default {
           INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
+        if (this.isVirusTotal) {
+          data = {
+            ...data,
+            detectionThreshold:
+              data.detectionThreshold === '' ? null : parseInt(data.detectionThreshold)
+          }
+        } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
+          delete payload['detectionThreshold']
+        }
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((apiKey, index) => {
           const obj = {
@@ -1608,7 +1636,13 @@ export default {
         response['data'].data.apiKeys = response['data'].data.apiKeys.length
           ? response['data'].data.apiKeys
           : [{ value: '', status: null, resourceId: null }]
-
+        if (this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL) {
+          if (!!response?.data?.data?.detectionThreshold.toString()) {
+            response.data.data.detectionThreshold = response?.data?.data?.detectionThreshold?.toString()
+          } else {
+            response.data.data.detectionThreshold = '1'
+          }
+        }
         if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
           response.data.data.password = response['data'].data['apiCredentials'].length
             ? response['data'].data['apiCredentials'][0].password
@@ -1703,6 +1737,17 @@ export default {
               apiKey: item.value,
               resourceId: item.resourceId
             }
+          }
+          if (this.isVirusTotal) {
+            payload = {
+              ...payload,
+              detectionThreshold:
+                this.formValues.detectionThreshold === ''
+                  ? null
+                  : parseInt(this.formValues.detectionThreshold)
+            }
+          } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
+            delete payload['detectionThreshold']
           }
           if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
