@@ -61,7 +61,9 @@
                   max-width="700"
                 >
                   <v-container fill-height fluid size="14" style="flex-wrap: nowrap;">
-                    <v-icon class="pa-2" size="24" marig color="#f56c6c"> mdi-close-circle </v-icon>
+                    <v-icon class="pa-2" size="24" marig color="#f56c6c">
+                      mdi-close-circle
+                    </v-icon>
                     <strong
                       v-if="submitError.isArray"
                       v-for="(error, index) in submitError.message"
@@ -87,6 +89,7 @@
                       entityName="email address"
                       initialPlaceholder="Email address"
                       required
+                      :rules="emailRules"
                     />
                   </form-group>
                   <form-group
@@ -738,6 +741,7 @@ import {
   getQuickScanCount,
   getQuickScanCreate
 } from '@/api/emailThreatSimlator'
+import { getVerifiedDomains } from '@/api/allowList'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputNumber from '@/components/Common/Inputs/InputNumber'
@@ -821,6 +825,19 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(''))
       ],
+      emailRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(labels.Email, 8)),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.email(v, labels.InvalidEmailAddress),
+        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+        (v) => {
+          if (Validations.email(v)) {
+            return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+          }
+          return false
+        }
+      ],
       permissionModalStatus: true,
       isSubmitDisabled: false,
       continuosScanErrortext: '',
@@ -865,6 +882,7 @@ export default {
     }
   },
   created() {
+    this.getVerifiedDomains()
     if (this.isDuplicate) {
       this.pageTitle = 'Duplicate Scan'
       this.emailSettingsValues.email = this.scanDetails.email
@@ -895,6 +913,11 @@ export default {
     }
   },
   methods: {
+    getVerifiedDomains() {
+      getVerifiedDomains().then((response) => {
+        this.emailRules.push((v) => Validations.verifiedDomains(v, response.data.data))
+      })
+    },
     commonRules(isNeed) {
       if (isNeed) {
         return this.baseRules
