@@ -190,10 +190,10 @@ export default {
             type: 'text',
             filterableType: 'select',
             filterableItems: [
-              { text: 'By DNS TXT Record', value: '1' },
-              { text: 'By System', value: '2' },
-              { text: 'By Primary Domain Rule', value: '3' },
-              { text: 'By Reseller', value: '4' }
+              { text: 'By DNS TXT Record', value: 1 },
+              { text: 'By System', value: 2 },
+              { text: 'By Primary Domain Rule', value: 3 },
+              { text: 'By Reseller', value: 4 }
             ]
           },
           {
