@@ -1068,6 +1068,7 @@ export default {
         analysisEngineTypeResourceId: null,
         cacheDuration: 4,
         cacheQueryCount: 4,
+        detectionThreshold: '1',
         tags: [],
         isActive: true,
         isSendUrl: false,
@@ -1356,7 +1357,7 @@ export default {
       }
     },
     saveIntegration() {
-      const data = { ...this.formValues }
+      let data = { ...this.formValues }
       if (!this.isVmrayOrVirusTotal) {
         delete data.isCachingEnabled
         delete data.cacheDuration
@@ -1372,6 +1373,15 @@ export default {
           INTEGRATION_TYPES.GOOGLEWEBRISK
         ].includes(this.selectedIntegrationType.name)
       ) {
+        if (this.isVirusTotal) {
+          data = {
+            ...data,
+            detectionThreshold:
+              data.detectionThreshold === '' ? null : parseInt(data.detectionThreshold)
+          }
+        } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
+          delete payload['detectionThreshold']
+        }
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((apiKey, index) => {
           const obj = {
@@ -1626,7 +1636,13 @@ export default {
         response['data'].data.apiKeys = response['data'].data.apiKeys.length
           ? response['data'].data.apiKeys
           : [{ value: '', status: null, resourceId: null }]
-
+        if (this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL) {
+          if (!!response?.data?.data?.detectionThreshold.toString()) {
+            response.data.data.detectionThreshold = response?.data?.data?.detectionThreshold?.toString()
+          } else {
+            response.data.data.detectionThreshold = '1'
+          }
+        }
         if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
           response.data.data.password = response['data'].data['apiCredentials'].length
             ? response['data'].data['apiCredentials'][0].password
@@ -1725,8 +1741,13 @@ export default {
           if (this.isVirusTotal) {
             payload = {
               ...payload,
-              detectionThreshold: parseInt(this.formValues.detectionThreshold)
+              detectionThreshold:
+                this.formValues.detectionThreshold === ''
+                  ? null
+                  : parseInt(this.formValues.detectionThreshold)
             }
+          } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
+            delete payload['detectionThreshold']
           }
           if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
