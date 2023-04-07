@@ -10,7 +10,7 @@
           {{ item.name }}
         </div>
         <div>
-          {{ item.userCount || item['usersCount'] || 0 }}
+          {{ item.userCount || item['userCount'] || 0 }}
         </div>
       </div>
     </div>

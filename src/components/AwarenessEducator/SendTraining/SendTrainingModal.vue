@@ -112,6 +112,7 @@ import { getErrorMessage, scrollToComponent } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import SendTrainingSummary from '@/components/AwarenessEducator/SendTraining/SendTrainingSummary'
+import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 
 export default {
@@ -159,6 +160,7 @@ export default {
       certificateData: null,
       reminderData: null,
       enrollmentData: null,
+      userCountDetailResponse: {},
       trainingPreviewData: {
         name: this?.selectedRow?.trainingName,
         category: this?.selectedRow?.category,
@@ -188,6 +190,8 @@ export default {
             )
             .join(', ')
         }
+        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+        formData.userCountDetailResponse = this.userCountDetailResponse
         formData.settings = {
           'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest
@@ -268,7 +272,7 @@ export default {
     handleClose() {
       this.$emit(EMITS.ON_CLOSE)
     },
-    changeStep(flag = 1) {
+    async changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {
         const { refSendTrainingSelectUsers } = this.$refs
         if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {
@@ -291,6 +295,8 @@ export default {
             refSendTrainingSelectUsers.totalTargetUserCount = totalUserCount
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = false
             refSendTrainingSelectUsers.isTargetGroupsValid = true
+            const targetGroupResourceIds = targetGroups.map((group) => group.resourceId)
+            this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
             this.step += flag
           } else {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true

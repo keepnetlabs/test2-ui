@@ -64,3 +64,10 @@ export function getUnverifiedDomains() {
     'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
   })
 }
+
+export function getVerifiedDomains() {
+  return testRequest.get(`/allow-list/search/verified`, {
+    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+  })
+}

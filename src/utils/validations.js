@@ -259,3 +259,16 @@ export function subdomainBlacklist(value) {
   }
   return true
 }
+
+export function verifiedDomains(
+  value,
+  verifiedDomainList = [],
+  message = 'This domain is unverified. Make it verified to use.'
+) {
+  value = getValue(value)
+  if (value.includes('@')) {
+    value = value.split('@')[1]
+    return verifiedDomainList.some((domain) => domain === value) || message
+  }
+  return true
+}
