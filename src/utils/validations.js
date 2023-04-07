@@ -260,15 +260,15 @@ export function subdomainBlacklist(value) {
   return true
 }
 
-export function unverifiedDomains(
+export function verifiedDomains(
   value,
-  unverifiedDomainList = [],
+  verifiedDomainList = [],
   message = 'This domain is unverified. Make it verified to use.'
 ) {
   value = getValue(value)
   if (value.includes('@')) {
     value = value.split('@')[1]
-    return unverifiedDomainList.some((domain) => domain.includes(value)) || message
+    return verifiedDomainList.some((domain) => domain === value) || message
   }
   return true
 }

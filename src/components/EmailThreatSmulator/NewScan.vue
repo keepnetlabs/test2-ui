@@ -915,7 +915,7 @@ export default {
   methods: {
     getVerifiedDomains() {
       getVerifiedDomains().then((response) => {
-        this.emailRules.push((v) => Validations.unverifiedDomains(v, response.data.data))
+        this.emailRules.push((v) => Validations.verifiedDomains(v, response.data.data))
       })
     },
     commonRules(isNeed) {
