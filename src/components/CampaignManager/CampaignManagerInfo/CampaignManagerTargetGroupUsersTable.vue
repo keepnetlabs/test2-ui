@@ -16,6 +16,11 @@
           ></span
         >
       </div>
+      <AlertBox
+        v-if="canRenderAlertbox"
+        :text="getUnverifiedDomainsText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -36,12 +41,14 @@
 <script>
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import { searchTargetGroupUsers } from '@/api/targetUsers'
+import { getTargetGroupCountDetail, searchTargetGroupUsers } from '@/api/targetUsers'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
+import AlertBox from '@/components//AlertBox'
+
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
-  components: { DataTable },
+  components: { DataTable, AlertBox },
   props: {
     resourceId: {
       type: String
@@ -61,6 +68,10 @@ export default {
     },
     addRowClassName: {
       type: Function
+    },
+    isVishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -69,6 +80,7 @@ export default {
       totalUserCount: 0,
       activeUserCount: 0,
       inactiveUserCount: 0,
+      usersFromUnverifiedDomainsCount: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -120,6 +132,12 @@ export default {
   computed: {
     getLoadingStatus() {
       return this.isTargetGroupLoading || this.isLoading
+    },
+    canRenderAlertbox() {
+      return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
+    },
+    getUnverifiedDomainsText() {
+      return `There are ${this.usersFromUnverifiedDomainsCount} active users with unverified domains in this group. Please verify the domains in the next 30 days.`
     }
   },
   watch: {
@@ -141,14 +159,32 @@ export default {
           const {
             data: { data }
           } = response
-
-          this.totalUserCount = data.totalNumberOfRecords
-          this.activeUserCount = data?.activeUserCount
-          this.inactiveUserCount = data?.inactiveUserCount
           this.tableData = data.results || []
-          this.setLoading(false)
         })
-        .catch(this.setLoading)
+        .then(() => {
+          getTargetGroupCountDetail([this.resourceId])
+            .then((response) => {
+              if (!Object.keys(response).length) return
+              const {
+                data: { data }
+              } = response
+
+              const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
+              const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
+              const usersFromUnverifiedDomainsCount =
+                data
+                  .find((row) => row.status === 'Active')
+                  ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+              this.totalUserCount = activeUserCount + inactiveUserCount
+              this.activeUserCount = activeUserCount
+              this.inactiveUserCount = inactiveUserCount
+              this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
+              this.setLoading(false)
+            })
+            .catch(() => {
+              this.setLoading(false)
+            })
+        })
     },
     setLoading(flag = false) {
       this.isLoading = flag

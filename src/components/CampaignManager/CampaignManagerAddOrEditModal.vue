@@ -118,6 +118,7 @@ import { getPhishingReportSummary } from '@/api/phishingReporter'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import { getTargetGroupCountDetail } from '@/api/targetUsers'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -159,7 +160,8 @@ export default {
       step: 1,
       selectedRowFormData: {},
       initialFormValues: {},
-      languageOptions: []
+      languageOptions: [],
+      userCountDetailResponse: {}
     }
   },
   computed: {
@@ -201,6 +203,7 @@ export default {
           ...formData,
           ...refCampaignManagerCampaignInfo.formData,
           ...refCampaignManagerAdvancedSettings.formData,
+          userCountDetailResponse: this.userCountDetailResponse,
           emailTemplate:
             refCampaignManagerCampaignInfo?.$refs?.refCampaignManagerPhishingScenarios
               ?.emailTemplate || '',
@@ -298,8 +301,10 @@ export default {
   created() {
     LookupLocalStorage.getSingle(21).then((response) => {
       this.languageOptions =
-        response?.map((language) => ({ text: language.description, value: language.resourceId })) ||
-        []
+        response?.map((language) => ({
+          text: language.description,
+          value: language.resourceId
+        })) || []
     })
     if (this.selectedRow) {
       this.callForData()
@@ -458,7 +463,7 @@ export default {
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (this.step === 1) {
         const { refCampaignManagerCampaignInfo } = this.$refs
         const { refForm } = refCampaignManagerCampaignInfo.$refs
@@ -475,9 +480,13 @@ export default {
           refForm.validate() &&
           refCampaignManagerCampaignInfo.isDateValid &&
           refCampaignManagerCampaignInfo.isTargetGroupsValid
-        )
+        ) {
+          const targetGroupResourceIds = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
+            (group) => group.value
+          )
+          this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
           this.changeStep()
-        else this.showErrorMessage(refForm)
+        } else this.showErrorMessage(refForm)
         return
       }
 

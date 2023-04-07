@@ -38,6 +38,15 @@ export function searchAllTargetGroups(payload) {
   return testRequest.post('/target-groups/search/all', payload)
 }
 
+export function getTargetGroupCountDetail(payload) {
+  const parametersArray = []
+  for (let i = 0; i < payload.length; i++) {
+    parametersArray.push(`targetGroupResourceIds=${payload[i]}`)
+  }
+  const parametersText = parametersArray.join('&')
+  return testRequest.get(`/target-groups/targetgroupusercountdetail?${parametersText}`)
+}
+
 export function createTargetGroup(payload) {
   return testRequest.post('/target-groups', payload, { snackbar: COMMON_SNACKBAR })
 }

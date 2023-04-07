@@ -160,6 +160,7 @@
               :selected-target-groups="formValues.targetGroupResourceIds"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"
+              :is-vishing="true"
               @handle-selection-change="handleTableSelectionChange"
             />
             <CustomError v-if="!isTargetGroupsValid" :error-message="getTargetGroupErrorMessage" />
@@ -304,6 +305,30 @@
                 :items="getCampaignDeliveryItems"
               />
             </div>
+            <div class="campaign-manager-last-step__target-users mt-4">
+              <CampaignManagerSummaryCard
+                detailable
+                icon="mdi-account-multiple"
+                :show-body-detail.sync="isShowTargetUserDetail"
+                :title="labels.TargetUsers"
+              >
+                <template #body>
+                  <div class="campaign-manager-last-step__target-users-body pb-4">
+                    <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
+                  </div>
+                  <div v-if="isShowTargetUserDetail">
+                    <CampaignManagerTargetGroupsAndUserSummaryInfo
+                      :items="currentFormData.selectedTargetGroups"
+                    />
+                  </div>
+                  <AlertBox
+                    v-if="canRenderAlertbox"
+                    :text="getUnverifiedDomainsText"
+                    :slots="{ primaryAction: false, secondaryAction: false }"
+                  />
+                </template>
+              </CampaignManagerSummaryCard>
+            </div>
             <VishingCampaignModalSummaryVishingTemplate
               v-if="!!formValues.template"
               class="mt-4"
@@ -348,7 +373,7 @@ import {
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import { searchTargetGroups } from '@/api/targetUsers'
+import { searchTargetGroups, getTargetGroupCountDetail } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import VishingCampaignModalSummaryVishingTemplate from '@/components/VishingCampaignManager/VishingCampaignModalSummaryVishingTemplate'
@@ -450,6 +475,8 @@ export default {
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: {},
       isShowTargetGroupUsersError: false,
+      isShowTargetUserDetail: false,
+      userCountDetailResponse: {},
       axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
       recipientTypes,
       distributionDays: 31,
@@ -465,6 +492,21 @@ export default {
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getTotalTargetGroupsAndUsersCount() {
+      let text = ''
+      if (Object.keys(this.formValues)?.length && this.formValues.targetGroupResourceIds) {
+        const { targetGroupResourceIds } = this.formValues
+        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
+      }
+      return text
+    },
+    getTotalActiveUsers() {
+      const totalActiveUsersCount =
+        this.userCountDetailResponse?.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+      return totalActiveUsersCount
+    },
     getSendCallsText() {
       return `${this.totalTargetUserCount} users will receive calls over ${
         this.formValues.distributionOverDays
@@ -786,7 +828,7 @@ export default {
         }
       })
     },
-    nextStep() {
+    async nextStep() {
       if (this.step === 1) {
         const { refFormStep1 } = this.$refs
         refFormStep1.validate()
@@ -801,6 +843,9 @@ export default {
             this.isTargetGroupsValid = false
             return
           }
+          this.userCountDetailResponse = await getTargetGroupCountDetail(
+            this.formValues.targetGroupResourceIds
+          )
           this.step++
         } else {
           this.isTargetGroupsValid = false

@@ -31,6 +31,11 @@
           <div v-if="isShowTargetUserDetail">
             <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.selectedTargetGroups" />
           </div>
+          <AlertBox
+            v-if="canRenderAlertbox"
+            :text="getUnverifiedDomainsText"
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          />
         </template>
       </CampaignManagerSummaryCard>
     </div>
@@ -190,13 +195,15 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
+import AlertBox from '@/components//AlertBox'
 
 export default {
   name: 'SendTrainingSummary',
   components: {
     KEmailPreview,
     CampaignManagerSummaryCard,
-    CampaignManagerTargetGroupsAndUserSummaryInfo
+    CampaignManagerTargetGroupsAndUserSummaryInfo,
+    AlertBox
   },
   props: {
     formData: {
@@ -216,18 +223,32 @@ export default {
   computed: {
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
-      if (Object.keys(this.formData)?.length && this.formData?.selectedTargetGroups) {
-        const { selectedTargetGroups } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) from ${selectedTargetGroups.length} group(s)`
+      if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
+        const { targetGroupResourceIds } = this.formData
+        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
+    canRenderAlertbox() {
+      return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
+    },
+    getUnverifiedDomainsText() {
+      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in the next 30 days.`
+    },
+    getUsersFromUnverifiedDomainsCount() {
+      return (
+        this.formData.userCountDetailResponse?.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+      )
+    },
     getTotalActiveUsers() {
-      const { selectedTargetGroups } = this.formData
-      return selectedTargetGroups.reduce((acc, item) => {
-        acc += item?.activeUserCount
-        return acc
-      }, 0)
+      const { userCountDetailResponse } = this.formData
+      const totalActiveUsersCount =
+        userCountDetailResponse.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+      return totalActiveUsersCount
     },
     getEnrollmentTemplate() {
       return this.formData?.enrollmentData?.template || ''

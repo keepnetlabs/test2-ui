@@ -43,6 +43,11 @@
               :items="currentFormData.selectedTargetGroups"
             />
           </div>
+          <AlertBox
+            v-if="canRenderAlertbox"
+            :text="getUnverifiedDomainsText"
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          />
         </template>
       </CampaignManagerSummaryCard>
     </div>
@@ -189,6 +194,8 @@ import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/At
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import AlertBox from '@/components//AlertBox'
+
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -197,11 +204,16 @@ export default {
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
     AttachmentsPreview,
-    CampaignManagerReportSummaryLandingPage
+    CampaignManagerReportSummaryLandingPage,
+    AlertBox
   },
   props: {
     formData: {
       type: Object
+    },
+    isVishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -245,6 +257,19 @@ export default {
     }
   },
   computed: {
+    canRenderAlertbox() {
+      return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
+    },
+    getUnverifiedDomainsText() {
+      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in the next 30 days.`
+    },
+    getUsersFromUnverifiedDomainsCount() {
+      return (
+        this.formData.userCountDetailResponse?.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+      )
+    },
     isFormData() {
       return Object.keys(this.formData).length
     },
@@ -300,7 +325,7 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
@@ -312,11 +337,12 @@ export default {
       }, 0)
     },
     getTotalActiveUsers() {
-      const { selectedTargetGroups } = this.formData
-      return selectedTargetGroups.reduce((acc, item) => {
-        acc += item?.activeUserCount
-        return acc
-      }, 0)
+      const { userCountDetailResponse } = this.formData
+      const totalActiveUsersCount =
+        userCountDetailResponse.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+      return totalActiveUsersCount
     },
     getSettingsItems() {
       const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
