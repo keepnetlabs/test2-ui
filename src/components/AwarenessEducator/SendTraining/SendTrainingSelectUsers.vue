@@ -96,7 +96,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import { searchAllTargetGroups } from '@/api/targetUsers'
+import { searchTargetGroups } from '@/api/targetUsers'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import SendTrainingSelectUsersByCampaign from '@/components/AwarenessEducator/SendTraining/SendTrainingSelectUsersByCampaign'
 export default {
@@ -223,7 +223,7 @@ export default {
         }))
     },
     callForTargetGroups() {
-      searchAllTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
+      searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response
         }

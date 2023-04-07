@@ -27,15 +27,18 @@
         <template #body>
           <div class="campaign-manager-last-step__target-users-body pb-4">
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
+            <div v-if="isShowTargetUserDetail" class="mt-4">
+              <CampaignManagerTargetGroupsAndUserSummaryInfo
+                :items="formData.selectedTargetGroups"
+              />
+            </div>
+            <AlertBox
+              v-if="canRenderAlertbox"
+              class="mt-4"
+              :text="getUnverifiedDomainsText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
-          <div v-if="isShowTargetUserDetail">
-            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.selectedTargetGroups" />
-          </div>
-          <AlertBox
-            v-if="canRenderAlertbox"
-            :text="getUnverifiedDomainsText"
-            :slots="{ primaryAction: false, secondaryAction: false }"
-          />
         </template>
       </CampaignManagerSummaryCard>
     </div>
@@ -223,9 +226,9 @@ export default {
   computed: {
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
-      if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
-        const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
+      if (Object.keys(this.formData)?.length && this.formData.selectedTargetGroups) {
+        const { selectedTargetGroups } = this.formData
+        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${selectedTargetGroups.length} group(s)`
       }
       return text
     },
@@ -237,7 +240,7 @@ export default {
     },
     getUsersFromUnverifiedDomainsCount() {
       return (
-        this.formData.userCountDetailResponse?.data
+        this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
       )
@@ -245,7 +248,7 @@ export default {
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
       const totalActiveUsersCount =
-        userCountDetailResponse.data
+        userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
       return totalActiveUsersCount

@@ -317,15 +317,8 @@
                     <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
                   </div>
                   <div v-if="isShowTargetUserDetail">
-                    <CampaignManagerTargetGroupsAndUserSummaryInfo
-                      :items="currentFormData.selectedTargetGroups"
-                    />
+                    <CampaignManagerTargetGroupsAndUserSummaryInfo :items="selectedTargetGroups" />
                   </div>
-                  <AlertBox
-                    v-if="canRenderAlertbox"
-                    :text="getUnverifiedDomainsText"
-                    :slots="{ primaryAction: false, secondaryAction: false }"
-                  />
                 </template>
               </CampaignManagerSummaryCard>
             </div>
@@ -393,6 +386,7 @@ import {
 } from '@/api/vishing'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
 import useDebounce from '@/hooks/useDebounce'
+import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
 
 const initialFormValues = {
   name: '',
@@ -429,7 +423,8 @@ export default {
     CampaignManagerTargetGroups,
     CustomError,
     CampaignManagerSummaryCard,
-    VishingCampaignModalSummaryVishingTemplate
+    VishingCampaignModalSummaryVishingTemplate,
+    CampaignManagerTargetGroupsAndUserSummaryInfo
   },
   mixins: [useDebounce],
   props: {
@@ -496,16 +491,16 @@ export default {
       let text = ''
       if (Object.keys(this.formValues)?.length && this.formValues.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formValues
-        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsersWithPhoneNumber} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
-    getTotalActiveUsers() {
-      const totalActiveUsersCount =
-        this.userCountDetailResponse?.data
+    getTotalActiveUsersWithPhoneNumber() {
+      const totalActiveUsersWithPhoneNumberCount =
+        this.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      return totalActiveUsersCount
+          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+      return totalActiveUsersWithPhoneNumberCount
     },
     getSendCallsText() {
       return `${this.totalTargetUserCount} users will receive calls over ${
@@ -843,9 +838,10 @@ export default {
             this.isTargetGroupsValid = false
             return
           }
-          this.userCountDetailResponse = await getTargetGroupCountDetail(
-            this.formValues.targetGroupResourceIds
+          const targetGroupResourceIds = this.formValues.targetGroupResourceIds.map(
+            (item) => item.value
           )
+          this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
           this.step++
         } else {
           this.isTargetGroupsValid = false

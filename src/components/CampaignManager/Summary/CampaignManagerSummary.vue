@@ -37,17 +37,18 @@
               {{ getTotalRandomlySelectedUserCount }}
             </span>
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
-          </div>
-          <div v-if="isShowTargetUserDetail">
-            <CampaignManagerTargetGroupsAndUserSummaryInfo
-              :items="currentFormData.selectedTargetGroups"
+            <div v-if="isShowTargetUserDetail" class="mt-4">
+              <CampaignManagerTargetGroupsAndUserSummaryInfo
+                :items="currentFormData.selectedTargetGroups"
+              />
+            </div>
+            <AlertBox
+              v-if="canRenderAlertbox"
+              class="mt-4"
+              :text="getUnverifiedDomainsText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
             />
           </div>
-          <AlertBox
-            v-if="canRenderAlertbox"
-            :text="getUnverifiedDomainsText"
-            :slots="{ primaryAction: false, secondaryAction: false }"
-          />
         </template>
       </CampaignManagerSummaryCard>
     </div>
@@ -228,6 +229,7 @@ export default {
   watch: {
     formData: {
       handler(val) {
+        console.log(val)
         this.currentFormData = {
           ...val,
           emailTemplateParams: {
@@ -265,7 +267,7 @@ export default {
     },
     getUsersFromUnverifiedDomainsCount() {
       return (
-        this.formData.userCountDetailResponse?.data
+        this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
       )
@@ -339,7 +341,7 @@ export default {
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
       const totalActiveUsersCount =
-        userCountDetailResponse.data
+        userCountDetailResponse?.data.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
       return totalActiveUsersCount
