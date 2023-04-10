@@ -139,6 +139,18 @@ export const COLUMNS = {
     ],
     width: 160
   },
+  EMAIL_DELIVERY: {
+    property: PROPERTY_STORE.EMAIL_DELIVERY,
+    align: 'left',
+    editable: false,
+    label: labels.EmailDelivery,
+    sortable: true,
+    show: true,
+    fixed: false,
+    width: 200,
+    type: 'text',
+    filterableType: 'text'
+  },
   LAST_LAUNCH: {
     property: PROPERTY_STORE.LASTLAUNCH,
     align: 'left',

@@ -158,6 +158,7 @@ export const labels = {
   Phished: 'Phished',
   TrainingDelivery: 'Training Delivery',
   EmailDelivery: 'Email Delivery',
+  EmailDeliverySub: 'Select email delivery configuration for this campaign',
   SIEMProvider: 'SIEM Provider',
   SIEMAddress: 'SIEM Address',
   URLOrIPAddress: 'URL or IP Address',

@@ -1,6 +1,18 @@
 #gjsNewsletterModal {
   height: 100vh !important;
 }
+.gjs-am-assets-cont{
+  .gjs-am-add-asset{
+    .gjs-btn-prim{
+      width:90px;
+    }
+  }
+  .gjs-am-assets{
+    .gjs-am-name{
+      margin-right:12px;
+    }
+  }
+}
 .merged-text {
   min-height: 40px;
   .gjs-block-label {

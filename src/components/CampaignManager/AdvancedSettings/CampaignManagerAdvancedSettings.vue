@@ -9,29 +9,30 @@
     />
     <FormGroup
       class="mt-8 campaign-manager-smtp-settings"
-      :title="labels.Smtp"
-      :sub-title="labels.SmtpSub"
+      :title="labels.EmailDelivery"
+      :sub-title="labels.EmailDeliverySub"
       has-hint
     >
       <KSelect
         v-bind="commonRules"
-        v-model.trim="formData.smtpSettingResourceId"
+        v-model.trim="emailDelivery"
         id="input--company-manager-advanced-settings-smtp"
         class="new-integration__select"
         dense
         outlined
+        item-text="name"
         placeholder="Select Option"
-        no-data-text="No SMTP setting available"
-        :items="smtpItems"
+        no-data-text="No Email Delivery configuration available"
+        return-object
+        :items="emailDeliveryItems"
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
         :disabled="isTestingConnection"
-        @change="handleChangeSmtp"
-        @focus="handleFocusOfSmtpSettingsInput"
-        @focusout="handleFocusOutOfSmtpSettingsInput"
+        @change="handleChangeEmailDelivery"
       >
       </KSelect>
       <v-btn
+        v-if="isSelectedEmailDeliveryIsSmtp"
         :key="buttonKey"
         class="ml-4"
         text
@@ -65,7 +66,11 @@
         </template>
       </v-btn>
     </FormGroup>
-    <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
+    <FormGroup
+      v-if="isSelectedEmailDeliveryIsSmtp"
+      :title="labels.Distribution"
+      :sub-title="labels.DistributionSub"
+    >
       <div class="campaign-manager-advanced-settings__distribution-item">
         <label for="input--campaign-manager-advanced-settings-time"
           >Send emails with SMTP Delay every
@@ -97,7 +102,11 @@
         />
       </div>
     </FormGroup>
-    <FormGroup :title="labels.SendingLimit" :sub-title="labels.SendingLimitSub">
+    <FormGroup
+      v-if="isSelectedEmailDeliveryIsSmtp"
+      :title="labels.SendingLimit"
+      :sub-title="labels.SendingLimitSub"
+    >
       <v-text-field
         v-model="formData.sendingLimit"
         v-mask="'###########'"
@@ -116,7 +125,11 @@
     >
       {{ getDistributionText }}
     </div>
-    <FormGroup class="mt-6" :title="labels.OtherSettings" style="max-width: 640px;">
+    <FormGroup
+      style="max-width: 640px;"
+      :class="isSelectedEmailDeliveryIsSmtp ? 'mt-6' : ''"
+      :title="labels.OtherSettings"
+    >
       <div>
         <v-checkbox
           v-model="formData.excludeFromReports"
@@ -178,10 +191,16 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
+import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
-import { calculateSendingInfo } from '@/api/phishingsimulator'
+import {
+  calculateSendingInfo,
+  getDefaultCompanySmtpSetting,
+  getEmailDeliveries
+} from '@/api/phishingsimulator'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import useDebounce from '@/hooks/useDebounce'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 export default {
   name: 'CampaignManagerAdvancedSettings',
   components: {
@@ -189,6 +208,7 @@ export default {
     KSelect,
     FormGroup
   },
+  mixins: [useDebounce],
   props: {
     formDetails: {
       type: Object
@@ -198,6 +218,9 @@ export default {
     },
     selectedPhishingScenario: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean
     }
   },
   data() {
@@ -211,30 +234,15 @@ export default {
       targetGroupResourceIds: [],
       isTestMailSend: false,
       totalTargetUserCount: 0,
-      smtpAxiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      smtpItems: [],
+      emailDeliveryItems: [],
       buttonKey: createRandomCryptStringNumber(),
-      defaultSmtpItems: [],
-      responseOfSmtpItems: [],
       isShowSmtpInputError: false,
       testEmailErrorMessage: '',
+      emailDelivery: null,
       formData: {
         smtpSettingResourceId: '',
+        directEmailSettingResourceId: '',
+        emailDeliverySettingType: '',
         excludeFromReports: false,
         sendOnlyActiveUsers: false,
         sendRandomlyUsers: false,
@@ -250,11 +258,7 @@ export default {
       commonRules: {
         hint: '*Required',
         persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
+        rules: [(v) => Validations.required(v, labels.Required)]
       },
       rules: {
         number: [
@@ -266,6 +270,10 @@ export default {
     }
   },
   computed: {
+    isSelectedEmailDeliveryIsSmtp() {
+      if (!this.emailDelivery) return false
+      return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
+    },
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
@@ -302,6 +310,7 @@ export default {
         : ''
     },
     getDistributionTextRenderStatus() {
+      if (!this.isSelectedEmailDeliveryIsSmtp) return
       return this.formData.distributionTypeId === '1'
         ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
         : this.formData.sendingLimit && this.formData.distributionEmailOver
@@ -322,7 +331,6 @@ export default {
       if (minutes === 0 && hours === 0 && seconds === 0) {
         seconds = 1
       }
-
       const hoursText = hours > 1 ? 'hours' : 'hour'
       const minutesText = minutes > 1 ? 'minutes' : 'minute'
       const secondsText = seconds > 1 ? 'seconds' : 'second'
@@ -350,9 +358,20 @@ export default {
   watch: {
     defaultValues(val) {
       for (const key of Object.keys(val)) {
-        if (key === 'smtpSetting') {
-          this.selectedSmtpSetting = val[key]
-          this.formData.smtpSettingResourceId = this.selectedSmtpSetting.value
+        if (key === 'smtpSetting' && val[key] && typeof val[key] === 'object') {
+          this.formData.smtpSettingResourceId = val[key].value
+          this.emailDelivery = {
+            name: val[key].text,
+            resourceId: val[key].value,
+            type: EMAIL_DELIVERY_TYPES.SMTP
+          }
+        } else if (key === 'directEmailSetting' && val[key] && typeof val[key] === 'object') {
+          this.formData.directEmailSettingResourceId = val[key].value
+          this.emailDelivery = {
+            name: val[key].text,
+            resourceId: val[key].value,
+            type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+          }
         } else if (key === 'distributionTypeId') {
           this.formData.distributionTypeId = '1'
         } else {
@@ -362,7 +381,8 @@ export default {
     }
   },
   created() {
-    this.callForSmtpSettings()
+    this.callForDefaultSmtpSetting()
+    this.callForEmailDeliveries()
   },
   methods: {
     getTestConnectionButtonStyle() {
@@ -387,11 +407,20 @@ export default {
         )
       }
     },
-    handleChangeSmtp() {
+    handleChangeEmailDelivery(delivery = {}) {
       this.buttonKey = createRandomCryptStringNumber()
       this.isTestMailSend = false
       this.isShowSmtpInputError = false
       this.testEmailErrorMessage = ''
+      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
+        this.formData.smtpSettingResourceId = delivery.resourceId
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        this.formData.directEmailSettingResourceId = ''
+      } else {
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        this.formData.directEmailSettingResourceId = delivery.resourceId
+        this.formData.smtpSettingResourceId = ''
+      }
     },
     handleOnConfirmSmtpErrorDialog() {
       this.toggleShowSmtpErrorDialog()
@@ -400,43 +429,42 @@ export default {
     toggleShowSmtpErrorDialog() {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
-    callForSmtpSettings() {
-      searchSmtpSettings(this.smtpAxiosPayload)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.responseOfSmtpItems = data.results
-          const defaultSmtpItems = this.responseOfSmtpItems.filter((item) => item.isDefault)
-          this.smtpItems = this.responseOfSmtpItems
-            .map((smtpItem) => {
-              if (smtpItem.isDefault) return null
-              return { text: smtpItem.name, value: smtpItem.resourceId }
-            })
-            .filter(Boolean)
-          if (defaultSmtpItems.length > 0) {
-            this.smtpItems.unshift(
-              ...defaultSmtpItems.map((smtpItem) => ({
-                text: smtpItem.name,
-                value: smtpItem.resourceId
-              })),
-              { divider: true },
-              {
-                header: 'Others',
-                class: 'campaign-manager-advanced-settings__smtp-select-header'
-              }
-            )
-          }
-          this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))
+    callForEmailDeliveries() {
+      getEmailDeliveries().then((res) => {
+        const {
+          data: { data: { results = [] } = {} }
+        } = res || {}
+        const deliveries = []
+        const smtpItems = results.filter((item) => item.type === EMAIL_DELIVERY_TYPES.SMTP)
+        if (smtpItems.length) {
+          deliveries.push({ header: 'SMTP' })
+          deliveries.push(...smtpItems)
+        }
+        const directEmailItems = results.filter(
+          (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        )
+        if (directEmailItems.length) {
+          deliveries.push({ header: 'Direct Email Creation' })
+          deliveries.push(...directEmailItems)
+        }
+        this.emailDeliveryItems = deliveries
+        this.$nextTick(() => {
+          //setting default smtp setting
+          if (this.isEdit || !this.formData.smtpSettingResourceId) return
+          this.emailDelivery =
+            deliveries.find((item) => item.resourceId === this.formData.smtpSettingResourceId) || {}
         })
-        .finally(() => {
-          if (
-            this.selectedSmtpSetting &&
-            !this.smtpItems.find((item) => item.value === this.selectedSmtpSetting.value)
-          ) {
-            this.smtpItems.push(this.selectedSmtpSetting)
-          }
-        })
+      })
+    },
+    callForDefaultSmtpSetting() {
+      if (this.isEdit) return
+      getDefaultCompanySmtpSetting().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.formData.smtpSettingResourceId = data.resourceId
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+      })
     },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length) return
@@ -491,6 +519,7 @@ export default {
       })
     },
     async callForTestConnection() {
+      if (this?.emailDelivery?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) return
       this.$emit('set-action-button-disability', true)
       try {
         this.isTestingConnection = true
@@ -527,56 +556,6 @@ export default {
       } finally {
         this.$emit('set-action-button-disability', false)
       }
-    },
-    handleFocusOfSmtpSettingsInput() {
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          const element = document.querySelector(
-            '#input--company-manager-advanced-settings-smtp .k-select__menu'
-          )
-          if (element) {
-            element.addEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
-    handleFocusOutOfSmtpSettingsInput() {
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          const element = document.querySelector(
-            '#input--company-manager-advanced-settings-smtp .k-select__menu'
-          )
-          if (element) {
-            element.removeEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
-    handleScroll(e) {
-      const { scrollTop, scrollHeight, offsetHeight } = e.target
-      if (
-        scrollTop - (scrollHeight - offsetHeight) < 10 &&
-        scrollTop - (scrollHeight - offsetHeight) > -10
-      ) {
-        this.smtpAxiosPayload.pageSize += 10
-        this.debounce(() => {
-          this.callForSmtpSettings()
-        }, 500)
-      }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     }
   }
 }
