@@ -462,10 +462,6 @@ const store = {
       return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
     },
     getAdvancedReportsSearchPermissions(state) {
-      console.log(
-        'state?.advancedReportsPermissions?.SEARCH?.hasPermission',
-        state?.advancedReportsPermissions?.SEARCH?.hasPermission
-      )
       return state?.advancedReportsPermissions?.SEARCH?.hasPermission
     },
     getCampaignReportsSearchPermissions(state) {

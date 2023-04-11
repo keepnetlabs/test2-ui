@@ -181,6 +181,22 @@ export default {
             width: 150
           },
           {
+            property: 'verifyType',
+            align: 'left',
+            editable: false,
+            label: 'Verification',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'By DNS TXT Record', value: 1 },
+              { text: 'By System', value: 2 },
+              { text: 'By Primary Domain Rule', value: 3 },
+              { text: 'By Reseller', value: 4 }
+            ]
+          },
+          {
             property: 'createTime',
             align: 'left',
             editable: false,
@@ -283,14 +299,18 @@ export default {
         getAllowListList(this.axiosPayload)
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 1,
+              pageNumber = 1,
+              results = []
+            } = response?.data?.data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((row) => ({
+              ...row,
+              verifyType: this.getVerifyTypeText(row)
+            }))
             if (resourceId !== null) {
               this.selectedDomain = results.find((x) => x.allowListResourceId === resourceId)
               this.verifyPopupStatus = true
@@ -303,6 +323,13 @@ export default {
       } else {
         this.$router.push('/')
       }
+    },
+    getVerifyTypeText(row) {
+      if (row.status === 'Unverified') return ''
+      if (row.verifyType === 1) return 'By DNS TXT Record'
+      if (row.verifyType === 2) return 'By System'
+      if (row.verifyType === 2) return 'By Primary Domain Rule'
+      if (row.verifyType === 4) return 'By Reseller'
     },
     setStatusColor(status) {
       let color = '#B6791D'
