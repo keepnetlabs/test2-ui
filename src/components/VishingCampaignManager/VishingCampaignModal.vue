@@ -491,7 +491,9 @@ export default {
       let text = ''
       if (Object.keys(this.formValues)?.length && this.formValues.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formValues
-        text = `${this.getTotalActiveUsersWithPhoneNumber} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsersWithPhoneNumber} active user${
+          this.getTotalActiveUsersWithPhoneNumber > 1 ? 's' : ''
+        } with phone numbers from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
@@ -503,9 +505,11 @@ export default {
       return totalActiveUsersWithPhoneNumberCount
     },
     getSendCallsText() {
-      return `${this.totalTargetUserCount} users will receive calls over ${
-        this.formValues.distributionOverDays
-      } ${this.getDistributionTimeText} between ${
+      return `${this.getTotalActiveUsersWithPhoneNumber} user${
+        this.getTotalActiveUsersWithPhoneNumber > 1 ? 's' : ''
+      } will receive calls over ${this.formValues.distributionOverDays} ${
+        this.getDistributionTimeText
+      } between ${
         this.formValues.distributionStartTime ? this.formValues.distributionStartTime : ' '
       } and ${
         this.formValues.distributionEndTime ? this.formValues.distributionEndTime : ' '
@@ -552,7 +556,7 @@ export default {
     getCampaignInfoItems() {
       return {
         'Campaign Name': this.formValues.name,
-        'Target Users': `${this.totalTargetUserCount} users`
+        'Target Users': `${this.getTotalActiveUsersWithPhoneNumber} users`
       }
     },
     getCampaignDeliveryItems() {
