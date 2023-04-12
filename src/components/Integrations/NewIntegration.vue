@@ -653,6 +653,7 @@
               v-model="formValues.detectionThreshold"
               entity-name="Detection Threshold"
               initial-placeholder="Enter a number"
+              :initialRules="detectionThresholdRules"
             />
           </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
@@ -1106,6 +1107,10 @@ export default {
         (v) => Validations.required(v, 'Enter a number higher than 0'),
         (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
         (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+      ],
+      detectionThresholdRules: [
+        (v) => Validations.required(v, 'Enter a number between 1 and 50'),
+        (v) => Validations.numberRangeRule(v, 1, 50)
       ],
       nameValidation: {
         required: (v) => Validations.required(v),
