@@ -11,9 +11,9 @@
       <div>
         <span class="campaign-manager-target-user-groups-header__badge"
           >Total {{ totalUserCount }} users:
-          <span class="campaign-manager-target-user-groups-header__active-and-inactive-users"
-            >{{ activeUserCount }} active, {{ inactiveUserCount }} inactive</span
-          ></span
+          <span class="campaign-manager-target-user-groups-header__active-and-inactive-users">{{
+            getActiveAndInactiveUserCountText
+          }}</span></span
         >
       </div>
       <AlertBox
@@ -79,6 +79,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
       activeUserCount: 0,
+      activeUsersWithPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       CONSTANTS: {
@@ -130,6 +131,28 @@ export default {
     }
   },
   computed: {
+    getActiveAndInactiveUserCountText() {
+      let text = ''
+      if (this.isVishing) {
+        if (!!this.activeUsersWithPhoneNumberCount) {
+          text += `${this.activeUsersWithPhoneNumberCount} active`
+        }
+      } else {
+        if (!!this.activeUserCount) {
+          text += `${this.activeUserCount} active`
+        }
+      }
+
+      if (text !== '' && !!this.inactiveUserCount) {
+        text += ', '
+      }
+
+      if (!!this.inactiveUserCount) {
+        text += `${this.inactiveUserCount} inactive`
+      }
+
+      return text
+    },
     getLoadingStatus() {
       return this.isTargetGroupLoading || this.isLoading
     },
@@ -137,7 +160,9 @@ export default {
       return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     getUnverifiedDomainsText() {
-      return `There are ${this.usersFromUnverifiedDomainsCount} active users with unverified domains in this group. Please verify the domains in the next 30 days.`
+      return `There are ${this.usersFromUnverifiedDomainsCount} active user${
+        this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
+      } with unverified domains in this group. Please verify the domains in the next 30 days.`
     }
   },
   watch: {
@@ -170,6 +195,10 @@ export default {
               } = response
 
               const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
+              const activeUsersWithPhoneNumberCount =
+                data
+                  .find((row) => row.status === 'Active')
+                  ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
               const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
               const usersFromUnverifiedDomainsCount =
                 data
@@ -179,6 +208,7 @@ export default {
               this.activeUserCount = activeUserCount
               this.inactiveUserCount = inactiveUserCount
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
+              this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
               this.setLoading(false)
             })
             .catch(() => {

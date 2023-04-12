@@ -229,7 +229,6 @@ export default {
   watch: {
     formData: {
       handler(val) {
-        console.log(val)
         this.currentFormData = {
           ...val,
           emailTemplateParams: {

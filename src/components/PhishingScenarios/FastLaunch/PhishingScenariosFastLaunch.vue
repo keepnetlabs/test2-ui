@@ -83,6 +83,7 @@ import {
   getDefaultCompanySmtpSetting,
   getPhishingScenarioLandingPageAndEmailTemplate
 } from '@/api/phishingsimulator'
+import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { isDifferent, scrollToComponent } from '@/utils/functions'
@@ -139,7 +140,8 @@ export default {
           duration: 3,
           emailTemplateParams: this.emailTemplateParams,
           landingPageTemplates: this.landingPageTemplate,
-          landingPageParams: this.landingPageParams
+          landingPageParams: this.landingPageParams,
+          userCountDetailResponse: this.userCountDetailResponse
         }
         formData.selectedPhishingScenario = this.selectedScenario
         formData.selectedSchedule = 'Now'
@@ -269,7 +271,7 @@ export default {
         scrollToComponent(el)
       })
     },
-    handleSubmit() {
+    async handleSubmit() {
       const { refFastLaunch } = this.$refs
       const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
       const { formData } = refCampaignManagerCampaignInfo
@@ -285,6 +287,10 @@ export default {
           if (totalUserCount) {
             refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
             refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+            const targetGroupResourceIds = refCampaignManagerCampaignInfo.selectedTargetGroups.map(
+              (group) => group.resourceId
+            )
+            this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
             this.changeStep()
           } else {
             refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
