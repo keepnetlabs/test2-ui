@@ -328,7 +328,7 @@ export default {
       if (row.status === 'Unverified') return ''
       if (row.verifyType === 1) return 'By DNS TXT Record'
       if (row.verifyType === 2) return 'By System'
-      if (row.verifyType === 2) return 'By Primary Domain Rule'
+      if (row.verifyType === 3) return 'By Primary Domain Rule'
       if (row.verifyType === 4) return 'By Reseller'
     },
     setStatusColor(status) {
