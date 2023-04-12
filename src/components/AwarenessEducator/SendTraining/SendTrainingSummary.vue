@@ -285,12 +285,6 @@ export default {
     }
   },
   watch: {
-    formData: {
-      deep: true,
-      handler(val) {
-        console.log(val)
-      }
-    },
     isShowTrainingEmail(val) {
       if (val) {
         this.$emit('on-show-training-summary')
