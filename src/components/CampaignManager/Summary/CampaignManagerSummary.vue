@@ -326,7 +326,7 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) with verified domains from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsers} active user(s) from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
@@ -340,9 +340,7 @@ export default {
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
       const totalActiveUsersCount =
-        userCountDetailResponse?.data.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+        userCountDetailResponse?.data.data?.find((row) => row.status === 'Active')?.count || 0
       return totalActiveUsersCount
     },
     getSettingsItems() {
