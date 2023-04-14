@@ -232,7 +232,9 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      LDAPService.searchTmpTargetUsersForLdap(this.axiosPayload, this.getTransactionId())
+      const transactionId = this.getTransactionId()
+      if (!transactionId) return
+      LDAPService.searchTmpTargetUsersForLdap(this.axiosPayload, transactionId)
         .then((response) => {
           const {
             data: {
