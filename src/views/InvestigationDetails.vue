@@ -1268,6 +1268,18 @@ export default {
     columns: [
       // Should be defined to show the table
       {
+        property: 'ownerEmail',
+        align: 'left',
+        editable: false,
+        label: 'Owner',
+        fixed: 'left',
+        sortable: true,
+        show: true,
+        type: 'text',
+        minWidth: 260,
+        filterableType: 'text'
+      },
+      {
         property: 'from',
         align: 'left',
         editable: false,
