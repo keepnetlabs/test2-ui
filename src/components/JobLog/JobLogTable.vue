@@ -195,7 +195,7 @@ export default {
       if (status === 2) return 'Running'
       if (status === 3) return 'Completed'
       if (status === 4) return 'Failed'
-      return ''
+      return 'Waiting'
     },
     exportJobLogData(downloadTypes) {},
     handleDetailsClick(row = {}) {
