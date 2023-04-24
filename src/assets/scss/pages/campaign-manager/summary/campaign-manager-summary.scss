@@ -14,6 +14,7 @@
     &__target-users {
       &-body {
         padding-left: 24px;
+        padding-right: 24px;
         padding-top: 16px;
         background-color: #fafafa;
         border-radius: 12px;
@@ -26,8 +27,10 @@
           margin-right: 4px;
           padding: 1px 8px;
           &:first-child {
-            color: #ffffff;
-            background: #383b41;
+            // color: #ffffff;
+            // background: #383b41;
+            color: #383b41;
+            background-color: #e0e0e0;
           }
           &:last-child {
             color: #383b41;

@@ -63,7 +63,6 @@ export default {
   },
   methods: {
     handleDomainChange(val = []) {
-      console.log('val', val)
       const isValIncludes = val.includes(labels.AllDomains)
       this.$emit('input', isValIncludes ? [labels.AllDomains] : val)
       this.setDomainItemsDisability(isValIncludes)

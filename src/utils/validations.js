@@ -95,7 +95,7 @@ export function urlOrIpAddress(value, message = 'Invalid URL') {
   value = getValue(value)
   if (value.includes(' ')) return message
   return value
-    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-z0-9@:%_\+.~#?&/=]*)/gi.test(
         value
       ) ||
         /^([(http(s)?):\/\/]{7,8})?(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)/.test(
@@ -109,7 +109,7 @@ export function urlWithPort(value, message = 'Invalid URL') {
   value = getValue(value)
   if (value.includes(' ')) return message
   return value
-    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z])?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z])?\b([-a-z0-9@:%_\+.~#?&/=]*)/gi.test(
         value
       ) || message
     : true
@@ -236,7 +236,7 @@ export function isDomainUrl(value, message = 'Invalid URL') {
 export function numberRangeRule(value, min = 0, max = 999) {
   if (value == '' && value == null) return false
   if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
-  return `Value has to be between ${min} and ${max}`
+  return `Enter a number between ${min} and ${max}`
 }
 
 export function subdomainDash(value, message = 'Invalid Subdomain') {
@@ -256,6 +256,19 @@ export function subdomainBlacklist(value) {
   )
   if (subdomainIndex !== -1) {
     return `“${blacklist[subdomainIndex]}” is a banned word for a subdomain`
+  }
+  return true
+}
+
+export function verifiedDomains(
+  value,
+  verifiedDomainList = [],
+  message = 'This domain is unverified. Make it verified to use.'
+) {
+  value = getValue(value)
+  if (value.includes('@')) {
+    value = value.split('@')[1]
+    return verifiedDomainList.some((domain) => domain === value) || message
   }
   return true
 }

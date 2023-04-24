@@ -1,9 +1,9 @@
 <template>
   <v-text-field
+    ref="refInputNumber"
     v-bind="requiredProps"
     outlined
     dense
-    type="number"
     :value="value"
     :id="id"
     :placeholder="placeholder"
@@ -11,8 +11,7 @@
     :disabled="disabled"
     :readonly="readonly"
     :hide-details="hideDetails"
-    :pattern="pattern"
-    @input="$emit('input', $event)"
+    @input="handleInputChange"
   />
 </template>
 <script>
@@ -60,6 +59,16 @@ export default {
       rules: [],
       placeholder: '',
       requiredProps: {}
+    }
+  },
+  methods: {
+    handleInputChange(value) {
+      if (!value || this.pattern.test(value)) {
+        this.$emit('input', value)
+      } else {
+        this.$refs.refInputNumber.initialValue = this.value
+        this.$refs.refInputNumber.lazyValue = this.value
+      }
     }
   },
   created() {

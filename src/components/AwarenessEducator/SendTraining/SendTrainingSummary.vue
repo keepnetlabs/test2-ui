@@ -17,6 +17,31 @@
         :items="getSettingItems"
       />
     </div>
+    <div class="campaign-manager-last-step__target-users mt-4">
+      <CampaignManagerSummaryCard
+        detailable
+        icon="mdi-account-multiple"
+        :show-body-detail.sync="isShowTargetUserDetail"
+        :title="labels.TargetUsers"
+      >
+        <template #body>
+          <div class="campaign-manager-last-step__target-users-body pb-4">
+            <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
+            <div v-if="isShowTargetUserDetail" class="mt-4">
+              <CampaignManagerTargetGroupsAndUserSummaryInfo
+                :items="formData.selectedTargetGroups"
+              />
+            </div>
+            <AlertBox
+              v-if="canRenderAlertbox"
+              class="mt-4"
+              :text="getUnverifiedDomainsText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+          </div>
+        </template>
+      </CampaignManagerSummaryCard>
+    </div>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
@@ -172,9 +197,17 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
+import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
+import AlertBox from '@/components//AlertBox'
+
 export default {
   name: 'SendTrainingSummary',
-  components: { KEmailPreview, CampaignManagerSummaryCard },
+  components: {
+    KEmailPreview,
+    CampaignManagerSummaryCard,
+    CampaignManagerTargetGroupsAndUserSummaryInfo,
+    AlertBox
+  },
   props: {
     formData: {
       type: Object
@@ -186,10 +219,38 @@ export default {
       isShowEnrollmentEmail: false,
       isShowTrainingEmail: false,
       isShowCertificate: false,
-      isShowReminderEmail: false
+      isShowReminderEmail: false,
+      isShowTargetUserDetail: false
     }
   },
   computed: {
+    getTotalTargetGroupsAndUsersCount() {
+      let text = ''
+      if (Object.keys(this.formData)?.length && this.formData.selectedTargetGroups) {
+        const { selectedTargetGroups } = this.formData
+        text = `${this.getTotalActiveUsers} active user(s) from ${selectedTargetGroups.length} group(s)`
+      }
+      return text
+    },
+    canRenderAlertbox() {
+      return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
+    },
+    getUnverifiedDomainsText() {
+      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in the next 30 days.`
+    },
+    getUsersFromUnverifiedDomainsCount() {
+      return (
+        this.formData.userCountDetailResponse?.data?.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+      )
+    },
+    getTotalActiveUsers() {
+      const { userCountDetailResponse } = this.formData
+      const totalActiveUsersCount =
+        userCountDetailResponse?.data?.data?.find((row) => row.status === 'Active')?.count || 0
+      return totalActiveUsersCount
+    },
     getEnrollmentTemplate() {
       return this.formData?.enrollmentData?.template || ''
     },
@@ -202,7 +263,7 @@ export default {
         this?.formData?.trainingInfo.Languages.includes('All Languages')
       ) {
         return {
-          ...this?.formData?.trainingInfo,
+          'Content Type': this?.formData?.trainingInfo?.['Content Type'],
           Languages: 'All Languages'
         }
       }

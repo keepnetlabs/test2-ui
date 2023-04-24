@@ -57,6 +57,7 @@
               :group-name="highlightedRow.name"
               :last-column-name="lastColumnName"
               :add-row-class-name="addRowClassName"
+              :is-vishing="isVishing"
             />
           </div>
         </Multipane>
@@ -99,6 +100,10 @@ export default {
     lastColumnName: {
       type: String,
       default: 'email'
+    },
+    isVishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
