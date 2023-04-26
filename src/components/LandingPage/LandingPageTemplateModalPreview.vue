@@ -1,14 +1,14 @@
 <template>
-  <div class="landing-page-template-preview pt-3" v-if="hasLandingPageTemplate">
+  <div class="landing-page-template-preview pt-6" v-if="hasLandingPageTemplate">
     <div class="landing-page-template-preview__text">
       <div>
-        <div>
-          <span class="landing-page-template-preview__text--title">Template Name: </span>
-          <span class="tlanding-page-template-preview__text--body">{{ templateName }}</span>
+        <div class="mb-1">
+          <span class="template-preview__text--title">Template Name: </span>
+          <span class="template-preview__text--body">{{ templateName }}</span>
         </div>
         <div>
-          <span class="landing-page-template-preview__text--title">Phishing URL: </span>
-          <span class="landing-page-template-preview__text--body">{{ phishingUrl }}</span>
+          <span class="template-preview__text--title">Phishing URL: </span>
+          <span class="template-preview__text--body">{{ phishingUrl }}</span>
         </div>
       </div>
       <div class="landing-page-template-preview__control-buttons">

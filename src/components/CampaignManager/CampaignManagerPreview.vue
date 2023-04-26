@@ -12,51 +12,31 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <el-tabs v-show="!isLoading" v-model="tab">
+      <el-tabs v-show="!isLoading" v-model="tab" class="k-sub-tab">
         <el-tab-pane
           id="campaign-manager-info--email-content"
           name="email"
           :label="labels.JustEmail"
         >
-          <div class="template-preview pt-3">
-            <div class="template-preview__text" v-if="!!emailTemplate">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Email Address: </span>
+          <div class="template-preview pt-6">
+            <div v-if="!!emailTemplate" class="template-preview__text">
+              <div class="mb-1">
+                <span class="template-preview__text--title">From: </span>
                 <span class="template-preview__text--body">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
-              <div>
-                <span
-                  class="template-preview__text--title"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >Subject:
-                </span>
-                <span
-                  class="template-preview__text--body"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >{{ emailTemplateParams.subject }}</span
-                >
+              <div class="mb-1">
+                <span class="template-preview__text--title">From Name: </span>
+                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+              </div>
+              <div class="mb-1">
+                <span class="template-preview__text--title">Template Name: </span>
+                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+              </div>
+              <div class="template-preview__text--subject">
+                <span>Subject: </span>
+                <span>{{ emailTemplateParams.subject }}</span>
               </div>
             </div>
             <div
@@ -85,6 +65,7 @@
           <LandingPageTemplateModalPreview
             :landingPageTemplates="landingPageTemplates"
             :phishingUrl="landingPageParams.urlTemplate"
+            :template-name="emailTemplateParams.name"
           />
         </el-tab-pane>
       </el-tabs>
