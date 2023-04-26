@@ -32,7 +32,7 @@
     @refreshAction="callForData"
     @handleMultipleDelete="handleMultipleDeleteOfCampaigns"
   >
-    <template v-slot:datatable-custom-column="{ scope, col }">
+    <template #datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
         <div class="reported-email-subject__container">
           <div class="reported-email-subject">
@@ -63,6 +63,19 @@
           </v-tooltip>
         </div>
       </template>
+      <template v-if="scope.column.property === 'method'">
+        <v-tooltip v-if="scope.row[col.property] === METHOD_TYPES.MULTIPLE_METHOD" bottom>
+          <template #activator="{ on }">
+            <span v-on="on">
+              {{ scope.row[col.property] }}
+            </span>
+          </template>
+          <span v-for="methodWrapper in scope.row.methodDetail" :key="methodWrapper.method">
+            {{ methodWrapper.method }} ({{ methodWrapper.count }})
+          </span>
+        </v-tooltip>
+        <span v-else> {{ scope.row[col.property] }}</span>
+      </template>
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
@@ -84,7 +97,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
+import { COLUMNS, getStatusBadgeProps, METHOD_TYPES } from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -128,6 +141,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
+      METHOD_TYPES,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
         ascending: 'ascending'
@@ -148,9 +162,10 @@ export default {
           COLUMNS.CAMPAIGN_NAME,
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
+          COLUMNS.SCENARIO_COUNT,
           COLUMNS.METHOD,
-          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATEDBY,
+          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
         ],

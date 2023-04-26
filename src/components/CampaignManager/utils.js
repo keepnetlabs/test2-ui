@@ -22,6 +22,12 @@ export const axiosPayload = {
   }
 }
 
+export const METHOD_TYPES = {
+  CLICK_ONLY: 'Click-Only',
+  MULTIPLE_METHOD: 'Multiple Method',
+  DATA_SUBMISSION: 'Data Submission',
+  ATTACHMENT: 'Attachment'
+}
 export const COLUMNS = {
   CAMPAIGN_NAME: {
     property: PROPERTY_STORE.NAME,
@@ -69,6 +75,19 @@ export const COLUMNS = {
     align: 'right',
     editable: false,
     label: labels.TargetUsers,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'number',
+    width: 160,
+    filterableType: 'number',
+    emptyText: 0
+  },
+  SCENARIO_COUNT: {
+    property: PROPERTY_STORE.SCENARIO_COUNT,
+    align: 'right',
+    editable: false,
+    label: labels.Scenarios,
     fixed: false,
     sortable: true,
     show: true,
@@ -130,9 +149,10 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     filterableType: 'select',
     filterableItems: [
+      { text: 'Multiple Method', value: 'Multiple Method' },
       { text: 'Click Only', value: 'Click-Only' },
       { text: 'Data Submission', value: 'Data Submission' },
       { text: 'Attachment', value: 'Attachment' }

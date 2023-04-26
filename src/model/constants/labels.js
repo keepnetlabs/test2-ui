@@ -11,6 +11,7 @@ export const labels = {
   DuplicateCertificate: 'Duplicate Certificate',
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
+  Scenarios: 'Scenarios',
   SelectSources: 'Select Sources',
   Reports: 'Reports',
   Platforms: 'Platforms',
