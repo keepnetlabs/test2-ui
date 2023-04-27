@@ -28,6 +28,16 @@ export const METHOD_TYPES = {
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment'
 }
+
+export const SCHEDULE_TYPES = {
+  SEND_NOW: '1',
+  SAVE_FOR_LATER: '2',
+  SCHEDULE_TO: '3'
+}
+export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
+  PERCENTAGE: '1',
+  USERS: '2'
+}
 export const COLUMNS = {
   CAMPAIGN_NAME: {
     property: PROPERTY_STORE.NAME,

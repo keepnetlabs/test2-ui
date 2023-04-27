@@ -1,5 +1,5 @@
 <template>
-  <div class="emailTemplatePreview" style="min-height: auto !important;">
+  <div class="emailTemplatePreview pt-0" style="min-height: auto !important;">
     <AppDialog
       icon="mdi-eye"
       custom-size="1600"
@@ -14,7 +14,7 @@
       <template #app-dialog-body>
         <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleTemplateDialog"
             >CLOSE
@@ -23,7 +23,7 @@
       </template>
     </AppDialog>
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
-      <div class="emailTemplatePreview__container-main">
+      <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
             <div class="d-flex justify-space-between">
@@ -60,6 +60,18 @@
                 </div>
                 <div>
                   <k-select
+                    v-model="language"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    :items="languages"
+                  ></k-select>
+                </div>
+                <div>
+                  <k-select
                     v-model="difficulty"
                     :items="difficulties"
                     placeholder="Difficulty"
@@ -82,44 +94,57 @@
                 class="pane"
                 :style="{
                   maxWidth: '25% !important',
-                  minWidth: '25% !important',
-                  pointerEvents: isPhishingScenariosLoading ? 'none' : 'inherit'
+                  minWidth: '25% !important'
                 }"
                 @scroll="handleScroll"
               >
+                <div class="my-5 mx-6">
+                  <v-switch
+                    v-model="isShowSelectedScenarios"
+                    id="input--campaign-manager-show-selected-status"
+                    class="k-switch selected-scenario-switch"
+                    hide-details
+                    color="#2196f3"
+                    :label="getSelectedScenarioSwitchLabel"
+                    :disabled="!value.length"
+                  />
+                </div>
                 <div
                   v-for="(item, index) in getItems"
                   :key="index"
                   :class="[
                     'template-list',
-                    { 'template-list--selected': item.resourceId === value }
+                    { 'bg-yellow': selectedTemplateResourceId === item.resourceId },
+                    { 'template-list--selected': value.includes(item.resourceId) }
                   ]"
-                  @click="setSelectedTemplate(item, index)"
+                  @click="callForSelectedPhishingScenario(item.resourceId)"
                 >
                   <div class="d-flex justify-space-between mb-2">
-                    <div class="d-flex flex-column wrapWord">
-                      <div class="template-list--item template-list--item__header">
-                        {{ item.name }}
-                      </div>
-                      <div
-                        class="template-list--item template-list--item__sub-header"
-                        style="overflow: hidden; text-overflow: ellipsis;"
-                      >
-                        {{ item.method }}
-                        &#8226;
-                        <span class="template-list--item__sub-header--span">by</span>
-                        {{ item['createdBy'] }}
+                    <div class="d-flex">
+                      <VCheckbox
+                        color="#2196f3"
+                        hide-details
+                        @click.stop
+                        @change="setSelectedTemplate(item, $event)"
+                      />
+                      <div class="d-flex flex-column wrapWord">
+                        <div class="template-list--item template-list--item__header">
+                          {{ item.name }}
+                        </div>
+                        <div
+                          class="template-list--item template-list--item__sub-header"
+                          style="overflow: hidden; text-overflow: ellipsis;"
+                        >
+                          {{ item.method }}
+                          &#8226;
+                          <span class="template-list--item__sub-header--span">by</span>
+                          {{ item['createdBy'] }}
+                        </div>
                       </div>
                     </div>
                     <div
                       class="template-list--item template-list--item__difficulty mr-8"
-                      :class="
-                        item.difficulty === 'Easy'
-                          ? 'difficulty-easy'
-                          : item.difficulty === 'Medium'
-                          ? 'difficulty-medium'
-                          : 'difficulty-hard'
-                      "
+                      :class="getItemDifficultyClass(item.difficulty)"
                     >
                       {{ item.difficulty }}
                     </div>
@@ -142,7 +167,7 @@
                     name="email"
                     :label="labels.JustEmail"
                   >
-                    <div class="template-preview pt-3">
+                    <div class="template-preview pt-0">
                       <div class="template-preview__icon">
                         <v-btn
                           v-if="!!emailTemplate"
@@ -205,7 +230,7 @@
                         :label="`Page ${index + 1}`"
                         :name="`${index + 1}`"
                       >
-                        <div class="template-preview pt-3">
+                        <div class="template-preview pt-0">
                           <div class="template-preview__icon">
                             <v-btn
                               v-if="!!template.content"
@@ -238,7 +263,7 @@
                         </div>
                       </el-tab-pane>
                     </el-tabs>
-                    <div v-else class="template-preview pt-3">
+                    <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
                         <v-btn
                           v-if="!!getSingleTemplateDetails"
@@ -301,15 +326,17 @@ import { getScenario, getScenariosList } from '@/api/scenarios'
 const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
 }
-import AppDialog from '@/components/AppDialog'
+import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import KSelect from '@/components/Common/Inputs/KSelect'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
-import KEmailPreview from '@/components/KEmailPreview'
-import ShowMoreTags from '@/components/ShowMoreTags'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+import KEmailPreview from '@/components/KEmailPreview.vue'
+import ShowMoreTags from '@/components/ShowMoreTags.vue'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
+import useDebounce from '@/hooks/useDebounce'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
@@ -322,52 +349,41 @@ export default {
     MultipaneResizer,
     AttachmentsPreview
   },
+  mixins: [useDebounce],
   props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
     items: {
       type: Array
     },
+    languages: {
+      type: Array
+    },
     value: {
-      type: String
+      type: Array
     },
-    isPhishingScenariosLoading: {
-      type: Boolean
-    },
-    isAttachmentBasedScenario: {
-      type: Boolean
+    isValid: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
       tab: 'email',
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload(),
       labels,
       search: '',
       isShowTemplate: false,
-      selectedTemplate: null,
+      selectedTemplateResourceId: null,
       methods,
       difficulties,
+      isAttachmentBasedScenario: false,
+      isShowSelectedScenarios: false,
       method: '',
       difficulty: '',
+      language: '',
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
@@ -378,12 +394,18 @@ export default {
     }
   },
   computed: {
+    getContainerStyle() {
+      return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
+    },
     getPhishingFile() {
       return this.emailTemplateParams?.phishingFileName
         ? {
             name: this.emailTemplateParams?.phishingFileName
           }
         : null
+    },
+    getSelectedScenarioSwitchLabel() {
+      return `Only show selected scenarios (${this.value.length})`
     },
     getTableEmptyTextMessage() {
       return this.isFilterOrSearchActive
@@ -435,11 +457,6 @@ export default {
     }
   },
   watch: {
-    value() {
-      this.tab = 'email'
-      this.selectedLandingPageTab = '1'
-      this.callForSelectedPhishingScenario()
-    },
     search(val) {
       this.debounce(() => {
         this.axiosPayload.filter.FilterGroups[1].FilterItems = [
@@ -448,7 +465,8 @@ export default {
           { FieldName: 'Tags', Operator: 'Contains', Value: val },
           { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
           { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
-          { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
+          { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
+          { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
         ]
         this.callForPhishingScenarios()
       }, 500)
@@ -477,34 +495,53 @@ export default {
       }
       this.callForPhishingScenarios()
     },
+    language(val) {
+      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => item.FieldName === 'languageTypeResourceId'
+      )
+      const obj = { Value: val, FieldName: 'LanguageTypeResourceId', Operator: 'Contains' }
+      if (index > -1) {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+      }
+      this.callForPhishingScenarios()
+    },
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({ ...item, tags: item?.tags || [] }))
     }
+  },
+  created() {
+    this.callForPhishingScenarios()
   },
   methods: {
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
       }
-
       if (item?.description === 'null' || item?.description === 'undefined') {
         return '\xa0'
       }
-
       return item?.description || '\xa0'
     },
-    callForSelectedPhishingScenario() {
-      getScenario(this.value).then((response) => {
+    getItemDifficultyClass(difficulty = '') {
+      return difficulty === 'Easy'
+        ? 'difficulty-easy'
+        : difficulty === 'Medium'
+        ? 'difficulty-medium'
+        : 'difficulty-hard'
+    },
+    callForSelectedPhishingScenario(resourceId = '') {
+      getScenario(resourceId).then((response) => {
         const {
           data: { data }
         } = response
-
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
           this.phishingScenarioItems.push(data)
         }
-
-        this.$emit('onItemDetailsChange', data)
-        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
+        this.isAttachmentBasedScenario = data.methodTypeId === '3'
+        this.selectedTemplateResourceId = resourceId
+        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {
             const { data: { data = {} } = {} } = response
             const { emailTemplate, landingPageTemplate, methodTypeId } = data
@@ -551,13 +588,15 @@ export default {
         )
       })
     },
-    callForPhishingScenarios() {
+    callForPhishingScenarios(isSelectFirstItem = true) {
       getScenariosList(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
-
         this.phishingScenarioItems = data.results || []
+        if (!this.isEdit && isSelectFirstItem && this.phishingScenarioItems.length) {
+          this.callForSelectedPhishingScenario(this.phishingScenarioItems[0].resourceId)
+        }
       })
     },
     handleScroll(e) {
@@ -568,26 +607,28 @@ export default {
       ) {
         this.axiosPayload.pageSize += 10
         this.debounce(() => {
-          this.callForPhishingScenarios()
+          this.callForPhishingScenarios(false)
         }, 500)
       }
     },
     toggleTemplateDialog() {
       this.isShowTemplate = !this.isShowTemplate
     },
-    setSelectedTemplate(val) {
-      this.$emit(EMITS.ON_ITEM_CHANGE, val)
+    setSelectedTemplate({ resourceId = '' } = {}, value = false) {
+      if (value) {
+        this.value.push(resourceId)
+        this.$emit('input', this.value)
+      } else {
+        this.$emit(
+          'input',
+          this.value.filter(
+            (phishingScenarioResourceId) => resourceId !== phishingScenarioResourceId
+          )
+        )
+      }
     },
     handleClickPreview() {
       this.toggleTemplateDialog()
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     }
   }
 }
