@@ -45,7 +45,7 @@
                   ></v-text-field>
                 </div>
                 <div>
-                  <k-select
+                  <KSelect
                     v-model="method"
                     :items="methods"
                     placeholder="Type"
@@ -56,10 +56,11 @@
                     persistent-hint
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
-                  ></k-select>
+                    @change="isShowSelectedScenarios = false"
+                  />
                 </div>
                 <div>
-                  <k-select
+                  <KSelect
                     v-model="language"
                     placeholder="Language"
                     item-disabled="disabled"
@@ -68,10 +69,11 @@
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
                     :items="languages"
-                  ></k-select>
+                    @change="isShowSelectedScenarios = false"
+                  />
                 </div>
                 <div>
-                  <k-select
+                  <KSelect
                     v-model="difficulty"
                     :items="difficulties"
                     placeholder="Difficulty"
@@ -82,8 +84,8 @@
                     persistent-hint
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
-                  >
-                  </k-select>
+                    @change="isShowSelectedScenarios = false"
+                  />
                 </div>
               </div>
             </div>
@@ -99,7 +101,7 @@
                 @scroll="handleScroll"
               >
                 <div class="my-5 mx-6">
-                  <v-switch
+                  <VSwitch
                     v-model="isShowSelectedScenarios"
                     id="input--campaign-manager-show-selected-status"
                     class="k-switch selected-scenario-switch"
@@ -110,22 +112,24 @@
                   />
                 </div>
                 <div
-                  v-for="(item, index) in getItems"
-                  :key="index"
+                  v-for="item in getItems"
+                  :key="item.resourceId"
                   :class="[
                     'template-list',
-                    { 'bg-yellow': selectedTemplateResourceId === item.resourceId },
+                    { 'bg-phishing-gray': selectedTemplateResourceId === item.resourceId },
                     { 'template-list--selected': value.includes(item.resourceId) }
                   ]"
                   @click="callForSelectedPhishingScenario(item.resourceId)"
                 >
                   <div class="d-flex justify-space-between mb-2">
-                    <div class="d-flex">
+                    <div class="d-flex overflow-hidden">
                       <VCheckbox
+                        v-model="checkboxModel[item.resourceId]"
                         color="#2196f3"
                         hide-details
                         @click.stop
-                        @change="setSelectedTemplate(item, $event)"
+                        :ripple="false"
+                        @change="setSelectedTemplate(item, item, $event)"
                       />
                       <div class="d-flex flex-column wrapWord">
                         <div class="template-list--item template-list--item__header">
@@ -161,7 +165,7 @@
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
-                <el-tabs v-model="tab">
+                <el-tabs v-model="tab" class="phishing-scenario-tab-container">
                   <el-tab-pane
                     id="campaign-manager-info--email-content"
                     name="email"
@@ -182,6 +186,18 @@
                         </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
+                        <div>
+                          <span class="template-preview__text--title">Template Name: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.name
+                          }}</span>
+                        </div>
+                        <div>
+                          <span class="template-preview__text--title">Subject: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.subject
+                          }}</span>
+                        </div>
                         <div>
                           <span class="template-preview__text--title">From Name: </span>
                           <span class="template-preview__text--body">{{
@@ -209,7 +225,6 @@
                         </div>
                       </div>
                       <hr class="mt-2" v-if="!!emailTemplate" />
-
                       <KEmailPreview
                         v-if="!!emailTemplate"
                         :key="emailTemplate"
@@ -223,7 +238,11 @@
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
                   >
-                    <el-tabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
+                    <el-tabs
+                      v-if="isLandingPageTabsVisible"
+                      v-model="selectedLandingPageTab"
+                      class="phishing-scenario-tab-container"
+                    >
                       <el-tab-pane
                         v-for="(template, index) in landingPageTemplates"
                         :key="index"
@@ -252,9 +271,9 @@
                               }}</span>
                             </div>
                             <div>
-                              <span class="template-preview__text--title">Description: </span>
+                              <span class="template-preview__text--title">Phishing URL: </span>
                               <span class="template-preview__text--body">{{
-                                landingPageParams.description
+                                landingPageParams.urlTemplate
                               }}</span>
                             </div>
                           </div>
@@ -285,9 +304,9 @@
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Description: </span>
+                          <span class="template-preview__text--title">Phishing URL: </span>
                           <span class="template-preview__text--body">{{
-                            landingPageParams.description
+                            landingPageParams.urlTemplate
                           }}</span>
                         </div>
                       </div>
@@ -373,12 +392,13 @@ export default {
     return {
       tab: 'email',
       axiosPayload: getDefaultAxiosPayload(),
+      checkboxModel: {},
       labels,
+      methods,
+      difficulties,
       search: '',
       isShowTemplate: false,
       selectedTemplateResourceId: null,
-      methods,
-      difficulties,
       isAttachmentBasedScenario: false,
       isShowSelectedScenarios: false,
       method: '',
@@ -390,7 +410,8 @@ export default {
       landingPageTemplate: null,
       selectedLandingPageTab: '1',
       landingPageTemplates: [],
-      phishingScenarioItems: []
+      phishingScenarioItems: [],
+      selectedPhishingScenarios: []
     }
   },
   computed: {
@@ -422,7 +443,9 @@ export default {
       return method || difficulty || search
     },
     getItems() {
-      return this.phishingScenarioItems
+      return this.isShowSelectedScenarios
+        ? this.selectedPhishingScenarios
+        : this.phishingScenarioItems
     },
     getStyle() {
       const style = {}
@@ -469,6 +492,7 @@ export default {
           { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
         ]
         this.callForPhishingScenarios()
+        this.isShowSelectedScenarios = false
       }, 500)
     },
     difficulty(val) {
@@ -509,6 +533,14 @@ export default {
     },
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({ ...item, tags: item?.tags || [] }))
+    },
+    selectedPhishingScenarios(val = false) {
+      if (val.length === 0) this.isShowSelectedScenarios = false
+    },
+    isShowSelectedScenarios(val = false) {
+      if (val) {
+        this.resetFilters()
+      }
     }
   },
   created() {
@@ -553,13 +585,15 @@ export default {
               difficultyResourceId,
               attachments,
               languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName
+              phishingFileName,
+              subject
             } = emailTemplate || {}
 
             this.emailTemplateParams = {
               fromName,
               fromAddress,
               name,
+              subject,
               difficulty:
                 difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
               attachments,
@@ -600,6 +634,7 @@ export default {
       })
     },
     handleScroll(e) {
+      if (this.isShowSelectedScenarios) return
       const { scrollTop, scrollHeight, offsetHeight } = e.target
       if (
         scrollTop - (scrollHeight - offsetHeight) < 10 &&
@@ -614,8 +649,9 @@ export default {
     toggleTemplateDialog() {
       this.isShowTemplate = !this.isShowTemplate
     },
-    setSelectedTemplate({ resourceId = '' } = {}, value = false) {
+    setSelectedTemplate({ resourceId = '' } = {}, item = {}, value = false) {
       if (value) {
+        this.selectedPhishingScenarios.push(item)
         this.value.push(resourceId)
         this.$emit('input', this.value)
       } else {
@@ -625,10 +661,21 @@ export default {
             (phishingScenarioResourceId) => resourceId !== phishingScenarioResourceId
           )
         )
+        this.selectedPhishingScenarios = this.selectedPhishingScenarios.filter(
+          (phishingScenario) => resourceId !== phishingScenario.resourceId
+        )
       }
     },
     handleClickPreview() {
       this.toggleTemplateDialog()
+    },
+    resetFilters() {
+      this.search = ''
+      this.difficulty = ''
+      this.method = ''
+      this.language = ''
+      this.axiosPayload = getDefaultAxiosPayload()
+      this.callForPhishingScenarios(false)
     }
   }
 }

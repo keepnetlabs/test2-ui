@@ -18,6 +18,7 @@
       />
       <CampaignManagerSummaryCard
         v-if="Object.keys(getOtherSettingsItems).length"
+        class="campaign-manager-last-step__other-settings"
         icon="mdi-memory"
         hide-label
         :title="labels.Other"
@@ -196,6 +197,7 @@ import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManage
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
+import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -339,9 +341,7 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      const totalActiveUsersCount =
-        userCountDetailResponse?.data.data?.find((row) => row.status === 'Active')?.count || 0
-      return totalActiveUsersCount
+      return userCountDetailResponse?.data.data?.find((row) => row.status === 'Active')?.count || 0
     },
     getSettingsItems() {
       const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
@@ -357,12 +357,22 @@ export default {
       return obj
     },
     getOtherSettingsItems() {
-      const { excludeFromReports, sendOnlyActiveUsers, sendRandomlyUsers } = this.formData
+      const {
+        excludeFromReports,
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId
+      } = this.formData
       let data = {}
       if (excludeFromReports) data.isExcludeFromReports = 'Excluded from reports'
-      if (sendOnlyActiveUsers)
-        data.isOnlyActiveUsers = 'Send only to active users on phishing reporter add-in'
-      if (sendRandomlyUsers) data.isRandomSelected = 'Send this campaign to randomly selected'
+      if (sendOnlyActiveUsers) data.isOnlyActiveUsers = 'Only to active users'
+      if (sendRandomlyUsers)
+        data.isRandomSelected = `Randomly selected ${sendRandomlyUsersCount}${
+          sendRandomlyUsersCalculateTypeId === SEND_RANDOMLY_USERS_CALCULATE_TYPES.PERCENTAGE
+            ? '%'
+            : ' users'
+        }`
       return data
     }
   },

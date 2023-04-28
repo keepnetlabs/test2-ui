@@ -77,7 +77,7 @@
                 padding: 10px;
                 border-bottom: 1px solid #e0e0e0;
             }
-            
+
             &__collapsable {
                 max-height: 480px !important;
                 overflow-y: auto;
@@ -126,4 +126,9 @@
         line-height: 21px !important;
         color: #383b41 !important;
     }
+}
+.phishing-scenario-tab-container {
+  .el-tabs__content{
+    margin-top:16px !important;
+  }
 }

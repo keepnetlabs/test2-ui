@@ -183,8 +183,7 @@
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
-                  ></LandingPageListPreview
-                ></v-list-item-content>
+                /></v-list-item-content>
               </v-list-item>
             </div>
           </v-stepper-content>

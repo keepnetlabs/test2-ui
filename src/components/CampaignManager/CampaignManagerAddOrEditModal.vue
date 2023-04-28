@@ -73,6 +73,7 @@
             />
             <CampaignManagerPhishingScenarios
               v-model="phishingScenarioResourceIds"
+              ref="refCampaignManagerPhishingScenarios"
               :languages="languageOptions"
               :is-valid="isPhishingScenariosValid"
             />
@@ -87,7 +88,7 @@
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
               :selected-target-groups.sync="selectedTargetGroups"
-              :target-group-resource-ids.sync="targetGroupResourceIds"
+              :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :form-details="formDetails"
             />
           </v-stepper-content>
@@ -95,6 +96,15 @@
             <ConfigureCompanyStepHeader
               :title="labels.DeliverySettings"
               :subtitle="labels.DeliverySettingsSub"
+            />
+            <CampaignManagerDeliverySettings
+              ref="refCampaignManagerDeliverySettings"
+              :form-details="formDetails"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :total-target-user-count="totalTargetUserCount"
+              :user-target-audience-data="getUserTargetAudienceData"
+              :selected-phishing-scenario="getSelectedPhishingScenario"
+              @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="5">
@@ -146,14 +156,14 @@ import {
   getCampaignManager,
   updateCampaignManager
 } from '@/api/phishingsimulator'
-import { getPhishingReportSummary } from '@/api/phishingReporter'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
-import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience.vue'
+import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
+import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -163,6 +173,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    CampaignManagerDeliverySettings,
     CampaignManagerTargetAudience,
     CustomError,
     CampaignManagerPhishingScenarios,
@@ -195,12 +206,13 @@ export default {
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,
+      totalTargetUserCount: 0,
       step: 1,
       selectedRowFormData: {},
       initialFormValues: {},
       languageOptions: [],
       userCountDetailResponse: {},
-      targetGroupResourceIds: [],
+      selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       phishingScenarioResourceIds: []
     }
@@ -213,11 +225,13 @@ export default {
     getSaveButtonText() {
       return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
     },
+    targetGroupResourceIds() {
+      return this.selectedTargetGroupsMapped.map((group) => group.value)
+    },
     getSelectedPhishingScenario() {
       let selectedScenario = {}
-      if (this.step === 2) {
-        const { refCampaignManagerCampaignInfo } = this.$refs
-        const { refCampaignManagerPhishingScenarios } = refCampaignManagerCampaignInfo.$refs
+      if (this.step === 4) {
+        const { refCampaignManagerPhishingScenarios } = this.$refs
         selectedScenario = refCampaignManagerPhishingScenarios?.emailTemplateParams || {}
         selectedScenario.template = refCampaignManagerPhishingScenarios?.emailTemplate || ''
       }
@@ -226,46 +240,44 @@ export default {
     getFormDataForCampaignSummary() {
       let formData = {}
       if (this.step === 5) {
-        const { refCampaignManagerCampaignInfo, refCampaignManagerAdvancedSettings } = this.$refs
-        const emailTemplateParams =
-          refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-            .emailTemplateParams
+        const {
+          refCampaignManagerPhishingScenarios,
+          refCampaignManagerCampaignInfo,
+          refCampaignManagerTargetAudience,
+          refCampaignManagerDeliverySettings
+        } = this.$refs
+        const emailTemplateParams = refCampaignManagerPhishingScenarios.emailTemplateParams
         emailTemplateParams.languageShortCode = this.languageOptions.find(
           (language) => language.value === emailTemplateParams.languageTypeResourceId
         )?.text
-
-        const landingPageParams =
-          refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios.landingPageParams
+        const landingPageParams = refCampaignManagerPhishingScenarios.landingPageParams
         landingPageParams.languageShortCode = this.languageOptions.find(
           (language) => language.value === landingPageParams.languageTypeResourceId
         )?.text
-
         formData = {
-          ...formData,
-          ...refCampaignManagerCampaignInfo.formData,
-          ...refCampaignManagerAdvancedSettings.formData,
           userCountDetailResponse: this.userCountDetailResponse,
-          emailTemplate:
-            refCampaignManagerCampaignInfo?.$refs?.refCampaignManagerPhishingScenarios
-              ?.emailTemplate || '',
+          emailTemplate: refCampaignManagerPhishingScenarios?.emailTemplate || '',
           emailTemplateParams,
-          landingPageTemplates:
-            refCampaignManagerCampaignInfo?.$refs?.refCampaignManagerPhishingScenarios
-              ?.landingPageTemplates,
+          landingPageTemplates: refCampaignManagerPhishingScenarios?.landingPageTemplates,
           landingPageParams
         }
-
-        formData.selectedPhishingScenario =
-          refCampaignManagerCampaignInfo.phishingScenarioItems.find(
-            (item) => item.resourceId === formData.phishingScenarioResourceId
-          ) || refCampaignManagerCampaignInfo.formData.phishingScenario
-
+        formData.selectedPhishingScenario = refCampaignManagerPhishingScenarios.phishingScenarioItems.find(
+          (item) => item.resourceId === this.phishingScenarioResourceIds[0]
+        )
         const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
         let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
+        formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
+        formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
+        formData.sendRandomlyUsersCount =
+          refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
+        formData.sendRandomlyUsersCalculateTypeId =
+          refCampaignManagerTargetAudience.formData.sendRandomlyUsersCalculateTypeId
+        formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
+        formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
-        formData.selectedEmailDelivery = refCampaignManagerAdvancedSettings?.emailDelivery
       }
       return formData
     },
@@ -333,6 +345,19 @@ export default {
         directEmailSetting,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
       }
+    },
+    getUserTargetAudienceData() {
+      const defaultObj = {
+        sendOnlyActiveUsers: false,
+        sendRandomlyUsers: false,
+        sendRandomlyUsersCount: 20,
+        sendRandomlyUsersCalculateTypeId: '1'
+      }
+      if (this.step === 4) {
+        const { refCampaignManagerTargetAudience } = this.$refs
+        return refCampaignManagerTargetAudience?.formData || defaultObj
+      }
+      return defaultObj
     }
   },
   watch: {
@@ -430,32 +455,6 @@ export default {
           this.step++
         }
       } else if (this.step === 1 && flag === 1) {
-        /*
-        this.setActionButtonDisability(true)
-        const targetGroups = refCampaignManagerCampaignInfo.selectedTargetGroups
-        const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
-          (item) => item.value
-        )
-        const totalUserCount = targetGroups.reduce((acc, item) => {
-          acc += item?.userCount || 0
-          return acc
-        }, 0)
-        refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
-        refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
-        if (totalUserCount) {
-          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-          refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-          this.step += flag
-          refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
-        } else {
-          refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-          refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-          this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
-        }
-        refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
-        this.setActionButtonDisability(false)
-
-         */
         this.step += flag
       } else {
         this.step += flag
@@ -479,7 +478,7 @@ export default {
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
-          this.totalTargetUserCount = this.targetGroupResourceIds.reduce((acc, item) => {
+          this.totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
             acc += item?.extraDatas.userCount || 0
             return acc
           }, 0)
@@ -487,7 +486,7 @@ export default {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
             this.userCountDetailResponse = await getTargetGroupCountDetail(
-              this.targetGroupResourceIds.map((group) => group.value)
+              this.targetGroupResourceIds
             )
             this.changeStep()
           } else {
@@ -495,6 +494,40 @@ export default {
             refCampaignManagerTargetAudience.isTargetGroupsValid = false
           }
           this.setActionButtonDisability(false)
+          return
+        case 4:
+          const { refCampaignManagerDeliverySettings } = this.$refs
+          if (
+            refCampaignManagerDeliverySettings.emailDelivery.type ===
+            EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+          )
+            return this.changeStep()
+          if (
+            refCampaignManagerDeliverySettings &&
+            refCampaignManagerDeliverySettings.testEmailErrorMessage &&
+            !refCampaignManagerDeliverySettings.isTestMailSend
+          ) {
+            refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
+          } else if (
+            refCampaignManagerDeliverySettings &&
+            !refCampaignManagerDeliverySettings.testEmailErrorMessage &&
+            !refCampaignManagerDeliverySettings.isTestMailSend
+          ) {
+            refCampaignManagerDeliverySettings
+              .callForTestConnection()
+              .then((response) => {
+                if (response) {
+                  this.step++
+                } else {
+                  refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
+                }
+              })
+              .catch(() => {
+                refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
+              })
+          } else {
+            this.changeStep()
+          }
           return
         default:
           break

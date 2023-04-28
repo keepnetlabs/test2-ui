@@ -18,7 +18,7 @@
           name="email"
           :label="labels.JustEmail"
         >
-          <div class="template-preview pt-3">
+          <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
               <div>
                 <span class="template-preview__text--title">Template Name: </span>

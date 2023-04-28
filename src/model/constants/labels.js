@@ -311,7 +311,8 @@ export const labels = {
   Smtp: 'SMTP',
   Distribution: 'Distribution',
   // DistributionSub: 'Send emails with selected intervals or over a specified time period',
-  DistributionSub: 'Send emails with selected intervals',
+  DistributionSub:
+    'Send emails with selected intervals or over a specified time period. Limit number of emails to be sent in each batch.',
   CustomizeSmtpForEachCompany: 'Customize SMTP For Each Company',
   CustomizeSmtpForEachCompanySub: 'Set SMTP configuration for each company',
   SmtpSub: 'Select SMTP configuration for this campaign',

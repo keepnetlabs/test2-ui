@@ -170,7 +170,8 @@ export default {
         scheduleTypeId: SCHEDULE_TYPES.SEND_NOW,
         duration: 365,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        excludeFromReports: false
       },
       rules: {
         name: [

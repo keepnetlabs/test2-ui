@@ -3,7 +3,6 @@
     <CampaignManagerTargetGroups
       ref="refCampaignManagerTargetGroup"
       is-call-api-when-created
-      :selected-target-groups="targetGroupResourceIds"
       :is-valid="isTargetGroupsValid"
       @handle-selection-change="handleTargetGroupSelectionChange"
     />
@@ -21,7 +20,12 @@
           color="#2196f3"
           :disabled="!onlineUsersCount"
         >
-          <template #label> Send only to active users on phishing reporter add-in</template>
+          <template #label>
+            Send only to active users on phishing reporter add-in ({{
+              onlineUsersCount
+            }}
+            currently)</template
+          >
         </VCheckbox>
         <div class="campaign-manager-advanced-settings__other-settings-last">
           <VCheckbox
@@ -75,7 +79,7 @@ export default {
   name: 'CampaignManagerTargetAudience',
   components: { KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
   props: {
-    targetGroupResourceIds: {
+    selectedTargetGroupsMapped: {
       type: Array,
       default: () => []
     },
@@ -111,7 +115,7 @@ export default {
   },
   computed: {
     getTargetGroupErrorMessage() {
-      return this.targetGroupResourceIds.length
+      return this.selectedTargetGroupsMapped.length
         ? this.getTargetGroupErrorText
         : labels.TargetGroupSelectionRequiredError
     },
@@ -123,7 +127,7 @@ export default {
     }
   },
   watch: {
-    targetGroupResourceIds(val) {
+    selectedTargetGroupsMapped(val) {
       this.isTargetGroupsValid = !!val.length
     }
   },
@@ -169,7 +173,7 @@ export default {
         endDate: dateObj.endDate
       }).then((response) => {
         const { data } = response.data
-        this.onlineUsersCount = !!data['onlineUsersCount']
+        this.onlineUsersCount = data['onlineUsersCount']
       })
     },
     getDateValue(value) {
@@ -179,7 +183,7 @@ export default {
     handleTargetGroupSelectionChange(items) {
       this.$emit('update:selectedTargetGroups', items)
       this.$emit(
-        'update:targetGroupResourceIds',
+        'update:selectedTargetGroupsMapped',
         items
           .filter((item) => item)
           .map((item) => ({
@@ -191,7 +195,6 @@ export default {
     },
     userCountValidation(v) {
       const { sendRandomlyUsersCalculateTypeId } = this.formData
-      //that means percent
       const val = parseInt(v)
       if (sendRandomlyUsersCalculateTypeId === SEND_RANDOMLY_USERS_CALCULATE_TYPES.PERCENTAGE) {
         return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
