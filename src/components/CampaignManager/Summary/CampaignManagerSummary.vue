@@ -40,7 +40,7 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="currentFormData.selectedTargetGroups"
+                :items="formData.selectedTargetGroups"
               />
             </div>
             <AlertBox
@@ -65,6 +65,7 @@
       v-if="phishingScenarios.length"
       v-model="selectedScenario"
       class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
+      @tab-click="callForScenarioDetail($event)"
     >
       <ElTabPane
         v-for="(template, index) in phishingScenarios"
@@ -82,53 +83,40 @@
       >
         <template #body>
           <div
-            v-if="
-              isFormData &&
-              currentFormData.emailTemplateParams &&
-              currentFormData.selectedPhishingScenario
-            "
+            v-if="isFormData && emailTemplateParams && phishingScenarios.length"
             class="campaign-manager-last-step__email-template-body pb-4"
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ currentFormData.emailTemplateParams.name }}
+                {{ emailTemplateParams.name }}
               </div>
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
                   size="mini"
-                  :color="getBadgeColor(currentFormData.emailTemplateParams.difficulty)"
-                  :text="getBadgeText(currentFormData.emailTemplateParams.difficulty)"
+                  :color="getBadgeColor(emailTemplateParams.difficulty)"
+                  :text="getBadgeText(emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
-                  v-if="
-                    currentFormData.landingPageParams.method ||
-                    currentFormData.emailTemplateParams.method
-                  "
+                  v-if="landingPageParams.method || emailTemplateParams.method"
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
-                  :text="
-                    getBadgeText(
-                      currentFormData.landingPageParams.method ||
-                        currentFormData.emailTemplateParams.method
-                    )
-                  "
+                  :text="getBadgeText(landingPageParams.method || emailTemplateParams.method)"
                   :outline="false"
                 />
                 <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                   <template #content>
-                    <v-icon>mdi-web</v-icon
-                    >{{ currentFormData.emailTemplateParams.languageShortCode }}
+                    <v-icon>mdi-web</v-icon>{{ emailTemplateParams.languageShortCode }}
                   </template>
                 </Badge>
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              From: {{ currentFormData.emailTemplateParams.fromName }}
+              From: {{ emailTemplateParams.fromName }}
               <span>&#60;</span>
-              {{ currentFormData.emailTemplateParams.fromAddress }}
+              {{ emailTemplateParams.fromAddress }}
               <span>&#62;</span>
             </div>
             <div
@@ -188,9 +176,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!currentFormData.emailTemplate"
+                v-if="!!emailTemplateParams.template"
                 ref="refPreview"
-                :html="currentFormData.emailTemplate"
+                :html="emailTemplateParams.template"
                 is-extra-height
               />
             </div>
@@ -201,7 +189,7 @@
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
         v-if="!isAttachmentBasedScenario"
-        :formData="currentFormData.landingPageParams"
+        :formData="landingPageParams"
       />
     </div>
   </div>
@@ -219,6 +207,8 @@ import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
+import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
+import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -238,53 +228,27 @@ export default {
     isVishing: {
       type: Boolean,
       default: false
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      currentFormData: {},
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false,
-      selectedScenario: ''
-    }
-  },
-  watch: {
-    formData: {
-      handler(val) {
-        this.currentFormData = {
-          ...val,
-          emailTemplateParams: {
-            fromName: val?.emailTemplateParams?.fromName || '',
-            fromAddress: val?.emailTemplateParams?.fromAddress || '',
-            name: val?.emailTemplateParams?.name || '',
-            difficulty: val?.emailTemplateParams?.difficulty || '',
-            attachments: val?.emailTemplateParams?.attachments || [],
-            languageShortCode: val?.emailTemplateParams?.languageShortCode,
-            method: val?.emailTemplateParams?.method,
-            phishingFileName: val?.emailTemplateParams?.phishingFileName || null
-          },
-          landingPageParams: {
-            landingPageTemplates: val?.landingPageTemplates || null,
-            name: val?.landingPageParams?.name || '',
-            description: val?.landingPageParams?.description || '',
-            urlTemplate: val?.landingPageParams?.urlTemplate || '',
-            difficulty: val?.landingPageParams?.difficulty || '',
-            method: val?.landingPageParams?.method || '',
-            languageShortCode: val?.landingPageParams?.languageShortCode
-          },
-          landingPageTemplate: val?.landingPageTemplate || ''
-        }
-        this.selectedScenario = val?.selectedPhishingScenarios?.[0]?.resourceId
-      },
-      deep: true,
-      immediate: true
+      isScenarioDetailLoading: false,
+      selectedScenario: '',
+      emailTemplateParams: {},
+      landingPageParams: {}
     }
   },
   computed: {
     phishingScenarios() {
-      return this.currentFormData?.selectedPhishingScenarios || []
+      return this.formData?.selectedPhishingScenarios || []
     },
     canRenderAlertbox() {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
@@ -303,21 +267,21 @@ export default {
       return Object.keys(this.formData).length
     },
     getPhishingFile() {
-      return this?.currentFormData?.emailTemplateParams?.phishingFileName
+      return this?.emailTemplateParams?.phishingFileName
         ? {
-            name: this?.currentFormData?.emailTemplateParams?.phishingFileName
+            name: this?.emailTemplateParams?.phishingFileName
           }
         : null
     },
     getAttachments() {
-      return this?.currentFormData?.emailTemplateParams?.attachments || []
+      return this?.emailTemplateParams?.attachments || []
     },
     isAttachmentBasedScenario() {
-      return this.formData?.selectedPhishingScenario?.method === 'Attachment' || false
+      return this.emailTemplateParams?.method === 'Attachment' || false
     },
     getScenarioInfoItems() {
-      const { selectedPhishingScenario = {} } = this.formData
-      const { name = '', method = '', difficulty = '', extraDatas = {} } = selectedPhishingScenario
+      const { name = '', method = '', difficulty = '', extraDatas = {} } =
+        this.formData.emailTemplateParams || {}
       if (Object.keys(extraDatas).length > 0) {
         return {
           name: extraDatas?.name || '',
@@ -402,7 +366,75 @@ export default {
       return data
     }
   },
+  watch: {
+    formData: {
+      handler(val) {
+        this.selectedScenario = val?.selectedPhishingScenarios?.[0]?.resourceId
+        this.callForScenarioDetail({ name: this.selectedScenario })
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
+    callForScenarioDetail(obj = {}) {
+      const resourceId = obj?.name || ''
+      if (!resourceId) return
+      this.isScenarioDetailLoading = true
+      getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response
+          const { emailTemplate, landingPageTemplate, methodTypeId } = data
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName,
+            subject
+          } = emailTemplate || {}
+
+          this.emailTemplateParams = {
+            fromName,
+            fromAddress,
+            name,
+            subject,
+            difficulty:
+              difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName,
+            template
+          }
+          this.emailTemplateParams.languageShortCode = this.languageOptions.find(
+            (language) => language.value === this.emailTemplateParams.languageTypeResourceId
+          )?.text
+          const {
+            name: landingPageName = '',
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            languageTypeResourceId
+          } = landingPageTemplate || {}
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+            method: methods[methodTypeId - 1]?.text || '',
+            languageTypeResourceId,
+            landingPageTemplates: landingPages
+          }
+          this.landingPageParams.languageShortCode = this.languageOptions.find(
+            (language) => language.value === this.landingPageParams.languageTypeResourceId
+          )?.text
+        })
+        .finally(() => (this.isScenarioDetailLoading = false))
+    },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)
     },
