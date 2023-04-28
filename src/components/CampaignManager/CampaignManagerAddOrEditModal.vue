@@ -72,7 +72,7 @@
               :subtitle="labels.CampaignManagerPhishingScenariosSub"
             />
             <CampaignManagerPhishingScenarios
-              v-model="phishingScenarioResourceIds"
+              v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
               :languages="languageOptions"
               :is-valid="isPhishingScenariosValid"
@@ -122,7 +122,7 @@
     </template>
     <template #overlay-footer>
       <StepperFooter
-        max-step="3"
+        max-step="5"
         :ids="{
           cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
           backButton: 'btn-back--add-or-edit-company-manager-modal',
@@ -214,6 +214,7 @@ export default {
       userCountDetailResponse: {},
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
+      selectedPhishingScenarios: [],
       phishingScenarioResourceIds: []
     }
   },
@@ -278,6 +279,9 @@ export default {
         formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
         formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.targetGroupResourceIds = this.targetGroupResourceIds
+        formData.selectedTargetGroups = this.selectedTargetGroups
+        formData.selectedPhishingScenarios = this.selectedPhishingScenarios
       }
       return formData
     },
@@ -361,7 +365,7 @@ export default {
     }
   },
   watch: {
-    phishingScenarioResourceIds(val) {
+    selectedPhishingScenarios(val) {
       this.isPhishingScenariosValid = !!val.length
     }
   },
@@ -420,45 +424,7 @@ export default {
       })
     },
     changeStep(flag = 1) {
-      const { refCampaignManagerAdvancedSettings } = this.$refs
-      if (this.step === 2 && flag === 1) {
-        return this.step++
-        if (
-          refCampaignManagerAdvancedSettings.emailDelivery.type ===
-          EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-        )
-          return this.step++
-        if (
-          refCampaignManagerAdvancedSettings &&
-          refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
-          !refCampaignManagerAdvancedSettings.isTestMailSend
-        ) {
-          refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
-        } else if (
-          refCampaignManagerAdvancedSettings &&
-          !refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
-          !refCampaignManagerAdvancedSettings.isTestMailSend
-        ) {
-          refCampaignManagerAdvancedSettings
-            .callForTestConnection()
-            .then((response) => {
-              if (response) {
-                this.step++
-              } else {
-                refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
-              }
-            })
-            .catch(() => {
-              refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
-            })
-        } else {
-          this.step++
-        }
-      } else if (this.step === 1 && flag === 1) {
-        this.step += flag
-      } else {
-        this.step += flag
-      }
+      this.step += flag
     },
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
@@ -471,7 +437,7 @@ export default {
           this.changeStep()
           return
         case 2:
-          this.isPhishingScenariosValid = !!this.phishingScenarioResourceIds.length
+          this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
           this.changeStep()
           return

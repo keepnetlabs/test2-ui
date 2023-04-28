@@ -53,6 +53,26 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
+    <div class="my-6">
+      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+      <span
+        v-if="phishingScenarios.length > 5"
+        class="campaign-manager-last-step__phishing-scenario-badge ml-4"
+        >Total {{ phishingScenarios.length }} Scenarios</span
+      >
+    </div>
+    <ElTabs
+      v-if="phishingScenarios.length"
+      v-model="selectedScenario"
+      class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
+    >
+      <ElTabPane
+        v-for="(template, index) in phishingScenarios"
+        :key="index"
+        :name="template.resourceId"
+        :label="template.name"
+      />
+    </ElTabs>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
@@ -125,6 +145,7 @@
               </div>
             </div>
             <div
+              v-if="getAttachments.length"
               class="campaign-manager-last-step__email-template-body-attachments"
               style="border: none;"
             >
@@ -225,7 +246,8 @@ export default {
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
-      isShowLandingPageTemplate: false
+      isShowLandingPageTemplate: false,
+      selectedScenario: ''
     }
   },
   watch: {
@@ -254,12 +276,16 @@ export default {
           },
           landingPageTemplate: val?.landingPageTemplate || ''
         }
+        this.selectedScenario = val?.selectedPhishingScenarios?.[0]?.resourceId
       },
       deep: true,
       immediate: true
     }
   },
   computed: {
+    phishingScenarios() {
+      return this.currentFormData?.selectedPhishingScenarios || []
+    },
     canRenderAlertbox() {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },

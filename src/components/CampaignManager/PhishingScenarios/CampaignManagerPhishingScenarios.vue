@@ -114,11 +114,7 @@
                 <div
                   v-for="item in getItems"
                   :key="item.resourceId"
-                  :class="[
-                    'template-list',
-                    { 'bg-phishing-gray': selectedTemplateResourceId === item.resourceId },
-                    { 'template-list--selected': value.includes(item.resourceId) }
-                  ]"
+                  :class="getItemClasses(item.resourceId, item)"
                   @click="callForSelectedPhishingScenario(item.resourceId)"
                 >
                   <div class="d-flex justify-space-between mb-2">
@@ -129,7 +125,7 @@
                         hide-details
                         @click.stop
                         :ripple="false"
-                        @change="setSelectedTemplate(item, item, $event)"
+                        @change="setSelectedTemplate(item, $event)"
                       />
                       <div class="d-flex flex-column wrapWord">
                         <div class="template-list--item template-list--item__header">
@@ -410,8 +406,7 @@ export default {
       landingPageTemplate: null,
       selectedLandingPageTab: '1',
       landingPageTemplates: [],
-      phishingScenarioItems: [],
-      selectedPhishingScenarios: []
+      phishingScenarioItems: []
     }
   },
   computed: {
@@ -443,9 +438,7 @@ export default {
       return method || difficulty || search
     },
     getItems() {
-      return this.isShowSelectedScenarios
-        ? this.selectedPhishingScenarios
-        : this.phishingScenarioItems
+      return this.isShowSelectedScenarios ? this.value : this.phishingScenarioItems
     },
     getStyle() {
       const style = {}
@@ -534,7 +527,7 @@ export default {
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({ ...item, tags: item?.tags || [] }))
     },
-    selectedPhishingScenarios(val = false) {
+    value(val = false) {
       if (val.length === 0) this.isShowSelectedScenarios = false
     },
     isShowSelectedScenarios(val = false) {
@@ -547,6 +540,17 @@ export default {
     this.callForPhishingScenarios()
   },
   methods: {
+    getItemClasses(selectedTemplateResourceId = '', item = {}) {
+      return [
+        'template-list',
+        { 'bg-phishing-gray': selectedTemplateResourceId === item.resourceId },
+        {
+          'template-list--selected': this.value.find(
+            (item) => item.resourceId === selectedTemplateResourceId
+          )
+        }
+      ]
+    },
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
@@ -649,20 +653,13 @@ export default {
     toggleTemplateDialog() {
       this.isShowTemplate = !this.isShowTemplate
     },
-    setSelectedTemplate({ resourceId = '' } = {}, item = {}, value = false) {
+    setSelectedTemplate(item = {}, value = false) {
       if (value) {
-        this.selectedPhishingScenarios.push(item)
-        this.value.push(resourceId)
-        this.$emit('input', this.value)
+        this.$emit('input', [...this.value, item])
       } else {
         this.$emit(
           'input',
-          this.value.filter(
-            (phishingScenarioResourceId) => resourceId !== phishingScenarioResourceId
-          )
-        )
-        this.selectedPhishingScenarios = this.selectedPhishingScenarios.filter(
-          (phishingScenario) => resourceId !== phishingScenario.resourceId
+          this.value.filter((phishingScenario) => item.resourceId !== phishingScenario.resourceId)
         )
       }
     },

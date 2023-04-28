@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     class="mt-4"
     detailable
-    icon="mdi-application"
+    icon="$domain"
     detailable-button-id="btn-preview--campaign-report-landing-page-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
