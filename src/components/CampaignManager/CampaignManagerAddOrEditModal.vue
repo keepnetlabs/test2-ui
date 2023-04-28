@@ -115,6 +115,7 @@
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
+              :language-options="languageOptions"
             />
           </v-stepper-content>
         </v-stepper-items>
@@ -242,33 +243,15 @@ export default {
       let formData = {}
       if (this.step === 5) {
         const {
-          refCampaignManagerPhishingScenarios,
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const emailTemplateParams = refCampaignManagerPhishingScenarios.emailTemplateParams
-        emailTemplateParams.languageShortCode = this.languageOptions.find(
-          (language) => language.value === emailTemplateParams.languageTypeResourceId
-        )?.text
-        const landingPageParams = refCampaignManagerPhishingScenarios.landingPageParams
-        landingPageParams.languageShortCode = this.languageOptions.find(
-          (language) => language.value === landingPageParams.languageTypeResourceId
-        )?.text
-        formData = {
-          userCountDetailResponse: this.userCountDetailResponse,
-          emailTemplate: refCampaignManagerPhishingScenarios?.emailTemplate || '',
-          emailTemplateParams,
-          landingPageTemplates: refCampaignManagerPhishingScenarios?.landingPageTemplates,
-          landingPageParams
-        }
-        formData.selectedPhishingScenario = refCampaignManagerPhishingScenarios.phishingScenarioItems.find(
-          (item) => item.resourceId === this.phishingScenarioResourceIds[0]
-        )
         const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
         let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        formData.userCountDetailResponse = this.userCountDetailResponse
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
