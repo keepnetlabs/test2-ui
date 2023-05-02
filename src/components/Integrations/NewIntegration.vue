@@ -1385,7 +1385,7 @@ export default {
               data.detectionThreshold === '' ? null : parseInt(data.detectionThreshold)
           }
         } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
-          delete payload['detectionThreshold']
+          delete data['detectionThreshold']
         }
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((apiKey, index) => {

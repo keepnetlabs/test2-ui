@@ -192,7 +192,7 @@ export default {
             filterableItems: [
               { text: 'By DNS TXT Record', value: 1 },
               { text: 'By System', value: 2 },
-              { text: 'By Primary Domain Rule', value: 3 },
+              { text: 'As Primary Domain', value: 3 },
               { text: 'By Reseller', value: 4 }
             ]
           },
@@ -328,7 +328,7 @@ export default {
       if (row.status === 'Unverified') return ''
       if (row.verifyType === 1) return 'By DNS TXT Record'
       if (row.verifyType === 2) return 'By System'
-      if (row.verifyType === 3) return 'By Primary Domain Rule'
+      if (row.verifyType === 3) return 'As Primary Domain'
       if (row.verifyType === 4) return 'By Reseller'
     },
     setStatusColor(status) {

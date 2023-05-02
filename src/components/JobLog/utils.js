@@ -19,4 +19,9 @@ export function getStatusBadgeProps(status) {
       text: 'Failed'
     }
   }
+
+  return {
+    color: '#1173C1',
+    text: 'Waiting'
+  }
 }

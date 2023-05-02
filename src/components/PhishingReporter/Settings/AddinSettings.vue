@@ -240,7 +240,7 @@
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
               color="#2196f3"
-              label="Show confirmation messsage when reporting email"
+              label="Show confirmation message when reporting email"
               class="k-checkbox add-in-settings__list-item-checkbox"
               id="input--phishing-reporter-is-confirmation-before-analysis"
               v-model="formValues.isConfirmationBeforeAnalysis"
