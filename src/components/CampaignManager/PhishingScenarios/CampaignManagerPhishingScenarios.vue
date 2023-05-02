@@ -114,7 +114,7 @@
                 <div
                   v-for="item in getItems"
                   :key="item.resourceId"
-                  :class="getItemClasses(item.resourceId, item)"
+                  :class="getItemClasses(item.resourceId)"
                   @click="callForSelectedPhishingScenario(item.resourceId)"
                 >
                   <div class="d-flex justify-space-between mb-2">
@@ -382,6 +382,9 @@ export default {
     isValid: {
       type: Boolean,
       default: true
+    },
+    defaultPhishingScenariosValuesMapped: {
+      type: [Array, Object]
     }
   },
   data() {
@@ -473,6 +476,18 @@ export default {
     }
   },
   watch: {
+    defaultPhishingScenariosValuesMapped(val) {
+      const setCheckbox = (resourceId = '') => {
+        this.checkboxModel[resourceId] = true
+      }
+      if (Array.isArray(val)) {
+        val.forEach((item) => {
+          setCheckbox(item.value)
+        })
+      } else {
+        setCheckbox(val.value)
+      }
+    },
     search(val) {
       this.debounce(() => {
         this.axiosPayload.filter.FilterGroups[1].FilterItems = [
@@ -540,14 +555,12 @@ export default {
     this.callForPhishingScenarios()
   },
   methods: {
-    getItemClasses(selectedTemplateResourceId = '', item = {}) {
+    getItemClasses(itemResourceId = '') {
       return [
         'template-list',
-        { 'bg-phishing-gray': selectedTemplateResourceId === item.resourceId },
+        { 'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId },
         {
-          'template-list--selected': this.value.find(
-            (item) => item.resourceId === selectedTemplateResourceId
-          )
+          'template-list--selected': this.value.find((item) => item.resourceId === itemResourceId)
         }
       ]
     },
@@ -627,11 +640,22 @@ export default {
       })
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
+      const payload = { ...this.axiosPayload }
+      if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
+        payload.resourceId = this.defaultPhishingScenariosValuesMapped.map((item) => item.value)
+        payload.pageSize = this.defaultPhishingScenariosValuesMapped.length
+      } else if (this.value.length && this.isEdit) {
+        payload.resourceId = this.value.map((item) => item.resourceId)
+      }
       getScenariosList(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
         this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems.forEach((item) => {
+          if (!item.isSelected) return
+          this.setSelectedTemplate(item, true)
+        })
         if (!this.isEdit && isSelectFirstItem && this.phishingScenarioItems.length) {
           this.callForSelectedPhishingScenario(this.phishingScenarioItems[0].resourceId)
         }
