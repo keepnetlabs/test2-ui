@@ -19,6 +19,7 @@
         outlined
         class="new-training-content-by-language__button"
         :ripple="false"
+        :disabled="isUploading"
         @click="handleRemove"
       >
         <v-icon left> mdi-delete </v-icon>
@@ -78,6 +79,9 @@ export default {
     isRemovable: {
       type: Boolean
     },
+    isUploading: {
+      type: Boolean
+    },
     filePreviews: {
       type: Array
     },
@@ -121,6 +125,7 @@ export default {
         this.value.file = null
         return
       }
+      this.$emit('input', { ...this.value, isUploading: true })
       this.abortController = new AbortController()
       const payload = new FormData()
       payload.append('zipFile', file)
@@ -141,7 +146,7 @@ export default {
           this.isBackendParsed = true
           this.progressEvent = undefined
           this.abortController = null
-          this.$emit('input', { ...this.value, file })
+          this.$emit('input', { ...this.value, file, isUploading: false })
         })
         .finally(() => {
           this.isReadonly = false
