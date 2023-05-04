@@ -580,7 +580,7 @@ export default {
           this.unverifiedDomains.length > 1 ? this.unverifiedDomains.length : ''
         } unverified ${
           this.unverifiedDomains.length > 1 ? 'domains' : 'domain'
-        }. Please verify the domains in the next 30 days.`
+        }. Please verify the domains in order to send emails.`
       }
       return ''
     },
