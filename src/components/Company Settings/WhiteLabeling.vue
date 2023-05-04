@@ -49,7 +49,31 @@
             :placeholder="labels.MainDomainPlaceHolder"
             :rules="[...urlRules, (v) => mainDomainCustomValidation(v)]"
           ></v-text-field>
+          <v-btn
+            outlined
+            class="new-training-content-by-language__button"
+            style="color: #2196f3; align-self: center; margin-bottom: 10px;"
+            :ripple="false"
+            :disabled="isCheckingMainDomainValidation"
+            @click="checkMainDomainValidation"
+          >
+            {{ isCheckingMainDomainValidation ? 'CHECKING' : 'CHECK' }}
+            <v-icon
+              v-if="isCheckingMainDomainValidation"
+              class="ml-1 loading-spin-clockwise"
+              color="#2196F3"
+              right
+              medium
+              >mdi-rotate-right
+            </v-icon>
+          </v-btn>
         </div>
+        <AlertBox
+          class="white-labeling__main-domain-alert-box"
+          icon-color="#2196F3"
+          :text="getMainDomainInformationText"
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        />
       </form-group>
       <form-group :title="labels.MainLogo" :sub-title="labels.MainLogoSubTitle">
         <k-file-upload
@@ -303,6 +327,8 @@ import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/Res
 import { getWhiteLabel } from '@/api/whitelabel'
 import WhiteLabelingDomainDialog from '@/components/Company Settings/WhiteLabelingDomainDialog'
 import { mapGetters } from 'vuex'
+import AlertBox from '@/components//AlertBox'
+
 export default {
   name: 'WhiteLabeling',
   components: {
@@ -314,7 +340,8 @@ export default {
     InputEmail,
     KFileUpload,
     FormGroup,
-    InputEntityName
+    InputEntityName,
+    AlertBox
   },
   props: {
     isCompanyConfigure: {
@@ -328,6 +355,7 @@ export default {
   data() {
     return {
       isShowDomainDialog: false,
+      isCheckingMainDomainValidation: false,
       whiteLabelingErrorMessage: false,
       whiteLabelingErrorTitle: '',
       isActionButtonDisabled: false,
@@ -351,6 +379,7 @@ export default {
         footerEulaUrl: '',
         footerCookiePolicyUrl: '',
         releaseNotesUrl: '',
+        pointingUrl: '',
         isShowReleaseVersionNumber: true,
         isShowReleaseNotes: true,
         emailTemplateLogoUrl: null,
@@ -398,6 +427,9 @@ export default {
     },
     getEmailTemplateLogo() {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
+    },
+    getMainDomainInformationText() {
+      return `A CNAME record pointing to ‘’${this.formValues?.pointingUrl}’’ should be created in your DNS for the entered domain.`
     }
   },
   watch: {
@@ -547,6 +579,16 @@ export default {
         .finally(() => {
           this.isWhiteLabelLoading = false
         })
+    },
+    checkMainDomainValidation() {
+      this.isCheckingMainDomainValidation = true
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve()
+        }, 1000)
+      }).then(() => {
+        this.isCheckingMainDomainValidation = false
+      })
     }
   }
 }
