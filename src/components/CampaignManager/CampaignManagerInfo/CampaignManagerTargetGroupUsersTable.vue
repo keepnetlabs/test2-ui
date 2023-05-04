@@ -162,7 +162,7 @@ export default {
     getUnverifiedDomainsText() {
       return `There are ${this.usersFromUnverifiedDomainsCount} active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
-      } with unverified domains in this group. Please verify the domains in the next 30 days.`
+      } with unverified domains in this group. Please verify the domains in order to send emails.`
     }
   },
   watch: {
