@@ -450,6 +450,7 @@ export default {
   },
   data() {
     return {
+      timeout: null,
       labels,
       Validations,
       step: 1,
@@ -665,6 +666,14 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     setTimezoneId() {
       if (this.isEdit || this.isDuplicate) return
       if (this.timeZones && this.companyObject) {

@@ -198,6 +198,7 @@ export default {
   },
   data() {
     return {
+      timeout: null,
       search: null,
       listData: [],
       template: null,
@@ -272,6 +273,14 @@ export default {
     this.getTemplates(true, this.templateResourceId)
   },
   methods: {
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
