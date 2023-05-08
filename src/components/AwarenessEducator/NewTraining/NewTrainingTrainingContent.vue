@@ -19,6 +19,7 @@
           :language-items="languages"
           :training-resource-id="resourceId"
           :is-removable="formData.contentByLanguage.length > 1"
+          :is-uploading="isUploading"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
           @on-remove="handleRemove(index - 1)"

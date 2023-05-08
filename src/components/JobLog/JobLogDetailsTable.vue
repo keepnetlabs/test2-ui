@@ -58,7 +58,27 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template v-slot:datatable-custom-column="{ scope, col }">
+          <template v-if="scope.column.property === 'Status'">
+            <div class="job-log-details-table__status-column">
+              <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
+                <template v-slot:activator="{ on }">
+                  <v-btn style="display: none;" />
+                  <Badge
+                    size="medium"
+                    :listeners="on"
+                    :col="col"
+                    :text="scope.row.Status"
+                    :color="getBtnStatusColor(scope.row.Status)"
+                  />
+                </template>
+                <span>{{ getErrorMessage(scope.row) }}</span>
+              </v-tooltip>
+            </div>
+          </template>
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -72,7 +92,7 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
@@ -83,10 +103,11 @@ import {
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getJobDetail } from '@/api/targetUsers'
 import AppDialog from '@/components/AppDialog'
+import Badge from '@/components/Badge'
 
 export default {
   name: 'JobLogDetailsTable',
-  components: { DataTable, AppDialog },
+  components: { DataTable, AppDialog, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -176,7 +197,7 @@ export default {
             fixed: 'right',
             hideSort: true,
             show: true,
-            type: 'badge',
+            type: 'slot',
             isEditable: true,
             isWithTooltip: true,
             filterableType: false
@@ -199,6 +220,21 @@ export default {
     this.callForData()
   },
   methods: {
+    getBtnStatusColor(status = '') {
+      return getBtnStatusColor(status)
+    },
+    getTooltipDisabilityStatus(row = {}) {
+      const message = row?.ValidationDetail ? JSON.parse(row?.ValidationDetail)?.[0]?.Message : ''
+      const result = row?.Status !== 'Error' || !message
+      return result
+    },
+    getErrorMessage(row = {}) {
+      if (row?.Status === 'Error') {
+        const message = row?.ValidationDetail ? JSON.parse(row?.ValidationDetail)?.[0]?.Message : ''
+        return message || ''
+      }
+      return ''
+    },
     callForData() {
       this.setLoading(true)
       getJobDetail(this.selectedRow.resourceId)
@@ -232,11 +268,10 @@ export default {
         .finally(this.setLoading)
     },
     getStatusName(status) {
-      if (status === 0) return 'Waiting'
-      if (status === 1) return 'Started'
-      if (status === 2) return 'Working'
-      if (status === 3) return 'Finished'
-      if (status === 4) return 'Failed'
+      if (status === 0) return 'Error'
+      if (status === 1) return 'Exists'
+      if (status === 2) return 'New'
+      if (status === 3) return 'Delete'
       return ''
     },
     getPriorityName(priority) {
