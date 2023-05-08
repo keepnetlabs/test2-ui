@@ -173,6 +173,7 @@ import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import Badge from '@/components/Badge'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   name: 'VishingTemplateSelectList',
@@ -186,6 +187,7 @@ export default {
       default: () => []
     }
   },
+  mixins: [useDebounce],
   directives: {
     'infinite-scroll': InfiniteScroll
   },
@@ -198,7 +200,6 @@ export default {
   },
   data() {
     return {
-      timeout: null,
       search: null,
       listData: [],
       template: null,
@@ -273,14 +274,6 @@ export default {
     this.getTemplates(true, this.templateResourceId)
   },
   methods: {
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    },
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
