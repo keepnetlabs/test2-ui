@@ -48,8 +48,51 @@
             hint="*Required"
             :placeholder="labels.MainDomainPlaceHolder"
             :rules="[...urlRules, (v) => mainDomainCustomValidation(v)]"
+            :error="!!mainDomainValidationError"
+            :error-messages="mainDomainValidationError"
           ></v-text-field>
+          <v-btn
+            v-if="mainDomainValidationSuccess === null"
+            outlined
+            class="new-training-content-by-language__button"
+            style="color: #2196f3; align-self: center; margin-bottom: 10px;"
+            :ripple="false"
+            :disabled="isCheckingMainDomainValidation"
+            @click="checkMainDomainValidation"
+          >
+            {{ isCheckingMainDomainValidation ? 'CHECKING' : 'CHECK' }}
+            <v-icon
+              v-if="isCheckingMainDomainValidation"
+              class="ml-1 loading-spin-clockwise"
+              color="#2196F3"
+              right
+              medium
+              >mdi-rotate-right
+            </v-icon>
+          </v-btn>
+          <v-icon
+            v-else-if="mainDomainValidationSuccess === true"
+            class="ml-4"
+            style="align-self: center; margin-bottom: 24px;"
+            color="#217124"
+            medium
+            >mdi-check-circle
+          </v-icon>
+          <v-icon
+            v-else-if="mainDomainValidationSuccess === false"
+            class="ml-4"
+            style="align-self: center; margin-bottom: 24px;"
+            color="#B83A3A"
+            medium
+            >mdi-alert
+          </v-icon>
         </div>
+        <AlertBox
+          class="white-labeling__main-domain-alert-box"
+          icon-color="#2196F3"
+          :text="getMainDomainInformationText"
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        />
       </form-group>
       <form-group :title="labels.MainLogo" :sub-title="labels.MainLogoSubTitle">
         <k-file-upload
@@ -300,9 +343,11 @@ import { scrollToComponent } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
-import { getWhiteLabel } from '@/api/whitelabel'
+import { getWhiteLabel, checkDNS } from '@/api/whitelabel'
 import WhiteLabelingDomainDialog from '@/components/Company Settings/WhiteLabelingDomainDialog'
 import { mapGetters } from 'vuex'
+import AlertBox from '@/components//AlertBox'
+
 export default {
   name: 'WhiteLabeling',
   components: {
@@ -314,7 +359,8 @@ export default {
     InputEmail,
     KFileUpload,
     FormGroup,
-    InputEntityName
+    InputEntityName,
+    AlertBox
   },
   props: {
     isCompanyConfigure: {
@@ -327,7 +373,10 @@ export default {
   },
   data() {
     return {
+      mainDomainValidationError: '',
+      mainDomainValidationSuccess: null,
       isShowDomainDialog: false,
+      isCheckingMainDomainValidation: false,
       whiteLabelingErrorMessage: false,
       whiteLabelingErrorTitle: '',
       isActionButtonDisabled: false,
@@ -351,6 +400,7 @@ export default {
         footerEulaUrl: '',
         footerCookiePolicyUrl: '',
         releaseNotesUrl: '',
+        pointingUrl: '',
         isShowReleaseVersionNumber: true,
         isShowReleaseNotes: true,
         emailTemplateLogoUrl: null,
@@ -398,11 +448,18 @@ export default {
     },
     getEmailTemplateLogo() {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
+    },
+    getMainDomainInformationText() {
+      return `A CNAME record pointing to ‘’${this.formValues?.pointingUrl}’’ should be created in your DNS for the entered domain.`
     }
   },
   watch: {
     mainDomainUrl(val) {
       this.formValues.acceptDnsRecordSettings = val === this.acceptedDnsRecordSettingsDomain
+    },
+    'formValues.mainDomainUrl'(val) {
+      this.mainDomainValidationError = ''
+      this.mainDomainValidationSuccess = null
     }
   },
   created() {
@@ -492,9 +549,9 @@ export default {
             .catch((e) => {
               if (e && e.response && e.response.status === 404) {
                 const [title, message] = e.response?.data?.validationMessages
+                this.whiteLabelingErrorTitle = title
                 this.whiteLabelingErrorMessage = message
                 this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl
-                this.whiteLabelingErrorTitle = title
                 this.toggleWhiteLabelingDomainDialog()
               } else {
                 this.callForData()
@@ -546,6 +603,25 @@ export default {
         })
         .finally(() => {
           this.isWhiteLabelLoading = false
+        })
+    },
+    checkMainDomainValidation() {
+      this.isCheckingMainDomainValidation = true
+      checkDNS({ MainDomainUrl: this.formValues.mainDomainUrl })
+        .then((response) => {
+          if (response?.data?.status === 'SUCCESS') {
+            this.mainDomainValidationError = ''
+            this.mainDomainValidationSuccess = true
+          }
+        })
+        .catch((error) => {
+          if (error?.response?.data?.validationMessages?.[0]) {
+            this.mainDomainValidationError = error.response.data.validationMessages[0]
+            this.mainDomainValidationSuccess = false
+          }
+        })
+        .finally(() => {
+          this.isCheckingMainDomainValidation = false
         })
     }
   }

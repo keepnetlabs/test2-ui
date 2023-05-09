@@ -5,6 +5,14 @@
     animation-timing-function: linear;
 }
 
+.loading-spin-clockwise {
+    animation-name: spin;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: reverse;
+}
+
 @keyframes spin {
     from {
         transform: rotate(360deg);
