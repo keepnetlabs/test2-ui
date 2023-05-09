@@ -15,6 +15,10 @@ export function getWhiteLabelByUrl(payload = {}) {
   })
 }
 
+export function checkDNS(payload = {}) {
+  return testRequest.post('/whitelabeling/check-dns', payload)
+}
+
 export function updateWhiteLabel(payload = {}, id = '', config = {}) {
   return testRequest.put(`/whitelabeling/${id}`, payload, {
     ...config,

@@ -285,7 +285,7 @@ export default {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     getUnverifiedDomainsText() {
-      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in the next 30 days.`
+      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
     getUsersFromUnverifiedDomainsCount() {
       return (
@@ -342,7 +342,7 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsers} active user(s) with verified domain(s) from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },
@@ -355,7 +355,11 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return userCountDetailResponse?.data.data?.find((row) => row.status === 'Active')?.count || 0
+      const totalActiveUsersCount =
+        userCountDetailResponse?.data.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+      return totalActiveUsersCount
     },
     getSettingsItems() {
       const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData

@@ -228,7 +228,7 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.selectedTargetGroups) {
         const { selectedTargetGroups } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) from ${selectedTargetGroups.length} group(s)`
+        text = `${this.getTotalActiveUsers} active user(s) with verified domain(s) from ${selectedTargetGroups.length} group(s)`
       }
       return text
     },
@@ -236,7 +236,7 @@ export default {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     getUnverifiedDomainsText() {
-      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in the next 30 days.`
+      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
     getUsersFromUnverifiedDomainsCount() {
       return (
@@ -248,7 +248,9 @@ export default {
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
       const totalActiveUsersCount =
-        userCountDetailResponse?.data?.data?.find((row) => row.status === 'Active')?.count || 0
+        userCountDetailResponse?.data?.data
+          ?.find((row) => row.status === 'Active')
+          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
       return totalActiveUsersCount
     },
     getEnrollmentTemplate() {
