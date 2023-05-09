@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     id="white-labeling--domain-popup"
-    icon="mdi-sync"
+    icon="mdi-alert"
     :title="title"
     title-id="text--whitelabeling-domain-popup-title"
     subtitle-id="text--whitelabeling-domain-popup-subtitle"
