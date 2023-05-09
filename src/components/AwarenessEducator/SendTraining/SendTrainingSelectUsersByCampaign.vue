@@ -110,8 +110,20 @@
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
-                <el-tabs v-model="tab" @tab-click="handleTabChange">
-                  <el-tab-pane name="email" :label="labels.JustEmail" id="send-training-email-page">
+                <ElTabs
+                  v-model="selectedScenarioTab"
+                  class="phishing-scenario-tab-container"
+                  @tab-click="callForScenarioDetail"
+                >
+                  <ElTabPane
+                    v-for="(template, index) in phishingScenarios"
+                    :key="index"
+                    :name="template.name"
+                    :label="template.name"
+                  />
+                </ElTabs>
+                <ElTabs v-model="tab" class="k-sub-tab" @tab-click="handleTabChange">
+                  <ElTabPane name="email" :label="labels.JustEmail" id="send-training-email-page">
                     <div class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
@@ -146,15 +158,15 @@
                         :html="emailTemplate"
                       />
                     </div>
-                  </el-tab-pane>
-                  <el-tab-pane
+                  </ElTabPane>
+                  <ElTabPane
                     v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
                     id="send-training-landing-page"
                   >
-                    <el-tabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
-                      <el-tab-pane
+                    <ElTabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
+                      <ElTabPane
                         v-for="(template, index) in landingPageTemplates"
                         :key="index"
                         :label="`Page ${index + 1}`"
@@ -178,8 +190,8 @@
                           <hr class="mt-2" v-if="!!template.content" />
                           <KEmailPreview v-if="!!template.content" :html="template.content" />
                         </div>
-                      </el-tab-pane>
-                    </el-tabs>
+                      </ElTabPane>
+                    </ElTabs>
                     <div v-else class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
@@ -201,8 +213,8 @@
                         :html="getSingleTemplateDetails"
                       />
                     </div>
-                  </el-tab-pane>
-                  <el-tab-pane
+                  </ElTabPane>
+                  <ElTabPane
                     :label="labels.CampaignResults"
                     name="campaign-results"
                     id="send-training-campaign-results"
@@ -216,7 +228,7 @@
                         style="margin-top: 0 !important;"
                       >
                         <KSelect
-                          v-model.trim="phishingCampaignResourceId"
+                          v-model.trim="phishingCampaignInstanceGroup"
                           id="input--campaign-manager-advanced-settings-other-settings-percent"
                           class="ml-2"
                           style="min-width: 80%;"
@@ -224,6 +236,7 @@
                           dense
                           hide-details
                           :items="phishingCampaignReportItems"
+                          @change="callForCampaignSummary"
                         />
                       </FormGroupHorizontalContent>
                     </div>
@@ -235,7 +248,7 @@
                     <div v-show="!isCampaignLoading" style="margin-top: 24px;">
                       <div
                         class="campaign-manager-target-user-groups-header"
-                        style="margin-right: 16px;"
+                        style="margin-right: 16px; flex-direction: row;"
                       >
                         <v-icon color="#000000">mdi-account-multiple</v-icon>
                         <span class="campaign-manager-target-user-groups-header__text"
@@ -255,8 +268,8 @@
                     >
                       <Pie :data="pieData" :chart-options="chartOptions" />
                     </div>
-                  </el-tab-pane>
-                </el-tabs>
+                  </ElTabPane>
+                </ElTabs>
               </div>
             </template>
             <div
@@ -301,6 +314,7 @@ import { useLoading } from '@/hooks/useLoading'
 import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 import Pie from '@/components/Common/Charts/Pie'
+import useDebounce from '@/hooks/useDebounce'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
   components: {
@@ -323,7 +337,7 @@ export default {
       type: Function
     }
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useDebounce],
   data() {
     return {
       labels,
@@ -333,11 +347,13 @@ export default {
       language: '',
       scenarioTypeItems: ['Click-Only', 'Data Submission', 'Attachment'],
       tab: '',
+      phishingScenarios: [],
       campaignItems: [],
       totalCampaignUsers: 0,
       isCampaignLoading: false,
       totalCampaignGroups: 0,
       isAttachmentBasedScenario: false,
+      selectedScenarioTab: '',
       methodTypeId: 1,
       emailTemplate: null,
       emailTemplateParams: null,
@@ -346,6 +362,7 @@ export default {
       selectedCampaign: null,
       phishingCampaignResourceId: '',
       selectedLandingPageTab: '1',
+      phishingCampaignInstanceGroup: null,
       phishingCampaignReportItems: [],
       timeout: null,
       initial: true,
@@ -486,22 +503,11 @@ export default {
       this.tab = 'email'
       this.selectedCampaign = row
       getCampaignManagerPreview(row.resourceId).then((response) => {
-        const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-        const { landingPageTemplate: landingPage, methodTypeId } = phishingScenarioPreviewDto
-        this.isAttachmentBasedScenario = methodTypeId === 3
-        this.methodTypeId = methodTypeId
-        this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
-        this.emailTemplateParams = {
-          name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
-          subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
-          fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
-          fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || ''
-        }
-        this.landingPageTemplates = landingPage?.landingPages || []
-        this.landingPageParams = {
-          name: landingPage?.name || '',
-          urlTemplate: landingPage?.urlTemplate || ''
-        }
+        const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
+        this.phishingScenarios = phishingScenarioPreviewList
+        const phishingScenarioPreviewDto = phishingScenarioPreviewList[0] || {}
+        this.selectedScenarioTab = phishingScenarioPreviewDto?.name
+        this.setActiveScenario(phishingScenarioPreviewDto || {})
         this.isCampaignLoading = true
         searchCampaignPhishingJob(this.searchCampaignReportAxiosPayload, row.resourceId)
           .then((response) => {
@@ -511,18 +517,22 @@ export default {
             const { results = [] } = data
             this.phishingCampaignReportItems = results.map((result) => ({
               text: `${result.startDate}(${result.status})`,
-              value: result.resourceId
+              value: row.instanceGroup
             }))
             if (this.phishingCampaignReportItems.length) {
-              this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
-              getCampaignJobSummary(this.phishingCampaignResourceId).then((response) => {
+              this.phishingCampaignResourceId = row.resourceId
+              this.phishingCampaignInstanceGroup = results[0].instanceGroup
+              getCampaignJobSummary(
+                this.phishingCampaignResourceId,
+                this.phishingCampaignInstanceGroup
+              ).then((response) => {
                 const { data: { data = {} } = {} } = response
                 this.$emit(EMITS.ON_ITEM_CHANGE, {
                   ...row,
                   ...data,
                   emailTemplateParams: this.emailTemplateParams,
                   landingPageParams: this.landingPageParams,
-                  methodTypeId
+                  methodTypeId: phishingScenarioPreviewDto.methodTypeId
                 })
                 this.callForCampaignSummary()
               })
@@ -533,13 +543,30 @@ export default {
           })
       })
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
+    setActiveScenario(phishingScenarioPreviewDto = {}) {
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId === 3
+      this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+      this.emailTemplateParams = {
+        name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+        fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+        fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || '',
+        subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
+        attachment: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+          ? {
+              name: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+            }
+          : null
       }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
+      this.landingPageTemplates =
+        phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      this.landingPageParams = {
+        name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
+        description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
+        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
+      }
+    },
+    callForScenarioDetail(event) {
+      this.setActiveScenario(this.phishingScenarios[event.index])
     },
     handleTabChange({ label }) {
       this.selectedLandingPageTab = '1'
@@ -556,10 +583,11 @@ export default {
             const { results = [] } = data
             this.phishingCampaignReportItems = results.map((result) => ({
               text: `${result.startDate}(${result.status})`,
-              value: result.resourceId
+              value: result.instanceGroup
             }))
             if (this.phishingCampaignReportItems.length) {
-              this.phishingCampaignResourceId = this.phishingCampaignReportItems[0].value
+              this.phishingCampaignResourceId = this.selectedCampaign.resourceId
+              this.phishingCampaignInstanceGroup = results[0].instanceGroup
               this.callForCampaignSummary()
             }
           })
@@ -569,7 +597,8 @@ export default {
       }
     },
     callForCampaignSummary() {
-      getCampaignJobSummary(this.phishingCampaignResourceId)
+      this.isCampaignLoading = true
+      getCampaignJobSummary(this.phishingCampaignResourceId, this.phishingCampaignInstanceGroup)
         .then((response) => {
           const { data: { data = {} } = {} } = response
           this.totalCampaignUsers = data?.campaignInfo?.totalTargetUserCount || 0
@@ -661,7 +690,10 @@ export default {
         .finally(() => {
           this.isCampaignLoading = false
         })
-      getCampaignJobSummaryTargetGroups(this.phishingCampaignResourceId).then((response) => {
+      getCampaignJobSummaryTargetGroups(
+        this.phishingCampaignResourceId,
+        this.phishingCampaignInstanceGroup
+      ).then((response) => {
         this.totalCampaignGroups = response?.data?.data?.groups?.length || 0
       })
     }

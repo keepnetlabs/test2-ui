@@ -24,9 +24,10 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     filterableType: 'select',
     filterableItems: [
+      { text: 'Multiple Method', value: 'Multiple Method' },
       { text: 'Click Only', value: 'Click-Only' },
       { text: 'Data Submission', value: 'Data Submission' },
       { text: 'Attachment', value: 'Attachment' }

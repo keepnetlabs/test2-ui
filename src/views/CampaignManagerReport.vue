@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
         />
@@ -106,6 +107,9 @@ export default {
     id() {
       return this.$route?.params?.id
     },
+    instanceGroup() {
+      return this.$route?.params?.instanceGroup
+    },
     getPhishingScenarioName() {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
@@ -131,36 +135,40 @@ export default {
       })
     },
     setSubmittedDataTabLabel() {
-      const id = this.$route?.params?.id
-      if (id) {
-        getCampaignJobSummary(this.$route?.params?.id)
-          .then((response) => {
-            if (response?.data?.data?.scenarioInfo?.methodTypeId === 1) {
-              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-              this.tabItems.splice(tabIndex, 1)
-            } else if (response?.data?.data?.scenarioInfo?.methodTypeId === 3) {
-              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-              if (tabIndex !== -1) {
-                this.tabItems[tabIndex] = {
-                  label: labels.OpenedAttachment,
-                  name: labels.OpenedAttachment,
-                  id: 'campaign-manager-report-opened-attachment-content',
-                  component: CampaignManagerReportOpenedAttachment,
-                  isVisible: this.$store.getters[
-                    'permissions/getCampaignReportsOpenedAttachmentPermissions'
-                  ]
-                }
-              }
-              const clickedTabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
-              if (clickedTabIndex !== -1) {
-                this.tabItems.splice(clickedTabIndex, 1)
+      if (!this.id || !this.instanceGroup) return
+      getCampaignJobSummary(this.id, this.instanceGroup)
+        .then((response) => {
+          const firstScenario = response?.data?.data?.scenarios[0]
+          console.log(
+            'firstScenario.scenarioInfo?.methodTypeId',
+            firstScenario.scenarioInfo?.methodTypeId
+          )
+          if (!firstScenario) return
+          if (firstScenario.scenarioInfo?.methodTypeId === 1) {
+            const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+            this.tabItems.splice(tabIndex, 1)
+          } else if (firstScenario.scenarioInfo?.methodTypeId === 3) {
+            const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+            if (tabIndex !== -1) {
+              this.tabItems[tabIndex] = {
+                label: labels.OpenedAttachment,
+                name: labels.OpenedAttachment,
+                id: 'campaign-manager-report-opened-attachment-content',
+                component: CampaignManagerReportOpenedAttachment,
+                isVisible: this.$store.getters[
+                  'permissions/getCampaignReportsOpenedAttachmentPermissions'
+                ]
               }
             }
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
-      }
+            const clickedTabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+            if (clickedTabIndex !== -1) {
+              this.tabItems.splice(clickedTabIndex, 1)
+            }
+          }
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     }
   }
 }

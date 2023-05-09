@@ -37,10 +37,10 @@
       @refreshAction="callForData"
       @downloadEvent="exportCampaignManagerItemList"
     >
-      <template v-slot:datatable-custom-column="{ scope, col }">
+      <template #datatable-custom-column="{ scope, col }">
         <div class="campaign-manager-item-table__status-column">
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <v-btn style="display: none;" />
               <Badge
                 v-bind="getStatusBadgeProps(scope.row.status)"
@@ -66,6 +66,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          :campaign-resource-id="item.resourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
@@ -95,7 +96,7 @@ import CampaignManagerItemRowActions from '@/components/CampaignManager/Campaign
 import {
   deletePhishingCampaignJob,
   exportCampaignManagerItem,
-  launchPhishingCampaign,
+  launchPhishingCampaignInstanceGroup,
   searchCampaignPhishingJob,
   stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
@@ -260,7 +261,7 @@ export default {
     },
     handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      deletePhishingCampaignJob(item.resourceId)
+      deletePhishingCampaignJob(this.item.resourceId, item.instanceGroup)
         .then(() => {
           this.$refs.refTable.unSelectRow(item)
           this.callForData()
@@ -271,12 +272,12 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(row.resourceId).then(() => {
+      stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaign(row.resourceId).then(() => {
+      launchPhishingCampaignInstanceGroup(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
@@ -288,9 +289,6 @@ export default {
     },
     getStatusBadgeProps(status = '') {
       return getStatusBadgeProps(status)
-    },
-    getDataTableFieldLabel(status = '') {
-      return getDataTableFieldLabel(status)
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage

@@ -118,7 +118,8 @@ export default {
       this.setLoading(true)
       getCampaignManagerEmailTemplatePreviewContent(
         this.formData.resourceId,
-        this.formData.jobResourceId
+        this.formData.campaignResourceId,
+        this.formData.instanceGroup
       )
         .then((response) => {
           const {

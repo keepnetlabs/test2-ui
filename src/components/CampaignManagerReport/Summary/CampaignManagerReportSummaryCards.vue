@@ -56,7 +56,7 @@ export default {
       type: Object
     },
     method: {
-      type: Number
+      type: [Number, String]
     }
   },
   data() {

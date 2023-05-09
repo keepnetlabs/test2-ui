@@ -8,7 +8,7 @@
     confirm-button-id="btn-save--campaign-manager-new-instance-modal"
     cancel-button-id="btn-cancel--campaign-manager-new-instance-modal"
     :confirm-button-text="labels.Launch"
-    :confirm-button-style="{ width: '80px' }"
+    :confirm-button-style="{ width: '90px' }"
     :save-disable="isActionButtonDisabled"
     @closeOverlay="closeOverlay"
     @submit="handleSubmit"
@@ -22,47 +22,8 @@
         class-name="campaign-manager__target-groups"
         :title="labels.TargetGroups"
         :sub-title="labels.TargetGroupsSub"
-      >
-        <KSelect
-          v-show="false"
-          v-model.trim="formValues.targetGroupResourceIds"
-          type="combobox"
-          id="input--campaign-target-user-groups"
-          class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
-          outlined
-          multiple
-          dense
-          auto-select-first
-          small-chips
-          deletable-chips
-          persistent-hint
-          hint="*Required"
-          placeholder="Select groups"
-          :loading="isTargetGroupSearchLoading"
-          :items="targetGroupItems"
-          :rules="rules.select"
-          :slots="{ progress: true }"
-          @input="handleTargetGroupsResourceIdsChange"
-          @update:search-input="handleSearchInputChange"
-          @focus="handleFocusOfTargetGroupsInput"
-          @focusout="handleFocusOutOfTargetGroupsInput"
-        >
-          <template #progress>
-            <KSelectLoading v-show="isTargetGroupSearchLoading && isTargetGroupFocused" />
-          </template>
-        </KSelect>
-        <v-btn
-          v-show="false"
-          text
-          class="campaign-manager__close-advanced-search"
-          color="#2196F3"
-          @click="toggleShowAdvancedSearch"
-        >
-          {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
-        </v-btn>
-      </FormGroup>
+      />
       <CampaignManagerTargetGroups
-        v-show="isShowAdvancedSearch"
         ref="refCampaignManagerTargetGroup"
         class="mt-2"
         :selected-target-groups="formValues.targetGroupResourceIds"
@@ -150,7 +111,7 @@
             id="input--campaign-manager-advanced-settings-exclude-from-reports"
             color="#2196f3"
           >
-            <template #label> Exclude from reports (Test campaign)</template>
+            <template #label> Exclude this campaign’s statistics from all generic reports</template>
           </v-checkbox>
         </div>
       </FormGroup>
@@ -164,14 +125,13 @@ import labels from '@/model/constants/labels'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import KSelectLoading from '@/components/KSelectLoading'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { launchPhishingCampaign } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
-import { isDifferent, getTimeZone } from '@/utils/functions'
+import { isDifferent, getTimeZone, getDefaultAxiosPayload } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import useDebounce from '@/hooks/useDebounce'
 
@@ -193,7 +153,6 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     KSelect,
-    KSelectLoading,
     CampaignManagerTargetGroups,
     CustomError,
     InputDate
@@ -225,34 +184,13 @@ export default {
       isActionButtonDisabled: false,
       initial: true,
       responseOfTargetGroupsItems: {},
-      isShowAdvancedSearch: true,
       defaultTargetGroups: [],
       targetGroupItems: [],
       radioItems: [
         { text: 'Send now', value: '1' },
         { text: 'Save for later', value: '2' }
       ],
-      axiosPayloadOfTargetGroups: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
       rules: {
         select: [
           (v) => !!v.length || labels.Required,
@@ -382,67 +320,6 @@ export default {
         )
       }
     },
-    handleSearchInputChange(val) {
-      this.debounce(() => {
-        if (
-          (!this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
-            val === null) ||
-          (this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
-            this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0].Value === val)
-        )
-          return
-        this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems = [
-          { FieldName: 'Name', Operator: 'Contains', Value: val }
-        ]
-        this.callForTargetGroups()
-      }, 500)
-    },
-    handleFocusOfTargetGroupsInput() {
-      this.isTargetGroupFocused = true
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
-            document
-              .querySelector('#input--campaign-target-user-groups .k-select__menu')
-              .addEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
-    handleScroll(
-      e,
-      callback = this.callForTargetGroups,
-      axiosPayload = this.axiosPayloadOfTargetGroups
-    ) {
-      const { scrollTop, scrollHeight, offsetHeight } = e.target
-      if (
-        scrollTop - (scrollHeight - offsetHeight) < 10 &&
-        scrollTop - (scrollHeight - offsetHeight) > -10
-      ) {
-        axiosPayload.pageSize += 10
-        this.debounce(() => {
-          callback()
-        }, 500)
-      }
-    },
-    handleFocusOutOfTargetGroupsInput() {
-      this.isTargetGroupFocused = false
-      if (this.inputTimeout) {
-        clearTimeout(this.inputTimeout)
-      }
-      this.inputTimeout = setTimeout(() => {
-        this.$nextTick(() => {
-          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
-            document
-              .querySelector('#input--campaign-target-user-groups .k-select__menu')
-              .removeEventListener('scroll', this.handleScroll)
-          }
-        })
-      }, 250)
-    },
     handleTableSelectionChange(items) {
       this.formValues.targetGroupResourceIds = items
         .filter((item) => item)
@@ -451,9 +328,6 @@ export default {
           value: item.value || item.resourceId,
           extraDatas: null
         }))
-    },
-    toggleShowAdvancedSearch() {
-      this.isShowAdvancedSearch = !this.isShowAdvancedSearch
     },
     setTargetGroupLoading(val = false) {
       this.isTargetGroupLoading = val

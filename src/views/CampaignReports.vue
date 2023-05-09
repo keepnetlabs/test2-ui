@@ -40,7 +40,7 @@ export default {
     },
     handleDeleteItem(row = {}) {
       this.setDeleteDialogActionButtonDisabled(true)
-      deletePhishingCampaignJob(row.resourceId)
+      deletePhishingCampaignJob(row.phishingCampaignResourceId, row.instanceGroup)
         .then(() => {
           this.$refs.refTable.$refs.refTable.unSelectRow(row)
           this.$refs.refTable.callForData()
@@ -57,10 +57,10 @@ export default {
       this.selectedRow = row
       this.toggleShowDeleteDialog()
     },
-    handleViewReport(row) {
+    handleViewReport(row = {}) {
       this.$router.push({
         name: 'Campaign Report',
-        params: { id: row.resourceId }
+        params: { id: row.phishingCampaignResourceId, instanceGroup: row.instanceGroup }
       })
     }
   }

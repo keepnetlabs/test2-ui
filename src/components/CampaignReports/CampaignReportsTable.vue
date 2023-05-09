@@ -4,6 +4,7 @@
     selectable
     filterable
     options
+    row-key="customKey"
     is-server-side
     :id="CONSTANTS.id"
     :loading="isLoading"
@@ -54,15 +55,36 @@
           </v-tooltip>
         </div>
       </template>
+      <template v-if="scope.column.property === 'method'">
+        <VTooltip v-if="scope.row[col.property] === METHOD_TYPES.MULTIPLE_METHOD" bottom>
+          <template #activator="{ on }">
+            <span v-on="on">
+              {{ scope.row[col.property] }}
+            </span>
+          </template>
+          <div
+            v-for="(methodWrapper, index) in getMethodDetail(scope.row.methodDetail)"
+            :key="index"
+          >
+            {{ methodWrapper.method }} ({{ methodWrapper.count }})
+          </div>
+        </VTooltip>
+        <span v-else> {{ scope.row[col.property] }}</span>
+      </template>
     </template>
   </DataTable>
 </template>
 
 <script>
 import DataTable from '@/components/DataTable'
-import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
+import {
+  getDefaultAxiosPayload,
+  getDataTableFieldLabel,
+  createRandomCryptStringNumber
+} from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS, getStatusBadgeProps } from './utils'
+import { METHOD_TYPES } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
 import { mapGetters } from 'vuex'
@@ -92,6 +114,7 @@ export default {
         ascending: 'ascending'
       },
       columns: COLUMNS,
+      METHOD_TYPES,
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -170,6 +193,14 @@ export default {
     this.callForData()
   },
   methods: {
+    getMethodDetail(methodDetail = {}) {
+      if (!methodDetail) return {}
+      try {
+        return JSON.parse(methodDetail)
+      } catch (e) {
+        return {}
+      }
+    },
     getChartOptionsForRow(row) {
       if (row.method === 'Click-Only') {
         return {
@@ -186,7 +217,7 @@ export default {
         }
       }
 
-      if (row.method === 'Data Submission') {
+      if (row.method === 'Data Submission' || row.method === 'Multiple Method') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
@@ -225,11 +256,13 @@ export default {
             return {
               ...row,
               campaignStatus,
+              customKey: `key-${createRandomCryptStringNumber()}`,
               progress:
                 Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) ||
                 0
             }
           })
+          console.log(this.tableData)
         })
         .finally(this.setLoading)
     },

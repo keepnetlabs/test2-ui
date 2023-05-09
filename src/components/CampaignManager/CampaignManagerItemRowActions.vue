@@ -71,6 +71,9 @@ export default {
     },
     scope: {
       type: Object
+    },
+    campaignResourceId: {
+      type: String
     }
   },
   data() {
@@ -162,7 +165,7 @@ export default {
       ) {
         return this.$router.push({
           name: 'Campaign Report',
-          params: { id: this.scope.row.resourceId }
+          params: { id: this.campaignResourceId, instanceGroup: this.scope.row.instanceGroup }
         })
       }
       let eventName = act.action
