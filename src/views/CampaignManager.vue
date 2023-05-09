@@ -54,9 +54,6 @@
       @on-preview="handleItemOnPreview"
       @on-delete="handleItemOnDelete"
       @on-duplicate="handleItemOnDuplicate"
-      @on-pause="handleOnPause"
-      @on-run="handleOnRun"
-      @on-stop="handleStop"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
     />
@@ -81,10 +78,7 @@ import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignMa
 import {
   bulkDeleteCampaignReports,
   deleteCampaignManager,
-  getCampaignManagerFormDetails,
-  pausePhishingCampaignJob,
-  resumePhishingCampaignJob,
-  stopPhishingCampaignJob
+  getCampaignManagerFormDetails
 } from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
@@ -240,26 +234,12 @@ export default {
       this.isDuplicate = true
       this.toggleAddCampaignManagerModal()
     },
-    handleOnPause(row = {}) {
-      pausePhishingCampaignJob(row.resourceId).then(() => {
-        this.$refs.campaignManagerParentTable.callForData()
-      })
-    },
-    handleOnRun(row = {}) {
-      resumePhishingCampaignJob(row.resourceId).then(() => {
-        this.$refs.campaignManagerParentTable.callForData()
-      })
-    },
-    handleStop(row = {}) {
-      stopPhishingCampaignJob(row.resourceId).then(() => {
-        this.$refs.campaignManagerParentTable.callForData()
-      })
-    },
     handleLaunch(row = {}) {
       this.launchResourceId = row.resourceId
       this.toggleShowLaunchDialog()
     },
     toggleShowPreviewDialog() {
+      if (this.isShowPreviewDialog) this.selectedRow = null
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleShowDeleteDialog() {

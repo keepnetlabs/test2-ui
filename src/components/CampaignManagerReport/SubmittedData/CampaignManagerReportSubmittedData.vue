@@ -21,6 +21,7 @@
       ref="refTable"
       class="mt-6"
       :id="id"
+      :instance-group="instanceGroup"
       :password-complexities="getPasswordComplexities"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
@@ -47,6 +48,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     },
     phishingScenarioName: {
       type: String

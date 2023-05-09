@@ -29,24 +29,23 @@
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
-          <div class="landingPagePreview-content--search">
+          <div class="landingPagePreview-content--search px-6 py-6">
             <div class="d-flex justify-space-between">
               <div class="d-flex">
                 <div>
                   <v-text-field
-                    @mouseover.native="hover = true"
-                    placeholder="Search"
-                    outlined
-                    class="filter-field filter-field-scenarios search-wrapper__search-filter"
                     v-model.trim="search"
-                    hide-details
-                    prepend-inner-icon="mdi-magnify"
                     style="
                       max-width: 328px;
                       min-width: 328px;
                       width: 100%;
                       padding-right: 4px !important;
                     "
+                    placeholder="Search"
+                    outlined
+                    class="filter-field filter-field-scenarios search-wrapper__search-filter"
+                    hide-details
+                    prepend-inner-icon="mdi-magnify"
                   ></v-text-field>
                 </div>
                 <div>
@@ -147,7 +146,11 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane pt-4" :style="{ flexGrow: 1 }">
-              <el-tabs v-if="landingPageTemplates.length > 1" v-model="selectedTab">
+              <el-tabs
+                v-if="landingPageTemplates.length > 1"
+                v-model="selectedTab"
+                class="phishing-scenario-tab-container"
+              >
                 <el-tab-pane
                   v-for="(template, index) in landingPageTemplates"
                   :key="index"

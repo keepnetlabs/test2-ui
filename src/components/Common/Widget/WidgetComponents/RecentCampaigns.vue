@@ -17,7 +17,11 @@
                 v-if="value"
                 :id="`text--recent-campaigns-name-${rowIndex}`"
                 class="k-widget-list__item cursor-pointer"
-                @click="$router.push(`/reports/campaign-reports/campaign-report/${row.resourceId}`)"
+                @click="
+                  $router.push(
+                    `/reports/campaign-reports/campaign-report/${row.resourceId}/${row.instanceGroup}`
+                  )
+                "
               >
                 {{ value }}
               </span>

@@ -56,6 +56,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     }
   },
   data() {
@@ -117,7 +120,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserAttachmentOpened(this.axiosPayload, this.id)
+      searchCampaignJobUserAttachmentOpened(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {
@@ -142,15 +145,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserAttachmentOpened(payload, this.id).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Opened-Attachment.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        exportCampaignJobUserAttachmentOpened(payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Report-Opened-Attachment.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

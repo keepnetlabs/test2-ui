@@ -312,7 +312,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/reports/campaign-reports/campaign-report/:id',
+          path: '/reports/campaign-reports/campaign-report/:id/:instanceGroup',
           name: 'Campaign Report',
           component: CampaignManagerReport,
           meta: {

@@ -59,6 +59,9 @@ export default {
     },
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     }
   },
   data() {
@@ -75,14 +78,14 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      resendPhishingCampaignToUsers({ Types: types }, this.id).finally(() => {
+      resendPhishingCampaignToUsers({ Types: types }, this.id, this.instanceGroup).finally(() => {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
     },
     handleDownloadReport() {
       this.isDownloadReportDisabled = true
-      exportPhishingCampaignJob(this.id)
+      exportPhishingCampaignJob(this.id, this.instanceGroup)
         .then((response) => {
           const { data } = response
           if (response.status === 200) {

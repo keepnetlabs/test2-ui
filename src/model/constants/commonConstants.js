@@ -171,6 +171,7 @@ export const PROPERTY_STORE = {
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   EMAIL_DELIVERY: 'emailDelivery',
+  SCENARIO_COUNT: 'scenarioCount',
   AUDIENCE: 'audience',
   TRAINING_NAME: 'trainingName',
   START_DATE: 'startDate',

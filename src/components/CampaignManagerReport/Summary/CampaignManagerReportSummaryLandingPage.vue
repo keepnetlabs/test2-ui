@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     class="mt-4"
     detailable
-    icon="mdi-application"
+    icon="$domain"
     detailable-button-id="btn-preview--campaign-report-landing-page-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
@@ -154,7 +154,7 @@ export default {
         if (fd?.landingPageTemplates) {
           this.templates = fd.landingPageTemplates
         } else if (fd?.resourceId && fd?.jobResourceId) {
-          this.callForTemplate(fd.resourceId, fd.jobResourceId)
+          this.callForTemplate(fd.resourceId, fd.jobResourceId, fd.instanceGroup)
         }
       },
       deep: true,
@@ -162,11 +162,11 @@ export default {
     }
   },
   methods: {
-    callForTemplate(resourceId, jobResourceId) {
+    callForTemplate(resourceId = '', jobResourceId = '', instanceGroup = '') {
       if (this.isFetchingSummary) {
         this.setLoading(true)
       }
-      getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId)
+      getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId, instanceGroup)
         .then((response) => {
           const {
             data: { data }

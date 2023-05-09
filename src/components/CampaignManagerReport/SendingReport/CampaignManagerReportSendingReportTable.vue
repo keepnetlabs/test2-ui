@@ -122,6 +122,9 @@ export default {
     },
     lastSendingStatusItems: {
       type: Array
+    },
+    instanceGroup: {
+      type: [String, Number]
     }
   },
   data() {
@@ -264,7 +267,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserSendingReport(this.axiosPayload, this.id)
+      searchCampaignJobUserSendingReport(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {
@@ -310,15 +313,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserSendingReport(payload, this.id).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Sending.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        exportCampaignJobUserSendingReport(payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Report-Sending.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
