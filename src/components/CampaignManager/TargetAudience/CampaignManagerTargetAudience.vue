@@ -12,7 +12,7 @@
       :is-valid="isTargetGroupsValid"
       :error-message="getTargetGroupErrorMessage"
     />
-    <FormGroup style="max-width: 640px;" :title="labels.LimitRecipients">
+    <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
       <div>
         <VCheckbox
           v-model="formData.sendOnlyActiveUsers"
@@ -79,6 +79,10 @@ export default {
   name: 'CampaignManagerTargetAudience',
   components: { KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
   props: {
+    showCheckboxes: {
+      type: Boolean,
+      default: true
+    },
     selectedTargetGroupsMapped: {
       type: Array,
       default: () => []

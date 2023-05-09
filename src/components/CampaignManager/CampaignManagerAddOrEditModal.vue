@@ -74,6 +74,8 @@
             <CampaignManagerPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              :campaign-manager-resource-id="getCampaignResourceId"
+              :is-edit="isEdit"
               :languages="languageOptions"
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
               :is-valid="isPhishingScenariosValid"
@@ -222,6 +224,9 @@ export default {
     }
   },
   computed: {
+    getCampaignResourceId() {
+      return this.selectedRow?.resourceId || ''
+    },
     getTitle() {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
@@ -291,7 +296,7 @@ export default {
       }
     },
     getDefaultValuesOfPhishingScenarios() {
-      return this?.selectedRowFormData?.phishingScenario || []
+      return this?.selectedRowFormData?.phishingScenarios || []
     },
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
@@ -365,7 +370,7 @@ export default {
       this.initialFormValues = { ...this.initialFormValues, ...values }
     },
     callForData() {
-      getCampaignManager(this.selectedRow.resourceId).then((response) => {
+      getCampaignManager(this.getCampaignResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
@@ -511,7 +516,7 @@ export default {
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {
-            updateCampaignManager(this.selectedRow.resourceId, payload)
+            updateCampaignManager(this.getCampaignResourceId, payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })

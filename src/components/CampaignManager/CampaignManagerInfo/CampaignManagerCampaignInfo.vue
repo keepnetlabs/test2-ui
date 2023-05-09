@@ -104,7 +104,7 @@
         >Days</span
       >
     </FormGroup>
-    <FormGroup :title="labels.MarkAsTest">
+    <FormGroup v-if="showMarkAsTest" :title="labels.MarkAsTest">
       <div>
         <v-checkbox
           v-model="formData.excludeFromReports"
@@ -148,6 +148,10 @@ export default {
       default: true
     },
     showDuration: {
+      type: Boolean,
+      default: true
+    },
+    showMarkAsTest: {
       type: Boolean,
       default: true
     }

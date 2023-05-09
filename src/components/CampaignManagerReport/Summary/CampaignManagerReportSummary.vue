@@ -4,6 +4,7 @@
       :phishing-scenario-name="phishingScenarioName"
       :resend-dialog-items="getResendDialogItems"
       :id="id"
+      :instance-group="instanceGroup"
     />
     <CampaignManagerReportSummaryCards
       :method="getScenarioMethod"
@@ -24,7 +25,32 @@
         :isLoading="isLoading"
       />
     </div>
-    <div class="campaign-manager-report-summary__general-info mt-4"></div>
+    <div class="my-6">
+      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+      <VTooltip v-if="phishingScenarios.length > 5" bottom>
+        <template #activator="{ on }">
+          <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
+            >Total {{ phishingScenarios.length }} Scenarios</span
+          >
+        </template>
+        <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
+          {{ methodWrapper.method }} ({{ methodWrapper.count }})
+        </div>
+      </VTooltip>
+    </div>
+    <ElTabs
+      v-if="phishingScenarios.length"
+      v-model="selectedScenarioTab"
+      class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
+      @tab-click="setScenarioDetail"
+    >
+      <ElTabPane
+        v-for="(template, index) in phishingScenarios"
+        :key="index"
+        :name="template.scenarioInfo.name"
+        :label="template.scenarioInfo.name"
+      />
+    </ElTabs>
     <CampaignManagerReportSummaryEmail
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading"
@@ -62,6 +88,9 @@ export default {
     id: {
       type: String
     },
+    instanceGroup: {
+      type: [Number, String]
+    },
     phishingScenarioName: {
       type: String
     }
@@ -69,6 +98,8 @@ export default {
   data() {
     return {
       targetGroups: [],
+      selectedScenarioTab: '',
+      activeScenarioIndex: 0,
       campaignSummary: {},
       interval: null,
       chartLabels: [
@@ -81,18 +112,52 @@ export default {
     }
   },
   computed: {
+    getMethodDetail() {
+      const mappedObj = this.phishingScenarios.reduce(
+        (acc, pScenario) => {
+          const method = methods[pScenario.scenarioInfo.methodTypeId - 1]?.text
+          acc[method] += 1
+          return acc
+        },
+        {
+          'Click-Only': 0,
+          'Data Submission': 0,
+          Attachment: 0
+        }
+      )
+      const mappedArr = []
+      Object.keys(mappedObj).forEach((key) => {
+        if (mappedObj[key] > 0) {
+          mappedArr.push({
+            method: key,
+            count: mappedObj[key]
+          })
+        }
+      })
+      return mappedArr
+    },
+    phishingScenarios() {
+      return this?.campaignSummary?.scenarios || []
+    },
+    getActiveScenario() {
+      return this.phishingScenarios[this.activeScenarioIndex] || {}
+    },
     getScenarioMethod() {
-      return this.campaignSummary?.scenarioInfo?.methodTypeId
+      console.log(
+        'this.getActiveScenario?.scenarioInfo?.methodTypeId',
+        this.getActiveScenario?.scenarioInfo?.methodTypeId
+      )
+      return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     isAttachment() {
-      return this.campaignSummary?.scenarioInfo?.methodTypeId === 3 || false
+      return this.getScenarioMethod === 3 || false
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const { languageShortCode = 'EN' } = this.campaignSummary?.scenarioInfo || {
+      const { languageShortCode = 'EN' } = this.getActiveScenario?.scenarioInfo || {
         languageShortCode: 'EN'
       }
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
@@ -132,13 +197,13 @@ export default {
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
       const {
-        emailDeliveryStartDate = '01/01/1970',
-        emailDeliveryEndDate = '01/01/1970',
+        startDate = '01/01/1970',
+        endDate = '01/01/1970',
         emailDeliveryDuration = 0
       } = campaignInfo
       return {
-        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
-        Duration: `${emailDeliveryDuration}`,
+        'Delivery Start - End': `${startDate} - ${endDate}`,
+        Duration: `${emailDeliveryDuration || 0}`,
         'Delivery Status': ''
       }
     },
@@ -257,14 +322,12 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.campaignSummary || {
+      const { emailTemplateInfo = {} } = this.getActiveScenario || {
         emailTemplateInfo: {}
       }
-
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
-
       const {
         name,
         difficultyResourceId,
@@ -290,12 +353,13 @@ export default {
                   name: phishingFileName
                 }
               : null,
-            jobResourceId: this.id
+            campaignResourceId: this.id,
+            instanceGroup: this.instanceGroup
           }
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.campaignSummary || {}
+      const { landingPageTemplateInfo = {} } = this.getActiveScenario || {}
       const {
         name,
         urlTemplate,
@@ -312,7 +376,8 @@ export default {
             method: methods[methodTypeId - 1].text,
             difficulty: difficulties[difficultyTypeId - 1].text,
             resourceId,
-            jobResourceId: this.id
+            jobResourceId: this.id,
+            instanceGroup: this.instanceGroup
           }
         : {}
     }
@@ -334,9 +399,13 @@ export default {
       if (isUseLoading) {
         this.setLoading(true)
       }
-      getCampaignJobSummary(this.id)
+      getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.campaignSummary = response?.data?.data
+          if (this?.campaignSummary?.scenarios?.length) {
+            this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].scenarioInfo?.name
+          }
+          console.log('this.campaignSummary', this.campaignSummary)
           this.$store.dispatch(
             'common/setActivePageRouterName',
             this.campaignSummary?.phishingCampaignName || ''
@@ -347,9 +416,12 @@ export default {
             this.setLoading(false)
           }
         })
-      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
+      getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
         this.targetGroups = response?.data?.data?.groups || []
       })
+    },
+    setScenarioDetail(event = {}) {
+      this.activeScenarioIndex = parseInt(event.index, 8)
     }
   }
 }

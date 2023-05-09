@@ -54,6 +54,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     }
   },
   data() {
@@ -105,7 +108,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserNoResponse(this.axiosPayload, this.id)
+      searchCampaignJobUserNoResponse(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {
@@ -131,7 +134,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserNoResponse(payload, this.id).then((response) => {
+        exportCampaignJobUserNoResponse(payload, this.id, this.instanceGroup).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

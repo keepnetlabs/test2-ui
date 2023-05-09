@@ -5,7 +5,15 @@
       :show-duration="false"
       :show-phishing-scenarios="false"
       :show-schedule="false"
+      :show-mark-as-test="false"
       @initialFormValues="getInitialFormValues"
+    />
+    <CampaignManagerTargetAudience
+      ref="refCampaignManagerTargetAudience"
+      :show-checkboxes="false"
+      :selected-target-groups.sync="selectedTargetGroups"
+      :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
+      :form-details="formDetails"
     />
     <div>
       <v-checkbox
@@ -58,10 +66,11 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience.vue'
 
 export default {
   name: 'PhishingScenariosFastLaunchStep1',
-  components: { KSelect, CampaignManagerCampaignInfo },
+  components: { CampaignManagerTargetAudience, KSelect, CampaignManagerCampaignInfo },
   props: {
     formDetails: {
       type: Object
@@ -71,6 +80,8 @@ export default {
     return {
       labels,
       initialFormValues: {},
+      selectedTargetGroups: [],
+      selectedTargetGroupsMapped: [],
       formData: {
         excludeFromReports: false,
         sendRandomlyUsers: false,

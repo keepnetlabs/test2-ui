@@ -70,9 +70,12 @@
               {{ scope.row[col.property] }}
             </span>
           </template>
-          <span v-for="methodWrapper in scope.row.methodDetail" :key="methodWrapper.method">
+          <div
+            v-for="(methodWrapper, index) in getMethodDetail(scope.row.methodDetail)"
+            :key="index"
+          >
             {{ methodWrapper.method }} ({{ methodWrapper.count }})
-          </span>
+          </div>
         </v-tooltip>
         <span v-else> {{ scope.row[col.property] }}</span>
       </template>
@@ -85,9 +88,6 @@
         @on-preview="handlePreview"
         @on-delete="handleDelete"
         @on-duplicate="handleDuplicate"
-        @on-pause="handlePause"
-        @on-run="handleRun"
-        @on-stop="handleStop"
         @on-launch="handleLaunch"
       />
     </template>
@@ -119,9 +119,6 @@ const EMITS = {
   ON_PREVIEW: 'on-preview',
   ON_DELETE: 'on-delete',
   ON_DUPLICATE: 'on-duplicate',
-  ON_PAUSE: 'on-pause',
-  ON_RUN: 'on-run',
-  ON_STOP: 'on-stop',
   ON_LAUNCH: 'on-launch'
 }
 
@@ -194,14 +191,12 @@ export default {
             id: 'btn-preview--row-actions-campaign-manager',
             icon: 'mdi-eye',
             action: 'on-preview'
-            // disabled: !this.$store.getters['permissions/getCampaignManagerParentPreviewPermissions']
           },
           {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-campaign-manager',
             icon: 'mdi-content-copy',
             action: 'on-duplicate'
-            // disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
           },
           {
             name: labels.Delete,
@@ -272,6 +267,14 @@ export default {
           .finally(this.setLoading)
       }
     },
+    getMethodDetail(methodDetail = {}) {
+      if (!methodDetail) return {}
+      try {
+        return JSON.parse(methodDetail)
+      } catch (e) {
+        return {}
+      }
+    },
     setLoading(flag = false) {
       this.$emit('update:is-loading', flag)
     },
@@ -316,15 +319,6 @@ export default {
     },
     handleDuplicate(row) {
       this.$emit(EMITS.ON_DUPLICATE, row)
-    },
-    handlePause(row) {
-      this.$emit(EMITS.ON_PAUSE, row)
-    },
-    handleRun(row) {
-      this.$emit(EMITS.ON_RUN, row)
-    },
-    handleStop(row) {
-      this.$emit(EMITS.ON_STOP, row)
     },
     handleLaunch(row) {
       this.$emit(EMITS.ON_LAUNCH, row)

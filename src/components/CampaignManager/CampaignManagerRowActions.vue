@@ -142,11 +142,7 @@ export default {
   methods: {
     handleItemClick(act = {}) {
       let eventName = ''
-      if (act.action === ACTION_STATUSES.RUNNING) {
-        eventName = 'on-pause'
-      } else if (act.action === ACTION_STATUSES.PAUSE) {
-        eventName = 'on-run'
-      } else if (
+      if (
         [ACTION_STATUSES.COMPLETE, ACTION_STATUSES.IDLE, ACTION_STATUSES.CANCEL].includes(
           act.action
         )

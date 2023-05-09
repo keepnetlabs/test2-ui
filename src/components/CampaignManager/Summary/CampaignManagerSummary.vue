@@ -1,11 +1,6 @@
 <template>
   <div class="campaign-manager-last-step">
-    <div
-      class="campaign-manager-last-step__header"
-      :style="{
-        gridTemplateColumns: Object.keys(getOtherSettingsItems).length ? '1fr 1fr 1fr' : '1fr 1fr'
-      }"
-    >
+    <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
         :title="labels.ScenarioInfo"
@@ -55,15 +50,20 @@
     </div>
     <div class="my-6">
       <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
-      <span
-        v-if="phishingScenarios.length > 5"
-        class="campaign-manager-last-step__phishing-scenario-badge ml-4"
-        >Total {{ phishingScenarios.length }} Scenarios</span
-      >
+      <VTooltip v-if="phishingScenarios.length > 5" bottom>
+        <template #activator="{ on }">
+          <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
+            >Total {{ phishingScenarios.length }} Scenarios</span
+          >
+        </template>
+        <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
+          {{ methodWrapper.method }} ({{ methodWrapper.count }})
+        </div>
+      </VTooltip>
     </div>
     <ElTabs
       v-if="phishingScenarios.length"
-      v-model="selectedScenario"
+      v-model="selectedScenarioResourceId"
       class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
       @tab-click="callForScenarioDetail($event)"
     >
@@ -241,12 +241,43 @@ export default {
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false,
       isScenarioDetailLoading: false,
-      selectedScenario: '',
+      selectedScenarioResourceId: '',
+      selectedScenarioName: '',
       emailTemplateParams: {},
       landingPageParams: {}
     }
   },
   computed: {
+    getMethodDetail() {
+      const mappedObj = this.phishingScenarios.reduce(
+        (acc, pScenario) => {
+          acc[pScenario.method] += 1
+          return acc
+        },
+        {
+          'Click-Only': 0,
+          'Data Submission': 0,
+          Attachment: 0
+        }
+      )
+      const mappedArr = []
+      Object.keys(mappedObj).forEach((key) => {
+        if (mappedObj[key] > 0) {
+          mappedArr.push({
+            method: key,
+            count: mappedObj[key]
+          })
+        }
+      })
+      return mappedArr
+    },
+    getHeaderStyle() {
+      return {
+        gridTemplateColumns: Object.keys(this.getOtherSettingsItems).length
+          ? '1fr 1fr 1fr'
+          : '1fr 1fr'
+      }
+    },
     phishingScenarios() {
       return this.formData?.selectedPhishingScenarios || []
     },
@@ -280,16 +311,9 @@ export default {
       return this.emailTemplateParams?.method === 'Attachment' || false
     },
     getScenarioInfoItems() {
-      const { name = '', method = '', difficulty = '', extraDatas = {} } =
-        this.formData.emailTemplateParams || {}
-      if (Object.keys(extraDatas).length > 0) {
-        return {
-          name: extraDatas?.name || '',
-          method: extraDatas?.method || '',
-          difficulty: extraDatas?.difficulty || ''
-        }
-      }
-      return { name, method, difficulty }
+      const { difficulty = '' } = this.emailTemplateParams || {}
+      const { method = '' } = this.landingPageParams || {}
+      return { name: this.selectedScenarioName, method, difficulty }
     },
     getTotalRandomlySelectedUserCount() {
       let text = ''
@@ -369,17 +393,20 @@ export default {
   watch: {
     formData: {
       handler(val) {
-        this.selectedScenario = val?.selectedPhishingScenarios?.[0]?.resourceId
-        this.callForScenarioDetail({ name: this.selectedScenario })
+        this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
+        this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
       },
       deep: true,
       immediate: true
     }
   },
   methods: {
-    callForScenarioDetail(obj = {}) {
-      const resourceId = obj?.name || ''
+    callForScenarioDetail(event = {}) {
+      const resourceId = event?.name || ''
       if (!resourceId) return
+      if (this.phishingScenarios.length) {
+        this.selectedScenarioName = this.phishingScenarios[parseInt(event.index)].name
+      }
       this.isScenarioDetailLoading = true
       getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
         .then((response) => {

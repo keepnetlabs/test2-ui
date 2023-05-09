@@ -161,25 +161,25 @@
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
-                <el-tabs v-model="tab" class="phishing-scenario-tab-container">
-                  <el-tab-pane
+                <ElTabs v-model="tab" class="phishing-scenario-tab-container">
+                  <ElTabPane
                     id="campaign-manager-info--email-content"
                     name="email"
                     :label="labels.JustEmail"
                   >
                     <div class="template-preview pt-0">
                       <div class="template-preview__icon">
-                        <v-btn
+                        <VBtn
                           v-if="!!emailTemplate"
                           :color="'#2196f3'"
                           icon
                           outlined
                           @click="handleClickPreview"
                         >
-                          <v-icon color="#2196f3" medium>
+                          <VIcon color="#2196f3" medium>
                             {{ 'mdi-fullscreen' }}
-                          </v-icon>
-                        </v-btn>
+                          </VIcon>
+                        </VBtn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
@@ -227,19 +227,19 @@
                         :html="emailTemplate"
                       />
                     </div>
-                  </el-tab-pane>
-                  <el-tab-pane
+                  </ElTabPane>
+                  <ElTabPane
                     v-if="!isAttachmentBasedScenario"
                     :label="labels.LandingPage"
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
                   >
-                    <el-tabs
+                    <ElTabs
                       v-if="isLandingPageTabsVisible"
                       v-model="selectedLandingPageTab"
                       class="phishing-scenario-tab-container"
                     >
-                      <el-tab-pane
+                      <ElTabPane
                         v-for="(template, index) in landingPageTemplates"
                         :key="index"
                         :label="`Page ${index + 1}`"
@@ -276,8 +276,8 @@
                           <hr class="mt-2" v-if="!!template.content" />
                           <KEmailPreview v-if="!!template.content" :html="template.content" />
                         </div>
-                      </el-tab-pane>
-                    </el-tabs>
+                      </ElTabPane>
+                    </ElTabs>
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
                         <v-btn
@@ -312,8 +312,8 @@
                         :html="getSingleTemplateDetails"
                       />
                     </div>
-                  </el-tab-pane>
-                </el-tabs>
+                  </ElTabPane>
+                </ElTabs>
               </div>
             </template>
             <div class="custom-empty-table-message" v-else>
@@ -385,6 +385,10 @@ export default {
     },
     defaultPhishingScenariosValuesMapped: {
       type: [Array, Object]
+    },
+    campaignManagerResourceId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -487,6 +491,7 @@ export default {
       } else {
         setCheckbox(val.value)
       }
+      this.callForPhishingScenarios()
     },
     search(val) {
       this.debounce(() => {
@@ -552,7 +557,9 @@ export default {
     }
   },
   created() {
-    this.callForPhishingScenarios()
+    if (!this.isEdit) {
+      this.callForPhishingScenarios()
+    }
   },
   methods: {
     getItemClasses(itemResourceId = '') {
@@ -635,17 +642,20 @@ export default {
               languageTypeResourceId
             }
             this.landingPageTemplates = landingPages || []
+            this.tab = 'email'
           }
         )
       })
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
-      const payload = { ...this.axiosPayload }
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
-        payload.resourceId = this.defaultPhishingScenariosValuesMapped.map((item) => item.value)
-        payload.pageSize = this.defaultPhishingScenariosValuesMapped.length
+        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        this.axiosPayload.pageSize =
+          this.defaultPhishingScenariosValuesMapped.length < 10
+            ? 10
+            : this.defaultPhishingScenariosValuesMapped.length
       } else if (this.value.length && this.isEdit) {
-        payload.resourceId = this.value.map((item) => item.resourceId)
+        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }
       getScenariosList(this.axiosPayload).then((response) => {
         const {
@@ -653,10 +663,11 @@ export default {
         } = response
         this.phishingScenarioItems = data.results || []
         this.phishingScenarioItems.forEach((item) => {
-          if (!item.isSelected) return
-          this.setSelectedTemplate(item, true)
+          if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
+            return
+          this.value.push(item)
         })
-        if (!this.isEdit && isSelectFirstItem && this.phishingScenarioItems.length) {
+        if (isSelectFirstItem && this.phishingScenarioItems.length) {
           this.callForSelectedPhishingScenario(this.phishingScenarioItems[0].resourceId)
         }
       })
@@ -680,6 +691,7 @@ export default {
     setSelectedTemplate(item = {}, value = false) {
       if (value) {
         this.$emit('input', [...this.value, item])
+        console.log('[...this.value, item]', [...this.value, item])
       } else {
         this.$emit(
           'input',
