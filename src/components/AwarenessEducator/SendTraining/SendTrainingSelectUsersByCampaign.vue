@@ -1,12 +1,19 @@
 <template>
-  <div class="emailTemplatePreview" style="min-height: auto !important;">
+  <div class="emailTemplatePreview">
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div
       v-show="!isLoading"
       class="emailTemplatePreview__container"
       style="padding-top: 13px !important;"
     >
-      <div class="emailTemplatePreview__container-main">
+      <div
+        class="emailTemplatePreview__container-main"
+        :style="{
+          minHeight: 'auto !important',
+          border: isTargetGroupsValid ? '' : '1px solid #f56c6c !important',
+          borderRadius: '12px'
+        }"
+      >
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
             <div class="d-flex justify-space-between" style="padding: 20px;">
@@ -291,6 +298,12 @@
           </multipane>
         </div>
       </div>
+      <CustomError
+        class="mb-6 ml-2"
+        style="margin-top: 2px;"
+        :is-valid="isTargetGroupsValid"
+        :error-message="getTargetGroupErrorMessage"
+      />
     </div>
   </div>
 </template>
@@ -315,9 +328,11 @@ import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
 import Pie from '@/components/Common/Charts/Pie'
 import useDebounce from '@/hooks/useDebounce'
+import CustomError from '@/components/CustomError.vue'
 export default {
   name: 'SendTrainingSelectUsersByCampaign',
   components: {
+    CustomError,
     Pie,
     FormGroupHorizontalContent,
     KEmailPreview,
@@ -330,6 +345,10 @@ export default {
   props: {
     value: {
       type: String
+    },
+    isTargetGroupsValid: {
+      type: Boolean,
+      default: true
     }
   },
   inject: {
@@ -345,6 +364,7 @@ export default {
       search: '',
       scenarioType: '',
       language: '',
+      isShowTargetGroupUsersError: false,
       scenarioTypeItems: ['Click-Only', 'Data Submission', 'Attachment'],
       tab: '',
       phishingScenarios: [],
@@ -375,6 +395,9 @@ export default {
     }
   },
   computed: {
+    getTargetGroupErrorMessage() {
+      return 'At least one target user must be selected'
+    },
     languageItems() {
       return (
         this?.getLanguages()?.map((language) => ({

@@ -26,6 +26,7 @@
       <SendTrainingSelectUsersByCampaign
         ref="refSendTrainingSelectUsersByCampaign"
         :value="formData.campaignResourceId"
+        :is-target-groups-valid="!!getTotalTargetUserCount"
         @on-item-change="handleCampaignChange"
       />
       <FormGroup
