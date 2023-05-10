@@ -330,7 +330,7 @@ export default {
         }
 
         if (sendRandomlyUsersCalculateTypeId === '1') {
-          const total = Math.floor(totalActiveUsers / Number(sendRandomlyUsersCount))
+          const total = Math.round((totalActiveUsers / 100) * Number(sendRandomlyUsersCount))
           text = `Randomly selected %${sendRandomlyUsersCount} (${total || 1} users) from`
         } else {
           text = `Randomly selected ${Number(sendRandomlyUsersCount)} users from`
