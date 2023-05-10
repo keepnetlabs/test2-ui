@@ -111,11 +111,14 @@ export default {
       if (val && !this.emailTemplate) {
         this.callForTemplate()
       }
+    },
+    'formData.resourceId'() {
+      this.callForTemplate(false)
     }
   },
   methods: {
-    callForTemplate() {
-      this.setLoading(true)
+    callForTemplate(showLoader = true) {
+      if (showLoader) this.setLoading(true)
       getCampaignManagerEmailTemplatePreviewContent(
         this.formData.resourceId,
         this.formData.campaignResourceId,
@@ -127,7 +130,9 @@ export default {
           } = response
           this.emailTemplate = data.template
         })
-        .finally(this.setLoading)
+        .finally(() => {
+          if (showLoader) this.setLoading()
+        })
     },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)
