@@ -47,7 +47,7 @@
       <ElTabPane
         v-for="(template, index) in phishingScenarios"
         :key="index"
-        :name="template.scenarioInfo.name"
+        :name="template.customKey"
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
@@ -73,6 +73,7 @@ import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -399,7 +400,11 @@ export default {
         .then((response) => {
           this.campaignSummary = response?.data?.data
           if (this?.campaignSummary?.scenarios?.length) {
-            this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].scenarioInfo?.name
+            this.campaignSummary.scenarios = this.campaignSummary.scenarios.map((pScenario) => ({
+              ...pScenario,
+              customKey: `key-${createRandomCryptStringNumber()}`
+            }))
+            this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].customKey
           }
           this.$store.dispatch(
             'common/setActivePageRouterName',
@@ -416,7 +421,7 @@ export default {
       })
     },
     setScenarioDetail(event = {}) {
-      this.activeScenarioIndex = parseInt(event.index, 8)
+      this.activeScenarioIndex = event.index
     }
   }
 }
