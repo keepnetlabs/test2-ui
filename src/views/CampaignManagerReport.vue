@@ -139,10 +139,6 @@ export default {
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           const firstScenario = response?.data?.data?.scenarios[0]
-          console.log(
-            'firstScenario.scenarioInfo?.methodTypeId',
-            firstScenario.scenarioInfo?.methodTypeId
-          )
           if (!firstScenario) return
           if (firstScenario.scenarioInfo?.methodTypeId === 1) {
             const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)

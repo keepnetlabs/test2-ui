@@ -262,7 +262,6 @@ export default {
                 0
             }
           })
-          console.log(this.tableData)
         })
         .finally(this.setLoading)
     },
