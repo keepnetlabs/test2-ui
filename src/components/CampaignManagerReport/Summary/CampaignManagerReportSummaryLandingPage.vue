@@ -10,8 +10,8 @@
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
-        <el-tabs v-if="templates.length > 1" v-model="selectedTab">
-          <el-tab-pane
+        <ElTabs v-if="templates.length > 1" v-model="selectedTab">
+          <ElTabPane
             v-for="(template, index) in templates"
             :key="index"
             :name="`${index + 1}`"
@@ -51,8 +51,8 @@
               >
               {{ formData.urlTemplate }}
             </div>
-          </el-tab-pane>
-        </el-tabs>
+          </ElTabPane>
+        </ElTabs>
         <div v-else>
           <div class="campaign-manager-last-step__landing-page-template-body-header">
             <div class="campaign-manager-last-step__landing-page-template-body-header-left">
@@ -96,7 +96,13 @@
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
           <DatatableLoading v-if="isLoading" :loading="isLoading" />
-          <KEmailPreview v-else ref="refPreview" :html="getCurrentTemplate" is-extra-height />
+          <KEmailPreview
+            v-else
+            ref="refPreview"
+            :key="getCurrentTemplate"
+            :html="getCurrentTemplate"
+            is-extra-height
+          />
         </div>
       </div>
     </template>

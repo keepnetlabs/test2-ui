@@ -179,6 +179,7 @@
                 v-if="!!emailTemplateParams.template"
                 ref="refPreview"
                 :html="emailTemplateParams.template"
+                :key="emailTemplateParams.template"
                 is-extra-height
               />
             </div>
