@@ -180,6 +180,11 @@
           height:46px;
           line-height:50px;
         }
+        .el-tabs__nav-next,.el-tabs__nav-prev{
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
       }
     }
   }

@@ -143,10 +143,6 @@ export default {
       return this.phishingScenarios[this.activeScenarioIndex] || {}
     },
     getScenarioMethod() {
-      console.log(
-        'this.getActiveScenario?.scenarioInfo?.methodTypeId',
-        this.getActiveScenario?.scenarioInfo?.methodTypeId
-      )
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     isAttachment() {
@@ -405,7 +401,6 @@ export default {
           if (this?.campaignSummary?.scenarios?.length) {
             this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].scenarioInfo?.name
           }
-          console.log('this.campaignSummary', this.campaignSummary)
           this.$store.dispatch(
             'common/setActivePageRouterName',
             this.campaignSummary?.phishingCampaignName || ''

@@ -691,7 +691,6 @@ export default {
     setSelectedTemplate(item = {}, value = false) {
       if (value) {
         this.$emit('input', [...this.value, item])
-        console.log('[...this.value, item]', [...this.value, item])
       } else {
         this.$emit(
           'input',
