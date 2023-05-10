@@ -549,8 +549,8 @@ export default {
             .catch((e) => {
               if (e && e.response && e.response.status === 404) {
                 const [title, message] = e.response?.data?.validationMessages
-                this.whiteLabelingErrorTitle = title
-                this.whiteLabelingErrorMessage = message
+                this.whiteLabelingErrorTitle = 'CNAME record does not exist'
+                this.whiteLabelingErrorMessage = `A CNAME record pointing to “${this.formValues?.pointingUrl}” was not found in your DNS for the ”${this.formValues?.mainDomainUrl}” domain. Create a CNAME record pointing to ‘’${this.formValues?.pointingUrl}’ in your DNS for the ”${this.formValues?.mainDomainUrl}” domain.`
                 this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl
                 this.toggleWhiteLabelingDomainDialog()
               } else {
