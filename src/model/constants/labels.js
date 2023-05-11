@@ -12,6 +12,7 @@ export const labels = {
   LimitRecipients: 'Limit Recipients',
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
+  ScenarioName: 'Scenario Name',
   Scenarios: 'Scenarios',
   SelectSources: 'Select Sources',
   Reports: 'Reports',

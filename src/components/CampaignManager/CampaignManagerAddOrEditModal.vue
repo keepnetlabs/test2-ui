@@ -497,6 +497,7 @@ export default {
               campaignManagerFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : campaignManagerFormData.scheduledDate,
+            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionSmtpDelayEvery: deliverySettingsFormData.distributionSmtpDelayEvery,
             distributionSmtpDelayTimeTypeId:
