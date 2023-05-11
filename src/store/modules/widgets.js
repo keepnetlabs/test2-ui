@@ -33,14 +33,15 @@ const widgetsStore = {
         const campaignStatus = [row['totalNoResponseCount'], row['totalOpenedCount']]
         if (row.method === 'Click-Only') {
           campaignStatus.push(row['totalClickedCount'])
-        }
-        if (row.method === 'Attachment') {
+        } else if (row.method === 'Attachment') {
           campaignStatus.push(row['totalAttachmentOpenedCount'])
-        }
-
-        if (row.method === 'Data Submission') {
+        } else if (row.method === 'Data Submission') {
           campaignStatus.push(row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
+        } else if (row.method === 'Multiple Method') {
+          campaignStatus.push(row['totalClickedCount'])
+          campaignStatus.push(row['totalSubmittedCount'])
+          campaignStatus.push(row['totalAttachmentOpenedCount'])
         }
         return {
           ...row,
