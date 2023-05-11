@@ -83,6 +83,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_REPORTED,
           COLUMNS.TIMES_REPORTED
         ],

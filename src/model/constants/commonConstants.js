@@ -181,6 +181,7 @@ export const PROPERTY_STORE = {
   COUNT: 'count',
   ENROLLED_BY: 'enrolledBy',
   TOEMAIL: 'toEmail',
+  PHISHING_SCENARIO_NAME: 'phishingScenarioName',
   EMAİL: 'email',
   OWNER: 'owner',
   FROMEMAIL: 'fromEmail',
