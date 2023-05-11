@@ -153,7 +153,7 @@ export const labels = {
   Audience: 'Audience',
   TargetAudience: 'Target Audience',
   TargetAudienceSub: 'Select intended audience for this training exercise',
-  CampaignManagerTargetAudienceSub: 'Select target users for your campaign',
+  CampaignManagerTargetAudienceSub: 'Select target groups for your campaign',
   Completed: 'Completed',
   Languages: 'Languages',
   RecentCampaigns: 'Recent Campaigns',
