@@ -12,56 +12,58 @@
       :is-valid="isTargetGroupsValid"
       :error-message="getTargetGroupErrorMessage"
     />
-    <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
-      <div>
-        <VCheckbox
-          v-model="formData.sendOnlyActiveUsers"
-          id="input--campaign-manager-advanced-settings-only-active-users"
-          color="#2196f3"
-          :disabled="!onlineUsersCount"
-        >
-          <template #label>
-            Send only to active users on phishing reporter add-in ({{
-              onlineUsersCount
-            }}
-            currently)</template
-          >
-        </VCheckbox>
-        <div class="campaign-manager-advanced-settings__other-settings-last">
+    <VForm ref="refForm">
+      <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
+        <div>
           <VCheckbox
-            v-model="formData.sendRandomlyUsers"
-            id="input--campaign-manager-advanced-settings-randomly-selected"
+            v-model="formData.sendOnlyActiveUsers"
+            id="input--campaign-manager-advanced-settings-only-active-users"
             color="#2196f3"
-            hide-details
+            :disabled="!onlineUsersCount"
           >
+            <template #label>
+              Send only to active users on phishing reporter add-in ({{
+                onlineUsersCount
+              }}
+              currently)</template
+            >
           </VCheckbox>
-          <span>Send this campaign to randomly selected</span>
-          <VTextField
-            v-model="formData.sendRandomlyUsersCount"
-            v-mask="'#######'"
-            id="input--campaign-manager-advanced-settings-other-settings-number"
-            outlined
-            class="ml-2 absolute-text-input-error absolute-text-input-error--max-width"
-            style="max-width: 64px;"
-            :disabled="getDisabledStatusOfRandomlySelected"
-            :rules="formData.sendRandomlyUsers ? [...rules.number, userCountValidation] : []"
-          ></VTextField>
-          <KSelect
-            v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-            id="input--campaign-manager-advanced-settings-other-settings-percent"
-            class="ml-2"
-            outlined
-            dense
-            hide-details
-            placeholder="Select a item"
-            style="max-width: 118px;"
-            :items="formDetails['sendRandomlyUsersCalculateTypes']"
-            :disabled="getDisabledStatusOfRandomlySelected"
-          />
-          <span class="ml-2">of target users</span>
+          <div class="campaign-manager-advanced-settings__other-settings-last">
+            <VCheckbox
+              v-model="formData.sendRandomlyUsers"
+              id="input--campaign-manager-advanced-settings-randomly-selected"
+              color="#2196f3"
+              hide-details
+            >
+            </VCheckbox>
+            <span>Send this campaign to randomly selected</span>
+            <VTextField
+              v-model="formData.sendRandomlyUsersCount"
+              v-mask="'#######'"
+              id="input--campaign-manager-advanced-settings-other-settings-number"
+              outlined
+              class="ml-2 absolute-text-input-error absolute-text-input-error--max-width"
+              style="max-width: 64px;"
+              :disabled="getDisabledStatusOfRandomlySelected"
+              :rules="formData.sendRandomlyUsers ? [...rules.number, userCountValidation] : []"
+            ></VTextField>
+            <KSelect
+              v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
+              id="input--campaign-manager-advanced-settings-other-settings-percent"
+              class="ml-2"
+              outlined
+              dense
+              hide-details
+              placeholder="Select a item"
+              style="max-width: 118px;"
+              :items="formDetails['sendRandomlyUsersCalculateTypes']"
+              :disabled="getDisabledStatusOfRandomlySelected"
+            />
+            <span class="ml-2">of target users</span>
+          </div>
         </div>
-      </div>
-    </FormGroup>
+      </FormGroup>
+    </VForm>
   </div>
 </template>
 
@@ -94,6 +96,10 @@ export default {
     formDetails: {
       type: Object,
       default: () => ({})
+    },
+    totalTargetUserCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {

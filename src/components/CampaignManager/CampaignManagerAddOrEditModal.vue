@@ -92,6 +92,7 @@
               ref="refCampaignManagerTargetAudience"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
+              :total-target-user-count="getTotalTargetUserCountForTargetAudience"
               :form-details="formDetails"
             />
           </v-stepper-content>
@@ -224,6 +225,13 @@ export default {
     }
   },
   computed: {
+    getTotalTargetUserCountForTargetAudience() {
+      if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
+      return this.selectedTargetGroupsMapped.reduce(
+        (acc, group) => acc + group?.extraDatas?.userCount,
+        0
+      )
+    },
     getCampaignResourceId() {
       return this.selectedRow?.resourceId || ''
     },
@@ -447,7 +455,7 @@ export default {
                   ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
                 totalTargetUserCount
             }
-            this.changeStep()
+            if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false
