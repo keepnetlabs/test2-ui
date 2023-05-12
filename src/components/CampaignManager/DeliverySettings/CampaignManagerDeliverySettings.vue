@@ -325,6 +325,9 @@ export default {
           this.formData[key] = val[key]
         }
       }
+    },
+    totalTargetUserCount() {
+      this.callForCalculateSendingInfo()
     }
   },
   created() {
@@ -398,7 +401,8 @@ export default {
           sendRandomlyUsers: this.userTargetAudienceData.sendRandomlyUsers,
           sendRandomlyUsersCount: this.userTargetAudienceData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.userTargetAudienceData
-            .sendRandomlyUsersCalculateTypeId
+            .sendRandomlyUsersCalculateTypeId,
+          totalTargetUserCount: this.totalTargetUserCount
         }
         if (payload.distributionSmtpDelayEvery) {
           calculateSendingInfo(payload).then((response) => {

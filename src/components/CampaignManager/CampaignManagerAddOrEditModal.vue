@@ -426,16 +426,26 @@ export default {
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
-          this.totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
+          const totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
             acc += item?.extraDatas.userCount || 0
             return acc
           }, 0)
-          if (this.totalTargetUserCount) {
+          if (totalTargetUserCount) {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
             this.userCountDetailResponse = await getTargetGroupCountDetail(
               this.targetGroupResourceIds
             )
+            if (
+              this.userCountDetailResponse?.data?.data &&
+              this.userCountDetailResponse?.data?.data?.length
+            ) {
+              this.totalTargetUserCount =
+                this.userCountDetailResponse?.data?.data
+                  ?.find((detail) => detail.status === 'Active')
+                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
+                totalTargetUserCount
+            }
             this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
