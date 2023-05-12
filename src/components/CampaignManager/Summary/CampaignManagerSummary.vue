@@ -3,8 +3,8 @@
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
-        :title="labels.ScenarioInfo"
-        :items="getScenarioInfoItems"
+        :title="labels.CampaignInfo"
+        :items="getCampaignInfoItems"
       />
       <CampaignManagerSummaryCard
         icon="mdi-cog"
@@ -311,10 +311,19 @@ export default {
     isAttachmentBasedScenario() {
       return this.emailTemplateParams?.method === 'Attachment' || false
     },
-    getScenarioInfoItems() {
-      const { difficulty = '' } = this.emailTemplateParams || {}
-      const { method = '' } = this.landingPageParams || {}
-      return { name: this.selectedScenarioName, method, difficulty }
+    getCampaignInfoItems() {
+      const { formData, phishingScenarios } = this
+      const methodSet = new Set()
+      const difficultySet = new Set()
+      phishingScenarios.forEach((pScenario) => {
+        methodSet.add(pScenario.method)
+        difficultySet.add(pScenario.difficulty)
+      })
+      return {
+        name: formData.name,
+        method: [...methodSet].join(', '),
+        difficulty: [...difficultySet].join(', ')
+      }
     },
     getTotalRandomlySelectedUserCount() {
       let text = ''
