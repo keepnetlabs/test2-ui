@@ -262,6 +262,7 @@ export default {
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
+        formData.name = refCampaignManagerCampaignInfo.formData.name
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =

@@ -386,7 +386,7 @@ export default {
       })
     },
     callForCalculateSendingInfo() {
-      if (!this.targetGroupResourceIds.length) return
+      if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
       if (!this.formData.distributionSmtpDelayEvery) return
       this.debounce(() => {
         const payload = {
