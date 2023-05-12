@@ -111,6 +111,7 @@ export default {
   },
   data() {
     return {
+      isSubmitting: false,
       categoryResources: [],
       labels,
       Validations: Validations,
@@ -141,7 +142,11 @@ export default {
   },
   computed: {
     saveButtonStatus() {
-      return this.formValues.domain.length === 0 || this.formValues.domain.length > 160
+      return (
+        this.isSubmitting ||
+        this.formValues.domain.length === 0 ||
+        this.formValues.domain.length > 160
+      )
     }
   },
   created() {
@@ -174,6 +179,7 @@ export default {
     },
     submit() {
       if (this.$refs.refdomainForm.validate()) {
+        this.isSubmitting = true
         const bodyFormData = new FormData()
         bodyFormData.append('Domain', this.formValues.domain)
         bodyFormData.append('TxtRecord', this.formValues.txtRecord)
@@ -188,6 +194,9 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
+          })
+          .finally(() => {
+            this.isSubmitting = false
           })
       }
     }
