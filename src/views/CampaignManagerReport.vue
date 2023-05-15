@@ -138,15 +138,51 @@ export default {
       if (!this.id || !this.instanceGroup) return
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
-          const firstScenario = response?.data?.data?.scenarios[0]
-          if (!firstScenario) return
-          if (firstScenario.scenarioInfo?.methodTypeId === 1) {
-            const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-            this.tabItems.splice(tabIndex, 1)
-          } else if (firstScenario.scenarioInfo?.methodTypeId === 3) {
-            const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-            if (tabIndex !== -1) {
-              this.tabItems[tabIndex] = {
+          const scenarios = response?.data?.data?.scenarios || []
+          const firstScenario = scenarios[0]
+          if (!firstScenario || !scenarios.length) return
+          if (scenarios.length === 1) {
+            if (firstScenario.scenarioInfo?.methodTypeId === 1) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              this.tabItems.splice(tabIndex, 1)
+            } else if (firstScenario.scenarioInfo?.methodTypeId === 3) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              if (tabIndex !== -1) {
+                this.tabItems[tabIndex] = {
+                  label: labels.OpenedAttachment,
+                  name: labels.OpenedAttachment,
+                  id: 'campaign-manager-report-opened-attachment-content',
+                  component: CampaignManagerReportOpenedAttachment,
+                  isVisible: this.$store.getters[
+                    'permissions/getCampaignReportsOpenedAttachmentPermissions'
+                  ]
+                }
+              }
+              const clickedTabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+              if (clickedTabIndex !== -1) {
+                this.tabItems.splice(clickedTabIndex, 1)
+              }
+            }
+          } else {
+            const isClickedOnly = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
+            )
+            const isSubmittedData = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+            )
+            const isAttachment = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+            )
+            if (!isSubmittedData) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              if (tabIndex) this.tabItems.splice(tabIndex, 1)
+            }
+            if (!isClickedOnly) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+              if (tabIndex) this.tabItems.splice(tabIndex, 1)
+            }
+            if (isAttachment) {
+              this.tabItems.splice(3, 0, {
                 label: labels.OpenedAttachment,
                 name: labels.OpenedAttachment,
                 id: 'campaign-manager-report-opened-attachment-content',
@@ -154,11 +190,7 @@ export default {
                 isVisible: this.$store.getters[
                   'permissions/getCampaignReportsOpenedAttachmentPermissions'
                 ]
-              }
-            }
-            const clickedTabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
-            if (clickedTabIndex !== -1) {
-              this.tabItems.splice(clickedTabIndex, 1)
+              })
             }
           }
         })
