@@ -309,7 +309,7 @@ export default {
       return this?.emailTemplateParams?.attachments || []
     },
     isAttachmentBasedScenario() {
-      return this.emailTemplateParams?.method === 'Attachment' || false
+      return this.landingPageParams?.method === 'Attachment' || false
     },
     getCampaignInfoItems() {
       const { formData, phishingScenarios } = this
