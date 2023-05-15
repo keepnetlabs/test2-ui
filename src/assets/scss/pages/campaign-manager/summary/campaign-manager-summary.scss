@@ -179,6 +179,9 @@
           overflow: hidden;
           height:46px;
           line-height:50px;
+         &.is-top:last-child{
+            padding-right:24px !important;
+          }
         }
         .el-tabs__nav-next,.el-tabs__nav-prev{
           display: flex;

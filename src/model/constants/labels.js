@@ -291,6 +291,8 @@ export const labels = {
   ResendTraining: 'Resend Training',
   ResetPassword: 'Reset Password',
   Clicked: 'Clicked',
+  ClickOnly: 'Click Only',
+  'Click-Only': 'Click-Only',
   ClickedThePhishingLink: 'Clicked the phishing link',
   SubmittedData: 'Submitted Data',
   OpenedAttachment: 'Opened Attachment',

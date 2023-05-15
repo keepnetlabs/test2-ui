@@ -7,6 +7,7 @@
       :instance-group="instanceGroup"
     />
     <CampaignManagerReportSummaryCards
+      :multiple-type="getCampaignMethodTypes"
       :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
@@ -147,7 +148,7 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     isAttachment() {
-      return this.getScenarioMethod === 3 || false
+      return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
@@ -377,6 +378,21 @@ export default {
             instanceGroup: this.instanceGroup
           }
         : {}
+    },
+    getCampaignMethodTypes() {
+      return this.phishingScenarios.length > 1
+        ? [
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
+            ),
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+            ),
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+            )
+          ]
+        : []
     }
   },
   created() {

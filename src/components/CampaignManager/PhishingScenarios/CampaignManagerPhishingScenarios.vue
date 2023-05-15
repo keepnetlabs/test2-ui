@@ -595,7 +595,7 @@ export default {
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
           this.phishingScenarioItems.push(data)
         }
-        this.isAttachmentBasedScenario = data.methodTypeId === '3'
+        this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
         this.selectedTemplateResourceId = resourceId
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {

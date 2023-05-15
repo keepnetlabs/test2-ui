@@ -797,7 +797,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     SUBMITTED_DATA: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}}`,
+      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
