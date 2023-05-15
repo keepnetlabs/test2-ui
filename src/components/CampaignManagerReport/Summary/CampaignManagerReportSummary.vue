@@ -147,7 +147,7 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     isAttachment() {
-      return this.getScenarioMethod === 3 || false
+      return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
