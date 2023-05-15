@@ -7,6 +7,7 @@
       :instance-group="instanceGroup"
     />
     <CampaignManagerReportSummaryCards
+      :multiple-type="getCampaignMethodTypes"
       :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
@@ -377,6 +378,21 @@ export default {
             instanceGroup: this.instanceGroup
           }
         : {}
+    },
+    getCampaignMethodTypes() {
+      return this.phishingScenarios.length > 1
+        ? [
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
+            ),
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+            ),
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+            )
+          ]
+        : []
     }
   },
   created() {
