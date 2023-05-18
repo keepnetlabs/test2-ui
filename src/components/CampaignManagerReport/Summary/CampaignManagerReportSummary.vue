@@ -155,14 +155,15 @@ export default {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const { languageShortCode = 'EN' } = this.getActiveScenario?.scenarioInfo || {
-        languageShortCode: 'EN'
-      }
+      const languages = new Set()
+      this?.phishingScenarios?.forEach((scenario) => {
+        languages.add(scenario.scenarioInfo.languageShortCode)
+      })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languageShortCode
+        Languages: languages.size ? [...languages].join(', ') : ''
       }
     },
     getCampaignSummaryHelperData() {
@@ -420,7 +421,8 @@ export default {
               ...pScenario,
               customKey: `key-${createRandomCryptStringNumber()}`
             }))
-            this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].customKey
+            if (!this.selectedScenarioTab)
+              this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].customKey
           }
           this.$store.dispatch(
             'common/setActivePageRouterName',
