@@ -121,3 +121,98 @@ export const MERGED_TEXTS = {
   '{LASTNAME}': lastName,
   '{PHISHINGURL}': phishingUrl
 }
+
+export const SCENARIO_METHOD_TYPES = {
+  CLICK_ONLY: 'Click-Only',
+  DATA_SUBMISSION: 'Data Submission',
+  ATTACHMENT: 'Attachment',
+  MFA: 'Mfa'
+}
+
+export const SCENARIO_METHODS = [
+  { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
+  { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+  { text: 'Attachment', value: '7dLrW2kdBTDs' },
+  { text: 'MFA', value: '7dLrW2kdBTDs' }
+]
+
+export const SCENARIO_DIFFICULTIES = [
+  { text: 'Easy', value: 'mT0CeYGgKsVb' },
+  { text: 'Medium', value: 'Z5XeVlpw6Dps' },
+  { text: 'Hard', value: 'c4LCGEB9MayB' }
+]
+
+export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
+  return {
+    pageNumber: 1,
+    pageSize: 10,
+    orderBy: 'createTime',
+    ascending: false,
+    filter: {
+      Condition: 'AND',
+      FilterGroups: [
+        {
+          Condition: 'AND',
+          FilterItems: [
+            {
+              value: SCENARIO_METHODS[Number(categoryResourceId) - 1].value,
+              FieldName: 'CategoryResourceId',
+              Operator: 'Include'
+            },
+            { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+          ],
+          FilterGroups: []
+        },
+        {
+          Condition: 'OR',
+          FilterItems: [
+            { FieldName: 'Name', Operator: 'Contains', value: '' },
+            { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
+            { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
+            { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
+            { FieldName: 'Tags', Operator: 'Contains', value: '' },
+            { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
+          ],
+          FilterGroups: []
+        }
+      ]
+    }
+  }
+}
+export const getDefaultLandingPageTemplatePayload = (method = '') => {
+  return {
+    pageNumber: 1,
+    pageSize: 10,
+    orderBy: 'createTime',
+    ascending: false,
+    filter: {
+      Condition: 'AND',
+      FilterGroups: [
+        {
+          Condition: 'AND',
+          FilterItems: [
+            {
+              value: method,
+              FieldName: 'Method',
+              Operator: '='
+            },
+            { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+          ],
+          FilterGroups: []
+        },
+        {
+          Condition: 'OR',
+          FilterItems: [
+            { FieldName: 'Name', Operator: 'Contains', Value: '' },
+            { FieldName: 'Method', Operator: 'Contains', Value: '' },
+            { FieldName: 'Difficulty', Operator: 'Contains', Value: '' },
+            { FieldName: 'CreatedBy', Operator: 'Contains', Value: '' },
+            { FieldName: 'Tags', Operator: 'Contains', Value: '' },
+            { FieldName: 'CreateTime', Operator: 'Contains', Value: '' }
+          ],
+          FilterGroups: []
+        }
+      ]
+    }
+  }
+}

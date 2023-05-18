@@ -1,10 +1,5 @@
 <template>
-  <FormGroup
-    has-hint
-    class="mt-6"
-    title="Caller Phone Number"
-    sub-title="Select caller phone number for this campaign"
-  >
+  <FormGroup has-hint class="mt-6" :title="title" :sub-title="subTitle">
     <KSelect
       :value="value"
       outlined
@@ -46,6 +41,18 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    title: {
+      type: String,
+      default: 'Caller Phone Number'
+    },
+    subTitle: {
+      type: String,
+      default: 'Select caller phone number for this campaign'
+    },
+    selectFirstItem: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -63,6 +70,7 @@ export default {
         const { data } = response
         if (!data) return
         this.phoneNumbers = data.map((phoneNumber) => this.getPhoneNumberFormatted(phoneNumber))
+        if (!this.value && this.selectFirstItem) this.handleInputChange(this.phoneNumbers[0])
       })
     },
     getPhoneNumberFormatted(phoneNumber = '') {

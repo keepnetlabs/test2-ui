@@ -12,12 +12,8 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <el-tabs v-show="!isLoading" v-model="tab">
-        <el-tab-pane
-          id="campaign-manager-info--email-content"
-          name="email"
-          :label="labels.JustEmail"
-        >
+      <ElTabs v-show="!isLoading" v-model="tab">
+        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
           <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
               <div>
@@ -75,20 +71,19 @@
             <hr class="mt-2" v-if="!!emailTemplate" />
             <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
           </div>
-        </el-tab-pane>
-        <el-tab-pane
+        </ElTabPane>
+        <ElTabPane
           v-if="!isAttachmentBasedScenario"
           :label="labels.LandingPage"
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <LandingPageTemplateModalPreview
-            :templateName="landingPageParams.name"
-            :landingPageTemplates="landingPageTemplates"
-            :phishingUrl="landingPageParams.urlTemplate"
+          <TabsWithMfaSettings
+            :landing-page-params="landingPageParams"
+            :landing-page-templates="landingPageTemplates"
           />
-        </el-tab-pane>
-      </el-tabs>
+        </ElTabPane>
+      </ElTabs>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -113,15 +108,15 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
 export default {
   name: 'PhishingScenarioPreview',
   components: {
+    TabsWithMfaSettings,
     KEmailPreview,
     DatatableLoading,
     AppDialog,
-    AttachmentsPreview,
-    LandingPageTemplateModalPreview
+    AttachmentsPreview
   },
   props: {
     status: {
