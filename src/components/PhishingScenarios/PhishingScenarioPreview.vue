@@ -79,6 +79,7 @@
           id="campaign-manager-info--landing-content"
         >
           <TabsWithMfaSettings
+            class="tabs-with-mfa-settings"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
           />

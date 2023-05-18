@@ -1,5 +1,5 @@
 <template>
-  <ElTabs v-model="landingPageTab" class="k-sub-tab tabs-with-mfa-settings mt-4">
+  <ElTabs v-model="landingPageTab" class="k-sub-tab mt-4">
     <ElTabPane
       v-for="(template, index) in landingPageTemplates"
       :key="index"
@@ -7,7 +7,7 @@
       :name="`${index + 1}`"
     >
       <div class="template-preview mt-4 pt-0">
-        <div v-if="!!template.content" class="template-preview__text">
+        <div class="template-preview__text">
           <div>
             <span class="template-preview__text--title">Template Name: </span>
             <span class="template-preview__text--body">{{ landingPageParams.name }}</span>
@@ -72,6 +72,11 @@ export default {
   computed: {
     isMethodMfa() {
       return this.landingPageParams.method === SCENARIO_METHOD_TYPES.MFA
+    }
+  },
+  watch: {
+    landingPageTemplates() {
+      this.landingPageTab = '1'
     }
   }
 }
