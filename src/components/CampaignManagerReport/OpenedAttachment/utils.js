@@ -14,6 +14,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  PHISHING_SCENARIO_NAME: {
+    property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,
+    align: 'left',
+    label: labels.ScenarioName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   LAST_NAME: {
     property: PROPERTY_STORE.LASTNAME,
     align: 'left',
