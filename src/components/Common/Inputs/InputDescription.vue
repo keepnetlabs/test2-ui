@@ -13,6 +13,7 @@
     :placeholder="placeholder"
     :rules="rules"
     :readonly="readonly"
+    :hint="hint"
     @input="$emit('input', $event)"
   />
 </template>
@@ -62,6 +63,9 @@ export default {
     },
     rows: {
       type: String
+    },
+    hint: {
+      type: String
     }
   },
   data() {
@@ -82,7 +86,7 @@ export default {
   watch: {
     required(val) {
       if (val) {
-        this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }
+        this.requiredProps = { hint: this.hint || labels.RequiredStar, persistentHint: true }
         this.rules.unshift((v) => Validations.required(v))
       }
       this.rules = this.applyRules ? this.initialRules || this.rules : []
@@ -91,7 +95,7 @@ export default {
   },
   created() {
     if (this.required) {
-      this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }
+      this.requiredProps = { hint: this.hint || labels.RequiredStar, persistentHint: true }
       this.rules.unshift((v) => Validations.required(v))
     }
     this.rules = this.applyRules ? this.initialRules || this.rules : []

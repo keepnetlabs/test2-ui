@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+  <div :class="`d-flex download-buttons flex-row flex-wrap justify-${justify}`">
     <v-btn
       type="but"
       text
@@ -29,6 +29,10 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'AppDialogFooter',
   props: {
+    justify: {
+      type: String,
+      default: 'end'
+    },
     actionButtonText: {
       type: String,
       default: labels.Confirm
