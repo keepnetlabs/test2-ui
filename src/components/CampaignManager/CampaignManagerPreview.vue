@@ -170,7 +170,6 @@ export default {
         })
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
-      console.log('phishingScenarioPreviewDto', phishingScenarioPreviewDto)
       this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId.toString() === '3'
       this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
       this.emailTemplateParams = {
