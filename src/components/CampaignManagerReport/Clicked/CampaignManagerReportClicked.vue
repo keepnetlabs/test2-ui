@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoClicked"
-      subtitle="List of users who clicked the phishing URL"
+      subtitle="List of users who clicked the phishing link"
     />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
