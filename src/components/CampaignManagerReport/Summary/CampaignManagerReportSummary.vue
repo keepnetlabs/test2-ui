@@ -47,8 +47,8 @@
     >
       <ElTabPane
         v-for="(template, index) in phishingScenarios"
-        :key="index"
-        :name="template.customKey"
+        :key="customKeys[index]"
+        :name="customKeys[index]"
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
@@ -110,7 +110,8 @@ export default {
         'Submitted data',
         'No response',
         'Not delivered'
-      ]
+      ],
+      customKeys: []
     }
   },
   computed: {
@@ -417,12 +418,12 @@ export default {
         .then((response) => {
           this.campaignSummary = response?.data?.data
           if (this?.campaignSummary?.scenarios?.length) {
-            this.campaignSummary.scenarios = this.campaignSummary.scenarios.map((pScenario) => ({
-              ...pScenario,
-              customKey: `key-${createRandomCryptStringNumber()}`
-            }))
-            if (!this.selectedScenarioTab)
-              this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].customKey
+            if (!this.customKeys.length) {
+              this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
+                .fill(0)
+                .map(() => `key-${createRandomCryptStringNumber()}`)
+            }
+            if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
           }
           this.$store.dispatch(
             'common/setActivePageRouterName',
