@@ -2,11 +2,11 @@
   <div id="campaign-manager-report-summary-cards" class="campaign-manager-report-summary-cards">
     <div class="campaign-manager-report-summary-cards__left">
       <CampaignManagerReportSummaryInfoCard
-        v-bind="getNoResponseData"
-        :title="labels.NoResponse"
+        v-bind="getFirstCardProps"
+        :title="getFirstCardTitle"
         :is-loading="isLoading"
-        :icon-src="noResponseIcon"
-        background-color="#0198AC"
+        :icon-src="getFirstCardIcon"
+        :background-color="getFirstCardColor"
       />
       <CampaignManagerReportSummaryInfoCard
         v-bind="getSecondCardProps"
@@ -23,7 +23,14 @@
         :title="getThirdCardLabel"
         :is-loading="isLoading"
         :icon-src="getThirdCardIcon"
-      />
+        :class="getThirdCardClass"
+      >
+        <template v-if="isCampaignHasAllTypes" #icon>
+          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+        </template>
+      </CampaignManagerReportSummaryInfoCard>
       <CampaignManagerReportSummaryInfoCard
         v-bind="getFourthCardProps"
         :class="getFourthCardClass"
@@ -56,7 +63,10 @@ export default {
       type: Object
     },
     method: {
-      type: Number
+      type: [Number, String]
+    },
+    multipleType: {
+      type: Array
     }
   },
   data() {
@@ -70,36 +80,107 @@ export default {
     }
   },
   computed: {
+    getFirstCardProps() {
+      if (this.isCampaignHasAllTypes) {
+        return this.getPhishingReporterData
+      }
+      return this.getNoResponseData
+    },
+    getFirstCardTitle() {
+      if (this.isCampaignHasAllTypes) {
+        return labels.PhishingReporter
+      }
+      return labels.NoResponse
+    },
+    getFirstCardColor() {
+      if (this.isCampaignHasAllTypes) {
+        return '#217124'
+      }
+      return '#0198AC'
+    },
+    getFirstCardIcon() {
+      if (this.isCampaignHasAllTypes) {
+        return this.phishingReportersIcon
+      }
+      return this.noResponseIcon
+    },
     getSecondCardProps() {
-      if (this.method === 3 || this.method === 1) {
+      if (this.isCampaignHasAllTypes) {
+        return this.getClickedData
+      }
+
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 3 ||
+        this.method === 1
+      ) {
         return this.getPhishingReporterData
       }
 
       return this.getOpenedData
     },
     getSecondCardLabel() {
-      if (this.method === 3 || this.method === 1) {
+      if (this.isCampaignHasAllTypes) {
+        return labels.ClickedLink
+      }
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 3 ||
+        this.method === 1
+      ) {
         return labels.PhishingReporters
       }
 
       return labels.OpenedEmail
     },
     getSecondCardIcon() {
-      if (this.method === 3 || this.method === 1) {
+      if (this.isCampaignHasAllTypes) {
+        return this.clickedLinkIcon
+      }
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 3 ||
+        this.method === 1
+      ) {
         return this.phishingReportersIcon
       }
 
       return this.openedEmailIcon
     },
     getSecondCardColor() {
-      if (this.method === 3 || this.method === 1) {
+      if (this.isCampaignHasAllTypes) {
+        return '#F56C6C'
+      }
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 3 ||
+        this.method === 1
+      ) {
         return '#217124'
       }
 
       return '#B6791D'
     },
     getThirdCardProps() {
-      if (this.method === 2) {
+      if (this.isCampaignHasAllTypes) {
+        return this.getSubmittedData
+      }
+      if (this.isCampaignHasAttachmentAndDataSubmission) {
+        return this.getOpenedAttachmentData
+      }
+      if (
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 2
+      ) {
         return this.getClickedData
       }
 
@@ -110,7 +191,17 @@ export default {
       return this.getOpenedData
     },
     getThirdCardLabel() {
-      if (this.method === 2) {
+      if (this.isCampaignHasAllTypes) {
+        return labels.SubmittedData
+      }
+      if (this.isCampaignHasAttachmentAndDataSubmission) {
+        return labels.OpenedAttachment
+      }
+      if (
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 2
+      ) {
         return labels.ClickedLink
       }
 
@@ -121,10 +212,16 @@ export default {
       return labels.OpenedEmail
     },
     getThirdCardColor() {
-      if (this.method === 2) {
+      if (this.isCampaignHasAllTypes || this.isCampaignHasAttachmentAndDataSubmission) {
+        return '#B83A3A'
+      }
+      if (
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 2
+      ) {
         return '#F56C6C'
       }
-
       if (this.method === 3 || this.method === 1) {
         return '#B6791D'
       }
@@ -132,7 +229,14 @@ export default {
       return '#B6791D'
     },
     getThirdCardIcon() {
-      if (this.method === 2) {
+      if (this.isCampaignHasAllTypes || this.isCampaignHasAttachmentAndDataSubmission) {
+        return this.submittedDataIcon
+      }
+      if (
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.method === 2
+      ) {
         return this.clickedLinkIcon
       }
 
@@ -142,7 +246,22 @@ export default {
 
       return this.openedEmailIcon
     },
+    getThirdCardClass() {
+      if (this.isCampaignHasAllTypes) {
+        return 'campaign-manager-report-summary-info-card--submitted-data'
+      }
+      return ''
+    },
     getFourthCardProps() {
+      if (this.isCampaignHasAllTypes || this.isCampaignClickOnlyAndAttachment) {
+        return this.getOpenedAttachmentData
+      }
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndDataSubmission
+      ) {
+        return this.getSubmittedData
+      }
       if (this.method === 1) {
         return this.getClickedData
       }
@@ -158,6 +277,15 @@ export default {
       return this.getSubmittedData
     },
     getFourthCardLabel() {
+      if (this.isCampaignHasAllTypes || this.isCampaignClickOnlyAndAttachment) {
+        return labels.OpenedAttachment
+      }
+      if (
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndDataSubmission
+      ) {
+        return labels.SubmittedData
+      }
       if (this.method === 1) {
         return labels.ClickedLink
       }
@@ -172,11 +300,14 @@ export default {
       return labels.SubmittedData
     },
     getFourthCardClass() {
+      if (this.isCampaignHasAttachmentAndDataSubmission || this.isCampaignClickOnlyAndAttachment) {
+        return 'campaign-manager-report-summary-info-card--opened-attachment-data'
+      }
       if (this.method === 1) {
         return 'campaign-manager-report-summary-info-card--clicked-link'
       }
 
-      if (this.method === 2) {
+      if (this.method === 2 || this.isCampaignClickOnlyAndDataSubmission) {
         return 'campaign-manager-report-summary-info-card--submitted-data'
       }
 
@@ -185,6 +316,18 @@ export default {
       }
 
       return 'campaign-manager-report-summary-info-card--submitted-data'
+    },
+    isCampaignHasAllTypes() {
+      return this.multipleType.length && this.multipleType.every(Boolean)
+    },
+    isCampaignHasAttachmentAndDataSubmission() {
+      return this.multipleType.length && this.multipleType[1] && this.multipleType[2]
+    },
+    isCampaignClickOnlyAndAttachment() {
+      return this.multipleType.length && this.multipleType[0] && this.multipleType[2]
+    },
+    isCampaignClickOnlyAndDataSubmission() {
+      return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
     },
     getNoResponseData() {
       const { noResponse } = this.items

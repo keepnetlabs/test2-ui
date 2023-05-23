@@ -15,6 +15,7 @@
       ref="refTable"
       class="mt-6"
       :id="id"
+      :instance-group="instanceGroup"
       :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
     />
@@ -41,6 +42,9 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     },
     formDetails: {
       type: Object

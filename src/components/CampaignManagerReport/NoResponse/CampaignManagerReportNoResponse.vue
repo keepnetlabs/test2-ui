@@ -15,6 +15,7 @@
       ref="refTable"
       class="mt-6"
       :id="id"
+      :instance-group="instanceGroup"
       @on-resend="handleOnResend"
     />
   </div>
@@ -37,6 +38,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     },
     phishingScenarioName: {
       type: String

@@ -35,6 +35,7 @@
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :search="search"
               :is-all-groups="isAllGroups"
+              :is-call-api-when-created="isCallApiWhenCreated"
               :is-show-company-column="isShowCompanyColumn"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
@@ -70,6 +71,7 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
 import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   name: 'CampaignManagerTargetGroups',
@@ -79,6 +81,7 @@ export default {
     Multipane,
     MultipaneResizer
   },
+  mixins: [useDebounce],
   props: {
     selectedTargetGroups: {
       type: Array
@@ -102,6 +105,10 @@ export default {
       default: 'email'
     },
     isVishing: {
+      type: Boolean,
+      default: false
+    },
+    isCallApiWhenCreated: {
       type: Boolean,
       default: false
     }
@@ -145,14 +152,6 @@ export default {
           : !refGroupTable?.$refs?.refTable?.isColumnFilterActive
       }
       return renderStatus
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     },
     handleHiglightedRowChange(row) {
       this.highlightedRow = row

@@ -59,6 +59,10 @@ export default {
     isShowCompanyColumn: {
       type: Boolean,
       default: true
+    },
+    isCallApiWhenCreated: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -161,6 +165,9 @@ export default {
     responseOfTargetGroupsItems(val) {
       this.setDefaultResponseParams(val)
     }
+  },
+  created() {
+    if (this.isCallApiWhenCreated) this.callForData()
   },
   methods: {
     callForData() {

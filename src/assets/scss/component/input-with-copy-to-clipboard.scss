@@ -4,3 +4,14 @@
         display: none;
     }
 }
+
+.input-duration{
+  max-width: 48px;
+  .v-text-field__details {
+    overflow: initial;
+    padding-left: 8px !important;
+  }
+  .v-messages__message{
+    white-space: nowrap;
+  }
+}

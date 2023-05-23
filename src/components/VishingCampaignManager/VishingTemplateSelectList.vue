@@ -173,6 +173,7 @@ import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import Badge from '@/components/Badge'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   name: 'VishingTemplateSelectList',
@@ -186,6 +187,7 @@ export default {
       default: () => []
     }
   },
+  mixins: [useDebounce],
   directives: {
     'infinite-scroll': InfiniteScroll
   },

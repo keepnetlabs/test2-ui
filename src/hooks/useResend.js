@@ -18,7 +18,7 @@ export const useResend = {
     },
     resendItem() {
       this.isResendActionButtonDisabled = true
-      resendPhishingCampaignToUserList(this.resendPayload, this.id)
+      resendPhishingCampaignToUserList(this.resendPayload, this.id, this.instanceGroup)
         .then(() => {
           this.toggleIsShowResendDialog()
           this.$refs.refTable.callForData()

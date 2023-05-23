@@ -86,7 +86,7 @@ import {
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { isDifferent, scrollToComponent } from '@/utils/functions'
+import { isDifferent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
@@ -132,7 +132,6 @@ export default {
         const { refFastLaunch } = this.$refs
         const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
         formData = {
-          ...formData,
           ...refCampaignManagerCampaignInfo.formData,
           ...refFastLaunch.formData,
           emailTemplate: this.emailTemplate,
@@ -141,9 +140,16 @@ export default {
           emailTemplateParams: this.emailTemplateParams,
           landingPageTemplates: this.landingPageTemplate,
           landingPageParams: this.landingPageParams,
-          userCountDetailResponse: this.userCountDetailResponse
+          userCountDetailResponse: this.userCountDetailResponse,
+          selectedTargetGroups: refFastLaunch.selectedTargetGroups.map((tGroup) => ({
+            name: tGroup.name,
+            userCount: tGroup.userCount
+          })),
+          targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(
+            (tGroup) => tGroup.resourceId
+          )
         }
-        formData.selectedPhishingScenario = this.selectedScenario
+        formData.selectedPhishingScenarios = [this.selectedScenario]
         formData.selectedSchedule = 'Now'
         formData.selectedEmailDelivery = {
           resourceId: this.smtpSettingResourceId,
@@ -265,53 +271,50 @@ export default {
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
     },
-    showErrorMessage(ref) {
-      this.$nextTick(() => {
-        const el = ref.$el.querySelector('.error--text')
-        scrollToComponent(el)
-      })
-    },
     async handleSubmit() {
       const { refFastLaunch } = this.$refs
-      const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
+      const {
+        refCampaignManagerCampaignInfo,
+        refCampaignManagerTargetAudience
+      } = refFastLaunch.$refs
       const { formData } = refCampaignManagerCampaignInfo
       const { refForm } = refCampaignManagerCampaignInfo.$refs
       if (this.step === 1) {
-        if (refForm.validate() && formData?.targetGroupResourceIds?.length) {
-          const targetGroups = refCampaignManagerCampaignInfo?.selectedTargetGroups || []
-          const totalUserCount = targetGroups.reduce((acc, item) => {
-            acc += item?.userCount || 0
+        if (refForm.validate() && refFastLaunch.selectedTargetGroups?.length) {
+          const selectedTargetGroupsMapped = refFastLaunch?.selectedTargetGroupsMapped || []
+          const totalUserCount = selectedTargetGroupsMapped.reduce((acc, item) => {
+            acc += item?.extraDatas.userCount || 0
             return acc
           }, 0)
-
           if (totalUserCount) {
-            refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
-            refCampaignManagerCampaignInfo.isTargetGroupsValid = true
-            const targetGroupResourceIds = refCampaignManagerCampaignInfo.selectedTargetGroups.map(
+            refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
+            refCampaignManagerTargetAudience.isTargetGroupsValid = true
+            const targetGroupResourceIds = refCampaignManagerTargetAudience.selectedTargetGroups.map(
               (group) => group.resourceId
             )
+            this.setActionButtonDisability(true)
             this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
+            this.setActionButtonDisability(false)
             this.changeStep()
           } else {
-            refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
-            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
-            this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
+            refCampaignManagerTargetAudience.isTargetGroupsValid = false
           }
-          refCampaignManagerCampaignInfo.formData.selectedTargetGroups = targetGroups
         } else {
-          if (!formData?.targetGroupResourceIds?.length) {
-            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+          if (!refFastLaunch?.selectedTargetGroupsMapped.length) {
+            refCampaignManagerTargetAudience.isTargetGroupsValid = false
           }
-          this.showErrorMessage(refForm)
         }
       } else if (this.step === 2) {
         this.setActionButtonDisability(true)
         const payload = {
           name: formData.name,
-          phishingScenarioResourceId: this.selectedScenario.resourceId,
+          phishingScenarioResourceIds: [this.selectedScenario.resourceId],
           scheduleTypeId: '1',
           duration: 365,
-          targetGroupResourceIds: formData.targetGroupResourceIds.map((item) => item.value),
+          targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(
+            (tGroup) => tGroup.resourceId
+          ),
           distributionTypeId: '1',
           distributionSmtpDelayEvery: 20,
           distributionSmtpDelayTimeTypeId: '1',

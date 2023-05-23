@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
         />
@@ -106,6 +107,9 @@ export default {
     id() {
       return this.$route?.params?.id
     },
+    instanceGroup() {
+      return this.$route?.params?.instanceGroup
+    },
     getPhishingScenarioName() {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
@@ -131,14 +135,17 @@ export default {
       })
     },
     setSubmittedDataTabLabel() {
-      const id = this.$route?.params?.id
-      if (id) {
-        getCampaignJobSummary(this.$route?.params?.id)
-          .then((response) => {
-            if (response?.data?.data?.scenarioInfo?.methodTypeId === 1) {
+      if (!this.id || !this.instanceGroup) return
+      getCampaignJobSummary(this.id, this.instanceGroup)
+        .then((response) => {
+          const scenarios = response?.data?.data?.scenarios || []
+          const firstScenario = scenarios[0]
+          if (!firstScenario || !scenarios.length) return
+          if (scenarios.length === 1) {
+            if (firstScenario.scenarioInfo?.methodTypeId === 1) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               this.tabItems.splice(tabIndex, 1)
-            } else if (response?.data?.data?.scenarioInfo?.methodTypeId === 3) {
+            } else if (firstScenario.scenarioInfo?.methodTypeId === 3) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {
@@ -156,11 +163,40 @@ export default {
                 this.tabItems.splice(clickedTabIndex, 1)
               }
             }
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
-      }
+          } else {
+            const isClickedOnly = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
+            )
+            const isSubmittedData = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+            )
+            const isAttachment = scenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+            )
+            if (!isSubmittedData) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              if (tabIndex) this.tabItems.splice(tabIndex, 1)
+            }
+            if (!isClickedOnly) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+              if (tabIndex) this.tabItems.splice(tabIndex, 1)
+            }
+            if (isAttachment) {
+              this.tabItems.splice(3, 0, {
+                label: labels.OpenedAttachment,
+                name: labels.OpenedAttachment,
+                id: 'campaign-manager-report-opened-attachment-content',
+                component: CampaignManagerReportOpenedAttachment,
+                isVisible: this.$store.getters[
+                  'permissions/getCampaignReportsOpenedAttachmentPermissions'
+                ]
+              })
+            }
+          }
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     }
   }
 }

@@ -55,6 +55,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
     }
   },
   data() {
@@ -80,6 +83,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_REPORTED,
           COLUMNS.TIMES_REPORTED
         ],
@@ -115,7 +119,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserPhishingReport(this.axiosPayload, this.id)
+      searchCampaignJobUserPhishingReport(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {
@@ -140,15 +144,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserPhishingReport(payload, this.id).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Phishing-Reporter.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        exportCampaignJobUserPhishingReport(payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Report-Phishing-Reporter.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

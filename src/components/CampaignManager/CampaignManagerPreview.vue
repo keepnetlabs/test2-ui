@@ -12,51 +12,40 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <el-tabs v-show="!isLoading" v-model="tab">
-        <el-tab-pane
-          id="campaign-manager-info--email-content"
-          name="email"
-          :label="labels.JustEmail"
-        >
-          <div class="template-preview pt-3">
-            <div class="template-preview__text" v-if="!!emailTemplate">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Email Address: </span>
+      <ElTabs
+        v-if="!isLoading"
+        v-model="selectedScenario"
+        class="campaign-manager-last-step__phishing-scenario-tab mb-6"
+        @tab-click="callForScenarioDetail"
+      >
+        <ElTabPane
+          v-for="(template, index) in phishingScenarios"
+          :key="index"
+          :name="template.name"
+          :label="template.name"
+        />
+      </ElTabs>
+      <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
+        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
+          <div class="template-preview pt-6">
+            <div v-if="!!emailTemplate" class="template-preview__text">
+              <div class="mb-1">
+                <span class="template-preview__text--title">From: </span>
                 <span class="template-preview__text--body">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
-              <div>
-                <span
-                  class="template-preview__text--title"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >Subject:
-                </span>
-                <span
-                  class="template-preview__text--body"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >{{ emailTemplateParams.subject }}</span
-                >
+              <div class="mb-1">
+                <span class="template-preview__text--title">From Name: </span>
+                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+              </div>
+              <div class="mb-1">
+                <span class="template-preview__text--title">Template Name: </span>
+                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+              </div>
+              <div class="template-preview__text--subject">
+                <span>Subject: </span>
+                <span>{{ emailTemplateParams.subject }}</span>
               </div>
             </div>
             <div
@@ -75,8 +64,8 @@
             <hr class="mt-2" v-if="!!emailTemplate" />
             <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
           </div>
-        </el-tab-pane>
-        <el-tab-pane
+        </ElTabPane>
+        <ElTabPane
           v-if="!isAttachmentBasedScenario"
           :label="labels.LandingPage"
           name="landing-page"
@@ -85,9 +74,10 @@
           <LandingPageTemplateModalPreview
             :landingPageTemplates="landingPageTemplates"
             :phishingUrl="landingPageParams.urlTemplate"
+            :template-name="emailTemplateParams.name"
           />
-        </el-tab-pane>
-      </el-tabs>
+        </ElTabPane>
+      </ElTabs>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -140,7 +130,9 @@ export default {
       tab: 'email',
       isLoading: false,
       labels,
-      timeoutId: ''
+      timeoutId: '',
+      selectedScenario: null,
+      phishingScenarios: []
     }
   },
   computed: {
@@ -162,34 +154,42 @@ export default {
       this.setLoading(true)
       getCampaignManagerPreview(this.selectedRow.resourceId)
         .then((response) => {
-          const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-          const { landingPageTemplate: landingPage, methodTypeId } =
-            phishingScenarioPreviewDto || {}
-          this.isAttachmentBasedScenario = methodTypeId === 3
-          this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
-          this.emailTemplateParams = {
-            name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
-            fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
-            fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || '',
-            subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
-            attachment: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
-              ? {
-                  name: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
-                }
-              : null
-          }
-          this.landingPageTemplates = landingPage?.landingPages || []
-          this.landingPageParams = {
-            name: landingPage?.name || '',
-            description: landingPage?.description || '',
-            urlTemplate: landingPage?.urlTemplate || ''
-          }
+          const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
+          this.phishingScenarios = phishingScenarioPreviewList
+          const phishingScenarioPreviewDto = phishingScenarioPreviewList[0] || {}
+          this.selectedScenario = phishingScenarioPreviewDto.name
+          this.setActiveScenario(phishingScenarioPreviewDto || {})
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
             this.setLoading()
           }, 500)
         })
+    },
+    setActiveScenario(phishingScenarioPreviewDto = {}) {
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId === 3
+      this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+      this.emailTemplateParams = {
+        name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
+        fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
+        fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || '',
+        subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
+        attachment: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+          ? {
+              name: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
+            }
+          : null
+      }
+      this.landingPageTemplates =
+        phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      this.landingPageParams = {
+        name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
+        description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
+        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
+      }
+    },
+    callForScenarioDetail(event) {
+      this.setActiveScenario(this.phishingScenarios[event.index])
     },
     setLoading(flag = false) {
       this.isLoading = flag

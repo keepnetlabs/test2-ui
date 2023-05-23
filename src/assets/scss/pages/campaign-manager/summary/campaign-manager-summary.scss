@@ -24,17 +24,15 @@
           font-size: 14px;
           line-height: 21px;
           border-radius: 4px;
-          margin-right: 4px;
           padding: 1px 8px;
           &:first-child {
-            // color: #ffffff;
-            // background: #383b41;
-            color: #383b41;
-            background-color: #e0e0e0;
+            color: #ffffff;
+            background: #383b41;
+            margin-right:8px
           }
-          &:last-child {
+          &:nth-child(2) {
             color: #383b41;
-            background-color: #e0e0e0;
+            background-color: #E0E0E0;
           }
         }
       }
@@ -58,7 +56,7 @@
           }
           &-left {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 20px;
             color: #383b41;
           }
           &-right {
@@ -85,9 +83,9 @@
             }
           }
           &-sub{
-            color: #757575;
-            font-weight: 600;
-            font-size: 12px;
+            color: #383B41;
+            font-weight: 400;
+            font-size: 16px;
           }
         }
         &-preview {
@@ -154,6 +152,41 @@
             border-top: 1px solid #b3d4fc;
             margin: 24px 24px 0 24px;
           }
+        }
+      }
+    }
+    &__phishing-scenario{
+      &-label{
+        color:#383B41;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 25px;
+      }
+      &-badge{
+        padding: 4px 8px;
+        color: #383B41;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 16px;
+        background: #FFFFFF;
+        border: 1px solid #757575;
+        border-radius: 4px;
+      }
+      &-tab {
+        .el-tabs__item{
+          max-width:180px !important;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          height:46px;
+          line-height:50px;
+         &.is-top:last-child{
+            padding-right:24px !important;
+          }
+        }
+        .el-tabs__nav-next,.el-tabs__nav-prev{
+          display: flex;
+          align-items: center;
+          height: 100%;
         }
       }
     }

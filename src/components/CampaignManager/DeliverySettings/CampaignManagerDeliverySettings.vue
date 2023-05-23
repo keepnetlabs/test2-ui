@@ -72,6 +72,21 @@
       :sub-title="labels.DistributionSub"
     >
       <div class="campaign-manager-advanced-settings__distribution-item">
+        <label for="input--campaign-manager-advanced-settings-time">Sending Limit </label>
+        <VTextField
+          v-model="formData.sendingLimit"
+          v-mask="'###########'"
+          id="input--campaign-manager-advanced-settings-sending-limit"
+          class="ml-6"
+          outlined
+          hide-details
+          placeholder="Enter number"
+          style="max-width: 128px;"
+          :rules="rules.number"
+          @input="callForCalculateSendingInfo"
+        />
+      </div>
+      <div class="campaign-manager-advanced-settings__distribution-item mt-3">
         <label for="input--campaign-manager-advanced-settings-time"
           >Send emails with SMTP Delay every
         </label>
@@ -102,87 +117,12 @@
         />
       </div>
     </FormGroup>
-    <FormGroup
-      v-if="isSelectedEmailDeliveryIsSmtp"
-      :title="labels.SendingLimit"
-      :sub-title="labels.SendingLimitSub"
-    >
-      <v-text-field
-        v-model="formData.sendingLimit"
-        v-mask="'###########'"
-        id="input--campaign-manager-advanced-settings-sending-limit"
-        outlined
-        persistent-hint
-        placeholder="Enter number"
-        hint="*Required"
-        :rules="rules.number"
-        @input="callForCalculateSendingInfo"
-      ></v-text-field>
-    </FormGroup>
     <div
       v-if="getDistributionTextRenderStatus"
-      class="campaign-manager-advanced-settings__distribution-text"
+      class="campaign-manager-advanced-settings__distribution-text mt-6"
     >
       {{ getDistributionText }}
     </div>
-    <FormGroup
-      style="max-width: 640px;"
-      :class="isSelectedEmailDeliveryIsSmtp ? 'mt-6' : ''"
-      :title="labels.OtherSettings"
-    >
-      <div>
-        <v-checkbox
-          v-model="formData.excludeFromReports"
-          id="input--campaign-manager-advanced-settings-exclude-from-reports"
-          color="#2196f3"
-        >
-          <template #label> Exclude from reports</template>
-        </v-checkbox>
-        <v-checkbox
-          v-model="formData.sendOnlyActiveUsers"
-          id="input--campaign-manager-advanced-settings-only-active-users"
-          color="#2196f3"
-          :disabled="!isUsersOnline"
-        >
-          <template #label> Send only to active users on phishing reporter add-in</template>
-        </v-checkbox>
-        <div class="campaign-manager-advanced-settings__other-settings-last">
-          <v-checkbox
-            v-model="formData.sendRandomlyUsers"
-            id="input--campaign-manager-advanced-settings-randomly-selected"
-            color="#2196f3"
-            hide-details
-          >
-          </v-checkbox>
-          <span>Send this campaign to randomly selected</span>
-          <v-text-field
-            v-model="formData.sendRandomlyUsersCount"
-            v-mask="'#######'"
-            id="input--campaign-manager-advanced-settings-other-settings-number"
-            placeholder="Enter number"
-            outlined
-            class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error absolute-text-input-error--max-width"
-            style="max-width: 64px;"
-            :disabled="getDisabledStatusOfRandomlySelected"
-            :rules="formData.sendRandomlyUsers ? [...rules.number, userCountValidation] : []"
-          ></v-text-field>
-          <KSelect
-            v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
-            id="input--campaign-manager-advanced-settings-other-settings-percent"
-            class="ml-2"
-            outlined
-            dense
-            hide-details
-            placeholder="Select a item"
-            style="max-width: 118px;"
-            :items="formDetails['sendRandomlyUsersCalculateTypes']"
-            :disabled="getDisabledStatusOfRandomlySelected"
-            @change="validateForm"
-          />
-          <span class="ml-2">of target users</span>
-        </div>
-      </div>
-    </FormGroup>
   </v-form>
 </template>
 
@@ -202,7 +142,7 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 export default {
-  name: 'CampaignManagerAdvancedSettings',
+  name: 'CampaignManagerDeliverySettings',
   components: {
     CampaignManagerSmtpErrorDialog,
     KSelect,
@@ -221,6 +161,23 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    targetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    userTargetAudienceData: {
+      type: Object,
+      default: () => ({
+        sendOnlyActiveUsers: false,
+        sendRandomlyUsers: false,
+        sendRandomlyUsersCount: 20,
+        sendRandomlyUsersCalculateTypeId: '1'
+      })
+    },
+    totalTargetUserCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -231,9 +188,7 @@ export default {
       isUsersOnline: false,
       totalSendSecond: 77720,
       batchEverySendSecond: 0,
-      targetGroupResourceIds: [],
       isTestMailSend: false,
-      totalTargetUserCount: 0,
       emailDeliveryItems: [],
       buttonKey: createRandomCryptStringNumber(),
       isShowSmtpInputError: false,
@@ -243,17 +198,12 @@ export default {
         smtpSettingResourceId: '',
         directEmailSettingResourceId: '',
         emailDeliverySettingType: '',
-        excludeFromReports: false,
-        sendOnlyActiveUsers: false,
-        sendRandomlyUsers: false,
         distributionTypeId: '1',
         distributionSmtpDelayEvery: 20,
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
         distributionSmtpDelayTimeTypeId: '1',
-        sendingLimit: 50,
-        sendRandomlyUsersCount: 20,
-        sendRandomlyUsersCalculateTypeId: '1'
+        sendingLimit: 50
       },
       commonRules: {
         hint: '*Required',
@@ -350,9 +300,6 @@ export default {
       }
 
       return `${leftSideText}${rightSideText}`
-    },
-    getDisabledStatusOfRandomlySelected() {
-      return !this.formData.sendRandomlyUsers
     }
   },
   watch: {
@@ -378,6 +325,9 @@ export default {
           this.formData[key] = val[key]
         }
       }
+    },
+    totalTargetUserCount() {
+      this.callForCalculateSendingInfo()
     }
   },
   created() {
@@ -389,37 +339,6 @@ export default {
       return {
         fontWeight: 600,
         pointerEvents: this.isTestMailSend ? 'none' : 'cursor'
-      }
-    },
-    validateForm() {
-      this.$refs.refForm.validate()
-    },
-    userCountValidation(v) {
-      const { sendRandomlyUsersCalculateTypeId } = this.formData
-      //that means percent
-      const val = parseInt(v)
-      if (sendRandomlyUsersCalculateTypeId === '1') {
-        return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
-      } else {
-        return (
-          this.totalTargetUserCount >= val ||
-          'This number cannot be higher than number of total target users.'
-        )
-      }
-    },
-    handleChangeEmailDelivery(delivery = {}) {
-      this.buttonKey = createRandomCryptStringNumber()
-      this.isTestMailSend = false
-      this.isShowSmtpInputError = false
-      this.testEmailErrorMessage = ''
-      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        this.formData.smtpSettingResourceId = delivery.resourceId
-        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
-        this.formData.directEmailSettingResourceId = ''
-      } else {
-        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-        this.formData.directEmailSettingResourceId = delivery.resourceId
-        this.formData.smtpSettingResourceId = ''
       }
     },
     handleOnConfirmSmtpErrorDialog() {
@@ -467,7 +386,7 @@ export default {
       })
     },
     callForCalculateSendingInfo() {
-      if (!this.targetGroupResourceIds.length) return
+      if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
       if (!this.formData.distributionSmtpDelayEvery) return
       this.debounce(() => {
         const payload = {
@@ -478,10 +397,12 @@ export default {
           distributionEmailOver: this.formData.distributionEmailOver,
           distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
           sendingLimit: this.formData.sendingLimit,
-          sendOnlyActiveUsers: this.formData.sendOnlyActiveUsers,
-          sendRandomlyUsers: this.formData.sendRandomlyUsers,
-          sendRandomlyUsersCount: this.formData.sendRandomlyUsersCount,
-          sendRandomlyUsersCalculateTypeId: this.formData.sendRandomlyUsersCalculateTypeId
+          sendOnlyActiveUsers: this.userTargetAudienceData.sendOnlyActiveUsers,
+          sendRandomlyUsers: this.userTargetAudienceData.sendRandomlyUsers,
+          sendRandomlyUsersCount: this.userTargetAudienceData.sendRandomlyUsersCount,
+          sendRandomlyUsersCalculateTypeId: this.userTargetAudienceData
+            .sendRandomlyUsersCalculateTypeId,
+          totalTargetUserCount: this.totalTargetUserCount
         }
         if (payload.distributionSmtpDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
@@ -555,6 +476,21 @@ export default {
       } catch (e) {
       } finally {
         this.$emit('set-action-button-disability', false)
+      }
+    },
+    handleChangeEmailDelivery(delivery = {}) {
+      this.buttonKey = createRandomCryptStringNumber()
+      this.isTestMailSend = false
+      this.isShowSmtpInputError = false
+      this.testEmailErrorMessage = ''
+      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
+        this.formData.smtpSettingResourceId = delivery.resourceId
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        this.formData.directEmailSettingResourceId = ''
+      } else {
+        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        this.formData.directEmailSettingResourceId = delivery.resourceId
+        this.formData.smtpSettingResourceId = ''
       }
     }
   }

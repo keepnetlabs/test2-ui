@@ -17,7 +17,11 @@
                 v-if="value"
                 :id="`text--recent-campaigns-name-${rowIndex}`"
                 class="k-widget-list__item cursor-pointer"
-                @click="$router.push(`/reports/campaign-reports/campaign-report/${row.resourceId}`)"
+                @click="
+                  $router.push(
+                    `/reports/campaign-reports/campaign-report/${row.resourceId}/${row.instanceGroup}`
+                  )
+                "
               >
                 {{ value }}
               </span>
@@ -141,6 +145,19 @@ export default {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
+          showTooltipLine: true
+        }
+      }
+      if (row.method === 'Multiple Method') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C'],
+          labels: [
+            labels.NoResponse,
+            labels.Clicked,
+            labels.Opened,
+            labels.Submitted,
+            labels.OpenedAttachment
+          ],
           showTooltipLine: true
         }
       }
