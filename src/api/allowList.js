@@ -38,6 +38,15 @@ export function getAllowListListVerify(resourceId) {
   })
 }
 
+export function markAsVerified(resourceId) {
+  return testRequest.put(`/allow-list/mark-as-verified/${resourceId}`, {
+    headers: {
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    }
+  })
+}
+
 export function deleteAllowListItems(resourceIds) {
   return testRequest.delete('/allow-list', {
     headers: {
