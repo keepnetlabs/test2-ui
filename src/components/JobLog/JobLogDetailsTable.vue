@@ -242,26 +242,25 @@ export default {
           const {
             data: { data }
           } = response
-          const processResults = data.processResults.map((result) => result.processErrors)
+          const processErrors =
+            data?.processResults?.find((result) => result.type === 11)?.processErrors || []
           const resultArray = []
-          for (const result of processResults) {
-            const results = result
-              .map((result) => {
-                if (result?.inputData) {
-                  const parsedData = JSON.parse(result.inputData)
-                  parsedData['Status'] = this.getStatusName(
-                    parsedData?.Status !== undefined ? parsedData?.Status : ''
-                  )
-                  parsedData['Priority'] = this.getPriorityName(
-                    parsedData?.Priority !== undefined ? parsedData?.Priority : ''
-                  )
-                  return parsedData
-                }
-                return undefined
-              })
-              .filter(Boolean)
-            resultArray.push(...results)
-          }
+          const results = processErrors
+            .map((pe) => {
+              if (pe?.inputData) {
+                const parsedData = JSON.parse(pe.inputData)
+                parsedData['Status'] = this.getStatusName(
+                  parsedData?.Status !== undefined ? parsedData?.Status : ''
+                )
+                parsedData['Priority'] = this.getPriorityName(
+                  parsedData?.Priority !== undefined ? parsedData?.Priority : ''
+                )
+                return parsedData
+              }
+              return undefined
+            })
+            .filter(Boolean)
+          resultArray.push(...results)
           this.tableData = resultArray
           this.progress = data.progress
         })
