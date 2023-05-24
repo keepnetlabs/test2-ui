@@ -39,7 +39,7 @@ export function searchAllTargetGroups(payload) {
 }
 
 export function getTargetGroupCountDetail(payload) {
-  return testRequest.post(`/target-groups/targetgroupusercountdetail`, paylaod)
+  return testRequest.post(`/target-groups/targetgroupusercountdetail`, payload)
 }
 
 export function createTargetGroup(payload) {
