@@ -112,7 +112,7 @@ const router = new Router({
         },
         {
           path: '/vishing',
-          name: 'Vishing',
+          name: 'Vishing Simulator',
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard',
@@ -125,7 +125,7 @@ const router = new Router({
           name: 'Vishing Templates',
           meta: {
             isAuthenticated: true,
-            parentName: 'Vishing',
+            parentName: 'Vishing Simulator',
             permissionStoreKey: 'permissions/getVishingTemplatesLeftMenuPermissions'
           },
           component: VishingTemplates
@@ -135,7 +135,7 @@ const router = new Router({
           name: 'Vishing Campaign Manager',
           meta: {
             isAuthenticated: true,
-            parentName: 'Vishing',
+            parentName: 'Vishing Simulator',
             permissionStoreKey: 'permissions/getVishingCampaignManagerLeftMenuPermissions'
           },
           component: VishingCampaignManager
@@ -547,7 +547,7 @@ const router = new Router({
           component: VishingReport,
           meta: {
             isAuthenticated: true,
-            parentName: '',
+            parentName: 'Vishing Campaign Manager',
             permissionStoreKey: 'permissions/getVishingReportsSummaryPermissions'
           },
           params: true
