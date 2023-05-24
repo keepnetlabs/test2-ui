@@ -39,12 +39,7 @@ export function searchAllTargetGroups(payload) {
 }
 
 export function getTargetGroupCountDetail(payload) {
-  const parametersArray = []
-  for (let i = 0; i < payload.length; i++) {
-    parametersArray.push(`targetGroupResourceIds=${payload[i]}`)
-  }
-  const parametersText = parametersArray.join('&')
-  return testRequest.get(`/target-groups/targetgroupusercountdetail?${parametersText}`)
+  return testRequest.post(`/target-groups/targetgroupusercountdetail`, payload)
 }
 
 export function createTargetGroup(payload) {
