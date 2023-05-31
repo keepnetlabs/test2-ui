@@ -34,6 +34,19 @@
       @handleVerifyDomainPopup="handleVerifyDomainPopup"
       @getDatatableList="callForData"
     />
+    <MarkAsVerifiedModal
+      v-if="markAsVerifiedPopupStatus"
+      :selectedDomain="selectedDomain"
+      :status="markAsVerifiedPopupStatus"
+      @handleCloseModal="markAsVerifiedPopupStatus = false"
+      @handleMarkAsVerifiedSuccess="handleMarkAsVerifiedSuccess"
+    />
+    <MarkAsVerifiedSuccessModal
+      v-if="markAsVerifiedSuccessPopupStatus"
+      :selectedDomain="selectedDomain"
+      :status="markAsVerifiedSuccessPopupStatus"
+      @handleCloseModal="markAsVerifiedSuccessPopupStatus = false"
+    />
     <domain-verified
       v-if="verifiedDomainStatus"
       :status="verifiedDomainStatus"
@@ -91,22 +104,52 @@
         </span>
       </template>
       <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click=";(selectedDomain = scope.row), (verifyPopupStatus = true)"
-        />
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDelete(scope.row)"
-        />
+        <template v-if="isRootOrReseller && scope.row.status !== 'Verified'">
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[0].disabled"
+            :checkIsOwnerProperty="false"
+            @on-click=";(selectedDomain = scope.row), (verifyPopupStatus = true)"
+          />
+          <RowActionsMenu>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :check-is-owner-property="false"
+              :disabled="tableOptions.rowActions[2].disabled"
+              :icon="tableOptions.rowActions[2].icon"
+              :text="tableOptions.rowActions[2].name"
+              @on-click="handleMarkAsVerified(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :icon="tableOptions.rowActions[1].icon"
+              :text="tableOptions.rowActions[1].name"
+              :scope="scope"
+              :disabled="tableOptions.rowActions[1].disabled"
+              :check-is-owner-property="false"
+              @on-click="handleDelete(scope.row)"
+            />
+          </RowActionsMenu>
+        </template>
+        <template v-else>
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[0].disabled"
+            :checkIsOwnerProperty="false"
+            @on-click=";(selectedDomain = scope.row), (verifyPopupStatus = true)"
+          />
+          <DefaultButtonRowAction
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :checkIsOwnerProperty="false"
+            @on-click="handleDelete(scope.row)"
+          />
+        </template>
       </template>
     </data-table>
   </div>
@@ -122,7 +165,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getAllowListList, exportAllowList } from '@/api/allowList'
+import { getAllowListList, exportAllowList, markAsVerified } from '@/api/allowList'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -132,17 +175,25 @@ import NewDomaim from '@/components/Company Settings/AllowedList/NewDomain'
 import VerifyDomain from '@/components/Company Settings/AllowedList/VerifyDomain'
 import DomainVerified from '@/components/Company Settings/AllowedList/DomainVerified'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import MarkAsVerifiedModal from './MarkAsVerifiedModal'
+import MarkAsVerifiedSuccessModal from './MarkAsVerifiedSuccessModal'
 
 export default {
   name: 'List',
   components: {
     DefaultButtonRowAction,
+    DefaultMenuRowAction,
     DataTable,
     CompanySettingsHeader,
     DeleteDomain,
     NewDomaim,
     VerifyDomain,
-    DomainVerified
+    DomainVerified,
+    RowActionsMenu,
+    MarkAsVerifiedModal,
+    MarkAsVerifiedSuccessModal
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
@@ -245,6 +296,12 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this.$store.getters['permissions/getAllowListPermissionsDelete']
+          },
+          {
+            name: 'Mark as Verified',
+            icon: 'mdi-check',
+            action: 'handleMarkAsVerified',
+            disabled: !this.$store.getters['permissions/getAllowListPermissionsVerify']
           }
         ],
         downloadButton: {
@@ -280,13 +337,20 @@ export default {
       serverSideProps: new ServerSideProps(),
       verifyPopupStatus: false,
       selectedDomain: {},
-      verifiedDomainStatus: false
+      verifiedDomainStatus: false,
+      markAsVerifiedPopupStatus: false,
+      markAsVerifiedSuccessPopupStatus: false
     }
   },
   computed: {
     ...mapGetters({
-      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch'
-    })
+      getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
+      getUserData: 'auth/userGetter'
+    }),
+    isRootOrReseller() {
+      const roleName = this.getUserData?.role?.name
+      return roleName && ['Root', 'Reseller'].includes(roleName)
+    }
   },
   created() {
     this.callForLanguages('refAllowList')
@@ -345,6 +409,16 @@ export default {
     handleDelete(row) {
       this.selectedDeleteItems.push(row)
       this.showDeleteModal = true
+    },
+    handleMarkAsVerified(row) {
+      this.markAsVerifiedPopupStatus = true
+      this.selectedDomain = row
+    },
+    handleMarkAsVerifiedSuccess() {
+      this.markAsVerifiedPopupStatus = false
+      this.markAsVerifiedSuccessPopupStatus = true
+      this.selectedDomain = {}
+      this.callForData()
     },
     handleVerifyDomainPopup() {
       this.verifyPopupStatus = false
