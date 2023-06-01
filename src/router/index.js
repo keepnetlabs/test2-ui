@@ -32,6 +32,7 @@ import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import SmishingSimulatorRoute from '@/views/SmishingSimulatorRoute'
+import SmishingCampaignManager from '@/views/SmishingCampaignManager'
 import VishingRoute from '@/views/VishingRoute'
 import VishingTemplates from '@/views/VishingTemplates'
 import VishingCampaignManager from '@/views/VishingCampaignManager'
@@ -340,7 +341,7 @@ const router = new Router({
         {
           path: '/smishing-simulator/campaign-manager',
           name: 'Smishing Campaign Manager',
-          component: CampaignManager,
+          component: SmishingCampaignManager,
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',
