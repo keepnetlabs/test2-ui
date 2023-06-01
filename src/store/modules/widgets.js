@@ -36,10 +36,10 @@ const widgetsStore = {
         } else if (row.method === 'Attachment') {
           campaignStatus.push(row['totalAttachmentOpenedCount'])
         } else if (row.method === 'Data Submission') {
-          campaignStatus.push(row['totalClickedCount'])
+          campaignStatus.splice(1, 0, row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
         } else if (row.method === 'Multiple Method') {
-          campaignStatus.push(row['totalClickedCount'])
+          campaignStatus.splice(1, 0, row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
           campaignStatus.push(row['totalAttachmentOpenedCount'])
         }
