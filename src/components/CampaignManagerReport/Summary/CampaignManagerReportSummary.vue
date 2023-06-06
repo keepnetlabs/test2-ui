@@ -47,8 +47,8 @@
     >
       <ElTabPane
         v-for="(template, index) in phishingScenarios"
-        :key="index"
-        :name="template.customKey"
+        :key="customKeys[index]"
+        :name="customKeys[index]"
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
@@ -110,7 +110,8 @@ export default {
         'Submitted data',
         'No response',
         'Not delivered'
-      ]
+      ],
+      customKeys: []
     }
   },
   computed: {
@@ -155,14 +156,15 @@ export default {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const { languageShortCode = 'EN' } = this.getActiveScenario?.scenarioInfo || {
-        languageShortCode: 'EN'
-      }
+      const languages = new Set()
+      this?.phishingScenarios?.forEach((scenario) => {
+        languages.add(scenario.scenarioInfo.languageShortCode)
+      })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languageShortCode
+        Languages: languages.size ? [...languages].join(', ') : ''
       }
     },
     getCampaignSummaryHelperData() {
@@ -416,11 +418,12 @@ export default {
         .then((response) => {
           this.campaignSummary = response?.data?.data
           if (this?.campaignSummary?.scenarios?.length) {
-            this.campaignSummary.scenarios = this.campaignSummary.scenarios.map((pScenario) => ({
-              ...pScenario,
-              customKey: `key-${createRandomCryptStringNumber()}`
-            }))
-            this.selectedScenarioTab = this?.campaignSummary?.scenarios[0].customKey
+            if (!this.customKeys.length) {
+              this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
+                .fill(0)
+                .map(() => `key-${createRandomCryptStringNumber()}`)
+            }
+            if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
           }
           this.$store.dispatch(
             'common/setActivePageRouterName',

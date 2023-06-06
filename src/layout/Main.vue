@@ -453,7 +453,7 @@
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title>Vishing</v-list-item-title>
+                <v-list-item-title>Vishing Simulator</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item

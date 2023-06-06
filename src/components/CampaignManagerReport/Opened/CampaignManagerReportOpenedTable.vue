@@ -84,7 +84,6 @@ export default {
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.SCENARIO,
           COLUMNS.LAST_OPENED,
           COLUMNS.TIMES_OPENED
         ],
