@@ -331,6 +331,51 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
+            v-if="getVishingLeftMenuPermissions"
+            id="btn--link-navigator-menu-phishing-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
+            :prepend-icon="iconPaths.mdiPhoneInTalk"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Vishing Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getVishingTemplatesLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/vishing-templates"
+                  id="btn--link-navigator-menu-vishing-templates"
+                  route-name="Vishing Templates"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getVishingCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/vishing/campaign-manager"
+                  id="btn--link-navigator-menu-vishing-campaign-manager"
+                  route-name="Vishing Campaign Manager"
+                  route-text="Campaign Manager"
+                  :router-name="routerName"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Vishing Campaign Manager' || routerName === 'Vishing Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
             v-if="getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[
@@ -385,52 +430,6 @@
                   id="btn--link-navigator-menu-certificates"
                   route-name="Certificates"
                   :router-name="routerName"
-                />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-group>
-
-          <v-list-group
-            v-if="getVishingLeftMenuPermissions"
-            id="btn--link-navigator-menu-phishing-simulator-list-group"
-            no-action
-            :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
-            :prepend-icon="iconPaths.mdiPhoneInTalk"
-            :append-icon="iconPaths.mdiChevronDown"
-          >
-            <template v-slot:activator>
-              <v-list-item-content class="menu-list-item">
-                <v-list-item-title>Vishing Simulator</v-list-item-title>
-              </v-list-item-content>
-            </template>
-            <v-list-item
-              v-if="getVishingTemplatesLeftMenuPermissions"
-              style="padding-left: 0 !important; margin-left: -5px;"
-            >
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/vishing/vishing-templates"
-                  id="btn--link-navigator-menu-vishing-templates"
-                  route-name="Vishing Templates"
-                  :router-name="routerName"
-                />
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item
-              v-if="getVishingCampaignManagerLeftMenuPermissions"
-              style="padding-left: 0 !important; margin-left: -5px;"
-            >
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/vishing/campaign-manager"
-                  id="btn--link-navigator-menu-vishing-campaign-manager"
-                  route-name="Vishing Campaign Manager"
-                  route-text="Campaign Manager"
-                  :router-name="routerName"
-                  :active-class-comparator="
-                    () =>
-                      routerName === 'Vishing Campaign Manager' || routerName === 'Vishing Report'
-                  "
                 />
               </v-list-item-content>
             </v-list-item>
