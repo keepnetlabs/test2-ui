@@ -93,6 +93,7 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
+// TODO: Change endpoints
 import {
   deletePhishingCampaignJob,
   exportCampaignManagerItem,

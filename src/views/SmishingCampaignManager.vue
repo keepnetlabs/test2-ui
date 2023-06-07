@@ -1,6 +1,5 @@
 <template>
   <KContainer tabless class="campaign-manager">
-    <!-- 
     <CampaignManagerAddOrEditModal
       v-if="isShowAddOrEditCampaignManagerModal"
       ref="refCampaignModal"
@@ -11,15 +10,15 @@
       :is-duplicate="isDuplicate"
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
-    /> -->
-    <!-- <CampaignManagerNewInstanceModal
+    />
+    <CampaignManagerNewInstanceModal
       ref="refCampaignNewInstance"
       v-if="isShowNewInstanceModal"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
-    /> -->
+    />
     <CampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
@@ -110,7 +109,7 @@
 <script>
 import CampaignManagerParentTable from '@/components/SmishingCampaignManager/CampaignManagerParentTable'
 import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable'
-import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
+import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
 import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
 // TODO: Import smishing endpoints
 import {
@@ -124,7 +123,7 @@ import CampaignManagerPreview from '@/components/SmishingCampaignManager/Campaig
 import CampaignManagerCreateNewInstanceDialog from '@/components/SmishingCampaignManager/CampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
-import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
+import CampaignManagerNewInstanceModal from '@/components/SmishingCampaignManager/CampaignManagerNewInstanceModal'
 import NoScenarioModal from '@/components/SmishingCampaignManager/NoScenarioModal'
 import NoTargetUserGroupModal from '@/components/SmishingCampaignManager/NoTargetUserGroupModal'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
@@ -142,7 +141,9 @@ export default {
     NoScenarioModal,
     NoTargetUserGroupModal,
     CreateNewUserGroupModal,
-    NewScenario
+    NewScenario,
+    CampaignManagerNewInstanceModal,
+    CampaignManagerAddOrEditModal
   },
   data() {
     return {

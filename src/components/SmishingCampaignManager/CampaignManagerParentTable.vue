@@ -293,7 +293,7 @@ export default {
       //   this.$emit('no-target-group')
       //   return
       // }
-      if (!this.tableData?.length || true) {
+      if (!this.tableData?.length) {
         this.$emit('no-scenario')
         return
       }

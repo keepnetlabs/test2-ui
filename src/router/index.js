@@ -27,6 +27,7 @@ import PhishingSimulator from '@/views/PhishingSimulator'
 import SmishingScenarios from '@/views/SmishingScenarios'
 import Sandbox from '@/views/Sandbox'
 import Settings from '@/views/Settings'
+import SmishingSettings from '@/views/SmishingSettings'
 import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
@@ -354,7 +355,7 @@ const router = new Router({
         {
           path: '/smishing-simulator/settings',
           name: 'Smishing Settings',
-          component: Settings,
+          component: SmishingSettings,
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',

@@ -1,10 +1,5 @@
 <template>
-  <FormGroup
-    has-hint
-    class="mt-6"
-    title="Caller Phone Number"
-    sub-title="Select caller phone number for this campaign"
-  >
+  <FormGroup has-hint class="mt-6" :title="title" :sub-title="subTitle">
     <KSelect
       :value="value"
       outlined
@@ -17,7 +12,7 @@
       :rules="[(v) => Validations.required(v)]"
       @input="handleInputChange"
     >
-      <template #item="{item}">
+      <template #item="{ item }">
         <div :class="['mail-configuration-select-sources__item-container']">
           <div class="mail-configuration-select-sources__item">
             <div class="mail-configuration-select-sources__item-left">
@@ -46,6 +41,14 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    title: {
+      type: String,
+      default: 'Caller Phone Number'
+    },
+    subTitle: {
+      type: String,
+      default: 'Select caller phone number for this campaign'
     }
   },
   data() {
