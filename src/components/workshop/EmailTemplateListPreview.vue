@@ -199,7 +199,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import AppDialog from '../AppDialog'
@@ -214,8 +213,7 @@ import {
   SCENARIO_METHODS
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
-import KSelect from '@/components/Common/Inputs/KSelect.vue'
-
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'EmailTemplateListPreview',
   props: {

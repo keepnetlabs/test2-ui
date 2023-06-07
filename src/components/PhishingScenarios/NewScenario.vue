@@ -202,7 +202,7 @@
                     <div class="summary-header">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ 'mdi-email' }}
+                          mdi-email
                         </v-icon>
                         Email that will be sent to users
                       </div>
@@ -232,8 +232,7 @@
                           </div>
                           <div
                             v-if="hasPhishingFile"
-                            class="attachment-wrapper mt-2 mb-0"
-                            style="position: relative;"
+                            class="attachment-wrapper position-relative mt-2 mb-0"
                           >
                             <div class="attachment blue-attach mb-0">
                               <AttachmentsPreview
@@ -265,6 +264,7 @@
                             }}
                           </v-chip>
                           <v-chip
+                            v-if="!!summaryData && !!summaryData.emailTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -272,7 +272,6 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
                           >
                             {{
                               methods.find(
@@ -538,7 +537,6 @@
     </template>
   </app-modal>
 </template>
-
 <script>
 import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
@@ -565,8 +563,8 @@ import {
   SCENARIO_METHOD_TYPES,
   SCENARIO_METHODS
 } from '@/components/PhishingScenarios/utils'
-import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard.vue'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 
 export default {
   name: 'NewScenarios',
@@ -690,7 +688,9 @@ export default {
         return 'Choose your click only type email template'
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
         return 'Choose your data submission type email template'
-      else return 'Choose your attachment type email template'
+      else if (mTypeText === SCENARIO_METHOD_TYPES.ATTACHMENT)
+        return 'Choose your attachment type email template'
+      else return 'Choose your click only or data submission type email template'
     },
     getStep3Subtitle() {
       const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
