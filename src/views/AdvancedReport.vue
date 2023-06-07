@@ -1,11 +1,14 @@
 <template>
   <KContainer tabless>
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
-    <PowerBIReportEmbed
-      v-else
-      :embed-config="config"
-      css-class-name="advanced-report-power-bi-container"
-    />
+    <div :style="isLoading ? 'visibility:hidden;max-height:0px' : ''">
+      <PowerBIReportEmbed
+        v-if="renderReport"
+        :embed-config="config"
+        css-class-name="advanced-report-power-bi-container"
+        :event-handlers="eventHandlers"
+      />
+    </div>
   </KContainer>
 </template>
 
@@ -13,7 +16,7 @@
 import KContainer from '@/components/KContainer/KContainer'
 import ReportsService from '@/api/reports'
 import { PowerBIReportEmbed } from 'powerbi-client-vue-js'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
 
 export default {
@@ -25,7 +28,33 @@ export default {
   },
   data() {
     return {
-      config: { type: 'report', tokenType: 1, id: '', embedUrl: '', accessToken: '' }
+      renderReport: false,
+      config: {
+        type: 'report',
+        tokenType: 1,
+        id: '',
+        embedUrl: '',
+        accessToken: '',
+        settings: {
+          panes: {
+            filters: {
+              visible: false
+            },
+            pageNavigation: {
+              visible: false
+            }
+          }
+        }
+      },
+      eventHandlers: new Map([
+        [
+          'loaded',
+          () =>
+            setTimeout(() => {
+              this.setLoading()
+            }, 1000)
+        ]
+      ])
     }
   },
   methods: {
@@ -39,8 +68,9 @@ export default {
           this.config.embedUrl = embedReport.embedUrl
           this.config.id = embedReport.reportId
           this.config.accessToken = embedToken.token
+          this.renderReport = true
         })
-        .finally(this.setLoading)
+        .catch(this.setLoading)
     }
   }
 }
