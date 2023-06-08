@@ -77,6 +77,14 @@
           :text="tableOptions.rowActions[4].name"
           @on-click="handleActionDelete(scope.row)"
         />
+        <DefaultMenuRowAction
+          :id="tableOptions.rowActions[5].id"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[5].disabled"
+          :icon="tableOptions.rowActions[5].icon"
+          :text="tableOptions.rowActions[5].name"
+          @on-click="handleDownloadPackage(scope.row)"
+        />
       </RowActionsMenu>
     </template>
   </DataTable>
@@ -182,6 +190,12 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
+          },
+          {
+            id: 'btn-download-package--row-actions-training-list',
+            name: labels.DownloadPackage,
+            icon: 'mdi-download',
+            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -223,6 +237,9 @@ export default {
     },
     handleActionDelete(row) {
       this.$emit(EMITS.ON_ACTION_DELETE, row)
+    },
+    handleDownloadPackage(row) {
+      this.$emit(EMITS.ON_DOWNLOAD, row)
     },
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
