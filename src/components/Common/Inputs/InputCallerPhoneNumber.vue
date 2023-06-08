@@ -110,7 +110,8 @@ export default {
       return phoneNumberObj?.g?.number?.international
     },
     getPhoneNumberCountry(phoneNumber) {
-      if (!phoneNumber) return
+      if (!phoneNumber) return 'EN'
+      if (this.isPhishingScenario && !this.phoneNumbers.length) return 'EN'
       const phoneNumberObj = this.createPhoneNumberObj(
         this.isPhishingScenario
           ? typeof phoneNumber === 'object'

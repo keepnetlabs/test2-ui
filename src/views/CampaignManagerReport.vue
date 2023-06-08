@@ -36,6 +36,7 @@ import CampaignManagerReportSubmittedData from '@/components/CampaignManagerRepo
 import CampaignManagerReportOpenedAttachment from '@/components/CampaignManagerReport/OpenedAttachment/CampaignManagerReportOpenedAttachment'
 import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
+import CampaignManagerReportSubmittedMfaCode from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCode'
 import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/phishingsimulator'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
 import KContainer from '@/components/KContainer/KContainer'
@@ -74,6 +75,13 @@ export default {
           id: 'campaign-manager-report-submitted-date-content',
           label: labels.SubmittedData,
           component: CampaignManagerReportSubmittedData,
+          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+        },
+        {
+          name: labels.SubmittedMFACode,
+          id: 'campaign-manager-report-submitted-mfa-content',
+          label: labels.SubmittedMFACode,
+          component: CampaignManagerReportSubmittedMfaCode,
           isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
         },
         {

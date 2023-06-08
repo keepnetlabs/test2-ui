@@ -11,12 +11,21 @@
       :title="labels.UsersWhoSubmittedTheMfaCode"
       :subtitle="labels.UsersWhoSubmittedTheMfaCodeSub"
     />
+    <CampaignManagerReportSubmittedMfaCodeTable
+      ref="refTable"
+      class="mt-6"
+      :id="id"
+      :instance-group="instanceGroup"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+    />
   </div>
 </template>
 
 <script>
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportSubmittedMfaCodeTable from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable'
 import { useResend } from '@/hooks/useResend'
 import labels from '@/model/constants/labels'
 
@@ -24,7 +33,8 @@ export default {
   name: 'CampaignManagerReportSubmittedMfaCode',
   components: {
     CampaignManagerReportResendDialog,
-    CampaignManagerReportHeader
+    CampaignManagerReportHeader,
+    CampaignManagerReportSubmittedMfaCodeTable
   },
   mixins: [useResend],
   props: {

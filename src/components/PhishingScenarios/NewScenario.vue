@@ -817,7 +817,8 @@ export default {
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
-          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSenderNumberResourceId
+          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
+          this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
           this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
