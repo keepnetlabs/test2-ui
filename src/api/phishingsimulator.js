@@ -281,7 +281,7 @@ export function exportCampaignJobUserEmailSubmitted(payload = {}, id = '', insta
 
 export function exportCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/submitteddata-mfa/search/export/${id}/${instanceGroup}`,
+    `/phishing-simulator/phishing-campaign-job-report/mfa/search/export/${id}/${instanceGroup}`,
     payload,
     {
       responseType: 'blob'
@@ -322,13 +322,13 @@ export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
 
 export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/submitteddata-mfa/search/${id}/${instanceGroup}`,
+    `/phishing-simulator/phishing-campaign-job-report/mfa/search/${id}/${instanceGroup}`,
     payload
   )
 }
 export function searchCampaignJobUserEmailSubmittedDetailsMfa(payload, id) {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/search-email-submitted-mfa/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/search-mfa-submitted/${id}`,
     payload
   )
 }

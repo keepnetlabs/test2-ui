@@ -45,8 +45,14 @@
         :is-loading="isLoading"
       >
         <template #icon>
-          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+          <div
+            v-if="!isCampaignClickOnlyAndMfa"
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+          >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+          <div v-else class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
         </template>
       </CampaignManagerReportSummaryInfoCard>
@@ -182,6 +188,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return this.getClickedData
@@ -203,6 +210,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return labels.ClickedLink
@@ -225,6 +233,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return '#F56C6C'
@@ -246,6 +255,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return this.clickedLinkIcon
@@ -277,6 +287,7 @@ export default {
       ) {
         return this.getSubmittedData
       }
+      if (this.isCampaignClickOnlyAndMfa) return this.getMfaData
       if (this.method === 1) {
         return this.getClickedData
       }
@@ -305,6 +316,7 @@ export default {
       ) {
         return labels.SubmittedData
       }
+      if (this.isCampaignClickOnlyAndMfa) return labels.SubmittedMFACode
       if (this.method === 1) {
         return labels.ClickedLink
       }
@@ -322,7 +334,8 @@ export default {
       if (
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignHasAttachmentAndDataSubmission ||
-        this.isCampaignClickOnlyAndAttachment
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndMfa
       ) {
         return 'campaign-manager-report-summary-info-card--opened-attachment-data'
       }
@@ -356,6 +369,9 @@ export default {
     },
     isCampaignClickOnlyAndAttachment() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[2]
+    },
+    isCampaignClickOnlyAndMfa() {
+      return this.multipleType.length && this.multipleType[0] && this.multipleType[3]
     },
     isCampaignClickOnlyAndDataSubmission() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[1]

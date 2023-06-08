@@ -354,7 +354,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 220,
     isEditable: false,
     filterableType: 'date'
   },
@@ -378,7 +378,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 220,
     isEditable: false,
     filterableType: 'number'
   },

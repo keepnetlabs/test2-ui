@@ -21,6 +21,7 @@
           :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
+          :multiple-type="multipleType"
         />
       </el-tab-pane>
     </el-tabs>
@@ -48,6 +49,7 @@ export default {
     return {
       isLoading: true,
       tab: labels.Summary,
+      multipleType: [],
       tabItems: [
         {
           name: labels.Summary,
@@ -172,15 +174,27 @@ export default {
               }
             }
           } else {
-            const isClickedOnly = scenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
-            )
-            const isSubmittedData = scenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
-            )
-            const isAttachment = scenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
-            )
+            let isClickedOnly, isSubmittedData, isAttachment, isMfa
+            const setMethodValues = (method = '') => {
+              if (method === '1') {
+                isSubmittedData = true
+              } else if (method === '2') {
+                isClickedOnly = true
+              } else if (method === '3') {
+                isAttachment = true
+              }
+            }
+            scenarios.forEach((scenario) => {
+              const method = scenario.scenarioInfo.methodTypeId.toString()
+              if (method === '4') {
+                isMfa = true
+                setMethodValues(scenario.landingPageTemplateInfo?.methodTypeId.toString())
+              } else {
+                setMethodValues(method)
+              }
+            })
+            this.multipleType = [isClickedOnly, isSubmittedData, isAttachment, isMfa]
+
             if (!isSubmittedData) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex) this.tabItems.splice(tabIndex, 1)
