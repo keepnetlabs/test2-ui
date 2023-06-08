@@ -177,9 +177,9 @@ export default {
             let isClickedOnly, isSubmittedData, isAttachment, isMfa
             const setMethodValues = (method = '') => {
               if (method === '1') {
-                isSubmittedData = true
-              } else if (method === '2') {
                 isClickedOnly = true
+              } else if (method === '2') {
+                isSubmittedData = true
               } else if (method === '3') {
                 isAttachment = true
               }

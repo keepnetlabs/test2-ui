@@ -252,7 +252,8 @@ export default {
           openedEmail: 0,
           submittedEmail: 0,
           attachmentOpenedEmail: 0,
-          reportedEmail: 0
+          reportedEmail: 0,
+          mfa: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -265,7 +266,8 @@ export default {
         openedEmail = 0,
         submittedEmail = 0,
         attachmentOpenedEmail = 0,
-        reportedEmail = 0
+        reportedEmail = 0,
+        mfa = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
@@ -274,7 +276,8 @@ export default {
         noResponseEmail,
         notDelivered,
         attachmentOpenedEmail,
-        reportedEmail
+        reportedEmail,
+        mfa
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
@@ -287,7 +290,8 @@ export default {
         noResponseEmail = 0,
         notDelivered = 0,
         attachmentOpenedEmail = 0,
-        reportedEmail = 0
+        reportedEmail = 0,
+        mfa = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -317,6 +321,10 @@ export default {
         phishingReporter: {
           userCount: reportedEmail,
           userPercent: ((reportedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        mfa: {
+          userCount: mfa,
+          userPercent: ((mfa / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
