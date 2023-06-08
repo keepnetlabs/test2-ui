@@ -1,4 +1,3 @@
-import { mdiConsoleNetworkOutline } from '@mdi/js'
 <template>
   <div class="campaign-manager-report-summary-header">
     <CampaignManagerReportSummaryResendDialog

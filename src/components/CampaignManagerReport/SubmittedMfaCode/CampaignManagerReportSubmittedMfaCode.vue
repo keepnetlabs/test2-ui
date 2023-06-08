@@ -8,21 +8,14 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
-      :title="labels.UserWhoSubmitted"
-      :subtitle="labels.UserWhoSubmittedSub"
+      :title="labels.UsersWhoSubmittedTheMfaCode"
+      :subtitle="labels.UsersWhoSubmittedTheMfaCodeSub"
     />
-    <CampaignManagerReportSubmittedItemDetailDialog
-      v-if="isShowDetailDialog"
-      :status="isShowDetailDialog"
-      :item="selectedRow"
-      @on-close="toggleShowDetailDialog"
-    />
-    <CampaignManagerReportSubmittedTable
+    <CampaignManagerReportSubmittedMfaCodeTable
       ref="refTable"
       class="mt-6"
       :id="id"
       :instance-group="instanceGroup"
-      :password-complexities="getPasswordComplexities"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -30,19 +23,18 @@
 </template>
 
 <script>
-import labels from '@/model/constants/labels'
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
-import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
-import { useResend } from '@/hooks/useResend'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportSubmittedMfaCodeTable from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable'
+import { useResend } from '@/hooks/useResend'
+import labels from '@/model/constants/labels'
+
 export default {
-  name: 'CampaignManagerReportSubmittedData',
+  name: 'CampaignManagerReportSubmittedMfaCode',
   components: {
     CampaignManagerReportResendDialog,
-    CampaignManagerReportSubmittedItemDetailDialog,
-    CampaignManagerReportSubmittedTable,
-    CampaignManagerReportHeader
+    CampaignManagerReportHeader,
+    CampaignManagerReportSubmittedMfaCodeTable
   },
   mixins: [useResend],
   props: {
@@ -64,11 +56,6 @@ export default {
       labels,
       isShowDetailDialog: false,
       selectedRow: {}
-    }
-  },
-  computed: {
-    getPasswordComplexities() {
-      return this?.formDetails?.passwordComplexityTypes || []
     }
   },
   methods: {

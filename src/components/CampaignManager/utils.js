@@ -26,7 +26,8 @@ export const METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
   MULTIPLE_METHOD: 'Multiple Method',
   DATA_SUBMISSION: 'Data Submission',
-  ATTACHMENT: 'Attachment'
+  ATTACHMENT: 'Attachment',
+  MFA: 'Mfa'
 }
 
 export const SCHEDULE_TYPES = {

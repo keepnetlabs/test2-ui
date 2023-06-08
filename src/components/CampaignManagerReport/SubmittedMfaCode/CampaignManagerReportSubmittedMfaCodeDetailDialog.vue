@@ -62,11 +62,11 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
+import { searchCampaignJobUserEmailSubmittedDetailsMfa } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
-  name: 'CampaignManagerReportSubmittedtemDetailDialog',
+  name: 'CampaignManagerReportSubmittedMfaDetailDialog',
   components: { DataTable, AppDialog },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -81,7 +81,7 @@ export default {
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
-        id: 'campaign-manager-submitted-detail-item-data-table',
+        id: 'campaign-manager-submitted-mfa-detail-item-data-table',
         ascending: 'ascending'
       },
       isLoading: false,
@@ -90,18 +90,17 @@ export default {
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
-          COLUMNS.SUBMITTED_TIME,
+          COLUMNS.SUBMITTED_TIME_MFA,
           COLUMNS.USER_AGENT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.SUBMITTED_DATA_IP,
-          COLUMNS.DATA
+          COLUMNS.SUBMITTED_DATA_IP
         ],
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportSubmittedData
+          message: labels.EmptyCampaignManagerReportSubmittedMfaData
         },
         rowActions: [],
         downloadButton: {
@@ -113,7 +112,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Submitted Data ${this.item?.['submittedCount'] || 0} Time(s)`
+      return `Submitted MFA Code ${this.item?.['submittedCount'] || 0} Time(s)`
     },
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
@@ -125,7 +124,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailSubmittedDetails(this.axiosPayload, this.item?.resourceId)
+      searchCampaignJobUserEmailSubmittedDetailsMfa(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {
             data: {

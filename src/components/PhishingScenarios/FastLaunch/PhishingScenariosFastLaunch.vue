@@ -43,6 +43,7 @@
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
+              :language-options="languageOptions"
             />
           </v-stepper-content>
         </v-stepper-items>
@@ -243,6 +244,8 @@ export default {
               )?.text
             }
             this.landingPageTemplate = landingPages
+            console.log(this.emailTemplateParams)
+            console.log(this.landingPageParams)
           }
         }
       )
