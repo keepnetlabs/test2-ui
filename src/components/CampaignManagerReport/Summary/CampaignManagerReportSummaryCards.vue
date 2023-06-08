@@ -20,6 +20,11 @@
             <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
         </template>
+        <template v-else-if="isCampaignAttachmentAndMfaDataSubmission" #icon>
+          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/attachment-icon.svg" alt="icon" />
+          </div>
+        </template>
       </CampaignManagerReportSummaryInfoCard>
     </div>
     <div class="campaign-manager-report-summary-cards__right">
@@ -31,9 +36,21 @@
         :icon-src="getThirdCardIcon"
         :class="getThirdCardClass"
       >
-        <template v-if="isCampaignHasAllTypes || isCampaignDataSubmissionAndMfa" #icon>
+        <template
+          v-if="
+            isCampaignHasAllTypes ||
+            isCampaignDataSubmissionAndMfa ||
+            isCampaignAttachmentAndMfaDataSubmission
+          "
+          #icon
+        >
           <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+        </template>
+        <template v-else-if="isCampaignAttachmentAndMfaClickOnly" #icon>
+          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
         </template>
       </CampaignManagerReportSummaryInfoCard>
@@ -46,7 +63,11 @@
       >
         <template #icon>
           <div
-            v-if="!isCampaignClickOnlyAndMfa && !isCampaignDataSubmissionAndMfa"
+            v-if="
+              !isCampaignClickOnlyAndMfa &&
+              !isCampaignDataSubmissionAndMfa &&
+              !isCampaignAttachmentAndMfaDataSubmission
+            "
             class="campaign-manager-report-summary-info-card--submitted-data-icon"
           >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
@@ -89,7 +110,8 @@ export default {
       clickedLinkIcon: require('../../../assets/img/ic-exclude.svg'),
       submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
       phishingReportersIcon: require('../../../assets/img/phishing-reporters.svg'),
-      mfaIcon: require('../../../assets/img/phonelink_lock.svg')
+      mfaIcon: require('../../../assets/img/phonelink_lock.svg'),
+      attachmentIcon: require('../../../assets/img/attachment-icon.svg')
     }
   },
   computed: {
@@ -97,30 +119,54 @@ export default {
       if (this.isCampaignHasAllTypes) {
         return this.getClickedData
       }
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment)
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
         return this.getPhishingReporterData
       return this.getNoResponseData
     },
     getFirstCardTitle() {
       if (this.isCampaignHasAllTypes) return labels.ClickedLink
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return labels.PhishingReporter
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return labels.PhishingReporter
       return labels.NoResponse
     },
     getFirstCardIcon() {
       if (this.isCampaignHasAllTypes) return this.clickedLinkIcon
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment)
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
         return this.phishingReportersIcon
       return this.noResponseIcon
     },
     getFirstCardColor() {
       if (this.isCampaignHasAllTypes) return '#F56C6C'
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return '#217124'
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return '#217124'
       return '#0198AC'
     },
     getSecondCardProps() {
       if (this.isCampaignHasAllTypes) return this.getMfaData
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return this.getClickedData
-
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly
+      )
+        return this.getClickedData
+      if (this.isCampaignAttachmentAndMfaDataSubmission) {
+        return this.getOpenedAttachmentData
+      }
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -135,7 +181,15 @@ export default {
     },
     getSecondCardLabel() {
       if (this.isCampaignHasAllTypes) return labels.SubmittedMFACode
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return labels.ClickedLink
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return labels.ClickedLink
+      if (this.isCampaignAttachmentAndMfaDataSubmission) {
+        return labels.OpenedAttachment
+      }
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -150,7 +204,14 @@ export default {
     },
     getSecondCardIcon() {
       if (this.isCampaignHasAllTypes) return this.submittedDataIcon
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return this.clickedLinkIcon
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly
+      )
+        return this.clickedLinkIcon
+      if (this.isCampaignAttachmentAndMfaDataSubmission) {
+        return this.attachmentIcon
+      }
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -165,7 +226,12 @@ export default {
     },
     getSecondCardColor() {
       if (this.isCampaignHasAllTypes) return '#B83A3A'
-      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return '#F56C6C'
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return '#F56C6C'
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -182,9 +248,13 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission
       ) {
         return this.getSubmittedData
+      }
+      if (this.isCampaignAttachmentAndMfaClickOnly) {
+        return this.getMfaData
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
         return this.getOpenedAttachmentData
@@ -208,9 +278,16 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission
       ) {
         return labels.SubmittedData
+      }
+      if (
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      ) {
+        return labels.SubmittedMFACode
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
         return labels.OpenedAttachment
@@ -235,7 +312,9 @@ export default {
         this.isCampaignHasAllTypes ||
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission ||
+        this.isCampaignAttachmentAndMfaClickOnly
       ) {
         return '#B83A3A'
       }
@@ -258,9 +337,13 @@ export default {
         this.isCampaignHasAllTypes ||
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission
       ) {
         return this.submittedDataIcon
+      }
+      if (this.isCampaignAttachmentAndMfaClickOnly) {
+        return this.mfaIcon
       }
       if (
         this.isCampaignClickOnlyAndAttachment ||
@@ -281,7 +364,9 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
       ) {
         return 'campaign-manager-report-summary-info-card--submitted-data'
       }
@@ -291,18 +376,23 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignClickOnlyAndAttachment
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly
       ) {
         return this.getOpenedAttachmentData
       }
+      if (
+        this.isCampaignClickOnlyAndMfa ||
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return this.getMfaData
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndDataSubmission
       ) {
         return this.getSubmittedData
       }
-      if (this.isCampaignClickOnlyAndMfa || this.isCampaignDataSubmissionAndMfa)
-        return this.getMfaData
       if (this.method === 1) {
         return this.getClickedData
       }
@@ -321,18 +411,23 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignClickOnlyAndAttachment
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignAttachmentAndMfaClickOnly
       ) {
         return labels.OpenedAttachment
       }
+      if (
+        this.isCampaignClickOnlyAndMfa ||
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaDataSubmission
+      )
+        return labels.SubmittedMFACode
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndDataSubmission
       ) {
         return labels.SubmittedData
       }
-      if (this.isCampaignClickOnlyAndMfa || this.isCampaignDataSubmissionAndMfa)
-        return labels.SubmittedMFACode
       if (this.method === 1) {
         return labels.ClickedLink
       }
@@ -352,7 +447,9 @@ export default {
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndMfa ||
-        this.isCampaignDataSubmissionAndMfa
+        this.isCampaignDataSubmissionAndMfa ||
+        this.isCampaignAttachmentAndMfaClickOnly ||
+        this.isCampaignAttachmentAndMfaDataSubmission
       ) {
         return 'campaign-manager-report-summary-info-card--opened-attachment-data'
       }
