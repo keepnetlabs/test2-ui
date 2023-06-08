@@ -36,7 +36,7 @@
 
 <script>
 import Templates from '@/components/SmishingTemplates/Templates'
-import LandingPageList from '@/components/LandingPage/LandingPageList'
+import LandingPageList from '@/components/SmishingLandingPages/LandingPageList'
 import Scenarios from '@/components/SmishingScenarios/Scenarios'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'

@@ -137,7 +137,7 @@
                     Select Text Message Template</v-list-item-title
                   >
                   <v-list-item-subtitle class="new-phishing-scenario__sub-title">
-                    Choose your text message template for the scenario.
+                    Choose your text message template for the scenario
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -243,18 +243,18 @@
                     </div>
                     <div class="summary-content">
                       <div class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!summaryData">
+                        <div class="d-flex flex-column" v-if="!!textMessageTemplate">
                           <div class="template-summary__title">
-                            {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
+                            {{ textMessageTemplate && textMessageTemplate.name }}
                           </div>
                           <div class="template-summary__sub-title mt-2">
                             <span class="font-weight-bold">Text Message:</span>
                             {{ getSummaryTextMessage }}
                           </div>
                         </div>
-                        <div class="d-flex" v-if="!!summaryData">
+                        <div class="d-flex" v-if="!!textMessageTemplate">
                           <v-chip
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
+                            v-if="!!textMessageTemplate"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -267,8 +267,7 @@
                           >
                             {{
                               difficulties.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.difficultyResourceId
+                                (item) => item.value === textMessageTemplate.difficultyResourceId
                               ).text
                             }}
                           </v-chip>
@@ -280,17 +279,16 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
+                            v-if="!!textMessageTemplate"
                           >
                             {{
                               methods.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.categoryResourceId
+                                (item) => item.value === textMessageTemplate.categoryResourceId
                               ).text
                             }}
                           </v-chip>
                           <v-chip
-                            v-if="!!summaryData"
+                            v-if="!!textMessageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               background-color: #757575;
@@ -303,26 +301,9 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{
-                              summaryData.emailTemplate &&
-                              summaryData.emailTemplate.languageShortCode
-                            }}
+                            >{{ textMessageTemplate && textMessageTemplate.languageShortCode }}
                           </v-chip>
                         </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="showTemplate1"
-                      class="summary-content summary-content__collapsable"
-                      style="border: none;"
-                    >
-                      <div class="summary-template">
-                        <KEmailPreview
-                          v-if="!!summaryData.emailTemplate.template"
-                          :key="summaryData.emailTemplate.template"
-                          :html="summaryData.emailTemplate.template"
-                          is-extra-height
-                        />
                       </div>
                     </div>
                   </div>
@@ -352,33 +333,33 @@
                         >
                       </div>
                     </div>
-                    <div v-if="summaryData.landingPageTemplate" class="summary-content">
+                    <div v-if="landingPageTemplate" class="summary-content">
                       <el-tabs
-                        v-if="summaryData.landingPageTemplate.landingPages.length > 1"
+                        v-if="
+                          landingPageTemplate.landingPages &&
+                          landingPageTemplate.landingPages.length > 1
+                        "
                         v-model="selectedTab"
                       >
                         <el-tab-pane
-                          v-for="(template, index) in summaryData.landingPageTemplate.landingPages"
+                          v-for="(template, index) in landingPageTemplate.landingPages"
                           :key="index"
                           :name="`${index + 1}`"
                           :label="`Page ${index + 1}`"
                         >
                           <div class="d-flex justify-space-between">
-                            <div class="d-flex flex-column" v-if="!!summaryData">
+                            <div class="d-flex flex-column" v-if="!!landingPageTemplate">
                               <div class="template-summary__title">
-                                {{
-                                  summaryData.landingPageTemplate &&
-                                  summaryData.landingPageTemplate.name
-                                }}
+                                {{ landingPageTemplate && landingPageTemplate.name }}
                               </div>
                               <div class="template-summary__sub-title mt-2">
                                 <b>URL:</b>
-                                {{ summaryData.landingPageTemplate.urlTemplate }}
+                                {{ landingPageTemplate.urlTemplate }}
                               </div>
                             </div>
-                            <div class="d-flex" v-if="!!summaryData">
+                            <div class="d-flex" v-if="!!landingPageTemplate">
                               <v-chip
-                                v-if="!!summaryData"
+                                v-if="!!landingPageTemplate"
                                 class="template-list--item template-list--item__chip p mr-2"
                                 style="
                                   color: white;
@@ -392,13 +373,12 @@
                                 {{
                                   scenarioDetailsLookup.difficultyTypes.find(
                                     (item) =>
-                                      item.value ===
-                                      summaryData.landingPageTemplate.difficultyTypeId.toString()
+                                      item.value === landingPageTemplate.difficultyTypeId.toString()
                                   ).text
                                 }}
                               </v-chip>
                               <v-chip
-                                v-if="!!summaryData"
+                                v-if="!!landingPageTemplate"
                                 class="template-list--item template-list--item__chip p"
                                 style="
                                   border-radius: 6px;
@@ -410,13 +390,12 @@
                                 {{
                                   scenarioDetailsLookup.methodTypes.find(
                                     (item) =>
-                                      item.value ===
-                                      summaryData.landingPageTemplate.methodTypeId.toString()
+                                      item.value === landingPageTemplate.methodTypeId.toString()
                                   ).text
                                 }}
                               </v-chip>
                               <v-chip
-                                v-if="!!summaryData"
+                                v-if="!!landingPageTemplate"
                                 class="template-list--item template-list--item__chip p"
                                 style="
                                   color: white;
@@ -429,30 +408,24 @@
                                 "
                               >
                                 <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                                >{{
-                                  summaryData.landingPageTemplate &&
-                                  summaryData.landingPageTemplate.languageShortCode
-                                }}
+                                >{{ landingPageTemplate && landingPageTemplate.languageShortCode }}
                               </v-chip>
                             </div>
                           </div>
                         </el-tab-pane>
                       </el-tabs>
                       <div v-else class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!summaryData">
+                        <div class="d-flex flex-column" v-if="!!landingPageTemplate">
                           <div class="template-summary__title">
-                            {{
-                              summaryData.landingPageTemplate &&
-                              summaryData.landingPageTemplate.name
-                            }}
+                            {{ landingPageTemplate && landingPageTemplate.name }}
                           </div>
                           <div class="template-summary__sub-title mt-2">
-                            <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                            <b>URL:</b> {{ landingPageTemplate.urlTemplate }}
                           </div>
                         </div>
-                        <div class="d-flex" v-if="!!summaryData">
+                        <div class="d-flex" v-if="!!landingPageTemplate">
                           <v-chip
-                            v-if="!!summaryData"
+                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -466,13 +439,12 @@
                             {{
                               scenarioDetailsLookup.difficultyTypes.find(
                                 (item) =>
-                                  item.value ===
-                                  summaryData.landingPageTemplate.difficultyTypeId.toString()
+                                  item.value === landingPageTemplate.difficultyTypeId.toString()
                               ).text
                             }}
                           </v-chip>
                           <v-chip
-                            v-if="!!summaryData"
+                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -483,14 +455,12 @@
                           >
                             {{
                               scenarioDetailsLookup.methodTypes.find(
-                                (item) =>
-                                  item.value ===
-                                  summaryData.landingPageTemplate.methodTypeId.toString()
+                                (item) => item.value === landingPageTemplate.methodTypeId.toString()
                               ).text
                             }}
                           </v-chip>
                           <v-chip
-                            v-if="!!summaryData"
+                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               color: white;
@@ -503,10 +473,7 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{
-                              summaryData.landingPageTemplate &&
-                              summaryData.landingPageTemplate.languageShortCode
-                            }}
+                            >{{ landingPageTemplate && landingPageTemplate.languageShortCode }}
                           </v-chip>
                         </div>
                       </div>
@@ -557,8 +524,8 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
-import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
+import SmishingService from '@/api/smishing'
+import LandingPageListPreview from '@/components/SmishingScenarios/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -626,12 +593,13 @@ export default {
       isFetched: false,
       selectedTab: '1',
       summaryData: {},
-      showTemplate1: false,
       showTemplate2: false,
       languageOptions: [],
       methods: [
         { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
-        { text: 'Data Submission', value: 'DYC0gugxJMjT' }
+        { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+        {},
+        { text: 'MFA', value: '67LcW2kHbtds' }
       ],
       difficulties: [
         { text: 'Easy', value: 'mT0CeYGgKsVb' },
@@ -650,12 +618,13 @@ export default {
         name: '',
         description: '',
         methodTypeId: '1',
-        difficultyTypeId: '1',
-        emailTemplateId: null,
+        textTemplateId: null,
         landingPageTemplateId: null,
         languageTypeResourceId: '862249c19aad',
         tags: []
       },
+      landingPageTemplate: null,
+      textMessageTemplate: null,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -672,18 +641,17 @@ export default {
   methods: {
     getMethodTypeDescription(method = '') {
       if (method === 'Click-Only') return 'See who fails for phishing links'
-      return method === 'Data Submission'
-        ? 'Gather information from users'
-        : 'Send a trackable file'
+      return method === 'Data Submission' ? 'Gather information from users' : 'Send a smishing MFA'
     },
     handleInitialTemplate(id) {
       this.initialFormValues.templateResourceId = id
     },
     handleSelectedTemplateChange(item) {
-      this.formValues.template = item
+      this.formValues.textTemplateId = item.id
+      this.textMessageTemplate = item
     },
     handleSelectedTemplateResourceIdChange(id) {
-      this.formValues.templateResourceId = id
+      this.formValues.textTemplateId = id
     },
     getInitialLandingPageTemplateId(id) {
       this.initialFormValues.landingPageTemplateId = id
@@ -694,12 +662,9 @@ export default {
     selectedLandingPageTemplateResourceId(id) {
       this.landingPageTemplateResourceId = id
     },
-    selectedEmailTemplateChange(id, item) {
-      this.formValues.emailTemplateId = id
-      this.selectedEmailTemplate = item
-    },
-    selectedLandingPageChange(id) {
-      this.formValues.landingPageTemplateId = id
+    selectedLandingPageChange(item) {
+      this.formValues.landingPageTemplateId = item.id
+      this.landingPageTemplate = item
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
@@ -762,37 +727,18 @@ export default {
         }
       }
       if (currentStep === 2) {
-        if (!!this.formValues.template || !!this.formValues.templateResourceId) {
+        if (!!this.formValues.textTemplateId && !!this.textMessageTemplate) {
           this.step += 1
         }
       }
-      if (currentStep === 3 && !this.isAttachmentBasedScenario) {
-        if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
-          this.isSubmitDisabled = true
-          getSummaryOfScenario(
-            this.formValues.templateResourceId,
-            this.landingPageTemplateResourceId
-          )
-            .then((response) => {
-              const {
-                data: { data }
-              } = response
-              data.emailTemplate.languageShortCode = this.languageOptions.find(
-                (language) => language.value === data?.emailTemplate?.languageTypeResourceId
-              )?.description
-              data.landingPageTemplate.languageShortCode = this.languageOptions.find(
-                (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
-              )?.description
-              this.emailDifficultyChipColor = this.getDifficultyColor(
-                this.selectedEmailTemplate?.difficultyName || ''
-              )
-              this.summaryData = data
-              this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
-              this.step += 1
-            })
-            .finally(() => {
-              this.isSubmitDisabled = false
-            })
+      if (currentStep === 3) {
+        if (this.formValues.landingPageTemplateId && this.landingPageTemplate) {
+          // SmishingService.previewSmishingScenarioUsedTemplates(
+          //   this.textMessageTemplate.resourceId,
+          //   this.landingPageTemplate.resourceId
+          // ).then((response) => {
+          // })
+          this.step += 1
         }
       }
     },
@@ -808,10 +754,11 @@ export default {
       }
       const payload = {
         ...this.formValues,
-        availableForRequests: this.availableForRequests
+        availableForRequests: this.availableForRequests,
+        methodTypeId: parseInt(this.formValues.methodTypeId)
       }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(payload, this.scenarioId)
+        SmishingService.updateSmishingScenario(this.scenarioId, payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -819,7 +766,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(payload)
+        SmishingService.createSmishingScenario(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -835,7 +782,7 @@ export default {
     },
     'formValues.methodTypeId'(val, oldVal) {
       if (val !== oldVal && !this.isInitial) {
-        this.formValues.emailTemplateId = null
+        this.formValues.textTemplateId = null
         this.formValues.landingPageTemplateId = null
         this.landingPageTemplateId = null
         this.landingPageTemplateResourceId = null
@@ -844,12 +791,8 @@ export default {
     }
   },
   computed: {
-    // TODO: Remove default text message
     getSummaryTextMessage() {
-      return (
-        (this.summaryData.emailTemplate && this.summaryData?.emailTemplate?.textMessage) ||
-        'Please confirm your Microsoft account. {SMISHING_LINK}'
-      )
+      return this.textMessageTemplate?.template
     },
     getSelectedMethod() {
       return this.formValues?.methodTypeId
@@ -892,9 +835,12 @@ export default {
         : null
     },
     getLandingPageDifficultyColor() {
-      const difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
-        (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
-      )?.text
+      let difficultyType = ''
+      if (this.landingPageTemplate) {
+        difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
+          (item) => item.value === this.landingPageTemplate.difficultyTypeId.toString()
+        )?.text
+      }
       if (difficultyType === 'Easy') return '#217124'
       else if (difficultyType === 'Medium') return '#2196F3'
       else return '#F56C6C'
@@ -903,11 +849,24 @@ export default {
       return !this.editItemsDisabled
     },
     getDifficultyType() {
-      return (
-        this.scenarioDetailsLookup['difficultyTypes'].find(
-          (item) => item.value === this.generalDifficultyTypeId
-        )?.text || ''
-      )
+      if (this.textMessageTemplate && this.landingPageTemplate) {
+        const textMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
+          'difficultyTypes'
+        ].find((item) => item.text === this.textMessageTemplate?.difficultyName)?.value
+        const landingMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
+          'difficultyTypes'
+        ].find((item) => item.text === this.landingPageTemplate?.difficulty)?.value
+        const maxDifficulty = Math.max(
+          parseInt(textMessageTemplateDifficultyValue),
+          parseInt(landingMessageTemplateDifficultyValue)
+        )
+        return (
+          this.scenarioDetailsLookup['difficultyTypes'].find(
+            (item) => item.value === maxDifficulty.toString()
+          )?.text || ''
+        )
+      }
+      return ''
     },
     getMethodText() {
       return (
@@ -917,10 +876,9 @@ export default {
       )
     },
     getCurrentLandingPageTemplate() {
-      return this.summaryData.landingPageTemplate?.landingPages?.length > 1
-        ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
-            .content || ''
-        : this.summaryData.landingPageTemplate.landingPages[0].content || ''
+      return this.landingPageTemplate?.landingPages?.length > 1
+        ? this.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1].content || ''
+        : this.landingPageTemplate.landingPages[0].content || ''
     }
   },
   created() {
@@ -938,14 +896,13 @@ export default {
     }
     if (this.isEdit) {
       this.isSubmitDisabled = true
-      getScenario(this.scenarioId)
+      SmishingService.getSmishingScenario(this.scenarioId)
         .then((response) => {
           this.formValues = response.data.data
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-          this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
+          this.formValues.textTemplateId = response.data.data.textTemplateId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
           const availableForList = response?.data?.data?.availableForList

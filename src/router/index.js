@@ -28,6 +28,7 @@ import SmishingScenarios from '@/views/SmishingScenarios'
 import Sandbox from '@/views/Sandbox'
 import Settings from '@/views/Settings'
 import SmishingSettings from '@/views/SmishingSettings'
+import SmishingReport from '@/views/SmishingReport'
 import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
@@ -361,6 +362,19 @@ const router = new Router({
             parentName: 'Smishing Simulator',
             // TODO: Change permissionStoreKey
             permissionStoreKey: 'permissions/getSettingsLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/smishing-report/:id/:instanceGroup',
+          name: 'Smishing Report',
+          component: SmishingReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Smishing Campaign Manager',
+            // TODO: Change permissionStoreKey
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           },
           props: true,
           params: true

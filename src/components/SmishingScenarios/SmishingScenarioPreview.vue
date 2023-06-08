@@ -19,12 +19,8 @@
           label="Text Message"
         >
           <div class="template-preview pt-4">
-            <!-- TODO: Replace email template params with text message params -->
-            <div class="template-preview__text" v-if="!!emailTemplate">
-              <div>
-                <span class="template-preview__text--title">Text Message: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              </div>
+            <div class="template-preview__text" v-if="!!textTemplate">
+              <span class="template-preview__text--body">{{ textTemplateParams.template }}</span>
             </div>
           </div>
         </el-tab-pane>
@@ -58,7 +54,7 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -80,10 +76,10 @@ export default {
   },
   data() {
     return {
-      emailTemplate: null,
+      textTemplate: null,
       landingPageTemplates: [],
       selectedLandingPageIndex: 0,
-      emailTemplateParams: {},
+      textTemplateParams: {},
       landingPageParams: {},
       tab: 'textMessage',
       isLoading: false,
@@ -120,33 +116,18 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      getPhishingScenarioLandingPageAndEmailTemplate(this.selectedRow.resourceId)
+      SmishingService.previewSmishingScenario(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
-          const {
-            template,
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            phishingFileName,
-            subject
-          } = emailTemplate || {}
+          const { textTemplate, landingPageTemplate } = data
+          const { template, name, difficultyResourceId } = textTemplate || {}
 
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
+          this.textTemplateParams = {
             name,
-            subject,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null
+            template,
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
           }
-          this.emailTemplate = template
+          this.textTemplate = template
 
           const {
             name: landingPageName,

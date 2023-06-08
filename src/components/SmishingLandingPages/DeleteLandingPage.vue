@@ -2,20 +2,20 @@
   <app-dialog
     type="delete"
     icon="mdi-delete"
-    title="Delete Scenario?"
-    subtitle="Scenario will deleted permanently"
-    title-id="text--scenario-delete-popup-title"
-    subtitle-id="text--scenario-delete-popup-subtitle"
+    title="Delete Landing Page Template?"
+    subtitle="Landing Page will deleted permanently"
+    title-id="text--email-landing-page-delete-popup-title"
+    subtitle-id="text--email-landing-page-delete-popup-subtitle"
     :status="status"
     @changeStatus="closeModal"
   >
     <template #app-dialog-body>
-      {{ selectedScenario && selectedScenario.name }} will be deleted.
+      {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
     </template>
     <template #app-dialog-footer>
       <app-dialog-footer
-        cancel-button-id="btn-cancel--scenario-popup"
-        confirm-button-id="btn-delete--scenario-popup"
+        cancel-button-id="btn-cancel--email-landing-page-popup"
+        confirm-button-id="btn-delete--email-landing-page-popup"
         type="delete"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="closeModal"
@@ -26,11 +26,12 @@
 </template>
 
 <script>
-import AppDialog from '@/components//AppDialog'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import SmishingService from '@/api/smishing'
+import { deleteLandingPage } from '@/api/landingPage'
 export default {
-  name: 'DeleteSmishingScenario',
+  name: 'DeleteIntegration',
   components: {
     AppDialog,
     AppDialogFooter
@@ -39,7 +40,7 @@ export default {
     status: {
       type: Boolean
     },
-    selectedScenario: {
+    selectedEmailTemplate: {
       type: Object
     }
   },
@@ -54,9 +55,9 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      SmishingService.deleteSmishingScenario(this.selectedScenario.resourceId)
+      SmishingService.deleteLandingPageTemplate(this.selectedEmailTemplate.resourceId)
         .then(() => {
-          this.$emit('handleSuccessDeleteAction', this.selectedScenario)
+          this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
           this.closeModal()
         })
         .finally(() => {

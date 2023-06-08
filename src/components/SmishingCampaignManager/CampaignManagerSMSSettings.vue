@@ -1,9 +1,11 @@
 <template>
   <v-form ref="refForm">
     <InputCallerPhoneNumber
-      v-model="formData.callerPhoneNumber"
       title="Sender Phone Number"
       subTitle="Select the SMS sender phone number"
+      :defaultPhoneNumbers="phoneNumbers"
+      :value="formData.phoneNumber"
+      @input="handlePhoneNumberChange"
     />
     <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
       <div class="campaign-manager-advanced-settings__distribution-item">
@@ -26,19 +28,18 @@
           >Send SMS with delay every
         </label>
         <v-text-field
-          v-model="formData.distributionSmtpDelayEvery"
+          v-model="formData.distributionDelayEvery"
           v-mask="'###'"
           id="input--campaign-manager-advanced-settings-time"
           outlined
           class="edit-name-textfield edit-select standard-height ml-2"
           hide-details
           style="max-width: 48px;"
-          :disabled="!distributionEmailOverTimeDisableStatus"
           :rules="rules.number"
           @input="callForCalculateSendingInfo"
         ></v-text-field>
         <KSelect
-          v-model.trim="formData.distributionSmtpDelayTimeTypeId"
+          v-model.trim="formData.distributionDelayTimeTypeId"
           id="input--campaign-manager-advanced-settings-time-type"
           class="ml-2"
           outlined
@@ -47,13 +48,12 @@
           placeholder="Select a item"
           style="max-width: 118px;"
           :items="formDetails['distributionSmtpDelayTimeTypes']"
-          :disabled="!distributionEmailOverTimeDisableStatus"
           @change="callForCalculateSendingInfo"
         />
       </div>
     </FormGroup>
     <div
-      v-if="formData.callerPhoneNumber"
+      v-if="formData.smsProviderNumberResourceId"
       class="campaign-manager-advanced-settings__distribution-text mt-6"
     >
       {{ getDistributionText }}
@@ -67,15 +67,12 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
-import {
-  calculateSendingInfo,
-  getDefaultCompanySmtpSetting,
-  getEmailDeliveries
-} from '@/api/phishingsimulator'
+import { calculateSendingInfo } from '@/api/phishingsimulator'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
+import SmishingService from '@/api/smishing'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
@@ -130,16 +127,14 @@ export default {
       isShowSmtpInputError: false,
       testEmailErrorMessage: '',
       emailDelivery: null,
+      phoneNumbers: [],
+      phoneNumberItems: [],
       formData: {
-        callerPhoneNumber: '',
-        smtpSettingResourceId: '',
-        directEmailSettingResourceId: '',
-        emailDeliverySettingType: '',
-        distributionTypeId: '1',
-        distributionSmtpDelayEvery: 20,
-        distributionEmailOverTimeTypeId: '1',
-        distributionEmailOver: 8,
-        distributionSmtpDelayTimeTypeId: '1',
+        phoneNumber: '',
+        smsProviderNumberResourceId: '',
+        distributionTypeId: 1,
+        distributionDelayEvery: 20,
+        distributionDelayTimeTypeId: 1,
         sendingLimit: 50
       },
       commonRules: {
@@ -156,16 +151,16 @@ export default {
       }
     }
   },
+  created() {
+    this.callForPhoneNumbers()
+  },
   computed: {
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
-    distributionEmailOverTimeDisableStatus() {
-      return this.formData.distributionTypeId === '1'
-    },
     getDistributionText() {
       return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take ${this.getApproximatedTime}.`
+        ? `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take ${this.getApproximatedTime}.`
         : `Sending  ${this.formData.sendingLimit} SMS every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
@@ -188,13 +183,13 @@ export default {
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionSmtpDelayTimeTypes']
         ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
-            (item) => item.value === this.formData.distributionSmtpDelayTimeTypeId
+            (item) => item.value === this.formData.distributionDelayTimeTypeId
           )?.text
         : ''
     },
     getDistributionTextRenderStatus() {
       return this.formData.distributionTypeId === '1'
-        ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
+        ? this.formData.sendingLimit && this.formData.distributionDelayEvery
         : this.formData.sendingLimit && this.formData.distributionEmailOver
     },
     getApproximatedTime() {
@@ -235,38 +230,34 @@ export default {
     }
   },
   watch: {
-    defaultValues(val) {
-      for (const key of Object.keys(val)) {
-        if (key === 'smtpSetting' && val[key] && typeof val[key] === 'object') {
-          this.formData.smtpSettingResourceId = val[key].value
-          this.emailDelivery = {
-            name: val[key].text,
-            resourceId: val[key].value,
-            type: EMAIL_DELIVERY_TYPES.SMTP
-          }
-        } else if (key === 'directEmailSetting' && val[key] && typeof val[key] === 'object') {
-          this.formData.directEmailSettingResourceId = val[key].value
-          this.emailDelivery = {
-            name: val[key].text,
-            resourceId: val[key].value,
-            type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-          }
-        } else if (key === 'distributionTypeId') {
-          this.formData.distributionTypeId = '1'
-        } else {
-          this.formData[key] = val[key]
-        }
+    defaultValues: {
+      deep: true,
+      handler(val) {
+        this.formData = { ...this.formData, ...val }
       }
     },
     totalTargetUserCount() {
       this.callForCalculateSendingInfo()
     }
   },
-  created() {
-    this.callForDefaultSmtpSetting()
-    this.callForEmailDeliveries()
-  },
   methods: {
+    handlePhoneNumberChange(phoneNumber) {
+      const phoneNumberIndex = this.phoneNumberItems.findIndex(
+        (item) => item.phoneNumber === phoneNumber
+      )
+      if (phoneNumberIndex !== -1) {
+        this.formData.smsProviderNumberResourceId = this.phoneNumberItems[
+          phoneNumberIndex
+        ].resourceId
+        this.formData.phoneNumber = phoneNumber
+      }
+    },
+    callForPhoneNumbers() {
+      SmishingService.getSmishingPhoneNumbers().then((response) => {
+        this.phoneNumberItems = response.data.data
+        this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
+      })
+    },
     validateForm() {
       let isValid = this.$refs.refForm.validate()
       return isValid
@@ -284,52 +275,15 @@ export default {
     toggleShowSmtpErrorDialog() {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
-    callForEmailDeliveries() {
-      getEmailDeliveries().then((res) => {
-        const {
-          data: { data: { results = [] } = {} }
-        } = res || {}
-        const deliveries = []
-        const smtpItems = results.filter((item) => item.type === EMAIL_DELIVERY_TYPES.SMTP)
-        if (smtpItems.length) {
-          deliveries.push({ header: 'SMTP' })
-          deliveries.push(...smtpItems)
-        }
-        const directEmailItems = results.filter(
-          (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-        )
-        if (directEmailItems.length) {
-          deliveries.push({ header: 'Direct Email Creation' })
-          deliveries.push(...directEmailItems)
-        }
-        this.emailDeliveryItems = deliveries
-        this.$nextTick(() => {
-          //setting default smtp setting
-          if (this.isEdit || !this.formData.smtpSettingResourceId) return
-          this.emailDelivery =
-            deliveries.find((item) => item.resourceId === this.formData.smtpSettingResourceId) || {}
-        })
-      })
-    },
-    callForDefaultSmtpSetting() {
-      if (this.isEdit) return
-      getDefaultCompanySmtpSetting().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.formData.smtpSettingResourceId = data.resourceId
-        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
-      })
-    },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
-      if (!this.formData.distributionSmtpDelayEvery) return
+      if (!this.formData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
           distributionTypeId: this.formData.distributionTypeId,
-          distributionSmtpDelayEvery: this.formData.distributionSmtpDelayEvery,
-          distributionSmtpDelayTimeTypeId: this.formData.distributionSmtpDelayTimeTypeId,
+          distributionDelayEvery: this.formData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.formData.distributionDelayTimeTypeId,
           distributionEmailOver: this.formData.distributionEmailOver,
           distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
           sendingLimit: this.formData.sendingLimit,
@@ -340,7 +294,7 @@ export default {
             .sendRandomlyUsersCalculateTypeId,
           totalTargetUserCount: this.totalTargetUserCount
         }
-        if (payload.distributionSmtpDelayEvery) {
+        if (payload.distributionDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
             const {
               data: { data }
@@ -351,83 +305,6 @@ export default {
           })
         }
       }, 500)
-    },
-    handleTestConnectionChange() {
-      try {
-        this.callForTestConnection()
-      } catch (e) {}
-    },
-    callForGetSmtpSetting() {
-      return getSmtpSettings(this.formData.smtpSettingResourceId).then((response) => {
-        const {
-          data: {
-            data: { password, serverAddress, serverPort, useAuthentication, useSSL, userName } = {}
-          } = {}
-        } = response
-        return {
-          serverAddress,
-          port: serverPort,
-          userName,
-          password,
-          resourceId: this.formData.smtpSettingResourceId,
-          useAuthentication,
-          useSSL
-        }
-      })
-    },
-    async callForTestConnection() {
-      if (this?.emailDelivery?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) return
-      this.$emit('set-action-button-disability', true)
-      try {
-        this.isTestingConnection = true
-        const smtpData = await this.callForGetSmtpSetting()
-        const { fromAddress, fromName, template } = this.selectedPhishingScenario
-        const payload = {
-          ...smtpData,
-          to: this.$store.state.auth.user.email,
-          from: fromAddress,
-          fromName,
-          message: template
-        }
-        try {
-          await testConnection(payload)
-          this.isTestMailSend = true
-          this.isShowSmtpInputError = false
-          this.$nextTick(() => {
-            this.testEmailErrorMessage = ''
-          })
-          return true
-        } catch (error) {
-          if (!error) return
-          const { response } = error
-          const { data: { message = '', Message = '' } = {} } = response
-          const errorMessage = message || Message
-          this.testEmailErrorMessage =
-            errorMessage ||
-            'You cannot use this scenario with this SMTP setting.If you are going to keep it like that, there will be some errors in the campaign.'
-          this.isShowSmtpInputError = true
-        } finally {
-          this.isTestingConnection = false
-        }
-      } catch (e) {
-      } finally {
-        this.$emit('set-action-button-disability', false)
-      }
-    },
-    handleChangeEmailDelivery(delivery = {}) {
-      this.buttonKey = createRandomCryptStringNumber()
-      this.isTestMailSend = false
-      this.isShowSmtpInputError = false
-      this.testEmailErrorMessage = ''
-      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        this.formData.smtpSettingResourceId = delivery.resourceId
-        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
-        this.formData.directEmailSettingResourceId = ''
-      } else {
-        this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-        this.formData.directEmailSettingResourceId = delivery.resourceId
-        this.formData.smtpSettingResourceId = ''
-      }
     }
   }
 }

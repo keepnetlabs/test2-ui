@@ -168,9 +168,9 @@
                     label="Text Message"
                   >
                     <div class="template-preview pt-0">
-                      <div class="template-preview__text pl-2" v-if="!!emailTemplate">
+                      <div class="template-preview__text pl-2" v-if="!!textTemplate">
                         <div>
-                          <span>{{ emailTemplateParams.textMessage }}</span>
+                          <span>{{ textTemplateParams.textMessage }}</span>
                         </div>
                       </div>
                     </div>
@@ -283,9 +283,7 @@
 </template>
 
 <script>
-// TODO: Change endpoint
-import { getScenario, getScenariosList } from '@/api/scenarios'
-
+import SmishingService from '@/api/smishing'
 const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
 }
@@ -294,7 +292,6 @@ import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
@@ -353,8 +350,8 @@ export default {
       method: '',
       difficulty: '',
       language: '',
-      emailTemplate: null,
-      emailTemplateParams: null,
+      textTemplate: null,
+      textTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
       selectedLandingPageTab: '1',
@@ -366,24 +363,17 @@ export default {
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },
-    getPhishingFile() {
-      return this.emailTemplateParams?.phishingFileName
-        ? {
-            name: this.emailTemplateParams?.phishingFileName
-          }
-        : null
-    },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`
     },
     getTableEmptyTextMessage() {
       return this.isFilterOrSearchActive
         ? 'Sorry, that search and filter criteria has no results.'
-        : 'You do not have any Phishing Scenarios'
+        : 'You do not have any Smishing Scenarios'
     },
     getTableEmptySubMessage() {
       return this.isFilterOrSearchActive
-        ? 'Go to Phishing Simulator>Phishing Scenarios to create a new scenario'
+        ? 'Go to Smishing Simulator>Smishing Scenarios to create a new scenario'
         : 'Please try adjusting your search or filter'
     },
     isFilterOrSearchActive() {
@@ -541,66 +531,51 @@ export default {
         : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
-      getScenario(resourceId).then((response) => {
+      SmishingService.getSmishingScenario(resourceId).then((response) => {
         const {
           data: { data }
         } = response
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
           this.phishingScenarioItems.push(data)
         }
-        this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
         this.selectedTemplateResourceId = resourceId
-        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
-          (response) => {
-            const { data: { data = {} } = {} } = response
-            const { emailTemplate, landingPageTemplate, methodTypeId } = data
-            const {
-              template,
-              fromName,
-              fromAddress,
-              name,
-              difficultyResourceId,
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName,
-              subject
-            } = emailTemplate || {}
+        SmishingService.previewSmishingScenario(resourceId).then((response) => {
+          const { data: { data = {} } = {} } = response
+          const { textTemplate, landingPageTemplate, methodTypeId } = data
+          const {
+            template,
+            name,
+            difficultyResourceId,
+            languageTypeResourceId: languageOfEmailTemplate
+          } = textTemplate || {}
 
-            this.emailTemplateParams = {
-              textMessage:
-                emailTemplate?.textMessage ||
-                'Please confirm your Microsoft account. {PHISHING_LINK}',
-              fromName,
-              fromAddress,
-              name,
-              subject,
-              difficulty:
-                difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName
-            }
-            this.emailTemplate = template
-            const {
-              name: landingPageName = '',
-              description,
-              landingPages,
-              urlTemplate,
-              difficultyTypeId,
-              languageTypeResourceId
-            } = landingPageTemplate || {}
-            this.landingPageParams = {
-              name: landingPageName,
-              description,
-              urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-              method: methods[methodTypeId - 1]?.text || '',
-              languageTypeResourceId
-            }
-            this.landingPageTemplates = landingPages || []
-            this.tab = 'textMessage'
+          this.textTemplateParams = {
+            textMessage: template,
+            name,
+            difficulty:
+              difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
+            languageTypeResourceId: languageOfEmailTemplate
           }
-        )
+          this.textTemplate = template
+          const {
+            name: landingPageName = '',
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            languageTypeResourceId
+          } = landingPageTemplate || {}
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+            method: methods[methodTypeId - 1]?.text || '',
+            languageTypeResourceId
+          }
+          this.landingPageTemplates = landingPages || []
+          this.tab = 'textMessage'
+        })
       })
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
@@ -613,7 +588,7 @@ export default {
       } else if (this.value.length && this.isEdit) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }
-      getScenariosList(this.axiosPayload).then((response) => {
+      SmishingService.searchSmishingScenarios(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response

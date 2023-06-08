@@ -97,7 +97,11 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps, METHOD_TYPES } from '@/components/CampaignManager/utils'
+import {
+  COLUMNS,
+  getStatusBadgeProps,
+  METHOD_TYPES
+} from '@/components/SmishingCampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -105,7 +109,7 @@ import {
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
-import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -163,7 +167,6 @@ export default {
           COLUMNS.SCENARIO_COUNT,
           COLUMNS.METHOD,
           COLUMNS.CREATEDBY,
-          COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
         ],
@@ -207,7 +210,7 @@ export default {
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-          // TODO: Change permission key
+            // TODO: Change permission key
             disabled: !this.$store.getters['permissions/getCampaignManagerParentDeletePermissions']
           }
         ],
@@ -248,7 +251,7 @@ export default {
     callForData() {
       if (this.getCampaignManagerParentSearchPermissions) {
         this.setLoading(true)
-        searchCampaignManager(this.axiosPayload)
+        SmishingService.searchSmishingCampaigns(this.axiosPayload)
           .then((response) => {
             const {
               data: { data = {} }
@@ -293,10 +296,11 @@ export default {
       //   this.$emit('no-target-group')
       //   return
       // }
-      if (!this.tableData?.length) {
-        this.$emit('no-scenario')
-        return
-      }
+      // TODO: Check scenario count
+      // if (!this.scenarioCount?.length) {
+      //   this.$emit('no-scenario')
+      //   return
+      // }
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
@@ -311,7 +315,7 @@ export default {
             exportType: item === 'XLS' ? 'Excel' : item,
             filter: this.axiosPayload.filter
           }
-          exportCampaignManager(payload).then((response) => {
+          SmishingService.exportSmishingCampaigns(payload).then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)

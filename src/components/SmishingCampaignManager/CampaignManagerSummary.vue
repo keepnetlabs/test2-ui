@@ -81,48 +81,45 @@
       >
         <template #body>
           <div
-            v-if="isFormData && emailTemplateParams && phishingScenarios.length"
+            v-if="isFormData && textTemplateParams && phishingScenarios.length"
             class="campaign-manager-last-step__email-template-body pb-4"
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ emailTemplateParams.name }}
+                {{ textTemplateParams.name }}
               </div>
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
                   size="mini"
-                  :color="getBadgeColor(emailTemplateParams.difficulty)"
-                  :text="getBadgeText(emailTemplateParams.difficulty)"
+                  :color="getBadgeColor(textTemplateParams.difficulty)"
+                  :text="getBadgeText(textTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
-                  v-if="landingPageParams.method || emailTemplateParams.method"
+                  v-if="landingPageParams.method || textTemplateParams.method"
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(landingPageParams.method || emailTemplateParams.method)"
+                  :text="getBadgeText(landingPageParams.method || textTemplateParams.method)"
                   :outline="false"
                 />
                 <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                   <template #content>
-                    <v-icon>mdi-web</v-icon>{{ emailTemplateParams.languageShortCode }}
+                    <v-icon>mdi-web</v-icon>{{ textTemplateParams.languageShortCode }}
                   </template>
                 </Badge>
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Text Message: {{ emailTemplateParams.textMessage }}
+              Text Message: {{ textTemplateParams.template }}
             </div>
           </div>
         </template>
       </CampaignManagerSummaryCard>
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerReportSummaryLandingPage
-        v-if="!isAttachmentBasedScenario"
-        :formData="landingPageParams"
-      />
+      <CampaignManagerReportSummaryLandingPage :formData="landingPageParams" />
     </div>
   </div>
 </template>
@@ -138,6 +135,7 @@ import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSetti
 import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 
 export default {
@@ -171,7 +169,7 @@ export default {
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
       selectedScenarioName: '',
-      emailTemplateParams: {},
+      textTemplateParams: {},
       landingPageParams: {}
     }
   },
@@ -224,16 +222,6 @@ export default {
     },
     isFormData() {
       return Object.keys(this.formData).length
-    },
-    getPhishingFile() {
-      return this?.emailTemplateParams?.phishingFileName
-        ? {
-            name: this?.emailTemplateParams?.phishingFileName
-          }
-        : null
-    },
-    getAttachments() {
-      return this?.emailTemplateParams?.attachments || []
     },
     isAttachmentBasedScenario() {
       return this.landingPageParams?.method === 'Attachment' || false
@@ -299,16 +287,12 @@ export default {
       return totalActiveUsersCount
     },
     getSettingsItems() {
-      const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
+      const { selectedSchedule, duration, senderPhoneNumber } = this.formData
       const obj = {
-        Starting: selectedSchedule
+        Starting: selectedSchedule,
+        Duration: duration,
+        'Sender Phone Number': senderPhoneNumber
       }
-      if (selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        obj['Sending Limit'] = sendingLimit
-      }
-      obj['Email Delivery'] = `${
-        selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
-      } - ${selectedEmailDelivery.name}`
       return obj
     },
     getOtherSettingsItems() {
@@ -349,39 +333,26 @@ export default {
         this.selectedScenarioName = this.phishingScenarios[parseInt(event.index)].name
       }
       this.isScenarioDetailLoading = true
-      getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
+      SmishingService.previewSmishingScenario(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate, methodTypeId } = data
+          const { textTemplate, landingPageTemplate, methodTypeId } = data
           const {
             template,
-            fromName,
-            fromAddress,
             name,
             difficultyResourceId,
-            attachments,
-            languageTypeResourceId: languageOfEmailTemplate,
-            phishingFileName,
-            subject
-          } = emailTemplate || {}
+            languageTypeResourceId: languageOfEmailTemplate
+          } = textTemplate || {}
 
-          this.emailTemplateParams = {
-            textMessage:
-              emailTemplate?.textMessage ||
-              'Please confirm your Microsoft account. {PHISHING_LINK}',
-            fromName,
-            fromAddress,
+          this.textTemplateParams = {
             name,
-            subject,
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
-            attachments,
             languageTypeResourceId: languageOfEmailTemplate,
-            phishingFileName,
             template
           }
-          this.emailTemplateParams.languageShortCode = this.languageOptions.find(
-            (language) => language.value === this.emailTemplateParams.languageTypeResourceId
+          this.textTemplateParams.languageShortCode = this.languageOptions.find(
+            (language) => language.value === this.textTemplateParams.languageOfEmailTemplate
           )?.text
           const {
             name: landingPageName = '',

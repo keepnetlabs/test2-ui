@@ -1,5 +1,5 @@
 <template>
-  <div id="smishing-templates">
+  <div id="landingPageList">
     <v-overlay
       id="add-new-community-overlay"
       :value="modalStatus"
@@ -8,48 +8,49 @@
       color="white"
       v-if="modalStatus"
     >
-      <NewSmishingTemplate
-        ref="newEmailTemplate"
+      <NewLandingPage
+        ref="newLandingPage"
         :status="modalStatus"
         :emailTemplateId="emailTemplateId"
         :isEdit="isEdit"
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
+        :landingPageData="landingPageData"
         @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
-        @showRenameAttachmentModal="onShowRenameAttachmentModal"
       />
     </v-overlay>
-    <DeleteTemplateModal
+    <DeleteEmailTemplates
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
     />
-    <AppDialog
+    <app-dialog
       v-if="isTemplateDetails"
-      custom-size="668"
+      custom-size="1600"
       max-height
       max-height-size="900"
-      icon="mdi-eye"
-      title="Text Message Template Preview"
       :status="isTemplateDetails"
-      :subtitle="selectedTemplateHeader"
       @changeStatus="isTemplateDetails = false"
+      icon="mdi-eye"
+      :title="selectedTemplateHeader"
+      :subtitle="'Landing Page Template Preview'"
+      :size="'ultraMaximum'"
     >
       <template v-slot:app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="d-flex flex-column py-6">
-            <span class="mb-2 text-body-1">Text Message</span>
-            <span class="text-body-1">{{ template }}</span>
-          </div>
-        </div>
+        <LandingPageTemplateModalPreview
+          v-show="!isPreviewLoading"
+          :templateName="landingPageParams.name"
+          :landingPageTemplates="landingPageTemplates"
+          :phishingUrl="landingPageParams.urlTemplate"
+        />
       </template>
-      <template #app-dialog-footer>
+      <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
-            id="btn-close--email-preview-popup"
+            id="btn-close--landing-page-preview-popup"
             class="pa-0 k-dialog__button"
             text
             color="#2196f3"
@@ -58,12 +59,12 @@
           </v-btn>
         </div>
       </template>
-    </AppDialog>
+    </app-dialog>
 
     <data-table
-      v-if="getEmailTemplatesSearchPermissions"
-      id="emailTemplates-data-table"
-      ref="refEmailTemplatesList"
+      v-if="getLandingPageTemplatesSearchPermissions"
+      id="landingPage-data-table"
+      ref="refLandingPageList"
       is-server-side
       selectable
       filterable
@@ -75,9 +76,9 @@
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :download-button="tableOptions.downloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :download-button="tableOptions.downloadButton"
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
@@ -85,7 +86,7 @@
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewEmailTemplateModalStatus(true)"
-      @downloadEvent="exportEmailTemplates"
+      @downloadEvent="exportLandingPage"
       @handleMultipleDelete="handleActionDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -97,11 +98,11 @@
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
-          :scope="scope"
           :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
-          :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
         />
@@ -114,8 +115,8 @@
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
-            :scope="scope"
             :id="tableOptions.rowActions[2].id"
+            :scope="scope"
             :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
@@ -138,32 +139,32 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import NewSmishingTemplate from '@/components/SmishingTemplates/NewTemplate'
-import DeleteTemplateModal from '@/components/SmishingTemplates/DeleteTemplateModal'
+import DeleteEmailTemplates from '@/components/SmishingLandingPages/DeleteLandingPage'
+import NewLandingPage from '@/components/SmishingLandingPages/NewLandingPage'
 import AppDialog from '@/components/AppDialog'
-import SmishingService from '@/api/smishing'
 import {
   getStoreValue,
   PROPERTY_STORE,
-  LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import SmishingService from '@/api/smishing'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+
 export default {
-  name: 'SmishingTemplates',
+  name: 'EmailTemplates',
   components: {
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
@@ -172,40 +173,31 @@ export default {
     DefaultButtonRowAction,
     DatatableLoading,
     DataTable,
-    DeleteTemplateModal,
-    NewSmishingTemplate,
-    AppDialog
+    DeleteEmailTemplates,
+    NewLandingPage,
+    AppDialog,
+    LandingPageTemplateModalPreview
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
-      attachmentName: '',
-      isRenameAttachmentModalVisible: false,
-      languageFilterOptions: [],
+      landingPageData: null,
       editableFormValues: {},
-      timeoutId: '',
-      emailTemplateParams: {},
       loading: true,
       isEdit: false,
       isDuplicate: false,
       emailTemplateId: null,
+      landingPageParams: {},
+      selectedLandingPageIndex: 0,
+      landingPageTemplates: [],
+      isPreviewLoading: false,
       labels,
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
-      isPreviewLoading: false,
       selectedEmailTemplate: {},
-      commonRules: {
-        hint: '*Required',
-        persistentHint: true,
-        rules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
-      },
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SMISHING_TEMPLATES,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SMISHING_TEMPLATES,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.LANDINGPAGES,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -215,10 +207,22 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            // type: "slot",
             fixed: 'left',
             width: 240,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            filterableType: 'text'
+          },
+          {
+            property: 'method',
+            align: 'left',
+            editable: false,
+            label: labels.Method,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 240,
+            filterableType: 'select'
           },
           {
             property: PROPERTY_STORE.LANGUAGE,
@@ -245,11 +249,10 @@ export default {
             type: 'smallBadge',
             width: 150,
             hasTooltip: true,
-            filterableType: 'text',
-            filterableCustomFieldName: PROPERTY_STORE.TAGS
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.DIFFICULTY,
+            property: 'difficulty',
             align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
@@ -257,25 +260,7 @@ export default {
             show: true,
             type: 'status',
             filterableType: 'select',
-            filterableItems: [
-              { text: 'Easy', value: 'mT0CeYGgKsVb' },
-              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-              { text: 'Hard', value: 'c4LCGEB9MayB' }
-            ],
-            width: 180,
-            filterableCustomFieldName: 'DifficultyResourceId'
-          },
-          {
-            property: PROPERTY_STORE.CREATEDBY,
-            align: 'left',
-            editable: false,
-            label: 'Created By',
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
-            filterableType: 'text'
+            width: 180
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -288,6 +273,18 @@ export default {
             type: 'text',
             filterableType: 'date',
             filterableCustomFieldName: 'createTime'
+          },
+          {
+            property: PROPERTY_STORE.CREATEDBY,
+            align: 'left',
+            editable: false,
+            label: 'Created By',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 180,
+            filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },
           {
             property: 'availableFor',
@@ -306,35 +303,32 @@ export default {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview',
-            id: 'btn-preview--email-templates-row-actions'
+            id: 'btn-preview--landing-page-templates-row-actions'
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
-            id: 'btn-edit--email-templates-row-actions'
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions'],
+            id: 'btn-edit--landing-page-templates-row-actions'
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
-            action: 'disable',
-            id: 'btn-duplicate--email-templates-row-actions'
+            action: 'duplicate',
+            id: 'btn-duplicate--landing-page-templates-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
-            id: 'btn-delete--email-templates-row-actions'
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions'],
+            id: 'btn-delete--landing-page-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          disabled: !this.$store.getters['permissions/getLandingPageTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -343,18 +337,17 @@ export default {
           download: false
         },
         empty: {
-          message: LABEL_STORE.NO_EMAIL_TEMPLATES,
+          message: 'You do not have any landing page template',
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--emailTemplates'
+          id: 'btn-empty--landingPage'
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Template',
-          id: 'btn-add--emailTemplates',
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          id: 'btn-add--landingPage',
+          disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
         }
       },
       modalStatus: false,
@@ -362,143 +355,41 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
-      template: null,
-      templateHTML: null
+      templateHTML: null,
+      timeoutId: ''
     }
   },
-  // TODO: change permission key
   computed: {
     ...mapGetters({
-      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
+      getLandingPageTemplatesSearchPermissions:
+        'permissions/getLandingPageTemplatesSearchPermissions'
     }),
-    getTextMessage() {
-      return this.emailTemplateParams?.template
+    hasLandingPageTemplate() {
+      return this.landingPageTemplates.length > 0
+    },
+    getCurrentLandingPageTemplate() {
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    hasNextTemplate() {
+      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
+    },
+    hasPreviousTemplate() {
+      return this.selectedLandingPageIndex > 0
     }
   },
   created() {
-    this.callForLanguages('refEmailTemplatesList')
+    this.callForLanguages('refLandingPageList')
+    this.callForLookups()
     this.callForData()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
-    onShowRenameAttachmentModal() {
-      this.isRenameAttachmentModalVisible = true
-    },
-    onCloseRenameAttachmentModal() {
-      this.attachmentName = ''
-      this.isRenameAttachmentModalVisible = false
-    },
-    onConfirmRenameAttachment() {
-      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
-        if (this.$refs.newEmailTemplate) {
-          let fileExtension = ''
-          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
-          if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
-            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
-              '.'
-            )[1]
-            const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              new File([file], `${this.attachmentName}.${fileExtension}`, {
-                type
-              })
-            ]
-          } else {
-            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
-              '.'
-            )[1]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              {
-                ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-                fileName: `${this.attachmentName}.${fileExtension}`
-              }
-            ]
-          }
-          this.$refs.newEmailTemplate.isPhishingFileModified = true
-        }
-        this.onCloseRenameAttachmentModal()
-      }
-    },
-    handleSuccessDeleteAction(row) {
-      this.$refs.refEmailTemplatesList.unSelectRow(row)
-      this.showDeleteModal = false
-      this.callForData()
-    },
-    handlePreview(row) {
-      this.isTemplateDetails = true
-      const id = row.resourceId
-      this.isPreviewLoading = true
-      SmishingService.getTextMessageTemplate(id)
-        .then((response) => {
-          const data = response.data.data
-          this.selectedTemplateHeader = data.name
-          this.template = data.template
-        })
-        .finally(() => {
-          this.timeoutId = setTimeout(() => {
-            this.isPreviewLoading = false
-          }, 500)
-        })
-    },
-    handleEdit(row, isDuplicate) {
-      this.editableFormValues = row
-      this.modalStatus = true
-      this.isEdit = true
-      this.isDuplicate = isDuplicate
-      this.emailTemplateId = row.resourceId
-    },
-    checkIfCanCloseGrapesJSModal() {
-      if (this.$refs.newEmailTemplate) {
-        if (this.$refs.newEmailTemplate.$refs.refEmailTemplate)
-          this.$refs.newEmailTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
-      }
-    },
-    checkIfCanCloseNewEmailTemplate() {
-      if (this.$refs.newEmailTemplate) {
-        this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
-      }
-    },
-    changeNewEmailTemplateModalStatus(status, restart) {
-      this.modalStatus = status
-      this.emailTemplateId = null
-      this.isEdit = false
-      this.isDuplicate = false
-      if (restart) {
-        this.editableFormValues = {}
-        this.emailTemplateId = null
-        this.isEdit = false
-        this.isDuplicate = false
-        this.callForData()
-      }
-    },
-    exportEmailTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      exportTypes.map((exportType) => {
-        const payload = {
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
-        }
-        SmishingService.exportTextMessageTemplates(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `smishing-templates.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
-    },
     callForData() {
-      if (this.getEmailTemplatesSearchPermissions) {
-        this.loading = true
-        SmishingService.searchTextMessageTemplates(this.axiosPayload)
+      this.loading = true
+      if (this.getLandingPageTemplatesSearchPermissions) {
+        SmishingService.searchLandingPageTemplates(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -516,9 +407,110 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handlePreviousTemplate() {
+      this.selectedLandingPageIndex--
+    },
+    handleNextTemplate() {
+      this.selectedLandingPageIndex++
+    },
+    handleSuccessDeleteAction(row) {
+      this.$refs.refLandingPageList.unSelectRow(row)
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handlePreview(row) {
+      const id = row.resourceId
+      this.isTemplateDetails = true
+      this.isPreviewLoading = true
+      SmishingService.getLandingPageTemplate(id)
+        .then((response) => {
+          const data = response.data.data
+          this.landingPageParams.urlTemplate = data.urlTemplate
+          this.landingPageParams.name = data.name
+          this.landingPageTemplates = data.landingPages
+          this.selectedTemplateHeader = data.name
+          this.templateHTML = data.landingPages?.length
+            ? data.landingPages[0]?.content || null
+            : null
+        })
+        .finally(() => {
+          this.timeoutId = setTimeout(() => {
+            this.isPreviewLoading = false
+          }, 500)
+        })
+    },
+    handleEdit(row, isDuplicate) {
+      this.editableFormValues = row
+      this.modalStatus = true
+      this.isEdit = true
+      this.isDuplicate = isDuplicate
+      this.emailTemplateId = row.resourceId
+    },
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newLandingPage) {
+        if (this.$refs.newLandingPage.$refs.refEmailTemplate)
+          this.$refs.newLandingPage.$refs.refEmailTemplate.toggleShowGrapesModal()
+      }
+    },
+    checkIfCanCloseNewLandingPage() {
+      if (this.$refs.newLandingPage) {
+        this.$refs.newLandingPage.changeNewEmailTemplateModalStatus()
+      }
+    },
+    changeNewEmailTemplateModalStatus(status, restart) {
+      this.modalStatus = status
+      this.emailTemplateId = null
+      this.isEdit = false
+      this.isDuplicate = false
+      if (restart) {
+        this.editableFormValues = {}
+        this.emailTemplateId = null
+        this.isEdit = false
+        this.isDuplicate = false
+        this.callForData()
+      }
+    },
+    exportLandingPage({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.axiosPayload.filter
+        }
+        SmishingService.exportLandingPageTemplates(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `smishing-landing-page-templates.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleActionDelete(row) {
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
+    },
+    callForLookups() {
+      SmishingService.getLandingPageTemplateFormDetails().then((response) => {
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          response.data.data.methodTypes.map((item) => item.text)
+        )
+        this.$set(
+          this.tableOptions.columns[3],
+          'filterableItems',
+          response.data.data.difficultyTypes.map((item) => item.text)
+        )
+        this?.$refs?.refLandingPageList?.reRenderFilters()
+        this.landingPageData = response.data.data
+      })
     }
   }
 }

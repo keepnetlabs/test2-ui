@@ -70,13 +70,7 @@
                             {{ item.name }}
                           </div>
                           <div class="mail-configuration-select-sources__item-right-platform">
-                            {{
-                              item.name === 'Click Only'
-                                ? 'See who falls for phishing links'
-                                : item.name === 'Data Submission'
-                                ? 'Gather information from users'
-                                : 'Send a trackable file '
-                            }}
+                            {{ item.description }}
                           </div>
                         </div>
                       </div>
@@ -158,7 +152,7 @@
                       sub-title="Text message to be sent to target users. Use the merge tag {PHISHING_LINK} for the link to be added to the text message"
                     >
                       <InputDescription
-                        v-model.trim="formValues.textMessage"
+                        v-model.trim="formValues.template"
                         id="input--new-text-message-template-text-message"
                         initialPlaceholder="Text message {PHISHING_LINK}"
                         rows="5"
@@ -203,11 +197,10 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import {
-  createPhishingEmailTemplate,
   getEmailTemplatePreviewContent,
-  getMergedTextForPhishing,
   updatePhishingEmailTemplate
 } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
@@ -280,14 +273,8 @@ export default {
         categoryResourceId: 'WNZt0sCVCWB3',
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
-        fromAddress: null,
-        fromName: null,
-        subject: null,
-        template: null,
-        attachmentFiles: [],
-        importedEmailAttachments: [],
-        attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad'
+        languageTypeResourceId: '862249c19aad',
+        template: ''
       },
       commonRules: {
         hint: '*Required',
@@ -319,7 +306,7 @@ export default {
           genericCodeTypeName: 'Phishing Simulator Categories',
           name: 'Click Only',
           code: '1',
-          description: null,
+          description: 'See who falls for phishing links',
           orderNumber: 1
         },
         {
@@ -328,8 +315,17 @@ export default {
           genericCodeTypeName: 'Phishing Simulator Categories',
           name: 'Data Submission',
           code: '2',
-          description: null,
+          description: 'Gather information from users',
           orderNumber: 2
+        },
+        {
+          resourceId: '67LcW2kHbtds',
+          genericCodeTypeId: 19,
+          genericCodeTypeName: 'Phishing Simulator Categories',
+          name: 'MFA',
+          code: '3',
+          description: 'Send a smishing MFA',
+          orderNumber: 3
         }
       ],
       difficultyItems: [
@@ -384,40 +380,21 @@ export default {
   },
   created() {
     this.setFooterButtonIds()
-    this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit) {
-      getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+      SmishingService.getTextMessageTemplate(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
-          description: response.data.data.description || '',
-          attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
+          description: response.data.data.description || ''
         }
         this.formValues.name = `${this.formValues.name}`
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
-        if (this.formValues.attachments) {
-          this.formValues.importedEmailAttachments = this.formValues.attachments.map((item) => ({
-            ...item,
-            isDeletable: true
-          }))
-          this.formValues.attachmentFilesFromApi = JSON.parse(
-            JSON.stringify(this.formValues.attachments)
-          )
-        }
-        if (response.data.data.phishingFileName) {
-          this.formValues.attachmentFiles = [
-            {
-              fileName: response.data.data.phishingFileName,
-              url: response.data.data.phishingFileUrl
-            }
-          ]
-        }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
@@ -566,7 +543,7 @@ export default {
         return
       }
 
-      if (!this.formValues?.textMessage?.includes('{PHISHING_LINK}')) {
+      if (!this.formValues?.template?.includes('{PHISHING_LINK}')) {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-information',
@@ -576,29 +553,24 @@ export default {
         return
       }
 
+      const formData = new FormData()
       let payload = {
         ...this.formValues,
         isDuplicated: this.isDuplicate,
-        duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
         description: this.formValues.description || '',
-        attachmentFiles: [
-          ...this.formValues.attachmentFiles,
-          ...this.formValues.importedEmailAttachments
-        ],
-        isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
-        isPhishingFileModified: this.isPhishingFileModified,
-        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
-        phishingFileName:
-          !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
-            ? this.formValues.attachmentFiles[0]?.fileName
-            : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         )
       }
-      delete payload.attachments
+      for (const key in payload) {
+        if (Array.isArray(payload[key])) {
+          payload[key].forEach((x) => formData.append(key, x))
+        } else {
+          payload[key] && formData.append(key, payload[key])
+        }
+      }
       if (this.isEdit && !this.isDuplicate) {
-        updatePhishingEmailTemplate(payload, this.emailTemplateId)
+        SmishingService.updateTextMessageTemplate(this.emailTemplateId, formData)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -606,7 +578,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createPhishingEmailTemplate(payload)
+        SmishingService.createTextMessageTemplate(formData)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -614,13 +586,6 @@ export default {
             this.isSubmitDisabled = false
           })
       }
-    },
-
-    callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
-        this.blockManagerComponents = response.data.data['mergeTags']
-        this.setActiveBlockManagerComponents(this.blockManagerComponents)
-      })
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {

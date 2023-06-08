@@ -117,6 +117,7 @@ import {
   deleteCampaignManager,
   getCampaignManagerFormDetails
 } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { getScenarioDataDetails } from '@/api/scenarios'
 import { createTargetGroup } from '@/api/targetUsers'
 import CampaignManagerPreview from '@/components/SmishingCampaignManager/CampaignManagerPreview'
@@ -320,7 +321,7 @@ export default {
     handleOnDelete(item = {}) {
       if (this.getCampaignManagerParentDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
-        deleteCampaignManager(item.resourceId)
+        SmishingService.deleteSmishingCampaign(item.resourceId)
           .then(() => {
             this.$refs?.campaignManagerParentTable?.$refs?.refTable?.unSelectRow(item)
             this.$refs?.campaignManagerParentTable?.$refs?.refTable?.changeServerSideSelectionCount(

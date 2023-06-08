@@ -92,7 +92,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
-import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
+import CampaignManagerItemRowActions from '@/components/SmishingCampaignManager/CampaignManagerItemRowActions'
 // TODO: Change endpoints
 import {
   deletePhishingCampaignJob,
@@ -101,6 +101,7 @@ import {
   searchCampaignPhishingJob,
   stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
 import { getDefaultAxiosPayload } from '@/utils/functions'
@@ -208,7 +209,7 @@ export default {
     callForData() {
       this.setLoading(true)
       this.$nextTick(() => {
-        searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+        SmishingService.searchSmishingCampaignJobReport(this.axiosPayload, this.item.resourceId)
           .then((response) => {
             const {
               data: { data = [] }

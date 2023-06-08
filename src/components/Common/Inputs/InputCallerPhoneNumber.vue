@@ -7,7 +7,7 @@
       persistent-hint
       hint="*Required"
       placeholder="Select a phone number"
-      :items="phoneNumbers"
+      :items="getPhoneNumbers"
       :slots="{ item: true }"
       :rules="[(v) => Validations.required(v)]"
       @input="handleInputChange"
@@ -49,6 +49,10 @@ export default {
     subTitle: {
       type: String,
       default: 'Select caller phone number for this campaign'
+    },
+    defaultPhoneNumbers: {
+      type: Array,
+      required: false
     }
   },
   data() {
@@ -57,8 +61,17 @@ export default {
       phoneNumbers: []
     }
   },
-  created() {
+  mounted() {
     this.callForPhoneNumbers()
+  },
+  computed: {
+    getPhoneNumbers() {
+      if (this.defaultPhoneNumbers?.length) {
+        return this.defaultPhoneNumbers
+      }
+
+      return this.phoneNumbers
+    }
   },
   methods: {
     callForPhoneNumbers() {

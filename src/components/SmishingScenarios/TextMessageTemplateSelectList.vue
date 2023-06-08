@@ -68,7 +68,7 @@
               @scroll="handleScroll"
             >
               <div
-                class="template-list"
+                class="template-list pr-6"
                 v-for="(item, index) in listData"
                 :key="item.name + index"
                 :class="{ 'template-list--selected': item['selected'] }"
@@ -100,16 +100,17 @@
                     {{ item['difficultyName'] }}
                   </div>
                 </div>
-
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item__tags mt-2">
+                <div
+                  class="template-list--item__tags d-flex justify-space-between align-center mt-2"
+                >
                   <ShowMoreTags :showMaximumBadgeCount="1" :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   <div class="template-list--item__narrator">
                     <v-icon :size="16" color="#757575">mdi-web</v-icon>
-                    <span class="template-list--item__language">{{ item.language }}</span>
+                    <span class="template-list--item__language">{{ item.languageTypeName }}</span>
                   </div>
                 </div>
               </div>
@@ -140,8 +141,9 @@
               <el-tabs value="textMessage">
                 <el-tab-pane id="textMessage" label="Text Message" name="textMessage">
                   <div class="text-message-template-select-list__text-message__content">
-                    <span class="text-message-template-select-list__text-message__label">Text Message</span>
-                    <span class="text-message-template-select-list__text-message__text">{{ getTextMessage }}</span>
+                    <span class="text-message-template-select-list__text-message__text">{{
+                      getTextMessage
+                    }}</span>
                   </div>
                 </el-tab-pane>
               </el-tabs>
@@ -155,8 +157,7 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-// TODO: Change api endpoints
-import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import useDebounce from '@/hooks/useDebounce'
@@ -185,7 +186,9 @@ export default {
   data() {
     const methods = [
       { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-      { text: 'Data Submission', value: 'DYC0gugxJMjT' }
+      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+      {},
+      { text: 'MFA', value: '67LcW2kHbtds' }
     ]
     return {
       search: null,
@@ -246,9 +249,8 @@ export default {
     getLanguageItems() {
       return []
     },
-    // TODO: Remove default text message
     getTextMessage() {
-      return this.template?.textMessage || `Please confirm your Microsoft account. {PHISHING_LINK}`
+      return this.template?.template
     }
   },
   watch: {
@@ -298,7 +300,7 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getEmailTemplatesList(copyOfBodyData)
+        SmishingService.searchTextMessageTemplates(copyOfBodyData)
           .then((response) => {
             if (!response.data.data.results.length) {
               this.listData = []
@@ -335,7 +337,7 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      getEmailTemplatesList(bodyData)
+      SmishingService.searchTextMessageTemplates(bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -407,7 +409,7 @@ export default {
       if (isInitial) {
         this.$emit('initialTemplateId', item.resourceId)
       }
-      getEmailTemplatePreviewContent(item.resourceId)
+      SmishingService.getTextMessageTemplate(item.resourceId)
         .then((response) => {
           this.template = response.data.data
           this.$emit('selectedTemplateChange', { ...item, ...this.template })

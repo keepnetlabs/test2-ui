@@ -89,7 +89,7 @@
           :scope="scope"
           :disabled="tableOptions.rowActions[0].disabled"
           :checkIsOwnerProperty="false"
-          @on-click="handleFastLaunch(scope.row)"
+          @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
           <ScenariosRowActionsEditButton
@@ -102,26 +102,17 @@
           <DefaultMenuRowAction
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
-            :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
-            @on-click="handlePreview(scope.row)"
-          />
-          <DefaultMenuRowAction
-            :id="tableOptions.rowActions[3].id"
-            :scope="scope"
-            :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
             :check-is-owner-property="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <ScenariosRowActionsDeleteButton
-            :id="tableOptions.rowActions[4].id"
+            :id="tableOptions.rowActions[3].id"
             :scope="scope"
-            :name="tableOptions.rowActions[4].name"
-            :disabled="tableOptions.rowActions[4].disabled"
+            :name="tableOptions.rowActions[3].name"
+            :disabled="tableOptions.rowActions[3].disabled"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -145,7 +136,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 // TODO: Import smishing endpoints
-import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
+import { getScenarioDataDetails } from '@/api/scenarios'
+import SmishingService from '@/api/smishing'
 import SmishingScenarioPreview from '@/components/SmishingScenarios/SmishingScenarioPreview'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
@@ -301,12 +293,10 @@ export default {
         ],
         rowActions: [
           {
-            name: labels.FastLaunch,
-            icon: 'mdi-send',
-            action: 'on-fast-launch',
-            id: 'btn-fast-launch--scenarios-row-actions',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            name: labels.Preview,
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            id: 'btn-preview--scenarios-row-actions'
           },
           {
             name: labels.Edit,
@@ -315,12 +305,6 @@ export default {
             id: 'btn-edit--scenarios-row-actions',
             // TODO: change permission key
             disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
-          },
-          {
-            name: labels.Preview,
-            icon: 'mdi-eye',
-            action: 'handlePreview',
-            id: 'btn-preview--scenarios-row-actions'
           },
           {
             name: 'Duplicate',
@@ -381,7 +365,7 @@ export default {
   },
   methods: {
     callForScenarioDetails() {
-      getScenarioDataDetails()
+      SmishingService.getSmishingScenarioFormDetails()
         .then((response) => {
           this.scenarioDetailsLookup = response?.data?.data || {
             methodTypes: [],
@@ -473,8 +457,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        // TODO: Replace api endpoint with correct one
-        exportScenarios(payload).then((response) => {
+        SmishingService.exportSmishingScenarios(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -489,8 +472,7 @@ export default {
       this.loading = true
       // TODO: Replace permission with correct one
       if (this.getPhishingScenariosSearchPermissions) {
-        // TODO: Replace api endpoint with correct one
-        getScenariosList(this.axiosPayload)
+        SmishingService.searchSmishingScenarios(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }

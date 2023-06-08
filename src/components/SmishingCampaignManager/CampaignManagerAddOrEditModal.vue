@@ -154,11 +154,9 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary'
-import {
-  createCampaignManager,
-  getCampaignManager,
-  updateCampaignManager
-} from '@/api/phishingsimulator'
+// TODO: Change api endpoints
+import { getCampaignManager, updateCampaignManager } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
@@ -270,6 +268,8 @@ export default {
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
+        formData.duration = refCampaignManagerCampaignInfo.formData.duration
+        formData.senderPhoneNumber = refCampaignManagerDeliverySettings.formData.phoneNumber
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
@@ -310,32 +310,25 @@ export default {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
       const {
-        distributionEmailOver,
-        distributionEmailOverTimeTypeId,
-        distributionSmtpDelayEvery,
-        distributionSmtpDelayTimeTypeId,
+        distributionDelayEvery,
+        distributionDelayTimeTypeId,
         distributionTypeId,
         sendingLimit,
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId,
-        smtpSetting,
-        directEmailSetting,
-        emailDeliverySettingType
+        smsProvider
       } = this.selectedRowFormData
       return {
-        smtpSetting,
-        distributionEmailOver: distributionEmailOver.toString(),
-        distributionEmailOverTimeTypeId: distributionEmailOverTimeTypeId.toString(),
-        distributionSmtpDelayEvery: distributionSmtpDelayEvery.toString(),
-        distributionSmtpDelayTimeTypeId: distributionSmtpDelayTimeTypeId.toString(),
-        distributionTypeId: distributionTypeId.toString(),
+        distributionDelayEvery: distributionDelayEvery,
+        distributionDelayTimeTypeId: distributionDelayTimeTypeId,
+        distributionTypeId: distributionTypeId,
         sendingLimit,
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
-        emailDeliverySettingType,
-        directEmailSetting,
-        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId,
+        phoneNumber: smsProvider.text,
+        smsProviderNumberResourceId: smsProvider.value
       }
     },
     getUserTargetAudienceData() {
@@ -378,7 +371,7 @@ export default {
       this.initialFormValues = { ...this.initialFormValues, ...values }
     },
     callForData() {
-      getCampaignManager(this.getCampaignResourceId).then((response) => {
+      SmishingService.getSmishingCampaign(this.getCampaignResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
@@ -473,45 +466,42 @@ export default {
             refCampaignManagerDeliverySettings: { formData: deliverySettingsFormData }
           } = this.$refs
           const payload = {
-            phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+            smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId
             ),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
-            duration: campaignManagerFormData.duration,
+            duration: parseInt(campaignManagerFormData.duration),
             scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
             scheduledDate:
               campaignManagerFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : campaignManagerFormData.scheduledDate,
             scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
-            distributionTypeId: deliverySettingsFormData.distributionTypeId,
-            distributionSmtpDelayEvery: deliverySettingsFormData.distributionSmtpDelayEvery,
-            distributionSmtpDelayTimeTypeId:
-              deliverySettingsFormData.distributionSmtpDelayTimeTypeId,
-            distributionEmailOver: deliverySettingsFormData.distributionEmailOver,
-            distributionEmailOverTimeTypeId:
-              deliverySettingsFormData.distributionEmailOverTimeTypeId,
-            sendingLimit: deliverySettingsFormData.sendingLimit,
-            smtpSettingResourceId: deliverySettingsFormData.smtpSettingResourceId,
-            directEmailSettingResourceId: deliverySettingsFormData.directEmailSettingResourceId,
-            emailDeliverySettingType: deliverySettingsFormData.emailDeliverySettingType,
+            distributionTypeId: parseInt(deliverySettingsFormData.distributionTypeId),
+            distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
+            distributionDelayTimeTypeId: parseInt(
+              deliverySettingsFormData.distributionDelayTimeTypeId
+            ),
+            sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
-            sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
-            sendRandomlyUsersCalculateTypeId:
+            sendRandomlyUsersCount: parseInt(targetAudienceFormData.sendRandomlyUsersCount),
+            sendRandomlyUsersCalculateTypeId: parseInt(
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+            ),
+            smsProviderNumberResourceId: deliverySettingsFormData.smsProviderNumberResourceId
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {
-            updateCampaignManager(this.getCampaignResourceId, payload)
+            SmishingService.updateSmishingCampaign(this.getCampaignResourceId, payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
               .finally(this.setActionButtonDisability)
           } else {
-            createCampaignManager(payload)
+            SmishingService.createSmishingCampaign(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })

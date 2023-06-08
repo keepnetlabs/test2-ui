@@ -75,6 +75,7 @@
 import AppDialog from '@/components/AppDialog'
 // TODO: Import smishing endpoints
 import { getCampaignManagerPreview } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
@@ -126,7 +127,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      getCampaignManagerPreview(this.selectedRow.resourceId)
+      SmishingService.previewSmishingCampaign(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
           this.phishingScenarios = phishingScenarioPreviewList

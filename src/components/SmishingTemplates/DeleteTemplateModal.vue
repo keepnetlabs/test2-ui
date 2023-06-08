@@ -28,7 +28,7 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { deleteEmailTemplate } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 export default {
   name: 'DeleteTemplateModal',
   components: {
@@ -54,7 +54,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      deleteEmailTemplate(this.selectedEmailTemplate.resourceId)
+      SmishingService.deleteTextMessageTemplate(this.selectedEmailTemplate.resourceId)
         .then(() => {
           this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
           this.closeModal()
