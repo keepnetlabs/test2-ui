@@ -279,6 +279,7 @@ export const labels = {
   EmptyTrainingReportSummaryAudienceDetails: 'You do not have any users',
   EmptyCampaignManagerReportSubmittedData: 'You do not have any user who submitted data',
   EmptyCampaignManagerReportSendingReport: 'You do not have any user who sending report',
+  DownloadPackage: 'Download Package',
   LastOpened: 'Last Opened',
   TimesOpened: 'Times Opened',
   UserAgent: 'User Agent',
