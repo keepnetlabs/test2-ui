@@ -296,6 +296,7 @@ export const labels = {
   EmptyCampaignManagerReportSubmittedData: 'You do not have any user who submitted data',
   EmptyCampaignManagerReportSubmittedMfaData: 'You do not have any user who submitted mfa code',
   EmptyCampaignManagerReportSendingReport: 'You do not have any user who sending report',
+  DownloadPackage: 'Download Package',
   LastOpened: 'Last Opened',
   TimesOpened: 'Times Opened',
   UserAgent: 'User Agent',
