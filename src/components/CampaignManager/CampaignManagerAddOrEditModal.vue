@@ -313,8 +313,8 @@ export default {
       const {
         distributionEmailOver,
         distributionEmailOverTimeTypeId,
-        distributionSmtpDelayEvery,
-        distributionSmtpDelayTimeTypeId,
+        distributionDelayEvery,
+        distributionDelayTimeTypeId,
         distributionTypeId,
         sendingLimit,
         sendOnlyActiveUsers,
@@ -328,8 +328,8 @@ export default {
         smtpSetting,
         distributionEmailOver: distributionEmailOver.toString(),
         distributionEmailOverTimeTypeId: distributionEmailOverTimeTypeId.toString(),
-        distributionSmtpDelayEvery: distributionSmtpDelayEvery.toString(),
-        distributionSmtpDelayTimeTypeId: distributionSmtpDelayTimeTypeId.toString(),
+        distributionDelayEvery: distributionDelayEvery.toString(),
+        distributionDelayTimeTypeId: distributionDelayTimeTypeId.toString(),
         distributionTypeId: distributionTypeId.toString(),
         sendingLimit,
         sendOnlyActiveUsers,
@@ -518,9 +518,8 @@ export default {
                 : campaignManagerFormData.scheduledDate,
             scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
-            distributionSmtpDelayEvery: deliverySettingsFormData.distributionSmtpDelayEvery,
-            distributionSmtpDelayTimeTypeId:
-              deliverySettingsFormData.distributionSmtpDelayTimeTypeId,
+            distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
+            distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
             distributionEmailOver: deliverySettingsFormData.distributionEmailOver,
             distributionEmailOverTimeTypeId:
               deliverySettingsFormData.distributionEmailOverTimeTypeId,

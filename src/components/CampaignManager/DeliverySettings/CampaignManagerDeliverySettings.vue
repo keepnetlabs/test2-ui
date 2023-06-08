@@ -91,7 +91,7 @@
           >Send emails with SMTP Delay every
         </label>
         <v-text-field
-          v-model="formData.distributionSmtpDelayEvery"
+          v-model="formData.distributionDelayEvery"
           v-mask="'###'"
           id="input--campaign-manager-advanced-settings-time"
           outlined
@@ -103,7 +103,7 @@
           @input="callForCalculateSendingInfo"
         ></v-text-field>
         <KSelect
-          v-model.trim="formData.distributionSmtpDelayTimeTypeId"
+          v-model.trim="formData.distributionDelayTimeTypeId"
           id="input--campaign-manager-advanced-settings-time-type"
           class="ml-2"
           outlined
@@ -199,10 +199,10 @@ export default {
         directEmailSettingResourceId: '',
         emailDeliverySettingType: '',
         distributionTypeId: '1',
-        distributionSmtpDelayEvery: 20,
+        distributionDelayEvery: 20,
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
-        distributionSmtpDelayTimeTypeId: '1',
+        distributionDelayTimeTypeId: '1',
         sendingLimit: 50
       },
       commonRules: {
@@ -232,7 +232,7 @@ export default {
     },
     getDistributionText() {
       return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
+        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
         : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
@@ -255,14 +255,14 @@ export default {
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionSmtpDelayTimeTypes']
         ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
-            (item) => item.value === this.formData.distributionSmtpDelayTimeTypeId
+            (item) => item.value === this.formData.distributionDelayTimeTypeId
           )?.text
         : ''
     },
     getDistributionTextRenderStatus() {
       if (!this.isSelectedEmailDeliveryIsSmtp) return
       return this.formData.distributionTypeId === '1'
-        ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
+        ? this.formData.sendingLimit && this.formData.distributionDelayEvery
         : this.formData.sendingLimit && this.formData.distributionEmailOver
     },
     getApproximatedTime() {
@@ -387,13 +387,13 @@ export default {
     },
     callForCalculateSendingInfo() {
       if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
-      if (!this.formData.distributionSmtpDelayEvery) return
+      if (!this.formData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
           distributionTypeId: this.formData.distributionTypeId,
-          distributionSmtpDelayEvery: this.formData.distributionSmtpDelayEvery,
-          distributionSmtpDelayTimeTypeId: this.formData.distributionSmtpDelayTimeTypeId,
+          distributionDelayEvery: this.formData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.formData.distributionDelayTimeTypeId,
           distributionEmailOver: this.formData.distributionEmailOver,
           distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
           sendingLimit: this.formData.sendingLimit,
@@ -404,7 +404,7 @@ export default {
             .sendRandomlyUsersCalculateTypeId,
           totalTargetUserCount: this.totalTargetUserCount
         }
-        if (payload.distributionSmtpDelayEvery) {
+        if (payload.distributionDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
             const {
               data: { data }
