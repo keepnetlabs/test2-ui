@@ -7,12 +7,12 @@
       persistent-hint
       hint="*Required"
       placeholder="Select a phone number"
-      :items="phoneNumbers"
+      :items="getPhoneNumberItems"
       :slots="{ item: true, append: true }"
       :rules="[(v) => Validations.required(v)]"
       @input="handleInputChange"
     >
-      <template #item="{item}">
+      <template #item="{ item }">
         <div :class="['mail-configuration-select-sources__item-container']">
           <div class="mail-configuration-select-sources__item">
             <div class="mail-configuration-select-sources__item-left">
@@ -57,6 +57,10 @@ export default {
       type: String,
       default: 'Select caller phone number for this campaign'
     },
+    defaultPhoneNumbers: {
+      type: Array,
+      required: false
+    },
     selectFirstItem: {
       type: Boolean,
       default: false
@@ -76,8 +80,17 @@ export default {
       phoneNumbers: []
     }
   },
-  created() {
+  mounted() {
     this.callForPhoneNumbers()
+  },
+  computed: {
+    getPhoneNumberItems() {
+      if (this.defaultPhoneNumbers?.length) {
+        return this.defaultPhoneNumbers
+      }
+
+      return this.phoneNumbers
+    }
   },
   methods: {
     callForPhoneNumbers() {
