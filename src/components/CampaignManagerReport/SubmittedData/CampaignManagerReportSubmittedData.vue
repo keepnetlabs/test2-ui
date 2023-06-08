@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoSubmitted"
-      subtitle="List of users who entered their credentials on phishing landing page"
+      :subtitle="labels.UserWhoSubmittedSub"
     />
     <CampaignManagerReportSubmittedItemDetailDialog
       v-if="isShowDetailDialog"

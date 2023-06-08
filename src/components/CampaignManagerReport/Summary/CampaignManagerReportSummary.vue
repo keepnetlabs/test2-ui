@@ -7,7 +7,7 @@
       :instance-group="instanceGroup"
     />
     <CampaignManagerReportSummaryCards
-      :multiple-type="getCampaignMethodTypes"
+      :multiple-type="multipleType"
       :method="getScenarioMethod"
       :items="getCardsData"
       :is-loading="isLoading"
@@ -95,6 +95,9 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    multipleType: {
+      type: Array
     }
   },
   data() {
@@ -249,7 +252,8 @@ export default {
           openedEmail: 0,
           submittedEmail: 0,
           attachmentOpenedEmail: 0,
-          reportedEmail: 0
+          reportedEmail: 0,
+          mfa: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -262,7 +266,8 @@ export default {
         openedEmail = 0,
         submittedEmail = 0,
         attachmentOpenedEmail = 0,
-        reportedEmail = 0
+        reportedEmail = 0,
+        mfa = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
@@ -271,7 +276,8 @@ export default {
         noResponseEmail,
         notDelivered,
         attachmentOpenedEmail,
-        reportedEmail
+        reportedEmail,
+        mfa
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
@@ -284,7 +290,8 @@ export default {
         noResponseEmail = 0,
         notDelivered = 0,
         attachmentOpenedEmail = 0,
-        reportedEmail = 0
+        reportedEmail = 0,
+        mfa = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -314,6 +321,10 @@ export default {
         phishingReporter: {
           userCount: reportedEmail,
           userPercent: ((reportedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        mfa: {
+          userCount: mfa,
+          userPercent: ((mfa / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
@@ -380,21 +391,6 @@ export default {
             instanceGroup: this.instanceGroup
           }
         : {}
-    },
-    getCampaignMethodTypes() {
-      return this.phishingScenarios.length > 1
-        ? [
-            this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
-            ),
-            this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
-            ),
-            this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
-            )
-          ]
-        : []
     }
   },
   created() {

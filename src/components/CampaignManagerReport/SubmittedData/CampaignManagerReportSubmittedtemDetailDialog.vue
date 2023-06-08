@@ -81,7 +81,7 @@ export default {
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
-        id: 'campaign-manager-opened-detail-item-data-table',
+        id: 'campaign-manager-submitted-detail-item-data-table',
         ascending: 'ascending'
       },
       isLoading: false,

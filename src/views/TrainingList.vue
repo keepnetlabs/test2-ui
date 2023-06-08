@@ -48,6 +48,7 @@
       @on-add="toggleShowNewTrainingModal"
       @on-edit="handleEditRowClick"
       @on-training="handleSendTrainingRowClick"
+      @on-download="handleDownloadPackage"
     />
   </KContainer>
 </template>
@@ -159,6 +160,18 @@ export default {
     handlePreviewRowClick(row) {
       this.selectedRow = row
       this.toggleShowPreviewDialog()
+    },
+    handleDownloadPackage(row) {
+      AwarenessEducatorService.downloadTrainingPackage({
+        trainingId: row.trainingId,
+        languageId: ''
+      }).then((response) => {
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = `${row.trainingId}_Scorm.zip`
+        link.click()
+      })
     }
   }
 }

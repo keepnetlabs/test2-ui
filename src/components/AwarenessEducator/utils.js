@@ -9,7 +9,8 @@ export const EMITS = {
   ON_CLOSE: 'on-close',
   ON_TRAINING: 'on-training',
   ON_ITEM_CHANGE: 'on-item-change',
-  ON_DUPLICATE: 'on-duplicate'
+  ON_DUPLICATE: 'on-duplicate',
+  ON_DOWNLOAD: 'on-download'
 }
 
 export const ENROLLMENT_STATUSES = {

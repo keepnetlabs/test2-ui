@@ -19,8 +19,8 @@
         @tab-click="callForScenarioDetail"
       >
         <ElTabPane
-          v-for="(template, index) in phishingScenarios"
-          :key="index"
+          v-for="template in phishingScenarios"
+          :key="template.customKey"
           :name="template.name"
           :label="template.name"
         />
@@ -71,10 +71,10 @@
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <LandingPageTemplateModalPreview
-            :landingPageTemplates="landingPageTemplates"
-            :phishingUrl="landingPageParams.urlTemplate"
-            :template-name="emailTemplateParams.name"
+          <TabsWithMfaSettings
+            :is-method-mfa="isMethodMfa"
+            :landing-page-params="landingPageParams"
+            :landing-page-templates="landingPageTemplates"
           />
         </ElTabPane>
       </ElTabs>
@@ -100,17 +100,18 @@ import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+import TabsWithMfaSettings from '../PhishingScenarios/TabsWithMfaSettings'
+import { createRandomCryptStringNumber } from '../../utils/functions'
 
 export default {
   name: 'CampaignManagerPreview',
   components: {
+    TabsWithMfaSettings,
     AttachmentsPreview,
     KEmailPreview,
     DatatableLoading,
-    AppDialog,
-    LandingPageTemplateModalPreview
+    AppDialog
   },
   props: {
     status: {
@@ -132,12 +133,13 @@ export default {
       labels,
       timeoutId: '',
       selectedScenario: null,
-      phishingScenarios: []
+      phishingScenarios: [],
+      isMethodMfa: false
     }
   },
   computed: {
     getTitle() {
-      return 'Campaign Template Preview'
+      return 'Phishing Campaign Preview'
     },
     getSubtitle() {
       return this.selectedRow.name || ''
@@ -155,7 +157,10 @@ export default {
       getCampaignManagerPreview(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
-          this.phishingScenarios = phishingScenarioPreviewList
+          this.phishingScenarios = phishingScenarioPreviewList.map((pScenario) => ({
+            ...pScenario,
+            customKey: createRandomCryptStringNumber()
+          }))
           const phishingScenarioPreviewDto = phishingScenarioPreviewList[0] || {}
           this.selectedScenario = phishingScenarioPreviewDto.name
           this.setActiveScenario(phishingScenarioPreviewDto || {})
@@ -167,7 +172,7 @@ export default {
         })
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
-      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId === 3
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId.toString() === '3'
       this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
       this.emailTemplateParams = {
         name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
@@ -183,10 +188,14 @@ export default {
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       this.landingPageParams = {
+        mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
+        mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
         name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
         description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
         urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
       }
+      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
+      this.tab = 'email'
     },
     callForScenarioDetail(event) {
       this.setActiveScenario(this.phishingScenarios[event.index])

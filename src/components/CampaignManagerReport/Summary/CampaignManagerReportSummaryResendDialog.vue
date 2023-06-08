@@ -28,7 +28,7 @@
             :disabled="!items.openedEmail"
             :value="1"
           >
-            <template #label> Only opened {{ `(${items.openedEmail || 0})` }}</template>
+            <template #label> Only opened email {{ `(${items.openedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
@@ -37,7 +37,7 @@
             :disabled="!items.clickedEmail"
             :value="2"
           >
-            <template #label> Only clicked {{ `(${items.clickedEmail || 0})` }}</template>
+            <template #label> Clicked phishing link {{ `(${items.clickedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
@@ -46,7 +46,16 @@
             :disabled="!items.submittedEmail"
             :value="3"
           >
-            <template #label> Only submitted {{ `(${items.submittedEmail || 0})` }}</template>
+            <template #label> Submitted data {{ `(${items.submittedEmail || 0})` }}</template>
+          </v-checkbox>
+          <v-checkbox
+            v-model="types"
+            id="input--campaign-manager-report-email-failed-to-send"
+            color="#2196f3"
+            :disabled="!items.submittedEmail"
+            :value="8"
+          >
+            <template #label> Submitted MFA code {{ `(${items.mfa || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"

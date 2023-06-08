@@ -90,7 +90,9 @@
             </div>
           </div>
         </div>
-        <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">Managing as</div>
+        <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">
+          Managing as
+        </div>
         <div :class="navigationDrawerClass">
           <div class="user-name-dropdown">
             <div class="user-name-dropdown__menu">
@@ -185,7 +187,9 @@
                     v-for="item in dropdownData"
                     :id="item.id"
                     :key="item.key"
-                    :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
+                    :class="{
+                      'user-name-dropdown__content--divider': setDropdownDivider(item)
+                    }"
                     @click="changeDropdownItem(item.value)"
                   >
                     <v-list-item-title>
@@ -212,7 +216,9 @@
           style="left: 22px !important;"
           @click.stop="onNavigationClick()"
         ></v-app-bar-nav-icon>
-        <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">M</div>
+        <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">
+          M
+        </div>
         <div class="v-responsive">
           <div v-if="mini && drawer">
             <img
@@ -324,6 +330,59 @@
                 <app-router-link
                   to="/phishing-simulator/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
+                  route-name="Settings"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
+            v-if="getPhishingSimulatorLeftMenuPermissions"
+            id="btn--link-navigator-menu-smishing-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
+            :prepend-icon="iconPaths.mdiMessageAlert"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Smishing Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getPhishingScenarioLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/smishing-simulator/smishing-scenarios"
+                  id="btn--link-navigator-menu-smishing-scenario"
+                  route-name="Smishing Scenarios"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/smishing-simulator/campaign-manager"
+                  id="btn--link-navigator-menu-smishing-campaign-manager"
+                  route-name="Campaign Manager"
+                  :active-class-comparator="() => routerName === 'Smishing Campaign Manager'"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getSettingsLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/smishing-simulator/settings"
+                  id="btn--link-navigator-menu-smishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
                 />
@@ -758,7 +817,8 @@ import {
   mdiHelpCircle,
   mdiPhoneInTalk,
   mdiBook,
-  mdiSearchWeb
+  mdiSearchWeb,
+  mdiMessageAlert
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -820,7 +880,8 @@ export default {
         mdiHelpCircle,
         mdiPhoneInTalk,
         mdiBook,
-        mdiSearchWeb
+        mdiSearchWeb,
+        mdiMessageAlert
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -871,6 +932,7 @@ export default {
       ]
     }
   },
+  // TODO: add smishing routes' permissions
   computed: {
     ...mapGetters({
       companyUpdateRequired: 'auth/companyUpdateRequired',
@@ -1028,6 +1090,17 @@ export default {
           routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
+      }
+    },
+    getSmishingSimulatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Smishing Simulator' ||
+          routerName === 'Smishing Scenarios' ||
+          routerName === 'Smishing Campaign Manager' ||
+          routerName === 'Smishing Settings',
+        'un-selected-list-item': routerName !== 'Smishing Simulator'
       }
     },
     getAwarenessEducatorClasses() {

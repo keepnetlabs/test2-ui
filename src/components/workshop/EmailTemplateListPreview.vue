@@ -33,7 +33,7 @@
             <div class="d-flex justify-space-between">
               <div class="d-flex">
                 <div>
-                  <v-text-field
+                  <VTextField
                     v-model.trim="search"
                     placeholder="Search"
                     outlined
@@ -46,23 +46,22 @@
                       width: 100%;
                       padding-right: 4px !important;
                     "
-                  ></v-text-field>
+                  />
                 </div>
-                <div>
-                  <v-select
+                <div style="max-width: 140px;">
+                  <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
-                    :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="value"
                     outlined
                     persistent-hint
-                    @change="getTemplatesForSearch"
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
-                  >
-                  </v-select>
+                    :items="difficulties"
+                    @change="getTemplatesForSearch"
+                  />
                 </div>
               </div>
             </div>
@@ -78,9 +77,8 @@
             >
               <div
                 v-for="(item, index) in listData"
-                class="template-list"
                 :key="item.name + index"
-                :class="{ 'template-list--selected': item['selected'] }"
+                :class="{ 'template-list': true, 'template-list--selected': item['selected'] }"
                 @click="setSelectedTemplate(item, index)"
               >
                 <div class="d-flex justify-space-between mb-2">
@@ -100,14 +98,10 @@
                     </div>
                   </div>
                   <div
-                    class="template-list--item template-list--item__difficulty mr-8"
-                    :class="
-                      item['difficultyName'] === 'Easy'
-                        ? 'difficulty-easy'
-                        : item['difficultyName'] === 'Medium'
-                        ? 'difficulty-medium'
-                        : 'difficulty-hard'
-                    "
+                    :class="[
+                      'template-list--item template-list--item__difficulty mr-8',
+                      getItemDifficultyClass(item['difficultyName'])
+                    ]"
                   >
                     {{ item['difficultyName'] }}
                   </div>
@@ -155,7 +149,7 @@
                     @click="isTemplateDetails = true"
                   >
                     <v-icon color="#2196f3" medium>
-                      {{ 'mdi-fullscreen' }}
+                      mdi-fullscreen
                     </v-icon>
                   </v-btn>
                 </div>
@@ -205,7 +199,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import AppDialog from '../AppDialog'
@@ -214,7 +207,13 @@ import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-
+import {
+  getDefaultEmailTemplatePayload,
+  SCENARIO_DIFFICULTIES,
+  SCENARIO_METHODS
+} from '@/components/PhishingScenarios/utils'
+import useDebounce from '@/hooks/useDebounce'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -226,6 +225,7 @@ export default {
     'infinite-scroll': InfiniteScroll
   },
   components: {
+    KSelect,
     ShowMoreTags,
     KEmailPreview,
     Multipane,
@@ -233,12 +233,8 @@ export default {
     AppDialog,
     AttachmentsPreview
   },
+  mixins: [useDebounce],
   data() {
-    const methods = [
-      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-      { text: 'Attachment', value: '7dLrW2kdBTDs' }
-    ]
     return {
       phishingFile: null,
       search: null,
@@ -248,47 +244,9 @@ export default {
       templateSubject: null,
       totalNumberOfPages: 1,
       templateFromEmail: null,
-      methods,
-      difficulties: [
-        { text: 'Easy', value: 'mT0CeYGgKsVb' },
-        { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-        { text: 'Hard', value: 'c4LCGEB9MayB' }
-      ],
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  value: methods[Number(this.categoryResourceId) - 1].value,
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include'
-                },
-                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                { FieldName: 'Name', Operator: 'Contains', value: '' },
-                { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
-                { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
-                { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
-                { FieldName: 'Tags', Operator: 'Contains', value: '' },
-                { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      methods: SCENARIO_METHODS,
+      difficulties: SCENARIO_DIFFICULTIES,
+      bodyData: getDefaultEmailTemplatePayload(this.categoryResourceId),
       loadingTemplatePreview: false,
       templateHTML: null,
       activeTemplateHTML: null,
@@ -299,7 +257,28 @@ export default {
       selectedPreviousIndex: 0
     }
   },
-  computed: {},
+  watch: {
+    search(newVal, oldVal) {
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
+          this.getTemplates(true)
+        } else {
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.emailTemplateResourceId
+          }))
+          this.templateHTML = this.activeTemplateHTML || this.templateHTML
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
+      }
+    }
+  },
   mounted() {
     this.getTemplates(true, this.emailTemplateResourceId)
   },
@@ -314,6 +293,13 @@ export default {
       }
 
       return item?.description || '\xa0'
+    },
+    getItemDifficultyClass(difficulty = '') {
+      return difficulty === 'Easy'
+        ? 'difficulty-easy'
+        : difficulty === 'Medium'
+        ? 'difficulty-medium'
+        : 'difficulty-hard'
     },
     callForSearch() {
       this.debounce(() => {
@@ -462,36 +448,6 @@ export default {
         .finally(() => {
           this.loadingTemplatePreview = false
         })
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    }
-  },
-  watch: {
-    search(newVal, oldVal) {
-      if (!newVal) {
-        if (
-          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
-          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
-        ) {
-          this.getTemplates(true)
-        } else {
-          this.listData = [...this.defaultListData].map((item) => ({
-            ...item,
-            selected: item.resourceId === this.emailTemplateResourceId
-          }))
-          this.templateHTML = this.activeTemplateHTML || this.templateHTML
-        }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
-      }
     }
   }
 }
