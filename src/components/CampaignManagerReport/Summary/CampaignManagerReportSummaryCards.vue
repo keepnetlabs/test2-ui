@@ -31,7 +31,7 @@
         :icon-src="getThirdCardIcon"
         :class="getThirdCardClass"
       >
-        <template v-if="isCampaignHasAllTypes" #icon>
+        <template v-if="isCampaignHasAllTypes || isCampaignDataSubmissionAndMfa" #icon>
           <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
           </div>
@@ -46,7 +46,7 @@
       >
         <template #icon>
           <div
-            v-if="!isCampaignClickOnlyAndMfa"
+            v-if="!isCampaignClickOnlyAndMfa && !isCampaignDataSubmissionAndMfa"
             class="campaign-manager-report-summary-info-card--submitted-data-icon"
           >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
@@ -179,7 +179,11 @@ export default {
       return '#B6791D'
     },
     getThirdCardProps() {
-      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignDataSubmissionAndMfa
+      ) {
         return this.getSubmittedData
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
@@ -201,7 +205,11 @@ export default {
       return this.getOpenedData
     },
     getThirdCardLabel() {
-      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignDataSubmissionAndMfa
+      ) {
         return labels.SubmittedData
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
@@ -226,7 +234,8 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasAttachmentAndDataSubmission ||
-        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignDataSubmissionAndMfa
       ) {
         return '#B83A3A'
       }
@@ -248,7 +257,8 @@ export default {
       if (
         this.isCampaignHasAllTypes ||
         this.isCampaignHasAttachmentAndDataSubmission ||
-        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignDataSubmissionAndMfa
       ) {
         return this.submittedDataIcon
       }
@@ -268,7 +278,11 @@ export default {
       return this.openedEmailIcon
     },
     getThirdCardClass() {
-      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignDataSubmissionAndMfa
+      ) {
         return 'campaign-manager-report-summary-info-card--submitted-data'
       }
       return ''
@@ -287,7 +301,8 @@ export default {
       ) {
         return this.getSubmittedData
       }
-      if (this.isCampaignClickOnlyAndMfa) return this.getMfaData
+      if (this.isCampaignClickOnlyAndMfa || this.isCampaignDataSubmissionAndMfa)
+        return this.getMfaData
       if (this.method === 1) {
         return this.getClickedData
       }
@@ -316,7 +331,8 @@ export default {
       ) {
         return labels.SubmittedData
       }
-      if (this.isCampaignClickOnlyAndMfa) return labels.SubmittedMFACode
+      if (this.isCampaignClickOnlyAndMfa || this.isCampaignDataSubmissionAndMfa)
+        return labels.SubmittedMFACode
       if (this.method === 1) {
         return labels.ClickedLink
       }
@@ -335,7 +351,8 @@ export default {
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
-        this.isCampaignClickOnlyAndMfa
+        this.isCampaignClickOnlyAndMfa ||
+        this.isCampaignDataSubmissionAndMfa
       ) {
         return 'campaign-manager-report-summary-info-card--opened-attachment-data'
       }
@@ -372,6 +389,25 @@ export default {
     },
     isCampaignClickOnlyAndMfa() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[3]
+    },
+    isCampaignDataSubmissionAndMfa() {
+      return this.multipleType.length && this.multipleType[1] && this.multipleType[3]
+    },
+    isCampaignAttachmentAndMfaClickOnly() {
+      return (
+        this.multipleType.length &&
+        this.multipleType[0] &&
+        this.multipleType[2] &&
+        this.multipleType[3]
+      )
+    },
+    isCampaignAttachmentAndMfaDataSubmission() {
+      return (
+        this.multipleType.length &&
+        this.multipleType[0] &&
+        this.multipleType[1] &&
+        this.multipleType[3]
+      )
     },
     isCampaignClickOnlyAndDataSubmission() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
