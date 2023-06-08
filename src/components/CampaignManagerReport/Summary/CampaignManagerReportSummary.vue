@@ -392,6 +392,9 @@ export default {
             ),
             this.phishingScenarios.some(
               (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+            ),
+            this.phishingScenarios.some(
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
             )
           ]
         : []

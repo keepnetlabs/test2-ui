@@ -80,6 +80,7 @@
         >
           <TabsWithMfaSettings
             class="tabs-with-mfa-settings"
+            :isMethodMfa="isMethodMfa"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
           />
@@ -131,6 +132,7 @@ export default {
     return {
       emailTemplate: null,
       landingPageTemplates: [],
+      isMethodMfa: false,
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
@@ -215,9 +217,12 @@ export default {
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
-            isAttachmentBasedTemplate: methodTypeId === 3
+            isAttachmentBasedTemplate: methodTypeId === 3,
+            mfaTextTemplate: data.mfaTextTemplate,
+            mfaSmsSenderNumber: data.mfaSmsSenderNumber
           }
           this.landingPageTemplates = landingPages
+          this.isMethodMfa = data.methodTypeId === 4
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

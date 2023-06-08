@@ -159,6 +159,7 @@
                     :category-resource-id="formValues.methodTypeId"
                     :method="getSelectedMethod"
                     :is-method-mfa="isMethodMfa"
+                    :mfa-data="mfaData"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -180,8 +181,15 @@
               <div
                 :style="
                   isMethodMfa
-                    ? { display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '16px' }
-                    : {}
+                    ? {
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        columnGap: '16px',
+                        maxWidth: 'calc(100% - 96px)'
+                      }
+                    : {
+                        maxWidth: 'calc(100% - 96px)'
+                      }
                 "
               >
                 <CampaignManagerSummaryCard
@@ -190,7 +198,7 @@
                   :items="getScenarioInfoItems"
                 />
                 <CampaignManagerSummaryCard
-                  v-if="isMethodMfa"
+                  v-if="isMethodMfa && step === 4"
                   icon="mdi-cog"
                   :title="labels.MFASettings"
                   :items="getMfaSettingsItems"
@@ -325,7 +333,7 @@
                     <div class="summary-header">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ 'mdi-application' }}
+                          mdi-application
                         </v-icon>
                         Landing Page for users who clicked the phishing link
                       </div>
@@ -651,13 +659,19 @@ export default {
           (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
+      mfaData: {
+        mfaSenderNumberResourceId: '',
+        mfaCallerPhoneNumber: '',
+        mfaTextTemplate: 'Your verification code: {MFA_CODE}'
+      },
       emailTemplateResourceId: null,
-      landingPageTemplateResourceId: null
+      landingPageTemplateResourceId: null,
+      selectedEmailTemplate: null
     }
   },
   computed: {
     isMethodMfa() {
-      return this.formValues.methodTypeId === SCENARIO_METHOD_TYPES.MFA
+      return this.formValues.methodTypeId === '4'
     },
     getScenarioInfoItems() {
       return {
@@ -668,17 +682,20 @@ export default {
     },
     getMfaSettingsItems() {
       return {
-        'Sender Phone Number': this.formValues.name,
-        'Verification Message': this.formValues.name
+        'Sender Phone Number': this?.mfaData?.mfaCallerPhoneNumber,
+        'Verification Message': this?.mfaData?.mfaTextTemplate
       }
     },
     hasPhishingFile() {
       return !!this.summaryData?.emailTemplate?.phishingFileName
     },
     getSelectedMethod() {
-      return this.formValues?.methodTypeId
-        ? this.methods[Number(this.formValues?.methodTypeId) - 1].text
-        : ''
+      if (!this.formValues?.methodTypeId) return ''
+      return this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA'
+        ? this.selectedEmailTemplate.categoryName === 'Click Only'
+          ? 'Click-Only'
+          : this.selectedEmailTemplate.categoryName
+        : this.methods[Number(this.formValues?.methodTypeId) - 1].text
     },
     getStep2Subtitle() {
       const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
@@ -700,6 +717,10 @@ export default {
         return 'Choose your click only type landing page'
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
         return 'Choose your data submission type landing page'
+      else if (mTypeText === SCENARIO_METHOD_TYPES.MFA)
+        return this?.selectedEmailTemplate?.categoryName === 'Click Only'
+          ? 'Choose your click only type landing page'
+          : 'Choose your data submission type landing page'
       else return 'Choose your attachment type landing page'
     },
     isAttachmentBasedScenario() {
@@ -796,6 +817,8 @@ export default {
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
+          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSenderNumberResourceId
+          this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
@@ -942,6 +965,7 @@ export default {
         if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
           this.isSubmitDisabled = true
+          this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
           getSummaryOfScenario(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
             .then((response) => {
               const {
@@ -978,6 +1002,8 @@ export default {
       }
       const payload = {
         ...this.formValues,
+        mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
+        mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
       }
       if (this.isEdit && !this.isDuplicate) {

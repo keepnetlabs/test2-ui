@@ -8,40 +8,22 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
-      :title="labels.UserWhoSubmitted"
-      :subtitle="labels.UserWhoSubmittedSub"
-    />
-    <CampaignManagerReportSubmittedItemDetailDialog
-      v-if="isShowDetailDialog"
-      :status="isShowDetailDialog"
-      :item="selectedRow"
-      @on-close="toggleShowDetailDialog"
-    />
-    <CampaignManagerReportSubmittedTable
-      ref="refTable"
-      class="mt-6"
-      :id="id"
-      :instance-group="instanceGroup"
-      :password-complexities="getPasswordComplexities"
-      @on-resend="handleOnResend"
-      @on-detail="handleOnDetail"
+      :title="labels.UsersWhoSubmittedTheMfaCode"
+      :subtitle="labels.UsersWhoSubmittedTheMfaCodeSub"
     />
   </div>
 </template>
 
 <script>
-import labels from '@/model/constants/labels'
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
-import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
-import { useResend } from '@/hooks/useResend'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import { useResend } from '@/hooks/useResend'
+import labels from '@/model/constants/labels'
+
 export default {
-  name: 'CampaignManagerReportSubmittedData',
+  name: 'CampaignManagerReportSubmittedMfaCode',
   components: {
     CampaignManagerReportResendDialog,
-    CampaignManagerReportSubmittedItemDetailDialog,
-    CampaignManagerReportSubmittedTable,
     CampaignManagerReportHeader
   },
   mixins: [useResend],
@@ -64,11 +46,6 @@ export default {
       labels,
       isShowDetailDialog: false,
       selectedRow: {}
-    }
-  },
-  computed: {
-    getPasswordComplexities() {
-      return this?.formDetails?.passwordComplexityTypes || []
     }
   },
   methods: {

@@ -279,6 +279,16 @@ export function exportCampaignJobUserEmailSubmitted(payload = {}, id = '', insta
   )
 }
 
+export function exportCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/submitteddata-mfa/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function searchCampaignJobUserNoResponse(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/noresponse/search/${id}/${instanceGroup}`,
@@ -306,6 +316,19 @@ export function searchCampaignJobUserEmailSubmitted(payload = {}, id = '', insta
 export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/submitteddata-mfa/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+export function searchCampaignJobUserEmailSubmittedDetailsMfa(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-submitted-mfa/${id}`,
     payload
   )
 }
@@ -465,4 +488,8 @@ export function postExcludedIPAddresses(payload = {}) {
 
 export function getEmailDeliveries() {
   return testRequest.get(`/phishing-simulator/phishing-campaign/email-delivery-setting-list`)
+}
+
+export function getPhishingScenariosPhoneNumber() {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/mfa-phone-number`)
 }

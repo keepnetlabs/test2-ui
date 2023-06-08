@@ -72,6 +72,7 @@
           id="campaign-manager-info--landing-content"
         >
           <TabsWithMfaSettings
+            :is-method-mfa="isMethodMfa"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
           />
@@ -132,7 +133,8 @@ export default {
       labels,
       timeoutId: '',
       selectedScenario: null,
-      phishingScenarios: []
+      phishingScenarios: [],
+      isMethodMfa: false
     }
   },
   computed: {
@@ -186,10 +188,13 @@ export default {
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       this.landingPageParams = {
+        mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
+        mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
         name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
         description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
         urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
       }
+      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
       this.tab = 'email'
     },
     callForScenarioDetail(event) {

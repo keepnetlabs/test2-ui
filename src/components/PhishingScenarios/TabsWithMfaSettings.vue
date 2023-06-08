@@ -1,5 +1,5 @@
 <template>
-  <ElTabs v-model="landingPageTab" class="k-sub-tab mt-4">
+  <ElTabs v-model="landingPageTab" :class="[isSubTab ? 'k-sub-tab' : '', 'mt-4']">
     <ElTabPane
       v-for="(template, index) in landingPageTemplates"
       :key="index"
@@ -21,7 +21,11 @@
         <KEmailPreview v-if="!!template.content" :html="template.content" />
       </div>
     </ElTabPane>
-    <ElTabPane v-if="isMethodMfa" label="MFA Settings" :name="`${landingPageTemplates.length + 1}`">
+    <ElTabPane
+      v-if="isMethodMfa && isPhishingScenario"
+      label="MFA Settings"
+      :name="`${landingPageTemplates.length + 1}`"
+    >
       <div class="template-preview mt-4 pt-0">
         <div v-if="!!landingPageParams.name" class="template-preview__text">
           <div>
@@ -33,14 +37,52 @@
         <div class="mt-6">
           <span class="template-preview__text--title">Sender Phone Number: </span>
           <span class="template-preview__text--body">{{
-            landingPageParams.senderPhoneNumber
+            landingPageParams.mfaSmsSenderNumber
           }}</span>
         </div>
         <div class="mt-2">
           <span class="template-preview__text--title">Verification Message: </span>
-          <span class="template-preview__text--body">{{
-            landingPageParams.verificationMessage
-          }}</span>
+          <span class="template-preview__text--body">{{ landingPageParams.mfaTextTemplate }}</span>
+        </div>
+      </div>
+    </ElTabPane>
+    <ElTabPane
+      v-if="isMethodMfa && !isPhishingScenario"
+      label="MFA Settings Info"
+      :name="`${landingPageTemplates.length + 1}`"
+    >
+      <div class="template-preview mt-6 pl-6 pt-0">
+        <h3 style="color: #383b41; font-size: 18px; font-weight: 600;">
+          Multi-Factor Authentication Info
+        </h3>
+        <div class="mt-6">
+          <span class="template-preview__text--title" style="font-size: 14px; font-weight: 600;"
+            >Sender Phone Number:
+          </span>
+          <span
+            class="template-preview__text--body"
+            style="font-size: 14px; color: #383b41; font-weight: 400;"
+            >{{ landingPageParams.mfaSmsSenderNumber }}</span
+          >
+        </div>
+        <div class="mt-2">
+          <span class="template-preview__text--title" style="font-size: 14px; font-weight: 600;"
+            >Verification Message:
+          </span>
+          <span
+            class="template-preview__text--body"
+            style="font-size: 14px; color: #383b41; font-weight: 400;"
+            >{{ landingPageParams.mfaTextTemplate }}</span
+          >
+        </div>
+        <div
+          class="mt-6 mr-6 d-flex align-center"
+          style="padding: 18px; background: #f1f8fe; border-radius: 8px;"
+        >
+          <VIcon color="#2196f3">mdi-information</VIcon>
+          <span class="ml-2" style="color: #383b41;"
+            >Scenarios created with MFA method can be edited from the phishing scenarios page.</span
+          >
         </div>
       </div>
     </ElTabPane>
@@ -49,8 +91,6 @@
 
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
-import { SCENARIO_METHOD_TYPES } from './utils'
-
 export default {
   name: 'TabsWithMfaSettings',
   components: { KEmailPreview },
@@ -62,16 +102,23 @@ export default {
     landingPageParams: {
       type: Object,
       default: () => ({})
+    },
+    isMethodMfa: {
+      type: Boolean,
+      default: false
+    },
+    isSubTab: {
+      type: Boolean,
+      default: true
+    },
+    isPhishingScenario: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
       landingPageTab: '1'
-    }
-  },
-  computed: {
-    isMethodMfa() {
-      return this.landingPageParams.method === SCENARIO_METHOD_TYPES.MFA
     }
   },
   watch: {

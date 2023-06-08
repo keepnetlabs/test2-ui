@@ -14,7 +14,7 @@
       <template #app-dialog-body>
         <KEmailPreview v-if="!!getSelectedTemplateDetails" :html="getSelectedTemplateDetails" />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             class="pa-0 k-dialog__button"
@@ -142,11 +142,7 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane pt-4" :style="{ flexGrow: 1 }">
-              <ElTabs
-                v-if="landingPageTemplates.length > 1 || isMethodMfa"
-                v-model="selectedTab"
-                class="phishing-scenario-tab-container"
-              >
+              <ElTabs v-if="landingPageTemplates.length > 1 || isMethodMfa" v-model="selectedTab">
                 <ElTabPane
                   v-for="(template, index) in landingPageTemplates"
                   :key="index"
@@ -199,8 +195,10 @@
                     />
                     <VForm ref="refMfaForm">
                       <InputCallerPhoneNumber
-                        v-model="mfaData.senderPhoneNumber"
+                        v-model="mfaData.mfaSenderNumberResourceId"
                         select-first-item
+                        is-phishing-scenario
+                        :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
                         :title="labels.SenderPhoneNumber"
                         :sub-title="labels.SenderPhoneNumberSub"
                       />
@@ -209,9 +207,9 @@
                         :sub-title="labels.VerificationMessageSub"
                       >
                         <div class="d-flex mt-2">
-                          <span class="mr-4">SMS Message</span>
+                          <span class="mr-4 fs-4">SMS Message</span>
                           <VTextarea
-                            v-model.trim="mfaData.message"
+                            v-model.trim="mfaData.mfaTextTemplate"
                             outlined
                             dense
                             no-resize
@@ -313,7 +311,11 @@ export default {
     landingPageTemplateResourceId: { required: false },
     categoryResourceId: { type: String, default: '' },
     method: { type: String, default: '' },
-    isMethodMfa: { type: Boolean, default: false }
+    isMethodMfa: { type: Boolean, default: false },
+    mfaData: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
     return {
@@ -334,10 +336,6 @@ export default {
       loadingTemplates: false,
       templateURL: null,
       selectedPreviousIndex: 0,
-      mfaData: {
-        senderPhoneNumber: '',
-        message: 'Your verification code: {MFA_CODE}'
-      },
       mfaMessageRules: [
         (v) => Validations.required(v),
         (v) => {
@@ -347,7 +345,7 @@ export default {
           }
           return true
         },
-        (v) => Validations.maxLength(v, 148, labels.SMS),
+        (v) => Validations.maxLength(v, 148, labels.getMaxLengthMessage(labels.SMS, 148)),
         (v) => Validations.isGsm7(v)
       ]
     }
@@ -572,12 +570,12 @@ export default {
     validateMfaForm() {
       if (!this.isMethodMfa) return true
       if (this.$refs.refMfaForm.validate()) {
-        if (this.mfaData.message.includes('{MFA_CODE}')) return true
+        if (this.mfaData.mfaTextTemplate.includes('{MFA_CODE}')) return true
         this.$store.dispatch('common/createSnackBar', {
           message:
             'You cannot iterate to next step without adding an {MFA_CODE} to the verification message field.',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-information-outline'
+          icon: 'mdi-information'
         })
         return false
       }

@@ -149,7 +149,7 @@
                     @click="isTemplateDetails = true"
                   >
                     <v-icon color="#2196f3" medium>
-                      {{ 'mdi-fullscreen' }}
+                      mdi-fullscreen
                     </v-icon>
                   </v-btn>
                 </div>

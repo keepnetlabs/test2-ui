@@ -133,7 +133,7 @@ export const SCENARIO_METHODS = [
   { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
   { text: 'Data Submission', value: 'DYC0gugxJMjT' },
   { text: 'Attachment', value: '7dLrW2kdBTDs' },
-  { text: 'MFA', value: '7dLrW2kdBTDs' }
+  { text: 'MFA', value: '4' }
 ]
 
 export const SCENARIO_DIFFICULTIES = [
@@ -143,6 +143,7 @@ export const SCENARIO_DIFFICULTIES = [
 ]
 
 export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
+  const categoryResourceIdValue = SCENARIO_METHODS[Number(categoryResourceId) - 1].value
   return {
     pageNumber: 1,
     pageSize: 10,
@@ -155,7 +156,10 @@ export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
           Condition: 'AND',
           FilterItems: [
             {
-              value: SCENARIO_METHODS[Number(categoryResourceId) - 1].value,
+              value:
+                categoryResourceIdValue === '4'
+                  ? 'WNZt0sCVCWB3,DYC0gugxJMjT'
+                  : categoryResourceIdValue,
               FieldName: 'CategoryResourceId',
               Operator: 'Include'
             },
