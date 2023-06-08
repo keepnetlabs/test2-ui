@@ -14,7 +14,13 @@
         :title="getSecondCardLabel"
         :is-loading="isLoading"
         :icon-src="getSecondCardIcon"
-      />
+      >
+        <template v-if="isCampaignHasAllTypes" #icon>
+          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
+          </div>
+        </template>
+      </CampaignManagerReportSummaryInfoCard>
     </div>
     <div class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
@@ -39,8 +45,14 @@
         :is-loading="isLoading"
       >
         <template #icon>
-          <div class="campaign-manager-report-summary-info-card--submitted-data-icon">
+          <div
+            v-if="!isCampaignClickOnlyAndMfa"
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+          >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+          <div v-else class="campaign-manager-report-summary-info-card--submitted-data-icon">
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
         </template>
       </CampaignManagerReportSummaryInfoCard>
@@ -76,38 +88,38 @@ export default {
       noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
       clickedLinkIcon: require('../../../assets/img/ic-exclude.svg'),
       submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
-      phishingReportersIcon: require('../../../assets/img/phishing-reporters.svg')
+      phishingReportersIcon: require('../../../assets/img/phishing-reporters.svg'),
+      mfaIcon: require('../../../assets/img/phonelink_lock.svg')
     }
   },
   computed: {
     getFirstCardProps() {
       if (this.isCampaignHasAllTypes) {
-        return this.getPhishingReporterData
+        return this.getClickedData
       }
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment)
+        return this.getPhishingReporterData
       return this.getNoResponseData
     },
     getFirstCardTitle() {
-      if (this.isCampaignHasAllTypes) {
-        return labels.PhishingReporter
-      }
+      if (this.isCampaignHasAllTypes) return labels.ClickedLink
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return labels.PhishingReporter
       return labels.NoResponse
     },
-    getFirstCardColor() {
-      if (this.isCampaignHasAllTypes) {
-        return '#217124'
-      }
-      return '#0198AC'
-    },
     getFirstCardIcon() {
-      if (this.isCampaignHasAllTypes) {
+      if (this.isCampaignHasAllTypes) return this.clickedLinkIcon
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment)
         return this.phishingReportersIcon
-      }
       return this.noResponseIcon
     },
+    getFirstCardColor() {
+      if (this.isCampaignHasAllTypes) return '#F56C6C'
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return '#217124'
+      return '#0198AC'
+    },
     getSecondCardProps() {
-      if (this.isCampaignHasAllTypes) {
-        return this.getClickedData
-      }
+      if (this.isCampaignHasAllTypes) return this.getMfaData
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return this.getClickedData
 
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
@@ -122,9 +134,8 @@ export default {
       return this.getOpenedData
     },
     getSecondCardLabel() {
-      if (this.isCampaignHasAllTypes) {
-        return labels.ClickedLink
-      }
+      if (this.isCampaignHasAllTypes) return labels.SubmittedMFACode
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return labels.ClickedLink
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -138,9 +149,8 @@ export default {
       return labels.OpenedEmail
     },
     getSecondCardIcon() {
-      if (this.isCampaignHasAllTypes) {
-        return this.clickedLinkIcon
-      }
+      if (this.isCampaignHasAllTypes) return this.submittedDataIcon
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return this.clickedLinkIcon
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -154,9 +164,8 @@ export default {
       return this.openedEmailIcon
     },
     getSecondCardColor() {
-      if (this.isCampaignHasAllTypes) {
-        return '#F56C6C'
-      }
+      if (this.isCampaignHasAllTypes) return '#B83A3A'
+      if (this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) return '#F56C6C'
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -170,7 +179,7 @@ export default {
       return '#B6791D'
     },
     getThirdCardProps() {
-      if (this.isCampaignHasAllTypes) {
+      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
         return this.getSubmittedData
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
@@ -179,6 +188,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return this.getClickedData
@@ -191,7 +201,7 @@ export default {
       return this.getOpenedData
     },
     getThirdCardLabel() {
-      if (this.isCampaignHasAllTypes) {
+      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
         return labels.SubmittedData
       }
       if (this.isCampaignHasAttachmentAndDataSubmission) {
@@ -200,6 +210,7 @@ export default {
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return labels.ClickedLink
@@ -212,12 +223,17 @@ export default {
       return labels.OpenedEmail
     },
     getThirdCardColor() {
-      if (this.isCampaignHasAllTypes || this.isCampaignHasAttachmentAndDataSubmission) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment
+      ) {
         return '#B83A3A'
       }
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return '#F56C6C'
@@ -229,12 +245,17 @@ export default {
       return '#B6791D'
     },
     getThirdCardIcon() {
-      if (this.isCampaignHasAllTypes || this.isCampaignHasAttachmentAndDataSubmission) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment
+      ) {
         return this.submittedDataIcon
       }
       if (
         this.isCampaignClickOnlyAndAttachment ||
         this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignClickOnlyAndMfa ||
         this.method === 2
       ) {
         return this.clickedLinkIcon
@@ -247,13 +268,17 @@ export default {
       return this.openedEmailIcon
     },
     getThirdCardClass() {
-      if (this.isCampaignHasAllTypes) {
+      if (this.isCampaignHasAllTypes || this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment) {
         return 'campaign-manager-report-summary-info-card--submitted-data'
       }
       return ''
     },
     getFourthCardProps() {
-      if (this.isCampaignHasAllTypes || this.isCampaignClickOnlyAndAttachment) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignClickOnlyAndAttachment
+      ) {
         return this.getOpenedAttachmentData
       }
       if (
@@ -262,6 +287,7 @@ export default {
       ) {
         return this.getSubmittedData
       }
+      if (this.isCampaignClickOnlyAndMfa) return this.getMfaData
       if (this.method === 1) {
         return this.getClickedData
       }
@@ -277,7 +303,11 @@ export default {
       return this.getSubmittedData
     },
     getFourthCardLabel() {
-      if (this.isCampaignHasAllTypes || this.isCampaignClickOnlyAndAttachment) {
+      if (
+        this.isCampaignHasAllTypes ||
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignClickOnlyAndAttachment
+      ) {
         return labels.OpenedAttachment
       }
       if (
@@ -286,6 +316,7 @@ export default {
       ) {
         return labels.SubmittedData
       }
+      if (this.isCampaignClickOnlyAndMfa) return labels.SubmittedMFACode
       if (this.method === 1) {
         return labels.ClickedLink
       }
@@ -300,7 +331,12 @@ export default {
       return labels.SubmittedData
     },
     getFourthCardClass() {
-      if (this.isCampaignHasAttachmentAndDataSubmission || this.isCampaignClickOnlyAndAttachment) {
+      if (
+        this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
+        this.isCampaignHasAttachmentAndDataSubmission ||
+        this.isCampaignClickOnlyAndAttachment ||
+        this.isCampaignClickOnlyAndMfa
+      ) {
         return 'campaign-manager-report-summary-info-card--opened-attachment-data'
       }
       if (this.method === 1) {
@@ -320,11 +356,22 @@ export default {
     isCampaignHasAllTypes() {
       return this.multipleType.length && this.multipleType.every(Boolean)
     },
+    isCampaignHasClickOnlyAndDataSubmissionAndAttachment() {
+      return (
+        this.multipleType.length &&
+        this.multipleType[0] &&
+        this.multipleType[1] &&
+        this.multipleType[2]
+      )
+    },
     isCampaignHasAttachmentAndDataSubmission() {
       return this.multipleType.length && this.multipleType[1] && this.multipleType[2]
     },
     isCampaignClickOnlyAndAttachment() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[2]
+    },
+    isCampaignClickOnlyAndMfa() {
+      return this.multipleType.length && this.multipleType[0] && this.multipleType[3]
     },
     isCampaignClickOnlyAndDataSubmission() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
@@ -352,6 +399,10 @@ export default {
     getPhishingReporterData() {
       const { phishingReporter } = this.items
       return phishingReporter ? phishingReporter : {}
+    },
+    getMfaData() {
+      const { mfa } = this.items
+      return mfa ? mfa : {}
     }
   }
 }

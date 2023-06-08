@@ -192,6 +192,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  SUBMITTED_TIME_MFA: {
+    property: 'submittedTime',
+    align: 'left',
+    label: labels.DateSubmittedMFACode,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   DATE_OPENED: {
     property: 'openedTime',
     align: 'left',
@@ -334,6 +346,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  LAST_SUBMISSION_CODE: {
+    property: 'lastSubmittedTime',
+    align: 'left',
+    label: labels.LastSubmissionCode,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
+    isEditable: false,
+    filterableType: 'date'
+  },
   TIMES_SUBMISSION: {
     property: 'submittedCount',
     align: 'right',
@@ -343,6 +367,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'number'
+  },
+  TIMES_SUBMISSION_CODE: {
+    property: 'submittedCount',
+    align: 'right',
+    label: labels.TimesSubmissionCode,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
     isEditable: false,
     filterableType: 'number'
   },

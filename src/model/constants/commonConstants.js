@@ -346,6 +346,7 @@ export const TABLE_SETTINGS_KEYS = {
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSettings',
+  CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE: 'CampaignManagerReportSubmittedMfaDataTableSettings',
   CAMPAIGN_REPORTS: 'CampaignReportsTableSettings',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
@@ -472,6 +473,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
+  CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
+    'CampaignManagerReportSubmittedMfaDataTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentDataTableSearchKeys',
   ENROLLMENTS_LIST: 'EnrollmentListSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
