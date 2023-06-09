@@ -244,8 +244,6 @@ export default {
               )?.text
             }
             this.landingPageTemplate = landingPages
-            console.log(this.emailTemplateParams)
-            console.log(this.landingPageParams)
           }
         }
       )

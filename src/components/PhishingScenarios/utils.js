@@ -126,7 +126,7 @@ export const SCENARIO_METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment',
-  MFA: 'Mfa'
+  MFA: 'MFA'
 }
 
 export const SCENARIO_METHODS = [
