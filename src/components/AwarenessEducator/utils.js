@@ -22,7 +22,8 @@ export const ENROLLMENT_STATUSES = {
   STOPPED: 'Stopped',
   PAUSED: 'Paused',
   ARCHIVED: 'Archived',
-  DELETED: 'Deleted'
+  DELETED: 'Deleted',
+  SCORM_PROXY: 'SCORM Proxy'
 }
 
 export const ENROLLMENT_STATUSES_FILTER = [
