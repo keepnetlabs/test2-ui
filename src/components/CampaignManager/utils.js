@@ -27,7 +27,7 @@ export const METHOD_TYPES = {
   MULTIPLE_METHOD: 'Multiple Method',
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment',
-  MFA: 'Mfa'
+  MFA: 'MFA'
 }
 
 export const SCHEDULE_TYPES = {

@@ -11,6 +11,12 @@
       :title="labels.UsersWhoSubmittedTheMfaCode"
       :subtitle="labels.UsersWhoSubmittedTheMfaCodeSub"
     />
+    <CampaignManagerReportSubmittedMfaCodeDetailDialog
+      v-if="isShowDetailDialog"
+      :status="isShowDetailDialog"
+      :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
+    />
     <CampaignManagerReportSubmittedMfaCodeTable
       ref="refTable"
       class="mt-6"
@@ -26,6 +32,8 @@
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedMfaCodeTable from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable'
+import CampaignManagerReportSubmittedMfaCodeDetailDialog from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeDetailDialog'
+
 import { useResend } from '@/hooks/useResend'
 import labels from '@/model/constants/labels'
 
@@ -34,7 +42,8 @@ export default {
   components: {
     CampaignManagerReportResendDialog,
     CampaignManagerReportHeader,
-    CampaignManagerReportSubmittedMfaCodeTable
+    CampaignManagerReportSubmittedMfaCodeTable,
+    CampaignManagerReportSubmittedMfaCodeDetailDialog
   },
   mixins: [useResend],
   props: {

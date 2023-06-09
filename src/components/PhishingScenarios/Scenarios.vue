@@ -215,7 +215,7 @@ export default {
               { text: 'Click Only', value: 'Click-Only' },
               { text: 'Data Submission', value: 'Data Submission' },
               { text: 'Attachment', value: 'Attachment' },
-              { text: 'Mfa', value: 'Mfa' }
+              { text: 'MFA', value: 'MFA' }
             ]
           },
           {

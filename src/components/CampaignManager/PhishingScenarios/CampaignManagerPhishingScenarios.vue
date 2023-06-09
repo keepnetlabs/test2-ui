@@ -568,7 +568,6 @@ export default {
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {
             const { data: { data = {} } = {} } = response
-            console.log('data', data)
             const {
               emailTemplate,
               landingPageTemplate,
@@ -621,7 +620,6 @@ export default {
             this.landingPageTemplates = landingPages || []
             this.tab = 'email'
             this.isMethodMfa = data.methodTypeId === 4
-            console.log('this.isMethodMfa', this.isMethodMfa)
           }
         )
       })

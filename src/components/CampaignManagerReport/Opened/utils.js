@@ -200,7 +200,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 230,
     isEditable: false,
     filterableType: 'date'
   },
@@ -347,9 +347,9 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   LAST_SUBMISSION_CODE: {
-    property: 'lastSubmittedTime',
+    property: 'lastSendingTime',
     align: 'left',
-    label: labels.LastSubmissionCode,
+    label: labels.LastSubmittedCode,
     fixed: false,
     sortable: true,
     show: true,
@@ -371,9 +371,9 @@ export const COLUMNS = {
     filterableType: 'number'
   },
   TIMES_SUBMISSION_CODE: {
-    property: 'submittedCount',
+    property: 'mfaSubmittedCount',
     align: 'right',
-    label: labels.TimesSubmissionCode,
+    label: labels.TimesSubmittedCode,
     fixed: false,
     sortable: true,
     show: true,
