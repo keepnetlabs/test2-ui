@@ -4,7 +4,7 @@
       v-bind="getFirstActionParams"
       :id="rowActions[0].id"
       :scope="scope"
-      :disabled="rowActions[0].disabled"
+      :disabled="rowActions[0].disabled || scope.row.status === 'SCORM Proxy'"
       :checkIsOwnerProperty="false"
       @on-click="handleAction(scope.row)"
     />
@@ -53,6 +53,14 @@
         :scope="scope"
         @on-click="$emit('on-stop', scope.row)"
       />
+      <DefaultMenuRowAction
+        :id="rowActions[4].id"
+        :scope="scope"
+        :disabled="rowActions[4].disabled"
+        :icon="rowActions[4].icon"
+        :text="rowActions[4].name"
+        @on-click="$emit('on-download', scope.row)"
+      />
     </RowActionsMenu>
   </div>
 </template>
@@ -91,7 +99,8 @@ export default {
         ENROLLMENT_STATUSES.AUTO_ENROLL,
         ENROLLMENT_STATUSES.FINISHED,
         ENROLLMENT_STATUSES.ERROR,
-        ENROLLMENT_STATUSES.STOPPED
+        ENROLLMENT_STATUSES.STOPPED,
+        ENROLLMENT_STATUSES.SCORM_PROXY
       ].includes(this.scope.row.status)
     },
     getFirstActionParams() {
@@ -122,7 +131,8 @@ export default {
           ENROLLMENT_STATUSES.AUTO_ENROLL,
           ENROLLMENT_STATUSES.FINISHED,
           ENROLLMENT_STATUSES.ERROR,
-          ENROLLMENT_STATUSES.STOPPED
+          ENROLLMENT_STATUSES.STOPPED,
+          ENROLLMENT_STATUSES.SCORM_PROXY
         ].includes(status)
       ) {
         this.routeToTrainingReport(row)

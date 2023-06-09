@@ -319,6 +319,15 @@ const downloadTrainingPackage = (payload) => {
     responseType: 'blob'
   })
 }
+const downloadEnrollmentPackage = (resourceId = '') => {
+  return testRequest.post(
+    `/enrollments/downloadscormproxy/${resourceId}`,
+    {},
+    {
+      responseType: 'blob'
+    }
+  )
+}
 
 export default {
   searchTraining,
@@ -383,5 +392,6 @@ export default {
   deletePermanentlyEnrollment,
   restoreEnrollment,
   getCertificateHtml,
-  downloadTrainingPackage
+  downloadTrainingPackage,
+  downloadEnrollmentPackage
 }

@@ -47,6 +47,7 @@
           @on-send="handleSend"
           @on-edit="handleEditRowClick"
           @on-preview="handlePreviewRowClick"
+          @on-download="handleDownloadPackage"
         />
       </el-tab-pane>
       <el-tab-pane label="Trash" name="trash" id="trash-content">
@@ -150,6 +151,15 @@ export default {
       if (forceUpdate) this.$refs.refTable.callForData()
       if (this.isShowSendEnrollmentDialog) this.selectedRow = null
       this.isShowSendEnrollmentDialog = !this.isShowSendEnrollmentDialog
+    },
+    handleDownloadPackage(row = {}) {
+      AwarenessEducatorService.downloadEnrollmentPackage(row.enrollmentId).then((response) => {
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = `${row.enrollmentId}_Scorm.zip`
+        link.click()
+      })
     }
   }
 }
