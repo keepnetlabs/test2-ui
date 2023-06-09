@@ -80,13 +80,6 @@ export default {
           isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
         },
         {
-          name: labels.SubmittedMFACode,
-          id: 'campaign-manager-report-submitted-mfa-content',
-          label: labels.SubmittedMFACode,
-          component: CampaignManagerReportSubmittedMfaCode,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
-        },
-        {
           name: labels.NoResponse,
           id: 'campaign-manager-report-no-response-content',
           label: labels.NoResponse,
@@ -152,10 +145,11 @@ export default {
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
           if (scenarios.length === 1) {
-            if (firstScenario.scenarioInfo?.methodTypeId === 1) {
+            const scenarioMethodType = firstScenario.scenarioInfo?.methodTypeId
+            if (scenarioMethodType === 1) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               this.tabItems.splice(tabIndex, 1)
-            } else if (firstScenario.scenarioInfo?.methodTypeId === 3) {
+            } else if (scenarioMethodType === 3) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {
@@ -172,53 +166,74 @@ export default {
               if (clickedTabIndex !== -1) {
                 this.tabItems.splice(clickedTabIndex, 1)
               }
+            } else if (scenarioMethodType === 4) {
+              this.setMultipleType(scenarios)
+              this.setTabStatus()
             }
           } else {
-            let isClickedOnly, isSubmittedData, isAttachment, isMfa
-            const setMethodValues = (method = '') => {
-              if (method === '1') {
-                isClickedOnly = true
-              } else if (method === '2') {
-                isSubmittedData = true
-              } else if (method === '3') {
-                isAttachment = true
-              }
-            }
-            scenarios.forEach((scenario) => {
-              const method = scenario.scenarioInfo.methodTypeId.toString()
-              if (method === '4') {
-                isMfa = true
-                setMethodValues(scenario.landingPageTemplateInfo?.methodTypeId.toString())
-              } else {
-                setMethodValues(method)
-              }
-            })
-            this.multipleType = [isClickedOnly, isSubmittedData, isAttachment, isMfa]
-
-            if (!isSubmittedData) {
-              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
-              if (tabIndex) this.tabItems.splice(tabIndex, 1)
-            }
-            if (!isClickedOnly) {
-              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
-              if (tabIndex) this.tabItems.splice(tabIndex, 1)
-            }
-            if (isAttachment) {
-              this.tabItems.splice(3, 0, {
-                label: labels.OpenedAttachment,
-                name: labels.OpenedAttachment,
-                id: 'campaign-manager-report-opened-attachment-content',
-                component: CampaignManagerReportOpenedAttachment,
-                isVisible: this.$store.getters[
-                  'permissions/getCampaignReportsOpenedAttachmentPermissions'
-                ]
-              })
-            }
+            this.setMultipleType(scenarios)
+            this.setTabStatus()
           }
         })
         .finally(() => {
           this.isLoading = false
         })
+    },
+    setMultipleType(scenarios = []) {
+      let isClickedOnly, isSubmittedData, isAttachment, isMfa
+      const setMethodValues = (method = '') => {
+        if (method === '1') {
+          isClickedOnly = true
+        } else if (method === '2') {
+          isSubmittedData = true
+        } else if (method === '3') {
+          isAttachment = true
+        }
+      }
+      scenarios.forEach((scenario) => {
+        const method = scenario.scenarioInfo.methodTypeId.toString()
+        if (method === '4') {
+          isMfa = true
+          setMethodValues(scenario.landingPageTemplateInfo?.methodTypeId.toString())
+        } else {
+          setMethodValues(method)
+        }
+      })
+      this.multipleType = [isClickedOnly, isSubmittedData, isAttachment, isMfa]
+    },
+    setTabStatus() {
+      //click only
+      if (!this.multipleType[0]) {
+        const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+        if (tabIndex) this.tabItems.splice(tabIndex, 1)
+      }
+      //data submission
+      if (!this.multipleType[1]) {
+        const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+        if (tabIndex) this.tabItems.splice(tabIndex, 1)
+      }
+      //attachment
+      if (this.multipleType[2]) {
+        this.tabItems.splice(3, 0, {
+          label: labels.OpenedAttachment,
+          name: labels.OpenedAttachment,
+          id: 'campaign-manager-report-opened-attachment-content',
+          component: CampaignManagerReportOpenedAttachment,
+          isVisible: this.$store.getters[
+            'permissions/getCampaignReportsOpenedAttachmentPermissions'
+          ]
+        })
+      }
+      //mfa
+      if (this.multipleType[3]) {
+        this.tabItems.splice(3, 0, {
+          name: labels.SubmittedMFACode,
+          id: 'campaign-manager-report-submitted-mfa-content',
+          label: labels.SubmittedMFACode,
+          component: CampaignManagerReportSubmittedMfaCode,
+          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+        })
+      }
     }
   }
 }
