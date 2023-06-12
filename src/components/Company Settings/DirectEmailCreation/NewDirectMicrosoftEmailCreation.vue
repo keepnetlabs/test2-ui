@@ -227,9 +227,11 @@ export default {
     },
     callForApplicationId() {
       if (!this.isInitial) return
-      DirectCreationService.getApplicationId().then((response) => {
-        const { data: { data = '' } = {} } = response
-        this.connectionUrl = `https://login.microsoftonline.com/common/adminconsent?client_id=${data}&redirect_uri=${window.location.href}`
+      DirectCreationService.getDirectEmailSettings().then((response) => {
+        const { data: { data = {} } = {} } = response
+        this.connectionUrl = `https://login.microsoftonline.com/common/adminconsent?client_id=${
+          data.applicationId
+        }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
       })
     },
     handleClose(forceUpdate = false) {
