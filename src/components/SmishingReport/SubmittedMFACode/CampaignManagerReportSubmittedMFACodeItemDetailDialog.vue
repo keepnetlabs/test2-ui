@@ -62,7 +62,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
@@ -94,8 +94,7 @@ export default {
           COLUMNS.USER_AGENT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.SUBMITTED_DATA_IP,
-          COLUMNS.DATA
+          COLUMNS.SUBMITTED_DATA_IP
         ],
         addButton: {
           show: false
@@ -125,7 +124,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailSubmittedDetails(this.axiosPayload, this.item?.resourceId)
+      SmishingService.searchCampaignJobUserEmailSubmittedDetails(
+        'search-mfa-submitted',
+        this.axiosPayload,
+        this.item?.resourceId
+      )
         .then((response) => {
           const {
             data: {

@@ -83,7 +83,6 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-// TODO: Change api endpoints
 import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
 import DeleteServiceModal from '@/components/SmishingSettings/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/SmishingSettings/Domains/NewEditDomain'

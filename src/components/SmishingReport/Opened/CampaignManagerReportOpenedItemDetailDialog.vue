@@ -69,7 +69,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailOpenedDetails } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
@@ -133,7 +133,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
+      SmishingService.searchCampaignJobTypeDetails(
+        'opened',
+        this.axiosPayload,
+        this.item?.resourceId
+      )
         .then((response) => {
           const {
             data: {

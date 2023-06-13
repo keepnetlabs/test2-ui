@@ -42,10 +42,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  exportCampaignJobUserEmailSubmitted,
-  searchCampaignJobUserEmailSubmitted
-} from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
@@ -85,7 +82,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
+          COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.PASSWORD_COMPLEXITY,
@@ -110,6 +107,7 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
             icon: '$custom-details',
             action: 'on-detail',
+            // TODO: Change permission key
             disabled: !this.$store.getters[
               'permissions/getCampaignReportsSubmittedDataDetailsPermissions'
             ]
@@ -132,7 +130,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailSubmitted(this.axiosPayload, this.id, this.instanceGroup)
+      SmishingService.searchCampaignJobType(
+        'SubmittedData',
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -165,17 +168,20 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailSubmitted(payload, this.id, this.instanceGroup).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Campaign-Report-Submitted-Data.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
+        SmishingService.exportCampaignJobType(
+          'SubmittedData',
+          payload,
+          this.id,
+          this.instanceGroup
+        ).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Smishing-Report-Submitted-Data.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

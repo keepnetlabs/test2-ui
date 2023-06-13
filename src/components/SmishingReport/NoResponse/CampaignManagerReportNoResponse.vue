@@ -8,8 +8,8 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
-      :title="labels.UserWhoHaventOpened"
-      subtitle="List of users who had no interaction with the phishing email"
+      title="Users who don't reply to messages"
+      subtitle="List of users who had no interaction with the smishing"
     />
     <CampaignManagerReportNoResponseTable
       ref="refTable"
@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportHeader from '@/components/SmishingReport/CampaignManagerReportHeader'
 import labels from '@/model/constants/labels'
-import CampaignManagerReportNoResponseTable from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponseTable'
-import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import CampaignManagerReportNoResponseTable from '@/components/SmishingReport/NoResponse/CampaignManagerReportNoResponseTable'
+import CampaignManagerReportResendDialog from '@/components/SmishingReport/CampaignManagerReportResendDialog'
+import { useSmishingResend } from '@/hooks/useSmishingResend'
 export default {
   name: 'CampaignManagerReportNoResponse',
   components: {
@@ -34,7 +34,7 @@ export default {
     CampaignManagerReportNoResponseTable,
     CampaignManagerReportHeader
   },
-  mixins: [useResend],
+  mixins: [useSmishingResend],
   props: {
     id: {
       type: String

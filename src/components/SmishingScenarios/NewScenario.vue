@@ -173,11 +173,13 @@
                 <v-list-item-content>
                   <LandingPageListPreview
                     v-if="!isAttachmentBasedScenario && step === 3"
-                    ref="RefEmailTemplateListPreview"
+                    ref="refLandingPageTemplateListPreview"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :method="getSelectedMethod"
+                    :is-method-mfa="isMethodMfa"
+                    :mfa-data="mfaData"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -191,7 +193,7 @@
             :step="isAttachmentBasedScenario ? 3 : 4"
           >
             <div class="email-settings">
-              <v-list-item>
+              <v-list-item class="mb-8">
                 <v-list-item-content>
                   <v-list-item-title class="new-phishing-scenario__title">
                     Scenario Summary</v-list-item-title
@@ -203,30 +205,31 @@
               </v-list-item>
               <v-list-item>
                 <v-list-item-content>
-                  <div class="summary">
-                    <div class="summary-header">
-                      <div style="color: #2196f3;">
-                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ 'mdi-information' }}
-                        </v-icon>
-                        Scenario Info
-                      </div>
-                    </div>
-                    <div class="summary-content">
-                      <div class="summary-content-details">
-                        <span class="summary-content__title">Name</span
-                        ><span class="summary-content__body">{{ formValues.name }}</span>
-                      </div>
-                      <div class="summary-content-details">
-                        <span class="summary-content__title">Method</span
-                        ><span class="summary-content__body">{{ getMethodText }}</span>
-                      </div>
-                      <div class="summary-content-details" style="border-bottom: none !important;">
-                        <span class="summary-content__title">Difficulty</span
-                        ><span class="summary-content__body">{{ getDifficultyType }}</span>
-                      </div>
-                    </div>
-                    <div class="summary-content__collapsable"></div>
+                  <div
+                    :style="
+                      isMethodMfa
+                        ? {
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            columnGap: '16px',
+                            maxWidth: 'calc(100% - 96px)'
+                          }
+                        : {
+                            maxWidth: 'calc(100% - 96px)'
+                          }
+                    "
+                  >
+                    <CampaignManagerSummaryCard
+                      icon="mdi-information"
+                      :title="labels.ScenarioInfo"
+                      :items="getScenarioInfoItems"
+                    />
+                    <CampaignManagerSummaryCard
+                      v-if="isMethodMfa && step === 4"
+                      icon="mdi-cog"
+                      :title="labels.MFASettings"
+                      :items="getMfaSettingsItems"
+                    />
                   </div>
                 </v-list-item-content>
               </v-list-item>
@@ -537,6 +540,7 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import TextMessageTemplateSelectList from '@/components/SmishingScenarios/TextMessageTemplateSelectList'
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 
 export default {
   name: 'NewScenario',
@@ -552,7 +556,8 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    TextMessageTemplateSelectList
+    TextMessageTemplateSelectList,
+    CampaignManagerSummaryCard
   },
   props: {
     status: {
@@ -633,6 +638,11 @@ export default {
           (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
+      mfaData: {
+        mfaSenderNumberResourceId: '',
+        mfaCallerPhoneNumber: '',
+        mfaTextTemplate: 'Your verification code: {MFA_CODE}'
+      },
       editItemsDisabled: false,
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null
@@ -663,6 +673,7 @@ export default {
       this.landingPageTemplateResourceId = id
     },
     selectedLandingPageChange(item) {
+      console.log('selectedLandingPageChange', item)
       this.formValues.landingPageTemplateId = item.id
       this.landingPageTemplate = item
     },
@@ -732,7 +743,9 @@ export default {
         }
       }
       if (currentStep === 3) {
+        if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return
         if (this.formValues.landingPageTemplateId && this.landingPageTemplate) {
+          this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
           // SmishingService.previewSmishingScenarioUsedTemplates(
           //   this.textMessageTemplate.resourceId,
           //   this.landingPageTemplate.resourceId
@@ -755,7 +768,9 @@ export default {
       const payload = {
         ...this.formValues,
         availableForRequests: this.availableForRequests,
-        methodTypeId: parseInt(this.formValues.methodTypeId)
+        methodTypeId: parseInt(this.formValues.methodTypeId),
+        smsProviderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
+        mfaTextTemplate: this.mfaData?.mfaTextTemplate || ''
       }
       if (this.isEdit && !this.isDuplicate) {
         SmishingService.updateSmishingScenario(this.scenarioId, payload)
@@ -791,6 +806,22 @@ export default {
     }
   },
   computed: {
+    getScenarioInfoItems() {
+      return {
+        Name: this.formValues.name,
+        Method: this.getMethodText,
+        Difficulty: this.getDifficultyType
+      }
+    },
+    isMethodMfa() {
+      return this.formValues.methodTypeId === '4'
+    },
+    getMfaSettingsItems() {
+      return {
+        'Sender Phone Number': this?.mfaData?.mfaCallerPhoneNumber,
+        'Verification Message': this?.mfaData?.mfaTextTemplate
+      }
+    },
     getSummaryTextMessage() {
       return this.textMessageTemplate?.template
     },
@@ -905,6 +936,9 @@ export default {
           this.formValues.textTemplateId = response.data.data.textTemplateId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
+          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
+          this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
+          this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)

@@ -90,6 +90,8 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              last-column-name="phoneNumber"
+              :is-vishing="true"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
@@ -154,17 +156,13 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary'
-// TODO: Change api endpoints
-import { getCampaignManager, updateCampaignManager } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import CampaignManagerSmishingScenarios from '@/components/SmishingCampaignManager/CampaignManagerSmishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
-import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
 
