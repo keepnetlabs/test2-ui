@@ -46,6 +46,10 @@ const getApplicationId = () => {
   return testRequest.get(`${API_URL}/application-id`)
 }
 
+const getDirectEmailSettings = () => {
+  return testRequest.get(`${API_URL}/settings`)
+}
+
 export default {
   getApplicationId,
   getDomains,
@@ -55,5 +59,6 @@ export default {
   getDirectEmailCreation,
   exportDirectEmailCreation,
   createDirectEmailCreation,
-  updateDirectEmailCreation
+  updateDirectEmailCreation,
+  getDirectEmailSettings
 }
