@@ -93,14 +93,6 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/SmishingCampaignManager/CampaignManagerItemRowActions'
-// TODO: Change endpoints
-import {
-  deletePhishingCampaignJob,
-  exportCampaignManagerItem,
-  launchPhishingCampaignInstanceGroup,
-  searchCampaignPhishingJob,
-  stopPhishingCampaignJob
-} from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
@@ -234,15 +226,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Instance.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        SmishingService.exportSmishingCampaignItems(payload, this.item.resourceId).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Smishing-Campaign-Instances.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleBackClick() {
@@ -263,7 +257,7 @@ export default {
     },
     handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      deletePhishingCampaignJob(this.item.resourceId, item.instanceGroup)
+      SmishingService.deleteSmishingCampaignItem(this.item.resourceId, item.instanceGroup)
         .then(() => {
           this.$refs.refTable.unSelectRow(item)
           this.callForData()
@@ -274,12 +268,12 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
+      SmishingService.stopSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaignInstanceGroup(this.item.resourceId, row.instanceGroup).then(() => {
+      SmishingService.startSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },

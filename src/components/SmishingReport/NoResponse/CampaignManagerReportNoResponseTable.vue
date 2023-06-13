@@ -40,10 +40,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserNoResponse,
-  searchCampaignJobUserNoResponse
-} from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -78,7 +75,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
+          COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_SEND_DATE
@@ -109,7 +106,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserNoResponse(this.axiosPayload, this.id, this.instanceGroup)
+      SmishingService.searchCampaignJobType(
+        'NoResponse',
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -135,7 +137,12 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserNoResponse(payload, this.id, this.instanceGroup).then((response) => {
+        SmishingService.exportCampaignJobType(
+          'NoResponse',
+          payload,
+          this.id,
+          this.instanceGroup
+        ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

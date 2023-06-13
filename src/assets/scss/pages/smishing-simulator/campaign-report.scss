@@ -1,0 +1,19 @@
+.smishing-campaign-manager-report-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-top: 24px;
+  .campaign-manager-report-summary-info-card {
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.smishing-campaign-manager-report-summary {
+  .campaign-manager-report-summary__general-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}

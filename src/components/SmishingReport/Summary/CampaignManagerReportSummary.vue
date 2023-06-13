@@ -1,5 +1,5 @@
 <template>
-  <div id="campaign-manager-report-summary" class="campaign-manager-report-summary">
+  <div id="campaign-manager-report-summary" class="smishing-campaign-manager-report-summary">
     <CampaignManagerReportSummaryHeader
       :phishing-scenario-name="phishingScenarioName"
       :resend-dialog-items="getResendDialogItems"
@@ -19,15 +19,14 @@
         :is-test-campaign="isTestCampaign"
         :isLoading="isLoading"
       />
-      <CampaignManagerReportEmailDelivery
-        class="ml-4"
-        :items="getEmailDeliveryData"
+      <CampaignManagerReportSMSDelivery
+        :items="getSMSDeliveryData"
         :helper-data="getEmailDeliveryHelperData"
         :isLoading="isLoading"
       />
     </div>
     <div class="my-6">
-      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+      <span class="campaign-manager-last-step__phishing-scenario-label">Smishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
         <template #activator="{ on }">
           <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
@@ -52,12 +51,11 @@
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
-    <CampaignManagerReportSummaryEmail
-      :form-data="getEmailTemplateData"
+    <CampaignManagerReportSummaryTextTemplate
+      :form-data="getTextTemplateData"
       :isFetchingSummary="isLoading"
     />
     <CampaignManagerReportSummaryLandingPage
-      v-if="!isAttachment"
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
     />
@@ -68,20 +66,19 @@
 import CampaignManagerReportSummaryHeader from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryHeader'
 import CampaignManagerReportSummaryCards from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryCampaignInfo'
-import CampaignManagerReportSummaryEmail from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryEmail'
+import CampaignManagerReportSummaryTextTemplate from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryTextTemplate'
 import CampaignManagerReportSummaryLandingPage from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryLandingPage'
-// TODO: Change api endpoint
-import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
-import CampaignManagerReportEmailDelivery from '@/components/SmishingReport/Summary/CampaignManagerReportEmailDelivery'
+import CampaignManagerReportSMSDelivery from '@/components/SmishingReport/Summary/CampaignManagerReportSMSDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
-    CampaignManagerReportEmailDelivery,
+    CampaignManagerReportSMSDelivery,
     CampaignManagerReportSummaryLandingPage,
-    CampaignManagerReportSummaryEmail,
+    CampaignManagerReportSummaryTextTemplate,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader
@@ -149,9 +146,6 @@ export default {
     getScenarioMethod() {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
-    isAttachment() {
-      return this.getScenarioMethod.toString() === '3' || false
-    },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
         endDate: '0',
@@ -195,17 +189,13 @@ export default {
         SMTP: smtpName
       }
     },
-    getEmailDeliveryData() {
-      const { campaignInfo = {} } = this.campaignSummary || {}
-      const {
-        startDate = '01/01/1970',
-        endDate = '01/01/1970',
-        emailDeliveryDuration = 0
-      } = campaignInfo
+    getSMSDeliveryData() {
+      const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
+      const { startDate = '01/01/1970', endDate = '01/01/1970' } = campaignInfo
       return {
-        'Delivery Start - End': `${startDate} - ${endDate}`,
-        Duration: `${emailDeliveryDuration || 0}`,
-        'Delivery Status': ''
+        'Sending Start - End': `${startDate} - ${endDate}`,
+        'Sending Status': '',
+        'Sender Phone Number': settings.smsProviderNumber
       }
     },
     getEmailDeliveryHelperData() {
@@ -223,89 +213,79 @@ export default {
     },
     getResendDialogItems() {
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        submittedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        attachmentOpenedEmail = 0
+        openedSms,
+        clickedSms,
+        submittedSms,
+        noResponseSms,
+        submittedMFASms,
+        notDelivered,
+        reportedSms
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            clickedEmail,
-            noResponseEmail,
+            openedSms,
+            clickedSms,
+            submittedSms,
+            noResponseSms,
+            submittedMFASms,
             notDelivered,
-            openedEmail,
-            submittedEmail,
-            attachmentOpenedEmail
+            reportedSms
           }
         : {}
     },
     getChartData() {
       const defaultScenarioStatsObject = {
         scenarioStats: {
-          clickedEmail: 0,
-          noResponseEmail: 0,
+          clickedSms: 0,
+          noResponseSms: 0,
           notDelivered: 0,
-          openedEmail: 0,
-          submittedEmail: 0,
-          attachmentOpenedEmail: 0,
-          reportedEmail: 0
+          openedSms: 0,
+          submittedSms: 0,
+          submittedMFASms: 0,
+          reportedSms: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
         ? this.campaignSummary
         : defaultScenarioStatsObject
       const {
-        clickedEmail = 0,
-        noResponseEmail = 0,
+        attachmentOpenedSms = 0,
+        clickedSms = 0,
+        noResponseSms = 0,
         notDelivered = 0,
-        openedEmail = 0,
-        submittedEmail = 0,
-        attachmentOpenedEmail = 0,
-        reportedEmail = 0
+        openedSms = 0,
+        reportedSms = 0,
+        submittedSms = 0,
+        submittedMFASms = 0
       } = scenarioStats
-      const dataContainer = [
-        openedEmail,
-        clickedEmail,
-        submittedEmail,
-        noResponseEmail,
-        notDelivered,
-        attachmentOpenedEmail,
-        reportedEmail
-      ]
+      const dataContainer = [clickedSms, submittedSms, noResponseSms, notDelivered, submittedMFASms]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
       if (!this.getChartData.length) return {}
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        submittedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        submittedMFA = 0
+        clickedSms,
+        submittedSms,
+        noResponseSms,
+        notDelivered,
+        submittedMFASms
       ] = this.getChartData
       return {
         noResponse: {
-          userCount: noResponseEmail,
-          userPercent: ((noResponseEmail / this.getTotalUsers) * 100).toFixed()
+          userCount: noResponseSms,
+          userPercent: ((noResponseSms / this.getTotalUsers) * 100).toFixed()
         },
-        openedEmail: {
-          userCount: openedEmail,
-          userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
+        clicked: {
+          userCount: clickedSms,
+          userPercent: ((clickedSms / this.getTotalUsers) * 100).toFixed()
         },
-        clickedEmail: {
-          userCount: clickedEmail,
-          userPercent: ((clickedEmail / this.getTotalUsers) * 100).toFixed()
-        },
-        submittedEmail: {
-          userCount: submittedEmail,
-          userPercent: ((submittedEmail / this.getTotalUsers) * 100).toFixed()
+        submitted: {
+          userCount: submittedSms,
+          userPercent: ((submittedSms / this.getTotalUsers) * 100).toFixed()
         },
         submittedMFA: {
-          userCount: submittedMFA,
-          userPercent: ((submittedMFA / this.getTotalUsers) * 100).toFixed()
+          userCount: submittedMFASms,
+          userPercent: ((submittedMFASms / this.getTotalUsers) * 100).toFixed()
         },
         notDelivered: {
           userCount: notDelivered,
@@ -317,38 +297,23 @@ export default {
       const { campaignInfo = {} } = this.campaignSummary
       return campaignInfo['totalTargetUserCount'] || 0
     },
-    getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.getActiveScenario || {
-        emailTemplateInfo: {}
+    getTextTemplateData() {
+      const { textTemplateInfo = {} } = this.getActiveScenario || {
+        textTemplateInfo: {}
       }
-      if (!Object.keys(emailTemplateInfo)?.length) {
+      if (!Object.keys(textTemplateInfo)?.length) {
         return {}
       }
-      const {
-        name,
-        difficultyResourceId,
-        categoryResourceId,
-        fromName,
-        fromAddress,
-        resourceId,
-        languageShortCode,
-        phishingFileName
-      } = emailTemplateInfo || {}
+      const { resourceId, name, difficultyResourceId, categoryResourceId, languageShortCode } =
+        textTemplateInfo || {}
 
-      return Object.keys(emailTemplateInfo)?.length
+      return Object.keys(textTemplateInfo)?.length
         ? {
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             method: methods.find((item) => item.value === categoryResourceId)?.text,
-            fromName,
-            fromAddress,
             name,
             resourceId,
             languageShortCode,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null,
             campaignResourceId: this.id,
             instanceGroup: this.instanceGroup
           }
@@ -378,7 +343,7 @@ export default {
         : {}
     },
     getCampaignMethodTypes() {
-      return this.phishingScenarios.length > 1
+      return this.phishingScenarios.length
         ? [
             this.phishingScenarios.some(
               (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
@@ -387,7 +352,7 @@ export default {
               (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
             ),
             this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '3'
+              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'
             )
           ]
         : []
@@ -410,7 +375,7 @@ export default {
       if (isUseLoading) {
         this.setLoading(true)
       }
-      getCampaignJobSummary(this.id, this.instanceGroup)
+      SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.campaignSummary = response?.data?.data
           if (this?.campaignSummary?.scenarios?.length) {
@@ -431,9 +396,11 @@ export default {
             this.setLoading(false)
           }
         })
-      getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
-        this.targetGroups = response?.data?.data?.groups || []
-      })
+      SmishingService.getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then(
+        (response) => {
+          this.targetGroups = response?.data?.data?.groups || []
+        }
+      )
     },
     setScenarioDetail(event = {}) {
       this.activeScenarioIndex = event.index

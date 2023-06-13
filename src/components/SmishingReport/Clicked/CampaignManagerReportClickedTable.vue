@@ -42,10 +42,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  exportCampaignJobUserEmailClicked,
-  searchCampaignJobUserEmailClicked
-} from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 export default {
@@ -80,7 +77,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
+          COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_CLICKED,
@@ -90,7 +87,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportClicked
+          message: 'You do not have any user who clicked the link'
         },
         selectEvent: {
           resend: true
@@ -107,6 +104,7 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-clicked',
             icon: '$custom-details',
             action: 'on-detail',
+            // TODO: Change permission key
             disabled: !this.$store.getters[
               'permissions/getCampaignReportsClickedDetailsPermissions'
             ]
@@ -121,7 +119,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id, this.instanceGroup)
+      SmishingService.searchCampaignJobType(
+        'clicked',
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -146,15 +149,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailClicked(payload, this.id, this.instanceGroup).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Clicked.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        SmishingService.exportCampaignJobType('clicked', payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Smishing-Report-Clicked.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

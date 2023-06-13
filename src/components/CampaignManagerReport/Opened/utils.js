@@ -50,6 +50,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  PHONENUMBER: {
+    property: 'phoneNumber',
+    align: 'left',
+    label: 'Phone Number',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   EMAIL_DELIVERY: {
     property: PROPERTY_STORE.EMAIL_DELIVERY,
     align: 'left',
@@ -66,7 +78,7 @@ export const COLUMNS = {
     property: 'lastSendingTime',
     align: 'left',
     editable: false,
-    label: labels.EmailSendDate,
+    label: 'Message Send Date',
     sortable: true,
     show: true,
     type: 'text',

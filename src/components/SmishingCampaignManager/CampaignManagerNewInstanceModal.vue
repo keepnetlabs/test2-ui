@@ -124,13 +124,10 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-// import KSelect from '@/components/Common/Inputs/KSelect'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-// import InputDate from '@/components/Common/Inputs/InputDate'
 import { searchTargetGroups } from '@/api/targetUsers'
-// TODO: Change api endpoint
-import { launchPhishingCampaign } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { mapGetters } from 'vuex'
 import { isDifferent, getTimeZone, getDefaultAxiosPayload } from '@/utils/functions'
 import * as validations from '@/utils/validations'
@@ -153,10 +150,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    // KSelect,
     CampaignManagerTargetGroups,
     CustomError
-    // InputDate
   },
   mixins: [useDebounce],
   emits: EMITS,
@@ -351,7 +346,7 @@ export default {
             (target) => target.value
           )
         }
-        launchPhishingCampaign(this.resourceId, payload)
+        SmishingService.launchSmishingCampaign(this.resourceId, payload)
           .then(() => {
             this.$emit(EMITS.ON_SUBMIT)
           })
