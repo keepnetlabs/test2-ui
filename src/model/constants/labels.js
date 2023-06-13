@@ -313,6 +313,7 @@ export const labels = {
   'Click-Only': 'Click-Only',
   ClickedThePhishingLink: 'Clicked the phishing link',
   SubmittedData: 'Submitted Data',
+  SubmittedMFACode: 'Submitted MFA Code',
   OpenedAttachment: 'Opened Attachment',
   NoResponse: 'No Response',
   SendingReport: 'Sending Report',

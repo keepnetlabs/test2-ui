@@ -371,7 +371,10 @@
                   to="/smishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-smishing-campaign-manager"
                   route-name="Campaign Manager"
-                  :active-class-comparator="() => routerName === 'Smishing Campaign Manager'"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Smishing Campaign Manager' || routerName === 'Smishing Report'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -1099,7 +1102,8 @@ export default {
           routerName === 'Smishing Simulator' ||
           routerName === 'Smishing Scenarios' ||
           routerName === 'Smishing Campaign Manager' ||
-          routerName === 'Smishing Settings',
+          routerName === 'Smishing Settings' ||
+          routerName === 'Smishing Report',
         'un-selected-list-item': routerName !== 'Smishing Simulator'
       }
     },

@@ -4,6 +4,8 @@
       ref="refCampaignManagerTargetGroup"
       is-call-api-when-created
       :is-valid="isTargetGroupsValid"
+      :is-vishing="isVishing"
+      :last-column-name="lastColumnName"
       @handle-selection-change="handleTargetGroupSelectionChange"
     />
     <CustomError
@@ -97,6 +99,14 @@ export default {
       type: Object,
       default: () => ({})
     },
+    isVishing: {
+      type: Boolean,
+      default: false
+    },
+    lastColumnName: {
+      type: String,
+      default: 'email'
+    },
     totalTargetUserCount: {
       type: Number,
       default: 0
@@ -137,6 +147,13 @@ export default {
     }
   },
   watch: {
+    isVishing: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        console.log('isVishing target audience', val)
+      }
+    },
     selectedTargetGroupsMapped(val) {
       this.isTargetGroupsValid = !!val.length
     }

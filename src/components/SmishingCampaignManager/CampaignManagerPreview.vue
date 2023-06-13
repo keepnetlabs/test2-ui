@@ -73,8 +73,6 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-// TODO: Import smishing endpoints
-import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'

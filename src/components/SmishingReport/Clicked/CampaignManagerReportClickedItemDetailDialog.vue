@@ -66,7 +66,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
-import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -132,7 +132,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailClickedDetails(this.axiosPayload, this.item?.resourceId)
+      SmishingService.searchCampaignJobTypeDetails(
+        'search-sms-clicked',
+        this.axiosPayload,
+        this.item?.resourceId
+      )
         .then((response) => {
           const {
             data: {

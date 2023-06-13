@@ -135,8 +135,6 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-// TODO: Import smishing endpoints
-import { getScenarioDataDetails } from '@/api/scenarios'
 import SmishingService from '@/api/smishing'
 import SmishingScenarioPreview from '@/components/SmishingScenarios/SmishingScenarioPreview'
 import { mapGetters } from 'vuex'

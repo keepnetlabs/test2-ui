@@ -170,10 +170,114 @@ function deleteSmishingCampaign(resourceId) {
   })
 }
 
+function getCampaignFormDetails() {
+  return testRequest.get(`/smishing-simulator/smishing-campaign-job/form-details`)
+}
+
 const searchSmishingCampaignJobReport = (payload, resourceId) => {
   return testRequest.post(
     `/smishing-simulator/smishing-campaign-job-report/${resourceId}/search`,
     payload
+  )
+}
+
+const launchSmishingCampaign = (resourceId, payload) => {
+  return testRequest.post(`/smishing-simulator/smishing-campaign-job/start/${resourceId}`, payload)
+}
+
+const startSmishingCampaign = (resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job/start/${resourceId}/${instanceGroup}`
+  )
+}
+
+const stopSmishingCampaign = (resourceId, instanceGroup) => {
+  return testRequest.patch(
+    `/smishing-simulator/smishing-campaign-job/stop/${resourceId}/${instanceGroup}`
+  )
+}
+
+function deleteSmishingCampaignItem(resourceId, instanceGroup) {
+  return testRequest.delete(
+    `/smishing-simulator/smishing-campaign-job/${resourceId}/${instanceGroup}`,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const exportSmishingCampaignItems = (payload, resourceId) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job-report/${resourceId}/search/export`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const getCampaignJobSummary = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/smishing-simulator/smishing-campaign-job-report/summary/${resourceId}/${instanceGroup}`
+  )
+}
+
+const getCampaignJobSummaryTargetGroups = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/smishing-simulator/smishing-campaign-job-report/summary/target-groups/${resourceId}/${instanceGroup}`
+  )
+}
+
+const searchCampaignJobType = (searchType, payload, resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job-report/${searchType}/search/${resourceId}/${instanceGroup}`,
+    payload
+  )
+}
+
+const searchCampaignJobTypeDetails = (searchType, payload, resourceId) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job-report/${searchType}/${resourceId}`,
+    payload
+  )
+}
+
+const resendSmishingCampaignToUsers = (payload, resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job/resend/${resourceId}/${instanceGroup}`,
+    payload
+  )
+}
+
+const resendSmishingCampaignToUserList = (payload, resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job/resend/list/${resourceId}/${instanceGroup}`,
+    payload
+  )
+}
+
+const exportCampaignJobType = (searchType, payload, resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job-report/${searchType}/search/export/${resourceId}/${instanceGroup}`,
+    payload
+  )
+}
+
+const downloadSmishingReport = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/smishing-simulator/smishing-campaign-job-report/export/${resourceId}/${instanceGroup}`,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const downloadSmishingReport2 = (resourceId) => {
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job-report/${resourceId}/search/export`,
+    {
+      responseType: 'blob'
+    }
   )
 }
 
@@ -209,6 +313,21 @@ export default {
   updateSmishingCampaign,
   previewSmishingCampaign,
   deleteSmishingCampaign,
+  getCampaignFormDetails,
   getSmishingPhoneNumbers,
-  searchSmishingCampaignJobReport
+  searchSmishingCampaignJobReport,
+  exportSmishingCampaignItems,
+  deleteSmishingCampaignItem,
+  launchSmishingCampaign,
+  startSmishingCampaign,
+  stopSmishingCampaign,
+  getCampaignJobSummary,
+  getCampaignJobSummaryTargetGroups,
+  searchCampaignJobType,
+  searchCampaignJobTypeDetails,
+  exportCampaignJobType,
+  downloadSmishingReport,
+  downloadSmishingReport2,
+  resendSmishingCampaignToUsers,
+  resendSmishingCampaignToUserList
 }

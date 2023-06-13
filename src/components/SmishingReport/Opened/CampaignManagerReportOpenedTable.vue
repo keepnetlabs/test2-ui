@@ -41,10 +41,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
-} from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -117,7 +114,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
+      SmishingService.searchCampaignJobType(
+        'Opened',
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -142,15 +144,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Opened.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        SmishingService.exportCampaignJobType('opened', payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Smishing-Report-Opened.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

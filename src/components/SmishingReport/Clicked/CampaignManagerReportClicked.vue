@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoClicked"
-      subtitle="List of users who clicked the phishing link"
+      subtitle="List of users who clicked the smishing link"
     />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
@@ -29,12 +29,12 @@
 </template>
 
 <script>
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportHeader from '@/components/SmishingReport/CampaignManagerReportHeader'
 import labels from '@/model/constants/labels'
-import CampaignManagerReportClickedTable from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedTable'
-import CampaignManagerReportClickedItemDetailDialog from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedItemDetailDialog'
-import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import CampaignManagerReportClickedTable from '@/components/SmishingReport/Clicked/CampaignManagerReportClickedTable'
+import CampaignManagerReportClickedItemDetailDialog from '@/components/SmishingReport/Clicked/CampaignManagerReportClickedItemDetailDialog'
+import CampaignManagerReportResendDialog from '@/components/SmishingReport/CampaignManagerReportResendDialog'
+import { useSmishingResend } from '@/hooks/useSmishingResend'
 export default {
   name: 'CampaignManagerReportClicked',
   components: {
@@ -43,7 +43,7 @@ export default {
     CampaignManagerReportClickedTable,
     CampaignManagerReportHeader
   },
-  mixins: [useResend],
+  mixins: [useSmishingResend],
   props: {
     id: {
       type: String

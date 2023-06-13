@@ -17,7 +17,7 @@
             id="input--campaign-manager-report-message-failed-to-send"
             color="#2196f3"
             :disabled="!items.notDelivered"
-            :value="1"
+            :value="5"
           >
             <template #label> Message failed to send {{ `(${items.notDelivered || 0})` }}</template>
           </v-checkbox>
@@ -25,38 +25,38 @@
             v-model="types"
             id="input--campaign-manager-report-clicked"
             color="#2196f3"
-            :disabled="!items.clickedEmail"
+            :disabled="!items.clickedSms"
             :value="2"
           >
-            <template #label> Clicked phishing link {{ `(${items.clickedEmail || 0})` }}</template>
+            <template #label> Clicked phishing link {{ `(${items.clickedSms || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--campaign-manager-report-submitted-data"
             color="#2196f3"
-            :disabled="!items.submittedEmail"
+            :disabled="!items.submittedSms"
             :value="3"
           >
-            <template #label> Submitted data {{ `(${items.submittedEmail || 0})` }}</template>
+            <template #label> Submitted data {{ `(${items.submittedSms || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--campaign-manager-report-submitted-mfa"
             color="#2196f3"
-            :disabled="!items.submittedMFA"
-            :value="7"
+            :disabled="!items.submittedMFAsms"
+            :value="8"
           >
-            <template #label> Submitted MFA Code {{ `(${items.submittedMFA || 0})` }}</template>
+            <template #label> Submitted MFA Code {{ `(${items.submittedMFAsms || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--campaign-manager-report-no-response"
             color="#2196f3"
             hide-details
-            :disabled="!items.noResponseEmail"
+            :disabled="!items.noResponseSms"
             :value="4"
           >
-            <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
+            <template #label> No response {{ `(${items.noResponseSms || 0})` }}</template>
           </v-checkbox>
         </div>
       </div>

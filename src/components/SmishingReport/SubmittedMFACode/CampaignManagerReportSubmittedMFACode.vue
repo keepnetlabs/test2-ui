@@ -8,8 +8,8 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
-      :title="labels.UserWhoSubmitted"
-      subtitle="List of users who entered their credentials on phishing landing page"
+      title="Users who submitted the MFA code"
+      subtitle="List of users who submitted the MFA code that is delivered to their phone by SMS."
     />
     <CampaignManagerReportSubmittedItemDetailDialog
       v-if="isShowDetailDialog"

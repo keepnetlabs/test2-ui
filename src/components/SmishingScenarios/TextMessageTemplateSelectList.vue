@@ -188,7 +188,7 @@ export default {
       { text: 'Click Only', value: 'WNZt0sCVCWB3' },
       { text: 'Data Submission', value: 'DYC0gugxJMjT' },
       {},
-      { text: 'MFA', value: '67LcW2kHbtds' }
+      { text: 'MFA', value: 'WNZt0sCVCWB3,DYC0gugxJMjT' }
     ]
     return {
       search: null,

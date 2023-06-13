@@ -8,8 +8,8 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
-      :title="labels.UserWhoSubmitted"
-      subtitle="List of users who entered their credentials on phishing landing page"
+      title="Users who submitted the form"
+      subtitle="List of users who entered their credentials on smishing landing page"
     />
     <CampaignManagerReportSubmittedItemDetailDialog
       v-if="isShowDetailDialog"
@@ -31,11 +31,11 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
-import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
+import CampaignManagerReportHeader from '@/components/SmishingReport/CampaignManagerReportHeader'
+import CampaignManagerReportSubmittedTable from '@/components/SmishingReport/SubmittedData/CampaignManagerReportSubmittedTable'
+import CampaignManagerReportSubmittedItemDetailDialog from '@/components/SmishingReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
 import { useResend } from '@/hooks/useResend'
-import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import CampaignManagerReportResendDialog from '@/components/SmishingReport/CampaignManagerReportResendDialog'
 export default {
   name: 'CampaignManagerReportSubmittedData',
   components: {

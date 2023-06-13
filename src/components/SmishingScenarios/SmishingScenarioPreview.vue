@@ -12,8 +12,8 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <el-tabs v-show="!isLoading" v-model="tab">
-        <el-tab-pane
+      <ElTabs v-show="!isLoading" v-model="tab">
+        <ElTabPane
           id="campaign-manager-info--email-content"
           name="textMessage"
           label="Text Message"
@@ -23,19 +23,20 @@
               <span class="template-preview__text--body">{{ textTemplateParams.template }}</span>
             </div>
           </div>
-        </el-tab-pane>
-        <el-tab-pane
+        </ElTabPane>
+        <ElTabPane
           :label="labels.LandingPage"
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <LandingPageTemplateModalPreview
-            :templateName="landingPageParams.name"
-            :landingPageTemplates="landingPageTemplates"
-            :phishingUrl="landingPageParams.urlTemplate"
+          <TabsWithMfaSettings
+            class="tabs-with-mfa-settings"
+            :isMethodMfa="isMethodMfa"
+            :landing-page-params="landingPageParams"
+            :landing-page-templates="landingPageTemplates"
           />
-        </el-tab-pane>
-      </el-tabs>
+        </ElTabPane>
+      </ElTabs>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -58,13 +59,14 @@ import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
+
 export default {
   name: 'SmishingScenarioPreview',
   components: {
     DatatableLoading,
     AppDialog,
-    LandingPageTemplateModalPreview
+    TabsWithMfaSettings
   },
   props: {
     status: {
@@ -78,6 +80,7 @@ export default {
     return {
       textTemplate: null,
       landingPageTemplates: [],
+      isMethodMfa: false,
       selectedLandingPageIndex: 0,
       textTemplateParams: {},
       landingPageParams: {},
@@ -147,6 +150,7 @@ export default {
             isAttachmentBasedTemplate: methodTypeId === 3
           }
           this.landingPageTemplates = landingPages
+          this.isMethodMfa = data.methodTypeId === 4
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

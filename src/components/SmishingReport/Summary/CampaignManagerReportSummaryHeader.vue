@@ -44,8 +44,7 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryResendDialog'
-// TODO: Change api endpoint
-import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export default {
@@ -79,21 +78,25 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      resendPhishingCampaignToUsers({ Types: types }, this.id, this.instanceGroup).finally(() => {
+      SmishingService.resendSmishingCampaignToUsers(
+        { Types: types },
+        this.id,
+        this.instanceGroup
+      ).finally(() => {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
     },
     handleDownloadReport() {
       this.isDownloadReportDisabled = true
-      exportPhishingCampaignJob(this.id, this.instanceGroup)
+      SmishingService.downloadSmishingReport2(this.id, this.instanceGroup)
         .then((response) => {
           const { data } = response
           if (response.status === 200) {
             const blob = new Blob([data])
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(blob)
-            link.download = `Campaign-Manager-Report.xlsx`
+            link.download = `Smishing-Report.xlsx`
             link.click()
           } else if (response.status === 201) {
             this.$store.dispatch('common/createSnackBar', {
