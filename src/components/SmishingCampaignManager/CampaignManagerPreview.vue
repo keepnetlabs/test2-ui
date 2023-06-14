@@ -32,9 +32,8 @@
           label="Text Message"
         >
           <div class="template-preview pt-6">
-            <div v-if="!!emailTemplate" class="template-preview__text">
+            <div v-if="!!textTemplate" class="template-preview__text">
               <div class="mb-1 d-flex flex-column">
-                <span class="template-preview__text--title mb-1">Text Message</span>
                 <span class="template-preview__text--body">{{
                   textMessageTemplateParams.textMessage
                 }}</span>
@@ -43,15 +42,14 @@
           </div>
         </ElTabPane>
         <ElTabPane
-          v-if="!isAttachmentBasedScenario"
           :label="labels.LandingPage"
           name="landing-page"
           id="campaign-manager-info--landing-content"
         >
-          <LandingPageTemplateModalPreview
-            :landingPageTemplates="landingPageTemplates"
-            :phishingUrl="landingPageParams.urlTemplate"
-            :template-name="textMessageTemplateParams.name"
+          <TabsWithMfaSettings
+            :is-method-mfa="isMethodMfa"
+            :landing-page-params="landingPageParams"
+            :landing-page-templates="landingPageTemplates"
           />
         </ElTabPane>
       </ElTabs>
@@ -76,14 +74,14 @@ import AppDialog from '@/components/AppDialog'
 import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
 
 export default {
   name: 'CampaignManagerPreview',
   components: {
     DatatableLoading,
     AppDialog,
-    LandingPageTemplateModalPreview
+    TabsWithMfaSettings
   },
   props: {
     status: {
@@ -95,8 +93,7 @@ export default {
   },
   data() {
     return {
-      isAttachmentBasedScenario: false,
-      emailTemplate: null,
+      textTemplate: null,
       landingPageTemplates: [],
       textMessageTemplateParams: {},
       landingPageParams: {},
@@ -105,7 +102,8 @@ export default {
       labels,
       timeoutId: '',
       selectedScenario: null,
-      phishingScenarios: []
+      phishingScenarios: [],
+      isMethodMfa: false
     }
   },
   computed: {
@@ -127,9 +125,9 @@ export default {
       this.setLoading(true)
       SmishingService.previewSmishingCampaign(this.selectedRow.resourceId)
         .then((response) => {
-          const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
-          this.phishingScenarios = phishingScenarioPreviewList
-          const phishingScenarioPreviewDto = phishingScenarioPreviewList[0] || {}
+          const { data: { data: { smishingScenarioPreviewList } = [] } = {} } = response
+          this.phishingScenarios = smishingScenarioPreviewList
+          const phishingScenarioPreviewDto = smishingScenarioPreviewList[0] || {}
           this.selectedScenario = phishingScenarioPreviewDto.name
           this.setActiveScenario(phishingScenarioPreviewDto || {})
         })
@@ -140,28 +138,20 @@ export default {
         })
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
-      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId === 3
-      this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
+      this.textTemplate = phishingScenarioPreviewDto?.textTemplate?.template || ''
       this.textMessageTemplateParams = {
-        name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
-        fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
-        fromAddress: phishingScenarioPreviewDto?.emailTemplate?.fromAddress || '',
-        subject: phishingScenarioPreviewDto?.emailTemplate?.subject || '',
-        attachment: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
-          ? {
-              name: phishingScenarioPreviewDto?.emailTemplate?.phishingFileName
-            }
-          : null,
-        textMessage:
-          phishingScenarioPreviewDto?.textMessage ||
-          'Please confirm your Microsoft account. {PHISHING_LINK}'
+        name: phishingScenarioPreviewDto?.textTemplate?.name || '',
+        textMessage: phishingScenarioPreviewDto?.textTemplate?.template
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       this.landingPageParams = {
         name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
         description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
-        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
+        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
+        mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate,
+        mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber
       }
     },
     callForScenarioDetail(event) {
