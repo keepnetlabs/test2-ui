@@ -259,7 +259,10 @@ const resendSmishingCampaignToUserList = (payload, resourceId, instanceGroup) =>
 const exportCampaignJobType = (searchType, payload, resourceId, instanceGroup) => {
   return testRequest.post(
     `/smishing-simulator/smishing-campaign-job-report/${searchType}/search/export/${resourceId}/${instanceGroup}`,
-    payload
+    payload,
+    {
+      responseType: 'blob'
+    }
   )
 }
 
