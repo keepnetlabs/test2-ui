@@ -212,30 +212,28 @@ export default {
       }
     },
     getResendDialogItems() {
+      console.log(this.getChartData)
       const [
-        openedSms,
+        notDelivered,
         clickedSms,
         submittedSms,
-        noResponseSms,
         submittedMFASms,
-        notDelivered,
-        reportedSms
+        noResponseSms
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            openedSms,
+            notDelivered,
             clickedSms,
             submittedSms,
-            noResponseSms,
             submittedMFASms,
-            notDelivered,
-            reportedSms
+            noResponseSms
           }
         : {}
     },
     getChartData() {
       const defaultScenarioStatsObject = {
         scenarioStats: {
+          attachmentOpenedSms: 0,
           clickedSms: 0,
           noResponseSms: 0,
           notDelivered: 0,
@@ -258,17 +256,17 @@ export default {
         submittedSms = 0,
         submittedMFASms = 0
       } = scenarioStats
-      const dataContainer = [clickedSms, submittedSms, noResponseSms, notDelivered, submittedMFASms]
+      const dataContainer = [notDelivered, clickedSms, submittedSms, submittedMFASms, noResponseSms]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
       if (!this.getChartData.length) return {}
       const [
+        notDelivered,
         clickedSms,
         submittedSms,
-        noResponseSms,
-        notDelivered,
-        submittedMFASms
+        submittedMFASms,
+        noResponseSms
       ] = this.getChartData
       return {
         noResponse: {

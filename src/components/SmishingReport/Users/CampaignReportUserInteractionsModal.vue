@@ -11,11 +11,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <p v-if="isShowMessage">
-        {{ getMessage }}
-      </p>
       <DataTable
-        v-if="!isShowMessage"
         :id="CONSTANTS.id"
         ref="refTable"
         selectable
@@ -58,7 +54,7 @@
           color="#2196f3"
           @click="handleClose"
         >
-          {{ isShowMessage ? 'OKAY' : 'CLOSE' }}
+          CLOSE
         </v-btn>
       </div>
     </template>
@@ -72,13 +68,13 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
+import { getStatusBadgeProps } from '@/components/SmishingReport/Users/utils'
 import Badge from '@/components/Badge'
-import AwarenessEducatorService from '@/api/awarenessEducator'
+import SmishingService from '@/api/smishing'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
-  name: 'TrainingReportUserInteractionsModal',
+  name: 'CampaignReportUserInteractionsModal',
   components: { DataTable, AppDialog, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -99,11 +95,27 @@ export default {
   data() {
     const columns = [
       {
+        property: 'interaction',
+        align: 'center',
+        fixed: 'left',
+        editable: false,
+        label: 'Last Interaction',
+        show: true,
+        type: 'slot',
+        width: 180,
+        props: {
+          style: {
+            maxWidth: '110px !important'
+          }
+        },
+        hideSort: true
+      },
+      {
         property: 'eventTime',
         align: 'left',
         fixed: this.interactionType ? 'left' : false,
         editable: false,
-        label: this.firstColumnLabel,
+        label: 'Date',
         show: true,
         type: 'text',
         width: 200,
@@ -152,26 +164,6 @@ export default {
         width: 160
       }
     ]
-    if (!this.interactionType)
-      columns.unshift({
-        property: 'interaction',
-        align: 'center',
-        fixed: 'left',
-        editable: false,
-        label: 'Interaction',
-        show: true,
-        type: 'slot',
-        width: 180,
-        props: {
-          style: {
-            maxWidth: '110px !important'
-          }
-        },
-        hideSort: true
-      })
-    else {
-      columns[columns.length - 1].width = 325
-    }
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -200,37 +192,6 @@ export default {
   computed: {
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
-    },
-    getMessage() {
-      if (['In Queue', 'InQueue'].includes(this.item.status)) {
-        return 'The email for this user is in the queue to send. Please check again after a while.'
-      }
-      if (['Not Delivered', 'NotDelivered'].includes(this.item.status)) {
-        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on the “Sending Report” tab.'
-      }
-      if (['Sending Error', 'SendingError', 'Error'].includes(this.item.status)) {
-        return 'The email could not be delivered to this user. Therefore there isn’t any action by the user. You can check the details about this error on the “Sending Report” tab.'
-      }
-      if (['Cancelled'].includes(this.item.status)) {
-        return 'The training enrollment was cancelled while sending emails. For this reason the email could not be delivered to this user. Therefore there isn’t any action by the user.'
-      }
-      if (['Processing'].includes(this.item.status)) {
-        return 'This user hasn’t interacted with the enrollment email or the training, yet. Please check again after a while.'
-      }
-      return ''
-    },
-    isShowMessage() {
-      return [
-        'In Queue',
-        'InQueue',
-        'Not Delivered',
-        'NotDelivered',
-        'Error',
-        'SendingError',
-        'Sending Error',
-        'Processing',
-        'Cancelled'
-      ].includes(this.item.status)
     }
   },
   created() {
@@ -242,17 +203,21 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.getTrainingReportInteractions(
-        this.item.enrollmentId,
-        this.item.targetUserResourceId,
-        this.interactionType
+      SmishingService.searchCampaignJobTypeDetails(
+        'search-sms-all',
+        this.axiosPayload,
+        this.item?.resourceId
       )
         .then((response) => {
-          this.tableData = response?.data?.data.map((item) => ({
-            interaction: item.interaction,
-            eventTime: item.eventTime,
-            ...item.trackingInfo
-          }))
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
         })
         .finally(this.setLoading)
     },

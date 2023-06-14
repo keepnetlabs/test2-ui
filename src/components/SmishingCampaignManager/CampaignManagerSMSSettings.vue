@@ -66,11 +66,9 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
-import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
 import SmishingService from '@/api/smishing'
 
@@ -134,7 +132,9 @@ export default {
         smsProviderNumberResourceId: '',
         distributionTypeId: 1,
         distributionDelayEvery: 20,
-        distributionDelayTimeTypeId: 1,
+        distributionDelayTimeTypeId: '1',
+        distributionEmailOver: 8,
+        distributionEmailOverTimeTypeId: '1',
         sendingLimit: 50
       },
       commonRules: {

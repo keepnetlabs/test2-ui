@@ -673,7 +673,6 @@ export default {
       this.landingPageTemplateResourceId = id
     },
     selectedLandingPageChange(item) {
-      console.log('selectedLandingPageChange', item)
       this.formValues.landingPageTemplateId = item.id
       this.landingPageTemplate = item
     },

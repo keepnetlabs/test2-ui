@@ -131,10 +131,8 @@ import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/Campaign
 import Badge from '@/components/Badge'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getDifficultyBadgeColor } from '@/utils/functions'
-import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
-import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 
@@ -341,7 +339,8 @@ export default {
             template,
             name,
             difficultyResourceId,
-            languageTypeResourceId: languageOfEmailTemplate
+            languageTypeResourceId: languageOfEmailTemplate,
+            method
           } = textTemplate || {}
 
           this.textTemplateParams = {
@@ -349,10 +348,11 @@ export default {
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             languageTypeResourceId: languageOfEmailTemplate,
-            template
+            template,
+            method
           }
           this.textTemplateParams.languageShortCode = this.languageOptions.find(
-            (language) => language.value === this.textTemplateParams.languageOfEmailTemplate
+            (language) => language.value === this.textTemplateParams.languageTypeResourceId
           )?.text
           const {
             name: landingPageName = '',

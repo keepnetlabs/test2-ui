@@ -70,14 +70,6 @@ export default {
       mfaIcon: require('../../../assets/img/phonelink_lock.svg')
     }
   },
-  watch: {
-    multipleType: {
-      deep: true,
-      handler(val) {
-        console.log('multipleType', val)
-      }
-    }
-  },
   computed: {
     getFirstCardProps() {
       return this.getNoResponseData
