@@ -74,7 +74,7 @@ import AppDialog from '@/components/AppDialog'
 import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import TabsWithMfaSettings from '../PhishingScenarios/TabsWithMfaSettings'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
 
 export default {
   name: 'CampaignManagerPreview',
