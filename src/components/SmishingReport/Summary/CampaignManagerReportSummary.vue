@@ -212,7 +212,6 @@ export default {
       }
     },
     getResendDialogItems() {
-      console.log(this.getChartData)
       const [
         notDelivered,
         clickedSms,
