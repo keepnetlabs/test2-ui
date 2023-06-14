@@ -276,17 +276,6 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'date'
-          },
-          {
-            property: 'availableFor',
-            align: 'right',
-            label: labels.AvailalbeFor,
-            fixed: false,
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'number',
-            width: 100
           }
         ],
         rowActions: [

@@ -115,7 +115,7 @@ export default {
       },
       columns: COLUMNS,
       METHOD_TYPES,
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],

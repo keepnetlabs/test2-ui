@@ -285,17 +285,6 @@ export default {
             filterableType: 'text',
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
-          },
-          {
-            property: 'availableFor',
-            align: 'right',
-            label: labels.AvailalbeFor,
-            fixed: false,
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'number',
-            width: 100
           }
         ],
         rowActions: [

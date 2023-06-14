@@ -319,7 +319,7 @@ export default {
       } = this.selectedRowFormData
       return {
         distributionDelayEvery: distributionDelayEvery,
-        distributionDelayTimeTypeId: distributionDelayTimeTypeId,
+        distributionDelayTimeTypeId: distributionDelayTimeTypeId.toString(),
         distributionTypeId: distributionTypeId,
         sendingLimit,
         sendOnlyActiveUsers,
@@ -482,6 +482,9 @@ export default {
             distributionDelayTimeTypeId: parseInt(
               deliverySettingsFormData.distributionDelayTimeTypeId
             ),
+            distributionEmailOver: deliverySettingsFormData.distributionEmailOver,
+            distributionEmailOverTimeTypeId:
+              deliverySettingsFormData.distributionEmailOverTimeTypeId,
             sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,

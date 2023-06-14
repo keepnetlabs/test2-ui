@@ -90,7 +90,8 @@ export default {
         ACTION_STATUSES.COMPLETE,
         ACTION_STATUSES.IDLE,
         ACTION_STATUSES.DELETE,
-        ACTION_STATUSES.CANCEL
+        ACTION_STATUSES.CANCEL,
+        ACTION_STATUSES.ERROR
       ].includes(this.actionStatus)
     },
     getId() {
@@ -123,7 +124,11 @@ export default {
       return rowActions
     },
     getIconName() {
-      if ([ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL].includes(this.actionStatus)) {
+      if (
+        [ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL, ACTION_STATUSES.ERROR].includes(
+          this.actionStatus
+        )
+      ) {
         return 'mdi-text-box'
       }
 
@@ -138,7 +143,11 @@ export default {
       return 'mdi-eye'
     },
     getTooltipText() {
-      if ([ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL].includes(this.actionStatus)) {
+      if (
+        [ACTION_STATUSES.COMPLETE, ACTION_STATUSES.CANCEL, ACTION_STATUSES.ERROR].includes(
+          this.actionStatus
+        )
+      ) {
         return labels.ViewReport
       }
 

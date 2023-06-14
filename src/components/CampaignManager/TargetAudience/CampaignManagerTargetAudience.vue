@@ -147,13 +147,6 @@ export default {
     }
   },
   watch: {
-    isVishing: {
-      immediate: true,
-      deep: true,
-      handler(val) {
-        console.log('isVishing target audience', val)
-      }
-    },
     selectedTargetGroupsMapped(val) {
       this.isTargetGroupsValid = !!val.length
     }

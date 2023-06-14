@@ -26,6 +26,7 @@
       <CampaignManagerTargetGroups
         ref="refCampaignManagerTargetGroup"
         class="mt-2"
+        is-vishing
         :selected-target-groups="formValues.targetGroupResourceIds"
         :response-of-target-groups-items="responseOfTargetGroupsItems"
         :is-valid="isTargetGroupsValid"
