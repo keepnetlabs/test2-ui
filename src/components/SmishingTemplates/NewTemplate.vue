@@ -69,7 +69,9 @@
                           <div class="mail-configuration-select-sources__item-left">
                             {{ item.name }}
                           </div>
-                          <div class="mail-configuration-select-sources__item-right-platform">
+                          <div
+                            class="mail-configuration-select-sources__item-right-platform"
+                          >
                             {{ item.description }}
                           </div>
                         </div>
@@ -145,16 +147,16 @@
               </v-list-item>
               <v-list-item>
                 <v-list-item-content>
-                  <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
+                  <v-form ref="refEmailTemplateContent" style="padding-right: 72px">
                     <form-group
                       class="mt-8"
                       title="Text Message"
-                      sub-title="Text message to be sent to target users. Use the merge tag {PHISHING_LINK} for the link to be added to the text message"
+                      sub-title="Text message to be sent to target users. Use the merge tag {PHISHINGURL} for the link to be added to the text message"
                     >
                       <InputDescription
                         v-model.trim="formValues.template"
                         id="input--new-text-message-template-text-message"
-                        initialPlaceholder="Text message {PHISHING_LINK}"
+                        initialPlaceholder="Text message {PHISHINGURL}"
                         rows="5"
                         height="160"
                         hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
@@ -176,7 +178,7 @@
         :step.sync="step"
         :disabled-statuses="{
           nextButton: isSubmitDisabled,
-          submitButton: isSubmitDisabled
+          submitButton: isSubmitDisabled,
         }"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
@@ -189,31 +191,31 @@
 </template>
 
 <script>
-import AppModal from '../AppModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
-import labels from '@/model/constants/labels'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import * as Validations from '@/utils/validations'
+import AppModal from "../AppModal"
+import KSelect from "@/components/Common/Inputs/KSelect"
+import InputSelectLanguage from "@/components/Common/Inputs/InputSelectLanguage"
+import labels from "@/model/constants/labels"
+import FormGroup from "@/components/SmallComponents/FormGroup"
+import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor"
+import * as Validations from "@/utils/validations"
 import {
   getEmailTemplatePreviewContent,
-  updatePhishingEmailTemplate
-} from '@/api/phishingsimulator'
-import SmishingService from '@/api/smishing'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
-import { getAvailableForValueFromList } from '@/utils/helperFunctions'
-import InputTag from '@/components/Common/Inputs/InputTag'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
-import { parseEmailOrMessageFile } from '@/api/file'
-import StepperFooter from '@/components/Stepper/StepperFooter'
-import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+  updatePhishingEmailTemplate,
+} from "@/api/phishingsimulator"
+import SmishingService from "@/api/smishing"
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage"
+import { scrollToComponent, isDifferent } from "@/utils/functions"
+import { getAvailableForValueFromList } from "@/utils/helperFunctions"
+import InputTag from "@/components/Common/Inputs/InputTag"
+import InputEntityName from "@/components/Common/Inputs/InputEntityName"
+import InputDescription from "@/components/Common/Inputs/InputDescription"
+import { parseEmailOrMessageFile } from "@/api/file"
+import StepperFooter from "@/components/Stepper/StepperFooter"
+import { MERGED_TEXTS } from "@/components/PhishingScenarios/utils"
+import { COMMON_CONSTANTS } from "@/model/constants/commonConstants"
 
 export default {
-  name: 'NewSmishingTemplate',
+  name: "NewSmishingTemplate",
   components: {
     StepperFooter,
     KSelect,
@@ -223,160 +225,162 @@ export default {
     InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription
+    InputDescription,
   },
   props: {
     status: {
       type: Boolean,
-      default: false
+      default: false,
     },
     editableFormValues: {
-      required: false
+      required: false,
     },
     isEdit: {
-      type: Boolean
+      type: Boolean,
     },
     isDuplicate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     emailTemplateId: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
       footerButtonsIds: {
-        cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
-        backButton: 'btn-back--add-or-edit-email-templates-modal',
-        nextButton: 'btn-next--add-or-edit-email-templates-modal',
-        saveButton: 'btn-save--add-or-edit-email-templates-modal'
+        cancelButton: "btn-cancel--add-or-edit-email-templates-modal",
+        backButton: "btn-back--add-or-edit-email-templates-modal",
+        nextButton: "btn-next--add-or-edit-email-templates-modal",
+        saveButton: "btn-save--add-or-edit-email-templates-modal",
       },
       isAttachmentError: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
-      attachmentName: '',
+      attachmentName: "",
       languageOptions: [],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       availableForRequests: [],
-      tagSearch: '',
+      tagSearch: "",
       labels,
       step: 1,
       Validations: Validations,
       initialFormValues: {},
       formValues: {
-        name: '',
-        description: '',
-        categoryResourceId: 'WNZt0sCVCWB3',
+        name: "",
+        description: "",
+        categoryResourceId: "WNZt0sCVCWB3",
         tags: [],
-        difficultyResourceId: 'mT0CeYGgKsVb',
-        languageTypeResourceId: '862249c19aad',
-        template: ''
+        difficultyResourceId: "mT0CeYGgKsVb",
+        languageTypeResourceId: "862249c19aad",
+        template: "",
       },
       commonRules: {
-        hint: '*Required',
+        hint: "*Required",
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
+          (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName)),
+        ],
       },
       textMessageRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => {
           if (!v) return true
-          const matches = /{PHISHING_LINK}/i.exec(v)
+          const matches = /{PHISHINGURL}/i.exec(v)
           if (matches?.length) {
             return (
-              matches[0] === '{PHISHING_LINK}' || 'Only use uppercase letters for the merge tag'
+              matches[0] === "{PHISHINGURL}" ||
+              "Only use uppercase letters for the merge tag"
             )
           }
           return true
         },
-        (v) => Validations.maxLength(v, 148, 'SMS cannot exceed 148 characters')
+        (v) => Validations.maxLength(v, 148, "SMS cannot exceed 148 characters"),
       ],
       editItemsDisabled: false,
       methodItems: [
         {
-          resourceId: 'WNZt0sCVCWB3',
+          resourceId: "WNZt0sCVCWB3",
           genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Click Only',
-          code: '1',
-          description: 'See who falls for phishing links',
-          orderNumber: 1
+          genericCodeTypeName: "Phishing Simulator Categories",
+          name: "Click Only",
+          code: "1",
+          description: "See who falls for phishing links",
+          orderNumber: 1,
         },
         {
-          resourceId: 'DYC0gugxJMjT',
+          resourceId: "DYC0gugxJMjT",
           genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Data Submission',
-          code: '2',
-          description: 'Gather information from users',
-          orderNumber: 2
+          genericCodeTypeName: "Phishing Simulator Categories",
+          name: "Data Submission",
+          code: "2",
+          description: "Gather information from users",
+          orderNumber: 2,
         },
         {
-          resourceId: '67LcW2kHbtds',
+          resourceId: "67LcW2kHbtds",
           genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'MFA',
-          code: '3',
-          description: 'Send a smishing MFA',
-          orderNumber: 3
-        }
+          genericCodeTypeName: "Phishing Simulator Categories",
+          name: "MFA",
+          code: "3",
+          description: "Send a smishing MFA",
+          orderNumber: 3,
+        },
       ],
       difficultyItems: [
         {
-          resourceId: 'mT0CeYGgKsVb',
+          resourceId: "mT0CeYGgKsVb",
           genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
+          genericCodeTypeName: "Phishing Simulator Difficulties",
+          name: "Easy",
+          code: "1",
           description: null,
-          orderNumber: 1
+          orderNumber: 1,
         },
         {
-          resourceId: 'Z5XeVlpw6Dps',
+          resourceId: "Z5XeVlpw6Dps",
           genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
+          genericCodeTypeName: "Phishing Simulator Difficulties",
+          name: "Medium",
+          code: "2",
           description: null,
-          orderNumber: 2
+          orderNumber: 2,
         },
         {
-          resourceId: 'c4LCGEB9MayB',
+          resourceId: "c4LCGEB9MayB",
           genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
+          genericCodeTypeName: "Phishing Simulator Difficulties",
+          name: "Hard",
+          code: "3",
           description: null,
-          orderNumber: 3
-        }
-      ]
+          orderNumber: 3,
+        },
+      ],
     }
   },
   computed: {
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
-        return 'Duplicate Text Message Template'
+        return "Duplicate Text Message Template"
       }
 
       if (this.isEdit) {
-        return 'Edit Text Message Template'
+        return "Edit Text Message Template"
       }
 
-      return 'New Text Message Template'
+      return "New Text Message Template"
     },
     isAttachmentBasedTemplate() {
-      return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
+      return this.formValues.categoryResourceId === "7dLrW2kdBTDs"
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
-    }
+    },
   },
   created() {
     this.setFooterButtonIds()
@@ -388,7 +392,7 @@ export default {
       SmishingService.getTextMessageTemplate(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
-          description: response.data.data.description || ''
+          description: response.data.data.description || "",
         }
         this.formValues.name = `${this.formValues.name}`
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
@@ -403,10 +407,10 @@ export default {
     setFooterButtonIds() {
       if (!this.isDuplicate) return
       this.footerButtonsIds = {
-        cancelButton: 'btn-duplicate-cancel--email-templates-modal',
-        backButton: 'btn-duplicate-back--email-templates-modal',
-        nextButton: 'btn-duplicate-next--email-templates-modal',
-        saveButton: 'btn-duplicate-save--email-templates-modal'
+        cancelButton: "btn-duplicate-cancel--email-templates-modal",
+        backButton: "btn-duplicate-back--email-templates-modal",
+        nextButton: "btn-duplicate-next--email-templates-modal",
+        saveButton: "btn-duplicate-save--email-templates-modal",
       }
     },
     handleDeleteAttachment() {
@@ -414,7 +418,7 @@ export default {
       this.isAddedNewPhishingFile = false
     },
     handleRenameAttachment() {
-      this.$emit('showRenameAttachmentModal')
+      this.$emit("showRenameAttachmentModal")
     },
     handleUploadEmailButtonClick() {
       this?.$refs?.refInputFileUpload?.click()
@@ -423,10 +427,10 @@ export default {
       const { files } = e.target
       if (files.length) {
         const formData = new FormData()
-        formData.append('File', files[0])
+        formData.append("File", files[0])
         parseEmailOrMessageFile(formData).then((response) => {
           const {
-            data: { data }
+            data: { data },
           } = response
           let { from, fromName, subject, attachments, body } = data
           this.formValues.fromAddress = from
@@ -437,10 +441,12 @@ export default {
             attachments = attachments.map((item) => ({
               ...item,
               fileName: item.name,
-              isDeletable: true
+              isDeletable: true,
             }))
             this.formValues.importedEmailAttachments = attachments
-            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
+            this.formValues.attachmentFilesFromApi = JSON.parse(
+              JSON.stringify(attachments)
+            )
           }
         })
       }
@@ -450,7 +456,10 @@ export default {
       const newAttachmentFilesFromApi = JSON.parse(
         JSON.stringify(this.formValues.attachmentFilesFromApi)
       )
-      if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
+      if (
+        this.formValues.attachmentFiles &&
+        this.formValues.attachmentFiles.length === 1
+      ) {
         newAttachmentFilesFromApi.splice(index - 1, 1)
         this.formValues.importedEmailAttachments.splice(index - 1, 1)
       } else {
@@ -466,26 +475,30 @@ export default {
       if (Array.isArray(file) && file.length === 0) return
       if (file && !file.type) {
         let newFile = null
-        let fileExtension = ''
-        if (file?.name.includes('.')) {
-          fileExtension = file.name.split('.').pop()
+        let fileExtension = ""
+        if (file?.name.includes(".")) {
+          fileExtension = file.name.split(".").pop()
         }
-        if (fileExtension === '.doc') {
-          newFile = new File([file], file.name, { type: 'application/msword' })
-        } else if (fileExtension === 'docx') {
+        if (fileExtension === ".doc") {
+          newFile = new File([file], file.name, { type: "application/msword" })
+        } else if (fileExtension === "docx") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            type:
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           })
-        } else if (fileExtension === 'ppt') {
+        } else if (fileExtension === "ppt") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.ms-powerpoint'
+            type: "application/vnd.ms-powerpoint",
           })
-        } else if (fileExtension === 'pptx') {
+        } else if (fileExtension === "pptx") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            type:
+              "application/vnd.openxmlformats-officedocument.presentationml.presentation",
           })
         }
-        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.formValues.attachmentFiles = Array.isArray(newFile)
+          ? newFile
+          : [newFile] || []
         this.isAttachmentError = false
       } else {
         this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
@@ -497,18 +510,18 @@ export default {
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
       this.isAvailableForValid = !!value.length
-      this.$emit('validation', this.isAvailableForValid)
+      this.$emit("validation", this.isAvailableForValid)
     },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit('changeNewEmailTemplateModalStatus', false)
+        return this.$emit("changeNewEmailTemplateModalStatus", false)
       }
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
         show: true,
         callback: () => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
-        }
+          this.$emit("changeNewEmailTemplateModalStatus", false)
+        },
       })
     },
     nextStep() {
@@ -520,7 +533,7 @@ export default {
       if (this.$refs.refFormStep1.validate() && isMakeAvailableForValid) {
         this.step += 1
       } else {
-        const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+        const el = this.$refs.refFormStep1.$el.querySelector(".v-messages__message")
         scrollToComponent(el)
       }
     },
@@ -535,19 +548,20 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isMakeAvailableForValid = refMakeAvailableFor.isAvailableForValid
       }
-      const isFormValid = this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
+      const isFormValid =
+        this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
       if (!isFormValid) {
-        const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+        const el = this.$refs.refFormStep1.$el.querySelector(".v-messages__message")
         scrollToComponent(el)
         this.isSubmitDisabled = false
         return
       }
 
-      if (!this.formValues?.template?.includes('{PHISHING_LINK}')) {
-        this.$store.dispatch('common/createSnackBar', {
+      if (!this.formValues?.template?.includes("{PHISHINGURL}")) {
+        this.$store.dispatch("common/createSnackBar", {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-information',
-          message: `You cannot save without adding a {PHISHING_LINK} to the verification message field.`
+          icon: "mdi-information",
+          message: `You cannot save without adding a {PHISHINGURL} to the verification message field.`,
         })
         this.isSubmitDisabled = false
         return
@@ -557,10 +571,10 @@ export default {
       let payload = {
         ...this.formValues,
         isDuplicated: this.isDuplicate,
-        description: this.formValues.description || '',
+        description: this.formValues.description || "",
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
       }
       for (const key in payload) {
         if (Array.isArray(payload[key])) {
@@ -572,7 +586,7 @@ export default {
       if (this.isEdit && !this.isDuplicate) {
         SmishingService.updateTextMessageTemplate(this.emailTemplateId, formData)
           .then(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            this.$emit("changeNewEmailTemplateModalStatus", false, true)
           })
           .finally(() => {
             this.isSubmitDisabled = false
@@ -580,7 +594,7 @@ export default {
       } else {
         SmishingService.createTextMessageTemplate(formData)
           .then(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            this.$emit("changeNewEmailTemplateModalStatus", false, true)
           })
           .finally(() => {
             this.isSubmitDisabled = false
@@ -592,7 +606,7 @@ export default {
         this.languageOptions =
           response?.map((language) => ({
             text: language.name,
-            value: language.resourceId
+            value: language.resourceId,
           })) || []
       })
     },
@@ -604,7 +618,7 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
-    }
-  }
+    },
+  },
 }
 </script>

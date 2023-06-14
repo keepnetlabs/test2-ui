@@ -100,7 +100,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportSubmittedData
+          message: 'You do not have any user who submitted MFA code'
         },
         rowActions: [],
         downloadButton: {
@@ -112,7 +112,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Submitted Data ${this.item?.['submittedCount'] || 0} Time(s)`
+      return `Submitted MFA Code ${this.item?.['submittedCount'] || 0} Time(s)`
     },
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
@@ -124,7 +124,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      SmishingService.searchCampaignJobUserEmailSubmittedDetails(
+      SmishingService.searchCampaignJobTypeDetails(
         'search-mfa-submitted',
         this.axiosPayload,
         this.item?.resourceId

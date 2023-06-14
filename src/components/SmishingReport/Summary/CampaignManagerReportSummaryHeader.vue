@@ -89,7 +89,7 @@ export default {
     },
     handleDownloadReport() {
       this.isDownloadReportDisabled = true
-      SmishingService.downloadSmishingReport2(this.id, this.instanceGroup)
+      SmishingService.downloadSmishingReport(this.id, this.instanceGroup)
         .then((response) => {
           const { data } = response
           if (response.status === 200) {
