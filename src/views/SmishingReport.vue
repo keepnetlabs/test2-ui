@@ -30,7 +30,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummary from '@/components/SmishingReport/Summary/CampaignManagerReportSummary'
-import SmishingReportUsers from '@/components/SmishingReport/Users/CampaignReportUsers'
+// import SmishingReportUsers from '@/components/SmishingReport/Users/CampaignReportUsers'
 import CampaignManagerReportClicked from '@/components/SmishingReport/Clicked/CampaignManagerReportClicked'
 // import CampaignManagerReportOpened from '@/components/SmishingReport/Opened/CampaignManagerReportOpened'
 import CampaignManagerReportSubmittedData from '@/components/SmishingReport/SubmittedData/CampaignManagerReportSubmittedData'
@@ -55,20 +55,18 @@ export default {
           // TODO: Change permission key
           isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
         },
-        {
-          name: labels.Users,
-          id: 'smishing-report-users-content',
-          label: labels.Users,
-          component: SmishingReportUsers,
-          // TODO: Change permission key
-          isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
-        },
+        // {
+        //   name: labels.Users,
+        //   id: 'smishing-report-users-content',
+        //   label: labels.Users,
+        //   component: SmishingReportUsers,
+        //   isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
+        // },
         // {
         //   name: labels.Opened,
         //   id: 'campaign-manager-report-opened-content',
         //   label: labels.Opened,
         //   component: CampaignManagerReportOpened,
-        //   // TODO: Change permission key
         //   isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
         // },
         {
@@ -136,7 +134,7 @@ export default {
             (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'
           )
           if (isSubmittedData && !isSubmittedMFA) {
-            this.tabItems.splice(3, 0, {
+            this.tabItems.splice(2, 0, {
               name: labels.SubmittedData,
               id: 'smishing-report-submitted-data-content',
               label: labels.SubmittedData,
@@ -149,7 +147,7 @@ export default {
           }
           if (isSubmittedMFA) {
             this.tabItems.splice(
-              3,
+              2,
               0,
               {
                 name: labels.SubmittedData,

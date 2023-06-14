@@ -149,12 +149,12 @@
                     <form-group
                       class="mt-8"
                       title="Text Message"
-                      sub-title="Text message to be sent to target users. Use the merge tag {PHISHING_LINK} for the link to be added to the text message"
+                      sub-title="Text message to be sent to target users. Use the merge tag {PHISHINGURL} for the link to be added to the text message"
                     >
                       <InputDescription
                         v-model.trim="formValues.template"
                         id="input--new-text-message-template-text-message"
-                        initialPlaceholder="Text message {PHISHING_LINK}"
+                        initialPlaceholder="Text message {PHISHINGURL}"
                         rows="5"
                         height="160"
                         hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
@@ -196,10 +196,6 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import {
-  getEmailTemplatePreviewContent,
-  updatePhishingEmailTemplate
-} from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -288,11 +284,9 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => {
           if (!v) return true
-          const matches = /{PHISHING_LINK}/i.exec(v)
+          const matches = /{PHISHINGURL}/i.exec(v)
           if (matches?.length) {
-            return (
-              matches[0] === '{PHISHING_LINK}' || 'Only use uppercase letters for the merge tag'
-            )
+            return matches[0] === '{PHISHINGURL}' || 'Only use uppercase letters for the merge tag'
           }
           return true
         },
@@ -543,11 +537,11 @@ export default {
         return
       }
 
-      if (!this.formValues?.template?.includes('{PHISHING_LINK}')) {
+      if (!this.formValues?.template?.includes('{PHISHINGURL}')) {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-information',
-          message: `You cannot save without adding a {PHISHING_LINK} to the verification message field.`
+          message: `You cannot save without adding a {PHISHINGURL} to the verification message field.`
         })
         this.isSubmitDisabled = false
         return
