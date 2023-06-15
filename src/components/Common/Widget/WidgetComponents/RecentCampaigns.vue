@@ -148,7 +148,7 @@ export default {
           showTooltipLine: true
         }
       }
-      if (row.method === 'Multiple Method') {
+      if (row.method === 'MFA') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C'],
           labels: [
@@ -156,7 +156,21 @@ export default {
             labels.Clicked,
             labels.Opened,
             labels.Submitted,
-            labels.OpenedAttachment
+            labels.SubmittedMFACode
+          ],
+          showTooltipLine: true
+        }
+      }
+      if (row.method === 'Multiple Method') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C', '#F56C6C'],
+          labels: [
+            labels.NoResponse,
+            labels.Clicked,
+            labels.Opened,
+            labels.Submitted,
+            labels.OpenedAttachment,
+            labels.SubmittedMFACode
           ],
           showTooltipLine: true
         }

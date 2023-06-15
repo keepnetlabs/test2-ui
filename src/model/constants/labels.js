@@ -320,7 +320,6 @@ export const labels = {
   PhishingScenarios: 'Phishing Scenarios',
   CampaignManagerPhishingScenariosSub:
     'Select multiple phishing scenarios for your campaign to distribute randomly.',
-  SubmittedMFACode: 'Submitted MFA Code',
   UserWhoSubmittedSub: 'List of users who entered their credentials on phishing landing page',
   UsersWhoSubmittedTheMfaCode: 'Users who submitted the MFA code',
   UsersWhoSubmittedTheMfaCodeSub:

@@ -224,7 +224,6 @@ export default {
       return this.openedEmailIcon
     },
     getSecondCardColor() {
-      debugger
       if (this.isCampaignHasAllTypes) return '#B83A3A'
       if (
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
