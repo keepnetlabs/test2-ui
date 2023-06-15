@@ -176,21 +176,18 @@ export default {
           action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
-          // TODO: Change permission key
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager',
-          // TODO: Change permission key
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
         },
         downloadButton: {
           show: true,
-          // TODO: Change permission key
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentExportPermissions']
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerExportPermissions']
         },
         rowActions: [
           {
@@ -210,21 +207,21 @@ export default {
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            // TODO: Change permission key
-            disabled: !this.$store.getters['permissions/getCampaignManagerParentDeletePermissions']
+            disabled: !this.$store.getters[
+              'permissions/getSmishingCampaignManagerDeletePermissions'
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
   },
-  // TODO: Change permission key
   computed: {
     ...mapGetters({
-      getCampaignManagerParentSearchPermissions:
-        'permissions/getCampaignManagerParentSearchPermissions',
-      getCampaignManagerParentExportPermissions:
-        'permissions/getCampaignManagerParentExportPermissions'
+      getSmishingCampaignManagerSearchPermissions:
+        'permissions/getSmishingCampaignManagerSearchPermissions',
+      getSmishingCampaignManagerExportPermissions:
+        'permissions/getSmishingCampaignManagerExportPermissions'
     })
   },
   watch: {
@@ -249,7 +246,7 @@ export default {
   },
   methods: {
     callForData() {
-      if (this.getCampaignManagerParentSearchPermissions) {
+      if (this.getSmishingCampaignManagerSearchPermissions) {
         this.setLoading(true)
         SmishingService.searchSmishingCampaigns(this.axiosPayload)
           .then((response) => {
@@ -304,7 +301,7 @@ export default {
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
-      if (this.getCampaignManagerParentExportPermissions) {
+      if (this.getSmishingCampaignManagerExportPermissionsP) {
         downloadTypes.exportTypes.forEach((item) => {
           let payload = {
             pageNumber: downloadTypes.pageNumber,
