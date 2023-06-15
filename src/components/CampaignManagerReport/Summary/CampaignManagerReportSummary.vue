@@ -428,7 +428,9 @@ export default {
         })
         .finally(() => {
           if (isUseLoading) {
-            this.setLoading(false)
+            setTimeout(() => {
+              this.setLoading(false)
+            }, 300)
           }
         })
       getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
