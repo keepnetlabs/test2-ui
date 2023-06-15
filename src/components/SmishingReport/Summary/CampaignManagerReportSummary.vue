@@ -191,9 +191,12 @@ export default {
     },
     getSMSDeliveryData() {
       const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
-      const { startDate = '01/01/1970', endDate = '01/01/1970' } = campaignInfo
+      const {
+        emailDeliveryStartDate = '01/01/1970',
+        emailDeliveryEndDate = '01/01/1970'
+      } = campaignInfo
       return {
-        'Sending Start - End': `${startDate} - ${endDate}`,
+        'Sending Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
         'Sending Status': '',
         'Sender Phone Number': settings.smsProviderNumber
       }
