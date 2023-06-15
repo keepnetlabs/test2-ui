@@ -121,8 +121,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard',
-            // TODO: Change permissionStoreKey
-            permissionStoreKey: 'permissions/getPhishingSimulatorLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
           },
           component: SmishingSimulatorRoute
         },
@@ -334,8 +333,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',
-            // TODO: Change permissionStoreKey
-            permissionStoreKey: 'permissions/getPhishingScenarioLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -347,8 +345,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',
-            // TODO: Change permissionStoreKey
-            permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getSmishingCampaignManagerLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -360,8 +357,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',
-            // TODO: Change permissionStoreKey
-            permissionStoreKey: 'permissions/getSettingsLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getSmishingSettingsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -373,8 +369,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Campaign Manager',
-            // TODO: Change permissionStoreKey
-            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
           },
           props: true,
           params: true

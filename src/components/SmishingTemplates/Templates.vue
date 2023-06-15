@@ -61,7 +61,7 @@
     </AppDialog>
 
     <data-table
-      v-if="getEmailTemplatesSearchPermissions"
+      v-if="getSmishingTextMessageTemplatesSearchPermissions"
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       is-server-side
@@ -301,8 +301,9 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getSmishingTextMessageTemplatesEditPermissions'
+            ],
             id: 'btn-edit--email-templates-row-actions'
           },
           {
@@ -315,15 +316,17 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getSmishingTextMessageTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--email-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          disabled: !this.$store.getters[
+            'permissions/getSmishingTextMessageTemplatesExportPermissions'
+          ]
         },
         selectEvent: {
           clipboard: true,
@@ -342,8 +345,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--emailTemplates',
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getSmishingTextMessageTemplatesCreatePermissions'
+          ]
         }
       },
       modalStatus: false,
@@ -358,7 +362,8 @@ export default {
   // TODO: change permission key
   computed: {
     ...mapGetters({
-      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
+      getSmishingTextMessageTemplatesSearchPermissions:
+        'permissions/getSmishingTextMessageTemplatesSearchPermissions'
     }),
     getTextMessage() {
       return this.emailTemplateParams?.template
@@ -485,7 +490,7 @@ export default {
       })
     },
     callForData() {
-      if (this.getEmailTemplatesSearchPermissions) {
+      if (this.getSmishingTextMessageTemplatesSearchPermissions) {
         this.loading = true
         SmishingService.searchTextMessageTemplates(this.axiosPayload)
           .then((response) => {

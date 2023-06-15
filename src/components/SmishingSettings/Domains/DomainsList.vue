@@ -201,14 +201,14 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDomainUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDomainUpdatePermissions'],
             id: 'btn-edit--domain-lists-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDomainDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDomainDeletePermissions'],
             id: 'btn-delete--domain-lists-row-actions'
           }
         ],
@@ -246,14 +246,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDomainUpdatePermissions: 'permissions/getDomainUpdatePermissions',
-      getDomainDeletePermissions: 'permissions/getDomainDeletePermissions',
-      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
+      getSmishingDomainUpdatePermissions: 'permissions/getSmishingDomainUpdatePermissions',
+      getSmishingDomainDeletePermissions: 'permissions/getSmishingDomainDeletePermissions',
+      getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
+      getSmishingDomainFormDetailsPermissions: 'permissions/getSmishingDomainFormDetailsPermissions'
     })
   },
   created() {
-    if (this.getDomainFormDetailsPermissions)
+    if (this.getSmishingDomainFormDetailsPermissions)
       getDomainData().then((response) => {
         this.domainData = response.data.data
         this.callForData()
@@ -262,7 +262,7 @@ export default {
   methods: {
     callForData() {
       this.loading = true
-      if (this.getDomainSearchPermissions) {
+      if (this.getSmishingDomainSearchPermissions) {
         getDomainsList(this.axiosPayload)
           .then((response) => {
             const {

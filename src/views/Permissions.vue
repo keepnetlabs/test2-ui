@@ -336,23 +336,26 @@ export default {
             case 'Phishing Simulation':
               sortedPermissions[1] = item
               break
-            case 'Awareness Educator':
+            case 'Smishing Simulation':
               sortedPermissions[2] = item
               break
-            case 'Incident Responder':
+            case 'Awareness Educator':
               sortedPermissions[3] = item
               break
-            case 'Phishing Reporter Add-In':
+            case 'Incident Responder':
               sortedPermissions[4] = item
               break
-            case 'Email Threat Simulator':
+            case 'Phishing Reporter Add-In':
               sortedPermissions[5] = item
               break
-            case 'Company':
+            case 'Email Threat Simulator':
               sortedPermissions[6] = item
               break
-            case 'Vishing':
+            case 'Company':
               sortedPermissions[7] = item
+              break
+            case 'Vishing':
+              sortedPermissions[8] = item
               break
             default:
               break

@@ -62,7 +62,7 @@
     </app-dialog>
 
     <data-table
-      v-if="getLandingPageTemplatesSearchPermissions"
+      v-if="getSmishingLandingPageTemplatesSearchPermissions"
       id="landingPage-data-table"
       ref="refLandingPageList"
       is-server-side
@@ -298,7 +298,9 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getSmishingLandingPageTemplatesEditPermissions'
+            ],
             id: 'btn-edit--landing-page-templates-row-actions'
           },
           {
@@ -311,13 +313,17 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getSmishingLandingPageTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--landing-page-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getLandingPageTemplatesExportPermissions']
+          disabled: !this.$store.getters[
+            'permissions/getSmishingLandingPageTemplatesExportPermissions'
+          ]
         },
         selectEvent: {
           clipboard: true,
@@ -336,7 +342,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--landingPage',
-          disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getSmishingLandingPageTemplatesCreatePermissions'
+          ]
         }
       },
       modalStatus: false,
@@ -350,8 +358,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getLandingPageTemplatesSearchPermissions:
-        'permissions/getLandingPageTemplatesSearchPermissions'
+      getSmishingLandingPageTemplatesSearchPermissions:
+        'permissions/getSmishingLandingPageTemplatesSearchPermissions'
     }),
     hasLandingPageTemplate() {
       return this.landingPageTemplates.length > 0
@@ -377,7 +385,7 @@ export default {
   methods: {
     callForData() {
       this.loading = true
-      if (this.getLandingPageTemplatesSearchPermissions) {
+      if (this.getSmishingLandingPageTemplatesSearchPermissions) {
         SmishingService.searchLandingPageTemplates(this.axiosPayload)
           .then((response) => {
             const {

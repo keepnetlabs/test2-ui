@@ -104,9 +104,8 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-clicked',
             icon: '$custom-details',
             action: 'on-detail',
-            // TODO: Change permission key
             disabled: !this.$store.getters[
-              'permissions/getCampaignReportsClickedDetailsPermissions'
+              'permissions/getSmishingReportClickedDetailstPermissions'
             ]
           }
         ]

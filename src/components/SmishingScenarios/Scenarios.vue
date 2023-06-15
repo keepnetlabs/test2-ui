@@ -45,7 +45,7 @@
       @handleConfirm="handleConfirmNoLandingPageTemplate"
     />
     <data-table
-      v-if="getPhishingScenariosSearchPermissions"
+      v-if="getSmishingScenariosSearchPermissions"
       id="scenarios-data-table"
       class="scenarios"
       ref="refScenariosList"
@@ -290,8 +290,7 @@ export default {
             icon: 'mdi-pencil',
             action: 'handleEdit',
             id: 'btn-edit--scenarios-row-actions',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
+            disabled: !this.$store.getters['permissions/getSmishingScenariosEditPermissions']
           },
           {
             name: 'Duplicate',
@@ -304,14 +303,12 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--scenarios-row-actions',
-            // TODO: change permission key
-            disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
+            disabled: !this.$store.getters['permissions/getSmishingScenariosDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getPhishingScenariosExportPermissions']
+          disabled: !this.$store.getters['permissions/getSmishingScenariosExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -330,8 +327,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          // TODO: change permission key
-          disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
+          disabled: !this.$store.getters['permissions/getSmishingScenariosCreatePermissions']
         }
       },
       modalStatus: false,
@@ -341,9 +337,8 @@ export default {
     }
   },
   computed: {
-    // TODO: change permission key
     ...mapGetters({
-      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
+      getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions'
     })
   },
   created() {
@@ -457,8 +452,7 @@ export default {
     },
     callForData() {
       this.loading = true
-      // TODO: Replace permission with correct one
-      if (this.getPhishingScenariosSearchPermissions) {
+      if (this.getSmishingScenariosSearchPermissions) {
         SmishingService.searchSmishingScenarios(this.axiosPayload)
           .then((response) => {
             const {

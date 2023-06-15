@@ -63,11 +63,11 @@ export default {
     return {
       labels,
       openedEmailIcon: require('../../../assets/img/ic-opened-email.svg'),
-      noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
+      noResponseIcon: require('../../../assets/img/smishing-report-no-response-icon.svg'),
       clickedLinkIcon: require('../../../assets/img/ic-exclude.svg'),
-      submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
+      submittedDataIcon: require('../../../assets/img/smishing-report-submitted-data-icon.svg'),
       phishingReportersIcon: require('../../../assets/img/phishing-reporters.svg'),
-      mfaIcon: require('../../../assets/img/phonelink_lock.svg')
+      mfaIcon: require('../../../assets/img/smishing-report-submitted-mfa-code-icon.svg')
     }
   },
   computed: {
