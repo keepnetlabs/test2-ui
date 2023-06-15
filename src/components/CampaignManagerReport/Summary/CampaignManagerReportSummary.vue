@@ -10,7 +10,7 @@
       :multiple-type="multipleType"
       :method="getScenarioMethod"
       :items="getCardsData"
-      :is-loading="isLoading"
+      :is-loading="isLoading || !getScenarioMethod"
     />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo
