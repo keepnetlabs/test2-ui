@@ -200,12 +200,12 @@ export default {
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
       const {
-        startDate = '01/01/1970',
-        endDate = '01/01/1970',
+        emailDeliveryStartDate = '01/01/1970',
+        emailDeliveryEndDate = '01/01/1970',
         emailDeliveryDuration = 0
       } = campaignInfo
       return {
-        'Delivery Start - End': `${startDate} - ${endDate}`,
+        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
         Duration: `${emailDeliveryDuration || 0}`,
         'Delivery Status': ''
       }
