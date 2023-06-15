@@ -22,7 +22,6 @@
                     "
                   />
                 </div>
-                <!-- TODO: Add language dropdown -->
                 <!-- <div>
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"

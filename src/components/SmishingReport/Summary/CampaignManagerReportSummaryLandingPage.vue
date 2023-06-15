@@ -115,7 +115,7 @@ import Badge from '@/components/Badge'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import SmishingService from '@/api/smishing'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 
@@ -172,7 +172,11 @@ export default {
       if (this.isFetchingSummary) {
         this.setLoading(true)
       }
-      getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId, instanceGroup)
+      SmishingService.getSmishingCampaignLandingPageTemplatePreviewContent(
+        resourceId,
+        jobResourceId,
+        instanceGroup
+      )
         .then((response) => {
           const {
             data: { data }

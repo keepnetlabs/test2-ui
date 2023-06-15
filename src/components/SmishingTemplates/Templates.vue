@@ -359,7 +359,6 @@ export default {
       templateHTML: null
     }
   },
-  // TODO: change permission key
   computed: {
     ...mapGetters({
       getSmishingTextMessageTemplatesSearchPermissions:

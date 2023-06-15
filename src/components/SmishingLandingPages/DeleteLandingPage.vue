@@ -29,7 +29,6 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import SmishingService from '@/api/smishing'
-import { deleteLandingPage } from '@/api/landingPage'
 export default {
   name: 'DeleteIntegration',
   components: {

@@ -272,7 +272,7 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import AppDialog from '../AppDialog'
-import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import SmishingService from '@/api/smishing'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
@@ -423,7 +423,7 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getLandingPageList(copyOfBodyData)
+        SmishingService.searchLandingPageTemplates(copyOfBodyData)
           .then((response) => {
             const { data } = response
             if (!response.data.data.results.length) {
@@ -482,7 +482,7 @@ export default {
       if (this.isMethodMfa) {
         this.bodyData.filter.FilterGroups[0].FilterItems[0].value = 'Click-Only'
       }
-      getLandingPageList(this.bodyData)
+      SmishingService.searchLandingPageTemplates(this.bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -557,7 +557,7 @@ export default {
       if (isInitial) {
         this.$emit('initialLandingPageTemplateId', item.id)
       }
-      getLandingPageTemplatePreviewContent(item.resourceId)
+      SmishingService.getLandingPageTemplate(item.resourceId)
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.templateName = response?.data?.data?.name
