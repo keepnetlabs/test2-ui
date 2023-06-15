@@ -314,6 +314,7 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
+// TODO: CHange api endpoint
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { scrollToComponent, isDifferent } from '@/utils/functions'

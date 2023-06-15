@@ -170,6 +170,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+// TODO: Change api endpoints
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
 import TestConnection from '@/components/SmishingSettings/Domains/TestConnection'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'

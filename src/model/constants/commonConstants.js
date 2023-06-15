@@ -532,6 +532,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
 }
 
 export const INTEGRATION_TYPES = {
+  ANYRUN: 'AnyRun',
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
@@ -544,6 +545,7 @@ export const INTEGRATION_TYPES = {
   GOOGLEWEBRISK: 'Google Web Risk'
 }
 export const INTEGRATION_LABELS = {
+  ANYRUN: 'AnyRun',
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
