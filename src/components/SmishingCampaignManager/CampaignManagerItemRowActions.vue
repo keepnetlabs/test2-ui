@@ -46,7 +46,7 @@
           :id="`btn--delete-row-action-${Math.random().toString().substring(2)}`"
           class="btn-hover"
           icon
-          :disabled="!getCampaignReportsDeletePermissions"
+          :disabled="!getSmishingCampaignJobDeletePermissions"
           @click="$emit('on-delete', scope.row)"
         >
           <v-icon>mdi-delete</v-icon>
@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCampaignReportsDeletePermissions: 'permissions/getCampaignReportsDeletePermissions'
+      getSmishingCampaignJobDeletePermissions: 'permissions/getSmishingCampaignJobDeletePermissions'
     }),
     isMenuRender() {
       return ![

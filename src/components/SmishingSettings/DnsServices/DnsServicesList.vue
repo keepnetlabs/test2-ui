@@ -190,20 +190,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDnsUpdatePermissions'],
             id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDnsDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDnsDeletePermissions'],
             id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDnsExportPermissions']
+          disabled: !this.$store.getters['permissions/getSmishingDnsExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -234,9 +234,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
-      getDnsUpdatePermissions: 'permissions/getDnsUpdatePermissions',
-      getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
+      getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
+      getSmishingDnsUpdatePermissions: 'permissions/getSmishingDnsUpdatePermissions',
+      getSmishingDnsDeletePermissions: 'permissions/getSmishingDnsDeletePermissions'
     })
   },
   created() {
@@ -245,7 +245,7 @@ export default {
   methods: {
     callForData() {
       this.loading = true
-      if (this.getDnsSearchPermissions) {
+      if (this.getSmishingDnsSearchPermissions) {
         getDnsServiceList(this.axiosPayload)
           .then((response) => {
             const {

@@ -382,7 +382,7 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
-            v-if="getPhishingSimulatorLeftMenuPermissions"
+            v-if="getSmishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-smishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
@@ -395,7 +395,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="getPhishingScenarioLeftMenuPermissions"
+              v-if="getSmishingSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -408,7 +408,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getCampaignManagerLeftMenuPermissions"
+              v-if="getSmishingCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -424,7 +424,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSettingsLeftMenuPermissions"
+              v-if="getSmishingSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -935,7 +935,6 @@ export default {
       ]
     }
   },
-  // TODO: add smishing routes' permissions
   computed: {
     ...mapGetters({
       companyUpdateRequired: 'auth/companyUpdateRequired',
@@ -984,7 +983,14 @@ export default {
       getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
       getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
       getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
-      getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions'
+      getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions',
+      getSmishingSimulatorLeftMenuPermissions:
+        'permissions/getSmishingSimulatorLeftMenuPermissions',
+      getSmishingScenariosLeftMenuPermissions:
+        'permissions/getSmishingScenariosLeftMenuPermissions',
+      getSmishingCampaignManagerLeftMenuPermissions:
+        'permissions/getSmishingCampaignManagerLeftMenuPermissions',
+      getSmishingSettingsLeftMenuPermissions: 'permissions/getSmishingSettingsLeftMenuPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
