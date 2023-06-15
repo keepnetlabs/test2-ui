@@ -203,7 +203,6 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
-import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -412,32 +411,6 @@ export default {
     },
     handleUploadEmailButtonClick() {
       this?.$refs?.refInputFileUpload?.click()
-    },
-    handleFileUpload(e) {
-      const { files } = e.target
-      if (files.length) {
-        const formData = new FormData()
-        formData.append('File', files[0])
-        parseEmailOrMessageFile(formData).then((response) => {
-          const {
-            data: { data }
-          } = response
-          let { from, fromName, subject, attachments, body } = data
-          this.formValues.fromAddress = from
-          this.formValues.template = body
-          this.formValues.subject = subject
-          this.formValues.fromName = fromName
-          if (attachments) {
-            attachments = attachments.map((item) => ({
-              ...item,
-              fileName: item.name,
-              isDeletable: true
-            }))
-            this.formValues.importedEmailAttachments = attachments
-            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
-          }
-        })
-      }
     },
     handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName

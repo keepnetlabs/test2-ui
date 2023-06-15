@@ -112,11 +112,7 @@ import CampaignManagerItemTable from '@/components/SmishingCampaignManager/Campa
 import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
 import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
 // TODO: Import smishing endpoints
-import {
-  bulkDeleteCampaignReports,
-  deleteCampaignManager,
-  getCampaignManagerFormDetails
-} from '@/api/phishingsimulator'
+import { getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { getScenarioDataDetails } from '@/api/scenarios'
 import { createTargetGroup } from '@/api/targetUsers'
@@ -175,11 +171,10 @@ export default {
       scenarioDetailsLookup: {}
     }
   },
-  // TODO: Change permissions keys
   computed: {
     ...mapGetters({
-      getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions'
+      getSmishingCampaignManagerDeletePermissions:
+        'permissions/getSmishingCampaignManagerDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -319,7 +314,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      if (this.getCampaignManagerParentDeletePermissions) {
+      if (this.getSmishingCampaignManagerDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         SmishingService.deleteSmishingCampaign(item.resourceId)
           .then(() => {

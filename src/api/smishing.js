@@ -284,6 +284,18 @@ const downloadSmishingReport2 = (resourceId) => {
   )
 }
 
+const getSmishingCampaignLandingPageTemplatePreviewContent = (id, resourceId, instanceGroup) => {
+  return testRequest.get(
+    `phishing-simulator/phishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/landing-page-template/${id}`
+  )
+}
+
+const getSmishingCampaignTextMessageTemplatePreviewContent = (id, resourceId, instanceGroup) => {
+  return testRequest.get(
+    `phishing-simulator/phishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/text-templates/${id}`
+  )
+}
+
 export default {
   searchTextMessageTemplates,
   getTextMessageTemplate,
@@ -332,5 +344,7 @@ export default {
   downloadSmishingReport,
   downloadSmishingReport2,
   resendSmishingCampaignToUsers,
-  resendSmishingCampaignToUserList
+  resendSmishingCampaignToUserList,
+  getSmishingCampaignLandingPageTemplatePreviewContent,
+  getSmishingCampaignTextMessageTemplatePreviewContent
 }
