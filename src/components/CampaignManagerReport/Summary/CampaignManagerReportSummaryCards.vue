@@ -72,6 +72,12 @@
           >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
           </div>
+          <div
+            v-else-if="isCampaignAttachmentAndMfaClickOnly"
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+          >
+            <img src="../../../assets/img/attachment-icon.svg" alt="icon" />
+          </div>
           <div v-else class="campaign-manager-report-summary-info-card--submitted-data-icon">
             <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
