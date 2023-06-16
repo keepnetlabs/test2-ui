@@ -149,6 +149,7 @@
                     :template-resource-id="formValues.templateResourceId"
                     :scenario-details-lookup="scenarioDetailsLookup"
                     :category-resource-id="formValues.methodTypeId"
+                    :language-options="languageOptions"
                     @initialTemplateId="handleInitialTemplate"
                     @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
                     @selectedTemplateChange="handleSelectedTemplateChange"
@@ -174,6 +175,7 @@
                   <LandingPageListPreview
                     v-if="!isAttachmentBasedScenario && step === 3"
                     ref="refLandingPageTemplateListPreview"
+                    :language-options="languageOptions"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
@@ -745,11 +747,15 @@ export default {
         if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return
         if (this.formValues.landingPageTemplateId && this.landingPageTemplate) {
           this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
-          // SmishingService.previewSmishingScenarioUsedTemplates(
-          //   this.textMessageTemplate.resourceId,
-          //   this.landingPageTemplate.resourceId
-          // ).then((response) => {
-          // })
+          this.emailDifficultyChipColor = this.getDifficultyColor(
+            this.textMessageTemplate.difficultyName
+          )
+          this.textMessageTemplate.languageShortCode = this.languageOptions.find(
+            (language) => language.value === this.textMessageTemplate.languageTypeResourceId
+          )?.description
+          this.landingPageTemplate.languageShortCode = this.languageOptions.find(
+            (language) => language.value === this.landingPageTemplate.languageTypeResourceId
+          )?.description
           this.step += 1
         }
       }
@@ -912,6 +918,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     if (this.isDuplicate) {
       this.footerButtonsIds = {
         cancelButton: 'btn-duplicate-cancel--scenario-modal',
@@ -920,7 +927,6 @@ export default {
         saveButton: 'btn-duplicate-save--scenario-modal'
       }
     }
-    this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }

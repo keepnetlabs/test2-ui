@@ -160,9 +160,7 @@ export default {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
     getDistributionText() {
-      return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take ${this.getApproximatedTime}.`
-        : `Sending  ${this.formData.sendingLimit} SMS every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
+      return `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
       let seconds = this.batchEverySendSecond

@@ -310,15 +310,6 @@ export default {
           code: '2',
           description: 'Gather information from users',
           orderNumber: 2
-        },
-        {
-          resourceId: '67LcW2kHbtds',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'MFA',
-          code: '3',
-          description: 'Send a smishing MFA',
-          orderNumber: 3
         }
       ],
       difficultyItems: [
