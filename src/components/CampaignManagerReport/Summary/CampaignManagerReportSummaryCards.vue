@@ -126,6 +126,7 @@ export default {
         return this.getClickedData
       }
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly ||
         this.isCampaignAttachmentAndMfaDataSubmission
@@ -136,6 +137,7 @@ export default {
     getFirstCardTitle() {
       if (this.isCampaignHasAllTypes) return labels.ClickedLink
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly ||
         this.isCampaignAttachmentAndMfaDataSubmission
@@ -146,6 +148,7 @@ export default {
     getFirstCardIcon() {
       if (this.isCampaignHasAllTypes) return this.clickedLinkIcon
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly ||
         this.isCampaignAttachmentAndMfaDataSubmission
@@ -156,6 +159,7 @@ export default {
     getFirstCardColor() {
       if (this.isCampaignHasAllTypes) return '#F56C6C'
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly ||
         this.isCampaignAttachmentAndMfaDataSubmission
@@ -166,6 +170,7 @@ export default {
     getSecondCardProps() {
       if (this.isCampaignHasAllTypes) return this.getMfaData
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly
       )
@@ -188,6 +193,7 @@ export default {
     getSecondCardLabel() {
       if (this.isCampaignHasAllTypes) return labels.SubmittedMFACode
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly
       )
@@ -210,6 +216,7 @@ export default {
     getSecondCardIcon() {
       if (this.isCampaignHasAllTypes) return this.submittedDataIcon
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly
       )
@@ -232,6 +239,7 @@ export default {
     getSecondCardColor() {
       if (this.isCampaignHasAllTypes) return '#B83A3A'
       if (
+        this.isCampaignMfaClickOnlyAndDataSubmission ||
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
         this.isCampaignAttachmentAndMfaClickOnly
       )
@@ -496,6 +504,14 @@ export default {
     },
     isCampaignDataSubmissionAndMfa() {
       return this.multipleType.length && this.multipleType[1] && this.multipleType[3]
+    },
+    isCampaignMfaClickOnlyAndDataSubmission() {
+      return (
+        this.multipleType.length &&
+        this.multipleType[0] &&
+        this.multipleType[1] &&
+        this.multipleType[3]
+      )
     },
     isCampaignAttachmentAndMfaClickOnly() {
       return (
