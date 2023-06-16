@@ -430,6 +430,7 @@ export default {
             return acc
           }, 0)
           if (totalTargetUserCount) {
+            refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = false
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
             this.userCountDetailResponse = await getTargetGroupCountDetail(
@@ -442,12 +443,18 @@ export default {
               this.totalTargetUserCount =
                 this.userCountDetailResponse?.data?.data
                   ?.find((detail) => detail.status === 'Active')
-                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
-                totalTargetUserCount
+                  ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
+
+              if (!this.totalTargetUserCount) {
+                refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
+                refCampaignManagerTargetAudience.isTargetGroupsValid = false
+                this.setActionButtonDisability(false)
+                return
+              }
             }
             if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
-            refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
+            refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false
           }
           this.setActionButtonDisability(false)

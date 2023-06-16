@@ -11,7 +11,8 @@
             'Phishing Simulator',
             'Reports',
             'Awareness Educator',
-            'Vishing Simulator'
+            'Vishing Simulator',
+            'Smishing Simulator'
           ].includes(item) && {
             pointerEvents: 'none',
             opacity: 0.7

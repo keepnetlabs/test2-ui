@@ -48,9 +48,25 @@
                     prepend-inner-icon="mdi-magnify"
                   />
                 </div>
+                <div>
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
+                    :items="languageOptions"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
                 <div style="max-width: 140px;">
                   <KSelect
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
                     :items="scenarioDetailsLookup.difficultyTypes"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -78,7 +94,7 @@
             >
               <div
                 v-for="(item, index) in listData"
-                class="template-list"
+                class="template-list pr-6"
                 :key="item.name + index"
                 :class="{ 'template-list--selected': item['selected'] }"
                 @click="setSelectedTemplate(item, index)"
@@ -99,7 +115,7 @@
                   </div>
                   <div
                     :class="[
-                      'template-list--item template-list--item__difficulty mr-8',
+                      'template-list--item template-list--item__difficulty',
                       getItemDifficultyClass(item.difficulty)
                     ]"
                   >
@@ -110,9 +126,13 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item mt-2">
+                <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                  <div class="template-list--item__narrator">
+                    <v-icon :size="16" color="#757575">mdi-web</v-icon>
+                    <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                  </div>
                 </div>
               </div>
               <div
@@ -276,11 +296,7 @@ import SmishingService from '@/api/smishing'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
-import {
-  getDefaultLandingPageTemplatePayload,
-  SCENARIO_DIFFICULTIES,
-  SCENARIO_METHODS
-} from '@/components/PhishingScenarios/utils'
+import { SCENARIO_DIFFICULTIES, SCENARIO_METHODS } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import ConfigureCompanyStepHeader from '../Companies/ConfigureCompanyStepHeader'
 import labels from '@/model/constants/labels'
@@ -315,6 +331,10 @@ export default {
     mfaData: {
       type: Object,
       default: () => ({})
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -330,7 +350,46 @@ export default {
       defaultListData: [],
       methods: SCENARIO_METHODS,
       difficulties: SCENARIO_DIFFICULTIES,
-      bodyData: getDefaultLandingPageTemplatePayload(this.method),
+      bodyData: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  value: this.method,
+                  FieldName: 'method',
+                  Operator: 'Include'
+                },
+                {
+                  value: '',
+                  FieldName: 'LanguageTypeResourceId',
+                  Operator: 'Include'
+                },
+                { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                { FieldName: 'Name', Operator: 'Contains', Value: '' },
+                { FieldName: 'Method', Operator: 'Contains', Value: '' },
+                { FieldName: 'Difficulty', Operator: 'Contains', Value: '' },
+                { FieldName: 'CreatedBy', Operator: 'Contains', Value: '' },
+                { FieldName: 'Tags', Operator: 'Contains', Value: '' },
+                { FieldName: 'CreateTime', Operator: 'Contains', Value: '' }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       loadingTemplatePreview: false,
       isTemplateDetails: null,
       loadingTemplates: false,
@@ -480,7 +539,7 @@ export default {
         })
       }
       if (this.isMethodMfa) {
-        this.bodyData.filter.FilterGroups[0].FilterItems[0].value = 'Click-Only'
+        this.bodyData.filter.FilterGroups[0].FilterItems[0].value = 'Click-Only,Data Submission'
       }
       SmishingService.searchLandingPageTemplates(this.bodyData)
         .then((response) => {

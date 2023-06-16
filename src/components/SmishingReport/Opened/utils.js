@@ -27,7 +27,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   PHISHING_SCENARIO_NAME: {
-    property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,
+    property: 'smishingScenarioName',
     align: 'left',
     label: labels.ScenarioName,
     fixed: false,

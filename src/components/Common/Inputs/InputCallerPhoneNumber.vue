@@ -123,7 +123,7 @@ export default {
       return phoneNumberObj?.g?.number?.international
     },
     getPhoneNumberCountry(phoneNumber) {
-      if (!phoneNumber) return 'EN'
+      if (!phoneNumber) return ''
       if (this.isPhishingScenario && !this.phoneNumbers.length) return 'EN'
       const phoneNumberObj = this.createPhoneNumberObj(
         this.isPhishingScenario

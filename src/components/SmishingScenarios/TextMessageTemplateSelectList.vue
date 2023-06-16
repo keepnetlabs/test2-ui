@@ -22,10 +22,10 @@
                     "
                   />
                 </div>
-                <!-- <div>
+                <div>
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
-                    :items="getLanguageItems"
+                    :items="languageOptions"
                     placeholder="Language"
                     item-disabled="disabled"
                     item-text="text"
@@ -37,7 +37,7 @@
                     @change="getTemplatesForSearch"
                   >
                   </v-select>
-                </div> -->
+                </div>
                 <div>
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
@@ -82,6 +82,7 @@
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
+                      {{ item.categoryName }}
                       <span class="template-list--item__sub-header--span">by</span>
                       {{ item['createdBy'] }}
                     </div>
@@ -171,6 +172,10 @@ export default {
     categoryResourceId: {
       type: String,
       required: true
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   mixins: [useDebounce],
@@ -218,7 +223,7 @@ export default {
                 },
                 {
                   value: '',
-                  FieldName: 'language',
+                  FieldName: 'LanguageTypeResourceId',
                   Operator: 'Include'
                 },
                 { value: '', FieldName: 'difficulty', Operator: 'Include' }

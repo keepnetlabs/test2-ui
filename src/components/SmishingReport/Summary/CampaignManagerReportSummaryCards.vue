@@ -27,7 +27,7 @@
       :class="getThirdCardClass"
     />
     <CampaignManagerReportSummaryInfoCard
-      v-if="multipleType[2]"
+      v-if="isCampaignHasAllTypes || isCampaignDataSubmissionAndSubmittedMFA"
       v-bind="getFourthCardProps"
       :class="getFourthCardClass"
       background-color="#B83A3A"
@@ -96,18 +96,54 @@ export default {
       return '#F56C6C'
     },
     getThirdCardProps() {
+      if (
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignDataSubmissionAndSubmittedMFA
+      ) {
+        return this.getSubmittedData
+      }
+      if (this.isCampaignOnlySubmittedMFA || this.isCampaignClickOnlyAndSubmittedMFA) {
+        return this.getSubmittedMFAData
+      }
       return this.getSubmittedData
     },
     getThirdCardLabel() {
+      if (
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignDataSubmissionAndSubmittedMFA
+      ) {
+        return labels.SubmittedData
+      }
+      if (this.isCampaignOnlySubmittedMFA || this.isCampaignClickOnlyAndSubmittedMFA) {
+        return labels.SubmittedMFACode
+      }
       return labels.SubmittedData
     },
     getThirdCardColor() {
       return '#B83A3A'
     },
     getThirdCardIcon() {
+      if (
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignDataSubmissionAndSubmittedMFA
+      ) {
+        return this.submittedDataIcon
+      }
+      if (this.isCampaignOnlySubmittedMFA || this.isCampaignClickOnlyAndSubmittedMFA) {
+        return this.mfaIcon
+      }
       return this.submittedDataIcon
     },
     getThirdCardClass() {
+      if (
+        this.isCampaignClickOnlyAndDataSubmission ||
+        this.isCampaignDataSubmissionAndSubmittedMFA
+      ) {
+        return 'campaign-manager-report-summary-info-card--submitted-data'
+      }
+      if (this.isCampaignOnlySubmittedMFA || this.isCampaignClickOnlyAndSubmittedMFA) {
+        return 'campaign-manager-report-summary-info-card--submitted-mfa-data'
+      }
       return 'campaign-manager-report-summary-info-card--submitted-data'
     },
     getFourthCardProps() {

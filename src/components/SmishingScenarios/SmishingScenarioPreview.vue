@@ -147,7 +147,9 @@ export default {
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
-            isAttachmentBasedTemplate: methodTypeId === 3
+            isAttachmentBasedTemplate: methodTypeId === 3,
+            mfaTextTemplate: data.mfaTextTemplate,
+            mfaSmsSenderNumber: data.mfaSmsSenderNumber
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4

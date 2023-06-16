@@ -212,7 +212,8 @@ export default {
             filterableType: 'select',
             filterableItems: [
               { text: 'Click Only', value: 'Click-Only' },
-              { text: 'Data Submission', value: 'Data Submission' }
+              { text: 'Data Submission', value: 'Data Submission' },
+              { text: 'MFA', value: 'MFA' }
             ]
           },
           {

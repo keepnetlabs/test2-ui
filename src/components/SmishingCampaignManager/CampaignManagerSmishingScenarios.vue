@@ -64,6 +64,8 @@
                     v-model="language"
                     placeholder="Language"
                     item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
@@ -181,50 +183,16 @@
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
                   >
-                    <ElTabs
-                      v-if="isLandingPageTabsVisible"
-                      v-model="selectedLandingPageTab"
-                      class="phishing-scenario-tab-container"
-                    >
-                      <ElTabPane
-                        v-for="(template, index) in landingPageTemplates"
-                        :key="index"
-                        :label="`Page ${index + 1}`"
-                        :name="`${index + 1}`"
-                      >
-                        <div class="template-preview pt-0">
-                          <div class="template-preview__icon">
-                            <v-btn
-                              v-if="!!template.content"
-                              :color="'#2196f3'"
-                              icon
-                              outlined
-                              @click="handleClickPreview"
-                            >
-                              <v-icon color="#2196f3" medium>
-                                {{ 'mdi-fullscreen' }}
-                              </v-icon>
-                            </v-btn>
-                          </div>
-                          <div v-if="!!template.content" class="template-preview__text pl-2">
-                            <div>
-                              <span class="template-preview__text--title">Name: </span>
-                              <span class="template-preview__text--body">{{
-                                landingPageParams.name
-                              }}</span>
-                            </div>
-                            <div>
-                              <span class="template-preview__text--title">Phishing URL: </span>
-                              <span class="template-preview__text--body">{{
-                                landingPageParams.urlTemplate
-                              }}</span>
-                            </div>
-                          </div>
-                          <hr class="mt-2" v-if="!!template.content" />
-                          <KEmailPreview v-if="!!template.content" :html="template.content" />
-                        </div>
-                      </ElTabPane>
-                    </ElTabs>
+                    <TabsWithMfaSettings
+                      v-if="isLandingPageTabsVisible || isMethodMfa"
+                      class="tabs-with-mfa-settings"
+                      is-smishing
+                      :is-sub-tab="false"
+                      :is-phishing-scenario="false"
+                      :isMethodMfa="isMethodMfa"
+                      :landing-page-params="landingPageParams"
+                      :landing-page-templates="landingPageTemplates"
+                    />
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
                         <v-btn
@@ -289,13 +257,14 @@ const EMITS = {
 }
 import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
-import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import { methods, difficulties } from '@/components/SmishingCampaignManager/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
 
 export default {
   name: 'CampaignManagerSmishingScenarios',
@@ -305,7 +274,8 @@ export default {
     KSelect,
     AppDialog,
     Multipane,
-    MultipaneResizer
+    MultipaneResizer,
+    TabsWithMfaSettings
   },
   mixins: [useDebounce],
   props: {
@@ -356,7 +326,8 @@ export default {
       landingPageTemplate: null,
       selectedLandingPageTab: '1',
       landingPageTemplates: [],
-      phishingScenarioItems: []
+      phishingScenarioItems: [],
+      isMethodMfa: false
     }
   },
   computed: {
@@ -470,7 +441,7 @@ export default {
     },
     language(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'languageTypeResourceId'
+        (item) => item.FieldName === 'LanguageTypeResourceId'
       )
       const obj = {
         Value: val,
@@ -541,7 +512,13 @@ export default {
         this.selectedTemplateResourceId = resourceId
         SmishingService.previewSmishingScenario(resourceId).then((response) => {
           const { data: { data = {} } = {} } = response
-          const { textTemplate, landingPageTemplate, methodTypeId } = data
+          const {
+            textTemplate,
+            landingPageTemplate,
+            methodTypeId,
+            mfaTextTemplate,
+            mfaSmsSenderNumber
+          } = data
           const {
             template,
             name,
@@ -571,10 +548,13 @@ export default {
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
-            languageTypeResourceId
+            languageTypeResourceId,
+            mfaSmsSenderNumber,
+            mfaTextTemplate
           }
           this.landingPageTemplates = landingPages || []
           this.tab = 'textMessage'
+          this.isMethodMfa = data.methodTypeId === 4
         })
       })
     },
