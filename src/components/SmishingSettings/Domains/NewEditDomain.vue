@@ -170,8 +170,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
-// TODO: Change api endpoints
-import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
+import SmishingService from '@/api/smishing'
 import TestConnection from '@/components/SmishingSettings/Domains/TestConnection'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import AppModalFooter from '@/components/AppModalFooter'
@@ -299,7 +298,7 @@ export default {
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
-      getDomainEditData(this.resourceId).then((res) => {
+      SmishingService.getDomainEditData(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         this.formValues.domain = res?.data?.data?.domain
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
@@ -365,7 +364,7 @@ export default {
             this.formValues.dnsRecord = null
           }
           if (this.isEdit && !this.isDuplicate) {
-            updateDomain(payload, this.resourceId)
+            SmishingService.updateDomain(payload, this.resourceId)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })
@@ -373,7 +372,7 @@ export default {
                 this.saveButtonDisabled = false
               })
           } else {
-            createDomain(payload)
+            SmishingService.createDomain(payload)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })

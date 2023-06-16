@@ -176,24 +176,18 @@ export default {
           action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
-          // TODO: Delte default permission
-          // disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions'],
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager',
-          // TODO: Delte default permission
-          // disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
         },
         downloadButton: {
           show: true,
-          // TODO: Delte default permission
-          // disabled: !this.$store.getters['permissions/getSmishingCampaignManagerExportPermissions']
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerExportPermissions']
         },
         rowActions: [
           {
@@ -213,11 +207,9 @@ export default {
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            // TODO: Delte default permission
-            // disabled: !this.$store.getters[
-            //   'permissions/getSmishingCampaignManagerDeletePermissions'
-            // ]
-            disabled: false
+            disabled: !this.$store.getters[
+              'permissions/getSmishingCampaignManagerDeletePermissions'
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -225,19 +217,12 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    // getSmishingCampaignManagerSearchPermissions:
-    //   "permissions/getSmishingCampaignManagerSearchPermissions",
-    // getSmishingCampaignManagerExportPermissions:
-    //   "permissions/getSmishingCampaignManagerExportPermissions",
-    // }),
-    // TODO: Delte default permission
-    getSmishingCampaignManagerSearchPermissions() {
-      return true
-    },
-    getSmishingCampaignManagerExportPermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingCampaignManagerSearchPermissions:
+        'permissions/getSmishingCampaignManagerSearchPermissions',
+      getSmishingCampaignManagerExportPermissions:
+        'permissions/getSmishingCampaignManagerExportPermissions'
+    })
   },
   watch: {
     statusItems(val) {

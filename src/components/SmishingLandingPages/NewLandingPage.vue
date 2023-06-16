@@ -314,8 +314,6 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-// TODO: CHange api endpoint
-import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
@@ -550,7 +548,7 @@ export default {
       })
     },
     callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
+      SmishingService.getSmishingLandingPageMergeTags().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })

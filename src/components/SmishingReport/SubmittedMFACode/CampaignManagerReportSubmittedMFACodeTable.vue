@@ -106,11 +106,9 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
             icon: '$custom-details',
             action: 'on-detail',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters[
-            //   'permissions/getSmishingReportSubmittedMFADetailstPermissions'
-            // ],
-            disabled: false
+            disabled: !this.$store.getters[
+              'permissions/getSmishingReportSubmittedMFADetailstPermissions'
+            ]
           }
         ]
       }

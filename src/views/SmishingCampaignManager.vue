@@ -111,8 +111,6 @@ import CampaignManagerParentTable from '@/components/SmishingCampaignManager/Cam
 import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
 import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
-// TODO: Import smishing endpoints
-import { getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { getScenarioDataDetails } from '@/api/scenarios'
 import { createTargetGroup } from '@/api/targetUsers'
@@ -172,14 +170,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    //   getSmishingCampaignManagerDeletePermissions:
-    //     'permissions/getSmishingCampaignManagerDeletePermissions'
-    // }),
-    // TODO: Delete default permission
-    getSmishingCampaignManagerDeletePermissions() {
-      return true
-    },
+    ...mapGetters({
+      getSmishingCampaignManagerDeletePermissions:
+        'permissions/getSmishingCampaignManagerDeletePermissions'
+    }),
     getStatusItems() {
       return this.formDetails.status
     }
@@ -216,7 +210,7 @@ export default {
       this.showNewInstanceModal()
     },
     callForFormDetails() {
-      getCampaignManagerFormDetails().then((response) => {
+      SmishingService.getCampaignManagerFormDetails().then((response) => {
         const {
           data: { data }
         } = response

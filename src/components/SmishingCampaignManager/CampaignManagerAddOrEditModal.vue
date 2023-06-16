@@ -425,38 +425,30 @@ export default {
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
-          const totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
-            acc += item?.extraDatas.userCount || 0
-            return acc
-          }, 0)
-          if (totalTargetUserCount) {
-            refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = false
-            refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
-            refCampaignManagerTargetAudience.isTargetGroupsValid = true
-            this.userCountDetailResponse = await getTargetGroupCountDetail(
-              this.targetGroupResourceIds
-            )
-            if (
-              this.userCountDetailResponse?.data?.data &&
-              this.userCountDetailResponse?.data?.data?.length
-            ) {
-              this.totalTargetUserCount =
-                this.userCountDetailResponse?.data?.data
-                  ?.find((detail) => detail.status === 'Active')
-                  ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
-
-              if (!this.totalTargetUserCount) {
-                refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
-                refCampaignManagerTargetAudience.isTargetGroupsValid = false
-                this.setActionButtonDisability(false)
-                return
-              }
+          this.userCountDetailResponse = await getTargetGroupCountDetail(
+            this.targetGroupResourceIds
+          )
+          if (
+            this.userCountDetailResponse?.data?.data &&
+            this.userCountDetailResponse?.data?.data?.length
+          ) {
+            this.totalTargetUserCount =
+              this.userCountDetailResponse?.data?.data
+                ?.find((detail) => detail.status === 'Active')
+                ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
+            if (!this.totalTargetUserCount) {
+              refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
+              refCampaignManagerTargetAudience.isTargetGroupsValid = false
+              this.setActionButtonDisability(false)
+              return
             }
-            if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false
+            this.setActionButtonDisability(false)
+            return
           }
+          if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           this.setActionButtonDisability(false)
           return
         case 4:
@@ -489,9 +481,6 @@ export default {
             distributionDelayTimeTypeId: parseInt(
               deliverySettingsFormData.distributionDelayTimeTypeId
             ),
-            distributionEmailOver: deliverySettingsFormData.distributionEmailOver,
-            distributionEmailOverTimeTypeId:
-              deliverySettingsFormData.distributionEmailOverTimeTypeId,
             sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,

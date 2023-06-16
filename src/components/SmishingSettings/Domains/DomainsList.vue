@@ -83,8 +83,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-// TODO: Change api endpoints
-import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
+import SmishingService from '@/api/smishing'
 import DeleteServiceModal from '@/components/SmishingSettings/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/SmishingSettings/Domains/NewEditDomain'
 import { mapGetters } from 'vuex'
@@ -202,26 +201,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            // TODO: Delete default permissions
-            disabled: false,
-            // disabled: !this.$store.getters['permissions/getSmishingDomainUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDomainUpdatePermissions'],
             id: 'btn-edit--domain-lists-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            // TODO: Delete default permissions
-            disabled: false,
-            // disabled: !this.$store.getters['permissions/getSmishingDomainDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getSmishingDomainDeletePermissions'],
             id: 'btn-delete--domain-lists-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: Delete default permissions
-          disabled: false
-          // disabled: !this.$store.getters['permissions/getDomainExportPermissions']
+          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -234,18 +227,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--domainList',
-          // TODO: Delete default permissions
-          disabled: false
-          // disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          // TODO: Delete default permissions
-          disabled: false
-          // disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         }
       },
       modalStatus: false,
@@ -255,30 +244,17 @@ export default {
       templateHTML: null
     }
   },
-  // TODO: Delete default permissions
   computed: {
-    // ...mapGetters({
-    //   getSmishingDomainUpdatePermissions: 'permissions/getSmishingDomainUpdatePermissions',
-    //   getSmishingDomainDeletePermissions: 'permissions/getSmishingDomainDeletePermissions',
-    //   getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
-    //   getSmishingDomainFormDetailsPermissions: 'permissions/getSmishingDomainFormDetailsPermissions'
-    // }),
-    getSmishingDomainUpdatePermissions() {
-      return true
-    },
-    getSmishingDomainDeletePermissions() {
-      return true
-    },
-    getSmishingDomainSearchPermissions() {
-      return true
-    },
-    getSmishingDomainFormDetailsPermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingDomainUpdatePermissions: 'permissions/getSmishingDomainUpdatePermissions',
+      getSmishingDomainDeletePermissions: 'permissions/getSmishingDomainDeletePermissions',
+      getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
+      getSmishingDomainFormDetailsPermissions: 'permissions/getSmishingDomainFormDetailsPermissions'
+    })
   },
   created() {
     if (this.getSmishingDomainFormDetailsPermissions)
-      getDomainData().then((response) => {
+      SmishingService.getDomainData().then((response) => {
         this.domainData = response.data.data
         this.callForData()
       })
@@ -287,7 +263,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getSmishingDomainSearchPermissions) {
-        getDomainsList(this.axiosPayload)
+        SmishingService.getDomainsList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -337,7 +313,7 @@ export default {
       this.callForData()
     },
     handleDelete(row) {
-      deleteEmailTemplate(row.resourceId).then(() => {
+      SmishingService.deleteDomainRecord(row.resourceId).then(() => {
         this.$refs.refDomainsListList.unSelectRow(row)
         this.callForData()
       })
@@ -362,7 +338,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportDnsService(payload).then((response) => {
+        SmishingService.exportDomains(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

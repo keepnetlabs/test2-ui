@@ -55,25 +55,13 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    //   getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
-    //   getSmishingTextMessageTemplatesSearchPermissions:
-    //     'permissions/getSmishingTextMessageTemplatesSearchPermissions',
-    //   getSmishingLandingPageTemplatesSearchPermissions:
-    //     'permissions/getSmishingLandingPageTemplatesSearchPermissions'
-    // }),
-    // TODO: delete default permission
-    getSmishingScenariosSearchPermissions() {
-      return true
-    },
-    // TODO: delete default permission
-    getSmishingTextMessageTemplatesSearchPermissions() {
-      return true
-    },
-    // TODO: delete default permission
-    getSmishingLandingPageTemplatesSearchPermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
+      getSmishingTextMessageTemplatesSearchPermissions:
+        'permissions/getSmishingTextMessageTemplatesSearchPermissions',
+      getSmishingLandingPageTemplatesSearchPermissions:
+        'permissions/getSmishingLandingPageTemplatesSearchPermissions'
+    })
   },
   methods: {
     changeTabStatus(tabStatus) {

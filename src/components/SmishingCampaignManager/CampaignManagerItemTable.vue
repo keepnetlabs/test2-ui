@@ -154,9 +154,7 @@ export default {
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--item-campaign-manager',
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions'],
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
         },
         rowActions: [
           {
@@ -165,18 +163,14 @@ export default {
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
             action: 'on-stop',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingCampaignJobStopPermissions']
-            disabled: false
+            disabled: !this.$store.getters['permissions/getSmishingCampaignJobStopPermissions']
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingCampaignJobDeletePermissions']
-            disabled: false
+            disabled: !this.$store.getters['permissions/getSmishingCampaignJobDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

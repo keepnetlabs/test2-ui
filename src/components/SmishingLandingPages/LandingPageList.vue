@@ -298,11 +298,9 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters[
-            //   'permissions/getSmishingLandingPageTemplatesEditPermissions'
-            // ],
-            disabled: false,
+            disabled: !this.$store.getters[
+              'permissions/getSmishingLandingPageTemplatesEditPermissions'
+            ],
             id: 'btn-edit--landing-page-templates-row-actions'
           },
           {
@@ -315,21 +313,17 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters[
-            //   'permissions/getSmishingLandingPageTemplatesDeletePermissions'
-            // ],
-            disabled: false,
+            disabled: !this.$store.getters[
+              'permissions/getSmishingLandingPageTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--landing-page-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters[
-          //   'permissions/getSmishingLandingPageTemplatesExportPermissions'
-          // ],
-          disabled: false
+          disabled: !this.$store.getters[
+            'permissions/getSmishingLandingPageTemplatesExportPermissions'
+          ]
         },
         selectEvent: {
           clipboard: true,
@@ -348,11 +342,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--landingPage',
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters[
-          //   'permissions/getSmishingLandingPageTemplatesCreatePermissions'
-          // ],
-          disabled: false
+          disabled: !this.$store.getters[
+            'permissions/getSmishingLandingPageTemplatesCreatePermissions'
+          ]
         }
       },
       modalStatus: false,
@@ -365,14 +357,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    // getSmishingLandingPageTemplatesSearchPermissions:
-    //   'permissions/getSmishingLandingPageTemplatesSearchPermissions',
-    // }),
-    // TODO: Delete default permission
-    getSmishingLandingPageTemplatesSearchPermissions() {
-      return true
-    },
+    ...mapGetters({
+      getSmishingLandingPageTemplatesSearchPermissions:
+        'permissions/getSmishingLandingPageTemplatesSearchPermissions'
+    }),
     hasLandingPageTemplate() {
       return this.landingPageTemplates.length > 0
     },

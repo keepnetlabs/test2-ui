@@ -104,11 +104,9 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-clicked',
             icon: '$custom-details',
             action: 'on-detail',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters[
-            //   'permissions/getSmishingReportClickedDetailstPermissions'
-            // ],
-            disabled: false
+            disabled: !this.$store.getters[
+              'permissions/getSmishingReportClickedDetailstPermissions'
+            ]
           }
         ]
       }
