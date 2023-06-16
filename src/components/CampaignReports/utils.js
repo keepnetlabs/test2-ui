@@ -30,7 +30,8 @@ export const COLUMNS = {
       { text: 'Multiple Method', value: 'Multiple Method' },
       { text: 'Click Only', value: 'Click-Only' },
       { text: 'Data Submission', value: 'Data Submission' },
-      { text: 'Attachment', value: 'Attachment' }
+      { text: 'Attachment', value: 'Attachment' },
+      { text: 'MFA', value: 'MFA' }
     ],
     width: 160
   },
