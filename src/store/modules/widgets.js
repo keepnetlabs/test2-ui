@@ -38,6 +38,8 @@ const widgetsStore = {
         } else if (row.method === 'Data Submission') {
           campaignStatus.splice(1, 0, row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])
+        } else if (row.method === 'MFA') {
+          campaignStatus.push(row['totalSubmittedMFACount'])
         } else if (row.method === 'Multiple Method') {
           campaignStatus.splice(1, 0, row['totalClickedCount'])
           campaignStatus.push(row['totalSubmittedCount'])

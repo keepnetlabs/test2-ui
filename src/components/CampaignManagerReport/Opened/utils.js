@@ -78,7 +78,7 @@ export const COLUMNS = {
     property: 'lastSendingTime',
     align: 'left',
     editable: false,
-    label: 'Message Send Date',
+    label: 'Email Send Date',
     sortable: true,
     show: true,
     type: 'text',

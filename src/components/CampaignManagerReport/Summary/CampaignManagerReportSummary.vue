@@ -10,7 +10,7 @@
       :multiple-type="multipleType"
       :method="getScenarioMethod"
       :items="getCardsData"
-      :is-loading="isLoading"
+      :is-loading="isLoading || !getScenarioMethod"
     />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo
@@ -200,12 +200,12 @@ export default {
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
       const {
-        startDate = '01/01/1970',
-        endDate = '01/01/1970',
+        emailDeliveryStartDate = '01/01/1970',
+        emailDeliveryEndDate = '01/01/1970',
         emailDeliveryDuration = 0
       } = campaignInfo
       return {
-        'Delivery Start - End': `${startDate} - ${endDate}`,
+        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
         Duration: `${emailDeliveryDuration || 0}`,
         'Delivery Status': ''
       }
@@ -428,7 +428,9 @@ export default {
         })
         .finally(() => {
           if (isUseLoading) {
-            this.setLoading(false)
+            setTimeout(() => {
+              this.setLoading(false)
+            }, 300)
           }
         })
       getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {

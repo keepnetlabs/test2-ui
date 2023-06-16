@@ -67,6 +67,7 @@ import DataContainerWithSearch from '@/components/Common/Others/DataContainerWit
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+// TODO: Change api endpoints
 import { getExcludedIPAddresses, postExcludedIPAddresses } from '@/api/phishingsimulator'
 
 export default {

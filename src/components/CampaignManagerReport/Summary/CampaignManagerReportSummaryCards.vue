@@ -72,6 +72,12 @@
           >
             <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
           </div>
+          <div
+            v-else-if="isCampaignAttachmentAndMfaClickOnly"
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+          >
+            <img src="../../../assets/img/attachment-icon.svg" alt="icon" />
+          </div>
           <div v-else class="campaign-manager-report-summary-info-card--submitted-data-icon">
             <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
           </div>
@@ -183,8 +189,7 @@ export default {
       if (this.isCampaignHasAllTypes) return labels.SubmittedMFACode
       if (
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignAttachmentAndMfaClickOnly ||
-        this.isCampaignAttachmentAndMfaDataSubmission
+        this.isCampaignAttachmentAndMfaClickOnly
       )
         return labels.ClickedLink
       if (this.isCampaignAttachmentAndMfaDataSubmission) {
@@ -228,10 +233,12 @@ export default {
       if (this.isCampaignHasAllTypes) return '#B83A3A'
       if (
         this.isCampaignHasClickOnlyAndDataSubmissionAndAttachment ||
-        this.isCampaignAttachmentAndMfaClickOnly ||
-        this.isCampaignAttachmentAndMfaDataSubmission
+        this.isCampaignAttachmentAndMfaClickOnly
       )
         return '#F56C6C'
+      if (this.isCampaignAttachmentAndMfaDataSubmission) {
+        return '#B83A3A'
+      }
       if (
         this.isCampaignHasAttachmentAndDataSubmission ||
         this.isCampaignClickOnlyAndAttachment ||
@@ -501,8 +508,8 @@ export default {
     isCampaignAttachmentAndMfaDataSubmission() {
       return (
         this.multipleType.length &&
-        this.multipleType[0] &&
         this.multipleType[1] &&
+        this.multipleType[2] &&
         this.multipleType[3]
       )
     },

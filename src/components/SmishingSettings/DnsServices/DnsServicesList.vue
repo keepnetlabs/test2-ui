@@ -88,6 +88,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+// TODO: Change api endpoints
 import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
 import DeleteServiceModal from '@/components/Settings/DnsServices/DeleteServiceModal'
 import NewEditDnsService from '@/components/Settings/DnsServices/NewEditDnsService'

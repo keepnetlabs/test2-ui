@@ -55,7 +55,6 @@ export default {
     }
   },
   computed: {
-    // TODO: delete default permission
     // ...mapGetters({
     //   getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
     //   getSmishingTextMessageTemplatesSearchPermissions:
@@ -63,12 +62,15 @@ export default {
     //   getSmishingLandingPageTemplatesSearchPermissions:
     //     'permissions/getSmishingLandingPageTemplatesSearchPermissions'
     // }),
+    // TODO: delete default permission
     getSmishingScenariosSearchPermissions() {
       return true
     },
+    // TODO: delete default permission
     getSmishingTextMessageTemplatesSearchPermissions() {
       return true
     },
+    // TODO: delete default permission
     getSmishingLandingPageTemplatesSearchPermissions() {
       return true
     }

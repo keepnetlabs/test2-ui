@@ -40,6 +40,7 @@
 
 <script>
 import TestConnectivityStatus from './TestConnectivityStatus'
+// TODO:Change api endpoints
 import { testConnection } from '@/api/dnsServices'
 export default {
   inheritAttrs: true,
