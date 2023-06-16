@@ -382,7 +382,7 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
-            v-if="getSmishingSimulatorLeftMenuPermissions"
+            v-if="getSmishingSimulatorLeftMenuPermissions || true"
             id="btn--link-navigator-menu-smishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
@@ -395,7 +395,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="getSmishingSettingsLeftMenuPermissions"
+              v-if="getSmishingScenariosLeftMenuPermissions || true"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -408,7 +408,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSmishingCampaignManagerLeftMenuPermissions"
+              v-if="getSmishingCampaignManagerLeftMenuPermissions || true"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -424,7 +424,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSmishingSettingsLeftMenuPermissions"
+              v-if="getSmishingSettingsLeftMenuPermissions || true"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">

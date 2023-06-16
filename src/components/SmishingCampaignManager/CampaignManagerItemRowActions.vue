@@ -82,9 +82,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      getSmishingCampaignJobDeletePermissions: 'permissions/getSmishingCampaignJobDeletePermissions'
-    }),
+    // ...mapGetters({
+    // getSmishingCampaignJobDeletePermissions: 'permissions/getSmishingCampaignJobDeletePermissions'
+    // }),
+    // TODO: Delete default permission
+    getSmishingCampaignJobDeletePermissions() {
+      return true
+    },
     isMenuRender() {
       return ![
         ACTION_STATUSES.COMPLETE,

@@ -290,7 +290,9 @@ export default {
             icon: 'mdi-pencil',
             action: 'handleEdit',
             id: 'btn-edit--scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getSmishingScenariosEditPermissions']
+            // TODO: Delete default permission
+            // disabled: !this.$store.getters['permissions/getSmishingScenariosEditPermissions'],
+            disabled: false
           },
           {
             name: 'Duplicate',
@@ -303,12 +305,16 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getSmishingScenariosDeletePermissions']
+            // TODO: Delete default permission
+            // disabled: !this.$store.getters['permissions/getSmishingScenariosDeletePermissions']
+            disabled: false
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getSmishingScenariosExportPermissions']
+          // TODO: Delete default permission
+          // disabled: !this.$store.getters['permissions/getSmishingScenariosExportPermissions']
+          disabled: false
         },
         selectEvent: {
           clipboard: true,
@@ -327,7 +333,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.$store.getters['permissions/getSmishingScenariosCreatePermissions']
+          // TODO: Delete default permission
+          // disabled: !this.$store.getters['permissions/getSmishingScenariosCreatePermissions']
+          disabled: false
         }
       },
       modalStatus: false,
@@ -337,9 +345,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions'
-    })
+    // ...mapGetters({
+    //   getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
+    // }).
+    // TODO: Delete default permission
+
+    getSmishingScenariosSearchPermissions() {
+      return true
+    }
   },
   created() {
     this.callForLanguages('refScenariosList')
