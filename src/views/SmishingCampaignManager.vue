@@ -172,10 +172,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      getSmishingCampaignManagerDeletePermissions:
-        'permissions/getSmishingCampaignManagerDeletePermissions'
-    }),
+    // ...mapGetters({
+    //   getSmishingCampaignManagerDeletePermissions:
+    //     'permissions/getSmishingCampaignManagerDeletePermissions'
+    // }),
+    // TODO: Delete default permission
+    getSmishingCampaignManagerDeletePermissions() {
+      return true
+    },
     getStatusItems() {
       return this.formDetails.status
     }
