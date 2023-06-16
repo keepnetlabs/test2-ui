@@ -73,6 +73,8 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSMSDelivery from '@/components/SmishingReport/Summary/CampaignManagerReportSMSDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import PhoneNumber from 'awesome-phonenumber'
+
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -192,13 +194,16 @@ export default {
     getSMSDeliveryData() {
       const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
       const {
-        emailDeliveryStartDate = '01/01/1970',
-        emailDeliveryEndDate = '01/01/1970'
+        smsDeliveryStartDate = '01/01/1970',
+        smsDeliveryEndDate = '01/01/1970'
       } = campaignInfo
+      const senderPhoneNumber = settings?.smsProviderNumber
+        ? new PhoneNumber(settings.smsProviderNumber)?.g?.number?.international
+        : ''
       return {
-        'Sending Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
+        'Sending Start - End': `${smsDeliveryStartDate} - ${smsDeliveryEndDate}`,
         'Sending Status': '',
-        'Sender Phone Number': settings.smsProviderNumber
+        'Sender Phone Number': senderPhoneNumber
       }
     },
     getEmailDeliveryHelperData() {
@@ -378,6 +383,10 @@ export default {
       SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.campaignSummary = response?.data?.data
+          this.$store.dispatch(
+            'common/setActivePageRouterName',
+            this.campaignSummary?.smishingCampaignName || ''
+          )
           if (this?.campaignSummary?.scenarios?.length) {
             if (!this.customKeys.length) {
               this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
@@ -386,10 +395,6 @@ export default {
             }
             if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
           }
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.campaignSummary?.phishingCampaignName || ''
-          )
         })
         .finally(() => {
           if (isUseLoading) {

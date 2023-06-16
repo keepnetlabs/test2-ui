@@ -36,6 +36,7 @@ import CampaignManagerReportClicked from '@/components/SmishingReport/Clicked/Ca
 import CampaignManagerReportSubmittedData from '@/components/SmishingReport/SubmittedData/CampaignManagerReportSubmittedData'
 import CampaignManagerReportSubmittedMFACode from '@/components/SmishingReport/SubmittedMFACode/CampaignManagerReportSubmittedMFACode'
 import CampaignManagerReportNoResponse from '@/components/SmishingReport/NoResponse/CampaignManagerReportNoResponse'
+import CampaignManagerReportSendingReport from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReport'
 import SmishingService from '@/api/smishing'
 import KContainer from '@/components/KContainer/KContainer'
 
@@ -87,6 +88,15 @@ export default {
           // TODO: Delete default permission
           isVisible: true
           // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+        },
+        {
+          name: labels.SendingReport,
+          id: 'campaign-manager-report-sending-response-content',
+          label: labels.SendingReport,
+          component: CampaignManagerReportSendingReport,
+          // TODO: Delete default permission
+          isVisible: true
+          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
         }
       ],
       formDetails: null
@@ -136,8 +146,8 @@ export default {
           const isSubmittedMFA = scenarios.some(
             (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'
           )
-          if (isSubmittedData && !isSubmittedMFA) {
-            this.tabItems.splice(2, 0, {
+          if (isSubmittedData) {
+            this.tabItems.splice(this.tabItems.length - 2, 0, {
               name: labels.SubmittedData,
               id: 'smishing-report-submitted-data-content',
               label: labels.SubmittedData,
@@ -148,28 +158,15 @@ export default {
             })
           }
           if (isSubmittedMFA) {
-            this.tabItems.splice(
-              2,
-              0,
-              {
-                name: labels.SubmittedData,
-                id: 'smishing-report-submitted-data-content',
-                label: labels.SubmittedData,
-                component: CampaignManagerReportSubmittedData,
-                // TODO: Delete default permission
-                isVisible: true
-                // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
-              },
-              {
-                name: 'Submitted MFA Code',
-                id: 'smishing-report-submitted-mfa-code-content',
-                label: 'Submitted MFA Code',
-                component: CampaignManagerReportSubmittedMFACode,
-                // TODO: Delete default permission
-                isVisible: true
-                // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
-              }
-            )
+            this.tabItems.splice(this.tabItems.length - 2, 0, {
+              name: 'Submitted MFA Code',
+              id: 'smishing-report-submitted-mfa-code-content',
+              label: 'Submitted MFA Code',
+              component: CampaignManagerReportSubmittedMFACode,
+              // TODO: Delete default permission
+              isVisible: true
+              // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+            })
           }
         })
         .finally(() => {

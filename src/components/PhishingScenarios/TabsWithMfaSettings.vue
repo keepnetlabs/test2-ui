@@ -81,7 +81,8 @@
         >
           <VIcon color="#2196f3">mdi-information</VIcon>
           <span class="ml-2" style="color: #383b41;"
-            >Scenarios created with MFA method can be edited from the phishing scenarios page.</span
+            >Scenarios created with MFA method can be edited from the
+            {{ isSmishing ? 'smishing' : 'phishing' }} scenarios page.</span
           >
         </div>
       </div>
@@ -114,6 +115,10 @@ export default {
     isPhishingScenario: {
       type: Boolean,
       default: true
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

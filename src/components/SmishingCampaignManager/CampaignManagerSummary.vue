@@ -112,14 +112,14 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Text Message: {{ textTemplateParams.template }}
+              <span style="font-weight: 600;">Text Message:</span> {{ textTemplateParams.template }}
             </div>
           </div>
         </template>
       </CampaignManagerSummaryCard>
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerReportSummaryLandingPage :formData="landingPageParams" />
+      <CampaignManagerSummaryLandingPage :formData="landingPageParams" :isMethodMfa="isMethodMfa" />
     </div>
   </div>
 </template>
@@ -129,12 +129,12 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
 import Badge from '@/components/Badge'
-import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import CampaignManagerSummaryLandingPage from '@/components/SmishingCampaignManager/CampaignManagerSummaryLandingPage'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -142,7 +142,7 @@ export default {
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
-    CampaignManagerReportSummaryLandingPage,
+    CampaignManagerSummaryLandingPage,
     AlertBox
   },
   props: {
@@ -167,11 +167,15 @@ export default {
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
       selectedScenarioName: '',
+      selectedScenarioMethodTypeId: '',
       textTemplateParams: {},
       landingPageParams: {}
     }
   },
   computed: {
+    isMethodMfa() {
+      return this.selectedScenarioMethodTypeId === 4
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
@@ -265,9 +269,18 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsers} active user(s) with verified domain(s) from ${targetGroupResourceIds.length} group(s)`
+        text = `${this.getTotalActiveUsersWithPhoneNumber} active user${
+          this.getTotalActiveUsersWithPhoneNumber > 1 ? 's' : ''
+        } with phone numbers from ${targetGroupResourceIds.length} group(s)`
       }
       return text
+    },
+    getTotalActiveUsersWithPhoneNumber() {
+      const totalActiveUsersWithPhoneNumberCount =
+        this.formData.userCountDetailResponse?.data?.data
+          ?.find((row) => row.status === 'Active')
+          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+      return totalActiveUsersWithPhoneNumberCount
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -334,7 +347,13 @@ export default {
       SmishingService.previewSmishingScenario(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { textTemplate, landingPageTemplate, methodTypeId } = data
+          const {
+            textTemplate,
+            landingPageTemplate,
+            methodTypeId: scenarioMethodTypeId,
+            mfaTextTemplate,
+            mfaSmsSenderNumber
+          } = data
           const {
             template,
             name,
@@ -360,7 +379,8 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            methodTypeId
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -369,11 +389,14 @@ export default {
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
-            landingPageTemplates: landingPages
+            landingPageTemplates: landingPages,
+            mfaTextTemplate,
+            mfaSmsSenderNumber
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
+          this.selectedScenarioMethodTypeId = scenarioMethodTypeId
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },

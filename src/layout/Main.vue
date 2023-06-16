@@ -784,6 +784,9 @@
             <h1 v-else-if="routerName === 'Vishing Report'">
               {{ getVishingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Smishing Report'">
+              {{ getSmishingReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1035,6 +1038,12 @@ export default {
         return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Vishing Report'
+    },
+    getSmishingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Smishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Smishing Report'
     },
     getRouterKey() {
       const { name } = this.$route

@@ -18,6 +18,7 @@
       <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
         <div>
           <VCheckbox
+            v-if="!isVishing"
             v-model="formData.sendOnlyActiveUsers"
             id="input--campaign-manager-advanced-settings-only-active-users"
             color="#2196f3"
@@ -117,6 +118,7 @@ export default {
       labels,
       isTargetGroupsValid: true,
       isShowTargetGroupUsersError: false,
+      isShowActiveAndPhoneNumberError: false,
       onlineUsersCount: 0,
       formData: {
         sendOnlyActiveUsers: false,
@@ -140,7 +142,15 @@ export default {
         : labels.TargetGroupSelectionRequiredError
     },
     getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
+      if (this.isShowActiveAndPhoneNumberError) {
+        return `Target groups must have at least 1 active user who has phone number assigned to them`
+      }
+
+      if (this.isShowTargetGroupUsersError) {
+        return labels.TargetGroupUserRequiredError
+      }
+
+      return 'Required'
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers

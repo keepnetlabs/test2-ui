@@ -35,7 +35,8 @@ const common = {
     getSessionCheck: (state) => state.sessionCheck,
     getIsShowLeavingDialog: (state) => state.isShowLeavingDialog,
     getLeavingDialogCallback: (state) => state.leavingDialogCallback,
-    getSelectedTimeZone: (state) => state.selectedTimeZone
+    getSelectedTimeZone: (state) => state.selectedTimeZone,
+    getActivePageRouterName: (state) => state.activePageRouterName
   },
   mutations: {
     SET_IS_SHOW_LEAVING_DIALOG(state, payload) {
