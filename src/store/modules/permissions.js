@@ -67,7 +67,8 @@ const {
   SMISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
   SMISHING_DNS_PERMISSIONS,
   SMISHING_DOMAIN_PERMISSIONS,
-  SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS
+  SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS,
+  SMISHING_EXCLUDED_IP_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -138,7 +139,8 @@ const defaultState = {
   smishingReportPermissions: SMISHING_REPORT_PERMISSIONS,
   smishingSettingsLeftMenuPermissions: SMISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
   smishingDnsPermissions: SMISHING_DNS_PERMISSIONS,
-  smishingDomainPermissions: SMISHING_DOMAIN_PERMISSIONS
+  smishingDomainPermissions: SMISHING_DOMAIN_PERMISSIONS,
+  smishingExcludedIpPermissions: SMISHING_EXCLUDED_IP_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -415,6 +417,12 @@ const store = {
     },
     getSmishingDomainFormDetailsPermissions(state) {
       return state?.smishingDomainPermissions?.FORM_DETAILS?.hasPermission
+    },
+    getSmishingExcludedIpGetPermissions(state) {
+      return state?.smishingExcludedIpPermissions?.GET?.hasPermission
+    },
+    getSmishingExcludedIpPostPermissions(state) {
+      return state?.smishingExcludedIpPermissions?.POST?.hasPermission
     },
     getEmailTemplatesSearchPermissions(state) {
       return state?.emailTemplatesPermissions?.SEARCH?.hasPermission
@@ -1284,7 +1292,8 @@ const store = {
         'smishingReportPermissions',
         'smishingSettingsLeftMenuPermissions',
         'smishingDnsPermissions',
-        'smishingDomainPermissions'
+        'smishingDomainPermissions',
+        'smishingExcludedIpPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

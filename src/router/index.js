@@ -357,7 +357,8 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Simulator',
-            permissionStoreKey: 'permissions/getSmishingSettingsLeftMenuPermissions'
+            // TODO: change permission key
+            permissionStoreKey: 'permissions/getSettingsLeftMenuPermissions'
           },
           props: true,
           params: true

@@ -2,7 +2,7 @@
   <KContainer id="phishing-settings">
     <el-tabs v-model="tab">
       <el-tab-pane
-        v-if="getDomainSearchPermissions"
+        v-if="getSmishingDomainSearchPermissions"
         label="Domains"
         name="Domains"
         id="domains-content"
@@ -10,7 +10,7 @@
         <DomainsList v-if="tab === 'Domains'" ref="refDomains" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getDnsSearchPermissions"
+        v-if="getSmishingDnsSearchPermissions"
         label="DNS Services"
         name="DNSServices"
         id="dns-services-content"
@@ -18,7 +18,7 @@
         <DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getExcludedIpAddressGetPermissions"
+        v-if="getSmishingExcludedIpGetPermissions"
         label="Exclude IP Address"
         name="ExcludeIpAddress"
         id="exclude-ip-address-content"
@@ -49,20 +49,30 @@ export default {
       tab: 'Domains'
     }
   },
+  // TODO: Delete default permission
   computed: {
-    ...mapGetters({
-      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
-      getExcludedIpAddressGetPermissions: 'permissions/getExcludedIpAddressGetPermissions'
-    })
+    // ...mapGetters({
+    //   getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
+    //   getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
+    //   getSmishingExcludedIpGetPermissions: 'permissions/getSmishingExcludedIpGetPermissions'
+    // }),
+    getSmishingDomainSearchPermissions() {
+      return true
+    },
+    getSmishingDnsSearchPermissions() {
+      return true
+    },
+    getSmishingExcludedIpGetPermissions() {
+      return true
+    }
   },
   created() {
-    if (!this.getDomainSearchPermissions && this.getDnsSearchPermissions) {
+    if (!this.getSmishingDomainSearchPermissions && this.getSmishingDnsSearchPermissions) {
       this.tab = 'DNSServices'
     } else if (
-      !this.getDomainSearchPermissions &&
-      !this.getDnsSearchPermissions &&
-      this.getExcludedIpAddressGetPermissions
+      !this.getSmishingDomainSearchPermissions &&
+      !this.getSmishingDnsSearchPermissions &&
+      this.getSmishingExcludedIpGetPermissions
     ) {
       this.tab = 'ExcludeIpAddress'
     }

@@ -82,9 +82,11 @@ export default {
     return {
       isLoading: false,
       Validations,
-      isActionButtonDisabled: !this.$store.getters[
-        'permissions/getExcludedIpAddressPostPermissions'
-      ],
+      // TODO: Delete default permission
+      // isActionButtonDisabled: !this.$store.getters[
+      //   'permissions/getExcludedIpAddressPostPermissions'
+      // ],
+      isActionButtonDisabled: false,
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],

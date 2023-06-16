@@ -190,20 +190,26 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getSmishingDnsUpdatePermissions'],
+            // TODO: Delete default permission
+            // disabled: !this.$store.getters['permissions/getSmishingDnsUpdatePermissions'],
+            disabled: false,
             id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getSmishingDnsDeletePermissions'],
+            // TODO: Delete default permission
+            // disabled: !this.$store.getters['permissions/getSmishingDnsDeletePermissions'],
+            disabled: false,
             id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getSmishingDnsExportPermissions']
+          // TODO: Delete default permission
+          // disabled: !this.$store.getters['permissions/getSmishingDnsExportPermissions'],
+          disabled: false
         },
         selectEvent: {
           clipboard: true,
@@ -222,7 +228,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a DNS Service',
           id: 'btn-add--DnsServiceList',
-          disabled: !this.$store.getters['permissions/getDnsCreatePermissions']
+          // TODO: Delete default permission
+          // disabled: !this.$store.getters['permissions/getDnsCreatePermissions'],
+          disabled: false
         }
       },
       modalStatus: false,
@@ -232,12 +240,22 @@ export default {
       templateHTML: null
     }
   },
+  // TODO: Delete default permission
   computed: {
-    ...mapGetters({
-      getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
-      getSmishingDnsUpdatePermissions: 'permissions/getSmishingDnsUpdatePermissions',
-      getSmishingDnsDeletePermissions: 'permissions/getSmishingDnsDeletePermissions'
-    })
+    // ...mapGetters({
+    //   getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
+    //   getSmishingDnsUpdatePermissions: 'permissions/getSmishingDnsUpdatePermissions',
+    //   getSmishingDnsDeletePermissions: 'permissions/getSmishingDnsDeletePermissions'
+    // }),
+    getSmishingDnsSearchPermissions() {
+      return true
+    },
+    getSmishingDnsUpdatePermissions() {
+      return true
+    },
+    getSmishingDnsDeletePermissions() {
+      return true
+    }
   },
   created() {
     this.callForData()

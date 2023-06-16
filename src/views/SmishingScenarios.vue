@@ -2,7 +2,7 @@
   <KContainer id="smishing-simulator">
     <el-tabs v-model="tab">
       <el-tab-pane
-        v-if="getPhishingScenariosSearchPermissions"
+        v-if="getSmishingScenariosSearchPermissions"
         label="Scenarios"
         name="scenarios"
         id="smishing-scenarios-content"
@@ -15,7 +15,7 @@
         />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getEmailTemplatesSearchPermissions"
+        v-if="getSmishingTextMessageTemplatesSearchPermissions"
         label="Text Message Templates"
         name="templates"
         id="templates-content"
@@ -23,7 +23,7 @@
         <Templates v-if="tab === 'templates'" ref="refTemplates" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getLandingPageTemplatesSearchPermissions"
+        v-if="getSmishingLandingPageTemplatesSearchPermissions"
         label="Landing Page Templates"
         name="landingPage"
         id="landing-page-content"
@@ -55,13 +55,23 @@ export default {
     }
   },
   computed: {
-    // TODO: change permission keys
-    ...mapGetters({
-      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions',
-      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions',
-      getLandingPageTemplatesSearchPermissions:
-        'permissions/getLandingPageTemplatesSearchPermissions'
-    })
+    // TODO: delete default permission
+    // ...mapGetters({
+    //   getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
+    //   getSmishingTextMessageTemplatesSearchPermissions:
+    //     'permissions/getSmishingTextMessageTemplatesSearchPermissions',
+    //   getSmishingLandingPageTemplatesSearchPermissions:
+    //     'permissions/getSmishingLandingPageTemplatesSearchPermissions'
+    // }),
+    getSmishingScenariosSearchPermissions() {
+      return true
+    },
+    getSmishingTextMessageTemplatesSearchPermissions() {
+      return true
+    },
+    getSmishingLandingPageTemplatesSearchPermissions() {
+      return true
+    }
   },
   methods: {
     changeTabStatus(tabStatus) {
@@ -85,12 +95,15 @@ export default {
     }
   },
   created() {
-    if (!this.getPhishingScenariosSearchPermissions && this.getEmailTemplatesSearchPermissions) {
+    if (
+      !this.getSmishingScenariosSearchPermissions &&
+      this.getSmishingTextMessageTemplatesSearchPermissions
+    ) {
       this.tab = 'templates'
     } else if (
-      !this.getPhishingScenariosSearchPermissions &&
-      !this.getEmailTemplatesSearchPermissions &&
-      this.getLandingPageTemplatesSearchPermissions
+      !this.getSmishingScenariosSearchPermissions &&
+      !this.getSmishingTextMessageTemplatesSearchPermissions &&
+      this.getSmishingLandingPageTemplatesSearchPermissions
     ) {
       this.tab = 'landingPage'
     }

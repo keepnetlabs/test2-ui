@@ -557,6 +557,18 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  SMISHING_EXCLUDED_IP_PERMISSIONS: {
+    GET: {
+      url: `smishing-simulator/excluded-ip-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    POST: {
+      url: `smishing-simulator/excluded-ip`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   VISHING_LEFT_MENU_PERMISSIONS: {
     VISHING_TEMPLATES: {
       url: `vishing-template/search`,

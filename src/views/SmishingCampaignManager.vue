@@ -175,12 +175,15 @@ export default {
       scenarioDetailsLookup: {}
     }
   },
-  // TODO: Change permissions keys
+  // TODO: Delete default permission
   computed: {
-    ...mapGetters({
-      getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions'
-    }),
+    // ...mapGetters({
+    //   getCampaignManagerParentDeletePermissions:
+    //     'permissions/getCampaignManagerParentDeletePermissions'
+    // }),
+    getCampaignManagerParentDeletePermissions() {
+      return true
+    },
     getStatusItems() {
       return this.formDetails.status
     }

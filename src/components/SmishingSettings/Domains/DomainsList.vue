@@ -201,20 +201,26 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getSmishingDomainUpdatePermissions'],
+            // TODO: Delete default permissions
+            disabled: false,
+            // disabled: !this.$store.getters['permissions/getSmishingDomainUpdatePermissions'],
             id: 'btn-edit--domain-lists-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getSmishingDomainDeletePermissions'],
+            // TODO: Delete default permissions
+            disabled: false,
+            // disabled: !this.$store.getters['permissions/getSmishingDomainDeletePermissions'],
             id: 'btn-delete--domain-lists-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
+          // TODO: Delete default permissions
+          disabled: false
+          // disabled: !this.$store.getters['permissions/getDomainExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -227,14 +233,18 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--domainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          // TODO: Delete default permissions
+          disabled: false
+          // disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          // TODO: Delete default permissions
+          disabled: false
+          // disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         }
       },
       modalStatus: false,
@@ -244,13 +254,26 @@ export default {
       templateHTML: null
     }
   },
+  // TODO: Delete default permissions
   computed: {
-    ...mapGetters({
-      getSmishingDomainUpdatePermissions: 'permissions/getSmishingDomainUpdatePermissions',
-      getSmishingDomainDeletePermissions: 'permissions/getSmishingDomainDeletePermissions',
-      getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
-      getSmishingDomainFormDetailsPermissions: 'permissions/getSmishingDomainFormDetailsPermissions'
-    })
+    // ...mapGetters({
+    //   getSmishingDomainUpdatePermissions: 'permissions/getSmishingDomainUpdatePermissions',
+    //   getSmishingDomainDeletePermissions: 'permissions/getSmishingDomainDeletePermissions',
+    //   getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
+    //   getSmishingDomainFormDetailsPermissions: 'permissions/getSmishingDomainFormDetailsPermissions'
+    // }),
+    getSmishingDomainUpdatePermissions() {
+      return true
+    },
+    getSmishingDomainDeletePermissions() {
+      return true
+    },
+    getSmishingDomainSearchPermissions() {
+      return true
+    },
+    getSmishingDomainFormDetailsPermissions() {
+      return true
+    }
   },
   created() {
     if (this.getSmishingDomainFormDetailsPermissions)

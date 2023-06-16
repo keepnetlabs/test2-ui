@@ -301,9 +301,11 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters[
-              'permissions/getSmishingTextMessageTemplatesEditPermissions'
-            ],
+            // TODO: Delete default permission
+            disabled: false,
+            // disabled: !this.$store.getters[
+            //   'permissions/getSmishingTextMessageTemplatesEditPermissions'
+            // ],
             id: 'btn-edit--email-templates-row-actions'
           },
           {
@@ -316,17 +318,21 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters[
-              'permissions/getSmishingTextMessageTemplatesDeletePermissions'
-            ],
+            // TODO: Delete default permission
+            disabled: false,
+            // disabled: !this.$store.getters[
+            //   'permissions/getSmishingTextMessageTemplatesDeletePermissions'
+            // ],
             id: 'btn-delete--email-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters[
-            'permissions/getSmishingTextMessageTemplatesExportPermissions'
-          ]
+          // TODO: Delete default permission
+          disabled: false
+          // disabled: !this.$store.getters[
+          //   'permissions/getSmishingTextMessageTemplatesExportPermissions'
+          // ]
         },
         selectEvent: {
           clipboard: true,
@@ -345,9 +351,11 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--emailTemplates',
-          disabled: !this.$store.getters[
-            'permissions/getSmishingTextMessageTemplatesCreatePermissions'
-          ]
+          // TODO: Delete default permission
+          disabled: false
+          // disabled: !this.$store.getters[
+          //   'permissions/getSmishingTextMessageTemplatesCreatePermissions'
+          // ]
         }
       },
       modalStatus: false,
@@ -359,12 +367,15 @@ export default {
       templateHTML: null
     }
   },
-  // TODO: change permission key
+  // TODO: Delete default permission
   computed: {
-    ...mapGetters({
-      getSmishingTextMessageTemplatesSearchPermissions:
-        'permissions/getSmishingTextMessageTemplatesSearchPermissions'
-    }),
+    // ...mapGetters({
+    //   getSmishingTextMessageTemplatesSearchPermissions:
+    //     'permissions/getSmishingTextMessageTemplatesSearchPermissions'
+    // }),
+    getSmishingTextMessageTemplatesSearchPermissions() {
+      return true
+    },
     getTextMessage() {
       return this.emailTemplateParams?.template
     }
