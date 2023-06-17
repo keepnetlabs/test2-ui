@@ -201,9 +201,9 @@ export default {
       defaultListData: [],
       totalNumberOfPages: 1,
       difficulties: [
-        { text: 'Easy', value: 'Easy' },
-        { text: 'Medium', value: 'Medium' },
-        { text: 'Hard', value: 'Hard' }
+        { text: 'Easy', value: 'mT0CeYGgKsVb' },
+        { text: 'Medium', value: 'Z5XeVlpw6Dps' },
+        { text: 'Hard', value: 'c4LCGEB9MayB' }
       ],
       bodyData: {
         pageNumber: 1,
@@ -226,7 +226,7 @@ export default {
                   FieldName: 'LanguageTypeResourceId',
                   Operator: 'Include'
                 },
-                { value: '', FieldName: 'difficulty', Operator: 'Include' }
+                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
               ],
               FilterGroups: []
             },

@@ -58,6 +58,7 @@
     <CampaignManagerReportSummaryLandingPage
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
+      :isMethodMfa="isMethodMfa"
     />
   </div>
 </template>
@@ -67,7 +68,7 @@ import CampaignManagerReportSummaryHeader from '@/components/SmishingReport/Summ
 import CampaignManagerReportSummaryCards from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryCampaignInfo'
 import CampaignManagerReportSummaryTextTemplate from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryTextTemplate'
-import CampaignManagerReportSummaryLandingPage from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryLandingPage'
+import CampaignManagerReportSummaryLandingPage from '@/components/SmishingCampaignManager/CampaignManagerSummaryLandingPage'
 import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
@@ -115,6 +116,9 @@ export default {
     }
   },
   computed: {
+    isMethodMfa() {
+      return this.phishingScenarios?.[this.activeScenarioIndex]?.scenarioInfo?.methodTypeId === 4
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
