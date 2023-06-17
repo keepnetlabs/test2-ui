@@ -81,6 +81,10 @@ const getSummaryLandingPageTemplate = (resourceId, instanceGroup, templateResour
   )
 }
 
+const getSmishingLandingPageMergeTags = () => {
+  return testRequest.get(`/smishing-simulator/text-templates/merge-tags`)
+}
+
 const searchSmishingScenarios = (payload) => {
   return testRequest.post('/smishing-simulator/smishing-scenario/search', payload)
 }
@@ -286,14 +290,111 @@ const downloadSmishingReport2 = (resourceId) => {
 
 const getSmishingCampaignLandingPageTemplatePreviewContent = (id, resourceId, instanceGroup) => {
   return testRequest.get(
-    `phishing-simulator/phishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/landing-page-template/${id}`
+    `/smishing-simulator/smishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/landing-page-template/${id}`
   )
 }
 
 const getSmishingCampaignTextMessageTemplatePreviewContent = (id, resourceId, instanceGroup) => {
   return testRequest.get(
-    `phishing-simulator/phishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/text-templates/${id}`
+    `/smishing-simulator/smishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/text-templates/${id}`
   )
+}
+
+function calculateSendingInfo(payload) {
+  return testRequest.post(`/smishing-simulator/smishing-campaign/calculate-sending-info`, payload)
+}
+
+function getDnsServiceList(payload) {
+  return testRequest.post(`smishing-simulator/dns-services/search`, payload)
+}
+
+function createDnsServiceList(payload) {
+  return testRequest.post(`smishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
+}
+
+function testConnection(payload, id) {
+  return testRequest.post(`smishing-simulator/dns-services/${id}/test`, payload)
+}
+
+function updateDnsServiceList(payload, id) {
+  return testRequest.put(`smishing-simulator/dns-services/${id}`, payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+function getDnsService(id) {
+  return testRequest.get(`smishing-simulator/dns-services/${id}`, { loading: true })
+}
+
+function deleteEmailTemplate(id) {
+  return testRequest.delete(`smishing-simulator/dns-services/${id}`, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+function exportDnsService(payload) {
+  return testRequest.post(`smishing-simulator/dns-services/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+function getDomainsList(payload) {
+  return testRequest.post(`smishing-simulator/domain-records/search`, payload)
+}
+
+function createDomain(payload) {
+  return testRequest.post(`smishing-simulator/domain-records`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+function updateDomain(payload, id) {
+  return testRequest.put(`smishing-simulator/domain-records/${id}`, payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+function deleteDomainRecord(id) {
+  return testRequest.delete(`smishing-simulator/domain-records/${id}`, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+function exportDomains(payload) {
+  return testRequest.post(`smishing-simulator/domain-records/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+function getDomainData() {
+  return testRequest.get(`smishing-simulator/domain-records/form-details`)
+}
+
+function getDomainEditData(resId) {
+  return testRequest.get(`smishing-simulator/domain-records/${resId}`, {
+    loading: true
+  })
+}
+function testDomainConnection(payload) {
+  return testRequest.post(`smishing-simulator/domain-records/test`, payload)
+}
+
+function getExcludedIPAddresses() {
+  return testRequest.get(`/smishing-simulator/excluded-ip-list`)
+}
+
+function postExcludedIPAddresses(payload = {}) {
+  return testRequest.post(`/smishing-simulator/excluded-ip`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function getCampaignManagerFormDetails() {
+  return testRequest.get('/smishing-simulator/smishing-campaign/form-details')
 }
 
 export default {
@@ -312,6 +413,7 @@ export default {
   createLandingPageTemplate,
   updateLandingPageTemplate,
   getSummaryLandingPageTemplate,
+  getSmishingLandingPageMergeTags,
   searchSmishingScenarios,
   exportSmishingScenarios,
   getSmishingScenario,
@@ -346,5 +448,24 @@ export default {
   resendSmishingCampaignToUsers,
   resendSmishingCampaignToUserList,
   getSmishingCampaignLandingPageTemplatePreviewContent,
-  getSmishingCampaignTextMessageTemplatePreviewContent
+  getSmishingCampaignTextMessageTemplatePreviewContent,
+  calculateSendingInfo,
+  getDnsServiceList,
+  createDnsServiceList,
+  testConnection,
+  updateDnsServiceList,
+  getDnsService,
+  deleteEmailTemplate,
+  exportDnsService,
+  getDomainsList,
+  createDomain,
+  updateDomain,
+  deleteDomainRecord,
+  exportDomains,
+  getDomainData,
+  getDomainEditData,
+  testDomainConnection,
+  getExcludedIPAddresses,
+  postExcludedIPAddresses,
+  getCampaignManagerFormDetails
 }

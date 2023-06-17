@@ -40,8 +40,7 @@
 
 <script>
 import TestConnectivityStatus from './TestConnectivityStatus'
-// TODO:Change api endpoints
-import { testConnection } from '@/api/dnsServices'
+import SmishingService from '@/api/smishing'
 export default {
   inheritAttrs: true,
   name: 'TestConnection',
@@ -91,7 +90,7 @@ export default {
         password: this.values.password,
         resourceId: this.values.resourceId
       }
-      return testConnection(payload, this.values.resourceId)
+      return SmishingService.testConnection(payload, this.values.resourceId)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '

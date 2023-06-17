@@ -53,9 +53,7 @@ export default {
           id: 'smishing-report-summary-content',
           label: labels.Summary,
           component: CampaignManagerReportSummary,
-          // TODO: Delete default permission
-          isVisible: true
-          // isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
+          isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
         },
         // {
         //   name: labels.Users,
@@ -76,27 +74,21 @@ export default {
           id: 'smishing-report-clicked-content',
           label: labels.Clicked,
           component: CampaignManagerReportClicked,
-          // TODO: Delete default permission
-          isVisible: true
-          // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
         },
         {
           name: labels.NoResponse,
           id: 'smishing-report-no-response-content',
           label: labels.NoResponse,
           component: CampaignManagerReportNoResponse,
-          // TODO: Delete default permission
-          isVisible: true
-          // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
         },
         {
           name: labels.SendingReport,
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport,
-          // TODO: Delete default permission
-          isVisible: true
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
         }
       ],
       formDetails: null
@@ -152,9 +144,7 @@ export default {
               id: 'smishing-report-submitted-data-content',
               label: labels.SubmittedData,
               component: CampaignManagerReportSubmittedData,
-              // TODO: Delete default permission
-              isVisible: true
-              // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+              isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
             })
           }
           if (isSubmittedMFA) {
@@ -163,9 +153,7 @@ export default {
               id: 'smishing-report-submitted-mfa-code-content',
               label: 'Submitted MFA Code',
               component: CampaignManagerReportSubmittedMFACode,
-              // TODO: Delete default permission
-              isVisible: true
-              // isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+              isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
             })
           }
         })
