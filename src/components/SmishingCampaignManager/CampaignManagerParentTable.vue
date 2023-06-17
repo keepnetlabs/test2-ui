@@ -301,7 +301,7 @@ export default {
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
-      if (this.getSmishingCampaignManagerExportPermissionsP) {
+      if (this.getSmishingCampaignManagerExportPermissions) {
         downloadTypes.exportTypes.forEach((item) => {
           let payload = {
             pageNumber: downloadTypes.pageNumber,

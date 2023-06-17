@@ -193,7 +193,7 @@ export default {
   },
   methods: {
     callForScenarioDetails() {
-      getScenarioDataDetails().then((response) => {
+      SmishingService.getSmishingScenarioFormDetails().then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {
           methodTypes: [],
           difficultyTypes: []

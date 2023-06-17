@@ -10,7 +10,7 @@
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
-        <ElTabs v-if="templates.length > 1" v-model="selectedTab">
+        <ElTabs v-if="templates.length > 1 || isMethodMfa" v-model="selectedTab">
           <ElTabPane
             v-for="(template, index) in templates"
             :key="index"

@@ -408,9 +408,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="
-                getSmishingCampaignManagerLeftMenuPermissionsgetSmishingScenariosLeftMenuPermissions
-              "
+              v-if="getSmishingCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -426,7 +424,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSmishingSettingsLeftMenuPermissionsgetSmishingScenariosLeftMenuPermissions"
+              v-if="getSmishingSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
