@@ -180,6 +180,7 @@
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :method="getSelectedMethod"
+                    :text-template-method="getSelectedTextTemplateMethod"
                     :is-method-mfa="isMethodMfa"
                     :mfa-data="mfaData"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
@@ -774,7 +775,7 @@ export default {
         ...this.formValues,
         availableForRequests: this.availableForRequests,
         methodTypeId: parseInt(this.formValues.methodTypeId),
-        smsProviderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
+        mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || ''
       }
       if (this.isEdit && !this.isDuplicate) {
@@ -834,6 +835,10 @@ export default {
       return this.formValues?.methodTypeId
         ? this.methods[Number(this.formValues?.methodTypeId) - 1].text
         : ''
+    },
+    getSelectedTextTemplateMethod() {
+      if (this.textMessageTemplate?.categoryName === 'Click Only') return 'Click-Only'
+      return this.textMessageTemplate?.categoryName || ''
     },
     getStep3Subtitle() {
       const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
