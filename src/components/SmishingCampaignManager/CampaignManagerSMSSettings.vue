@@ -47,7 +47,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 118px;"
-          :items="formDetails['distributionSmtpDelayTimeTypes']"
+          :items="formDetails['distributionDelayTimeTypes']"
           @change="callForCalculateSendingInfo"
         />
       </div>
@@ -129,7 +129,7 @@ export default {
       formData: {
         phoneNumber: '',
         smsProviderNumberResourceId: '',
-        distributionTypeId: 1,
+        distributionTypeId: 3,
         distributionDelayEvery: 20,
         distributionDelayTimeTypeId: '1',
         sendingLimit: 50
@@ -176,8 +176,8 @@ export default {
       }`
     },
     getSelectedSmtpDelayOverTimeType() {
-      return this.formDetails['distributionSmtpDelayTimeTypes']
-        ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
+      return this.formDetails['distributionDelayTimeTypes']
+        ? this.formDetails['distributionDelayTimeTypes']?.find(
             (item) => item.value === this.formData.distributionDelayTimeTypeId
           )?.text
         : ''
