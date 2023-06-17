@@ -307,7 +307,7 @@ export default {
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const {
+      let {
         distributionDelayEvery,
         distributionDelayTimeTypeId,
         distributionTypeId,
@@ -317,6 +317,7 @@ export default {
         sendRandomlyUsersCalculateTypeId,
         smsProvider
       } = this.selectedRowFormData
+      distributionTypeId = 3
       return {
         distributionDelayEvery: distributionDelayEvery,
         distributionDelayTimeTypeId: distributionDelayTimeTypeId.toString(),
