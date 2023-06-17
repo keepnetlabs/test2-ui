@@ -34,7 +34,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -77,7 +77,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.SMISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_SEND_DATE
         ],
         addButton: {
