@@ -59,7 +59,7 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import SmishingService from '@/api/smishing'
@@ -90,7 +90,7 @@ export default {
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
-          COLUMNS.SUBMITTED_TIME,
+          COLUMNS.SUBMITTED_TIME_MFA,
           COLUMNS.USER_AGENT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,

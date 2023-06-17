@@ -40,7 +40,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
@@ -84,9 +84,9 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.LAST_SUBMISSION,
-          COLUMNS.TIMES_SUBMISSION
+          COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.LAST_SUBMISSION_CODE,
+          COLUMNS.TIMES_SUBMISSION_CODE
         ],
         addButton: {
           show: false
@@ -114,14 +114,14 @@ export default {
       }
     }
   },
-  watch: {
-    passwordComplexities: {
-      immediate: true,
-      handler() {
-        this.setPasswordComplexityItems()
-      }
-    }
-  },
+  // watch: {
+  //   passwordComplexities: {
+  //     immediate: true,
+  //     handler() {
+  //       this.setPasswordComplexityItems()
+  //     }
+  //   }
+  // },
   created() {
     this.callForData()
   },
@@ -142,14 +142,14 @@ export default {
         })
         .finally(this.setLoading)
     },
-    setPasswordComplexityItems() {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'minPasswordComplexity'),
-        'filterableItems',
-        this.passwordComplexities.map((item) => ({ ...item, value: item.text }))
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
+    // setPasswordComplexityItems() {
+    //   this.$set(
+    //     this.tableOptions.columns.find((col) => col.property === 'minPasswordComplexity'),
+    //     'filterableItems',
+    //     this.passwordComplexities.map((item) => ({ ...item, value: item.text }))
+    //   )
+    //   this?.$refs?.refTable?.reRenderFilters()
+    // },
     exportCampaignManagerReportSubmittedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {

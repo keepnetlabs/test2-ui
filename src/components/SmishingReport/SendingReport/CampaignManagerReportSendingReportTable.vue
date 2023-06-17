@@ -100,10 +100,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  getCampaignJobEmailActivity,
-  searchCampaignJobUserSendingReport
-} from '@/api/phishingsimulator'
+import { getCampaignJobEmailActivity } from '@/api/phishingsimulator'
 import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReportEvent'
@@ -147,7 +144,7 @@ export default {
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
           COLUMNS.PHONENUMBER,
-          COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.SMISHING_SCENARIO_NAME,
           COLUMNS.DATE_SENT,
           COLUMNS.DELIVERY_STATUS
         ],
@@ -255,6 +252,7 @@ export default {
   watch: {
     lastSendingStatusItems: {
       immediate: true,
+      deep: true,
       handler() {
         this.setLastSendingStatusItems()
       }
