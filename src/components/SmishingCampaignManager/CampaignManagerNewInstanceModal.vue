@@ -128,7 +128,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import { searchTargetGroups } from '@/api/targetUsers'
+import { searchTargetGroups, getTargetGroupCountDetail } from '@/api/targetUsers'
 import SmishingService from '@/api/smishing'
 import { mapGetters } from 'vuex'
 import { isDifferent, getTimeZone, getDefaultAxiosPayload } from '@/utils/functions'
@@ -178,6 +178,8 @@ export default {
       isTargetGroupLoading: false,
       isTargetGroupFocused: false,
       isTargetGroupsValid: true,
+      isShowTargetGroupUsersError: false,
+      isShowActiveAndPhoneNumberError: false,
       isDateValid: true,
       isActionButtonDisabled: false,
       initial: true,
@@ -212,7 +214,15 @@ export default {
         : labels.TargetGroupSelectionRequiredError
     },
     getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
+      if (this.isShowActiveAndPhoneNumberError) {
+        return `Target groups must have at least 1 active user who has phone number assigned to them`
+      }
+
+      if (this.isShowTargetGroupUsersError) {
+        return labels.TargetGroupUserRequiredError
+      }
+
+      return 'Required'
     },
     isScheduledTimeDisabled() {
       return this.formValues.scheduleTypeId !== '3'
@@ -330,7 +340,8 @@ export default {
     setTargetGroupLoading(val = false) {
       this.isTargetGroupLoading = val
     },
-    handleSubmit() {
+    async handleSubmit() {
+      this.setActionButtonDisability(true)
       if (this.formValues.scheduleTypeId === '3' && !this.formValues.scheduledDate) {
         this.isDateValid = false
       }
@@ -338,21 +349,41 @@ export default {
         this.isTargetGroupsValid = false
       }
       if (this.isDateValid && this.isTargetGroupsValid) {
-        this.setActionButtonDisability(true)
+        const targetGroupResourceIds = this.formValues.targetGroupResourceIds.map(
+          (target) => target.value
+        )
+        const userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
+        if (userCountDetailResponse?.data?.data && userCountDetailResponse?.data?.data?.length) {
+          const totalTargetUserCount =
+            userCountDetailResponse?.data?.data
+              ?.find((detail) => detail.status === 'Active')
+              ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
+          if (!totalTargetUserCount) {
+            this.isShowActiveAndPhoneNumberError = true
+            this.isTargetGroupsValid = false
+            this.setActionButtonDisability(false)
+            return
+          }
+        } else {
+          this.isShowActiveAndPhoneNumberError = true
+          this.isTargetGroupsValid = false
+          this.setActionButtonDisability(false)
+          return
+        }
         const payload = {
           ...this.formValues,
           scheduleTypeId: parseInt(this.formValues.scheduleTypeId),
           scheduledDate:
             parseInt(this.formValues.scheduleTypeId) !== 3 ? null : this.formValues.scheduledDate,
-          targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(
-            (target) => target.value
-          )
+          targetGroupResourceIds: targetGroupResourceIds
         }
         SmishingService.launchSmishingCampaign(this.resourceId, payload)
           .then(() => {
             this.$emit(EMITS.ON_SUBMIT)
           })
           .finally(this.setActionButtonDisability)
+      } else {
+        this.setActionButtonDisability(false)
       }
     },
     setActionButtonDisability(flag = false) {

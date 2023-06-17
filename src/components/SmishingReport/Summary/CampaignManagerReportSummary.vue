@@ -21,7 +21,7 @@
       />
       <CampaignManagerReportSMSDelivery
         :items="getSMSDeliveryData"
-        :helper-data="getEmailDeliveryHelperData"
+        :helper-data="getSMSDeliveryHelperData"
         :isLoading="isLoading"
       />
     </div>
@@ -206,16 +206,12 @@ export default {
         'Sender Phone Number': senderPhoneNumber
       }
     },
-    getEmailDeliveryHelperData() {
+    getSMSDeliveryHelperData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
-      const {
-        emailDeliveredUserCount,
-        emailNotDeliveredUserCount,
-        totalTargetUserCount
-      } = campaignInfo
+      const { smsDeliveredUserCount, smsNotDeliveredUserCount, totalTargetUserCount } = campaignInfo
       return {
-        emailDeliveredUserCount,
-        emailNotDeliveredUserCount,
+        smsDeliveredUserCount,
+        smsNotDeliveredUserCount,
         totalTargetUserCount
       }
     },

@@ -66,12 +66,10 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-// TODO: Change api endpoint
-import { calculateSendingInfo } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
-import SmishingService from '@/api/smishing'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
@@ -134,8 +132,6 @@ export default {
         distributionTypeId: 1,
         distributionDelayEvery: 20,
         distributionDelayTimeTypeId: '1',
-        distributionEmailOver: 8,
-        distributionEmailOverTimeTypeId: '1',
         sendingLimit: 50
       },
       commonRules: {
@@ -294,7 +290,7 @@ export default {
           totalTargetUserCount: this.totalTargetUserCount
         }
         if (payload.distributionDelayEvery) {
-          calculateSendingInfo(payload).then((response) => {
+          SmishingService.calculateSendingInfo(payload).then((response) => {
             const {
               data: { data }
             } = response

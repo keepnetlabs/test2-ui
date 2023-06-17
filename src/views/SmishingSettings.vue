@@ -49,22 +49,12 @@ export default {
       tab: 'Domains'
     }
   },
-  // TODO: Delete default permission
   computed: {
-    // ...mapGetters({
-    //   getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
-    //   getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
-    //   getSmishingExcludedIpGetPermissions: 'permissions/getSmishingExcludedIpGetPermissions'
-    // }),
-    getSmishingDomainSearchPermissions() {
-      return true
-    },
-    getSmishingDnsSearchPermissions() {
-      return true
-    },
-    getSmishingExcludedIpGetPermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingDomainSearchPermissions: 'permissions/getSmishingDomainSearchPermissions',
+      getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
+      getSmishingExcludedIpGetPermissions: 'permissions/getSmishingExcludedIpGetPermissions'
+    })
   },
   created() {
     if (!this.getSmishingDomainSearchPermissions && this.getSmishingDnsSearchPermissions) {

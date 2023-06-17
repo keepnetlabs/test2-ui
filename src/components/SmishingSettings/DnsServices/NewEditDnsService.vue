@@ -99,8 +99,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
-// TODO: Change api endpoints
-import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
+import SmishingService from '@/api/smishing'
 import * as Validations from '@/utils/validations'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
@@ -165,7 +164,7 @@ export default {
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
-      getDnsService(this.resourceId).then((res) => {
+      SmishingService.getDnsService(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
@@ -218,7 +217,7 @@ export default {
             )
           }
           if (this.isEdit && !this.isDuplicate) {
-            updateDnsServiceList(payload, this.resourceId)
+            SmishingService.updateDnsServiceList(payload, this.resourceId)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })
@@ -226,7 +225,7 @@ export default {
                 this.saveButtonDisabled = false
               })
           } else {
-            createDnsServiceList(payload)
+            SmishingService.createDnsServiceList(payload)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })

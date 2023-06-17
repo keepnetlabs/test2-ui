@@ -59,12 +59,12 @@ export default {
       return !!(this.helperData?.emailNotDeliveredUserCount || 0)
     },
     getDeliveryValue() {
-      const { emailDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
-      return `${emailDeliveredUserCount} / ${totalTargetUserCount} sent`
+      const { smsDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
+      return `${smsDeliveredUserCount} / ${totalTargetUserCount} sent`
     },
     getNotDeliveredValue() {
-      const { emailNotDeliveredUserCount = '' } = this.helperData
-      return `${emailNotDeliveredUserCount} not delivered`
+      const { smsNotDeliveredUserCount = '' } = this.helperData
+      return `${smsNotDeliveredUserCount} not delivered`
     }
   }
 }

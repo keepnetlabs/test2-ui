@@ -67,8 +67,7 @@ import DataContainerWithSearch from '@/components/Common/Others/DataContainerWit
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-// TODO: Change api endpoints
-import { getExcludedIPAddresses, postExcludedIPAddresses } from '@/api/phishingsimulator'
+import SmishingService from '@/api/smishing'
 
 export default {
   name: 'ExcludeIPAddress',
@@ -83,11 +82,9 @@ export default {
     return {
       isLoading: false,
       Validations,
-      // TODO: Delete default permission
-      // isActionButtonDisabled: !this.$store.getters[
-      //   'permissions/getExcludedIpAddressPostPermissions'
-      // ],
-      isActionButtonDisabled: false,
+      isActionButtonDisabled: !this.$store.getters[
+        'permissions/getSmishingExcludedIpPostPermissions'
+      ],
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
@@ -114,7 +111,7 @@ export default {
   methods: {
     getExcludedIPAddresses() {
       this.isLoading = true
-      getExcludedIPAddresses()
+      SmishingService.getExcludedIPAddresses()
         .then((response) => {
           this.dataContainerWithSearchItems =
             response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
@@ -153,7 +150,7 @@ export default {
         const payload = {
           excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
         }
-        postExcludedIPAddresses(payload)
+        SmishingService.postExcludedIPAddresses(payload)
           .then(() => {
             this.getExcludedIPAddresses()
           })

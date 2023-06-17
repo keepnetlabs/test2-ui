@@ -40,8 +40,7 @@
 
 <script>
 import TestConnectivityStatus from '@/components/Settings/DnsServices/TestConnectivityStatus'
-// TODO: Change api endpoints
-import { testDomainConnection } from '@/api/domains'
+import SmishingService from '@/api/smishing'
 export default {
   inheritAttrs: true,
   name: 'TestConnection',
@@ -86,7 +85,7 @@ export default {
         dnsServiceProviderId: this.values.dnsServiceProviderId,
         zoneId: this.values.zoneId
       }
-      testDomainConnection(payload)
+      SmishingService.testDomainConnection(payload)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '

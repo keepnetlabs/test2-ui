@@ -88,13 +88,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-// TODO: Change api endpoints
-import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
-import DeleteServiceModal from '@/components/Settings/DnsServices/DeleteServiceModal'
-import NewEditDnsService from '@/components/Settings/DnsServices/NewEditDnsService'
+import SmishingService from '@/api/smishing'
+import DeleteServiceModal from '@/components/SmishingSettings/DnsServices/DeleteServiceModal'
+import NewEditDnsService from '@/components/SmishingSettings/DnsServices/NewEditDnsService'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import CantDeleteDnsServiceDialog from '@/components/Settings/DnsServices/CantDeleteDnsServiceDialog'
+import CantDeleteDnsServiceDialog from '@/components/SmishingSettings/DnsServices/CantDeleteDnsServiceDialog'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
@@ -191,26 +190,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingDnsUpdatePermissions'],
-            disabled: false,
+            disabled: !this.$store.getters['permissions/getSmishingDnsUpdatePermissions'],
             id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingDnsDeletePermissions'],
-            disabled: false,
+            disabled: !this.$store.getters['permissions/getSmishingDnsDeletePermissions'],
             id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters['permissions/getSmishingDnsExportPermissions'],
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingDnsExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -229,9 +222,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a DNS Service',
           id: 'btn-add--DnsServiceList',
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters['permissions/getDnsCreatePermissions'],
-          disabled: false
+          disabled: !this.$store.getters['permissions/getDnsCreatePermissions']
         }
       },
       modalStatus: false,
@@ -241,22 +232,12 @@ export default {
       templateHTML: null
     }
   },
-  // TODO: Delete default permission
   computed: {
-    // ...mapGetters({
-    //   getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
-    //   getSmishingDnsUpdatePermissions: 'permissions/getSmishingDnsUpdatePermissions',
-    //   getSmishingDnsDeletePermissions: 'permissions/getSmishingDnsDeletePermissions'
-    // }),
-    getSmishingDnsSearchPermissions() {
-      return true
-    },
-    getSmishingDnsUpdatePermissions() {
-      return true
-    },
-    getSmishingDnsDeletePermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingDnsSearchPermissions: 'permissions/getSmishingDnsSearchPermissions',
+      getSmishingDnsUpdatePermissions: 'permissions/getSmishingDnsUpdatePermissions',
+      getSmishingDnsDeletePermissions: 'permissions/getSmishingDnsDeletePermissions'
+    })
   },
   created() {
     this.callForData()
@@ -265,7 +246,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getSmishingDnsSearchPermissions) {
-        getDnsServiceList(this.axiosPayload)
+        SmishingService.getDnsServiceList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -304,7 +285,7 @@ export default {
       this.callForData()
     },
     handleDelete(row) {
-      deleteEmailTemplate(row.resourceId).then(() => {
+      SmishingService.deleteEmailTemplate(row.resourceId).then(() => {
         this.$refs.refDnsServiceListList.unSelectRow(row)
         this.callForData()
       })
@@ -329,7 +310,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportDnsService(payload).then((response) => {
+        SmishingService.exportDnsService(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

@@ -291,9 +291,7 @@ export default {
             icon: 'mdi-pencil',
             action: 'handleEdit',
             id: 'btn-edit--scenarios-row-actions',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingScenariosEditPermissions'],
-            disabled: false
+            disabled: !this.$store.getters['permissions/getSmishingScenariosEditPermissions']
           },
           {
             name: 'Duplicate',
@@ -306,16 +304,12 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--scenarios-row-actions',
-            // TODO: Delete default permission
-            // disabled: !this.$store.getters['permissions/getSmishingScenariosDeletePermissions']
-            disabled: false
+            disabled: !this.$store.getters['permissions/getSmishingScenariosDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters['permissions/getSmishingScenariosExportPermissions']
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingScenariosExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -334,9 +328,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          // TODO: Delete default permission
-          // disabled: !this.$store.getters['permissions/getSmishingScenariosCreatePermissions']
-          disabled: false
+          disabled: !this.$store.getters['permissions/getSmishingScenariosCreatePermissions']
         }
       },
       modalStatus: false,
@@ -346,14 +338,9 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    //   getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
-    // }).
-    // TODO: Delete default permission
-
-    getSmishingScenariosSearchPermissions() {
-      return true
-    }
+    ...mapGetters({
+      getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions'
+    })
   },
   created() {
     this.callForLanguages('refScenariosList')
