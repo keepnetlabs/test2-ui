@@ -63,7 +63,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import SmishingService from '@/api/smishing'
