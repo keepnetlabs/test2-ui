@@ -335,6 +335,9 @@ export default {
     languageOptions: {
       type: Array,
       default: () => []
+    },
+    textTemplateMethod: {
+      type: String
     }
   },
   data() {
@@ -539,7 +542,7 @@ export default {
         })
       }
       if (this.isMethodMfa) {
-        this.bodyData.filter.FilterGroups[0].FilterItems[0].value = 'Click-Only,Data Submission'
+        this.bodyData.filter.FilterGroups[0].FilterItems[0].value = this.textTemplateMethod
       }
       SmishingService.searchLandingPageTemplates(this.bodyData)
         .then((response) => {

@@ -106,7 +106,12 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
+  components: {
+    Badge,
+    CampaignManagerItemDeleteDialog,
+    CampaignManagerItemRowActions,
+    DataTable
+  },
   props: {
     item: {
       type: Object
@@ -178,19 +183,23 @@ export default {
     }
   },
   watch: {
-    statusItems(val) {
-      if (val.length) {
-        const col = this.tableOptions.columns.find(
-          (col) => col.property === COLUMNS.STATUS.property
-        )
-        this.$set(
-          col,
-          'filterableItems',
-          val.map((item) => {
-            return { ...item, value: item.text }
-          })
-        )
-        this?.$refs?.refTable?.reRenderFilters()
+    statusItems: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val.length) {
+          const col = this.tableOptions.columns.find(
+            (col) => col.property === COLUMNS.STATUS.property
+          )
+          this.$set(
+            col,
+            'filterableItems',
+            val.map((item) => {
+              return { ...item, value: item.text }
+            })
+          )
+          this?.$refs?.refTable?.reRenderFilters()
+        }
       }
     }
   },
