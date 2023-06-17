@@ -260,9 +260,9 @@ export default {
         openedSms = 0,
         reportedSms = 0,
         submittedSms = 0,
-        submittedMFASms = 0
+        mfaSubmittedSms = 0
       } = scenarioStats
-      const dataContainer = [notDelivered, clickedSms, submittedSms, submittedMFASms, noResponseSms]
+      const dataContainer = [notDelivered, clickedSms, submittedSms, mfaSubmittedSms, noResponseSms]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
@@ -271,7 +271,7 @@ export default {
         notDelivered,
         clickedSms,
         submittedSms,
-        submittedMFASms,
+        mfaSubmittedSms,
         noResponseSms
       ] = this.getChartData
       return {
@@ -288,8 +288,8 @@ export default {
           userPercent: ((submittedSms / this.getTotalUsers) * 100).toFixed()
         },
         submittedMFA: {
-          userCount: submittedMFASms,
-          userPercent: ((submittedMFASms / this.getTotalUsers) * 100).toFixed()
+          userCount: mfaSubmittedSms,
+          userPercent: ((mfaSubmittedSms / this.getTotalUsers) * 100).toFixed()
         },
         notDelivered: {
           userCount: notDelivered,
