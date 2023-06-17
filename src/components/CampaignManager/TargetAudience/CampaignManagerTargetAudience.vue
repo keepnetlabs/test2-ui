@@ -198,13 +198,15 @@ export default {
           fourMinutesBeforeSeconds
         )}`
       }
-      getPhishingReportSummary({
-        startDate: dateObj.startDate,
-        endDate: dateObj.endDate
-      }).then((response) => {
-        const { data } = response.data
-        this.onlineUsersCount = data['onlineUsersCount']
-      })
+      if (!this.isVishing) {
+        getPhishingReportSummary({
+          startDate: dateObj.startDate,
+          endDate: dateObj.endDate
+        }).then((response) => {
+          const { data } = response.data
+          this.onlineUsersCount = data['onlineUsersCount']
+        })
+      }
     },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()

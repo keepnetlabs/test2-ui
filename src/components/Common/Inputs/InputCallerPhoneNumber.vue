@@ -40,7 +40,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getPhoneNumbers } from '@/api/vishing'
 import PhoneNumber from 'awesome-phonenumber'
 import * as Validations from '@/utils/validations'
-import { getPhishingScenariosPhoneNumber } from '../../../api/phishingsimulator'
+import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 export default {
   name: 'InputCallerPhoneNumber',
   components: { KSelect, FormGroup },
@@ -69,6 +69,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
     callerPhoneNumber: {
       type: String,
       default: ''
@@ -81,7 +85,7 @@ export default {
     }
   },
   mounted() {
-    this.callForPhoneNumbers()
+    if (!this.isSmishing) this.callForPhoneNumbers()
   },
   computed: {
     getPhoneNumberItems() {
