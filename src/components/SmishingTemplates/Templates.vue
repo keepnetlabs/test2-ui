@@ -221,6 +221,23 @@ export default {
             filterableCustomFieldName: 'Name'
           },
           {
+            property: 'categoryName',
+            align: 'left',
+            editable: false,
+            label: labels.Method,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 240,
+            filterableType: 'select',
+            filterableCustomFieldName: 'CategoryResourceId',
+            filterableItems: [
+              { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+              { text: 'Data Submission', value: 'DYC0gugxJMjT' }
+            ]
+          },
+          {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,

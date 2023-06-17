@@ -501,7 +501,7 @@ export default {
           response.data.data.methodTypes.map((item) => item.text)
         )
         this.$set(
-          this.tableOptions.columns[3],
+          this.tableOptions.columns[4],
           'filterableItems',
           response.data.data.difficultyTypes.map((item) => item.text)
         )
