@@ -1434,7 +1434,6 @@ export default {
       delete data.apiKeys
       delete data.userName
       delete data.password
-      console.log(data)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {
