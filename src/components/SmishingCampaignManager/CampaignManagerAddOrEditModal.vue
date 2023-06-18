@@ -424,8 +424,14 @@ export default {
           this.changeStep()
           return
         case 3:
-          const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
+          const { refCampaignManagerTargetAudience } = this.$refs
+          if (!this.targetGroupResourceIds.length) {
+            refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
+            refCampaignManagerTargetAudience.isTargetGroupsValid = false
+            this.setActionButtonDisability(false)
+            return
+          }
           this.userCountDetailResponse = await getTargetGroupCountDetail(
             this.targetGroupResourceIds
           )

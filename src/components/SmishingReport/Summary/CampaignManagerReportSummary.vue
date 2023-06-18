@@ -350,10 +350,10 @@ export default {
       return this.phishingScenarios.length
         ? [
             this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '1'
+              (scenario) => scenario.landingPageTemplateInfo.methodTypeId.toString() === '1'
             ),
             this.phishingScenarios.some(
-              (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+              (scenario) => scenario.landingPageTemplateInfo.methodTypeId.toString() === '2'
             ),
             this.phishingScenarios.some(
               (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'

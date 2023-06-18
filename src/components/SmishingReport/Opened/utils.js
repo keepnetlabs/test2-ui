@@ -383,7 +383,7 @@ export const COLUMNS = {
     filterableType: 'number'
   },
   TIMES_SUBMISSION_CODE: {
-    property: 'mfaSubmittedCount',
+    property: 'submittedCount',
     align: 'right',
     label: labels.TimesSubmittedCode,
     fixed: false,
