@@ -745,7 +745,15 @@ export default {
         }
       }
       if (currentStep === 3) {
-        if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return
+        const isMFAFormValid = this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()
+        if (!isMFAFormValid) {
+          this.$nextTick(() => {
+            if (this.$refs?.refLandingPageTemplateListPreview) {
+              this.$refs.refLandingPageTemplateListPreview.selectedTab = 'mfa'
+            }
+          })
+          return
+        }
         if (this.formValues.landingPageTemplateId && this.landingPageTemplate) {
           this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
           this.emailDifficultyChipColor = this.getDifficultyColor(

@@ -202,11 +202,7 @@
                     />
                   </div>
                 </ElTabPane>
-                <ElTabPane
-                  v-if="isMethodMfa"
-                  label="MFA Settings"
-                  :name="`${landingPageTemplates.length + 1}`"
-                >
+                <ElTabPane v-if="isMethodMfa" label="MFA Settings" name="mfa">
                   <div class="ml-6">
                     <ConfigureCompanyStepHeader
                       class="mb-6"
@@ -401,7 +397,7 @@ export default {
       mfaMessageRules: [
         (v) => Validations.required(v),
         (v) => {
-          if (v.toLowerCase().includes('{mfa_code}')) {
+          if (v && v.toLowerCase().includes('{mfa_code}')) {
             if (v.includes('{MFA_CODE}')) return true
             return 'Only use uppercase letters for the merge tag'
           }

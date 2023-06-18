@@ -133,7 +133,7 @@ export default {
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
           const isSubmittedData = scenarios.some(
-            (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '2'
+            (scenario) => scenario.landingPageTemplateInfo.methodTypeId.toString() === '2'
           )
           const isSubmittedMFA = scenarios.some(
             (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'
