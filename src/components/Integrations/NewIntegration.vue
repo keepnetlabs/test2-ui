@@ -1760,12 +1760,6 @@ export default {
           } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
             delete payload['detectionThreshold']
           }
-          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.ANYRUN) {
-            payload = {
-              ...payload,
-              apiKey: this.formValues.apiKeys[0].value
-            }
-          }
           if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
             .then((response) => {
