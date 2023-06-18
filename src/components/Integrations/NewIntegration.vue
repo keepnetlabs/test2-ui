@@ -1373,6 +1373,7 @@ export default {
       this.integrationTypeDisabled = true
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
@@ -1433,6 +1434,7 @@ export default {
       delete data.apiKeys
       delete data.userName
       delete data.password
+      console.log(data)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {
@@ -1758,6 +1760,12 @@ export default {
             }
           } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
             delete payload['detectionThreshold']
+          }
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.ANYRUN) {
+            payload = {
+              ...payload,
+              apiKey: this.formValues.apiKeys[0].value
+            }
           }
           if (this.isIbmXForce) payload['apiCredential']['password'] = item.password
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
