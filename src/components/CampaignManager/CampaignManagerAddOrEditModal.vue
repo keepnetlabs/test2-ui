@@ -75,7 +75,7 @@
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
               :campaign-manager-resource-id="getCampaignResourceId"
-              :is-edit="isEdit"
+              :is-edit="isEdit || isDuplicate"
               :languages="languageOptions"
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
               :is-valid="isPhishingScenariosValid"
