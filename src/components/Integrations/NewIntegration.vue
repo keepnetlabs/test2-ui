@@ -1373,6 +1373,7 @@ export default {
       this.integrationTypeDisabled = true
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
