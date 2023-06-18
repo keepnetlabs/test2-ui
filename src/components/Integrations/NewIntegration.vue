@@ -825,7 +825,7 @@
             </div>
           </form-group>
           <form-group
-            v-if="isVmrayVirusTotalOrAnyRun"
+            v-if="isVmrayOrVirusTotal"
             title="Cache"
             class-name="mt-4"
             style="max-width: max-content;"
@@ -1159,6 +1159,11 @@ export default {
         INTEGRATION_TYPES.ANYRUN
       ].includes(this.selectedIntegrationType.name)
     },
+    isVmrayOrVirusTotal() {
+      return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
+        this.selectedIntegrationType.name
+      )
+    },
     isGoogleWebRisk() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.GOOGLEWEBRISK
     },
@@ -1365,7 +1370,7 @@ export default {
     },
     saveIntegration() {
       let data = { ...this.formValues }
-      if (!this.isVmrayVirusTotalOrAnyRun) {
+      if (!this.isVmrayOrVirusTotal) {
         delete data.isCachingEnabled
         delete data.cacheDuration
         delete data.cacheQueryCount
