@@ -515,17 +515,22 @@ export default {
       let payload = {
         ...this.formValues,
         isDuplicated: this.isDuplicate,
-        description: this.formValues.description || '',
-        availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
-          this.availableForRequests
-        )
+        description: this.formValues.description || ''
       }
+      const availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForValues(
+        this.availableForRequests
+      )
+      delete payload['availableForList']
       for (const key in payload) {
         if (Array.isArray(payload[key])) {
           payload[key].forEach((x) => formData.append(key, x))
         } else {
           payload[key] && formData.append(key, payload[key])
         }
+      }
+      for (let i = 0; i < availableForRequests.length; i++) {
+        formData.append(`AvailableForRequests[${i}].ResourceId`, availableForRequests[i].resourceId)
+        formData.append(`AvailableForRequests[${i}].Type`, availableForRequests[i].type)
       }
       if (this.isEdit && !this.isDuplicate) {
         SmishingService.updateTextMessageTemplate(this.emailTemplateId, formData)
