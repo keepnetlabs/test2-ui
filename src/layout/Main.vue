@@ -433,6 +433,7 @@
                   id="btn--link-navigator-menu-smishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
+                  :active-class-comparator="() => routerName === 'Smishing Settings'"
                 />
               </v-list-item-content>
             </v-list-item>
