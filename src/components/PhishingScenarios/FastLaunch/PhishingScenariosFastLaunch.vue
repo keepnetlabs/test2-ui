@@ -43,6 +43,7 @@
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
+              :language-options="languageOptions"
             />
           </v-stepper-content>
         </v-stepper-items>
@@ -316,8 +317,8 @@ export default {
             (tGroup) => tGroup.resourceId
           ),
           distributionTypeId: '1',
-          distributionSmtpDelayEvery: 20,
-          distributionSmtpDelayTimeTypeId: '1',
+          distributionDelayEvery: 20,
+          distributionDelayTimeTypeId: '1',
           distributionEmailOver: 8,
           distributionEmailOverTimeTypeId: '1',
           sendingLimit: 50,

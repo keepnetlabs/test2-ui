@@ -346,6 +346,7 @@ export const TABLE_SETTINGS_KEYS = {
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSettings',
+  CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE: 'CampaignManagerReportSubmittedMfaDataTableSettings',
   CAMPAIGN_REPORTS: 'CampaignReportsTableSettings',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
@@ -383,6 +384,9 @@ export const TABLE_SETTINGS_KEYS = {
   DOMAINS: 'DomainsListTableSettingsKey',
   LANDINGPAGES: 'LandingPagesTableSettingsKey',
   SCENARIOS: 'Scenarios',
+  SMISHING_SCENARIOS: 'SmishingScenarios',
+  SMISHING_TEMPLATES: 'SmishingTemplates',
+  SMISHING_LANDING_PAGES: 'SmishingLandingPages',
   LASTLAUNCH: 'lastLaunch',
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanSettings',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorSettings',
@@ -469,6 +473,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
+  CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
+    'CampaignManagerReportSubmittedMfaDataTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE: 'CampaignManagerReportAttachmentDataTableSearchKeys',
   ENROLLMENTS_LIST: 'EnrollmentListSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
@@ -515,6 +521,9 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   DOMAINS: 'DomainsSearchContainerKeys',
   LANDINGPAGES: 'LandingPagesSearchContainerKeys',
   SCENARIOS: 'ScenariosSearchKeys',
+  SMISHING_SCENARIOS: 'SmishingScenariosSearchKeys',
+  SMISHING_TEMPLATES: 'SmishingTemplatesSearchKeys',
+  SMISHING_LANDING_PAGES: 'SmishingLandingPagesSearchKeys',
   ETS_QUICK_SCAN_TABLE: 'EtsQuickScanKeys',
   ETS_ATTACK_VECTOR_TABLE: 'EtsAttackVectorKeys',
   ETS_REPORT_SENT_ATTACK_TABLE: 'EtsReportSentAttackKeys',
@@ -523,6 +532,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
 }
 
 export const INTEGRATION_TYPES = {
+  ANYRUN: 'AnyRun',
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
@@ -535,6 +545,7 @@ export const INTEGRATION_TYPES = {
   GOOGLEWEBRISK: 'Google Web Risk'
 }
 export const INTEGRATION_LABELS = {
+  ANYRUN: 'AnyRun',
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',

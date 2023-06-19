@@ -211,6 +211,364 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  SMISHING_SIMULATOR_LEFT_MENU_PERMISSIONS: {
+    SMISHING_SCENARIOS: {
+      url: `smishing-simulator/smishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CAMPAIGN_MANAGER: {
+      url: `smishing-simulator/smishing-campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DNS: {
+      url: `smishing-simulator/dns-services/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DOMAIN: {
+      url: `smishing-simulator/domain-records/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS: {
+    SCENARIOS: {
+      url: `smishing-simulator/smishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TEXT_TEMPLATES: {
+      url: `smishing-simulator/text-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: 'smishing-simulator/landing-page-template/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS: {
+    CAMPAIGN_MANAGER: {
+      url: 'smishing-simulator/smishing-campaign/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_SCENARIOS_PERMISSIONS: {
+    SEARCH: {
+      url: `smishing-simulator/smishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `smishing-simulator/smishing-scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `smishing-simulator/smishing-scenario`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `smishing-simulator/smishing-scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `smishing-simulator/smishing-scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    PREVIEW: {
+      url: `smishing-simulator/smishing-scenario/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `smishing-simulator/smishing-scenario/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_TEXT_MESSAGE_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `smishing-simulator/text-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `smishing-simulator/text-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `smishing-simulator/text-templates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `smishing-simulator/text-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `smishing-simulator/text-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `smishing-simulator/text-templates/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: 'smishing-simulator/landing-page-template/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `smishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `smishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `smishing-simulator/landing-page-template`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `smishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `smishing-simulator/landing-page-template/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_CAMPAIGN_MANAGER_PERMISSIONS: {
+    SEARCH: {
+      url: 'smishing-simulator/smishing-campaign/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `smishing-simulator/smishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `smishing-simulator/smishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `smishing-simulator/smishing-campaign`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `smishing-simulator/smishing-campaign/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    PREVIEW: {
+      url: `smishing-simulator/smishing-campaign/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `smishing-simulator/smishing-campaign/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_CAMPAIGN_JOB_PERMISSIONS: {
+    SEARCH: {
+      url: 'smishing-simulator/smishing-campaign-job-report/{resourceId}/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    START: {
+      url: 'smishing-simulator/smishing-campaign-job/start/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    LAUNCH: {
+      url: 'smishing-simulator/smishing-campaign-job/start/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    STOP: {
+      url: 'smishing-simulator/smishing-campaign-job/stop/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.PATCH
+    },
+    DELETE: {
+      url: `smishing-simulator/smishing-campaign-job/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    RESEND: {
+      url: 'smishing-simulator/smishing-campaign-job/resend/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    RESEND_LIST: {
+      url: 'smishing-simulator/smishing-campaign-job/resend/list/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT: {
+      url: `smishing-simulator/smishing-campaign-job-report/{resourceId}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_REPORT_PERMISSIONS: {
+    SUMMARY: {
+      url: 'smishing-simulator/smishing-campaign-job-report/summary/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SEARCH_TYPE: {
+      url:
+        'smishing-simulator/smishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TYPE_EXPORT: {
+      url:
+        'smishing-simulator/smishing-campaign-job-report/{searchType}/search/export/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CLICKED_DETAILS: {
+      url: 'smishing-simulator/smishing-campaign-job-report/search-sms-clicked/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUBMITTED_DATA_DETAILS: {
+      url: 'smishing-simulator/smishing-campaign-job-report/search-sms-submitted/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUBMITTED_MFA_DETAILS: {
+      url: 'smishing-simulator/smishing-campaign-job-report/search-mfa-submitted/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DOWNLOAD_REPORT: {
+      url: 'smishing-simulator/smishing-campaign-job-report/export/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  SMISHING_SETTINGS_LEFT_MENU_PERMISSIONS: {
+    DOMAIN: {
+      url: `smishing-simulator/domian-records/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DNS: {
+      url: `smishing-simulator/dns-services/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_DNS_PERMISSIONS: {
+    SEARCH: {
+      url: `smishing-simulator/dns-services/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `smishing-simulator/dns-services`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `smishing-simulator/dns-services/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `smishing-simulator/dns-services/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `smishing-simulator/dns-services/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `smishing-simulator/dns-services/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SMISHING_DOMAIN_PERMISSIONS: {
+    SEARCH: {
+      url: `smishing-simulator/domian-records/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `smishing-simulator/domian-records`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `smishing-simulator/domian-records/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `smishing-simulator/domian-records/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `smishing-simulator/domian-records/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `smishing-simulator/domian-records/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    FORM_DETAILS: {
+      url: `smishing-simulator/domian-records/form-details`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  SMISHING_EXCLUDED_IP_PERMISSIONS: {
+    GET: {
+      url: `smishing-simulator/excluded-ip-list`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    POST: {
+      url: `smishing-simulator/excluded-ip`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   VISHING_LEFT_MENU_PERMISSIONS: {
     VISHING_TEMPLATES: {
       url: `vishing-template/search`,

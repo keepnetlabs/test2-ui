@@ -1,6 +1,6 @@
 <template>
   <div class="landingPagePreview">
-    <app-dialog
+    <AppDialog
       style="overflow: hidden;"
       subtitle="Landing Page Template Preview"
       custom-size="1600"
@@ -14,7 +14,7 @@
       <template #app-dialog-body>
         <KEmailPreview v-if="!!getSelectedTemplateDetails" :html="getSelectedTemplateDetails" />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             class="pa-0 k-dialog__button"
@@ -25,7 +25,7 @@
           </v-btn>
         </div>
       </template>
-    </app-dialog>
+    </AppDialog>
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
@@ -33,7 +33,7 @@
             <div class="d-flex justify-space-between">
               <div class="d-flex">
                 <div>
-                  <v-text-field
+                  <VTextField
                     v-model.trim="search"
                     style="
                       max-width: 328px;
@@ -46,23 +46,23 @@
                     class="filter-field filter-field-scenarios search-wrapper__search-filter"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
-                  ></v-text-field>
+                  />
                 </div>
-                <div>
-                  <v-select
+                <div style="max-width: 140px;">
+                  <KSelect
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     :items="scenarioDetailsLookup.difficultyTypes"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     item-value="text"
                     outlined
                     persistent-hint
-                    @change="getTemplatesForSearch"
+                    hide-details
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
-                  >
-                  </v-select>
+                    @change="getTemplatesForSearch"
+                  />
                 </div>
               </div>
             </div>
@@ -77,11 +77,11 @@
               @scroll="handleScroll"
             >
               <div
-                class="template-list"
                 v-for="(item, index) in listData"
+                class="template-list"
                 :key="item.name + index"
-                @click="setSelectedTemplate(item, index)"
                 :class="{ 'template-list--selected': item['selected'] }"
+                @click="setSelectedTemplate(item, index)"
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
@@ -98,14 +98,10 @@
                     </div>
                   </div>
                   <div
-                    class="template-list--item template-list--item__difficulty mr-8"
-                    :class="
-                      item.difficulty === 'Easy'
-                        ? 'difficulty-easy'
-                        : item.difficulty === 'Medium'
-                        ? 'difficulty-medium'
-                        : 'difficulty-hard'
-                    "
+                    :class="[
+                      'template-list--item template-list--item__difficulty mr-8',
+                      getItemDifficultyClass(item.difficulty)
+                    ]"
                   >
                     {{ item.difficulty }}
                   </div>
@@ -146,12 +142,8 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane pt-4" :style="{ flexGrow: 1 }">
-              <el-tabs
-                v-if="landingPageTemplates.length > 1"
-                v-model="selectedTab"
-                class="phishing-scenario-tab-container"
-              >
-                <el-tab-pane
+              <ElTabs v-if="landingPageTemplates.length > 1 || isMethodMfa" v-model="selectedTab">
+                <ElTabPane
                   v-for="(template, index) in landingPageTemplates"
                   :key="index"
                   :name="`${index + 1}`"
@@ -159,17 +151,17 @@
                 >
                   <div class="template-preview">
                     <div class="template-preview__icon">
-                      <v-btn
+                      <VBtn
                         v-if="!!template.content"
                         color="#2196F3"
                         icon
                         outlined
                         @click="isTemplateDetails = true"
                       >
-                        <v-icon color="#2196f3" medium>
-                          {{ 'mdi-fullscreen' }}
-                        </v-icon>
-                      </v-btn>
+                        <VIcon color="#2196f3" medium>
+                          mdi-fullscreen
+                        </VIcon>
+                      </VBtn>
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!template.content">
                       <div>
@@ -184,27 +176,70 @@
                     <hr class="mt-2" v-if="!!template.content" />
                     <KEmailPreview
                       v-if="!!template.content"
-                      :html="template.content"
-                      :key="template.content"
                       is-extra-height
+                      :key="template.content"
+                      :html="template.content"
                     />
                   </div>
-                </el-tab-pane>
-              </el-tabs>
+                </ElTabPane>
+                <ElTabPane
+                  v-if="isMethodMfa"
+                  label="MFA Settings"
+                  :name="`${landingPageTemplates.length + 1}`"
+                >
+                  <div class="ml-6">
+                    <ConfigureCompanyStepHeader
+                      class="mb-6"
+                      :title="labels.MultiFactorAuthentication"
+                      :subtitle="labels.MultiFactorAuthenticationSub"
+                    />
+                    <VForm ref="refMfaForm">
+                      <InputCallerPhoneNumber
+                        v-model="mfaData.mfaSenderNumberResourceId"
+                        select-first-item
+                        is-phishing-scenario
+                        :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
+                        :title="labels.SenderPhoneNumber"
+                        :sub-title="labels.SenderPhoneNumberSub"
+                      />
+                      <FormGroup
+                        :title="labels.VerificationMessage"
+                        :sub-title="labels.VerificationMessageSub"
+                      >
+                        <div class="d-flex mt-2">
+                          <span class="mr-4 fs-4">SMS Message</span>
+                          <VTextarea
+                            v-model.trim="mfaData.mfaTextTemplate"
+                            outlined
+                            dense
+                            no-resize
+                            persistent-hint
+                            rows="2"
+                            height="76"
+                            hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
+                            placeholder="Enter your SMS message"
+                            :rules="mfaMessageRules"
+                          />
+                        </div>
+                      </FormGroup>
+                    </VForm>
+                  </div>
+                </ElTabPane>
+              </ElTabs>
               <div v-else>
                 <div class="template-preview">
                   <div class="template-preview__icon">
-                    <v-btn
+                    <VBtn
                       v-if="!!getSingleTemplateDetails"
-                      :color="'#2196f3'"
                       icon
                       outlined
+                      color="#2196f3"
                       @click="isTemplateDetails = true"
                     >
-                      <v-icon color="#2196f3" medium>
-                        {{ 'mdi-fullscreen' }}
-                      </v-icon>
-                    </v-btn>
+                      <VIcon color="#2196f3" medium>
+                        mdi-fullscreen
+                      </VIcon>
+                    </VBtn>
                   </div>
                   <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                     <div>
@@ -240,25 +275,52 @@ import AppDialog from '../AppDialog'
 import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import {
+  getDefaultLandingPageTemplatePayload,
+  SCENARIO_DIFFICULTIES,
+  SCENARIO_METHODS
+} from '@/components/PhishingScenarios/utils'
+import useDebounce from '@/hooks/useDebounce'
+import ConfigureCompanyStepHeader from '../Companies/ConfigureCompanyStepHeader'
+import labels from '@/model/constants/labels'
+import InputCallerPhoneNumber from '../Common/Inputs/InputCallerPhoneNumber'
+import FormGroup from '../SmallComponents/FormGroup'
+import * as Validations from '@/utils/validations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+
 export default {
   name: 'LandingPageListPreview',
+  mixins: [useDebounce],
+  components: {
+    FormGroup,
+    InputCallerPhoneNumber,
+    ConfigureCompanyStepHeader,
+    KSelect,
+    ShowMoreTags,
+    KEmailPreview,
+    Multipane,
+    MultipaneResizer,
+    AppDialog
+  },
+  directives: {
+    'infinite-scroll': InfiniteScroll
+  },
   props: {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false },
     categoryResourceId: { type: String, default: '' },
-    method: { type: String, default: '' }
-  },
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
-  directives: {
-    'infinite-scroll': InfiniteScroll
+    method: { type: String, default: '' },
+    isMethodMfa: { type: Boolean, default: false },
+    mfaData: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
-    const methods = [
-      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-      { text: 'Attachment', value: '7dLrW2kdBTDs' }
-    ]
     return {
+      Validations,
+      labels,
       templateName: '',
       selectedTab: '1',
       landingPageTemplates: [],
@@ -266,52 +328,26 @@ export default {
       listData: [],
       totalNumberOfPages: 1,
       defaultListData: [],
-      methods,
-      difficulties: [
-        { text: 'Easy', value: 'mT0CeYGgKsVb' },
-        { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-        { text: 'Hard', value: 'c4LCGEB9MayB' }
-      ],
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  value: this.method,
-                  FieldName: 'Method',
-                  Operator: '='
-                },
-                { Value: '', FieldName: 'difficulty', Operator: 'Include' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                { FieldName: 'Name', Operator: 'Contains', Value: '' },
-                { FieldName: 'Method', Operator: 'Contains', Value: '' },
-                { FieldName: 'Difficulty', Operator: 'Contains', Value: '' },
-                { FieldName: 'CreatedBy', Operator: 'Contains', Value: '' },
-                { FieldName: 'Tags', Operator: 'Contains', Value: '' },
-                { FieldName: 'CreateTime', Operator: 'Contains', Value: '' }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      methods: SCENARIO_METHODS,
+      difficulties: SCENARIO_DIFFICULTIES,
+      bodyData: getDefaultLandingPageTemplatePayload(this.method),
       loadingTemplatePreview: false,
       isTemplateDetails: null,
       loadingTemplates: false,
       templateURL: null,
-      selectedPreviousIndex: 0
+      selectedPreviousIndex: 0,
+      mfaMessageRules: [
+        (v) => Validations.required(v),
+        (v) => {
+          if (v.toLowerCase().includes('{mfa_code}')) {
+            if (v.includes('{MFA_CODE}')) return true
+            return 'Only use uppercase letters for the merge tag'
+          }
+          return true
+        },
+        (v) => Validations.maxLength(v, 148, labels.getMaxLengthMessage(labels.SMS, 148)),
+        (v) => Validations.isGsm7(v)
+      ]
     }
   },
   computed: {
@@ -332,6 +368,27 @@ export default {
       return `${this.getSingleTemplateDetails}-${this.templateName}`
     }
   },
+  watch: {
+    search(newVal, oldVal) {
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
+          this.getTemplates(true)
+        } else {
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.landingPageTemplateResourceId
+          }))
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
+      }
+    }
+  },
   mounted() {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
@@ -346,6 +403,13 @@ export default {
       }
 
       return item?.description || '\xa0'
+    },
+    getItemDifficultyClass(difficulty = '') {
+      return difficulty === 'Easy'
+        ? 'difficulty-easy'
+        : difficulty === 'Medium'
+        ? 'difficulty-medium'
+        : 'difficulty-hard'
     },
     callForSearch() {
       this.debounce(() => {
@@ -503,34 +567,19 @@ export default {
           this.selectedTab = '1'
         })
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
+    validateMfaForm() {
+      if (!this.isMethodMfa) return true
+      if (this.$refs.refMfaForm.validate()) {
+        if (this.mfaData.mfaTextTemplate.includes('{MFA_CODE}')) return true
+        this.$store.dispatch('common/createSnackBar', {
+          message:
+            'You cannot iterate to next step without adding an {MFA_CODE} to the verification message field.',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-information'
+        })
+        return false
       }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    }
-  },
-  watch: {
-    search(newVal, oldVal) {
-      if (!newVal) {
-        if (
-          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
-          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
-        ) {
-          this.getTemplates(true)
-        } else {
-          this.listData = [...this.defaultListData].map((item) => ({
-            ...item,
-            selected: item.resourceId === this.landingPageTemplateResourceId
-          }))
-        }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
-      }
+      return false
     }
   }
 }

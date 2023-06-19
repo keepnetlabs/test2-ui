@@ -234,50 +234,15 @@
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
                   >
-                    <ElTabs
-                      v-if="isLandingPageTabsVisible"
-                      v-model="selectedLandingPageTab"
-                      class="phishing-scenario-tab-container"
-                    >
-                      <ElTabPane
-                        v-for="(template, index) in landingPageTemplates"
-                        :key="index"
-                        :label="`Page ${index + 1}`"
-                        :name="`${index + 1}`"
-                      >
-                        <div class="template-preview pt-0">
-                          <div class="template-preview__icon">
-                            <v-btn
-                              v-if="!!template.content"
-                              :color="'#2196f3'"
-                              icon
-                              outlined
-                              @click="handleClickPreview"
-                            >
-                              <v-icon color="#2196f3" medium>
-                                {{ 'mdi-fullscreen' }}
-                              </v-icon>
-                            </v-btn>
-                          </div>
-                          <div v-if="!!template.content" class="template-preview__text pl-2">
-                            <div>
-                              <span class="template-preview__text--title">Name: </span>
-                              <span class="template-preview__text--body">{{
-                                landingPageParams.name
-                              }}</span>
-                            </div>
-                            <div>
-                              <span class="template-preview__text--title">Phishing URL: </span>
-                              <span class="template-preview__text--body">{{
-                                landingPageParams.urlTemplate
-                              }}</span>
-                            </div>
-                          </div>
-                          <hr class="mt-2" v-if="!!template.content" />
-                          <KEmailPreview v-if="!!template.content" :html="template.content" />
-                        </div>
-                      </ElTabPane>
-                    </ElTabs>
+                    <TabsWithMfaSettings
+                      v-if="isLandingPageTabsVisible || isMethodMfa"
+                      class="tabs-with-mfa-settings"
+                      :is-sub-tab="false"
+                      :is-phishing-scenario="false"
+                      :isMethodMfa="isMethodMfa"
+                      :landing-page-params="landingPageParams"
+                      :landing-page-templates="landingPageTemplates"
+                    />
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
                         <v-btn
@@ -352,10 +317,12 @@ import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
+    TabsWithMfaSettings,
     ShowMoreTags,
     KEmailPreview,
     KSelect,
@@ -413,7 +380,8 @@ export default {
       landingPageTemplate: null,
       selectedLandingPageTab: '1',
       landingPageTemplates: [],
-      phishingScenarioItems: []
+      phishingScenarioItems: [],
+      isMethodMfa: false
     }
   },
   computed: {
@@ -600,7 +568,13 @@ export default {
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {
             const { data: { data = {} } = {} } = response
-            const { emailTemplate, landingPageTemplate, methodTypeId } = data
+            const {
+              emailTemplate,
+              landingPageTemplate,
+              methodTypeId,
+              mfaTextTemplate,
+              mfaSmsSenderNumber
+            } = data
             const {
               template,
               fromName,
@@ -639,10 +613,13 @@ export default {
               urlTemplate,
               difficulty: difficulties[difficultyTypeId - 1]?.text || '',
               method: methods[methodTypeId - 1]?.text || '',
-              languageTypeResourceId
+              languageTypeResourceId,
+              mfaSmsSenderNumber,
+              mfaTextTemplate
             }
             this.landingPageTemplates = landingPages || []
             this.tab = 'email'
+            this.isMethodMfa = data.methodTypeId === 4
           }
         )
       })

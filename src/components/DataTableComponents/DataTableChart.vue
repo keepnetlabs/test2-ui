@@ -5,15 +5,17 @@
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <pie :data="scope.row[col.property]" :chart-options="chartOptions" />
-            <span class="datatable-chart__information-text" v-if="chartOptions.isWithText">{{
-              scope.row[col.informationTextProperty]
-            }}</span>
+            <span
+              class="datatable-chart__information-text"
+              v-if="chartOptions && chartOptions.isWithText"
+              >{{ scope.row[col.informationTextProperty] }}</span
+            >
           </div>
         </template>
         <div
           v-for="(item, index) in scope.row[col.property]"
           :key="index"
-          v-if="chartOptions.showTooltipLine"
+          v-if="chartOptions && chartOptions.showTooltipLine"
         >
           <p class="datatable-chart__tooltip">{{ chartOptions.labels[index] }} : {{ item }}</p>
         </div>
@@ -23,9 +25,11 @@
           <div class="datatable-chart__empty">
             <div class="datatable-chart__empty-chart"></div>
           </div>
-          <span v-if="chartOptions.isWithText" class="datatable-chart__empty-chart-text">{{
-            scope.row[col.informationTextProperty]
-          }}</span>
+          <span
+            v-if="chartOptions && chartOptions.isWithText"
+            class="datatable-chart__empty-chart-text"
+            >{{ scope.row[col.informationTextProperty] }}</span
+          >
         </div>
       </template>
     </div>

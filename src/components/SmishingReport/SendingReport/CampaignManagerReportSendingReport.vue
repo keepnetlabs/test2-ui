@@ -1,0 +1,71 @@
+<template>
+  <div id="campaign-manager-report-sending-report" class="campaign-manager-report-sending-report">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
+    <CampaignManagerReportHeader
+      title="SMS Sending Report"
+      subtitle="Smishing SMS delivery details"
+    />
+    <CampaignManagerReportSendingReportTable
+      ref="refTable"
+      class="mt-6"
+      :id="id"
+      :instance-group="instanceGroup"
+      :last-sending-status-items="getLastSendingStatusItems"
+      @on-resend="handleOnResend"
+    />
+  </div>
+</template>
+
+<script>
+import labels from '@/model/constants/labels'
+import CampaignManagerReportHeader from '@/components/SmishingReport/CampaignManagerReportHeader'
+import CampaignManagerReportSendingReportTable from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReportTable'
+import CampaignManagerReportResendDialog from '@/components/SmishingReport/CampaignManagerReportResendDialog'
+import { useSmishingResend } from '@/hooks/useSmishingResend'
+export default {
+  name: 'CampaignManagerReportSendingReport',
+  components: {
+    CampaignManagerReportResendDialog,
+    CampaignManagerReportSendingReportTable,
+    CampaignManagerReportHeader
+  },
+  mixins: [useSmishingResend],
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
+    },
+    formDetails: {
+      type: Object
+    }
+  },
+  data() {
+    return {
+      labels,
+      selectedRow: null
+    }
+  },
+  computed: {
+    getLastSendingStatusItems() {
+      return this?.formDetails?.userStatuses || []
+    }
+  },
+  methods: {
+    handleOnDetail(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDetailDialog()
+    }
+  }
+}
+</script>

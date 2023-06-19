@@ -26,7 +26,8 @@ export const METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
   MULTIPLE_METHOD: 'Multiple Method',
   DATA_SUBMISSION: 'Data Submission',
-  ATTACHMENT: 'Attachment'
+  ATTACHMENT: 'Attachment',
+  MFA: 'MFA'
 }
 
 export const SCHEDULE_TYPES = {
@@ -165,7 +166,8 @@ export const COLUMNS = {
       { text: 'Multiple Method', value: 'Multiple Method' },
       { text: 'Click Only', value: 'Click-Only' },
       { text: 'Data Submission', value: 'Data Submission' },
-      { text: 'Attachment', value: 'Attachment' }
+      { text: 'Attachment', value: 'Attachment' },
+      { text: 'MFA', value: 'MFA' }
     ],
     width: 160
   },

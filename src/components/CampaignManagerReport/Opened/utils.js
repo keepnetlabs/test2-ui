@@ -50,6 +50,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  PHONENUMBER: {
+    property: 'phoneNumber',
+    align: 'left',
+    label: 'Phone Number',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   EMAIL_DELIVERY: {
     property: PROPERTY_STORE.EMAIL_DELIVERY,
     align: 'left',
@@ -66,7 +78,7 @@ export const COLUMNS = {
     property: 'lastSendingTime',
     align: 'left',
     editable: false,
-    label: labels.EmailSendDate,
+    label: 'Email Send Date',
     sortable: true,
     show: true,
     type: 'text',
@@ -189,6 +201,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  SUBMITTED_TIME_MFA: {
+    property: 'submittedTime',
+    align: 'left',
+    label: labels.DateSubmittedMFACode,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 230,
     isEditable: false,
     filterableType: 'date'
   },
@@ -334,6 +358,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  LAST_SUBMISSION_CODE: {
+    property: 'lastSendingTime',
+    align: 'left',
+    label: labels.LastSubmittedCode,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
+    isEditable: false,
+    filterableType: 'date'
+  },
   TIMES_SUBMISSION: {
     property: 'submittedCount',
     align: 'right',
@@ -343,6 +379,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'number'
+  },
+  TIMES_SUBMISSION_CODE: {
+    property: 'mfaSubmittedCount',
+    align: 'right',
+    label: labels.TimesSubmittedCode,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 220,
     isEditable: false,
     filterableType: 'number'
   },

@@ -34,11 +34,11 @@ export default {
       }
       this.renderChart(
         {
-          labels: this.chartOptions.showLabels ? this.chartOptions.labels : undefined,
+          labels: this.chartOptions?.showLabels ? this.chartOptions?.labels : undefined,
           datasets: [
             {
               data: this.data,
-              backgroundColor: this.chartOptions.backgroundColor
+              backgroundColor: this.chartOptions?.backgroundColor
             }
           ]
         },

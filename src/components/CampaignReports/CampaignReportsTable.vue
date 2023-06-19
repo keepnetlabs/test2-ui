@@ -115,7 +115,7 @@ export default {
       },
       columns: COLUMNS,
       METHOD_TYPES,
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
@@ -220,6 +220,18 @@ export default {
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
           showTooltipLine: true
         }
+      } else if (row.method === 'MFA') {
+        return {
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C'],
+          labels: [
+            labels.NoResponse,
+            labels.Clicked,
+            labels.Opened,
+            labels.Submitted,
+            labels.SubmittedMFACode
+          ],
+          showTooltipLine: true
+        }
       } else if (row.method === 'Multiple Method') {
         return {
           backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C'],
@@ -263,10 +275,12 @@ export default {
               campaignStatus.push(row['totalAttachmentOpenedCount'])
             }
 
-            if (row.method === 'Data Submission') {
+            if (row.method === 'Data Submission' || row.method === 'MFA') {
               campaignStatus.push(row['totalClickedCount'])
               campaignStatus.push(row['totalOpenedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
+            } else if (row.method === 'MFA') {
+              campaignStatus.push(row['totalSubmittedMFACount'])
             }
             return {
               ...row,

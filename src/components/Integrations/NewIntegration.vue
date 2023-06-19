@@ -162,7 +162,7 @@
           <v-list-item
             class="px-0"
             v-if="
-              isVmrayOrVirusTotal ||
+              isVmrayVirusTotalOrAnyRun ||
               isIbmXForce ||
               isGoogleSafeBrowser ||
               isCustomIntegration ||
@@ -656,7 +656,7 @@
               :initialRules="detectionThresholdRules"
             />
           </form-group>
-          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayVirusTotalOrAnyRun }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label"> Tags </v-list-item-title>
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
@@ -1152,6 +1152,13 @@ export default {
     isFortiNet() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET
     },
+    isVmrayVirusTotalOrAnyRun() {
+      return [
+        INTEGRATION_TYPES.VIRUSTOTAL,
+        INTEGRATION_TYPES.VMRAY,
+        INTEGRATION_TYPES.ANYRUN
+      ].includes(this.selectedIntegrationType.name)
+    },
     isVmrayOrVirusTotal() {
       return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
         this.selectedIntegrationType.name
@@ -1371,6 +1378,7 @@ export default {
       this.integrationTypeDisabled = true
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
@@ -1546,6 +1554,7 @@ export default {
     getTestConnectionDisableStatus() {
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
@@ -1616,6 +1625,7 @@ export default {
         ) || {}
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
@@ -1725,6 +1735,7 @@ export default {
     testConnection(isSave) {
       if (
         [
+          INTEGRATION_TYPES.ANYRUN,
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
@@ -1887,6 +1898,9 @@ export default {
         this.formValues.apiUrl = 'https://reputation.roksit.com/api/query/'
       } else if (name === INTEGRATION_TYPES.VMRAY) {
         this.formValues.apiUrl = 'https://cloud.vmray.com'
+        this.resetApiKeysAndCredentials()
+      } else if (name === INTEGRATION_TYPES.ANYRUN) {
+        this.formValues.apiUrl = 'https://api.any.run/v1/analysis'
         this.resetApiKeysAndCredentials()
       } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
         if (this.formValues) {

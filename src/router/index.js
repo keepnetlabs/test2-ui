@@ -24,12 +24,17 @@ import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 import PhishingSimulator from '@/views/PhishingSimulator'
+import SmishingScenarios from '@/views/SmishingScenarios'
 import Sandbox from '@/views/Sandbox'
 import Settings from '@/views/Settings'
+import SmishingSettings from '@/views/SmishingSettings'
+import SmishingReport from '@/views/SmishingReport'
 import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
+import SmishingSimulatorRoute from '@/views/SmishingSimulatorRoute'
+import SmishingCampaignManager from '@/views/SmishingCampaignManager'
 import VishingRoute from '@/views/VishingRoute'
 import VishingTemplates from '@/views/VishingTemplates'
 import VishingCampaignManager from '@/views/VishingCampaignManager'
@@ -109,6 +114,16 @@ const router = new Router({
             permissionStoreKey: 'permissions/getPhishingSimulatorLeftMenuPermissions'
           },
           component: PhishingSimulatorRoute
+        },
+        {
+          path: '/smishing-simulator',
+          name: 'Smishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: SmishingSimulatorRoute
         },
         {
           path: '/vishing',
@@ -307,6 +322,54 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Phishing Simulator',
             permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/smishing-simulator/smishing-scenarios',
+          name: 'Smishing Scenarios',
+          component: SmishingScenarios,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Smishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/smishing-simulator/campaign-manager',
+          name: 'Smishing Campaign Manager',
+          component: SmishingCampaignManager,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Smishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingCampaignManagerLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/smishing-simulator/settings',
+          name: 'Smishing Settings',
+          component: SmishingSettings,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Smishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingSettingsLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/smishing-report/:id/:instanceGroup',
+          name: 'Smishing Report',
+          component: SmishingReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Smishing Campaign Manager',
+            permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
           },
           props: true,
           params: true

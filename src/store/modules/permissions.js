@@ -55,7 +55,20 @@ const {
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
   DIRECT_EMAIL_CREATION_PERMISSIONS,
-  ADVANCED_REPORTS_PERMISSIONS
+  ADVANCED_REPORTS_PERMISSIONS,
+  SMISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  SMISHING_SCENARIOS_PERMISSIONS,
+  SMISHING_TEXT_MESSAGE_TEMPLATES_PERMISSIONS,
+  SMISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  SMISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  SMISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  SMISHING_CAMPAIGN_JOB_PERMISSIONS,
+  SMISHING_REPORT_PERMISSIONS,
+  SMISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
+  SMISHING_DNS_PERMISSIONS,
+  SMISHING_DOMAIN_PERMISSIONS,
+  SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS,
+  SMISHING_EXCLUDED_IP_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -114,7 +127,20 @@ const defaultState = {
   threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS,
   allowListPermissions: ALLOW_LIST_PERMISSIONS,
   directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS,
-  advancedReportsPermissions: ADVANCED_REPORTS_PERMISSIONS
+  advancedReportsPermissions: ADVANCED_REPORTS_PERMISSIONS,
+  smishingSimulatorLeftMenuPermissions: SMISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  smishingScenariosLeftMenuPermissions: SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS,
+  smishingScenariosPermissions: SMISHING_SCENARIOS_PERMISSIONS,
+  smishingTextMessageTemplatesPermissions: SMISHING_TEXT_MESSAGE_TEMPLATES_PERMISSIONS,
+  smishingLandingPageTemplatesPermissions: SMISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  smishingCampaignManagerLeftMenuPermissions: SMISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  smishingCampaignManagerPermissions: SMISHING_CAMPAIGN_MANAGER_PERMISSIONS,
+  smishingCampaignJobPermissions: SMISHING_CAMPAIGN_JOB_PERMISSIONS,
+  smishingReportPermissions: SMISHING_REPORT_PERMISSIONS,
+  smishingSettingsLeftMenuPermissions: SMISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
+  smishingDnsPermissions: SMISHING_DNS_PERMISSIONS,
+  smishingDomainPermissions: SMISHING_DOMAIN_PERMISSIONS,
+  smishingExcludedIpPermissions: SMISHING_EXCLUDED_IP_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -217,6 +243,186 @@ const store = {
     },
     getPhishingScenariosExportPermissions(state) {
       return state?.phishingScenariosPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingSimulatorLeftMenuPermissions(state) {
+      return state?.smishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getSmishingScenariosLeftMenuPermissions(state) {
+      return state?.smishingScenariosLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getSmishingScenariosSearchPermissions(state) {
+      return state?.smishingScenariosPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingScenariosGetPermissions(state) {
+      return state?.smishingScenariosPermissions?.GET?.hasPermission
+    },
+    getSmishingScenariosCreatePermissions(state) {
+      return state?.smishingScenariosPermissions?.CREATE?.hasPermission
+    },
+    getSmishingScenariosEditPermissions(state) {
+      return state?.smishingScenariosPermissions?.EDIT?.hasPermission
+    },
+    getSmishingScenariosDeletePermissions(state) {
+      return state?.smishingScenariosPermissions?.DELETE?.hasPermission
+    },
+    getSmishingScenariosPreviewPermissions(state) {
+      return state?.smishingScenariosPermissions?.PREVIEW?.hasPermission
+    },
+    getSmishingScenariosExportPermissions(state) {
+      return state?.smishingScenariosPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingTextMessageTemplatesSearchPermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingTextMessageTemplatesGetPermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.GET?.hasPermission
+    },
+    getSmishingTextMessageTemplatesCreatePermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getSmishingTextMessageTemplatesEditPermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getSmishingTextMessageTemplatesDeletePermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getSmishingTextMessageTemplatesExportPermissions(state) {
+      return state?.smishingTextMessageTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingLandingPageTemplatesSearchPermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingLandingPageTemplatesGetPermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.GET?.hasPermission
+    },
+    getSmishingLandingPageTemplatesCreatePermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getSmishingLandingPageTemplatesEditPermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getSmishingLandingPageTemplatesDeletePermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getSmishingLandingPageTemplatesExportPermissions(state) {
+      return state?.smishingLandingPageTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingCampaignManagerLeftMenuPermissions(state) {
+      return state?.smishingCampaignManagerLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getSmishingCampaignManagerSearchPermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingCampaignManagerGetPermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.GET?.hasPermission
+    },
+    getSmishingCampaignManagerCreatePermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.CREATE?.hasPermission
+    },
+    getSmishingCampaignManagerEditPermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.EDIT?.hasPermission
+    },
+    getSmishingCampaignManagerDeletePermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.DELETE?.hasPermission
+    },
+    getSmishingCampaignManagerPreviewPermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.PREVIEW?.hasPermission
+    },
+    getSmishingCampaignManagerExportPermissions(state) {
+      return state?.smishingCampaignManagerPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingCampaignJobSearchPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingCampaignJobStartPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.START?.hasPermission
+    },
+    getSmishingCampaignJobLaunchPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.LAUNCH?.hasPermission
+    },
+    getSmishingCampaignJobStopPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.STOP?.hasPermission
+    },
+    getSmishingCampaignJobDeletePermissions(state) {
+      return state?.smishingCampaignJobPermissions?.DELETE?.hasPermission
+    },
+    getSmishingCampaignJobResendPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.RESEND?.hasPermission
+    },
+    getSmishingCampaignJobResendListPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.RESEND_LIST?.hasPermission
+    },
+    getSmishingCampaignJobExportPermissions(state) {
+      return state?.smishingCampaignJobPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingReportSummaryPermissions(state) {
+      return state?.smishingReportPermissions?.SUMMARY?.hasPermission
+    },
+    getSmishingReportSearchTypePermissions(state) {
+      return state?.smishingReportPermissions?.SEARCH_TYPE?.hasPermission
+    },
+    getSmishingReportTypeExportPermissions(state) {
+      return state?.smishingReportPermissions?.TYPE_EXPORT?.hasPermission
+    },
+    getSmishingReportClickedDetailstPermissions(state) {
+      return state?.smishingReportPermissions?.CLICKED_DETAILS?.hasPermission
+    },
+    getSmishingReportSubmittedDataDetailstPermissions(state) {
+      return state?.smishingReportPermissions?.SUBMITTED_DATA_DETAILS?.hasPermission
+    },
+    getSmishingReportSubmittedMFADetailstPermissions(state) {
+      return state?.smishingReportPermissions?.SUBMITTED_MFA_DETAILS?.hasPermission
+    },
+    getSmishingReportDownloadReportPermissions(state) {
+      return state?.smishingReportPermissions?.DOWNLOAD_REPORT?.hasPermission
+    },
+    getSmishingSettingsLeftMenuPermissions(state) {
+      return state?.smishingSettingsLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getSmishingDnsCreatePermissions(state) {
+      return state?.smishingDnsPermissions?.CREATE?.hasPermission
+    },
+    getSmishingDnsSearchPermissions(state) {
+      return state?.smishingDnsPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingDnsUpdatePermissions(state) {
+      return state?.smishingDnsPermissions?.UPDATE?.hasPermission
+    },
+    getSmishingDnsDeletePermissions(state) {
+      return state?.smishingDnsPermissions?.DELETE?.hasPermission
+    },
+    getSmishingDnsGetPermissions(state) {
+      return state?.smishingDnsPermissions?.GET?.hasPermission
+    },
+    getSmishingDnsExportPermissions(state) {
+      return state?.smishingDnsPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingDomainSearchPermissions(state) {
+      return state?.smishingDomainPermissions?.SEARCH?.hasPermission
+    },
+    getSmishingDomainCreatePermissions(state) {
+      return state?.smishingDomainPermissions?.CREATE?.hasPermission
+    },
+    getSmishingDomainUpdatePermissions(state) {
+      return state?.smishingDomainPermissions?.UPDATE?.hasPermission
+    },
+    getSmishingDomainDeletePermissions(state) {
+      return state?.smishingDomainPermissions?.DELETE?.hasPermission
+    },
+    getSmishingDomainGetPermissions(state) {
+      return state?.smishingDomainPermissions?.GET?.hasPermission
+    },
+    getSmishingDomainExportPermissions(state) {
+      return state?.smishingDomainPermissions?.EXPORT?.hasPermission
+    },
+    getSmishingDomainFormDetailsPermissions(state) {
+      return state?.smishingDomainPermissions?.FORM_DETAILS?.hasPermission
+    },
+    getSmishingExcludedIpGetPermissions(state) {
+      return state?.smishingExcludedIpPermissions?.GET?.hasPermission
+    },
+    getSmishingExcludedIpPostPermissions(state) {
+      return state?.smishingExcludedIpPermissions?.POST?.hasPermission
     },
     getEmailTemplatesSearchPermissions(state) {
       return state?.emailTemplatesPermissions?.SEARCH?.hasPermission
@@ -1074,7 +1280,20 @@ const store = {
         'threatIntelligencePermissions',
         'allowListPermissions',
         'directEmailCreationPermissions',
-        'advancedReportsPermissions'
+        'advancedReportsPermissions',
+        'smishingSimulatorLeftMenuPermissions',
+        'smishingScenariosLeftMenuPermissions',
+        'smishingScenariosPermissions',
+        'smishingTextMessageTemplatesPermissions',
+        'smishingLandingPageTemplatesPermissions',
+        'smishingCampaignManagerLeftMenuPermissions',
+        'smishingCampaignManagerPermissions',
+        'smishingCampaignJobPermissions',
+        'smishingReportPermissions',
+        'smishingSettingsLeftMenuPermissions',
+        'smishingDnsPermissions',
+        'smishingDomainPermissions',
+        'smishingExcludedIpPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

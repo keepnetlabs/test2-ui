@@ -1,6 +1,6 @@
 <template>
   <v-tooltip bottom>
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-btn
         v-on="on"
         :id="id"

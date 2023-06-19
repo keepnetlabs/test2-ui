@@ -314,6 +314,21 @@ const getCertificateHtml = (resourceId) => {
   return testRequest.post(`/training-reports/certificate/${resourceId}`)
 }
 
+const downloadTrainingPackage = (payload) => {
+  return testRequest.post('/enrollments/scorm-proxy', payload, {
+    responseType: 'blob'
+  })
+}
+const downloadEnrollmentPackage = (resourceId = '') => {
+  return testRequest.post(
+    `/enrollments/downloadscormproxy/${resourceId}`,
+    {},
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -376,5 +391,7 @@ export default {
   searchTrash,
   deletePermanentlyEnrollment,
   restoreEnrollment,
-  getCertificateHtml
+  getCertificateHtml,
+  downloadTrainingPackage,
+  downloadEnrollmentPackage
 }

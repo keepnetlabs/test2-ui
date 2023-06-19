@@ -9,7 +9,8 @@ export const EMITS = {
   ON_CLOSE: 'on-close',
   ON_TRAINING: 'on-training',
   ON_ITEM_CHANGE: 'on-item-change',
-  ON_DUPLICATE: 'on-duplicate'
+  ON_DUPLICATE: 'on-duplicate',
+  ON_DOWNLOAD: 'on-download'
 }
 
 export const ENROLLMENT_STATUSES = {
@@ -21,7 +22,8 @@ export const ENROLLMENT_STATUSES = {
   STOPPED: 'Stopped',
   PAUSED: 'Paused',
   ARCHIVED: 'Archived',
-  DELETED: 'Deleted'
+  DELETED: 'Deleted',
+  SCORM_PROXY: 'SCORM Proxy'
 }
 
 export const ENROLLMENT_STATUSES_FILTER = [

@@ -38,6 +38,7 @@
         @on-edit="$emit('on-edit', $event)"
         @on-delete="$emit('on-delete', $event)"
         @on-preview="$emit('on-preview', $event)"
+        @on-download="$emit('on-download', $event)"
       />
     </template>
   </DataTable>
@@ -136,6 +137,12 @@ export default {
             id: 'btn-delete--row-actions-enrollments-list',
             name: labels.Delete,
             icon: 'mdi-delete',
+            disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
+          },
+          {
+            id: 'btn-download-package--row-actions-enrollments-list',
+            name: labels.DownloadPackage,
+            icon: 'mdi-download',
             disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
           }
         ],
