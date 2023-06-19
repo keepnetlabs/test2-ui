@@ -54,6 +54,7 @@
         @on-click="$emit('on-stop', scope.row)"
       />
       <DefaultMenuRowAction
+        v-if="isScormProxy"
         :id="rowActions[4].id"
         :scope="scope"
         :disabled="rowActions[4].disabled"
@@ -93,6 +94,9 @@ export default {
     },
     isScheduled() {
       return this.scope.row.status === ENROLLMENT_STATUSES.SCHEDULED
+    },
+    isScormProxy() {
+      return this.scope.row.status === ENROLLMENT_STATUSES.SCORM_PROXY
     },
     isShowReport() {
       return [
