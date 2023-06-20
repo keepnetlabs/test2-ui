@@ -10,6 +10,7 @@ import RefreshLeft from '@/components/CustomIcons/RefreshLeft'
 import Domain from '@/components/CustomIcons/Domain'
 import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
 import BookSearch from '@/components/CustomIcons/BookSearch'
+import SmishingSimulator from '@/components/CustomIcons/SmishingSimulator'
 
 Vue.use(Vuetify)
 
@@ -19,6 +20,9 @@ export default new Vuetify({
       iconfont: 'mdiSvg'
     },
     values: {
+      'smishing-simulator': {
+        component: SmishingSimulator
+      },
       'custom-resend': {
         component: ResendIcon
       },
