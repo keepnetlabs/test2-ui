@@ -84,24 +84,39 @@
             />
             <v-form ref="refFormStep2" lazy-validation>
               <FormGroup
-                title="Language"
-                sub-title="Select the language of this template and text-to-speech speaker"
+                title="Language and Voice"
+                sub-title="Select the language of this template and the text-to-speech voice"
               >
-                <KSelect
-                  v-model="formValues.vishingLanguageResourceId"
-                  type="autocomplete"
-                  :items="vishingLanguageItems"
-                  placeholder="Select language"
-                  item-disabled="disabled"
-                  item-text="text"
-                  item-value="value"
-                  outlined
-                  persistent-hint
-                  hint="*Required"
-                  :rules="[(v) => Validations.required(v, labels.Required)]"
-                  class="filter-field-scenarios"
-                  style="padding-right: 4px !important; padding-left: 4px !important;"
-                />
+                <div class="d-flex flex-row">
+                  <KSelect
+                    v-model="selectedVishingLanguage"
+                    type="autocomplete"
+                    :items="languages"
+                    placeholder="Select language"
+                    item-disabled="disabled"
+                    outlined
+                    persistent-hint
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    class="filter-field-scenarios mr-4"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @input="onVishingLanguageChange"
+                  />
+                  <KSelect
+                    v-model="selectedVishingVoice"
+                    type="autocomplete"
+                    :disabled="!selectedVishingLanguage"
+                    :items="getVoiceItems"
+                    placeholder="Select voice"
+                    item-disabled="disabled"
+                    outlined
+                    persistent-hint
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                  />
+                </div>
               </FormGroup>
               <FormGroup
                 class="mt-4"
@@ -299,9 +314,7 @@ const initialFormValues = {
   description: '',
   tags: [],
   difficulty: 1,
-  languageResourceId: 'WNZt0sCVCWB3',
-  vishingLanguage: 'Turkish - Female',
-  vishingLanguageResourceId: '0c2f30ce5db5',
+  vishingLanguageResourceId: '',
   availableForRequests: [],
   dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
@@ -354,7 +367,15 @@ export default {
     templateId: {
       type: String
     },
+    languageItems: {
+      type: Array,
+      default: () => []
+    },
     languages: {
+      type: Array,
+      default: () => []
+    },
+    voices: {
       type: Array,
       default: () => []
     }
@@ -414,10 +435,22 @@ export default {
           text: 'Hard'
         }
       ],
-      vishingLanguageItems: []
+      selectedVishingLanguage: '',
+      selectedVishingVoice: ''
     }
   },
   computed: {
+    getVoiceItems() {
+      if (this.selectedVishingLanguage) {
+        const voiceItems = this.languageItems.filter(
+          (language) => language.language === this.selectedVishingLanguage
+        )
+        const voices = voiceItems.map((voice) => voice.name)
+        return voices
+      }
+
+      return []
+    },
     getTitle() {
       if (!this.isEdit) return 'New Vishing Template'
       return this.isDuplicate ? 'Duplicate Vishing Template' : 'Edit Vishing Template'
@@ -490,6 +523,13 @@ export default {
           this.formValues.steps.splice(invalidDialingNoticeStepIndex, 1)
         }
         this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
+        const vishingItemIndex = this.languageItems.findIndex(
+          (language) => this.formValues.vishingLanguageResourceId === language.resourceId
+        )
+        if (vishingItemIndex !== -1) {
+          this.selectedVishingLanguage = this.languageItems[vishingItemIndex].language
+          this.selectedVishingVoice = this.languageItems[vishingItemIndex].name
+        }
         delete this.formValues.availableForList
         delete this.formValues.createTime
         delete this.formValues.vishingLanguage
@@ -501,28 +541,10 @@ export default {
       })
     }
   },
-  watch: {
-    languages: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        this.vishingLanguageItems = val.map((language) => ({
-          value: language.resourceId,
-          text: language.name
-        }))
-        if (!this.isEdit && !this.isDuplicate) {
-          const englishFemaleIndex = this.vishingLanguageItems.findIndex(
-            (item) => item.text === 'Turkish - Female'
-          )
-          if (englishFemaleIndex) {
-            const vishingItem = this.vishingLanguageItems[englishFemaleIndex]
-            this.formValues.vishingLanguageResourceId = vishingItem?.value || ''
-          }
-        }
-      }
-    }
-  },
   methods: {
+    onVishingLanguageChange() {
+      this.selectedVishingVoice = ''
+    },
     onRemoveStep(index) {
       this.formValues.steps.splice(index, 1)
       for (let i = 0; i < this.formValues.steps.length; i++) {
@@ -752,7 +774,17 @@ export default {
       for (let i = 0; i < this.formValues.tags.length; i++) {
         formData.append(`Tags[${i}]`, this.formValues.tags[i])
       }
-      formData.append('VishingLanguageResourceId', this.formValues.vishingLanguageResourceId)
+      const vishingLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedVishingLanguage &&
+          language.name === this.selectedVishingVoice
+      )
+      if (vishingLanguageIndex !== -1) {
+        formData.append(
+          'VishingLanguageResourceId',
+          this.languageItems[vishingLanguageIndex].resourceId
+        )
+      }
       formData.append('Difficulty', this.formValues.difficulty)
       for (let i = 0; i < this.formValues.availableForRequests.length; i++) {
         formData.append(

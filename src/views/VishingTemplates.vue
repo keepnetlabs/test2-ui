@@ -21,6 +21,8 @@
       :isEdit="isEdit"
       :isDuplicate="isDuplicate"
       :languages="languages"
+      :voices="voices"
+      :languageItems="languageItems"
       @changeVishingTemplateModalStatus="changeNewVishingTemplateModalStatus"
     />
     <DataTable
@@ -124,7 +126,8 @@ import {
   exportVishingTemplates,
   getVishingTemplates,
   getVishingTemplateLanguages,
-  deleteVishingTemplate
+  deleteVishingTemplate,
+  getVishingTemplateVoices
 } from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
@@ -157,6 +160,8 @@ export default {
       isDeleteModalVisible: false,
       selectedTemplate: null,
       languages: [],
+      voices: [],
+      languageItems: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.VISHINGTEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.VISHINGTEMPLATES,
@@ -179,6 +184,19 @@ export default {
             align: 'left',
             editable: false,
             label: 'Language',
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 175,
+            filterableType: 'select',
+            filterableItems: []
+          },
+          {
+            property: 'voice',
+            align: 'left',
+            editable: false,
+            label: 'Voice',
             sortable: true,
             show: true,
             type: 'text',
@@ -416,14 +434,26 @@ export default {
     },
     callForLanguages() {
       getVishingTemplateLanguages().then((response) => {
-        this.languages = response?.data?.data || []
-        const filterableItems = response?.data?.data
+        this.languageItems = response?.data?.data || []
+        const voiceFilterableItems = response?.data?.data
           ? response.data.data.map((language) => language.name)
           : []
+        const uniqueVoiceFilterableItems = [...new Set(voiceFilterableItems)]
+        this.voices = uniqueVoiceFilterableItems
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'voice'),
+          'filterableItems',
+          uniqueVoiceFilterableItems
+        )
+        const languageFilterableItems = response?.data?.data
+          ? response.data.data.map((language) => language.language)
+          : []
+        const uniqueLanguageFilterableItems = [...new Set(languageFilterableItems)]
+        this.languages = uniqueLanguageFilterableItems
         this.$set(
           this.tableOptions.columns.find((col) => col.property === 'language'),
           'filterableItems',
-          filterableItems
+          uniqueLanguageFilterableItems
         )
         this?.$refs?.refVishingTemplatesList?.reRenderFilters()
       })
