@@ -61,7 +61,8 @@
             <div
               class="pane"
               :style="{
-                width: '400px !important',
+                width: '25% !important',
+                minWidth: '360px',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"
