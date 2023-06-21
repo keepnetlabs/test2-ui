@@ -12,7 +12,7 @@
       @changeStatus="isTemplateDetails = false"
     >
       <template #app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
+        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" :key="templateHTML" />
       </template>
       <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -71,6 +71,7 @@
               class="pane"
               :style="{
                 width: '25% !important',
+                minWidth: '360px',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"
