@@ -74,7 +74,7 @@
           <form-group
             className="mt-6"
             title="Status"
-            sub-title="This attack vector will be included to continous scans and new scans."
+            sub-title="This attack vector will be included to continuous scans and new scans."
             hint
           >
             <v-switch
