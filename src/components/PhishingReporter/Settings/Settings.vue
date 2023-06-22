@@ -172,7 +172,6 @@ export default {
         analysisEmailDeleteMessage: addinSettings.analysisEmailDeleteMessage || '',
         simulationMailMessage: addinSettings.simulationMailMessage || ''
       }
-
       const newFormData = {
         ...this.formData,
         ...addinSettings,
@@ -185,6 +184,7 @@ export default {
       if (!newFormData?.file?.name) {
         delete newFormData.file
       }
+      newFormData.isSendSimulationMails = !newFormData.isSendSimulationMails
       const formData = new FormData()
       Object.keys(newFormData).forEach((key) => {
         formData.append(

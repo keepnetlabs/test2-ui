@@ -132,20 +132,20 @@
           <v-card class="phishing-reporter__card">
             <el-tabs v-model="tab" @tab-click="handleTabClick">
               <el-tab-pane
+                v-if="getPhishingReporterSearchPermissions"
                 :label="labels.Users"
                 name="phishing-reporter-users"
                 id="phishing-reporter-users-content"
-                v-if="getPhishingReporterSearchPermissions"
                 ><users
                   v-if="tab === 'phishing-reporter-users'"
                   ref="refUsers"
                   @callForPhishingReporterSummary="getPhishingReportSummary()"
               /></el-tab-pane>
               <el-tab-pane
+                v-if="getPhishingReporterGetPermissions"
                 :label="labels.Settings"
                 name="phishing-reporter-settings"
                 id="phishing-reporter-settings-content"
-                v-if="getPhishingReporterGetPermissions"
               >
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component

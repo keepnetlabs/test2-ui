@@ -285,11 +285,11 @@
           </div>
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
+              v-model="formValues.isSendSimulationMails"
               color="#2196f3"
               label="Turn off email forwarding for reported Phishing Simulation Emails"
               class="k-checkbox add-in-settings__list-item-checkbox"
               id="input--phishing-reporter-is-send-simulatiion-mails"
-              v-model="formValues.isSendSimulationMails"
               :readonly="!showForm"
             ></v-checkbox>
             <InputDescription
@@ -328,10 +328,10 @@
       </v-list-item>
       <phishing-settings-footer
         v-if="showFooter"
-        @submit="submit($event)"
-        @submitWithDownload="submit($event, true)"
         className="mt-3"
         :saveDisable="saveDisable"
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
       />
     </v-form>
   </v-container>
@@ -519,6 +519,7 @@ export default {
   created() {
     //If has a report
     if (this.formData) {
+      debugger
       const {
         addInName,
         brandName,
@@ -557,7 +558,7 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.isSendSimulationMails = !isSendSimulationMails
       this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         //this.$refs.refFileUpload.$refs.upload.add(response.data)
@@ -638,7 +639,7 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = isSendSimulationMails
+      this.formValues.isSendSimulationMails = !isSendSimulationMails
       this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
