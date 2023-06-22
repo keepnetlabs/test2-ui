@@ -91,6 +91,7 @@
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
               last-column-name="phoneNumber"
+              :default-values="getDefaultTargetAudienceSettings"
               :is-vishing="true"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
@@ -303,6 +304,23 @@ export default {
     },
     getDefaultValuesOfPhishingScenarios() {
       return this?.selectedRowFormData?.phishingScenarios || []
+    },
+    getDefaultTargetAudienceSettings() {
+      const keys = Object.keys(this.selectedRowFormData)
+      if (!keys.length) return {}
+      const {
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId
+      } = this.selectedRowFormData
+
+      return {
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+      }
     },
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
