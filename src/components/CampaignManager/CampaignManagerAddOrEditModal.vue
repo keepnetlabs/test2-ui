@@ -90,6 +90,7 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              :default-values="getDefaultTargetAudienceSettings"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
@@ -306,6 +307,23 @@ export default {
     },
     getDefaultValuesOfPhishingScenarios() {
       return this?.selectedRowFormData?.phishingScenarios || []
+    },
+    getDefaultTargetAudienceSettings() {
+      const keys = Object.keys(this.selectedRowFormData)
+      if (!keys.length) return {}
+      const {
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId
+      } = this.selectedRowFormData
+
+      return {
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+      }
     },
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
