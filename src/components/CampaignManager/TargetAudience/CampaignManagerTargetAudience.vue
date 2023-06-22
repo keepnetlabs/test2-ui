@@ -84,6 +84,10 @@ export default {
   name: 'CampaignManagerTargetAudience',
   components: { KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
   props: {
+    defaultValues: {
+      type: Object,
+      default: () => ({})
+    },
     showCheckboxes: {
       type: Boolean,
       default: true
@@ -157,6 +161,12 @@ export default {
     }
   },
   watch: {
+    defaultValues: {
+      deep: true,
+      handler(val) {
+        this.formData = { ...this.formData, ...val }
+      }
+    },
     selectedTargetGroupsMapped(val) {
       this.isTargetGroupsValid = !!val.length
     }
