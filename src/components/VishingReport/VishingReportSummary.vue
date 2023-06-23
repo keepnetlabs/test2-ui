@@ -153,7 +153,6 @@ export default {
       }
     },
     getResendDialogItems() {
-      console.log('this.vishingSummary', this.vishingSummary)
       const {
         answeredCount: answered = 0,
         noResponseCount: noResponse = 0,
