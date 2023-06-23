@@ -133,10 +133,13 @@ export default {
       radioGroupItems: [
         {
           label: labels.ByUserGroups
-        },
+        }
+        /*
         {
           label: labels.ByCampaign
         }
+
+         */
       ],
       axiosPayloadOfTargetGroups: getDefaultAxiosPayload()
     }
