@@ -153,9 +153,12 @@ export default {
       }
     },
     getResendDialogItems() {
-      const { answeredCount: answered = 0, noResponseCount: noResponse = 0 } =
-        this.vishingSummary || {}
-      return { answered, noResponse }
+      const {
+        answeredCount: answered = 0,
+        noResponseCount: noResponse = 0,
+        errorTargetUserCount = 0
+      } = this.vishingSummary || {}
+      return { answered, noResponse, callingError: errorTargetUserCount }
     }
   },
   created() {

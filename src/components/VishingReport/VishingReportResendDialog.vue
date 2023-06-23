@@ -30,6 +30,15 @@
           >
             <template #label> No response {{ `(${items.noResponse || 0})` }}</template>
           </v-checkbox>
+          <v-checkbox
+            v-model="types"
+            id="input--training-report-email-failed-to-send"
+            color="#2196f3"
+            :disabled="!items.callingError"
+            :value="3"
+          >
+            <template #label> Calling Error {{ `(${items.callingError || 0})` }}</template>
+          </v-checkbox>
         </div>
       </div>
     </template>
