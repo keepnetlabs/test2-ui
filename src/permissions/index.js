@@ -417,7 +417,7 @@ export default {
       method: ENUMS.METHODS.PATCH
     },
     DELETE: {
-      url: `smishing-simulator/smishing-campaign-job/{resourceId}`,
+      url: `smishing-simulator/smishing-campaign-job/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
@@ -522,37 +522,37 @@ export default {
   },
   SMISHING_DOMAIN_PERMISSIONS: {
     SEARCH: {
-      url: `smishing-simulator/domian-records/search`,
+      url: `smishing-simulator/domain-records/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     CREATE: {
-      url: `smishing-simulator/domian-records`,
+      url: `smishing-simulator/domain-records`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     UPDATE: {
-      url: `smishing-simulator/domian-records/{resourceId}`,
+      url: `smishing-simulator/domain-records/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     DELETE: {
-      url: `smishing-simulator/domian-records/{resourceId}`,
+      url: `smishing-simulator/domain-records/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     GET: {
-      url: `smishing-simulator/domian-records/{resourceId}`,
+      url: `smishing-simulator/domain-records/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EXPORT: {
-      url: `smishing-simulator/domian-records/search/export`,
+      url: `smishing-simulator/domain-records/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     FORM_DETAILS: {
-      url: `smishing-simulator/domian-records/form-details`,
+      url: `smishing-simulator/domain-records/form-details`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     }
