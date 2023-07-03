@@ -355,12 +355,14 @@ export default {
         userWhoOpenedEmail,
         userWhoClickedEmail,
         userWhoSubmittedData,
+        userWhoSubmittedMFACode,
         userWhoDownloadedAttachment,
         userWhoReportedAsSuspicious
       } = formData
       if (userWhoOpenedEmail) phishingCampaignConditionTypes.push('EmailOpened')
       if (userWhoClickedEmail) phishingCampaignConditionTypes.push('PhishingLinkClicked')
       if (userWhoSubmittedData) phishingCampaignConditionTypes.push('DataSubmitted')
+      if (userWhoSubmittedMFACode) phishingCampaignConditionTypes.push('MfaDataSubmitted')
       if (userWhoDownloadedAttachment) phishingCampaignConditionTypes.push('AttachmentDownloaded')
       if (userWhoReportedAsSuspicious) phishingCampaignConditionTypes.push('ReportedAsSuspicious')
       return phishingCampaignConditionTypes
