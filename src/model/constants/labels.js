@@ -91,6 +91,7 @@ export const labels = {
   CampaignResults: 'Campaign Results',
   NotDelivered: 'Not Delivered',
   UserWhoSubmittedData: 'Users who submitted data',
+  UserWhoSubmittedMFACode: 'Users who submitted MFA code',
   SelectInstance: 'Select Instance',
   UserWhoReportedAsSuspicious: 'Users who reported as suspicious',
   ReportedAsSuspicious: 'Reported as Suspicious',

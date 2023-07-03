@@ -45,7 +45,7 @@
             <template #label>{{ labels.UserWhoOpenedEmail }}</template>
           </v-checkbox>
           <v-checkbox
-            v-if="methodTypeId !== 3"
+            v-if="isMultipleMethod || methodTypeId !== 3"
             v-model="formData.userWhoClickedEmail"
             id="input--send-training-user-who-clicked-email"
             color="#2196f3"
@@ -54,7 +54,7 @@
             <template #label>{{ labels.UserWhoClickedEmail }}</template>
           </v-checkbox>
           <v-checkbox
-            v-if="methodTypeId === 2"
+            v-if="isMultipleMethod || isMFADataSubmission || methodTypeId === 2"
             v-model="formData.userWhoSubmittedData"
             id="input--send-training-user-who-submitted-data"
             color="#2196f3"
@@ -63,7 +63,16 @@
             <template #label>{{ labels.UserWhoSubmittedData }}</template>
           </v-checkbox>
           <v-checkbox
-            v-if="methodTypeId === 3"
+            v-if="isMultipleMethod || isMFADataSubmission || isMFAClickOnly"
+            v-model="formData.userWhoSubmittedMFACode"
+            id="input--send-training-user-who-submitted-mfa-code"
+            color="#2196f3"
+            @click="checkboxSelectionChange"
+          >
+            <template #label>{{ labels.UserWhoSubmittedMFACode }}</template>
+          </v-checkbox>
+          <v-checkbox
+            v-if="isMultipleMethod || methodTypeId === 3"
             v-model="formData.userWhoDownloadedAttachment"
             id="input--send-training-user-who-downloaded-attachment"
             color="#2196f3"
@@ -127,6 +136,7 @@ export default {
         userWhoOpenedEmail: false,
         userWhoClickedEmail: false,
         userWhoSubmittedData: false,
+        userWhoSubmittedMFACode: false,
         userWhoDownloadedAttachment: false,
         userWhoReportedAsSuspicious: false
       },
@@ -142,6 +152,23 @@ export default {
     }
   },
   computed: {
+    isMultipleMethod() {
+      return this.selectedCampaign?.methodType === 'Multiple Method' || false
+    },
+    isMFADataSubmission() {
+      return (
+        (this.selectedCampaign?.methodType === 'MFA' &&
+          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId === 2) ||
+        false
+      )
+    },
+    isMFAClickOnly() {
+      return (
+        (this.selectedCampaign?.methodType === 'MFA' &&
+          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId === 1) ||
+        false
+      )
+    },
     getTargetGroupErrorMessage() {
       return this.formData.targetGroupResourceIds.length
         ? this.getTargetGroupErrorText
@@ -177,9 +204,14 @@ export default {
           total += this.selectedCampaign.scenarioStats.submittedEmail
         }
 
+        if (this.formData.userWhoSubmittedMFACode) {
+          total += this.selectedCampaign.scenarioStats.mfa
+        }
+
         if (this.formData.userWhoDownloadedAttachment) {
           total += this.selectedCampaign.scenarioStats.attachmentOpenedEmail
         }
+
         if (this.formData.userWhoReportedAsSuspicious) {
           total += this.selectedCampaign.scenarioStats.reportedEmail
         }
@@ -194,12 +226,8 @@ export default {
   watch: {
     selectedRadioGroupIndex(val) {
       if (val === 0) {
+        this.resetCheckboxes()
         this.totalTargetUserCount = 0
-        this.formData.userWhoOpenedEmail = false
-        this.formData.userWhoClickedEmail = false
-        this.formData.userWhoSubmittedData = false
-        this.formData.userWhoDownloadedAttachment = false
-        this.formData.userWhoReportedAsSuspicious = false
         this.formData.campaignResourceId = ''
         this.methodTypeId = ''
         this.selectedCampaign = null
@@ -213,6 +241,14 @@ export default {
     }
   },
   methods: {
+    resetCheckboxes() {
+      this.formData.userWhoOpenedEmail = false
+      this.formData.userWhoClickedEmail = false
+      this.formData.userWhoSubmittedData = false
+      this.formData.userWhoSubmittedMFACode = false
+      this.formData.userWhoDownloadedAttachment = false
+      this.formData.userWhoReportedAsSuspicious = false
+    },
     handleTableSelectionChange(items) {
       this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
@@ -234,16 +270,8 @@ export default {
     handleCampaignChange(item) {
       this.selectedCampaign = item
       this.methodTypeId = item.methodTypeId
-      if (this.methodTypeId === 3) {
-        this.formData.userWhoClickedEmail = false
-      }
-      if (this.methodTypeId !== 2) {
-        this.formData.userWhoSubmittedData = false
-      }
-      if (this.methodTypeId !== 3) {
-        this.formData.userWhoDownloadedAttachment = false
-      }
       this.formData.campaignResourceId = item.resourceId
+      this.resetCheckboxes()
     },
     checkboxSelectionChange() {
       this.targetUserCheckboxSelectionError = false
