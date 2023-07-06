@@ -179,3 +179,13 @@ export function makeDefaultTemplate(resourceId = '', payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getCompanyPrivacy() {
+  return testRequest.get(`/companies/privacy`)
+}
+
+export function updateCompanyPrivacy(payload = {}) {
+  return testRequest.put(`/companies/privacy`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
