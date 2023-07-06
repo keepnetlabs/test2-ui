@@ -231,6 +231,8 @@ export default {
       return this.formData.distributionTypeId === '1'
     },
     getDistributionText() {
+      if (this.totalTargetUserCount === 1)
+        return `Sending an email will start immediately for a single user.`
       return this.formData.distributionTypeId === '1'
         ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
         : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
@@ -386,7 +388,12 @@ export default {
       })
     },
     callForCalculateSendingInfo() {
-      if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
+      if (
+        !this.targetGroupResourceIds.length ||
+        !this.totalTargetUserCount ||
+        this.totalTargetUserCount === 1
+      )
+        return
       if (!this.formData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
