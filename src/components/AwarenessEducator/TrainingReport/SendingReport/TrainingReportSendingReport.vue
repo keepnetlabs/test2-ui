@@ -125,7 +125,9 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
-
+const ENUMS = {
+  SEND_GRID: 'Sendgrid'
+}
 export default {
   name: 'TrainingReportSendingReport',
   components: {
@@ -383,7 +385,7 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return 'Event history is only available for Sendgrid'
+      return `Event history is only available for ${provider}`
     }
   },
   created() {
