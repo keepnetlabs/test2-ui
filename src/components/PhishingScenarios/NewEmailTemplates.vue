@@ -526,7 +526,7 @@ export default {
         let newFile = null
         let fileExtension = ''
         if (file?.name.includes('.')) {
-          fileExtension = file.name.split('.').pop()
+          fileExtension = file?.name?.split('.')?.pop()
         }
         if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })

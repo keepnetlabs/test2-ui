@@ -92,7 +92,7 @@ export default {
         }
         newTags.splice(newTags.length - 1, 1)
         if (tagSearch.includes(',')) {
-          const tags = [...new Set(tagSearch.split(','))]
+          const tags = [...new Set(tagSearch?.split(','))]
           tags.forEach((tag) => {
             if (tag.trim() && !newTags.includes(tag)) {
               this.tags.push(tag.trim().substring(0, 20))
