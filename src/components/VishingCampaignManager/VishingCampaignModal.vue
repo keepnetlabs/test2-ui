@@ -782,9 +782,10 @@ export default {
         const selectedTableItems = items
           .filter((item) => item)
           .map((item) => ({ ...item, resourceId: item.value }))
-        this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
-          selectedTableItems
-        )
+        if (this.$refs?.refTargetAudience?.$refs?.refGroupTable?.$refs?.refTable)
+          this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+            selectedTableItems
+          )
       })
     },
     handleTableSelectionChange(items) {

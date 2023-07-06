@@ -408,9 +408,13 @@ export default {
           resourceId: tGroup.value
         }))
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
-        this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
-          this.selectedTargetGroups
+        if (
+          this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs
+            ?.refGroupTable?.$refs?.refTable
         )
+          this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+            this.selectedTargetGroups
+          )
       })
     },
     getFormValues() {
