@@ -139,7 +139,7 @@ export function email(value, message = 'Invalid email address') {
 
 export function controlEmailLength(value, message = '') {
   value = getValue(value)
-  const [leftSide = '', rightSide = ''] = value.split('@')
+  const [leftSide = '', rightSide = ''] = value?.split('@')
   if (leftSide.length > 64 || rightSide.length > 256) {
     return message ? message : ''
   }
@@ -267,7 +267,7 @@ export function verifiedDomains(
 ) {
   value = getValue(value)
   if (value.includes('@')) {
-    value = value.split('@')[1]
+    value = value?.split('@')[1]
     return verifiedDomainList.some((domain) => domain === value) || message
   }
   return true

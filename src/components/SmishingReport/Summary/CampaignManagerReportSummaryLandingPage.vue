@@ -178,10 +178,7 @@ export default {
         instanceGroup
       )
         .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.templates = data?.landingPages || []
+          this.templates = response?.data?.data?.landingPages || []
         })
         .finally(this.setLoading)
     },
