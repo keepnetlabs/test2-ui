@@ -205,7 +205,7 @@
                       Scan and Delivery Settings</v-list-item-title
                     >
                     <v-list-item-subtitle class="new-phishing-scenario__sub-title"
-                      >Set email delivery and continuos scan options</v-list-item-subtitle
+                      >Set email delivery and continuous scan options</v-list-item-subtitle
                     >
                   </v-list-item-content>
                 </v-list-item>
@@ -218,7 +218,7 @@
                   {{ continuosScanErrortext }}
                 </v-alert>
                 <v-form ref="refFormStep2" lazy-validation class="mt-8">
-                  <form-group title="Continuos Scan" hint>
+                  <form-group title="Continuous Scan" hint>
                     <v-checkbox
                       v-model="scanAndDeliveryValues.continuousScan"
                       color="#2196f3"

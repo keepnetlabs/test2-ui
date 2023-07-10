@@ -338,7 +338,7 @@
           </v-list-group>
           <v-list-group
             v-if="getVishingLeftMenuPermissions"
-            id="btn--link-navigator-menu-phishing-simulator-list-group"
+            id="btn--link-navigator-menu-vishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
             :prepend-icon="iconPaths.mdiPhoneInTalk"
@@ -385,8 +385,8 @@
             v-if="getSmishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-smishing-simulator-list-group"
             no-action
+            prepend-icon="$smishing-simulator"
             :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
-            :prepend-icon="iconPaths.mdiMessageAlert"
             :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
@@ -824,8 +824,7 @@ import {
   mdiHelpCircle,
   mdiPhoneInTalk,
   mdiBook,
-  mdiSearchWeb,
-  mdiMessageAlert
+  mdiSearchWeb
 } from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
@@ -887,8 +886,7 @@ export default {
         mdiHelpCircle,
         mdiPhoneInTalk,
         mdiBook,
-        mdiSearchWeb,
-        mdiMessageAlert
+        mdiSearchWeb
       },
       switchDialogStatus: false,
       showNewPassword: false,

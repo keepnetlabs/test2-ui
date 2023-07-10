@@ -130,6 +130,61 @@
                   />
                 </ElTabs>
                 <ElTabs v-model="tab" class="k-sub-tab" @tab-click="handleTabChange">
+                  <ElTabPane
+                    :label="labels.CampaignResults"
+                    name="campaign-results"
+                    id="send-training-campaign-results"
+                  >
+                    <div
+                      class="send-training-campaign-results-container"
+                      style="margin-top: -20px;"
+                    >
+                      <FormGroupHorizontalContent
+                        :label="labels.SelectInstance"
+                        style="margin-top: 0 !important;"
+                      >
+                        <KSelect
+                          v-model.trim="phishingCampaignInstanceGroup"
+                          id="input--campaign-manager-advanced-settings-other-settings-percent"
+                          class="ml-2"
+                          style="min-width: 80%;"
+                          outlined
+                          dense
+                          hide-details
+                          :items="phishingCampaignReportItems"
+                          @change="callForCampaignSummary"
+                        />
+                      </FormGroupHorizontalContent>
+                    </div>
+                    <DatatableLoading
+                      v-if="isCampaignLoading"
+                      :loading="isCampaignLoading"
+                      class="mt-2"
+                    />
+                    <div v-show="!isCampaignLoading" style="margin-top: 24px;">
+                      <div
+                        class="campaign-manager-target-user-groups-header"
+                        style="margin-right: 16px; flex-direction: row;"
+                      >
+                        <v-icon color="#000000">mdi-account-multiple</v-icon>
+                        <span class="campaign-manager-target-user-groups-header__text"
+                          >Total {{ totalCampaignUsers }} users from
+                          {{ totalCampaignGroups }} groups</span
+                        >
+                      </div>
+                    </div>
+                    <div
+                      v-if="!isCampaignLoading"
+                      style="
+                        margin-top: -64px;
+                        margin-left: 20px;
+                        max-height: 525px;
+                        max-width: 525px;
+                      "
+                    >
+                      <Pie :data="pieData" :chart-options="chartOptions" />
+                    </div>
+                  </ElTabPane>
                   <ElTabPane name="email" :label="labels.JustEmail" id="send-training-email-page">
                     <div class="template-preview mt-n1 pt-0">
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
@@ -221,61 +276,6 @@
                       />
                     </div>
                   </ElTabPane>
-                  <ElTabPane
-                    :label="labels.CampaignResults"
-                    name="campaign-results"
-                    id="send-training-campaign-results"
-                  >
-                    <div
-                      class="send-training-campaign-results-container"
-                      style="margin-top: -20px;"
-                    >
-                      <FormGroupHorizontalContent
-                        :label="labels.SelectInstance"
-                        style="margin-top: 0 !important;"
-                      >
-                        <KSelect
-                          v-model.trim="phishingCampaignInstanceGroup"
-                          id="input--campaign-manager-advanced-settings-other-settings-percent"
-                          class="ml-2"
-                          style="min-width: 80%;"
-                          outlined
-                          dense
-                          hide-details
-                          :items="phishingCampaignReportItems"
-                          @change="callForCampaignSummary"
-                        />
-                      </FormGroupHorizontalContent>
-                    </div>
-                    <DatatableLoading
-                      v-if="isCampaignLoading"
-                      :loading="isCampaignLoading"
-                      class="mt-2"
-                    />
-                    <div v-show="!isCampaignLoading" style="margin-top: 24px;">
-                      <div
-                        class="campaign-manager-target-user-groups-header"
-                        style="margin-right: 16px; flex-direction: row;"
-                      >
-                        <v-icon color="#000000">mdi-account-multiple</v-icon>
-                        <span class="campaign-manager-target-user-groups-header__text"
-                          >Total {{ totalCampaignUsers }} users from
-                          {{ totalCampaignGroups }} groups</span
-                        >
-                      </div>
-                    </div>
-                    <div
-                      v-if="!isCampaignLoading"
-                      style="
-                        margin-top: -64px;
-                        margin-left: 20px;
-                        max-height: 525px;
-                        max-width: 525px;
-                      "
-                    >
-                      <Pie :data="pieData" :chart-options="chartOptions" />
-                    </div>
-                  </ElTabPane>
                 </ElTabs>
               </div>
             </template>
@@ -365,10 +365,11 @@ export default {
       scenarioType: '',
       language: '',
       isShowTargetGroupUsersError: false,
-      scenarioTypeItems: ['Click-Only', 'Data Submission', 'Attachment'],
-      tab: '',
+      scenarioTypeItems: ['Multiple Method', 'Click-Only', 'Data Submission', 'Attachment', 'MFA'],
+      tab: 'campaign-results',
       phishingScenarios: [],
       campaignItems: [],
+      campaignMethod: 'Click-Only',
       totalCampaignUsers: 0,
       isCampaignLoading: false,
       totalCampaignGroups: 0,
@@ -523,8 +524,9 @@ export default {
       }
     },
     setSelectedTemplate(row) {
-      this.tab = 'email'
+      this.tab = 'campaign-results'
       this.selectedCampaign = row
+      this.campaignMethod = row.methodType
       getCampaignManagerPreview(row.resourceId).then((response) => {
         const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
         this.phishingScenarios = phishingScenarioPreviewList
@@ -540,7 +542,7 @@ export default {
             const { results = [] } = data
             this.phishingCampaignReportItems = results.map((result) => ({
               text: `${result.startDate}(${result.status})`,
-              value: row.instanceGroup
+              value: result.instanceGroup
             }))
             if (this.phishingCampaignReportItems.length) {
               this.phishingCampaignResourceId = row.resourceId
@@ -649,7 +651,51 @@ export default {
               }
             }
           }
-          if (this.isAttachmentBasedScenario) {
+          if (this.campaignMethod === 'Multiple Method') {
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: [
+                '#217124',
+                '#43A047',
+                '#E6A23C',
+                '#FF4433',
+                '#913831',
+                '#A52A2A',
+                '#FF0000',
+                '#757575'
+              ],
+              labels: [
+                labels.NoResponse,
+                labels.ReportedAsSuspicious,
+                labels.OpenedEmail,
+                labels.ClickedThePhishingLink,
+                labels.OpenedAttachment,
+                labels.SubmittedData,
+                labels.SubmittedMFACode,
+                labels.NotDelivered
+              ],
+              showTooltipLine: true
+            }
+          } else if (this.campaignMethod === 'MFA') {
+            const scenarioMethodTypeId = data?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
+              labels: [
+                labels.NoResponse,
+                labels.OpenedEmail,
+                labels.ReportedAsSuspicious,
+                labels.ClickedThePhishingLink,
+                labels.SubmittedMFACode,
+                labels.NotDelivered
+              ],
+              showTooltipLine: true
+            }
+            if (scenarioMethodTypeId === 2) {
+              this.chartOptions.labels.splice(4, 0, labels.SubmittedData)
+              this.chartOptions.backgroundColor.splice(4, 0, '#B83A3A')
+            }
+          } else if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
               backgroundColor: ['#217124', '#E6A23C', '#43A047', '#F56C6C', '#757575'],
@@ -662,33 +708,34 @@ export default {
               ],
               showTooltipLine: true
             }
-          }
-          if (this.methodTypeId === 2) {
-            this.chartOptions = {
-              ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
-              labels: [
-                labels.NoResponse,
-                labels.OpenedEmail,
-                labels.ReportedAsSuspicious,
-                labels.ClickedThePhishingLink,
-                labels.SubmittedData,
-                labels.NotDelivered
-              ],
-              showTooltipLine: true
-            }
           } else {
-            this.chartOptions = {
-              ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#757575'],
-              labels: [
-                labels.NoResponse,
-                labels.OpenedEmail,
-                labels.ReportedAsSuspicious,
-                labels.ClickedThePhishingLink,
-                labels.NotDelivered
-              ],
-              showTooltipLine: true
+            if (this.methodTypeId === 2) {
+              this.chartOptions = {
+                ...chartOptions,
+                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
+                labels: [
+                  labels.NoResponse,
+                  labels.OpenedEmail,
+                  labels.ReportedAsSuspicious,
+                  labels.ClickedThePhishingLink,
+                  labels.SubmittedData,
+                  labels.NotDelivered
+                ],
+                showTooltipLine: true
+              }
+            } else {
+              this.chartOptions = {
+                ...chartOptions,
+                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#757575'],
+                labels: [
+                  labels.NoResponse,
+                  labels.OpenedEmail,
+                  labels.ReportedAsSuspicious,
+                  labels.ClickedThePhishingLink,
+                  labels.NotDelivered
+                ],
+                showTooltipLine: true
+              }
             }
           }
           const {
@@ -698,9 +745,10 @@ export default {
             notDelivered,
             openedEmail,
             reportedEmail,
-            submittedEmail
+            submittedEmail,
+            mfa
           } = data?.scenarioStats
-          const pieData = []
+          let pieData = []
           pieData.push(noResponseEmail)
           pieData.push(openedEmail)
           pieData.push(reportedEmail)
@@ -708,6 +756,25 @@ export default {
           if (this.methodTypeId === 2) pieData.push(submittedEmail)
           if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)
           pieData.push(notDelivered)
+          if (this.campaignMethod === 'Multiple Method') {
+            pieData = [
+              noResponseEmail,
+              reportedEmail,
+              openedEmail,
+              clickedEmail,
+              attachmentOpenedEmail,
+              submittedEmail,
+              mfa,
+              notDelivered
+            ]
+          }
+          if (this.campaignMethod === 'MFA') {
+            const scenarioMethodTypeId = data?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId
+            pieData = [noResponseEmail, openedEmail, reportedEmail, clickedEmail, mfa, notDelivered]
+            if (scenarioMethodTypeId === 2) {
+              pieData.splice(4, 0, submittedEmail)
+            }
+          }
           this.pieData = JSON.parse(JSON.stringify(pieData))
         })
         .finally(() => {

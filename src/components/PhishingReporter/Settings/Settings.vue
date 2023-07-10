@@ -172,7 +172,6 @@ export default {
         analysisEmailDeleteMessage: addinSettings.analysisEmailDeleteMessage || '',
         simulationMailMessage: addinSettings.simulationMailMessage || ''
       }
-
       const newFormData = {
         ...this.formData,
         ...addinSettings,

@@ -285,11 +285,11 @@
           </div>
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
+              v-model="formValues.isSendSimulationMails"
               color="#2196f3"
               label="Turn off email forwarding for reported Phishing Simulation Emails"
               class="k-checkbox add-in-settings__list-item-checkbox"
               id="input--phishing-reporter-is-send-simulatiion-mails"
-              v-model="formValues.isSendSimulationMails"
               :readonly="!showForm"
             ></v-checkbox>
             <InputDescription
@@ -328,10 +328,10 @@
       </v-list-item>
       <phishing-settings-footer
         v-if="showFooter"
-        @submit="submit($event)"
-        @submitWithDownload="submit($event, true)"
         className="mt-3"
         :saveDisable="saveDisable"
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
       />
     </v-form>
   </v-container>

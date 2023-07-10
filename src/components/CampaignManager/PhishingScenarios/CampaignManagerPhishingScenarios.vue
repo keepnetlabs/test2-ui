@@ -95,8 +95,8 @@
               <div
                 class="pane"
                 :style="{
-                  maxWidth: '25% !important',
-                  minWidth: '25% !important'
+                  width: '25% !important',
+                  minWidth: '360px'
                 }"
                 @scroll="handleScroll"
               >
