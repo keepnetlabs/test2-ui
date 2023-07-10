@@ -223,7 +223,7 @@ export default {
           if (obj[path] !== undefined) return obj[path]
           path = path.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
           path = path.replace(/^\./, '') // strip a leading dot
-          return getNestedValue(obj, path.split('.'), fallback)
+          return getNestedValue(obj, path?.split('.'), fallback)
         }
 
         function getNestedValue(obj, path, fallback) {

@@ -729,11 +729,14 @@ export default {
           targetGroups
         } = response?.data?.data || {}
         this.formValues.callerPhoneNumber = callerPhoneNumber
-        this.formValues.distributionEndTime = distributionEndTime.split(':').slice(0, 2).join(':')
+        this.formValues.distributionEndTime = distributionEndTime
+          ?.split(':')
+          ?.slice(0, 2)
+          ?.join(':')
         this.formValues.distributionStartTime = distributionStartTime
-          .split(':')
-          .slice(0, 2)
-          .join(':')
+          ?.split(':')
+          ?.slice(0, 2)
+          ?.join(':')
         this.formValues.sendCallsOnDays = getSendCallOnDays(distributionDays)
         this.formValues.distributionOverDays = distributionOverDays / 7
         this.formValues.excludeFromReports = excludeFromReports
@@ -779,9 +782,10 @@ export default {
         const selectedTableItems = items
           .filter((item) => item)
           .map((item) => ({ ...item, resourceId: item.value }))
-        this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
-          selectedTableItems
-        )
+        if (this.$refs?.refTargetAudience?.$refs?.refGroupTable?.$refs?.refTable)
+          this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+            selectedTableItems
+          )
       })
     },
     handleTableSelectionChange(items) {

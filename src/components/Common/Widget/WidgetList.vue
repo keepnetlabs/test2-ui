@@ -18,7 +18,7 @@
           :key="col.label"
           :class="[
             'k-widget-list__header',
-            `k-widget-list__th-${col.label.split(' ').join('').toLowerCase()}`
+            `k-widget-list__th-${col?.label?.split(' ').join('').toLowerCase()}`
           ]"
           :style="col['thStyle'] && col['thStyle']"
         >

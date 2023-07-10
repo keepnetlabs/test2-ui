@@ -321,7 +321,8 @@ export default {
         .filter((item) => item)
         .map((item) => ({ ...item, resourceId: item.value }))
       if (
-        this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.$refs.elTableRef
+        this.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupTable?.$refs?.refTable?.$refs
+          ?.elTableRef
       ) {
         this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
           selectedTableItems

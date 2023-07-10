@@ -90,7 +90,7 @@ export default {
         const newData = []
         for (const row of data) {
           let { attachmentOpenedCount, clickedCount, submittedCount, date } = row
-          const splittedDate = date.split('-')
+          const splittedDate = date?.split('-')
           const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
           if (timeStampOfDate < minDate) {
             minDate = timeStampOfDate

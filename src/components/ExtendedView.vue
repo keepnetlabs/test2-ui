@@ -836,7 +836,7 @@ export default {
     getComboBoxValue(prop) {
       if (typeof prop === 'string' && prop.length > 0) {
         if (prop.charAt(prop.length - 1) === ',') {
-          return prop.substring(0, prop.length - 1).split(',')
+          return prop.substring(0, prop.length - 1)?.split(',')
         } else {
           return prop && prop.split(',')
         }

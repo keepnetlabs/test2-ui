@@ -46,10 +46,10 @@ export function createCompanyGroups(payload) {
 }
 
 function createCompanyPayload(payload) {
-  const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
-  const parsedStartDate = parsedStartDatePart.split('/').reverse().join('-')
-  const parsedEndDatePart = payload.LicenseEndDate.split(' ')[0]
-  const parsedEndDate = parsedEndDatePart.split('/').reverse().join('-')
+  const parsedStartDatePart = payload.LicenseStartDate?.split(' ')[0]
+  const parsedStartDate = parsedStartDatePart?.split('/').reverse().join('-')
+  const parsedEndDatePart = payload.LicenseEndDate?.split(' ')[0]
+  const parsedEndDate = parsedEndDatePart?.split('/').reverse().join('-')
   payload.LicenseStartDate = parsedStartDate
   payload.LicenseEndDate = parsedEndDate
 

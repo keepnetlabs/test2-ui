@@ -75,7 +75,8 @@ export default (router) => {
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
       'ResizeObserver loop completed with undelivered notifications.',
-      'Request failed with status code 403'
+      'Request failed with status code 403',
+      'Userflow.js error reply (undefined): undefined'
     ],
     trackComponents: true,
     tracesSampleRate: 1.0

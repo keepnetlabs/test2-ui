@@ -72,14 +72,14 @@ export default function imageToBlob(img, options, callback) {
 function dataURItoBlob(uri) {
   let byteString, mimeString
 
-  if (uri.split(',')[0].indexOf('base64') >= 0) {
+  if (uri?.split(',')[0].indexOf('base64') >= 0) {
     //atob(uri.split(',')[1])
-    byteString = Buffer.from(uri.split(',')[1], 'base64')
+    byteString = Buffer.from(uri?.split(',')[1], 'base64')
   } else {
-    byteString = decodeURI(uri.split(',')[1])
+    byteString = decodeURI(uri?.split(',')[1])
   }
 
-  mimeString = uri.split(',')[0].split(':')[1].split(';')[0]
+  mimeString = uri?.split(',')?.[0]?.split(':')?.[1]?.split(';')?.[0]
 
   return new Blob([byteString], {
     type: mimeString
@@ -96,5 +96,5 @@ function handleImageToURI(options, err, uri) {
 }
 
 function getType(url) {
-  return url ? types[url.split('?').shift().split('.').pop()] : null
+  return url ? types[url?.split('?')?.shift()?.split('.')?.pop()] : null
 }

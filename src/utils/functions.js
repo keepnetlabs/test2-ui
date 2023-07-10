@@ -249,7 +249,7 @@ export function passwordComplexity(pwd) {
   if (pwd) {
     nScore = parseInt(pwd.length * nMultLength)
     nLength = pwd.length
-    let arrPwd = pwd.replace(/\s+/g, '').split(/\s*/)
+    let arrPwd = pwd.replace(/\s+/g, '')?.split(/\s*/)
     let arrPwdLen = arrPwd.length
 
     /* Loop through password to check for Symbol, Numeric, Lowercase and Uppercase pattern matches */
