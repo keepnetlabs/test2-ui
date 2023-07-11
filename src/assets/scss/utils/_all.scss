@@ -4,20 +4,15 @@
     display: block;
   }
 }
-
 .cursor-pointer{
   cursor: pointer;
 }
-
 .bg-image-incident-analysis {
   background-image: linear-gradient(to bottom, #f3a0a0, #f56c6c 99%);
 }
-
 .bg-investigation-green{
   background-color: #43a047;
 }
-
-
 .hide-caret {
   .v-input__append-inner {
     display: none !important;
@@ -96,4 +91,45 @@
 }
 .fs-4{
   font-size:16px;
+}
+.bg-aqua-light{
+  background-color:#F1F8FE;
+}
+.text-primary-color{
+  color: #383B41;
+}
+.max-w-554{
+  max-width: 554px !important;
+}
+.access-text{
+  max-width: 554px !important;
+  color: #383B41;
+  background-color:#F1F8FE;
+  padding:16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom:8px;
+  font-weight: 400;
+  line-height: 21px;
+}
+.account-privacy-button{
+  margin-left: 16px;
+  background: transparent !important;
+  &:before{
+    background: transparent !important;
+  }
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+.error-bg-red{
+  background-color: #FEF7F7;
+}
+
+.br-2{
+  border-radius:8px;
+}
+.fs-medium{
+  font-size:14px;
 }

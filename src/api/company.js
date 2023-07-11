@@ -46,10 +46,10 @@ export function createCompanyGroups(payload) {
 }
 
 function createCompanyPayload(payload) {
-  const parsedStartDatePart = payload.LicenseStartDate?.split(' ')[0]
-  const parsedStartDate = parsedStartDatePart?.split('/').reverse().join('-')
-  const parsedEndDatePart = payload.LicenseEndDate?.split(' ')[0]
-  const parsedEndDate = parsedEndDatePart?.split('/').reverse().join('-')
+  const parsedStartDatePart = payload.LicenseStartDate?.split(' ')?.[0]
+  const parsedStartDate = parsedStartDatePart?.split('/')?.reverse()?.join('-')
+  const parsedEndDatePart = payload.LicenseEndDate?.split(' ')?.[0]
+  const parsedEndDate = parsedEndDatePart?.split('/')?.reverse()?.join('-')
   payload.LicenseStartDate = parsedStartDate
   payload.LicenseEndDate = parsedEndDate
 
@@ -176,6 +176,16 @@ export function bulkDeleteCompanyGroups(payload = {}) {
 
 export function makeDefaultTemplate(resourceId = '', payload = {}) {
   return testRequest.put(`/companies/email-templates/make-default/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function getCompanyPrivacy() {
+  return testRequest.get(`/companies/privacy`)
+}
+
+export function updateCompanyPrivacy(payload = {}) {
+  return testRequest.put(`/companies/privacy`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }

@@ -56,6 +56,17 @@ testService.interceptors.response.use(
       return Promise.resolve({})
     }
 
+    if (error?.response?.status === 403 && error?.response?.data?.status === 'PRIVACY_ERROR') {
+      const mainCompanyId = localStorage.getItem('companyResourceId')
+      const mainCompanyName = localStorage.getItem('companyName')
+      localStorage.setItem('isSelectCompany', 'false')
+      localStorage.setItem('companyId', mainCompanyId)
+      localStorage.setItem('companyRequestId', mainCompanyId)
+      localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
+      localStorage.setItem('selectedCompanyName', mainCompanyName)
+      router.go(0)
+    }
+
     if (error?.response?.status === 503) {
       return Promise.resolve({})
     }
