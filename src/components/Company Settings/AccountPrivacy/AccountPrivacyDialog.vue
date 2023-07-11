@@ -27,6 +27,8 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { updateCompanyPrivacy } from '@/api/company'
+
 export default {
   components: {
     AppDialog,
@@ -38,6 +40,10 @@ export default {
     },
     timeAllowed: {
       type: String
+    },
+    privacyDurationId: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -46,10 +52,19 @@ export default {
     }
   },
   methods: {
-    handleClose() {
-      this.$emit('on-close')
+    handleClose(forceUpdate = false) {
+      this.$emit('on-close', forceUpdate)
     },
-    handleConfirm() {}
+    handleConfirm() {
+      this.isActionButtonDisabled = true
+      updateCompanyPrivacy({ privacyDurationId: this.privacyDurationId })
+        .then(() => {
+          this.handleClose(true)
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
+    }
   }
 }
 </script>

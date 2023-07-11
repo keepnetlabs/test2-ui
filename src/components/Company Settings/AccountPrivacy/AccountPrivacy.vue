@@ -1,15 +1,31 @@
 <template>
   <div>
-    <CompanySettingsHeader title="Account Privacy" sub-title="Manage accaunt privacy settings" />
+    <CompanySettingsHeader title="Account Privacy" sub-title="Manage account privacy settings" />
     <AccountPrivacyDialog
       v-if="isShowAccountPrivacyDialog"
       :status="isShowAccountPrivacyDialog"
       :time-allowed="getTimeAllowed"
+      :privacy-duration-id="privacyDurationId"
       @on-close="toggleShowAccountPrivacyDialog"
     />
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div v-else>
-      <div class="access-text">{{ accessText }}</div>
+      <div class="access-text">
+        <span v-if="confirmedPrivacyDurationId === 0 || confirmedPrivacyDurationId === 1">{{
+          accessText
+        }}</span>
+        <div v-else>
+          <div class="pb-2">
+            You are granting access permission to your account for a limited time
+          </div>
+          <div>
+            <strong class="fw-600">Start Time: </strong> <span>{{ privacyDurationStartTime }}</span>
+          </div>
+          <div>
+            <strong class="fw-600">End Time: </strong> <span>{{ privacyDurationEndTime }}</span>
+          </div>
+        </div>
+      </div>
       <FormGroup
         class-name="campaign-manager-smtp-settings max-w-554"
         title="Access Period"
@@ -21,6 +37,7 @@
           class="new-integration__select"
           dense
           outlined
+          hide-details
           placeholder="Select Option"
           :items="accessPeriodItems"
           @change="handlePrivacyDurationChange"
@@ -49,6 +66,7 @@ import FormGroup from '../../SmallComponents/FormGroup'
 import KSelect from '../../Common/Inputs/KSelect'
 import { getCompanyPrivacy } from '@/api/company'
 import AccountPrivacyDialog from './AccountPrivacyDialog.vue'
+import { PRIVACY_DURATIONS, accessPeriodItems } from './utils'
 export default {
   name: 'AccountPrivacy',
   components: {
@@ -62,18 +80,12 @@ export default {
   data() {
     return {
       accessText: '',
-      privacyDurationId: 1,
-      confirmedPrivacyDurationId: 1,
+      privacyDurationId: PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY,
+      confirmedPrivacyDurationId: PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY,
+      privacyDurationStartTime: '',
+      privacyDurationEndTime: '',
       isConfirmed: true,
-      accessPeriodItems: [
-        { text: 'Deny allowing access', value: 0 },
-        { text: 'Allow access for 1 hour', value: 2 },
-        { text: 'Allow access for 1 day', value: 3 },
-        { text: 'Allow access for 3 days', value: 4 },
-        { text: 'Allow access for 7 days', value: 5 },
-        { text: 'Allow access for 30 days', value: 6 },
-        { text: 'Allow access continuously', value: 1 }
-      ],
+      accessPeriodItems,
       isShowAccountPrivacyDialog: false
     }
   },
@@ -86,19 +98,19 @@ export default {
       }
     },
     getTimeAllowed() {
-      if (this.privacyDurationId === 0) {
+      if (this.privacyDurationId === PRIVACY_DURATIONS.DENY) {
         return 'Deny allowing access'
-      } else if (this.privacyDurationId === 1) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY) {
         return 'Allow access continuously'
-      } else if (this.privacyDurationId === 2) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.ONE_HOUR) {
         return '1 hour'
-      } else if (this.privacyDurationId === 3) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.ONE_DAY) {
         return '1 day'
-      } else if (this.privacyDurationId === 4) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.THREE_DAYS) {
         return '3 days'
-      } else if (this.privacyDurationId === 5) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.SEVEN_DAYS) {
         return '7 days'
-      } else if (this.privacyDurationId === 6) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.THIRTY_DAYS) {
         return '30 days'
       }
       return ''
@@ -113,24 +125,27 @@ export default {
       getCompanyPrivacy()
         .then((response) => {
           const { data: { data = {} } = {} } = response || {}
-          this.privacyDurationId = data?.privacyDurationId || 1
+          this.privacyDurationId = data?.privacyDurationId ?? PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY
+          this.privacyDurationStartTime = data?.privacyDurationStartTime || ''
+          this.privacyDurationEndTime = data?.privacyDurationEndTime || ''
           this.confirmedPrivacyDurationId = this.privacyDurationId
+          this.isConfirmed = true
           this.setAccessText()
         })
         .finally(this.setLoading)
     },
     setAccessText() {
-      if (this.privacyDurationId === 0) {
+      if (this.privacyDurationId === PRIVACY_DURATIONS.DENY) {
         this.accessText = 'You deny access to your account'
-      } else if (this.privacyDurationId === 1) {
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY) {
         this.accessText = 'You are granting continuous access to your account'
-      } else {
       }
     },
     handlePrivacyDurationChange() {
       this.isConfirmed = this.privacyDurationId === this.confirmedPrivacyDurationId
     },
-    toggleShowAccountPrivacyDialog() {
+    toggleShowAccountPrivacyDialog(forceUpdate = false) {
+      if (forceUpdate) this.callForData()
       this.isShowAccountPrivacyDialog = !this.isShowAccountPrivacyDialog
     },
     handleAccessPeriod() {

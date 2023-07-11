@@ -6,8 +6,8 @@
           <v-icon medium left color="blue" class="ml-2">mdi-swap-horizontal</v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title class="v-card-headline">Switch Company</v-list-item-title>
-          <v-list-item-subtitle class="connection-lost-title"
+          <v-list-item-title class="k-dialog__title">Switch Company</v-list-item-title>
+          <v-list-item-subtitle class="k-dialog__sub-title"
             >Switch between reseller and company accounts</v-list-item-subtitle
           >
         </v-list-item-content>
@@ -54,7 +54,7 @@
               outlined
               hide-details
               autocomplete="off"
-              placeholder="Search for a company to manage"
+              placeholder="Select company to manage"
               :append-icon="searchCompanyIcon"
               @input="handleSearchText"
               @focus="handleSearchCompanyFocus"
@@ -68,6 +68,13 @@
               :is-open-all="isOpenAllMenuItems"
               @on-selected-account="handleOnSelectedAccount"
             />
+            <div
+              v-if="isRenderPrivacyCard"
+              class="error-bg-red mt-2 px-4 py-4 fs-medium d-flex align-center br-2"
+            >
+              <VIcon color="#F56C6C">mdi-information</VIcon>
+              <span class="ml-2">You don't have access permission to this company account</span>
+            </div>
           </div>
         </div>
       </div>
@@ -85,6 +92,7 @@
           id="btn-confirm--switch-company-dashboard-popup"
           color="#2196f3"
           class="k-dialog__button"
+          :style="getConfirmButtonStyle"
           :disabled="isSwitchAccountDisabled"
           @click="onClickSelectedAccount(selectedAccount)"
           >{{ labels.Confirm }}</v-btn
@@ -100,6 +108,8 @@ import { getMyCompanies } from '@/api/company'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
 import SwitchAccountTreeView from '@/components/SwitchAccountTreeView'
+import useDebounce from '@/hooks/useDebounce'
+import { PRIVACY_DURATIONS } from './Company Settings/AccountPrivacy/utils'
 export default {
   name: 'SwitchAccount',
   components: { SwitchAccountTreeView },
@@ -108,6 +118,7 @@ export default {
       type: Object
     }
   },
+  mixins: [useDebounce],
   data() {
     return {
       labels,
@@ -123,14 +134,83 @@ export default {
       openedArrays: [],
       searchedCompanyText: '',
       isCompaniesLoading: false,
-      isSwitchAccountDisabled: false,
+      isSwitchAccountDisabled: true,
       timeout: null,
       searchedText: '',
       selectedAccount: ''
     }
   },
+  computed: {
+    ...mapGetters({
+      isLoadingFromStore: 'common/getIsLoading',
+      getDropdown: 'dashboard/getCompanyDropdowns',
+      isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen'
+    }),
+    ...mapState({
+      currentCompany: (state) => state.dashboard.selectedCompany
+    }),
+    getConfirmButtonStyle() {
+      const style = {}
+      if (!this.selectedAccount || this.isPrivacyDenied) {
+        style.color = '#2196f3 !important'
+        style.opacity = '0.5'
+      }
+      return style
+    },
+    isPrivacyDenied() {
+      return this?.selectedAccount?.privacyDurationId === PRIVACY_DURATIONS.DENY
+    },
+    isRenderPrivacyCard() {
+      if (!this.selectedAccount) false
+      return this.isPrivacyDenied
+    },
+    switchDialog: {
+      get() {
+        return this.isSwitchDialogOpen
+      },
+      set(newValue) {
+        this.setSwitchDialog(newValue)
+      }
+    },
+    hasUser() {
+      return this.$store?.state?.auth?.user
+    },
+    hasCompanyName() {
+      return this.$store?.state?.auth?.companyName
+    },
+    hasUserRoleName() {
+      return this.$store?.state?.auth?.userRoleName
+    },
+    getLogoImage() {
+      if (!this.hasUser) return ''
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+    getSelectedCompanyName() {
+      if (!this.hasCompanyName) return ''
+      return this.$store.state.auth.selectedCompanyName
+    },
+
+    getFirstName() {
+      if (!this.hasUser) return ''
+      return this.$store.state.auth.user.firstName
+    },
+    getRoleName() {
+      if (!this.hasUserRoleName) return ''
+      return this.$store.state.auth.userRoleName
+    },
+    isLoading: {
+      get() {
+        return this.isLoadingFromStore
+      },
+      set() {}
+    }
+  },
   created() {
-    this.isSwitchAccountDisabled = false
+    this.isSwitchAccountDisabled = true
     this.isCompaniesLoading = true
     getMyCompanies()
       .then((response) => {
@@ -163,6 +243,7 @@ export default {
       this.selectedAccount = item
       this.searchedCompanyText = item.label
       this.isMenuOpen = false
+      this.isSwitchAccountDisabled = item.privacyDurationId === PRIVACY_DURATIONS.DENY
       this.changeMenuStatus()
       this.searchCompanyIcon = 'mdi-menu-down'
     },
@@ -204,28 +285,18 @@ export default {
         this.search = ''
       }
     },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
-    },
     handleSearchText() {
       this.debounce(() => {
         const defaultOrderedItems = JSON.parse(JSON.stringify(this.defaultOrderedItems))
         const excluded = new Set()
         this.isOpenAllMenuItems = !!this.searchedCompanyText
         function getObjectValueByPath(obj, path, fallback) {
-          // credit: http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key#comment55278413_6491621
           if (obj == null || !path || typeof path !== 'string') return fallback
           if (obj[path] !== undefined) return obj[path]
           path = path.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
           path = path.replace(/^\./, '') // strip a leading dot
           return getNestedValue(obj, path.split('.'), fallback)
         }
-
         function getNestedValue(obj, path, fallback) {
           const last = path.length - 1
 
@@ -302,60 +373,6 @@ export default {
             return acc
           }, [])
       }, 750)
-    }
-  },
-  computed: {
-    ...mapGetters({
-      isLoadingFromStore: 'common/getIsLoading',
-      getDropdown: 'dashboard/getCompanyDropdowns',
-      isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen'
-    }),
-    ...mapState({
-      currentCompany: (state) => state.dashboard.selectedCompany
-    }),
-    switchDialog: {
-      get() {
-        return this.isSwitchDialogOpen
-      },
-      set(newValue) {
-        this.setSwitchDialog(newValue)
-      }
-    },
-    hasUser() {
-      return this.$store?.state?.auth?.user
-    },
-    hasCompanyName() {
-      return this.$store?.state?.auth?.companyName
-    },
-    hasUserRoleName() {
-      return this.$store?.state?.auth?.userRoleName
-    },
-    getLogoImage() {
-      if (!this.hasUser) return ''
-      let image =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl
-      return image || require('../assets/img/no-logo.png')
-    },
-    getSelectedCompanyName() {
-      if (!this.hasCompanyName) return ''
-      return this.$store.state.auth.selectedCompanyName
-    },
-
-    getFirstName() {
-      if (!this.hasUser) return ''
-      return this.$store.state.auth.user.firstName
-    },
-    getRoleName() {
-      if (!this.hasUserRoleName) return ''
-      return this.$store.state.auth.userRoleName
-    },
-    isLoading: {
-      get() {
-        return this.isLoadingFromStore
-      },
-      set() {}
     }
   }
 }

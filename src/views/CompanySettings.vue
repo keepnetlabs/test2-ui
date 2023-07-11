@@ -1,7 +1,12 @@
 <template>
   <KContainer id="company-settings">
     <el-tabs v-model="tab" ref="refTabContainer">
-      <el-tab-pane label="Account Privacy" name="account-privacy" id="account-privacy-content">
+      <el-tab-pane
+        v-if="getAccountPrivacyPermission"
+        label="Account Privacy"
+        name="account-privacy"
+        id="account-privacy-content"
+      >
         <AccountPrivacy v-if="tab === 'account-privacy'" ref="refAccountPrivacy"
       /></el-tab-pane>
       <el-tab-pane
@@ -153,7 +158,9 @@ export default {
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
-      getDirectEmailCreationSearchPermissions: 'permissions/getDirectEmailCreationSearchPermissions'
+      getDirectEmailCreationSearchPermissions:
+        'permissions/getDirectEmailCreationSearchPermissions',
+      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission'
     })
   },
   created() {
