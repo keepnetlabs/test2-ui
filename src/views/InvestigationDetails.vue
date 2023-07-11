@@ -1790,11 +1790,11 @@ export default {
         return
       let today = moment(new Date()).toDate()
       let createDate = moment(
-        this.investigationDetailsData.createTime.split(' '),
+        this.investigationDetailsData.createTime?.split(' '),
         getTimeZoneForMoment()
       ).toDate()
       let expireDate = moment(
-        this.investigationDetailsData.expireDate.split(' '),
+        this.investigationDetailsData.expireDate?.split(' '),
         getTimeZoneForMoment()
       ).toDate()
       let diffSeconds = parseInt((expireDate - today) / 1000, 10)

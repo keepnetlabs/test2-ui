@@ -86,7 +86,7 @@ export default {
       return this.step?.inputType === 'FileUpload'
     },
     hasTags() {
-      return this.hasRequiredDigitCount || this.step.isVishingStep
+      return this.hasRequiredDigitCount || this.step?.isVishingStep
     },
     hasRequiredDigitCount() {
       return !!this.step?.inputDigit

@@ -410,7 +410,7 @@ export default {
     callForLanguages() {
       getVishingTemplateLanguages().then((response) => {
         this.languages = response?.data?.data
-          ? response.data.data.map((language) => language.name)
+          ? response.data.data.map((language) => language.language)
           : []
       })
     },

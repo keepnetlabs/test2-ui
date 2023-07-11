@@ -718,8 +718,8 @@ export default {
           return
         }
         if (newVal && oldVal) {
-          const newSelectedDate = newVal.split(' ')[0]
-          const oldSelectedDate = oldVal.split(' ')[0]
+          const newSelectedDate = newVal?.split(' ')?.[0]
+          const oldSelectedDate = oldVal?.split(' ')?.[0]
           if (newSelectedDate !== oldSelectedDate && !this.edit) {
             this.formData.LicenseEndDate = ''
           }
@@ -823,7 +823,7 @@ export default {
     disabledEndDates(val) {
       let selectedStartDate = new Date()
       if (this.formData.LicenseStartDate) {
-        const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        const [day, month, year] = this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/')
         selectedStartDate = new Date(year, month - 1, day)
       }
       return selectedStartDate.getTime() + 1000 * 60 * 60 * 24 > val.getTime()
@@ -956,10 +956,10 @@ export default {
           startFirstPart,
           startSecondPart,
           startThirdPart
-        ] = this.formData.LicenseStartDate.split(' ')[0].split('/')
-        const [endFirstPart, endSecondPart, endThirdPart] = this.formData.LicenseEndDate.split(
+        ] = this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/')
+        const [endFirstPart, endSecondPart, endThirdPart] = this.formData?.LicenseEndDate?.split(
           ' '
-        )[0].split('/')
+        )?.[0]?.split('/')
         let LicenseStartDate, LicenseEndDate
         if (this.dateFormat === 'YYYY/MM/DD') {
           LicenseStartDate = `${startFirstPart}-${startSecondPart}-${startThirdPart}`
@@ -1067,16 +1067,16 @@ export default {
       let end = new Date()
       let start = new Date()
       if (!!this.formData.LicenseStartDate) {
-        const [datePart, timePart] = this.formData.LicenseStartDate.split(' ')
-        const [firstPart, secondPart, thirdPart] = datePart.split('/')
+        const [datePart, timePart] = this.formData?.LicenseStartDate?.split(' ')
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
         let minutes, hours
         if (this.timeFormat && this.timeFormat === '12h') {
           // remove PM - AM part
-          const [hoursPart, minutesPart] = timePart.split(' ')[0].split(':')
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
           minutes = minutesPart
           hours = hoursPart
         } else {
-          const [hoursPart, minutesPart] = timePart.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(':')
           minutes = minutesPart
           hours = hoursPart
         }

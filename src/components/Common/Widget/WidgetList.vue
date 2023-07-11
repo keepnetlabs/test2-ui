@@ -16,10 +16,7 @@
         <th
           v-for="col in columns"
           :key="col.label"
-          :class="[
-            'k-widget-list__header',
-            `k-widget-list__th-${col.label.split(' ').join('').toLowerCase()}`
-          ]"
+          :class="['k-widget-list__header', `${getThClass(col)}`]"
           :style="col['thStyle'] && col['thStyle']"
         >
           {{ col.label }}
@@ -131,6 +128,12 @@ export default {
     }
   },
   methods: {
+    getThClass(col) {
+      if (col?.label) {
+        return `k-widget-list__th-${col.label.split(' ').join('').toLowerCase()}`
+      }
+      return `k-widget-list__th`
+    },
     handleMouseEnterTd(event = {}, value = '', index = 0) {
       const { target: parent } = event
       const parentRECT = parent.getBoundingClientRect()

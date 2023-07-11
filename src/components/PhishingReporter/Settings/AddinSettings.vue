@@ -557,7 +557,7 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = !isSendSimulationMails
+      this.formValues.isSendSimulationMails = isSendSimulationMails
       this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         //this.$refs.refFileUpload.$refs.upload.add(response.data)
@@ -638,7 +638,7 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = !isSendSimulationMails
+      this.formValues.isSendSimulationMails = isSendSimulationMails
       this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data

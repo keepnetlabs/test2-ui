@@ -179,7 +179,7 @@ export default {
               this.setDefaultResponseParams(response)
             })
             .finally(() => {
-              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+              this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
             })
         } else {
           searchTargetGroups(this.axiosPayload)
@@ -187,7 +187,7 @@ export default {
               this.setDefaultResponseParams(response)
             })
             .finally(() => {
-              this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+              this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
             })
         }
       })
@@ -208,7 +208,7 @@ export default {
         this.highlightedRow = {}
         if (!this.$refs?.refTable?.isColumnFilterActive) this.$emit('update:empty', true)
       }
-      this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+      this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
       this.setLoading(false)
     },
     setLoading(val = false) {

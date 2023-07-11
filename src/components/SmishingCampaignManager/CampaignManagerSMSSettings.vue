@@ -157,6 +157,8 @@ export default {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
     getDistributionText() {
+      if (this.totalTargetUserCount === 1)
+        return `Sending an SMS will start immediately for a single user.`
       return `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
@@ -272,7 +274,12 @@ export default {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
     callForCalculateSendingInfo() {
-      if (!this.targetGroupResourceIds.length || !this.totalTargetUserCount) return
+      if (
+        !this.targetGroupResourceIds.length ||
+        !this.totalTargetUserCount ||
+        this.totalTargetUserCount === 1
+      )
+        return
       if (!this.formData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {

@@ -103,7 +103,7 @@ export default {
         let itemTypes = new Set()
         const newData = data.map((row) => {
           let { month, result, emailCount } = row
-          const splittedDate = month.split('-')
+          const splittedDate = month?.split('-')
           const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
           if (timeStampOfDate < minDate) {
             minDate = timeStampOfDate

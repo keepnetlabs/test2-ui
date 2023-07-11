@@ -96,9 +96,9 @@ export const sendCallsOverTypes = [
 ]
 export const getSendCallOnDays = (val) => {
   return Number(val)
-    .toString(2)
-    .split('')
-    .reverse()
+    ?.toString(2)
+    ?.split('')
+    ?.reverse()
     .reduce((acc, item, index) => {
       const number = parseInt(item)
       if (number === 0) return acc
