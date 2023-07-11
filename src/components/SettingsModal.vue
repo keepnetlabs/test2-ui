@@ -123,7 +123,6 @@ export default {
       loadingSettingsModal: false,
       formValues: {
         timeZoneId: null,
-        timeZoneName: null,
         dateFormat: null,
         timeFormat: null
       },

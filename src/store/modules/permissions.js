@@ -817,6 +817,9 @@ const store = {
     getDirectEmailCreationSearchPermissions(state) {
       return state?.directEmailCreationPermissions?.SEARCH?.hasPermission
     },
+    getAccountPrivacyPermission(state) {
+      return state?.companyLeftMenuPermissions?.ACCOUNT_PRIVACY?.hasPermission
+    },
     getDirectEmailCreatePermissions(state) {
       return state?.directEmailCreationPermissions?.CREATE?.hasPermission
     },
