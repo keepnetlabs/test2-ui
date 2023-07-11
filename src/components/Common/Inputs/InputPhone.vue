@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     handleTelChange(newVal) {
-      if (newVal?.split('+').length > 2) {
+      if (newVal?.split('+')?.length > 2) {
         this.setOldValueBySplitter('+', newVal)
       } else if (this.isRegionGBOrTRAndHasHyphen(newVal)) {
         this.setOldValueBySplitter('-', newVal)
@@ -121,7 +121,7 @@ export default {
     },
     setOldValueBySplitter(splitter = '-', newVal = '') {
       if (!this.value) {
-        const splittedVal = newVal?.split(splitter)[0]
+        const splittedVal = newVal?.split(splitter)?.[0]
         this.$refs.refTelInput.phone = splittedVal
         this.$emit('input', splittedVal)
       } else {

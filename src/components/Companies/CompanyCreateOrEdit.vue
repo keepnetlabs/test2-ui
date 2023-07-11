@@ -718,8 +718,8 @@ export default {
           return
         }
         if (newVal && oldVal) {
-          const newSelectedDate = newVal?.split(' ')[0]
-          const oldSelectedDate = oldVal?.split(' ')[0]
+          const newSelectedDate = newVal?.split(' ')?.[0]
+          const oldSelectedDate = oldVal?.split(' ')?.[0]
           if (newSelectedDate !== oldSelectedDate && !this.edit) {
             this.formData.LicenseEndDate = ''
           }
