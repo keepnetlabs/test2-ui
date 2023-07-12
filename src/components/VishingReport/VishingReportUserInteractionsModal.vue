@@ -182,15 +182,6 @@ export default {
   created() {
     this.callForData()
   },
-  watch: {
-    'axiosPayload.filter': {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log(val)
-      }
-    }
-  },
   methods: {
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
