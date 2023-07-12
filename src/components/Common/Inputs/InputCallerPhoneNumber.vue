@@ -102,6 +102,9 @@ export default {
         getPhishingScenariosPhoneNumber().then((response) => {
           const { data: { data = [] } = {} } = response
           if (!data) return
+          data.sort((a, b) => {
+            return a.phoneNumber < b.phoneNumber ? -1 : 1
+          })
           this.phoneNumbers = data.map((phoneNumberWrapper) => {
             return {
               text: this.getPhoneNumberFormatted({ text: phoneNumberWrapper.phoneNumber }),
@@ -114,6 +117,7 @@ export default {
       } else {
         getPhoneNumbers().then((response) => {
           const { data } = response
+          data.sort()
           if (!data) return
           this.phoneNumbers = data.map((phoneNumber) => this.getPhoneNumberFormatted(phoneNumber))
           if (!this.value && this.selectFirstItem) this.handleInputChange(this.phoneNumbers[0])
@@ -142,6 +146,8 @@ export default {
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
     },
     createPhoneNumberObj(phoneNumber = '') {
+      const newPhoneNumber = new PhoneNumber('', 'US')
+      console.log(PhoneNumber.getCountryCodeForRegionCode('US'))
       return new PhoneNumber(phoneNumber)
     },
     handleInputChange(val) {

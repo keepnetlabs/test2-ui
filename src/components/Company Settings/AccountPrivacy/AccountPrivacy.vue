@@ -10,10 +10,17 @@
     />
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div v-else>
-      <div class="access-text">
-        <span v-if="confirmedPrivacyDurationId === 0 || confirmedPrivacyDurationId === 1">{{
-          accessText
-        }}</span>
+      <div
+        v-if="isReturnMainAccountVisible"
+        class="bg-warning px-4 py-4 max-w-554 mb-2 text-primary-color align-start fs-medium d-flex br-2"
+      >
+        <VIcon color="#B6791D">mdi-alert-circle</VIcon>
+        <span class="ml-2"
+          >You need to be a company system user to change the account privacy settings</span
+        >
+      </div>
+      <div v-if="!(isAccessOrDeny && isReturnMainAccountVisible)" class="access-text">
+        <span v-if="isAccessOrDeny">{{ accessText }}</span>
         <div v-else>
           <div class="pb-2">
             You are granting access permission to your account for a limited time
@@ -40,10 +47,12 @@
           hide-details
           placeholder="Select Option"
           :items="accessPeriodItems"
+          :disabled="isReturnMainAccountVisible"
           @change="handlePrivacyDurationChange"
         >
         </KSelect>
         <VBtn
+          v-if="!isReturnMainAccountVisible"
           class="account-privacy-button"
           text
           color="#2196f3"
@@ -90,6 +99,15 @@ export default {
     }
   },
   computed: {
+    isAccessOrDeny() {
+      return this.confirmedPrivacyDurationId === 0 || this.confirmedPrivacyDurationId === 1
+    },
+    isReturnMainAccountVisible() {
+      return (
+        localStorage.getItem('companyResourceId') !==
+        localStorage.getItem('selectedCompanyRequestId')
+      )
+    },
     getAccessButtonStyle() {
       return {
         color: this.isConfirmed ? '#43A047' : '#2196F3',
@@ -99,19 +117,17 @@ export default {
     },
     getTimeAllowed() {
       if (this.privacyDurationId === PRIVACY_DURATIONS.DENY) {
-        return 'Deny allowing access'
+        return 'Deny access'
       } else if (this.privacyDurationId === PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY) {
         return 'Allow access continuously'
-      } else if (this.privacyDurationId === PRIVACY_DURATIONS.ONE_HOUR) {
-        return '1 hour'
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.TWO_HOURS) {
+        return '2 hours'
+      } else if (this.privacyDurationId === PRIVACY_DURATIONS.EIGHT_HOUR) {
+        return '8 hours'
       } else if (this.privacyDurationId === PRIVACY_DURATIONS.ONE_DAY) {
         return '1 day'
-      } else if (this.privacyDurationId === PRIVACY_DURATIONS.THREE_DAYS) {
-        return '3 days'
       } else if (this.privacyDurationId === PRIVACY_DURATIONS.SEVEN_DAYS) {
         return '7 days'
-      } else if (this.privacyDurationId === PRIVACY_DURATIONS.THIRTY_DAYS) {
-        return '30 days'
       }
       return ''
     }
