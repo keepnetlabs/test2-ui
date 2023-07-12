@@ -257,8 +257,7 @@ export default {
       })
     },
     validateForm() {
-      let isValid = this.$refs.refForm.validate()
-      return isValid
+      return this.$refs.refForm.validate()
     },
     getTestConnectionButtonStyle() {
       return {
