@@ -12,21 +12,21 @@
       <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
         <div class="campaign-manager-last-step__email-template-body-header">
           <div class="campaign-manager-last-step__email-template-body-header-left">
-            {{ formData.name }}
+            {{ name }}
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
               size="mini"
-              :color="getBadgeColor(formData.difficulty)"
-              :text="getBadgeText(formData.difficulty)"
+              :color="getBadgeColor(difficulty)"
+              :text="getBadgeText(difficulty)"
               :outline="false"
             />
             <Badge
               size="mini"
               color="#E0E0E0"
               class-name="badge-middle px-2 py-2"
-              :text="getBadgeText(formData.method)"
+              :text="getBadgeText(method)"
               :outline="false"
             />
             <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -37,9 +37,9 @@
           </div>
         </div>
         <div class="campaign-manager-last-step__email-template-body-header-sub">
-          From: {{ formData.fromName }}
+          From: {{ fromName }}
           <span>&#60;</span>
-          {{ formData.fromAddress }} <span>&#62;</span>
+          {{ fromAddress }} <span>&#62;</span>
         </div>
         <div v-if="formData.attachment" class="attachment-wrapper mt-2" style="position: relative;">
           <div class="attachment blue-attach mb-0">
@@ -90,6 +90,14 @@ export default {
     formData: {
       type: Object
     },
+    difficulties: {
+      type: Array,
+      default: () => []
+    },
+    methods: {
+      type: Array,
+      default: () => []
+    },
     isFetchingSummary: {
       type: Boolean
     }
@@ -98,7 +106,12 @@ export default {
     return {
       isShowEmailTemplate: false,
       labels,
-      emailTemplate: null
+      emailTemplate: null,
+      difficulty: '',
+      method: '',
+      name: '',
+      fromName: '',
+      fromAddress: ''
     }
   },
   computed: {
@@ -129,6 +142,13 @@ export default {
             data: { data }
           } = response
           this.emailTemplate = data.template
+          this.difficulty =
+            this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
+          this.method =
+            this.methods.find((item) => item.value === data.categoryResourceId)?.text || ''
+          this.fromName = data.fromName
+          this.fromAddress = data.fromAddress
+          this.name = data.name
         })
         .finally(() => {
           if (showLoader) this.setLoading()
