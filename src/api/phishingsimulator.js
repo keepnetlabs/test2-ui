@@ -445,6 +445,12 @@ export function getCampaignJobSummary(id = '', instanceGroup = '') {
   )
 }
 
+export function getCampaignJobSummaryForTraining(id = '', instanceGroup = '') {
+  return testRequest.get(
+    `/phishing-simulator/phishing-campaign-job-report/summary/training/${id}/${instanceGroup}`
+  )
+}
+
 export function getCampaignJobSummaryTargetGroups(id = '', instanceGroup = '') {
   return testRequest.get(
     `/phishing-simulator/phishing-campaign-job-report/summary/target-groups/${id}/${instanceGroup}`

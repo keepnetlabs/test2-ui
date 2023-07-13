@@ -53,11 +53,15 @@
       />
     </ElTabs>
     <CampaignManagerReportSummaryEmail
+      :difficulties="difficulties"
+      :methods="methods"
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading"
     />
     <CampaignManagerReportSummaryLandingPage
       v-if="!isAttachment"
+      :difficulties="difficulties"
+      :methods="methods"
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
     />
@@ -114,7 +118,9 @@ export default {
         'No response',
         'Not delivered'
       ],
-      customKeys: []
+      customKeys: [],
+      difficulties,
+      methods
     }
   },
   computed: {
@@ -333,32 +339,18 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {} } = this.getActiveScenario || {
+      const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
         emailTemplateInfo: {}
       }
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
-      const {
-        name,
-        difficultyResourceId,
-        categoryResourceId,
-        fromName,
-        fromAddress,
-        resourceId,
-        languageShortCode,
-        phishingFileName
-      } = emailTemplateInfo || {}
+      const { resourceId, phishingFileName } = emailTemplateInfo || {}
 
       return Object.keys(emailTemplateInfo)?.length
         ? {
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            method: methods.find((item) => item.value === categoryResourceId)?.text,
-            fromName,
-            fromAddress,
-            name,
             resourceId,
-            languageShortCode,
+            languageShortCode: scenarioInfo?.languageShortCode,
             attachment: phishingFileName
               ? {
                   name: phishingFileName
@@ -370,22 +362,11 @@ export default {
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplateInfo = {} } = this.getActiveScenario || {}
-      const {
-        name,
-        urlTemplate,
-        difficultyTypeId = 1,
-        methodTypeId = 1,
-        resourceId,
-        languageShortCode
-      } = landingPageTemplateInfo
+      const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
+      const { resourceId } = landingPageTemplateInfo
       return Object.keys(landingPageTemplateInfo).length
         ? {
-            languageShortCode,
-            name,
-            urlTemplate,
-            method: methods[methodTypeId - 1].text,
-            difficulty: difficulties[difficultyTypeId - 1].text,
+            languageShortCode: scenarioInfo?.languageShortCode,
             resourceId,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup

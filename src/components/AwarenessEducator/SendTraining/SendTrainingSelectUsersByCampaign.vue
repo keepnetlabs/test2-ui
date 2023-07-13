@@ -318,6 +318,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
 import {
   getCampaignJobSummary,
+  getCampaignJobSummaryForTraining,
   getCampaignJobSummaryTargetGroups,
   getCampaignManagerPreview,
   searchUnscheduledCampaigns,
@@ -547,7 +548,7 @@ export default {
             if (this.phishingCampaignReportItems.length) {
               this.phishingCampaignResourceId = row.resourceId
               this.phishingCampaignInstanceGroup = results[0].instanceGroup
-              getCampaignJobSummary(
+              getCampaignJobSummaryForTraining(
                 this.phishingCampaignResourceId,
                 this.phishingCampaignInstanceGroup
               ).then((response) => {
@@ -623,7 +624,10 @@ export default {
     },
     callForCampaignSummary() {
       this.isCampaignLoading = true
-      getCampaignJobSummary(this.phishingCampaignResourceId, this.phishingCampaignInstanceGroup)
+      getCampaignJobSummaryForTraining(
+        this.phishingCampaignResourceId,
+        this.phishingCampaignInstanceGroup
+      )
         .then((response) => {
           const { data: { data = {} } = {} } = response
           this.totalCampaignUsers = data?.campaignInfo?.totalTargetUserCount || 0
