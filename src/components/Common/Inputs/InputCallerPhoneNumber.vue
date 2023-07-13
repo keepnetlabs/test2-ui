@@ -147,7 +147,6 @@ export default {
     },
     createPhoneNumberObj(phoneNumber = '') {
       const newPhoneNumber = new PhoneNumber('', 'US')
-      console.log(PhoneNumber.getCountryCodeForRegionCode('US'))
       return new PhoneNumber(phoneNumber)
     },
     handleInputChange(val) {
