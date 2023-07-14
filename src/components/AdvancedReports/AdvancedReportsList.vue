@@ -3,7 +3,8 @@
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <AdvancedReportsCard
       v-else
-      v-for="report in reports"
+      v-for="(report, index) in reports"
+      :class="reports.length > 1 && index < reports.length - 1 ? 'mb-4' : ''"
       :key="report.name"
       :title="report.name"
       :description="report.description"
