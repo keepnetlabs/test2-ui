@@ -15,6 +15,7 @@
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
+        is-server-side
         selectable
         filterable
         options
@@ -30,6 +31,8 @@
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
         :count-row="5"
+        :server-side-events="tableOptions.serverSideEvents"
+        :server-side-props="serverSideProps"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -116,8 +119,8 @@ export default {
         id: 'vishing-report-user-interactions-data-table',
         ascending: 'ascending'
       },
-      serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CallDate' }),
+      serverSideProps: new ServerSideProps('', false, 5),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CallDate', pageSize: 5 }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
@@ -209,10 +212,20 @@ export default {
     callForData() {
       this.setLoading(true)
       const payload = {
-        resourceId: this.item.resourceId,
-        pagination: this.axiosPayload
+        ...this.axiosPayload,
+        resourceId: this.item.resourceId
       }
-      delete payload.pagination.filter
+      if (
+        payload.filter.FilterGroups[1].FilterItems.length &&
+        payload.filter.FilterGroups[1].FilterItems.some(
+          (field) => field.FieldName === 'CallDuration'
+        )
+      ) {
+        const fieldIndex = payload.filter.FilterGroups[1].FilterItems.findIndex(
+          (field) => field.FieldName === 'CallDuration'
+        )
+        if (fieldIndex !== -1) payload.filter.FilterGroups[1].FilterItems.splice(fieldIndex, 1)
+      }
       getVishingReportUsersInteractions(payload)
         .then((response) => {
           this.tableData = response?.data?.data?.results || []
