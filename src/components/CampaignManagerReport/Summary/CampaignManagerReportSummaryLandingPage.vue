@@ -20,22 +20,22 @@
             <div class="campaign-manager-last-step__landing-page-template-body-header">
               <div class="campaign-manager-last-step__landing-page-template-body-header-left">
                 <div class="campaign-manager-last-step__email-template-body-header-left">
-                  {{ formData.name }}
+                  {{ name || formData.name }}
                 </div>
               </div>
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
                   size="mini"
-                  :color="getBadgeColor(formData.difficulty)"
-                  :text="getBadgeText(formData.difficulty)"
+                  :color="getBadgeColor(difficulty || formData.difficulty)"
+                  :text="getBadgeText(difficulty || formData.difficulty)"
                   :outline="false"
                 />
                 <Badge
                   size="mini"
                   color="#E0E0E0"
                   class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(formData.method)"
+                  :text="getBadgeText(method || formData.method)"
                   :outline="false"
                 />
                 <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -49,7 +49,7 @@
               <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
                 >URL:</span
               >
-              {{ formData.urlTemplate }}
+              {{ urlTemplate || formData.urlTemplate }}
             </div>
           </ElTabPane>
         </ElTabs>
@@ -57,22 +57,22 @@
           <div class="campaign-manager-last-step__landing-page-template-body-header">
             <div class="campaign-manager-last-step__landing-page-template-body-header-left">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.name }}
+                {{ name || formData.name }}
               </div>
             </div>
             <div class="campaign-manager-last-step__landing-page-template-body-header-right">
               <v-btn style="display: none;"></v-btn>
               <Badge
                 size="mini"
-                :color="getBadgeColor(formData.difficulty)"
-                :text="getBadgeText(formData.difficulty)"
+                :color="getBadgeColor(difficulty || formData.difficulty)"
+                :text="getBadgeText(difficulty || formData.difficulty)"
                 :outline="false"
               />
               <Badge
                 size="mini"
                 color="#E0E0E0"
                 class-name="badge-middle px-2 py-2"
-                :text="getBadgeText(formData.method)"
+                :text="getBadgeText(method || formData.method)"
                 :outline="false"
               />
               <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -86,7 +86,7 @@
             <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
               >URL:</span
             >
-            {{ formData.urlTemplate }}
+            {{ urlTemplate || formData.urlTemplate }}
           </div>
         </div>
       </div>
@@ -134,6 +134,14 @@ export default {
     },
     isFetchingSummary: {
       type: Boolean
+    },
+    difficulties: {
+      type: Array,
+      default: () => []
+    },
+    methods: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -141,7 +149,11 @@ export default {
       selectedTab: '1',
       labels,
       isShowLandingPageTemplate: false,
-      templates: []
+      templates: [],
+      name: '',
+      urlTemplate: '',
+      method: '',
+      difficulty: ''
     }
   },
   computed: {
@@ -178,6 +190,10 @@ export default {
             data: { data }
           } = response
           this.templates = data?.landingPages || []
+          this.name = data?.name || ''
+          this.urlTemplate = data?.urlTemplate || ''
+          this.method = this.methods[data.methodTypeId - 1].text
+          this.difficulty = this.difficulties[data.difficultyTypeId - 1].text
         })
         .finally(this.setLoading)
     },

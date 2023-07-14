@@ -24,7 +24,7 @@ export default {
     rules: {
       default: () => [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Department))
+        (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Department, 256))
       ]
     }
   }
