@@ -93,6 +93,7 @@
               last-column-name="phoneNumber"
               :default-values="getDefaultTargetAudienceSettings"
               :is-vishing="true"
+              :is-all-groups="!isEdit"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
