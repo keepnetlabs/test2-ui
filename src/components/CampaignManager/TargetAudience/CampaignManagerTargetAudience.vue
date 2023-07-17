@@ -5,6 +5,7 @@
       is-call-api-when-created
       :is-valid="isTargetGroupsValid"
       :is-vishing="isVishing"
+      :is-all-groups="isAllGroups"
       :last-column-name="lastColumnName"
       @handle-selection-change="handleTargetGroupSelectionChange"
     />
@@ -105,6 +106,10 @@ export default {
       default: () => ({})
     },
     isVishing: {
+      type: Boolean,
+      default: false
+    },
+    isAllGroups: {
       type: Boolean,
       default: false
     },

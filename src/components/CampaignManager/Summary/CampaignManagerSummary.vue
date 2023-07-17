@@ -480,7 +480,6 @@ export default {
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
-          console.log(this.landingPageParams)
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },

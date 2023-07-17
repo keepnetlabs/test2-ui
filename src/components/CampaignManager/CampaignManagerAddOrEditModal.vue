@@ -90,6 +90,7 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              :is-all-groups="!isEdit"
               :default-values="getDefaultTargetAudienceSettings"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"

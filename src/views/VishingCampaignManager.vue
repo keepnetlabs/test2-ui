@@ -409,9 +409,7 @@ export default {
     },
     callForLanguages() {
       getVishingTemplateLanguages().then((response) => {
-        this.languages = response?.data?.data
-          ? response.data.data.map((language) => language.language)
-          : []
+        this.languages = response?.data?.data || []
       })
     },
     toggleShowLaunchDialog(forceUpdate = false) {
