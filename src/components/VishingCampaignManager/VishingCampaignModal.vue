@@ -556,6 +556,7 @@ export default {
     getCampaignInfoItems() {
       return {
         'Campaign Name': this.formValues.name,
+        'Language / Voice': `${this.formValues?.template?.language} / ${this.formValues?.template?.voice}`,
         'Target Users': `${this.getTotalActiveUsersWithPhoneNumber} users`
       }
     },

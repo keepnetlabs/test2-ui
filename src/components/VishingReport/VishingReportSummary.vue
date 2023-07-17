@@ -106,9 +106,9 @@ export default {
           show: true,
           value: targetUserCount
         },
-        Language: {
+        'Language / Voice': {
           show: true,
-          value: vishingTemplateDto?.vishingLanguage
+          value: `${vishingTemplateDto?.vishingLanguage} / ${vishingTemplateDto?.vishingVoice}`
         }
       }
     },
@@ -141,6 +141,7 @@ export default {
           resourceId: this.$route.params.id,
           name,
           language: vishingTemplateDto?.vishingLanguage,
+          voice: vishingTemplateDto?.vishingVoice,
           languageShortCode,
           narratorGender,
           description,
