@@ -53,6 +53,8 @@
     </ElTabs>
     <CampaignManagerReportSummaryTextTemplate
       :form-data="getTextTemplateData"
+      :difficulties="difficulties"
+      :methods="methods"
       :isFetchingSummary="isLoading"
     />
     <CampaignManagerReportSummaryLandingPage
@@ -111,7 +113,9 @@ export default {
         'No response',
         'Not delivered'
       ],
-      customKeys: []
+      customKeys: [],
+      difficulties,
+      methods
     }
   },
   computed: {
@@ -327,7 +331,6 @@ export default {
       const { landingPageTemplateInfo = {} } = this.getActiveScenario || {}
       const {
         name,
-        urlTemplate,
         difficultyTypeId = 1,
         methodTypeId = 1,
         resourceId,
@@ -337,7 +340,6 @@ export default {
         ? {
             languageShortCode,
             name,
-            urlTemplate,
             method: methods[methodTypeId - 1].text,
             difficulty: difficulties[difficultyTypeId - 1].text,
             resourceId,

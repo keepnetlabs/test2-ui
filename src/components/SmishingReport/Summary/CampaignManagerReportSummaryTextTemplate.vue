@@ -15,15 +15,15 @@
             <v-btn style="display: none;"></v-btn>
             <Badge
               size="mini"
-              :color="getBadgeColor(formData.difficulty)"
-              :text="getBadgeText(formData.difficulty)"
+              :color="getBadgeColor(difficulty)"
+              :text="getBadgeText(difficulty)"
               :outline="false"
             />
             <Badge
               size="mini"
               color="#E0E0E0"
               class-name="badge-middle px-2 py-2"
-              :text="getBadgeText(formData.method)"
+              :text="getBadgeText(method)"
               :outline="false"
             />
             <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
@@ -63,12 +63,20 @@ export default {
     },
     isFetchingSummary: {
       type: Boolean
+    },
+    difficulties: {
+      type: Array
+    },
+    methods: {
+      type: Array
     }
   },
   data() {
     return {
       labels,
-      textTemplate: null
+      textTemplate: null,
+      difficulty: '',
+      method: ''
     }
   },
   computed: {
@@ -94,6 +102,10 @@ export default {
             data: { data }
           } = response
           this.textTemplate = data.template
+          this.difficulty = this.difficulties.find(
+            (item) => item.value === data.difficultyResourceId
+          )?.text
+          this.method = this.methods.find((item) => item.value === data.categoryResourceId)?.text
         })
         .finally(() => {
           if (showLoader) this.setLoading()
