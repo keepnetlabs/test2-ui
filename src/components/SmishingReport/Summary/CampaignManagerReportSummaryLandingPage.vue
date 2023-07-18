@@ -86,7 +86,7 @@
             <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
               >URL:</span
             >
-            {{ formData.urlTemplate }}
+            {{ urlTemplate }}
           </div>
         </div>
       </div>
@@ -141,7 +141,8 @@ export default {
       selectedTab: '1',
       labels,
       isShowLandingPageTemplate: false,
-      templates: []
+      templates: [],
+      urlTemplate: ''
     }
   },
   computed: {
@@ -179,6 +180,7 @@ export default {
       )
         .then((response) => {
           this.templates = response?.data?.data?.landingPages || []
+          this.urlTemplate = response?.data?.data?.urlTemplate
         })
         .finally(this.setLoading)
     },
