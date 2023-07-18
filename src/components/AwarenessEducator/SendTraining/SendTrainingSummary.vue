@@ -3,15 +3,10 @@
     <div
       class="campaign-manager-last-step__header"
       :style="{
-        gridTemplateColumns: '1fr 1fr'
+        gridTemplateColumns: '1fr'
       }"
     >
-      <CampaignManagerSummaryCard
-        icon="mdi-alert-circle"
-        :title="labels.TrainingInfo"
-        :items="getTrainingInfoItems"
-      />
-      <CampaignManagerSummaryCard
+      <CampaignManagerSummaryCardOneLine
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingItems"
@@ -195,6 +190,7 @@
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import CampaignManagerSummaryCardOneLine from '@/components/CampaignManager/Summary/CampaignManagerSummaryCardOneLine'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
@@ -205,6 +201,7 @@ export default {
   components: {
     KEmailPreview,
     CampaignManagerSummaryCard,
+    CampaignManagerSummaryCardOneLine,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     AlertBox
   },

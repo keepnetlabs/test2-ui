@@ -31,3 +31,26 @@
     font-weight:600;
   }
 }
+.campaign-manager-summary-card__body-item-one-line{
+
+}
+.campaign-manager-summary-card__body-container-one-line{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+    padding-top:16px !important;
+    padding-bottom: 24px !important;
+    position:relative;
+    &:after{
+        content: "";
+        height: 80%;
+        width: 1px;
+        background-color: #F2F2F2;
+        position: absolute;
+        left: 50%;
+        top: 16px;
+    }
+}
+.campaign-manager-summary-card__body-item.campaign-manager-summary-card__body-item-one-line:first-child{
+    padding:0 !important;
+}
