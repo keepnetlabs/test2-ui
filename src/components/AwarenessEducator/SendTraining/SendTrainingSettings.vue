@@ -1,5 +1,27 @@
 <template>
   <v-form ref="refForm" class="send-training-settings">
+    <FormGroup
+      class="send-training-settings__lms"
+      title="Training Delivery for Your LMS"
+      sub-title="Easily use the training in your own LMS by downloading the training proxy package"
+    >
+      <div class="send-training-settings__lms-switch">
+        <VSwitch
+          v-model="formData.isProxy"
+          id="input--send-training-settings-lms"
+          hide-details
+          label="Training Delivery for Your LMS"
+          color="#2196f3"
+        />
+      </div>
+      <div class="send-training-settings__lms-helper">
+        <VIcon size="default">mdi-information</VIcon>
+        <span class="text-primary-color fs-3 ml-2"
+          >When the Training Delivery for Your LMS is activated, only the Content Language and Mark
+          as Test options are used</span
+        >
+      </div>
+    </FormGroup>
     <FormGroup has-hint :title="labels.ContentLanguage">
       <KSelect
         v-model.trim="formData.languageIds"
@@ -47,7 +69,7 @@
         </template>
       </KSelect>
     </FormGroup>
-    <FormGroup style="max-width: 600px;" :title="labels.Schedule">
+    <FormGroup v-if="!formData.isProxy" style="max-width: 600px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -104,7 +126,12 @@
         </div>
       </v-radio-group>
     </FormGroup>
-    <FormGroup class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
+    <FormGroup
+      v-if="!formData.isProxy"
+      class="mt-6"
+      :title="labels.Reminder"
+      style="max-width: 875px;"
+    >
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="sendReminderEvery"
@@ -179,7 +206,7 @@
         />
       </div>
     </FormGroup>
-    <FormGroup class="mt-6" :title="labels.Certificate">
+    <FormGroup v-if="!formData.isProxy" class="mt-6" :title="labels.Certificate">
       <v-checkbox
         v-model="formData.awardCertificate"
         id="input--campaign-manager-advanced-settings-randomly-selected"
@@ -189,17 +216,12 @@
       >
       </v-checkbox>
     </FormGroup>
-    <FormGroup class="mt-6" title="Mark as Test">
-      <v-checkbox
-        v-model="formData.markedAsTest"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
-        hide-details
-        color="#2196f3"
-        label="Exclude this enrollment's statistics from all generic reports"
-      >
-      </v-checkbox>
-    </FormGroup>
-    <FormGroup class="mt-6" style="max-width: 950px;" :title="labels.AutoEnroll">
+    <FormGroup
+      v-if="!formData.isProxy"
+      class="mt-6"
+      style="max-width: 950px;"
+      :title="labels.AutoEnroll"
+    >
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="isAutoEnroll"
@@ -265,6 +287,16 @@
         />
       </div>
     </FormGroup>
+    <FormGroup :class="!formData.isProxy ? 'mt-6' : ''" title="Mark as Test">
+      <v-checkbox
+        v-model="formData.markedAsTest"
+        id="input--campaign-manager-advanced-settings-randomly-selected"
+        hide-details
+        color="#2196f3"
+        label="Exclude this campaign’s statistics from all generic reports"
+      >
+      </v-checkbox>
+    </FormGroup>
   </v-form>
 </template>
 
@@ -318,6 +350,7 @@ export default {
         markedAsTest: false,
         awardCertificate: false,
         scheduleTypeId: '1',
+        isProxy: false,
         enrollmentScheduler: {
           scheduledDate: '',
           scheduledTimeZoneId: '',

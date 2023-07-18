@@ -89,7 +89,7 @@
           nextButton: isActionButtonDisabled,
           submitButton: isActionButtonDisabled
         }"
-        saveButtonText="Launch"
+        :save-button-text="getSaveButtonText"
         @on-cancel="handleClose"
         @on-back="changeStep(-1)"
         @on-next="changeStep()"
@@ -175,6 +175,12 @@ export default {
     getTitle() {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
+    getSaveButtonText() {
+      if (this.step === 3 && this?.$refs?.refSendTrainingSettings?.formData?.isProxy) {
+        return 'SAVE & DOWNLOAD'
+      }
+      return 'LAUNCH'
+    },
     getTrainingSummaryFormData() {
       let formData = {}
       if (this.step === 3) {
@@ -192,16 +198,28 @@ export default {
         }
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
+        const languages = refSendTrainingSettings.formData.languageIds
+          .map(
+            (lang) =>
+              refSendTrainingSettings.contentLanguageItems.find((item) => item.value === lang).text
+          )
+          .join(', ')
+        const isProxy = refSendTrainingSettings?.formData?.isProxy
         formData.settings = {
-          'Auto-enroll new users': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
-          'Exclude From Reports(Test)': refSendTrainingSettings.formData.markedAsTest
-            ? 'Yes'
-            : 'No',
+          'Training Delivery for Your LMS': isProxy ? 'ON' : 'OFF',
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
         }
+        if (isProxy) {
+          delete formData.settings['Auto-enroll']
+          delete formData.settings['Schedule']
+        }
+
         formData.certificateData = refSendTrainingSettings.formData.awardCertificate
           ? this.certificateData
           : null
@@ -368,6 +386,8 @@ export default {
       return phishingCampaignConditionTypes
     },
     handleSubmit() {
+      if (this?.$refs?.refSendTrainingSettings?.formData?.isProxy)
+        return this.handleDownloadPackage(this.selectedRow)
       const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
       const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
       const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
@@ -408,17 +428,34 @@ export default {
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.$router.push({ name: 'Enrollments' })
-          this.$emit(EMITS.ON_CLOSE, true)
-        })
+        .then(this.showSuccessSnackbarAndRouteToEnrollments)
         .catch((error) => {
           this.createErrorMessage = getErrorMessage(error)
+        })
+        .finally(() => (this.isActionButtonDisabled = false))
+    },
+    showSuccessSnackbarAndRouteToEnrollments(response = {}) {
+      this.$store.dispatch('common/createSnackBar', {
+        message: response.data.message,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
+      this.$router.push({ name: 'Enrollments' })
+      this.$emit(EMITS.ON_CLOSE, true)
+    },
+    handleDownloadPackage(row) {
+      this.isActionButtonDisabled = true
+      AwarenessEducatorService.downloadTrainingPackage({
+        trainingId: row.trainingId,
+        languageId: ''
+      })
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `${row.trainingId}_Scorm.zip`
+          link.click()
+          this.$emit(EMITS.ON_CLOSE, true)
         })
         .finally(() => (this.isActionButtonDisabled = false))
     }
