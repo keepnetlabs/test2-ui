@@ -6,4 +6,40 @@
     #input--timezone:disabled::placeholder {
         color: #383B41 !important;
     }
+    &__lms{
+        &-switch{
+            padding:16px;
+            background-color: #F1F8FE;
+            border-radius:8px;
+            .v-input--switch{
+                margin-top:0 !important;
+                padding-top:0 !important;
+                label{
+                    font-size: 14px;
+                    color: rgba(56, 59, 65, 0.72);
+                    font-weight: 400;
+                    line-height: 21px;
+                }
+                &.v-input--is-label-active{
+                    label{
+                        color:#383b41;
+                    }
+                }
+            }
+        }
+        &-helper{
+        display:flex;
+        align-items:flex-start;
+        margin-top:8px;
+        margin-bottom:32px;
+            i{
+                &:before{
+                    font-size: 16px;
+                }
+            }
+            span {
+                line-height: 19px;
+            }
+        }
+    }
 }
