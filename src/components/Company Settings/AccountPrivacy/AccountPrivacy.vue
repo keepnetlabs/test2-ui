@@ -1,6 +1,9 @@
 <template>
   <div>
-    <CompanySettingsHeader title="Account Privacy" sub-title="Manage account privacy settings" />
+    <CompanySettingsHeader
+      title="Account Privacy"
+      sub-title="Configure customer success representative access to your account"
+    />
     <AccountPrivacyDialog
       v-if="isShowAccountPrivacyDialog"
       :status="isShowAccountPrivacyDialog"
@@ -20,23 +23,31 @@
         >
       </div>
       <div v-if="!(isAccessOrDeny && isReturnMainAccountVisible)" class="access-text">
-        <span v-if="isAccessOrDeny">{{ accessText }}</span>
-        <div v-else>
-          <div class="pb-2">
-            You are granting access permission to your account for a limited time
-          </div>
-          <div>
-            <strong class="fw-600">Start Time: </strong> <span>{{ privacyDurationStartTime }}</span>
-          </div>
-          <div>
-            <strong class="fw-600">End Time: </strong> <span>{{ privacyDurationEndTime }}</span>
+        <div v-if="isAccessOrDeny" class="d-flex align-start">
+          <VIcon class="mr-2" color="#2196f3">{{ accessIcon }}</VIcon
+          ><span>{{ accessText }}</span>
+        </div>
+        <div class="d-flex align-start" v-else>
+          <VIcon>$lock-open-time</VIcon>
+          <div class="ml-2">
+            <div class="pb-2">
+              You granted customer success representatives access to your account for a limited time
+            </div>
+            <div>
+              <strong class="fw-600">Start Time: </strong>
+              <span>{{ privacyDurationStartTime }} {{ selectedTimeZone }}</span>
+            </div>
+            <div>
+              <strong class="fw-600">End Time: </strong>
+              <span>{{ privacyDurationEndTime }} {{ selectedTimeZone }}</span>
+            </div>
           </div>
         </div>
       </div>
       <FormGroup
         class-name="campaign-manager-smtp-settings max-w-554"
         title="Access Period"
-        sub-title="Access period is the allowed period for an authorized account before it expires or is terminated"
+        sub-title="Access period is the allowed period for a customer success representative to access your account"
       >
         <KSelect
           v-model.trim="privacyDurationId"
@@ -76,6 +87,7 @@ import KSelect from '../../Common/Inputs/KSelect'
 import { getCompanyPrivacy } from '@/api/company'
 import AccountPrivacyDialog from './AccountPrivacyDialog.vue'
 import { PRIVACY_DURATIONS, accessPeriodItems } from './utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'AccountPrivacy',
   components: {
@@ -89,6 +101,7 @@ export default {
   data() {
     return {
       accessText: '',
+      accessIcon: '',
       privacyDurationId: PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY,
       confirmedPrivacyDurationId: PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY,
       privacyDurationStartTime: '',
@@ -99,6 +112,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZoneName'
+    }),
     isAccessOrDeny() {
       return this.confirmedPrivacyDurationId === 0 || this.confirmedPrivacyDurationId === 1
     },
@@ -134,6 +150,7 @@ export default {
   },
   created() {
     this.callForData()
+    if (!this.selectedTimeZone) this.$store.dispatch('common/callForSettings')
   },
   methods: {
     callForData() {
@@ -146,15 +163,18 @@ export default {
           this.privacyDurationEndTime = data?.privacyDurationEndTime || ''
           this.confirmedPrivacyDurationId = this.privacyDurationId
           this.isConfirmed = true
-          this.setAccessText()
+          this.setAccessTextAndIcon()
         })
         .finally(this.setLoading)
     },
-    setAccessText() {
+    setAccessTextAndIcon() {
       if (this.privacyDurationId === PRIVACY_DURATIONS.DENY) {
-        this.accessText = 'You deny access to your account'
+        this.accessText = 'You denied any customer success representative access to your account'
+        this.accessIcon = 'mdi-lock'
       } else if (this.privacyDurationId === PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY) {
-        this.accessText = 'You are granting continuous access to your account'
+        this.accessText =
+          'You granted customer success representatives continuous access to your account'
+        this.accessIcon = 'mdi-lock-open-outline'
       }
     },
     handlePrivacyDurationChange() {

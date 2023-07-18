@@ -18,6 +18,7 @@ const common = {
     isReCaptcha: false,
     activePageRouterName: '',
     selectedTimeZone: '',
+    selectedTimeZoneName: '',
     isShowLeavingDialog: false,
     leavingDialogCallback: () => {}
   },
@@ -36,6 +37,7 @@ const common = {
     getIsShowLeavingDialog: (state) => state.isShowLeavingDialog,
     getLeavingDialogCallback: (state) => state.leavingDialogCallback,
     getSelectedTimeZone: (state) => state.selectedTimeZone,
+    getSelectedTimeZoneName: (state) => state.selectedTimeZoneName,
     getActivePageRouterName: (state) => state.activePageRouterName
   },
   mutations: {
@@ -53,6 +55,9 @@ const common = {
     },
     SET_SELECTED_TIME_ZONE(state, payload) {
       state.selectedTimeZone = payload
+    },
+    SET_SELECTED_TIME_ZONE_NAME(state, payload) {
+      state.selectedTimeZoneName = payload
     },
     SET_IS_LOADING(state, payload) {
       state.isLoading += payload
@@ -143,9 +148,13 @@ const common = {
     setSelectedTimeZone({ commit }, payload) {
       commit('SET_SELECTED_TIME_ZONE', payload)
     },
+    setSelectedTimeZoneName({ commit }, payload) {
+      commit('SET_SELECTED_TIME_ZONE_NAME', payload)
+    },
     callForSettings({ dispatch }) {
       getSystemUserSettings().then((response) => {
         dispatch('setSelectedTimeZone', response.data.data.timeZoneId)
+        dispatch('setSelectedTimeZoneName', response.data.data.timeZoneName)
       })
     }
   }
