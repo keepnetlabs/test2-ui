@@ -9,7 +9,8 @@
   >
     <template #app-dialog-body>
       <div>
-        Are you sure you want to change how long the company officials can access your account?
+        Are you sure you want to change how long the customer success representatives can access
+        your account?
       </div>
       <div class="mt-2">Time allowed for the access: {{ timeAllowed }}</div>
     </template>

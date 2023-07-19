@@ -65,6 +65,7 @@ testService.interceptors.response.use(
       localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
       localStorage.setItem('selectedCompanyName', mainCompanyName)
       router.go(0)
+      return Promise.resolve({})
     }
 
     if (error?.response?.status === 503) {

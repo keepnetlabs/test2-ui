@@ -226,6 +226,7 @@ export default {
         formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
         formData.enrollmentData = this.enrollmentData
         formData.trainingData = this.trainingPreviewData
+        formData.isProxy = isProxy
       }
       return formData
     }
@@ -444,17 +445,32 @@ export default {
       this.$emit(EMITS.ON_CLOSE, true)
     },
     handleDownloadPackage(row) {
+      const languageIds = this.$refs?.refSendTrainingSettings?.formData?.languageIds.filter(
+        (language) => language !== 'All'
+      )
+      const contentLanguageItems = this.$refs?.refSendTrainingSettings?.contentLanguageItems
       this.isActionButtonDisabled = true
-      AwarenessEducatorService.downloadTrainingPackage({
-        trainingId: row.trainingId,
-        languageId: ''
+      const promises = []
+      languageIds.forEach((languageId) => {
+        promises.push(
+          AwarenessEducatorService.downloadTrainingPackage({
+            trainingId: row.trainingId,
+            languageId
+          })
+        )
       })
-        .then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `${row.trainingId}_Scorm.zip`
-          link.click()
+      Promise.all(promises)
+        .then((responses) => {
+          responses.forEach((response, index) => {
+            const { data } = response
+            const languageText = contentLanguageItems.find(
+              (item) => item.value === languageIds[index]
+            ).text
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `${row.trainingId}-${languageText}_Scorm.zip`
+            link.click()
+          })
           this.$emit(EMITS.ON_CLOSE, true)
         })
         .finally(() => (this.isActionButtonDisabled = false))
