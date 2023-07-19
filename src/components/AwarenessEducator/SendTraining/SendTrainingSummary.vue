@@ -37,7 +37,7 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="campaign-manager-last-step__email-template mt-4">
+    <div v-if="!isProxy" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
         title="Enrollment email that will be sent to users"
@@ -256,17 +256,8 @@ export default {
     getSettingItems() {
       return this?.formData?.settings
     },
-    getTrainingInfoItems() {
-      if (
-        this?.formData?.trainingInfo &&
-        this?.formData?.trainingInfo.Languages.includes('All Languages')
-      ) {
-        return {
-          'Content Type': this?.formData?.trainingInfo?.['Content Type'],
-          Languages: 'All Languages'
-        }
-      }
-      return this?.formData?.trainingInfo
+    isProxy() {
+      return this?.formData?.isProxy
     },
     isEnrollmentData() {
       return this?.formData?.enrollmentData
