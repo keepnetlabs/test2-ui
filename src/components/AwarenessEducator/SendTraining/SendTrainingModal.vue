@@ -1,4 +1,3 @@
-<script src="../../../../../../Downloads/easyscorm.min (3).js"></script>
 <template>
   <AppModal
     :status="status"
