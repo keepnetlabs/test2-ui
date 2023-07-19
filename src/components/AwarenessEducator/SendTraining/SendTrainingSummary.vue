@@ -254,7 +254,6 @@ export default {
       return this.formData?.enrollmentData?.template || ''
     },
     getSettingItems() {
-      console.log('this.formData?.settings', this.formData?.settings)
       return this?.formData?.settings
     },
     isProxy() {
