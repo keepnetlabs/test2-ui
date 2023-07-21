@@ -31,7 +31,6 @@ stages:
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
   - job: Build_UI
-
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
