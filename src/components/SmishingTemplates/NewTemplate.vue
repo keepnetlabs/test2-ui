@@ -505,7 +505,7 @@ export default {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-information',
-          message: `You cannot save without adding a {PHISHINGURL} to the verification message field.`
+          message: `You cannot save without adding a {PHISHINGURL} to the text message field`
         })
         this.isSubmitDisabled = false
         return
