@@ -28,10 +28,9 @@ resources:
 stages:
 # BUILD DEV
 - stage: CI_Dev 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
   - job: Build_UI
-
     steps:
       - template: sub-KeepnetLabs.UI-CI.yml
 
