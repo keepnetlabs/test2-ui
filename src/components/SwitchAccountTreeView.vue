@@ -111,7 +111,11 @@ export default {
       this.handleMenuHeight(true)
     },
     handleTreeViewChange(item) {
-      this.$emit('on-selected-account', { label: item.name, id: item.resourceId })
+      this.$emit('on-selected-account', {
+        label: item.name,
+        id: item.resourceId,
+        privacyDurationId: item.privacyDurationId
+      })
     },
     handleMenuHeight(resize = false) {
       const menu = document.querySelector('.switch-account__container')

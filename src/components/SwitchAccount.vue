@@ -161,7 +161,7 @@ export default {
       return this?.selectedAccount?.privacyDurationId === PRIVACY_DURATIONS.DENY
     },
     isRenderPrivacyCard() {
-      if (!this.selectedAccount) false
+      if (!this.selectedAccount) return false
       return this.isPrivacyDenied
     },
     switchDialog: {
