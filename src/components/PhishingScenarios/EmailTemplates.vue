@@ -484,7 +484,7 @@ export default {
           let fileExtension = ''
           const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
           if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
-            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
+            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.name.split(
               '.'
             )[1]
             const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
@@ -494,9 +494,9 @@ export default {
               })
             ]
           } else {
-            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
+            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.fileName?.split(
               '.'
-            )[1]
+            )?.[1]
             this.$refs.newEmailTemplate.formValues.attachmentFiles = [
               {
                 ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],

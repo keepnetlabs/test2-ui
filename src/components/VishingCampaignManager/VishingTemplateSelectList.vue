@@ -25,11 +25,9 @@
                 <div>
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
-                    :items="languages"
+                    :items="getLanguageItems"
                     placeholder="Language"
                     item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
@@ -41,6 +39,21 @@
                 <div>
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
+                    :items="getVoiceItems"
+                    :disabled="!bodyData.filter.FilterGroups[0].FilterItems[0].value"
+                    placeholder="Voice"
+                    item-disabled="disabled"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
+                <div>
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -104,13 +117,19 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item__tags mt-2">
+                <div class="template-list--item__tags flex-column align-stretch">
+                  <div class="d-flex justify-space-between align-center mb-2">
+                    <div class="template-list--item__narrator">
+                      <v-icon :size="16" color="#757575">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.language }}</span>
+                    </div>
+                    <div class="template-list--item__narrator">
+                      <v-icon :size="16" color="#757575">mdi-microphone-outline</v-icon>
+                      <span class="template-list--item__language">{{ item.voice }}</span>
+                    </div>
+                  </div>
                   <ShowMoreTags :showMaximumBadgeCount="1" :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
-                  <div class="template-list--item__narrator">
-                    <v-icon :size="16" color="#757575">mdi-web</v-icon>
-                    <span class="template-list--item__language">{{ item.language }}</span>
-                  </div>
                 </div>
               </div>
               <div
@@ -227,6 +246,11 @@ export default {
                   FieldName: 'language',
                   Operator: 'Include'
                 },
+                {
+                  value: '',
+                  FieldName: 'voice',
+                  Operator: 'Include'
+                },
                 { value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
               FilterGroups: []
@@ -250,12 +274,38 @@ export default {
       selectedPreviousIndex: 0
     }
   },
+  computed: {
+    getSelectedLanguage() {
+      return this.bodyData.filter.FilterGroups[0].FilterItems[0].value
+    },
+    getSelectedVoice() {
+      return this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+    },
+    getLanguageItems() {
+      return this.languages?.map((language) => language.language)
+    },
+    getVoiceItems() {
+      if (this.getSelectedLanguage) {
+        const voiceItems = this.languages?.filter(
+          (language) => language.language === this.getSelectedLanguage
+        )
+        const voices = voiceItems.map((voice) => voice.name)
+        return voices
+      }
+
+      return []
+    }
+  },
   watch: {
+    getSelectedLanguage() {
+      this.bodyData.filter.FilterGroups[0].FilterItems[1].value = ''
+    },
     search(newVal, oldVal) {
       if (!newVal) {
         if (
           this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
-          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[2].value
         ) {
           this.getTemplates(true)
         } else {

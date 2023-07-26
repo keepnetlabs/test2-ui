@@ -355,7 +355,7 @@ export default {
         this.filterableType === 'select'
           ? this.value.selectValue === ''
             ? []
-            : this.value.selectValue.split(',')
+            : this.value?.selectValue?.split(',')
           : [],
       textFilterItems: [
         { text: 'Contains', value: 'Contains' },

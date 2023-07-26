@@ -26,7 +26,8 @@ const initialState = {
   releaseNotesUrl: '',
   systemVersion: null,
   companyLicense: null,
-  showLicenseExceededDialog: false
+  showLicenseExceededDialog: false,
+  countryCode: ''
 }
 
 const whitelabel = {
@@ -77,6 +78,9 @@ const whitelabel = {
     },
     getBrandName({ brandName }) {
       return brandName
+    },
+    getCountryCode({ countryCode }) {
+      return countryCode
     }
   },
   mutations: {
@@ -147,7 +151,7 @@ const whitelabel = {
     },
     callForSystemInfoSummary(context = {}, payload = {}) {
       callForSystemInfoSummary().then((response) => {
-        const { versionInfo, companyLicense } = response?.data || {
+        const { versionInfo, companyLicense, summary = {} } = response?.data || {
           versionInfo: {
             data: {
               version: ''
@@ -164,6 +168,9 @@ const whitelabel = {
           if (isLimited && isLicenseExceeded) {
             context.commit('SET_SHOW_EXCEED_DIALOG')
           }
+        }
+        if (summary?.data?.countryCode) {
+          context.commit('SET_DATA', { countryCode: summary?.data?.countryCode })
         }
       })
     },

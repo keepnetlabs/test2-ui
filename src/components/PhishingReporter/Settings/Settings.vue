@@ -14,10 +14,10 @@
     />
     <el-tabs id="settings-el-tabs" v-model="tab" v-if="!inModal || applicationType === 'Outlook'">
       <el-tab-pane
+        v-if="!inModal || applicationType === 'Outlook'"
         label="Add-in Settings"
         name="phishing-reporter-settings-add-in-settings"
         id="phishing-reporter-settings-add-in-settings-content"
-        v-if="!inModal || applicationType === 'Outlook'"
       >
         <addin-settings
           ref="refAddinSettings"
@@ -30,51 +30,51 @@
           @updateForm="callForCreatePhishingReporter"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="!inModal || applicationType === 'Outlook'"
         label="Email Settings"
         name="phishing-reporter-settings-email-settings"
         id="phishing-reporter-settings-email-settings-content"
-        v-if="!inModal || applicationType === 'Outlook'"
       >
         <email-settings
           ref="refEmailSettings"
           :formData="formData"
-          @updateForm="callForCreatePhishingReporter"
           :show-footer="!inModal"
           :showHeaderLink="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
       <el-tab-pane
+        v-if="!inModal || applicationType === 'Outlook'"
         label="Other Settings"
         name="phishing-reporter-settings-other-settings"
         id="phishing-reporter-settings-other-settings-content"
-        v-if="!inModal || applicationType === 'Outlook'"
       >
         <other-settings
           :formData="formData"
           ref="refOtherSettings"
-          @updateForm="callForCreatePhishingReporter"
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
       <el-tab-pane
+        v-if="!inModal || applicationType === 'DiagnosticTool'"
         label="Diagnostic Tool"
         name="phishing-reporter-settings-diagnostic-tool"
         id="phishing-reporter-settings-diagnostic-tool-content"
-        v-if="!inModal || applicationType === 'DiagnosticTool'"
       >
         <diagnostic-tool
           ref="refDiagnosticTool"
           :formData="formData"
-          @updateForm="callForCreatePhishingReporter"
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
     </el-tabs>
@@ -82,11 +82,11 @@
       <diagnostic-tool
         ref="refDiagnosticTool"
         :formData="formData"
-        @updateForm="callForCreatePhishingReporter"
         :show-footer="!inModal"
         :show-header-link="!inModal"
         :showForm="!inModal"
         :saveDisable="saveDisable"
+        @updateForm="callForCreatePhishingReporter"
       />
     </div>
   </div>

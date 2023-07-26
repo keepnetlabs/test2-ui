@@ -194,6 +194,9 @@ export default {
     },
     'value.parameterTypeId'() {
       this.changeDisabledLabel()
+    },
+    'value.subDomain'() {
+      this.changeDisabledLabel()
     }
   },
   mounted() {

@@ -201,7 +201,7 @@ export default {
           const formData = {
             resourceId: this.selectedRow.resourceId,
             ...this.formValues,
-            phoneNumber: phoneNumber.split(' ').join('')
+            phoneNumber: phoneNumber?.split(' ')?.join('')
           }
           formData.roleResourceIdList = [this.formValues.roleResourceIdList]
           this.callForUpdateSystemUser(formData)
@@ -209,7 +209,7 @@ export default {
           const { phoneNumber } = this.formValues
           const formData = {
             ...this.formValues,
-            phoneNumber: phoneNumber.split(' ').join('')
+            phoneNumber: phoneNumber?.split(' ')?.join('')
           }
           formData.roleResourceIdList = [this.formValues.roleResourceIdList]
           this.callForCreateSystemUser(formData)

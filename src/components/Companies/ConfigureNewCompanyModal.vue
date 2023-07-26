@@ -249,7 +249,7 @@ export default {
           const { phoneNumber } = this.systemUserFormData
           const formData = {
             ...this.systemUserFormData,
-            phoneNumber: phoneNumber.split(' ').join('')
+            phoneNumber: phoneNumber?.split(' ')?.join('')
           }
           formData.roleResourceIdList = [this.systemUserFormData.roleResourceIdList]
           this.callForCreateSystemUser(formData)

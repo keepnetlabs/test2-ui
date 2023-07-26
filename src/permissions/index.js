@@ -1221,6 +1221,11 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
+    ACCOUNT_PRIVACY: {
+      url: `companies/privacy`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
     ROLES: {
       url: `roles/search`,
       hasPermission: false,

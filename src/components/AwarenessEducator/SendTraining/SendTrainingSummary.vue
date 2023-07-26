@@ -3,15 +3,10 @@
     <div
       class="campaign-manager-last-step__header"
       :style="{
-        gridTemplateColumns: '1fr 1fr'
+        gridTemplateColumns: '1fr'
       }"
     >
-      <CampaignManagerSummaryCard
-        icon="mdi-alert-circle"
-        :title="labels.TrainingInfo"
-        :items="getTrainingInfoItems"
-      />
-      <CampaignManagerSummaryCard
+      <CampaignManagerSummaryCardOneLine
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingItems"
@@ -42,7 +37,7 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="campaign-manager-last-step__email-template mt-4">
+    <div v-if="!isProxy" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
         title="Enrollment email that will be sent to users"
@@ -195,6 +190,7 @@
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import CampaignManagerSummaryCardOneLine from '@/components/CampaignManager/Summary/CampaignManagerSummaryCardOneLine'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
@@ -205,6 +201,7 @@ export default {
   components: {
     KEmailPreview,
     CampaignManagerSummaryCard,
+    CampaignManagerSummaryCardOneLine,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     AlertBox
   },
@@ -259,17 +256,8 @@ export default {
     getSettingItems() {
       return this?.formData?.settings
     },
-    getTrainingInfoItems() {
-      if (
-        this?.formData?.trainingInfo &&
-        this?.formData?.trainingInfo.Languages.includes('All Languages')
-      ) {
-        return {
-          'Content Type': this?.formData?.trainingInfo?.['Content Type'],
-          Languages: 'All Languages'
-        }
-      }
-      return this?.formData?.trainingInfo
+    isProxy() {
+      return this?.formData?.isProxy
     },
     isEnrollmentData() {
       return this?.formData?.enrollmentData

@@ -2,6 +2,14 @@
   <KContainer id="company-settings">
     <el-tabs v-model="tab" ref="refTabContainer">
       <el-tab-pane
+        v-if="getAccountPrivacyPermission"
+        label="Account Privacy"
+        name="account-privacy"
+        id="account-privacy-content"
+      >
+        <AccountPrivacy v-if="tab === 'account-privacy'" ref="refAccountPrivacy"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getSMTPSettingsSearchPermissions"
         label="SMTP Settings"
         name="smtp-settings"
@@ -113,7 +121,7 @@ import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
-
+import AccountPrivacy from '@/components/Company Settings/AccountPrivacy/AccountPrivacy'
 export default {
   name: 'CompanySettings',
   components: {
@@ -128,7 +136,8 @@ export default {
     CustomApi,
     WhiteLabeling,
     ProxySettings,
-    AllowedList
+    AllowedList,
+    AccountPrivacy
   },
   data() {
     return {
@@ -149,11 +158,14 @@ export default {
       getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions',
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
-      getDirectEmailCreationSearchPermissions: 'permissions/getDirectEmailCreationSearchPermissions'
+      getDirectEmailCreationSearchPermissions:
+        'permissions/getDirectEmailCreationSearchPermissions',
+      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission'
     })
   },
   created() {
     this.tab = [
+      { permission: true, name: 'account-privacy' },
       { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
       {
         permission: this.getDirectEmailCreationSearchPermissions,

@@ -190,6 +190,8 @@
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
         v-if="!isAttachmentBasedScenario"
+        :difficulties="difficulties"
+        :methods="methods"
         :formData="landingPageParams"
       />
     </div>
@@ -245,7 +247,9 @@ export default {
       selectedScenarioResourceId: '',
       selectedScenarioName: '',
       emailTemplateParams: {},
-      landingPageParams: {}
+      landingPageParams: {},
+      difficulties,
+      methods
     }
   },
   computed: {
@@ -309,7 +313,7 @@ export default {
       return this?.emailTemplateParams?.attachments || []
     },
     isAttachmentBasedScenario() {
-      return this.landingPageParams?.method === 'Attachment' || false
+      return this.emailTemplateParams?.method === 'Attachment' || false
     },
     getCampaignInfoItems() {
       const { formData, phishingScenarios } = this
@@ -431,6 +435,7 @@ export default {
             fromName,
             fromAddress,
             name,
+            categoryResourceId,
             difficultyResourceId,
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
@@ -443,6 +448,7 @@ export default {
             fromAddress,
             name,
             subject,
+            method: methods.find((item) => item.value === categoryResourceId)?.text || '',
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             attachments,

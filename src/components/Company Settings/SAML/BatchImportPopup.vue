@@ -70,15 +70,15 @@ export default {
     handleConfirm() {
       const { text } = this
       if (this.overrideDelimiter) {
-        const items = text.split('\n').filter((item) => item)
+        const items = text?.split('\n')?.filter((item) => item)
         this.$emit('on-confirm', items)
       } else {
         this.$emit(
           'on-confirm',
           text
-            .replace(/\n/g, ',')
-            .split(',')
-            .filter((item) => item)
+            ?.replace(/\n/g, ',')
+            ?.split(',')
+            ?.filter((item) => item)
         )
       }
       this.handleCloseDialog()

@@ -74,7 +74,7 @@ export default {
   },
   created() {
     this.rules.unshift((v) =>
-      Validations.maxLength(v, 64, labels.getMaxLengthMessage(this.entityName, 64))
+      Validations.maxLength(v, 256, labels.getMaxLengthMessage(this.entityName, 256))
     )
 
     this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`

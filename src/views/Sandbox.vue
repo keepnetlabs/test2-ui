@@ -333,10 +333,10 @@ export default {
   },
   created() {
     if (localStorage.getItem('sandboxCompany'))
-      this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
+      this.companyValue = localStorage.getItem('sandboxCompany')?.split(',') || ''
     if (localStorage.getItem('sandboxIntegration'))
       this.analysisEngineTypeResourceId =
-        localStorage.getItem('sandboxIntegration').split(',') || ''
+        localStorage.getItem('sandboxIntegration')?.split(',') || ''
     if (localStorage.getItem('sandboxDateValue'))
       this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
     if (localStorage.getItem('sandboxDateValue'))
@@ -346,7 +346,7 @@ export default {
       }
     let dateValue = localStorage.getItem('sandboxDateOption')
     if (this.filteredSelectValueDate === 'between') {
-      this.filteredDateValueRange = dateValue.split(',')
+      this.filteredDateValueRange = dateValue?.split(',')
     } else {
       this.filteredDateValue = dateValue
     }
@@ -413,7 +413,7 @@ export default {
         this.setFilterOptions()
       } else if (value === 'Restore default filter') {
         if (localStorage.getItem('sandboxCompany'))
-          this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
+          this.companyValue = localStorage.getItem('sandboxCompany')?.split(',') || ''
         if (localStorage.getItem('sandboxIntegration'))
           this.analysisEngineTypeResourceId =
             localStorage.getItem('sandboxIntegration').split(',') || ''
@@ -426,7 +426,7 @@ export default {
         }
         let dateValue = localStorage.getItem('sandboxDateOption')
         if (this.filteredSelectValueDate === 'between') {
-          this.filteredDateValueRange = dateValue.split(',')
+          this.filteredDateValueRange = dateValue?.split(',')
         } else {
           this.filteredDateValue = dateValue
         }

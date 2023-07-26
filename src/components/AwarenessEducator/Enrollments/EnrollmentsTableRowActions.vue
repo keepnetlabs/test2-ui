@@ -4,7 +4,7 @@
       v-bind="getFirstActionParams"
       :id="rowActions[0].id"
       :scope="scope"
-      :disabled="rowActions[0].disabled || scope.row.status === 'SCORM Proxy'"
+      :disabled="rowActions[0].disabled"
       :checkIsOwnerProperty="false"
       @on-click="handleAction(scope.row)"
     />

@@ -372,7 +372,7 @@ export default {
         let values = {
           ...this.formValues,
           allowedIpAddresses: this.formValues.allowedIpAddresses.map((item) => item.value),
-          roleResourceIdList: this.formValues.roleResourceIdList.split()
+          roleResourceIdList: this.formValues?.roleResourceIdList?.split()
         }
         if (!values.allowedIpAddresses[0]) values.allowedIpAddresses = []
         if (!values.hasIpAddressRestriction) values.allowedIpAddresses = []

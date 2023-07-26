@@ -126,8 +126,7 @@ import {
   exportVishingTemplates,
   getVishingTemplates,
   getVishingTemplateLanguages,
-  deleteVishingTemplate,
-  getVishingTemplateVoices
+  deleteVishingTemplate
 } from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'
