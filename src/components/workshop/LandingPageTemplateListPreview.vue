@@ -344,8 +344,8 @@ export default {
       mfaMessageRules: [
         (v) => Validations.required(v),
         (v) => {
-          if (v.toLowerCase().includes('{mfa_code}')) {
-            if (v.includes('{MFA_CODE}')) return true
+          if (v?.toLowerCase()?.includes('{mfa_code}')) {
+            if (v?.includes('{MFA_CODE}')) return true
             return 'Only use uppercase letters for the merge tag'
           }
           return true

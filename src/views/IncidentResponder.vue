@@ -1258,7 +1258,7 @@ export default {
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
       )
-      const rightSideText = template.isDefault ? `(${labels.Default})` : ''
+      const rightSideText = template?.isDefault ? `(${labels.Default})` : ''
       return template && `${template.name} ${rightSideText}`
     }
   },

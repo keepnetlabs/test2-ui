@@ -25,7 +25,8 @@ const CONSTANTS = {
     'this.em.getSelected is not a function',
     'this.em.getSelectedAll is not a function',
     "undefined is not an object (evaluating 'u.width')",
-    "null is not an object (evaluating 'this.getDoc().querySelector')"
+    "null is not an object (evaluating 'this.getDoc().querySelector')",
+    "undefined is not an object (evaluating '__gCrWeb.instantSearch.clearHighlight')"
   ],
   VUETIFY_INTERNAL: [
     "Cannot read properties of undefined (reading 'getTiles')",
@@ -44,7 +45,11 @@ const CONSTANTS = {
     'Non-Error promise rejection captured with value: Timeout'
   ],
   NETWORK_ERROR: 'Network Error',
-  USER_FLOW: ['Userflow.js error reply (generic)', 'Unexpected token'],
+  USER_FLOW: [
+    'Userflow.js error reply (generic)',
+    'Unexpected token',
+    'Failed to fetch dynamically imported module: https://js.userflow.com'
+  ],
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
     'Redirected when going from "/login" to "/" via a navigation guard.',
