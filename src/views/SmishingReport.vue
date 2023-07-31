@@ -21,6 +21,7 @@
           :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
+          :api-response="apiResponse"
         />
       </el-tab-pane>
     </el-tabs>
@@ -47,6 +48,7 @@ export default {
     return {
       isLoading: true,
       tab: labels.Summary,
+      apiResponse: {},
       tabItems: [
         {
           name: labels.Summary,
@@ -129,6 +131,7 @@ export default {
       if (!this.id || !this.instanceGroup) return
       SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
+          this.apiResponse = response
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return

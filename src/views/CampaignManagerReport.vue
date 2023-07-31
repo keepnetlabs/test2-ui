@@ -22,6 +22,7 @@
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
           :multiple-type="multipleType"
+          :api-response="apiResponse"
         />
       </el-tab-pane>
     </el-tabs>
@@ -49,6 +50,7 @@ export default {
     return {
       isLoading: true,
       tab: labels.Summary,
+      apiResponse: {},
       multipleType: [],
       tabItems: [
         {
@@ -141,6 +143,7 @@ export default {
       if (!this.id || !this.instanceGroup) return
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
+          this.apiResponse = response
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
