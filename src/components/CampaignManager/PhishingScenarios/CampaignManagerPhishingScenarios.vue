@@ -143,7 +143,7 @@
                       </div>
                     </div>
                     <div
-                      class="template-list--item template-list--item__difficulty mr-8"
+                      class="template-list--item template-list--item__difficulty"
                       :class="getItemDifficultyClass(item.difficulty)"
                     >
                       {{ item.difficulty }}
@@ -153,9 +153,13 @@
                   <div class="template-list--item">
                     {{ getItemDescription(item) }}
                   </div>
-                  <div class="template-list--item mt-2">
+                  <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
                     <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                    <div class="d-flex align-center">
+                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
