@@ -149,18 +149,21 @@
                     <form-group
                       class="mt-8"
                       title="Text Message"
-                      sub-title="Text message to be sent to target users. Use the merge tag {PHISHINGURL} for the link to be added to the text message"
+                      sub-title="Text message to be sent to target users. Use the mandatory merge tag {PHISHINGURL} for the link to be added to the text message"
                     >
-                      <InputDescription
+                      <InputMergeTag
                         v-model.trim="formValues.template"
                         id="input--new-text-message-template-text-message"
                         initialPlaceholder="Text message {PHISHINGURL}"
                         rows="5"
                         height="160"
-                        hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
+                        hint="SMS supports the GSM-7 character set and can contain up to 160 characters"
                         required
+                        :mergeTags="mergeTags"
                         :initialRules="textMessageRules"
                       />
+                      <!-- <InputDescription
+                      /> -->
                     </form-group>
                   </v-form>
                 </v-list-item-content>
@@ -206,6 +209,7 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 
 export default {
   name: 'NewSmishingTemplate',
@@ -218,7 +222,8 @@ export default {
     InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    InputMergeTag
   },
   props: {
     status: {
@@ -281,15 +286,7 @@ export default {
       },
       textMessageRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => {
-          if (!v) return true
-          const matches = /{PHISHINGURL}/i.exec(v)
-          if (matches?.length) {
-            return matches[0] === '{PHISHINGURL}' || 'Only use uppercase letters for the merge tag'
-          }
-          return true
-        },
-        (v) => Validations.maxLength(v, 148, 'SMS cannot exceed 148 characters')
+        (v) => Validations.maxLength(v, 160, 'SMS cannot exceed 160 characters')
       ],
       editItemsDisabled: false,
       methodItems: [
@@ -339,6 +336,28 @@ export default {
           code: '3',
           description: null,
           orderNumber: 3
+        }
+      ],
+      mergeTags: [
+        {
+          text: 'Phishing URL',
+          value: '{PHISHINGURL}'
+        },
+        {
+          text: 'Full Name',
+          value: '{FULLNAME}'
+        },
+        {
+          text: 'First Name',
+          value: '{FIRSTNAME}'
+        },
+        {
+          text: 'Last Name',
+          value: '{LASTNAME}'
+        },
+        {
+          text: 'Company Name',
+          value: '{COMPANYNAME}'
         }
       ]
     }

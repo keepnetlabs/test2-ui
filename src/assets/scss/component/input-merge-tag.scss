@@ -1,0 +1,20 @@
+.input-merge-tag {
+  display: flex;
+  flex-direction: column;
+
+  &__tags {
+    display: flex;
+    padding: 4px 8px;
+    flex-wrap: wrap;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: #e0e0e0;
+  }
+
+  &__tag {
+    background-color: #2196f3 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-transform: none;
+  }
+}
