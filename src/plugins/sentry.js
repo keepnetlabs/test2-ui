@@ -25,7 +25,8 @@ const CONSTANTS = {
     'this.em.getSelected is not a function',
     'this.em.getSelectedAll is not a function',
     "undefined is not an object (evaluating 'u.width')",
-    "null is not an object (evaluating 'this.getDoc().querySelector')"
+    "null is not an object (evaluating 'this.getDoc().querySelector')",
+    'v.get is not a function'
   ],
   VUETIFY_INTERNAL: [
     "Cannot read properties of undefined (reading 'getTiles')",

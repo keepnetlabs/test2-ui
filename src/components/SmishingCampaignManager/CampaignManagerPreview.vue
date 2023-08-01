@@ -138,7 +138,7 @@ export default {
         })
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
-      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
+      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId?.toString() === '4'
       this.textTemplate = phishingScenarioPreviewDto?.textTemplate?.template || ''
       this.textMessageTemplateParams = {
         name: phishingScenarioPreviewDto?.textTemplate?.name || '',
