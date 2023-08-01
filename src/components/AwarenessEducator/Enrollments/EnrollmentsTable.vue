@@ -176,7 +176,7 @@ export default {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
-          } = response
+          } = response || { data: { data: {} } }
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber

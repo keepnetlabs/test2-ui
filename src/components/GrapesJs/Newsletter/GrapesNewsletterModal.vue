@@ -440,7 +440,7 @@ export default {
               }
             },
             handleTextChange(component, value) {
-              if (component.getEl().constructor.name === 'HTMLButtonElement') {
+              if (component?.getEl()?.constructor?.name === 'HTMLButtonElement') {
                 component.components(value)
               }
             },
@@ -482,7 +482,7 @@ export default {
               const style = component.getStyle()
               let styleHTML = ''
               const keys = Object.keys(style)
-              const el = component.getEl()
+              const el = component?.getEl()
               for (const key of keys) {
                 styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]

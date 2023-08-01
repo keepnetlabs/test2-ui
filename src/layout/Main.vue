@@ -1208,7 +1208,7 @@ export default {
       return image || require('../assets/img/no-logo.png')
     },
     getFirstName() {
-      return this.$store.state.auth.user.firstName || ''
+      return this?.$store?.state?.auth?.user?.firstName || ''
     },
     getSelectedCompanyName() {
       return this?.$store?.state?.auth?.selectedCompanyName || ''

@@ -225,8 +225,9 @@
                     title="Text"
                     subTitle="Enter your text to be voiced by AI"
                   >
-                    <InputDescription
+                    <InputMergeTag
                       v-model.trim="formValues.dialingNoticeStepInputText"
+                      :mergeTags="mergeTags"
                       initial-placeholder="Enter text here"
                       entity-name="Text to speech"
                       :max-length="500"
@@ -307,6 +308,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
+import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 
 const initialFormValues = {
   resourceId: null,
@@ -350,7 +352,8 @@ export default {
     VishingTemplateDialogStep,
     KFileUpload,
     Draggable,
-    AudioPlayer
+    AudioPlayer,
+    InputMergeTag
   },
   props: {
     status: {
@@ -382,6 +385,24 @@ export default {
   },
   data() {
     return {
+      mergeTags: [
+        {
+          text: 'Full Name',
+          value: '{FULLNAME}'
+        },
+        {
+          text: 'First Name',
+          value: '{FIRSTNAME}'
+        },
+        {
+          text: 'Last Name',
+          value: '{LASTNAME}'
+        },
+        {
+          text: 'Company Name',
+          value: '{COMPANYNAME}'
+        }
+      ],
       Validations,
       labels,
       isVishingStepSelected: false,

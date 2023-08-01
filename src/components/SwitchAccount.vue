@@ -43,10 +43,21 @@
           </div>
         </div>
         <div class="switch-account__content--current-user">
-          <div class="switch-account__content--current-user__section-header">
-            Switch to
+          <div class="d-flex justify-space-between align-center">
+            <div class="switch-account__content--current-user__section-header">
+              Switch to
+            </div>
+            <div class="switch-account__content--current-user__switch">
+              <VSwitch
+                v-model="isShowAllCompany"
+                id="input--switch-account-is-show-all-company"
+                hide-details
+                label="Show all companies"
+                color="#2196f3"
+              />
+            </div>
           </div>
-          <div style="position: relative;" v-click-outside="handleSearchCompanyFocusOut">
+          <div class="position-relative">
             <v-text-field
               v-model.trim="searchedCompanyText"
               ref="refSearchTextField"
@@ -54,10 +65,10 @@
               outlined
               hide-details
               autocomplete="off"
-              placeholder="Select company to manage"
+              placeholder="Search companies to manage"
               :append-icon="searchCompanyIcon"
               @input="handleSearchText"
-              @focus="handleSearchCompanyFocus"
+              @focus="handleSearchInputFocus"
             ></v-text-field>
             <switch-account-tree-view
               ref="refSwitchAccountTreeView"
@@ -137,7 +148,8 @@ export default {
       isSwitchAccountDisabled: true,
       timeout: null,
       searchedText: '',
-      selectedAccount: ''
+      selectedAccount: '',
+      isShowAllCompany: false
     }
   },
   computed: {
@@ -209,6 +221,14 @@ export default {
       set() {}
     }
   },
+  watch: {
+    isShowAllCompany(val) {
+      if (val) this.handleSearchCompanyFocus()
+      else {
+        if (this.searchedCompanyText.length < 3) this.handleSearchCompanyFocusOut()
+      }
+    }
+  },
   created() {
     this.isSwitchAccountDisabled = true
     this.isCompaniesLoading = true
@@ -236,12 +256,13 @@ export default {
       this.searchCompanyIcon = 'mdi-menu-up'
       this.isMenuOpen = true
       this.changeMenuStatus('visible')
-      this.searchedCompanyText = ''
-      this.orderedAccounts = this.defaultOrderedItems
+      //this.searchedCompanyText = ''
+      //this.orderedAccounts = this.defaultOrderedItems
     },
     handleOnSelectedAccount(item) {
       this.selectedAccount = item
       this.searchedCompanyText = item.label
+      this.searchItems(false)
       this.isMenuOpen = false
       this.isSwitchAccountDisabled = item.privacyDurationId === PRIVACY_DURATIONS.DENY
       this.changeMenuStatus()
@@ -252,7 +273,7 @@ export default {
       this.isMenuOpen = false
       this.changeMenuStatus()
       this.isOpenAllMenuItems = false
-      this.searchedCompanyText = this.selectedAccount.label
+      //this.searchedCompanyText = this.selectedAccount.label
       if (this.$refs && this.$refs.refSearchTextField && this.$refs.refSearchTextField) {
         const el = this.$refs.refSearchTextField.$el
         el && el.querySelector('input').blur()
@@ -286,6 +307,11 @@ export default {
       }
     },
     handleSearchText() {
+      this.selectedAccount = ''
+      if (this.searchedCompanyText.length < 3 && !this.isShowAllCompany) this.changeMenuStatus()
+      this.searchItems(true)
+    },
+    searchItems(changeMenuStatus = true) {
       this.debounce(() => {
         const defaultOrderedItems = JSON.parse(JSON.stringify(this.defaultOrderedItems))
         const excluded = new Set()
@@ -372,7 +398,14 @@ export default {
             acc.push(item)
             return acc
           }, [])
+        if (changeMenuStatus && this.searchedCompanyText.length >= 3) {
+          this.changeMenuStatus('visible')
+        }
       }, 750)
+    },
+    handleSearchInputFocus() {
+      if (!this.selectedAccount) return
+      this.changeMenuStatus('visible')
     }
   }
 }
