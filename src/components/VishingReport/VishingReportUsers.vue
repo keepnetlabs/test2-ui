@@ -102,6 +102,10 @@ export default {
   props: {
     id: {
       type: String
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -235,6 +239,31 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = val?.map((field) => ({
+          property: field,
+          align: 'left',
+          label: field,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 180,
+          isEditable: false,
+          filterableType: 'text'
+        }))
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
+  },
   methods: {
     callForData() {
       // this.tableData = [{}]
@@ -242,10 +271,16 @@ export default {
       getVishingReportUsers(this.axiosPayload, this.id)
         .then((response) => {
           const { data: { data = {} } = {} } = response || {}
-          this.tableData = data.results
           this.serverSideProps.totalNumberOfRecords = data.totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = data.totalNumberOfPages
           this.serverSideProps.pageNumber = data.pageNumber
+          this.tableData = data?.results?.map((row) => {
+            let customFields = {}
+            row.customFieldValues.forEach((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .catch(() => {
           this.tableData = []

@@ -16,6 +16,7 @@
       class="mt-6"
       :id="id"
       :instance-group="instanceGroup"
+      :custom-fields="customFields"
       @on-resend="handleOnResend"
     />
   </div>
@@ -44,6 +45,10 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

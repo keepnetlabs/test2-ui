@@ -58,6 +58,10 @@ export default {
     },
     passwordComplexities: {
       type: Array
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -125,6 +129,31 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = val?.map((field) => ({
+          property: field,
+          align: 'left',
+          label: field,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 180,
+          isEditable: false,
+          filterableType: 'text'
+        }))
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
+  },
   methods: {
     callForData() {
       this.setLoading(true)
@@ -138,7 +167,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row.customFieldValues.forEach((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

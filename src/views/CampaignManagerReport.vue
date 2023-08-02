@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :custom-fields="customFields"
           :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
@@ -40,6 +41,7 @@ import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
 import CampaignManagerReportSubmittedMfaCode from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCode'
 import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/phishingsimulator'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
 import KContainer from '@/components/KContainer/KContainer'
 
@@ -48,6 +50,7 @@ export default {
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
@@ -131,9 +134,15 @@ export default {
     }
   },
   created() {
+    this.callForCustomFields()
     this.callForFormDetails()
   },
   methods: {
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data?.map((field) => field.name)
+      })
+    },
     callForFormDetails() {
       getCampaignManagerJobFormDetails().then((response) => {
         this.formDetails = response?.data?.data
