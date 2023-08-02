@@ -22,6 +22,7 @@
       class="mt-6"
       :id="id"
       :instance-group="instanceGroup"
+      :custom-fields="customFields"
       :password-complexities="getPasswordComplexities"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
@@ -57,6 +58,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

@@ -18,6 +18,7 @@
           :is="item.component"
           :id="id"
           :vishing-name="getVishingName"
+          :custom-fields="customFields"
         />
       </el-tab-pane>
     </el-tabs>
@@ -32,11 +33,13 @@ import VishingReportUsers from '@/components/VishingReport/VishingReportUsers'
 import VishingReportAnswered from '@/components/VishingReport/VishingReportAnswered'
 import VishingReportDialedNumber from '@/components/VishingReport/VishingReportDialedNumber'
 import VishingReportNoResponse from '@/components/VishingReport/VishingReportNoResponse'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 export default {
   name: 'VishingReport',
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -78,12 +81,22 @@ export default {
       ]
     }
   },
+  created() {
+    this.callForCustomFields()
+  },
   computed: {
     id() {
       return this.$route?.params?.id
     },
     getVishingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Vishing Name'
+    }
+  },
+  methods: {
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data?.map((field) => field.name)
+      })
     }
   }
 }
