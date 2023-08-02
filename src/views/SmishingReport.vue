@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :custom-fields="customFields"
           :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
@@ -39,6 +40,7 @@ import CampaignManagerReportSubmittedMFACode from '@/components/SmishingReport/S
 import CampaignManagerReportNoResponse from '@/components/SmishingReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReport'
 import SmishingService from '@/api/smishing'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import KContainer from '@/components/KContainer/KContainer'
 
 export default {
@@ -46,6 +48,7 @@ export default {
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
@@ -119,9 +122,15 @@ export default {
     }
   },
   created() {
+    this.callForCustomFields()
     this.callForFormDetails()
   },
   methods: {
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data?.map((field) => field.name)
+      })
+    },
     callForFormDetails() {
       SmishingService.getCampaignFormDetails().then((response) => {
         this.formDetails = response?.data?.data
