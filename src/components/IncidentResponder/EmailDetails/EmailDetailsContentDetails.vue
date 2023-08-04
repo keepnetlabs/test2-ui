@@ -159,18 +159,18 @@ export default {
     }),
     getMailDetailsTo() {
       const mailDetails = this.mailDetails
-      return mailDetails && mailDetails.to && mailDetails.to.toString()
+      return mailDetails && mailDetails.to && mailDetails.to.join(', ')
     },
     getResourceId() {
       return this.$route.params.id || ''
     },
     getMailDetailsCc() {
       const mailDetails = this.mailDetails
-      return mailDetails && mailDetails.cc && mailDetails.cc.toString()
+      return mailDetails && mailDetails.cc && mailDetails.cc.join(', ')
     },
     getMailDetailsBcc() {
       const mailDetails = this.mailDetails
-      return mailDetails && mailDetails.to && mailDetails.bcc.toString()
+      return mailDetails && mailDetails.to && mailDetails.bcc.join(', ')
     },
     isReAnalyzeDisabled() {
       const mailDetails = this.mailDetails || {}
