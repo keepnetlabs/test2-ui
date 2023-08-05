@@ -3,6 +3,9 @@ const API_URL = 'notified-emails'
 export function getNotifiedEmail(id, loading = false) {
   return testRequest.get(`${API_URL}/${id}`, { loading })
 }
+export function getNotifiedEmailForEdit(id, loading = false) {
+  return testRequest.get(`${API_URL}/for-edit/${id}`, { loading })
+}
 export function downloadAttachment(payload) {
   return testRequest.post(`/notified-emails/attachments`, payload, {
     responseType: 'blob'
