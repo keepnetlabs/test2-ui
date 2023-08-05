@@ -449,7 +449,11 @@ import {
   setSafariClusterFix
 } from '@/utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
-import { exportNotifiedEmails, getNotifiedEmailForEdit } from '@/api/notifiedEmail'
+import {
+  exportNotifiedEmails,
+  getNotifiedEmailForEdit,
+  getNotifiedEmail
+} from '@/api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import AppModal from '@/components/AppModal'
@@ -2000,7 +2004,7 @@ export default {
       window.open(`${window.location.href}/reported-emails/email-details/${row.resourceId}`)
     },
     handleReportedEmailInvestigate(row) {
-      getNotifiedEmailForEdit(row.resourceId).then((response) => {
+      getNotifiedEmail(row.resourceId).then((response) => {
         this.selectedEmail = response.data.data
         this.isWantToAddNewInvestigation = true
       })
