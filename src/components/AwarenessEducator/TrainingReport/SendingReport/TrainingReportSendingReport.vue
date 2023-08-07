@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
       class="mb-6"
@@ -125,6 +125,8 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
+import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
+
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -137,7 +139,7 @@ export default {
     CampaignManagerReportHeader,
     TrainingReportSendingReportExtendedView
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useResend],
   props: {
     id: {
       type: String
@@ -149,15 +151,12 @@ export default {
   data() {
     return {
       selectedRow: null,
-      isShowResendDialog: false,
       isShowInteractionsModal: false,
-      isResendActionButtonDisabled: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
-      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -297,16 +296,16 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          // {
-          //   name: labels.Resend,
-          //   id: 'btn-interactions--row-actions-training-report-users',
-          //   icon: '$custom-resend',
-          //   action: 'on-resend'
-          //   // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
-          // },
+          {
+            name: labels.Resend,
+            id: 'btn-interactions--row-actions-training-report-sending-report',
+            icon: '$custom-resend',
+            action: 'on-resend'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+          },
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-details',
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
