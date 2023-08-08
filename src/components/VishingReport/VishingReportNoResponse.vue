@@ -50,6 +50,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { exportVishingReportNoResponse, getVishingReportNoResponse } from '@/api/vishing'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 export default {
   name: 'VishingReportNoResponse',
@@ -168,17 +169,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = val?.map((field) => ({
-          property: field,
-          align: 'left',
-          label: field,
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 180,
-          isEditable: false,
-          filterableType: 'text'
-        }))
+        const fields = createCustomFieldColumns(val)
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )

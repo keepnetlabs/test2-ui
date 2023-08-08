@@ -45,6 +45,7 @@ import SmishingService from '@/api/smishing'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 export default {
   name: 'CampaignManagerReportOpenedTable',
@@ -120,22 +121,12 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = val?.map((field) => ({
-          property: field,
-          align: 'left',
-          label: field,
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 180,
-          isEditable: false,
-          filterableType: 'text'
-        }))
+        const fields = createCustomFieldColumns(val)
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
         if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex, 0, ...fields)
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
       }
     }
