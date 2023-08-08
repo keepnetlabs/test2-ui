@@ -140,7 +140,7 @@ export default {
   methods: {
     callForCustomFields() {
       getTargetUserCustomFieldsByCompanyId().then((response) => {
-        this.customFields = response?.data?.data?.map((field) => field.name)
+        this.customFields = response?.data?.data
       })
     },
     callForFormDetails() {
