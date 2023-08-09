@@ -16,6 +16,7 @@
       class="mt-6"
       :id="id"
       :instance-group="instanceGroup"
+      :custom-fields="customFields"
       :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
     />
@@ -48,6 +49,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

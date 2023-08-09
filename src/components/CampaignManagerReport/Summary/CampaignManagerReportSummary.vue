@@ -102,6 +102,9 @@ export default {
     },
     multipleType: {
       type: Array
+    },
+    apiResponse: {
+      type: Object
     }
   },
   data() {
@@ -374,6 +377,14 @@ export default {
         : {}
     }
   },
+  watch: {
+    apiResponse(value = {}) {
+      this.setCampaignSummary(value)
+      setTimeout(() => {
+        this.setLoading(false)
+      }, 300)
+    }
+  },
   created() {
     this.callForData()
   },
@@ -382,7 +393,11 @@ export default {
   },
   methods: {
     callForData() {
-      this.callApis(true)
+      if (Object.keys(this.apiResponse)?.length) this.callApis(true)
+      else {
+        this.setLoading(true)
+        this.callForTargetGroups()
+      }
       this.interval = setInterval(() => {
         this.callApis()
       }, 15000)
@@ -393,19 +408,7 @@ export default {
       }
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
-          this.campaignSummary = response?.data?.data
-          if (this?.campaignSummary?.scenarios?.length) {
-            if (!this.customKeys.length) {
-              this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
-                .fill(0)
-                .map(() => `key-${createRandomCryptStringNumber()}`)
-            }
-            if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
-          }
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.campaignSummary?.phishingCampaignName || ''
-          )
+          this.setCampaignSummary(response)
         })
         .finally(() => {
           if (isUseLoading) {
@@ -414,6 +417,24 @@ export default {
             }, 300)
           }
         })
+      this.callForTargetGroups()
+    },
+    setCampaignSummary(response) {
+      this.campaignSummary = response?.data?.data
+      if (this?.campaignSummary?.scenarios?.length) {
+        if (!this.customKeys.length) {
+          this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
+            .fill(0)
+            .map(() => `key-${createRandomCryptStringNumber()}`)
+        }
+        if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
+      }
+      this.$store.dispatch(
+        'common/setActivePageRouterName',
+        this.campaignSummary?.phishingCampaignName || ''
+      )
+    },
+    callForTargetGroups() {
       getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
         this.targetGroups = response?.data?.data?.groups || []
       })

@@ -108,6 +108,7 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -125,6 +126,10 @@ export default {
     },
     instanceGroup: {
       type: [String, Number]
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -260,6 +265,19 @@ export default {
       handler() {
         this.setLastSendingStatusItems()
       }
+    },
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
     }
   },
   created() {
@@ -278,7 +296,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row.customFieldValues.forEach((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

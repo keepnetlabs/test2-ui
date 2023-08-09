@@ -1,40 +1,3 @@
-.switch-account-wrapper {
-    cursor: pointer;
-    padding: 24px;
-
-    .switch-right-wrapper {
-        max-width: 85%;
-    }
-
-    .switch-account-logo {
-        border: solid 1px #dcdcdc;
-        width: 46px;
-        height: 46px;
-        margin-right: 16px;
-    }
-
-    .swith-account-title {
-        font-family: 'Open Sans', sans-serif !important;
-        margin-bottom: 5px;
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 1.3;
-        color: rgba(0, 0, 0, 0.87) !important;
-        max-width: 100%;
-        text-overflow: ellipsis;
-        display: block;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-
-    .switch-account-description {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        line-height: 1.58;
-        color: rgba(0, 0, 0, 0.87) !important;
-    }
-}
-
 .v-list-item__subtitle {
     font-size: 14px;
     font-weight: normal;
@@ -102,14 +65,30 @@
 
         &--current-user {
             &__section-header {
-                font-size: 18px;
+                font-size: 20px;
                 font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: normal;
-                letter-spacing: normal;
+                line-height: 24px;
                 color: #383b41;
                 margin-bottom: 8px;
+            }
+            &__switch{
+                .theme--light.v-input--switch{
+                    margin-top:0 !important;
+                    padding-top:0 !important;
+                    margin-bottom: 8px;
+                    &__track{
+                        color:rgba(0, 0, 0, 0.87);
+                    }
+                }
+                .v-input--switch__track{
+                    width:34px !important;
+                }
+                label{
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 21px;
+                    color:#383B41 !important;
+                }
             }
 
             &__logo {

@@ -97,6 +97,9 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    apiResponse: {
+      type: Object
     }
   },
   data() {
@@ -364,6 +367,12 @@ export default {
         : []
     }
   },
+  watch: {
+    apiResponse(value = {}) {
+      this.setCampaignSummary(value)
+      this.setLoading(false)
+    }
+  },
   created() {
     this.callForData()
   },
@@ -372,36 +381,42 @@ export default {
   },
   methods: {
     callForData() {
-      this.callApis(true)
+      if (Object.keys(this.apiResponse)?.length) this.callApis(true)
+      else {
+        this.setLoading(true)
+        this.callForTargetGroups()
+      }
       this.interval = setInterval(() => {
         this.callApis()
       }, 15000)
     },
     callApis(isUseLoading = false) {
-      if (isUseLoading) {
-        this.setLoading(true)
-      }
+      if (isUseLoading) this.setLoading(true)
       SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
-          this.campaignSummary = response?.data?.data
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.campaignSummary?.smishingCampaignName || ''
-          )
-          if (this?.campaignSummary?.scenarios?.length) {
-            if (!this.customKeys.length) {
-              this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
-                .fill(0)
-                .map(() => `key-${createRandomCryptStringNumber()}`)
-            }
-            if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
-          }
+          this.setCampaignSummary(response)
         })
         .finally(() => {
-          if (isUseLoading) {
-            this.setLoading(false)
-          }
+          if (isUseLoading) this.setLoading(false)
         })
+      this.callForTargetGroups()
+    },
+    setCampaignSummary(response = {}) {
+      this.campaignSummary = response?.data?.data
+      this.$store.dispatch(
+        'common/setActivePageRouterName',
+        this.campaignSummary?.smishingCampaignName || ''
+      )
+      if (this?.campaignSummary?.scenarios?.length) {
+        if (!this.customKeys.length) {
+          this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
+            .fill(0)
+            .map(() => `key-${createRandomCryptStringNumber()}`)
+        }
+        if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
+      }
+    },
+    callForTargetGroups() {
       SmishingService.getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then(
         (response) => {
           this.targetGroups = response?.data?.data?.groups || []

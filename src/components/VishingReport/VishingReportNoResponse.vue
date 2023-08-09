@@ -50,6 +50,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { exportVishingReportNoResponse, getVishingReportNoResponse } from '@/api/vishing'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 export default {
   name: 'VishingReportNoResponse',
@@ -61,6 +62,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -159,6 +164,21 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
+  },
   methods: {
     callForData() {
       this.isLoading = true
@@ -169,6 +189,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = data.totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = data.totalNumberOfPages
           this.serverSideProps.pageNumber = data.pageNumber
+          this.tableData = data?.results?.map((row) => {
+            let customFields = {}
+            row.customFieldValues.forEach((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .catch(() => {
           this.tableData = []

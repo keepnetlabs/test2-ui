@@ -22,6 +22,7 @@
       class="mt-6"
       :id="id"
       :instance-group="instanceGroup"
+      :custom-fields="customFields"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -58,6 +59,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

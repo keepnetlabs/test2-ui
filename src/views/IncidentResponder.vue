@@ -449,7 +449,11 @@ import {
   setSafariClusterFix
 } from '@/utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
-import { exportNotifiedEmails, getNotifiedEmail } from '@/api/notifiedEmail'
+import {
+  exportNotifiedEmails,
+  getNotifiedEmailForEdit,
+  getNotifiedEmail
+} from '@/api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import AppModal from '@/components/AppModal'
@@ -1258,7 +1262,7 @@ export default {
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
       )
-      const rightSideText = template.isDefault ? `(${labels.Default})` : ''
+      const rightSideText = template?.isDefault ? `(${labels.Default})` : ''
       return template && `${template.name} ${rightSideText}`
     }
   },
@@ -1682,7 +1686,7 @@ export default {
         this.extendedViewLoading = true
         if (selections.length === 1 && (!isMultiple || !this.extendedViewValue.length)) {
           this.isMultipleSelectedTemplateResourceId = false
-          getNotifiedEmail(selections[0].resourceId)
+          getNotifiedEmailForEdit(selections[0].resourceId)
             .then((response) => {
               const selectedItem = response.data.data
               this.selectedTemplateResourceId =

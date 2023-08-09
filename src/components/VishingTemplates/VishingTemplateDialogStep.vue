@@ -88,14 +88,15 @@
           className="mt-1"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Text"
-          subTitle="Enter your text to be voiced by AI"
+          subTitle="Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags."
         >
-          <InputDescription
+          <InputMergeTag
             :value="value.inputText"
             :max-length="500"
+            :mergeTags="mergeTags"
             class="vishing-template-dialog-step__text-to-speech-input"
             entity-name="Text to speech"
-            initialPlaceholder="Enter text here"
+            initialPlaceholder="Enter your text to speech"
             required
             @input="onTextToSpeechChange"
           />
@@ -128,20 +129,20 @@ import KButtonCheckbox from '@/components/Common/Checkbox/KButtonCheckbox'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AudioPlayer from '@/components/AudioPlayer'
 import CustomError from '@/components/CustomError'
+import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 
 export default {
   name: 'VishingTemplateDialogStep',
   components: {
     KButtonCheckbox,
     FormGroup,
-    InputDescription,
     KFileUpload,
     AudioPlayer,
-    CustomError
+    CustomError,
+    InputMergeTag
   },
   emits: ['removeStep'],
   props: {
@@ -195,6 +196,24 @@ export default {
   },
   data() {
     return {
+      mergeTags: [
+        {
+          text: 'Full Name',
+          value: '{FULLNAME}'
+        },
+        {
+          text: 'First Name',
+          value: '{FIRSTNAME}'
+        },
+        {
+          text: 'Last Name',
+          value: '{LASTNAME}'
+        },
+        {
+          text: 'Company Name',
+          value: '{COMPANYNAME}'
+        }
+      ],
       fileUploadErrorText: '',
       durationRules: [
         (v) => (v === 0 ? true : validations.required(v, labels.Required)),

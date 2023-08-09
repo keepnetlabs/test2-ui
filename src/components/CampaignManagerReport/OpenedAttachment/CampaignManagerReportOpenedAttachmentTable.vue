@@ -49,6 +49,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 export default {
   name: 'CampaignManagerReportOpenedAttachmentTable',
   components: { DataTable },
@@ -59,6 +60,10 @@ export default {
     },
     instanceGroup: {
       type: [String, Number]
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -117,6 +122,21 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
+  },
   methods: {
     callForData() {
       this.setLoading(true)
@@ -130,7 +150,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row.customFieldValues.forEach((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

@@ -18,9 +18,11 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :custom-fields="customFields"
           :instance-group="instanceGroup"
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
+          :api-response="apiResponse"
         />
       </el-tab-pane>
     </el-tabs>
@@ -38,6 +40,7 @@ import CampaignManagerReportSubmittedMFACode from '@/components/SmishingReport/S
 import CampaignManagerReportNoResponse from '@/components/SmishingReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReport'
 import SmishingService from '@/api/smishing'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import KContainer from '@/components/KContainer/KContainer'
 
 export default {
@@ -45,8 +48,10 @@ export default {
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       isLoading: true,
       tab: labels.Summary,
+      apiResponse: {},
       tabItems: [
         {
           name: labels.Summary,
@@ -117,9 +122,15 @@ export default {
     }
   },
   created() {
+    this.callForCustomFields()
     this.callForFormDetails()
   },
   methods: {
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data
+      })
+    },
     callForFormDetails() {
       SmishingService.getCampaignFormDetails().then((response) => {
         this.formDetails = response?.data?.data
@@ -129,6 +140,7 @@ export default {
       if (!this.id || !this.instanceGroup) return
       SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
+          this.apiResponse = response
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
