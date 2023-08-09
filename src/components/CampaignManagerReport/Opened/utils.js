@@ -288,6 +288,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  IP_SLOT: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: 'right',
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   IP_PHISHING_REPORTER: {
     property: 'userIpAddressList',
     align: 'left',
@@ -301,6 +313,18 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   SUBMITTED_DATA_IP: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  SUBMITTED_DATA_IP_SLOT: {
     property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
@@ -497,5 +521,7 @@ export function getStatusBadgeProps(status) {
 }
 
 export const UNUSUAL_TYPES = {
-  UNUSUAL_IP: 1
+  UNUSUAL_IP: 1,
+  UNUSUAL_AGENT: 2,
+  UNUSUAL_IP_AND_AGENT: 3
 }

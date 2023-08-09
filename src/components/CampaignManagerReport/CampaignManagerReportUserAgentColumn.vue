@@ -27,7 +27,12 @@ export default {
   },
   computed: {
     isRenderTooltip() {
-      return this?.scope?.row?.sandBoxClientType === UNUSUAL_TYPES.UNUSUAL_IP
+      return (
+        this.scope?.row?.sandBoxClientType &&
+        [UNUSUAL_TYPES.UNUSUAL_AGENT, UNUSUAL_TYPES.UNUSUAL_IP_AND_AGENT].includes(
+          this.scope.row.sandBoxClientType
+        )
+      )
     }
   }
 }
