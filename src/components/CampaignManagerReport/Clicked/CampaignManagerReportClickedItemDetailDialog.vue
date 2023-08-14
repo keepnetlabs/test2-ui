@@ -40,8 +40,15 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
-        <template #datatable-custom-column="{ scope }">
-          <CampaignManagerReportUserAgentColumn :scope="scope" />
+        <template #datatable-custom-column="{ scope, col }">
+          <CampaignManagerReportUserAgentColumn
+            v-if="col.property === COLUMNS.USER_AGENT_SLOT.property"
+            :scope="scope"
+          />
+          <CampaignManagerReportIPColumn
+            v-if="col.property === COLUMNS.IP_SLOT.property"
+            :scope="scope"
+          />
         </template>
       </DataTable>
     </template>
@@ -71,9 +78,16 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
+import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
+
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
-  components: { CampaignManagerReportUserAgentColumn, DataTable, AppDialog },
+  components: {
+    CampaignManagerReportUserAgentColumn,
+    CampaignManagerReportIPColumn,
+    DataTable,
+    AppDialog
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -85,6 +99,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-clicked-detail-item-data-table',
@@ -100,7 +115,7 @@ export default {
           COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.IP
+          COLUMNS.IP_SLOT
         ],
         addButton: {
           show: false
