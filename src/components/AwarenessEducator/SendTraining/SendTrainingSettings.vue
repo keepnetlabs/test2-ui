@@ -69,6 +69,29 @@
         </template>
       </KSelect>
     </FormGroup>
+    <div v-if="!formData.isProxy" class="mb-6">
+      <FormGroup
+        class="send-training-settings__lms"
+        title="SMS Notification"
+        sub-title="In addition to the training enrollment, send an SMS notification with the selected phone number"
+      >
+        <div class="send-training-settings__lms-switch">
+          <VSwitch
+            v-model="formData.isSendSMSNotification"
+            id="input--send-training-settings-lms"
+            hide-details
+            label="SMS notification for your training"
+            color="#2196f3"
+          />
+        </div>
+      </FormGroup>
+      <SendTrainingSMSSettings
+        v-if="formData.isSendSMSNotification"
+        ref="refSendTrainingSMSSettings"
+        :distributionDelayTimeTypes="distributionDelayTimeTypes"
+        :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
+      />
+    </div>
     <FormGroup v-if="!formData.isProxy" style="max-width: 600px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
@@ -311,16 +334,30 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
 import { mapGetters } from 'vuex'
 import { getTimeZone } from '@/utils/functions'
+import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings'
 
 export default {
   name: 'SendTrainingSettings',
-  components: { ContentLanguageSelecItem, InputTimezone, InputDate, KSelect, FormGroup },
+  components: {
+    ContentLanguageSelecItem,
+    InputTimezone,
+    InputDate,
+    KSelect,
+    FormGroup,
+    SendTrainingSMSSettings
+  },
   props: {
     selectedRow: {
       type: Object
     },
     enumTypes: {
       type: Object
+    },
+    distributionDelayTimeTypes: {
+      type: Array
+    },
+    totalPhoneNumberUserCount: {
+      type: Number
     }
   },
   inject: {
@@ -346,6 +383,9 @@ export default {
         disabledDate: this.disabledEndDates
       },
       formData: {
+        isSendSMSNotification: false,
+        senderPhoneNumber: '',
+        smsText: '',
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
