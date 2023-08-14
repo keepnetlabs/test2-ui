@@ -521,7 +521,7 @@ export function getStatusBadgeProps(status) {
 }
 
 export const UNUSUAL_TYPES = {
-  UNUSUAL_IP: 1,
-  UNUSUAL_AGENT: 2,
-  UNUSUAL_IP_AND_AGENT: 3
+  USER_AGENT: 0,
+  IP: 1,
+  HONEYPOT: 2
 }

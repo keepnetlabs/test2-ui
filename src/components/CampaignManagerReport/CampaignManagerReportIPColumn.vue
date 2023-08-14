@@ -27,12 +27,9 @@ export default {
   },
   computed: {
     isRenderTooltip() {
-      return (
-        this.scope?.row?.sandBoxClientType &&
-        [UNUSUAL_TYPES.UNUSUAL_IP, UNUSUAL_TYPES.UNUSUAL_IP_AND_AGENT].includes(
-          this.scope.row.sandBoxClientType
-        )
-      )
+      if (!this.scope?.row?.sandBoxType) return false
+      const binaryArray = this.scope.row.sandBoxType.toString(2)
+      return [binaryArray[UNUSUAL_TYPES.IP], binaryArray[UNUSUAL_TYPES.HONEYPOT]].includes('1')
     }
   }
 }
