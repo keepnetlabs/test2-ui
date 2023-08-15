@@ -143,7 +143,7 @@ export default {
       phoneNumbers: [],
       phoneNumberItems: [],
       formData: {
-        smsText: '',
+        smsText: `Dear {FULLNAME} {TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}`,
         phoneNumber: '',
         smsProviderNumberResourceId: '',
         distributionTypeId: 3,
