@@ -28,7 +28,7 @@ export default {
   computed: {
     isRenderTooltip() {
       if (!this.scope?.row?.sandBoxType) return false
-      const binaryArray = this.scope.row.sandBoxType.toString(2)
+      const binaryArray = this.scope.row.sandBoxType.toString(2).split('').reverse().join('')
       return [binaryArray[UNUSUAL_TYPES.IP], binaryArray[UNUSUAL_TYPES.HONEYPOT]].includes('1')
     }
   }
