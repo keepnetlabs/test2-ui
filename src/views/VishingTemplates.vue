@@ -323,7 +323,7 @@ export default {
           disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
         }
       },
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({}, 'default'),
       serverSideProps: new ServerSideProps()
     }
   },
