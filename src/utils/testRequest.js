@@ -6,7 +6,7 @@ import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
   baseURL: APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api',
-  timeout: 5000, //@note timeout changed from 30000 to 100000
+  timeout: 100000, //@note timeout changed from 30000 to 100000
   rejectUnauthorized: false
 })
 
@@ -77,6 +77,13 @@ testService.interceptors.response.use(
     }
 
     if (error.code === 'ECONNABORTED') {
+      if (error?.message === 'timeout of 100000ms exceeded') {
+        store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Your request took too long. Please check your connection and try again.',
+          icon: 'mdi-alert'
+        })
+      }
       return Promise.reject(error)
     } else if (!error.response) {
       return Promise.reject(error)
