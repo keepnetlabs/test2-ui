@@ -77,6 +77,13 @@ testService.interceptors.response.use(
     }
 
     if (error.code === 'ECONNABORTED') {
+      if (error?.message === 'timeout of 100000ms exceeded') {
+        store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Your request took too long. Please check your connection and try again.',
+          icon: 'mdi-alert'
+        })
+      }
       return Promise.reject(error)
     } else if (!error.response) {
       return Promise.reject(error)

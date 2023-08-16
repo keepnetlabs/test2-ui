@@ -1951,7 +1951,7 @@ export default {
           }
           sets.result.add(row.result)
           sets.status.add(row.status)
-          const tags = typeof row.tags === 'string' ? row.tags : row.tags.join(',') || ''
+          const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
           sets.tag.add(tags)
           sets.note.add(row.note)
           sets.isNotifyUser.add(row.isNotifyUser)
@@ -1980,7 +1980,7 @@ export default {
         })
       } else {
         const [item] = selectedRows
-        const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
+        const tag = typeof item?.tags === 'string' ? item?.tags : item?.tags?.join(',')
         const payload = {
           result: item.result,
           status: item.status,
