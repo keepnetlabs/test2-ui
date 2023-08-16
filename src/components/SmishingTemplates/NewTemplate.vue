@@ -148,6 +148,7 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <form-group
                       class="mt-8"
+                      style="max-width: 591px;"
                       title="Text Message"
                       sub-title="Text message to be sent to target users. Use the mandatory merge tag {PHISHINGURL} for the link to be added to the text message"
                     >
@@ -357,7 +358,35 @@ export default {
         },
         {
           text: 'Company Name',
-          value: '{COMPANYNAME}'
+          value: '{COMPANY_NAME}'
+        },
+        {
+          text: 'Date Sent',
+          value: '{DATE_SENT}'
+        },
+        {
+          text: 'Current Date',
+          value: '{CURRENT_DATE}'
+        },
+        {
+          text: 'Current Date Plus 10 Days',
+          value: '{CURRENT_DATE_PLUS_10_DAYS}'
+        },
+        {
+          text: 'Current Date Minus 10 Days',
+          value: '{CURRENT_DATE_MINUS_10_DAYS}'
+        },
+        {
+          text: 'Random Number 1 Digit',
+          value: '{RANDOM_NUMBER_1_DIGIT}'
+        },
+        {
+          text: 'Random Number 2 Digits',
+          value: '{RANDOM_NUMBER_2_DIGITS}'
+        },
+        {
+          text: 'Random Number 3 Digits',
+          value: '{RANDOM_NUMBER_3_DIGITS}'
         }
       ]
     }

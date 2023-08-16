@@ -86,6 +86,7 @@
         <FormGroup
           v-if="value.inputType === 'TextToSpeech'"
           className="mt-1"
+          style="max-width: 603px;"
           labelClassName="vishing-template-dialog-step__form-label"
           title="Text"
           subTitle="Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags."
@@ -211,7 +212,35 @@ export default {
         },
         {
           text: 'Company Name',
-          value: '{COMPANYNAME}'
+          value: '{COMPANY_NAME}'
+        },
+        {
+          text: 'Date Sent',
+          value: '{DATE_SENT}'
+        },
+        {
+          text: 'Current Date',
+          value: '{CURRENT_DATE}'
+        },
+        {
+          text: 'Current Date Plus 10 Days',
+          value: '{CURRENT_DATE_PLUS_10_DAYS}'
+        },
+        {
+          text: 'Current Date Minus 10 Days',
+          value: '{CURRENT_DATE_MINUS_10_DAYS}'
+        },
+        {
+          text: 'Random Number 1 Digit',
+          value: '{RANDOM_NUMBER_1_DIGIT}'
+        },
+        {
+          text: 'Random Number 2 Digits',
+          value: '{RANDOM_NUMBER_2_DIGITS}'
+        },
+        {
+          text: 'Random Number 3 Digits',
+          value: '{RANDOM_NUMBER_3_DIGITS}'
         }
       ],
       fileUploadErrorText: '',
