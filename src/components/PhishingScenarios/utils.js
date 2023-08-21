@@ -52,12 +52,18 @@ import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/anal
 import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
 import dateEmailSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateEmailSent'
+import dateSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateSent'
 import emailMergedText from '@/components/GrapesJs/Newsletter/mergedTexts/emailMergedText'
 import firstName from '@/components/GrapesJs/Newsletter/mergedTexts/firstName'
 import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
 import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
+import currentDatePlusTenDays from '@/components/GrapesJs/Newsletter/mergedTexts/currentDatePlusTenDays'
+import currentDateMinusTenDays from '@/components/GrapesJs/Newsletter/mergedTexts/currentDateMinusTenDays'
+import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberOneDigit'
+import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
+import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
 
 export const MERGED_TEXTS = {
   '{FULLNAME}': fullName,
@@ -114,12 +120,18 @@ export const MERGED_TEXTS = {
   '{INVESTIGATIONURL}': investigationUrl,
   '{COMPANYLOGO}': companyLogo,
   '{DATEMAILSENT}': dateEmailSent,
+  '{DATESENT}': dateSent,
   '{EMAIL}': emailMergedText,
   '{FIRSTNAME}': firstName,
   '{FROMEMAIL}': fromEmail,
   '{FROMNAME}': fromName,
   '{LASTNAME}': lastName,
-  '{PHISHINGURL}': phishingUrl
+  '{PHISHINGURL}': phishingUrl,
+  '{CURRENTDATEPLUS10DAYS}': currentDatePlusTenDays,
+  '{CURRENTDATEMINUS10DAYS}': currentDateMinusTenDays,
+  '{RANDOMNUMBER1DIGIT}': randomNumberOneDigit,
+  '{RANDOMNUMBER2DIGITS}': randomNumberTwoDigits,
+  '{RANDOMNUMBER3DIGITS}': randomNumberThreeDigits
 }
 
 export const SCENARIO_METHOD_TYPES = {

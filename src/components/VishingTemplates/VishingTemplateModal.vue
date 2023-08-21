@@ -84,6 +84,7 @@
             />
             <v-form ref="refFormStep2" lazy-validation>
               <FormGroup
+                style="max-width: 610px;"
                 title="Language and Voice"
                 sub-title="Select the language of this template and the text-to-speech voice"
               >
@@ -120,6 +121,7 @@
               </FormGroup>
               <FormGroup
                 class="mt-4"
+                style="max-width: 610px;"
                 title="Steps"
                 sub-title="Define your vishing template step by step"
               >
@@ -196,12 +198,14 @@
                 </div>
               </FormGroup>
               <FormGroup
+                style="max-width: 610px;"
                 title="Invalid Dialing Notice"
                 subTitle="This notice will be played when the user fails to enter a number correctly"
               >
                 <v-card class="px-4 pt-3 mt-2 vishing-template__invalid-dialing-notice-card">
                   <span class="vishing-template__invalid-dialing-notice-title">Notice</span>
                   <FormGroup
+                    style="max-width: 610px;"
                     title="Method"
                     subTitle="Choose playback method"
                     labelClassName="vishing-template-dialog-step__form-label"
@@ -221,6 +225,7 @@
                   <FormGroup
                     v-if="formValues.dialingNoticeStepInputType === 'TextToSpeech'"
                     className="mt-2"
+                    style="max-width: 603px;"
                     labelClassName="vishing-template-dialog-step__form-label"
                     title="Text"
                     subTitle="Enter your text to be voiced by AI"
@@ -401,6 +406,34 @@ export default {
         {
           text: 'Company Name',
           value: '{COMPANYNAME}'
+        },
+        {
+          text: 'Date Sent',
+          value: '{DATE_SENT}'
+        },
+        {
+          text: 'Current Date',
+          value: '{CURRENT_DATE}'
+        },
+        {
+          text: 'Current Date Plus 10 Days',
+          value: '{CURRENT_DATE_PLUS_10_DAYS}'
+        },
+        {
+          text: 'Current Date Minus 10 Days',
+          value: '{CURRENT_DATE_MINUS_10_DAYS}'
+        },
+        {
+          text: 'Random Number 1 Digit',
+          value: '{RANDOM_NUMBER_1_DIGIT}'
+        },
+        {
+          text: 'Random Number 2 Digits',
+          value: '{RANDOM_NUMBER_2_DIGITS}'
+        },
+        {
+          text: 'Random Number 3 Digits',
+          value: '{RANDOM_NUMBER_3_DIGITS}'
         }
       ],
       Validations,
