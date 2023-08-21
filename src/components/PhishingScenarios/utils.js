@@ -120,7 +120,7 @@ export const MERGED_TEXTS = {
   '{INVESTIGATIONURL}': investigationUrl,
   '{COMPANYLOGO}': companyLogo,
   '{DATEMAILSENT}': dateEmailSent,
-  '{DATESENT}': dateSent,
+  '{DATE_SENT}': dateSent,
   '{EMAIL}': emailMergedText,
   '{FIRSTNAME}': firstName,
   '{FROMEMAIL}': fromEmail,

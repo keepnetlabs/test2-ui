@@ -212,7 +212,7 @@ export default {
         },
         {
           text: 'Company Name',
-          value: '{COMPANY_NAME}'
+          value: '{COMPANYNAME}'
         },
         {
           text: 'Date Sent',

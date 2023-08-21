@@ -63,6 +63,7 @@ import currentDateMinusTenDays from '@/components/GrapesJs/Newsletter/mergedText
 import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberOneDigit'
 import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
 import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
+import dateSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateSent'
 
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
@@ -125,6 +126,7 @@ export const MERGED_TEXTS_MAP = {
   '{FROMNAME}': fromName,
   '{LASTNAME}': lastName,
   '{PHISHINGURL}': phishingUrl,
+  '{DATE_SENT}': dateSent,
   '{CURRENT_DATE_PLUS_10_DAYS}': currentDatePlusTenDays,
   '{CURRENT_DATE_MINUS_10_DAYS}': currentDateMinusTenDays,
   '{RANDOM_NUMBER_1_DIGIT}': randomNumberOneDigit,
