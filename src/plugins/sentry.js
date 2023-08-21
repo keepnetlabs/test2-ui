@@ -49,7 +49,8 @@ const CONSTANTS = {
   USER_FLOW: [
     'Userflow.js error reply (generic)',
     'Unexpected token',
-    'Failed to fetch dynamically imported module: https://js.userflow.com'
+    'Failed to fetch dynamically imported module: https://js.userflow.com',
+    'Non-Error exception captured with keys: currentTarget, detail, isTrusted, target'
   ],
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
