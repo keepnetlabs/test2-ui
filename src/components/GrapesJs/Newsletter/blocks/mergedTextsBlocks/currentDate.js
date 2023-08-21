@@ -1,7 +1,7 @@
 const mergedTextsCurrentDate = [
   {
     tagName: 'span',
-    content: '{CURRENTDATE}'
+    content: '{CURRENT_DATE}'
   }
 ]
 export default mergedTextsCurrentDate
