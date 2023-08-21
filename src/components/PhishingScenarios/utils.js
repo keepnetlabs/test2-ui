@@ -120,18 +120,18 @@ export const MERGED_TEXTS = {
   '{INVESTIGATIONURL}': investigationUrl,
   '{COMPANYLOGO}': companyLogo,
   '{DATEMAILSENT}': dateEmailSent,
-  '{DATE_SENT}': dateSent,
+  '{DATESENT}': dateSent,
   '{EMAIL}': emailMergedText,
   '{FIRSTNAME}': firstName,
   '{FROMEMAIL}': fromEmail,
   '{FROMNAME}': fromName,
   '{LASTNAME}': lastName,
   '{PHISHINGURL}': phishingUrl,
-  '{CURRENT_DATE_PLUS_10_DAYS}': currentDatePlusTenDays,
-  '{CURRENT_DATE_MINUS_10_DAYS}': currentDateMinusTenDays,
-  '{RANDOM_NUMBER_1_DIGIT}': randomNumberOneDigit,
-  '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
-  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits
+  '{CURRENTDATEPLUS10DAYS}': currentDatePlusTenDays,
+  '{CURRENTDATEMINUS10DAYS}': currentDateMinusTenDays,
+  '{RANDOMNUMBER1DIGIT}': randomNumberOneDigit,
+  '{RANDOMNUMBER2DIGITS}': randomNumberTwoDigits,
+  '{RANDOMNUMBER3DIGITS}': randomNumberThreeDigits
 }
 
 export const SCENARIO_METHOD_TYPES = {
