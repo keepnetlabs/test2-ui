@@ -325,8 +325,8 @@ export default {
       })
       return {
         name: formData.name,
-        method: [...methodSet].join(', '),
-        difficulty: [...difficultySet].join(', ')
+        method: [...methodSet]?.join(', '),
+        difficulty: [...difficultySet]?.join(', ')
       }
     },
     getTotalRandomlySelectedUserCount() {
