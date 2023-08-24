@@ -725,12 +725,12 @@ export default {
             return item.val === 'analyze'
           })
           if (!hasAnalyze) {
-            this.$refs.refActionItem.addAction('analyze')
+            this?.$refs?.refActionItem?.addAction('analyze')
           }
           this.$refs.refActionItem.analyzeCheckbox = true
         } else {
           if (this.playbookActionAnalyzers.length > 0) {
-            this.$refs.refActionItem.addAction('analyze')
+            this?.$refs?.refActionItem?.addAction('analyze')
           }
         }
         if (
@@ -740,7 +740,7 @@ export default {
         ) {
           this.$refs.refActionItem.playbookActionStatus.actionStatusType =
             data.playbookActionStatus.actionStatusType
-          this.$refs.refActionItem.addAction('status')
+          this?.$refs?.refActionItem?.addAction('status')
         }
         this.initialFormValues = {
           ...this.initialFormValues,
