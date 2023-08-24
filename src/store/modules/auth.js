@@ -31,6 +31,7 @@ const auth = {
     SET_CURRENTUSER(state, payload) {
       if (payload.isSelectCompany) {
         let data = payload.currentUserData
+        if (!data) return
         state.user = data
         state.companyName = data.userCompany.name
         state.selectedCompanyId = data.userCompany.id

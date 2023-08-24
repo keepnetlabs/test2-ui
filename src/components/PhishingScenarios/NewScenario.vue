@@ -65,7 +65,7 @@
                   <KSelect
                     v-bind="commonRules"
                     v-model="formValues.methodTypeId"
-                    :items="scenarioDetailsLookup.methodTypes"
+                    :items="getMethodTypes"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="value"
@@ -406,7 +406,7 @@
                                 "
                               >
                                 {{
-                                  scenarioDetailsLookup.methodTypes.find(
+                                  getMethodTypes.find(
                                     (item) =>
                                       item.value ===
                                       summaryData.landingPageTemplate.methodTypeId.toString()
@@ -480,7 +480,7 @@
                             "
                           >
                             {{
-                              scenarioDetailsLookup.methodTypes.find(
+                              getMethodTypes.find(
                                 (item) =>
                                   item.value ===
                                   summaryData.landingPageTemplate.methodTypeId.toString()
@@ -670,6 +670,9 @@ export default {
     }
   },
   computed: {
+    getMethodTypes() {
+      return this.scenarioDetailsLookup?.methodTypes || []
+    },
     isMethodMfa() {
       return this.formValues.methodTypeId === '4'
     },
@@ -698,9 +701,10 @@ export default {
         : this.methods[Number(this.formValues?.methodTypeId) - 1].text
     },
     getStep2Subtitle() {
-      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
-        (mType) => mType.value === this.formValues.methodTypeId
-      )?.text
+      const mTypeText =
+        this.scenarioDetailsLookup?.methodTypes?.find(
+          (mType) => mType.value === this.formValues.methodTypeId
+        )?.text || ''
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
         return 'Choose your click only type email template'
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
@@ -710,9 +714,10 @@ export default {
       else return 'Choose your click only or data submission type email template'
     },
     getStep3Subtitle() {
-      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
-        (mType) => mType.value === this.formValues.methodTypeId
-      )?.text
+      const mTypeText =
+        this.scenarioDetailsLookup?.methodTypes?.find(
+          (mType) => mType.value === this.formValues.methodTypeId
+        )?.text || ''
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
         return 'Choose your click only type landing page'
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
@@ -766,7 +771,7 @@ export default {
     },
     getMethodText() {
       return (
-        this.scenarioDetailsLookup.methodTypes.find(
+        this.scenarioDetailsLookup?.methodTypes?.find(
           (item) => item.value === this.formValues.methodTypeId
         )?.text || ''
       )
