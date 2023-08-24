@@ -370,7 +370,7 @@ export default {
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+          playbookActionInvestigations.push(ref?.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
@@ -462,7 +462,7 @@ export default {
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+          playbookActionInvestigations.push(ref?.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           if (item && item.analysisEngineType && item.analysisEngineType) {
