@@ -10,7 +10,10 @@
           >mdi-information</v-icon
         >
       </template>
-      <span>Unusual IP Interaction: This user had no interaction with the email.</span>
+
+      <span
+        >A sandbox has clicked the Honeypot link. This user had no interaction with the email.</span
+      >
     </v-tooltip>
   </span>
 </template>
