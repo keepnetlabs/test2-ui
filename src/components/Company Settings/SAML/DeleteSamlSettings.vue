@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     getSubtitle() {
-      return this.selectedRow.name || ''
+      return this.selectedRow?.name || ''
     }
   },
   methods: {

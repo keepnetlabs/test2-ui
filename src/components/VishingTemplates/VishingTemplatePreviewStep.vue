@@ -16,7 +16,7 @@
         {{ getFileName(step.inputUrl) }}
       </span>
       <AudioPlayer
-        v-if="step.inputUrl"
+        v-if="step && step.inputUrl"
         ref="refAudioPlayer"
         :src="step.inputUrl"
         @play="handleAudioPlay"
@@ -34,7 +34,7 @@
         :text="getRequiredDigitCountTagText"
       />
       <Badge
-        v-if="step.isVishingStep"
+        v-if="step && step.isVishingStep"
         className="vishing-template-preview-step__tags__vishing-step-tag"
         color="#B83A3A"
         text="Vishing Step"
@@ -42,7 +42,7 @@
       />
     </div>
     <span
-      v-if="step.duration"
+      v-if="step && step.duration"
       class="vishing-template-preview-step__text vishing-template-preview-step__pause-duration-text"
     >
       {{ `Pause for ${step.duration} seconds` }}
