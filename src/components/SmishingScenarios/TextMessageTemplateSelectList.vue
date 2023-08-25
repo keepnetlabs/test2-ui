@@ -331,9 +331,16 @@ export default {
         this.getTemplates(true, this.templateResourceId, this.bodyData, true)
       }
     },
-    checkAndAddResourceIdToPayload() {
+    checkAndAddResourceIdToPayload(isInitial, bodyData) {
       this.loadingTemplates = true
       this.$emit('loading', true)
+      if (isInitial && this.templateResourceId) {
+        bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'ResourceId',
+          Operator: 'Include',
+          value: this.templateResourceId
+        })
+      }
     },
     getTemplates(
       isInitial = false,

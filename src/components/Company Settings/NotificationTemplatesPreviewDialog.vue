@@ -55,7 +55,7 @@ export default {
       return 'Notification Template Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name || ''
+      return this.selectedRow?.name || ''
     }
   },
   created() {
