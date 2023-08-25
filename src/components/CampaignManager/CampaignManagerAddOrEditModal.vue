@@ -90,6 +90,7 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              :is-multiple-phishing-scenarios="selectedPhishingScenarios.length > 1"
               :is-all-groups="!isEdit"
               :default-values="getDefaultTargetAudienceSettings"
               :selected-target-groups.sync="selectedTargetGroups"
@@ -264,11 +265,12 @@ export default {
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
-        let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
+        const scheduleTypeId = refCampaignManagerDeliverySettings.formData.scheduleTypeId
+        let selectedSchedule = refCampaignManagerDeliverySettings?.formData?.scheduledDate || ''
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
         formData.userCountDetailResponse = this.userCountDetailResponse
+        formData.duration = refCampaignManagerCampaignInfo.formData.duration
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
@@ -283,6 +285,9 @@ export default {
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
+        formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
+          (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
+        )?.text
       }
       return formData
     },
@@ -488,6 +493,7 @@ export default {
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
+          if (!refCampaignManagerDeliverySettings?.validateForm()) return
           if (
             refCampaignManagerDeliverySettings.emailDelivery.type ===
             EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
