@@ -10,6 +10,7 @@
           >mdi-information</v-icon
         >
       </template>
+
       <span
         >A sandbox has clicked the Honeypot link. This user had no interaction with the email.</span
       >
