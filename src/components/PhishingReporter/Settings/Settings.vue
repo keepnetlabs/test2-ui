@@ -52,8 +52,8 @@
         id="phishing-reporter-settings-other-settings-content"
       >
         <other-settings
-          :formData="formData"
           ref="refOtherSettings"
+          :formData="formData"
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
@@ -63,9 +63,9 @@
       </el-tab-pane>
       <el-tab-pane
         v-if="!inModal || applicationType === 'DiagnosticTool'"
+        id="phishing-reporter-settings-diagnostic-tool-content"
         label="Diagnostic Tool"
         name="phishing-reporter-settings-diagnostic-tool"
-        id="phishing-reporter-settings-diagnostic-tool-content"
       >
         <diagnostic-tool
           ref="refDiagnosticTool"
