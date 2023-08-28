@@ -40,23 +40,24 @@
             <v-icon class="close-icon">mdi-close</v-icon>
           </v-btn>
           <v-btn
-            @click="cancelEditedOnes"
+            v-if="editMode"
             id="btn-cancel--extended-view"
             class="pl-1 pr-1"
             color="#f56c6c"
             dense
             text
-            v-if="editMode"
+            :disabled="isCancelButtonDisabled"
+            @click="cancelEditedOnes"
             >{{ labels.Cancel }}
           </v-btn>
           <v-btn
-            @click="saveEditedOnes()"
+            v-if="editMode"
             id="btn-save--extended-view"
             color="#2196f3"
             dense
             text
-            v-if="editMode"
             :disabled="isSaveButtonDisabled"
+            @click="saveEditedOnes()"
             >{{ labels.Save }}
           </v-btn>
         </div>
@@ -676,6 +677,10 @@ export default {
     extendedViewDisableChanger: {
       type: Function
     },
+    isCancelButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     createMode: {
       type: Boolean,
       default: false
@@ -701,6 +706,10 @@ export default {
       default: false
     },
     isEditableRuntime: {
+      type: Boolean,
+      default: false
+    },
+    waitApi: {
       type: Boolean,
       default: false
     }
@@ -747,6 +756,7 @@ export default {
   },
   computed: {
     isSaveButtonDisabled() {
+      if (this.isCancelButtonDisabled) return true
       const isDisableChecker = this.extendedViewDisableChanger
         ? this.extendedViewDisableChanger()
         : true
@@ -886,17 +896,22 @@ export default {
             })
           }
         }
-
         this.$emit('handleEdit', this.copyOfEditedRows)
-        this.closeEditPopup()
-        this.editMode = false
-        this.multipleEditDisables = []
-        this.editedPopupProperties = []
-        this.multipleEditModels = []
-        this.copyOfEditedRows = []
+        if (this.waitApi) return true
+        this.closeEditPopupAndResetParameters()
       }
     },
-
+    closeEditPopupAndResetParameters() {
+      this.closeEditPopup()
+      this.resetParameters()
+    },
+    resetParameters() {
+      this.editMode = false
+      this.multipleEditDisables = []
+      this.editedPopupProperties = []
+      this.multipleEditModels = []
+      this.copyOfEditedRows = []
+    },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
     },

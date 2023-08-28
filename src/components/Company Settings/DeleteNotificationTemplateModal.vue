@@ -53,7 +53,7 @@ export default {
       return `Delete Notification Template`
     },
     getSubtitle() {
-      return `${this.selectedItem.name}`
+      return this.selectedItem?.name || ''
     }
   },
   methods: {
