@@ -294,20 +294,10 @@ export default {
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const {
-        name,
-        scheduleTypeId,
-        duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
-        excludeFromReports
-      } = this.selectedRowFormData
+      const { name, duration, excludeFromReports } = this.selectedRowFormData
       return {
         name,
-        scheduleTypeId: scheduleTypeId.toString(),
         duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
         excludeFromReports
       }
     },
@@ -346,7 +336,11 @@ export default {
         sendRandomlyUsersCalculateTypeId,
         smtpSetting,
         directEmailSetting,
-        emailDeliverySettingType
+        emailDeliverySettingType,
+        scheduleTypeId,
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        frequency
       } = this.selectedRowFormData
       return {
         smtpSetting,
@@ -360,7 +354,11 @@ export default {
         sendRandomlyUsersCount,
         emailDeliverySettingType,
         directEmailSetting,
-        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString(),
+        scheduleTypeId: scheduleTypeId.toString(),
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        frequency
       }
     },
     getUserTargetAudienceData() {
@@ -540,12 +538,12 @@ export default {
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             duration: campaignManagerFormData.duration,
-            scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
+            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
-              campaignManagerFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
-                : campaignManagerFormData.scheduledDate,
-            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
+                : deliverySettingsFormData.scheduledDate,
+            scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
@@ -559,6 +557,7 @@ export default {
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
+            frequency: deliverySettingsFormData.frequency,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
           }
