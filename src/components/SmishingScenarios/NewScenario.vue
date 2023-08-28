@@ -146,7 +146,7 @@
                   <TextMessageTemplateSelectList
                     v-if="step === 2"
                     ref="refTextMessageTemplateSelectList"
-                    :template-resource-id="formValues.templateResourceId"
+                    :template-resource-id="formValues.textTemplateResourceId"
                     :scenario-details-lookup="scenarioDetailsLookup"
                     :category-resource-id="formValues.methodTypeId"
                     :language-options="languageOptions"
@@ -657,7 +657,7 @@ export default {
       return method === 'Data Submission' ? 'Gather information from users' : 'Send a smishing MFA'
     },
     handleInitialTemplate(id) {
-      this.initialFormValues.templateResourceId = id
+      this.initialFormValues.textTemplateResourceId = id
     },
     handleSelectedTemplateChange(item) {
       this.formValues.textTemplateId = item.id
