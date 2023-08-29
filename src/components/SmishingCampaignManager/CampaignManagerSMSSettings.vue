@@ -8,6 +8,78 @@
       :value="formData.phoneNumber"
       @input="handlePhoneNumberChange"
     />
+    <FormGroup
+      class="mb-6"
+      :title="labels.Schedule"
+      :sub-title="labels.ScheduleSub"
+      style="max-width: 600px;"
+    >
+      <v-radio-group
+        v-model="formData.scheduleTypeId"
+        class="mt-0 campaign-manager-target-groups-radio"
+        hide-details
+      >
+        <v-radio
+          v-for="item in radioItems"
+          :key="item.text"
+          style="margin-bottom: 16px;"
+          color="#2196f3"
+          :id="`input--campaign-manager-radio-${item.text}`"
+          :value="item.value"
+          :label="item.text"
+        ></v-radio>
+        <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+          <v-radio
+            :id="`input--campaign-manager-radio-schedule-to`"
+            style="margin-bottom: 0;"
+            label="Schedule to"
+            color="#2196f3"
+            value="3"
+          />
+          <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+            <InputDate
+              v-model="formData.scheduledDate"
+              class="date-picker-height-40 ml-2"
+              type="datetime"
+              ref="refPicker"
+              placeholder="Select Date Select Time"
+              style="width: 100%; max-width: 222px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
+              :disabled="isScheduledTimeDisabled"
+              :picker-options="datePickerOptions"
+            />
+            <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+              <transition appear name="bounce">
+                <div class="v-messages theme--light error--text" role="alert">
+                  <div class="v-messages__wrapper">
+                    <div class="v-messages__message" style="padding-left: 10px;">
+                      Date is required
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <KSelect
+            v-model.trim="formData.scheduledDateTimeZoneId"
+            type="autocomplete"
+            id="input--campaign-manager-campaign-info-time-type"
+            class="ml-2"
+            style="max-width: 195px;"
+            outlined
+            dense
+            hide-details
+            placeholder="Select a item"
+            min-width-type="super"
+            nudge-width="200"
+            :items="scheduledTimeItems"
+            :disabled="isScheduledTimeDisabled"
+          />
+        </div>
+      </v-radio-group>
+    </FormGroup>
     <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
       <div class="campaign-manager-advanced-settings__distribution-item">
         <label for="input--campaign-manager-advanced-settings-time">Sending Limit</label>
@@ -68,13 +140,17 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import SmishingService from '@/api/smishing'
-import { createRandomCryptStringNumber } from '@/utils/functions'
+import { createRandomCryptStringNumber, getTimeZone } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
+import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
+    InputDate,
     KSelect,
     FormGroup,
     InputCallerPhoneNumber
@@ -114,6 +190,11 @@ export default {
   data() {
     return {
       labels,
+      isDateValid: true,
+      parsedFormat: getTimeZone(false),
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
       isTestingConnection: false,
       isShowSmtpErrorDialog: false,
       isUsersOnline: false,
@@ -127,13 +208,20 @@ export default {
       emailDelivery: null,
       phoneNumbers: [],
       phoneNumberItems: [],
+      radioItems: [
+        { text: 'Send now', value: SCHEDULE_TYPES.SEND_NOW },
+        { text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }
+      ],
       formData: {
         phoneNumber: '',
         smsProviderNumberResourceId: '',
         distributionTypeId: 3,
         distributionDelayEvery: 20,
         distributionDelayTimeTypeId: '1',
-        sendingLimit: 50
+        sendingLimit: 50,
+        scheduleTypeId: SCHEDULE_TYPES.SEND_NOW,
+        scheduledDate: '',
+        scheduledDateTimeZoneId: ''
       },
       commonRules: {
         hint: '*Required',
@@ -151,8 +239,14 @@ export default {
   },
   created() {
     this.callForPhoneNumbers()
+    this.callForGetTimeZones()
+    if (!this.isEdit) this.getSelectedTimeZone()
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
+    }),
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
@@ -225,6 +319,13 @@ export default {
       }
 
       return `${leftSideText}${rightSideText}`
+    },
+    isScheduledTimeDisabled() {
+      return this.formData.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO
+    },
+    scheduledTimeItems() {
+      const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
+      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
   watch: {
@@ -236,9 +337,40 @@ export default {
     },
     totalTargetUserCount() {
       this.callForCalculateSendingInfo()
+    },
+    selectedTimeZone(val) {
+      this.formData.scheduledDateTimeZoneId = val
+    },
+    'formData.scheduledDate'(val) {
+      let isDateValid = true
+      if (this.formData) {
+        isDateValid =
+          this.formData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO ? val && val.length > 0 : true
+      }
+      this.isDateValid = isDateValid
+    },
+    'formData.scheduleTypeId'(val) {
+      if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
+        this.isDateValid = true
+      }
     }
   },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formData.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
+    },
     handlePhoneNumberChange(phoneNumber) {
       const phoneNumberIndex = this.phoneNumberItems.findIndex(
         (item) => item.phoneNumber === phoneNumber
