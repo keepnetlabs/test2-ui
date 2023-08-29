@@ -256,3 +256,11 @@ export function getStatusBadgeProps(status) {
     }
   }
 }
+
+export const frequencyItems = [
+  { text: 'One Time', value: 0 },
+  { text: 'Weekly', value: 1 },
+  { text: 'Every two weeks', value: 2 },
+  { text: 'Monthly', value: 3 },
+  { text: 'Quarterly', value: 4 }
+]
