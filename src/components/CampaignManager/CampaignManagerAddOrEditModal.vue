@@ -543,7 +543,10 @@ export default {
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : deliverySettingsFormData.scheduledDate,
-            scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId || null,
+            scheduledDateTimeZoneId:
+              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+                ? null
+                : deliverySettingsFormData.scheduledDateTimeZoneId,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
