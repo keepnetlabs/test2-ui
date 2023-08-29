@@ -68,13 +68,15 @@
     </FormGroup>
     <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub" has-hint>
       <KSelect
-        v-bind="commonRules"
         v-model.trim="formData.frequency"
         id="input--company-manager-advanced-settings-frequency"
         dense
         outlined
+        hint="*Required"
+        persistent-hint
         placeholder="Select Option"
         no-data-text="No frequency configuration available"
+        :rules="rules.frequency"
         :items="frequencyItems"
       />
     </FormGroup>
@@ -289,14 +291,14 @@ export default {
       testEmailErrorMessage: '',
       emailDelivery: null,
       frequencyItems: [
-        { text: 'One Time', value: '0' },
-        { text: 'Weekly', value: '1' },
-        { text: 'Every two weeks', value: '2' },
-        { text: 'Monthly', value: '3' },
-        { text: 'Quarterly', value: '4' }
+        { text: 'One Time', value: 0 },
+        { text: 'Weekly', value: 1 },
+        { text: 'Every two weeks', value: 2 },
+        { text: 'Monthly', value: 3 },
+        { text: 'Quarterly', value: 4 }
       ],
       formData: {
-        frequency: '0',
+        frequency: 0,
         smtpSettingResourceId: '',
         directEmailSettingResourceId: '',
         emailDeliverySettingType: '',
@@ -320,7 +322,8 @@ export default {
           (v) => Validations.required(v, 'Enter a number higher than 0'),
           (v) => Validations.startsWith(v, 'Cannot start with 0', '0'),
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
-        ]
+        ],
+        frequency: [(v) => v >= 0 || labels.Required]
       },
       radioItems: [
         { text: 'Send now', value: SCHEDULE_TYPES.SEND_NOW },
