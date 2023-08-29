@@ -96,7 +96,9 @@
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
+              :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :form-details="formDetails"
+              :is-call-api-when-created="!isEdit"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -224,7 +226,8 @@ export default {
       userCountDetailResponse: {},
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
-      selectedPhishingScenarios: []
+      selectedPhishingScenarios: [],
+      defaultTargetGroupResourceIds: []
     }
   },
   computed: {
@@ -411,14 +414,17 @@ export default {
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
           this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs
             ?.refGroupTable?.$refs?.refTable
-        )
+        ) {
+          this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs.refGroupTable.callForData()
           this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
             this.selectedTargetGroups
           )
+        }
       })
     },
     getFormValues() {
