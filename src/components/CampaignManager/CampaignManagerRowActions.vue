@@ -41,7 +41,7 @@
               :src="act.icon"
               alt="icon"
             />
-            <v-icon v-else class="pr-3">{{ act.icon }}</v-icon>
+            <v-icon v-else class="pr-3" :disabled="act.disabled">{{ act.icon }}</v-icon>
             <span>{{ act.name }}</span>
           </v-list-item-title>
         </v-list-item>
@@ -113,7 +113,7 @@ export default {
         id: 'btn-edit--row-actions-campaign-manager',
         icon: 'mdi-pencil',
         action: 'on-edit',
-        disabled: !this.getCampaignManagerParentUpdatePermissions
+        disabled: !this.getCampaignManagerParentUpdatePermissions || this.scope.row.frequency > 0
       }
 
       if (

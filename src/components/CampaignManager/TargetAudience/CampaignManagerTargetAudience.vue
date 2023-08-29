@@ -1,5 +1,14 @@
 <template>
   <div>
+    <AlertBox
+      v-if="isMultiplePhishingScenarios"
+      class="mb-6 bg-aqua-light"
+      style="margin-right: 120px;"
+      text="Ensure that the target user count is equal to or greater than the scenario count. Adjust accordingly if the target user count is lower."
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <CampaignManagerTargetGroups
       ref="refCampaignManagerTargetGroup"
       is-call-api-when-created
@@ -80,10 +89,11 @@ import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import * as Validations from '@/utils/validations'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
+import AlertBox from '@/components/AlertBox.vue'
 
 export default {
   name: 'CampaignManagerTargetAudience',
-  components: { KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
+  components: { AlertBox, KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
   props: {
     defaultValues: {
       type: Object,
@@ -120,6 +130,10 @@ export default {
     totalTargetUserCount: {
       type: Number,
       default: 0
+    },
+    isMultiplePhishingScenarios: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

@@ -326,7 +326,8 @@ export default {
       return {
         name: formData.name,
         method: [...methodSet].join(', '),
-        difficulty: [...difficultySet].join(', ')
+        difficulty: [...difficultySet].join(', '),
+        'Tracking Duration': formData.duration
       }
     },
     getTotalRandomlySelectedUserCount() {
@@ -386,6 +387,7 @@ export default {
       obj['Email Delivery'] = `${
         selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
       } - ${selectedEmailDelivery.name}`
+      obj.frequency = this.formData.frequency
       return obj
     },
     getOtherSettingsItems() {
