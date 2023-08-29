@@ -114,6 +114,7 @@
               :total-target-user-count="totalTargetUserCount"
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
+              :is-edit="isEdit"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>

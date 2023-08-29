@@ -78,6 +78,7 @@
         no-data-text="No frequency configuration available"
         :rules="rules.frequency"
         :items="frequencyItems"
+        :disabled="isEdit"
       />
     </FormGroup>
     <FormGroup
@@ -228,8 +229,8 @@ import {
 import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import InputDate from '@/components/Common/Inputs/InputDate.vue'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import InputDate from '@/components/Common/Inputs/InputDate'
+import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerDeliverySettings',
@@ -290,13 +291,7 @@ export default {
       isShowSmtpInputError: false,
       testEmailErrorMessage: '',
       emailDelivery: null,
-      frequencyItems: [
-        { text: 'One Time', value: 0 },
-        { text: 'Weekly', value: 1 },
-        { text: 'Every two weeks', value: 2 },
-        { text: 'Monthly', value: 3 },
-        { text: 'Quarterly', value: 4 }
-      ],
+      frequencyItems,
       formData: {
         frequency: 0,
         smtpSettingResourceId: '',
