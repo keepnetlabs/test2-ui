@@ -183,6 +183,7 @@ export const PROPERTY_STORE = {
   TOEMAIL: 'toEmail',
   PHISHING_SCENARIO_NAME: 'phishingScenarioName',
   EMAİL: 'email',
+  FREQUENCY_DESCRIPTION: 'frequencyDescription',
   OWNER: 'owner',
   FROMEMAIL: 'fromEmail',
   CATEGORY: 'category',

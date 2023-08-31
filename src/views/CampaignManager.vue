@@ -65,6 +65,17 @@
       :status-items="getStatusItems"
       @on-launch="handleLaunch"
       @on-back-click="handleOnBackClick"
+      @on-record-button-click="handleItemTableRecordButtonClick"
+      @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
+    />
+    <CampaignManagerFrequencyTable
+      v-if="isFrequencyTableShowing"
+      ref="campaignManagerFrequencyTable"
+      :is-loading="isFrequencyTableShowing"
+      :item="selectedInstanceItem"
+      :status-items="getStatusItems"
+      @on-launch="handleLaunch"
+      @on-back-click="handleOnFrequencyBackClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
     />
   </KContainer>
@@ -85,6 +96,7 @@ import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
+import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
 export default {
   name: 'CampaignManager',
   components: {
@@ -95,7 +107,8 @@ export default {
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     CampaignManagerAddOrEditModal,
-    CampaignManagerNewInstanceModal
+    CampaignManagerNewInstanceModal,
+    CampaignManagerFrequencyTable
   },
   data() {
     return {
@@ -104,6 +117,7 @@ export default {
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       selectedParentItem: null,
+      selectedInstanceItem: null,
       selectedRow: null,
       isShowPreviewDialog: false,
       isEdit: false,
@@ -116,6 +130,7 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
+      isFrequencyTableShowing: false,
       formDetails: {},
       multipleSystemUserPayload: {}
     }
@@ -181,14 +196,27 @@ export default {
       this.selectedParentItem = row
       this.toggleItemTableShowing()
     },
+    handleItemTableRecordButtonClick(row) {
+      this.selectedInstanceItem = row
+      this.toggleFrequencyTableShowing()
+    },
     handleOnBackClick() {
       if (this.$refs.campaignManagerParentTable) {
         this.$refs.campaignManagerParentTable.callForData()
       }
       this.toggleItemTableShowing()
     },
+    handleOnFrequencyBackClick() {
+      if (this.$refs.campaignManagerItemTable) {
+        this.$refs.campaignManagerItemTable.callForData()
+      }
+      this.toggleFrequencyTableShowing()
+    },
     toggleItemTableShowing() {
       this.isItemTableShowing = !this.isItemTableShowing
+    },
+    toggleFrequencyTableShowing() {
+      this.isFrequencyTableShowing = !this.isFrequencyTableShowing
     },
     toggleAddCampaignManagerModal() {
       if (this.isShowAddOrEditCampaignManagerModal) {

@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    v-if="isRenderButton"
     rounded
     :id="`btn-records--incident-responder-clustered-table-${index}`"
     :class="['the-records-button', { 'the-records-button--disabled': isDisabled }]"
@@ -29,6 +30,10 @@ export default {
     label: {
       type: String,
       default: 'record'
+    },
+    isShowButtonWithZeroTotal: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -43,6 +48,9 @@ export default {
     }
   },
   computed: {
+    isRenderButton() {
+      return this.isShowButtonWithZeroTotal
+    },
     getColor() {
       return '#e3f2fd'
     },

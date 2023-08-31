@@ -38,25 +38,7 @@
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <template v-if="scope.column.property === 'frequencyDescription'">
-          <div class="reported-email-subject__container">
-            <div class="reported-email-subject">
-              <span> {{ scope.row[col.property] }}</span>
-            </div>
-            <TheRecordsButton
-              label="recurrence"
-              :index="scope.$index"
-              :row="scope.row"
-              :disabled-count="0"
-              :is-show-button-with-zero-total="false"
-              @on-click="handleRecordButtonClick"
-            />
-          </div>
-        </template>
-        <div
-          v-if="scope.column.property === 'status'"
-          class="campaign-manager-item-table__status-column"
-        >
+        <div class="campaign-manager-item-table__status-column">
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
             <template #activator="{ on }">
               <v-btn style="display: none;" />
@@ -123,22 +105,14 @@ import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/Campai
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_BACK_CLICK: 'on-back-click',
-  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
+  ON_BACK_CLICK: 'on-back-click'
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: {
-    TheRecordsButton,
-    Badge,
-    CampaignManagerItemDeleteDialog,
-    CampaignManagerItemRowActions,
-    DataTable
-  },
+  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
   props: {
     item: {
       type: Object
@@ -172,7 +146,6 @@ export default {
           download: false
         },
         columns: [
-          COLUMNS.FREQUENCY,
           COLUMNS.SCHEDULE,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
           COLUMNS.STATUS,
@@ -243,12 +216,7 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            this.tableData = results.map((item) => {
-              const newItem = JSON.parse(JSON.stringify(item))
-              delete newItem['instanceCount']
-              newItem.total = Number(item['frequencyCount']) || 0
-              return newItem
-            })
+            this.tableData = results
           })
           .finally(this.setLoading)
       })
@@ -324,9 +292,6 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
-    },
-    handleRecordButtonClick(row) {
-      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
     }
   }
 }
