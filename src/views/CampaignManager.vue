@@ -36,15 +36,15 @@
       @on-submit="handleOnSubmit"
     />
     <CampaignManagerNewInstanceModal
-      ref="refCampaignNewInstance"
       v-if="isShowNewInstanceModal"
+      ref="refCampaignNewInstance"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
     <CampaignManagerParentTable
-      v-show="!isItemTableShowing"
+      v-show="!isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerParentTable"
       :is-loading.sync="isParentTableLoading"
       :status-items="getStatusItems"
@@ -58,7 +58,8 @@
       @on-multiple-delete="handleMultipleDelete"
     />
     <CampaignManagerItemTable
-      v-if="isItemTableShowing"
+      v-if="selectedParentItem"
+      v-show="isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerItemTable"
       :is-loading="isItemTableLoading"
       :item="selectedParentItem"
@@ -74,6 +75,7 @@
       :is-loading="isFrequencyTableShowing"
       :item="selectedInstanceItem"
       :status-items="getStatusItems"
+      :parent-resource-id="selectedParentItem.resourceId"
       @on-launch="handleLaunch"
       @on-back-click="handleOnFrequencyBackClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
@@ -97,6 +99,7 @@ import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManager',
   components: {
@@ -194,6 +197,10 @@ export default {
     },
     handleOnRecordButtonClick(row) {
       this.selectedParentItem = row
+      if (this.$refs.campaignManagerItemTable) {
+        this.$refs.campaignManagerItemTable.resetTable()
+        this.$refs.campaignManagerItemTable.callForData()
+      }
       this.toggleItemTableShowing()
     },
     handleItemTableRecordButtonClick(row) {

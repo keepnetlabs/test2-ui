@@ -66,7 +66,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
-          :campaign-resource-id="item.resourceId"
+          :campaign-resource-id="parentResourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
@@ -76,7 +76,7 @@
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
-          {{ labels.InstancesOfCampaign }}: {{ item.name }}
+          {{ labels.ScenariosOfInstance }}: {{ item.frequencyDescription }}
         </div>
       </template>
     </DataTable>
@@ -119,6 +119,9 @@ export default {
     },
     statusItems: {
       type: Array
+    },
+    parentResourceId: {
+      type: String
     }
   },
   emits: EMITS,
@@ -137,8 +140,8 @@ export default {
       selectedRow: {},
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -207,7 +210,13 @@ export default {
     callForData() {
       this.setLoading(true)
       this.$nextTick(() => {
-        searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+        searchCampaignPhishingJob(
+          {
+            ...this.axiosPayload,
+            phishingCampaignFrequencyGroup: this.item.frequencyGroup
+          },
+          this.parentResourceId
+        )
           .then((response) => {
             const {
               data: { data = [] }
@@ -232,7 +241,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
+        exportCampaignManagerItem(payload, this.parentResourceId).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -247,7 +256,7 @@ export default {
       this.$emit(EMITS.ON_BACK_CLICK)
     },
     handleOnAddButtonClick() {
-      this.$emit('on-launch', { resourceId: this.item.resourceId })
+      this.$emit('on-launch', { resourceId: this.parentResourceId })
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
@@ -261,7 +270,7 @@ export default {
     },
     handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      deletePhishingCampaignJob(this.item.resourceId, item.instanceGroup)
+      deletePhishingCampaignJob(this.parentResourceId, item.instanceGroup)
         .then(() => {
           this.$refs.refTable.unSelectRow(item)
           this.callForData()
@@ -272,12 +281,12 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
+      stopPhishingCampaignJob(this.parentResourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaignInstanceGroup(this.item.resourceId, row.instanceGroup).then(() => {
+      launchPhishingCampaignInstanceGroup(this.parentResourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },

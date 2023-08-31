@@ -34,6 +34,10 @@ export default {
     isShowButtonWithZeroTotal: {
       type: Boolean,
       default: true
+    },
+    width: {
+      type: String,
+      default: '130px'
     }
   },
   watch: {
@@ -49,7 +53,8 @@ export default {
   },
   computed: {
     isRenderButton() {
-      return this.isShowButtonWithZeroTotal
+      if (this.isShowButtonWithZeroTotal) return true
+      return this?.row?.total > 0
     },
     getColor() {
       return '#e3f2fd'
@@ -57,7 +62,7 @@ export default {
     getStyle() {
       return {
         boxShadow: 'none !important',
-        width: '130px'
+        width: this.width
       }
     },
     getText() {

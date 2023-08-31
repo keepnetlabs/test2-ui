@@ -45,6 +45,7 @@
             </div>
             <TheRecordsButton
               label="recurrence"
+              width="150px"
               :index="scope.$index"
               :row="scope.row"
               :disabled-count="0"
@@ -94,7 +95,7 @@
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
-          {{ labels.InstancesOfCampaign }}: {{ item.name }}
+          {{ getTableAllRecordsText }}
         </div>
       </template>
     </DataTable>
@@ -210,6 +211,11 @@ export default {
       }
     }
   },
+  computed: {
+    getTableAllRecordsText() {
+      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+    }
+  },
   watch: {
     statusItems(val) {
       if (val.length) {
@@ -223,7 +229,7 @@ export default {
             return { ...item, value: item.text }
           })
         )
-        this?.$refs?.refTable?.reRenderFilters()
+        this.reRenderFilters()
       }
     }
   },
@@ -245,7 +251,7 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             this.tableData = results.map((item) => {
               const newItem = JSON.parse(JSON.stringify(item))
-              delete newItem['instanceCount']
+              delete newItem['frequencyCount']
               newItem.total = Number(item['frequencyCount']) || 0
               return newItem
             })
@@ -327,6 +333,19 @@ export default {
     },
     handleRecordButtonClick(row) {
       this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
+    },
+    reRenderFilters(filterValues = undefined) {
+      this?.$refs?.refTable?.reRenderFilters(filterValues)
+    },
+    resetSearchText() {
+      this.$refs.refTable.resetSearchText()
+    },
+    resetTable() {
+      this.resetSearchText()
+      this.reRenderFilters({})
+      this.axiosPayload = getDefaultAxiosPayload({
+        orderBy: 'CreatedDate'
+      })
     }
   }
 }
