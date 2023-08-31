@@ -370,7 +370,7 @@ export default {
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+          playbookActionInvestigations.push(ref?.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
@@ -462,7 +462,7 @@ export default {
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+          playbookActionInvestigations.push(ref?.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           if (item && item.analysisEngineType && item.analysisEngineType) {
@@ -725,12 +725,12 @@ export default {
             return item.val === 'analyze'
           })
           if (!hasAnalyze) {
-            this.$refs.refActionItem.addAction('analyze')
+            this?.$refs?.refActionItem?.addAction('analyze')
           }
           this.$refs.refActionItem.analyzeCheckbox = true
         } else {
           if (this.playbookActionAnalyzers.length > 0) {
-            this.$refs.refActionItem.addAction('analyze')
+            this?.$refs?.refActionItem?.addAction('analyze')
           }
         }
         if (
@@ -740,7 +740,7 @@ export default {
         ) {
           this.$refs.refActionItem.playbookActionStatus.actionStatusType =
             data.playbookActionStatus.actionStatusType
-          this.$refs.refActionItem.addAction('status')
+          this?.$refs?.refActionItem?.addAction('status')
         }
         this.initialFormValues = {
           ...this.initialFormValues,
