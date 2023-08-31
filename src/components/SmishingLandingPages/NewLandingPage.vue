@@ -633,7 +633,7 @@ export default {
         delete data.subDomain
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this.$refs.refInputPhishingLink.checkSchemaTypes(phishingLink.domainRecordId)
+        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`

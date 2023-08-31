@@ -495,7 +495,7 @@ export default {
         this.formValues.domain = domain
         this.formValues.isDefaultRole = isDefaultRole
         this.formValues.defaultRoleResourceId = defaultRoleResourceId
-        this.dataContainerWithSearchItems = domain.concat()
+        this.dataContainerWithSearchItems = domain?.concat()
         this.certificateText = idPCertificateFileContent
         if (this.certificateText) {
           this.isCertificateTextDisabled = true
