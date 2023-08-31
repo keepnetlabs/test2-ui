@@ -1428,7 +1428,7 @@ export default {
           let customColumns = _this.columns.filter((item) => item.isCustomField)
           allColumns = mainColumns
           if (customColumns) {
-            allColumns = allColumns.concat(customColumns)
+            allColumns = allColumns?.concat(customColumns)
           }
           this.allCustomColumns = customColumns
           _this.mappingData.columns = allColumns
