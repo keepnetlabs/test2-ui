@@ -90,6 +90,7 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              :is-multiple-phishing-scenarios="selectedPhishingScenarios.length > 1"
               :is-all-groups="!isEdit"
               :default-values="getDefaultTargetAudienceSettings"
               :selected-target-groups.sync="selectedTargetGroups"
@@ -111,6 +112,7 @@
               :total-target-user-count="totalTargetUserCount"
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
+              :is-edit="isEdit"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -264,11 +266,12 @@ export default {
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
-        let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
+        const scheduleTypeId = refCampaignManagerDeliverySettings.formData.scheduleTypeId
+        let selectedSchedule = refCampaignManagerDeliverySettings?.formData?.scheduledDate || ''
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
         formData.userCountDetailResponse = this.userCountDetailResponse
+        formData.duration = refCampaignManagerCampaignInfo.formData.duration
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
@@ -283,26 +286,19 @@ export default {
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
+        formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
+          (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
+        )?.text
       }
       return formData
     },
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const {
-        name,
-        scheduleTypeId,
-        duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
-        excludeFromReports
-      } = this.selectedRowFormData
+      const { name, duration, excludeFromReports } = this.selectedRowFormData
       return {
         name,
-        scheduleTypeId: scheduleTypeId.toString(),
         duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
         excludeFromReports
       }
     },
@@ -341,7 +337,11 @@ export default {
         sendRandomlyUsersCalculateTypeId,
         smtpSetting,
         directEmailSetting,
-        emailDeliverySettingType
+        emailDeliverySettingType,
+        scheduleTypeId,
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        frequency
       } = this.selectedRowFormData
       return {
         smtpSetting,
@@ -355,7 +355,11 @@ export default {
         sendRandomlyUsersCount,
         emailDeliverySettingType,
         directEmailSetting,
-        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString(),
+        scheduleTypeId: scheduleTypeId.toString(),
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        frequency
       }
     },
     getUserTargetAudienceData() {
@@ -488,6 +492,7 @@ export default {
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
+          if (!refCampaignManagerDeliverySettings?.validateForm()) return
           if (
             refCampaignManagerDeliverySettings.emailDelivery.type ===
             EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
@@ -534,12 +539,15 @@ export default {
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             duration: campaignManagerFormData.duration,
-            scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
+            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
-              campaignManagerFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
-                : campaignManagerFormData.scheduledDate,
-            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
+                : deliverySettingsFormData.scheduledDate,
+            scheduledDateTimeZoneId:
+              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+                ? null
+                : deliverySettingsFormData.scheduledDateTimeZoneId,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
@@ -553,6 +561,7 @@ export default {
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
+            frequency: deliverySettingsFormData.frequency,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
           }
