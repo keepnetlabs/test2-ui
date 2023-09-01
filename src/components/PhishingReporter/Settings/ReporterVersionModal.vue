@@ -1,19 +1,19 @@
 <template>
   <app-dialog
+    v-if="status"
     :status="status"
     icon="mdi-timer-sand-full"
     :title="getTitle"
     subtitle="Version configurations"
-    @changeStatus="$emit('changeReporterVersionModalStatus', false)"
     custom-size="650"
     title-id="text--phishing-reporters-versions-title"
     subtitle-id="text--phishing-reporters-versions-subtitle"
     :class-name="'matching-modal version-history'"
     :max-height="selectedVersionRow.applicationType === 'Outlook'"
-    v-if="status"
     :maxHeightSize="selectedVersionRow.applicationType === 'Outlook' ? '500px' : '240px'"
+    @changeStatus="$emit('changeReporterVersionModalStatus', false)"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <phishing-settings
         :applicationType="selectedVersionRow.applicationType"
         ref="refSettings"
@@ -21,7 +21,7 @@
         :inModal="true"
       />
     </template>
-    <template v-slot:app-dialog-footer>
+    <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
         <v-btn
           id="btn-close--reporter-version-popup"

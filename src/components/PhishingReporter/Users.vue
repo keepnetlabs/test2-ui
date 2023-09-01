@@ -10,8 +10,8 @@
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
     >
-      <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
+      <template #app-dialog-footer>
         <app-dialog-footer
           type="delete"
           cancel-button-id="btn-cancel--phishing-reporter-users-popup"
@@ -54,30 +54,30 @@
       @handleMultipleDelete="handleMultipleDeleteOfPhishingUsers"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <v-btn style="display: none;" />
+        <v-btn class="d-none" />
         <v-tooltip
+          v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
           bottom
           content-class="users__tooltip"
-          v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
         >
           <template #activator="{ on }">
             <badge
+              v-if="scope.row && scope.row[col.property]"
+              v-bind="col.props"
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
               :full-width="col.fullWidth"
-              v-bind="col.props"
               :col="col"
               :text="getDataTableFieldLabel(scope.row[col.property])"
-              v-if="scope.row && scope.row[col.property]"
             />
           </template>
           <span>{{ getStatusTooltipMessage(scope.row) }}</span>
         </v-tooltip>
         <template v-if="col.property === PROPERTY_STORE.DIAGNOSTICTOOL">
           <v-tooltip
+            v-if="scope.row['diagnosticToolLastSeen']"
             bottom
             content-class="users__tooltip"
-            v-if="scope.row['diagnosticToolLastSeen']"
           >
             <template #activator="{ on }">
               <span v-on="on">{{ scope.row[col.property] }}</span>
@@ -155,8 +155,6 @@ export default {
             show: true,
             type: 'text',
             width: 300,
-            isEditable: true,
-            editComponent: 'textfield',
             filterableType: 'text',
             filterableCustomFieldName: 'Email'
           },
@@ -170,7 +168,6 @@ export default {
             show: true,
             type: 'slot',
             width: 180,
-            isEditable: false,
             props: {
               style: {
                 maxWidth: '110px'
@@ -194,8 +191,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            isEditable: true,
-            editComponent: 'textfield',
             width: 220,
             filterableType: 'date',
             filterableCustomFieldName: 'LastSeen'
@@ -209,7 +204,6 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            isEditable: true,
             width: 165,
             filterableType: 'select',
             filterableItems: [
@@ -228,8 +222,6 @@ export default {
             sortable: true,
             show: true,
             type: 'fiber',
-            isEditable: true,
-            editComponent: 'textfield',
             filterableType: 'text',
             width: 200
           },
@@ -242,8 +234,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            isEditable: true,
-            editComponent: 'textfield',
             width: 150,
             filterableType: 'text'
           }
@@ -322,6 +312,7 @@ export default {
         addInDisabledReason,
         addInDisabledLastDisabledTime,
         hklmLoadBehaviorValue,
+        osAccountLoadBehaviorValue,
         bootTime,
         outlookArchitecture,
         outlookVersion
@@ -329,6 +320,7 @@ export default {
       let text = ''
       const textOS = `OS version: ${osVersion ? osVersion : 'Unknown'}`
       const textHKLM = `HKLM: ${hklmLoadBehaviorValue || 'N/A'}\n`
+      const textHKCU = `HKCU: ${osAccountLoadBehaviorValue || 'N/A'}\n`
       const bootTimeLeftExpression = `${bootTime} ms`
       const textBootTime = `Boot time: ${bootTime ? bootTimeLeftExpression : 'N/A'}\n`
       const textOutlookVersion = `Outlook version: ${outlookVersion || 'N/A'}\n`
@@ -337,6 +329,7 @@ export default {
       if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Online') {
         text = 'Add-in is installed and active\n'
         text += textHKLM
+        text += textHKCU
         text += textBootTime
         text += textOutlookVersion
         text += textOutlookArchitecture
@@ -346,6 +339,7 @@ export default {
         text = 'Addin is inactivated by user\n'
         text += 'User is offline\n'
         text += textHKLM
+        text += textHKCU
         text += textOutlookVersion
         text += textOutlookArchitecture
         text += textOS
@@ -354,6 +348,7 @@ export default {
         text = 'Add-in is installed\n'
         text += 'User is offline\n'
         text += textHKLM
+        text += textHKCU
         text += textBootTime
         text += textOutlookVersion
         text += textOutlookArchitecture
@@ -366,6 +361,7 @@ export default {
           addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
         }\n`
         text += textHKLM
+        text += textHKCU
         text += textBootTime
         text += textOutlookVersion
         text += textOutlookArchitecture

@@ -1,20 +1,20 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
     <version-history-modal
+      v-if="versionHistoryModalStatus"
       :status="versionHistoryModalStatus"
       @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
       @handleHistoryRow="handleHistoryRow"
-      v-if="versionHistoryModalStatus"
     />
     <reporter-version-modal
+      v-if="reporterVersionModalStatus"
       :selected-version-row="selectedVersionRow"
       :status="reporterVersionModalStatus"
       @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
-      v-if="reporterVersionModalStatus"
     />
     <v-list-item
-      class="pl-0 add-in-settings__list-item add-in-settings__header mt-0 mr-2"
       v-if="showHeader"
+      class="pl-0 add-in-settings__list-item add-in-settings__header mt-0 mr-2"
     >
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
@@ -31,10 +31,10 @@
           <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Name }}</label>
           <InputEntityName
             v-model.trim="formValues.addInName"
-            initialPlaceholder="Enter an add-in name"
-            entityName="add-in name"
             id="input--phishing-reporter-settings-add-in-name"
             class="k-textfield mt-2"
+            initial-placeholder="Enter an add-in name"
+            entity-name="add-in name"
             :readonly="!showForm"
             :applyRules="showForm"
           />
@@ -46,10 +46,10 @@
           <label class="add-in-settings__label">{{ labels.Brand }} {{ labels.Name }}</label>
           <InputEntityName
             v-model.trim="formValues.brandName"
-            initialPlaceholder="Enter a Brand Name"
-            entityName="brand name"
             id="input--phishing-reporter-settings-brand-name"
             class="k-textfield mt-2"
+            initial-placeholder="Enter a Brand Name"
+            entity-name="brand name"
             :readonly="!showForm"
             :applyRules="showForm"
           />
@@ -69,8 +69,8 @@
             ref="refFileUpload"
             :readonly="!showForm"
             :extensions="['jpg', 'png']"
-            @inputFile="onFileChanged"
             :size="2"
+            @inputFile="onFileChanged"
           />
         </v-list-item-content>
       </v-list-item>
@@ -560,7 +560,6 @@ export default {
       this.formValues.isSendSimulationMails = isSendSimulationMails
       this.formValues.simulationMailMessage = simulationMailMessage
       getPhishingReporterImg().then((response) => {
-        //this.$refs.refFileUpload.$refs.upload.add(response.data)
         this.formValues.file = response.data
       })
     } else {
