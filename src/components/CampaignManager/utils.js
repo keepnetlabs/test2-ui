@@ -55,6 +55,21 @@ export const COLUMNS = {
     parentRect: 'reported-email-subject',
     overrideWidth: true
   },
+  FREQUENCY: {
+    property: PROPERTY_STORE.FREQUENCY_DESCRIPTION,
+    align: 'left',
+    label: labels.Frequency,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 360,
+    isEditable: false,
+    isCustomOverflowedColumn: true,
+    filterableType: 'text',
+    parentRect: 'reported-email-subject',
+    overrideWidth: true
+  },
   CREATEDBY: {
     property: PROPERTY_STORE.CREATEDBY,
     align: 'left',
@@ -66,8 +81,6 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
-    // filterableType: 'select',
-    // filterableItems: ['Custom', 'System']
   },
   SCHEDULE: {
     property: 'startDate',
