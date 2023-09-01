@@ -37,6 +37,7 @@
               :is-all-groups="isAllGroups"
               :is-call-api-when-created="isCallApiWhenCreated"
               :is-show-company-column="isShowCompanyColumn"
+              :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
             />
@@ -83,8 +84,9 @@ export default {
   },
   mixins: [useDebounce],
   props: {
-    selectedTargetGroups: {
-      type: Array
+    defaultSelectedTargetGroupResourceIds: {
+      type: Array,
+      default: () => []
     },
     responseOfTargetGroupsItems: {
       type: Object

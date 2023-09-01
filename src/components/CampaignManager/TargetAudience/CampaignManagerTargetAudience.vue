@@ -11,11 +11,12 @@
     />
     <CampaignManagerTargetGroups
       ref="refCampaignManagerTargetGroup"
-      is-call-api-when-created
+      :is-call-api-when-created="isCallApiWhenCreated"
       :is-valid="isTargetGroupsValid"
       :is-vishing="isVishing"
       :is-all-groups="isAllGroups"
       :last-column-name="lastColumnName"
+      :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
       @handle-selection-change="handleTargetGroupSelectionChange"
     />
     <CustomError
@@ -134,6 +135,14 @@ export default {
     isMultiplePhishingScenarios: {
       type: Boolean,
       default: false
+    },
+    defaultSelectedTargetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    isCallApiWhenCreated: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
