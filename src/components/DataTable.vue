@@ -1702,9 +1702,8 @@ export default {
       this.handleRefresh()
     },
     handleClearFilters() {
-      this.search = ''
-      this.filterValues = {}
-      this.reRenderFilters()
+      this.resetSearchText()
+      this.reRenderFilters({})
       this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
       this.handleRefresh()
       this.$emit('clear-filters')
@@ -3043,6 +3042,9 @@ export default {
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
       this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
+    },
+    resetSearchText() {
+      this.search = ''
     }
   }
 }
