@@ -1,8 +1,8 @@
 <template>
   <div>
     <add-in-configuration
-      ref="addInConfiguration"
       v-if="showAddInConfiguration"
+      ref="addInConfiguration"
       :status="showAddInConfiguration"
       @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
       @getPhishingReport="getReport"
