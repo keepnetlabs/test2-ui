@@ -94,6 +94,18 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  START_TIME: {
+    property: 'startDate',
+    align: 'left',
+    editable: false,
+    label: labels.StartTime,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   TARGET_USERS: {
     property: PROPERTY_STORE.TARGET_USERS,
     align: 'right',
