@@ -133,9 +133,9 @@ export default {
     callForTemplate(showLoader = true) {
       if (showLoader) this.setLoading(true)
       if (
-        !this.formData?.resourceId ||
-        !this.formData?.campaignResourceId ||
-        !this.formData?.instanceGroup
+        this.formData?.resourceId &&
+        this.formData?.campaignResourceId &&
+        this.formData?.instanceGroup
       )
         getCampaignManagerEmailTemplatePreviewContent(
           this.formData.resourceId,
