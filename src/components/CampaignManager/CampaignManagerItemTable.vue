@@ -174,7 +174,7 @@ export default {
         },
         columns: [
           COLUMNS.FREQUENCY,
-          COLUMNS.SCHEDULE,
+          COLUMNS.START_TIME,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
           COLUMNS.STATUS,
           COLUMNS.CREATE_TIME_ITEM_TABLE
