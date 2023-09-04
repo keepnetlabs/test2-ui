@@ -76,7 +76,7 @@
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
-          {{ labels.ScenariosOfInstance }}: {{ item.frequencyDescription }}
+          {{ labels.RecurrencesOfInstance }}: {{ item.frequencyDescription }}
         </div>
       </template>
     </DataTable>
