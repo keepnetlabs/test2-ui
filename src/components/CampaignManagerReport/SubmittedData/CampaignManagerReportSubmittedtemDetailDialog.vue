@@ -38,7 +38,18 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope, col }">
+          <CampaignManagerReportUserAgentColumn
+            v-if="col.property === COLUMNS.USER_AGENT_SLOT.property"
+            :scope="scope"
+          />
+          <CampaignManagerReportIPColumn
+            v-if="col.property === COLUMNS.SUBMITTED_DATA_IP_SLOT.property"
+            :scope="scope"
+          />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -65,9 +76,17 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
+import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
+
 export default {
   name: 'CampaignManagerReportSubmittedtemDetailDialog',
-  components: { DataTable, AppDialog },
+  components: {
+    CampaignManagerReportUserAgentColumn,
+    CampaignManagerReportIPColumn,
+    DataTable,
+    AppDialog
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -79,6 +98,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-submitted-detail-item-data-table',
@@ -91,10 +111,10 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.SUBMITTED_TIME,
-          COLUMNS.USER_AGENT,
+          COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.SUBMITTED_DATA_IP,
+          COLUMNS.SUBMITTED_DATA_IP_SLOT,
           COLUMNS.DATA
         ],
         addButton: {

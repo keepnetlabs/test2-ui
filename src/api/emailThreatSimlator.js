@@ -55,8 +55,10 @@ export function getQuickScanCount() {
 export function exportQuickScan(payload) {
   return emailThreatSimlatorRequest.post(`/quick-scan/search/export`, payload, {
     responseType: 'blob',
-    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
-    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    headers: {
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    }
   })
 }
 export function getAttackVectorList(payload) {
@@ -123,8 +125,10 @@ export function enableAttackVector(payload) {
 export function exportAttacksVector(payload) {
   return emailThreatSimlatorRequest.post(`/plugin/search/export`, payload, {
     responseType: 'blob',
-    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
-    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    headers: {
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    }
   })
 }
 export function getQuickScanReportCountById(resourceId) {
@@ -155,8 +159,10 @@ export function getQuickScanReportList(payload, resourceId) {
 export function exportQuickScanReportList(payload, resourceId) {
   return emailThreatSimlatorRequest.post(`/quick-scan-item/${resourceId}/search/export`, payload, {
     responseType: 'blob',
-    'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
-    'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    headers: {
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyRequestId')
+    }
   })
 }
 export function getLookupNameList() {
