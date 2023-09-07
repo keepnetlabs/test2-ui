@@ -112,3 +112,21 @@
         }
     }
 }
+
+.campaign-manager-schedule-dialog__container{
+    border:1px solid #E0E0E0;
+    border-radius: 8px;
+    margin-top: 24px;
+}
+.campaign-manager-schedule-dialog__item{
+    color:#383B41;
+    font-size:14px;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 48px 16px 16px;
+    border-bottom:1px solid #E0E0E0;
+    &:last-child{
+        border-bottom:none;
+    }
+}

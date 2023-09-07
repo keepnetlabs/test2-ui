@@ -499,3 +499,7 @@ export function getEmailDeliveries() {
 export function getPhishingScenariosPhoneNumber() {
   return testRequest.get(`/phishing-simulator/phishing-scenario/mfa-phone-number`)
 }
+
+export function getCalculatedScheduleInfo(payload) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-schedule-info`, payload)
+}
