@@ -293,7 +293,7 @@ export default {
       return this?.formData?.frequencyId || ''
     },
     getScheduleTypeId() {
-      return this?.formData?.scheduleTypeId || ''
+      return this?.formData?.selectedScheduleId || ''
     },
     getPhishingScenarios() {
       return this?.formData?.selectedPhishingScenarios || []

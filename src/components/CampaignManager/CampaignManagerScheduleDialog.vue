@@ -10,21 +10,24 @@
     @changeStatus="closeModal"
   >
     <template #app-dialog-body>
-      <div class="fs-4 text-primary-color">Selected Frequency: {{ selectedFrequency }}</div>
-      <div class="campaign-manager-schedule-dialog__container">
-        <div
-          v-for="(item, index) in items"
-          :key="index"
-          class="campaign-manager-schedule-dialog__item"
-        >
-          <span>
-            {{ item.scenarioName }}
-          </span>
-          <span>
-            {{ item.scheduleDate }}
-          </span>
+      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+      <template v-else>
+        <div class="fs-4 text-primary-color">Selected Frequency: {{ selectedFrequency }}</div>
+        <div class="campaign-manager-schedule-dialog__container">
+          <div
+            v-for="(item, index) in items"
+            :key="index"
+            class="campaign-manager-schedule-dialog__item"
+          >
+            <span>
+              {{ item.scenarioName }}
+            </span>
+            <span>
+              {{ item.scheduleDate }}
+            </span>
+          </div>
         </div>
-      </div>
+      </template>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex justify-end">
@@ -45,9 +48,12 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import { getCalculatedScheduleInfo } from '@/api/phishingsimulator'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerItemDeleteDialog',
-  components: { AppDialog },
+  components: { DatatableLoading, AppDialog },
+  mixins: [useLoading],
   props: {
     status: {
       type: Boolean
@@ -97,15 +103,18 @@ export default {
   },
   methods: {
     callForData() {
+      this.setLoading(true)
       getCalculatedScheduleInfo({
         scheduledDate: this.scheduledDate,
         scheduledDateTimeZoneId: this.scheduledDateTimeZoneId,
         scheduleTypeId: this.scheduleTypeId,
-        frequencyId: this.frequencyId,
-        phishingScenarios: this.phishingScenarios
-      }).then((res) => {
-        this.items = res?.data?.data
+        frequency: this.frequencyId,
+        phishingScenarioResourceIds: this.phishingScenarios.map((pScenario) => pScenario.resourceId)
       })
+        .then((res) => {
+          this.items = res?.data?.data
+        })
+        .finally(this.setLoading)
     },
     closeModal() {
       this.$emit('on-close')
