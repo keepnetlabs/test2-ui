@@ -125,6 +125,7 @@
             />
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
+              :show-schedule="showSchedule"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
             />
@@ -177,7 +178,6 @@ import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
-
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -239,6 +239,17 @@ export default {
         0
       )
     },
+    showSchedule() {
+      if (this.step === 5) {
+        const { refCampaignManagerDeliverySettings } = this.$refs
+        return (
+          refCampaignManagerDeliverySettings?.formData?.scheduleTypeId !==
+            SCHEDULE_TYPES.SAVE_FOR_LATER &&
+          refCampaignManagerDeliverySettings?.formData?.frequency !== 0
+        )
+      }
+      return false
+    },
     getCampaignResourceId() {
       return this.selectedRow?.resourceId || ''
     },
@@ -271,8 +282,8 @@ export default {
         } = this.$refs
         const scheduleTypeId = refCampaignManagerDeliverySettings.formData.scheduleTypeId
         let selectedSchedule = refCampaignManagerDeliverySettings?.formData?.scheduledDate || ''
-        if (scheduleTypeId === '1') selectedSchedule = 'Now'
-        else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        if (scheduleTypeId === SCHEDULE_TYPES.SEND_NOW) selectedSchedule = 'Now'
+        else if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = 'Later'
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
@@ -286,12 +297,17 @@ export default {
         formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
         formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
+        formData.scheduledDateTimeZoneId =
+          refCampaignManagerDeliverySettings?.formData?.scheduledDateTimeZoneId
+        formData.scheduledDate = refCampaignManagerDeliverySettings?.formData?.scheduledDate
         formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
+        formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
       }
       return formData
     },
