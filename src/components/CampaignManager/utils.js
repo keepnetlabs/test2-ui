@@ -55,6 +55,21 @@ export const COLUMNS = {
     parentRect: 'reported-email-subject',
     overrideWidth: true
   },
+  FREQUENCY: {
+    property: PROPERTY_STORE.FREQUENCY_DESCRIPTION,
+    align: 'left',
+    label: labels.Frequency,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 360,
+    isEditable: false,
+    isCustomOverflowedColumn: true,
+    filterableType: 'text',
+    parentRect: 'reported-email-subject',
+    overrideWidth: true
+  },
   CREATEDBY: {
     property: PROPERTY_STORE.CREATEDBY,
     align: 'left',
@@ -66,14 +81,24 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
-    // filterableType: 'select',
-    // filterableItems: ['Custom', 'System']
   },
   SCHEDULE: {
     property: 'startDate',
     align: 'left',
     editable: false,
     label: labels.Schedule,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  START_TIME: {
+    property: 'startDate',
+    align: 'left',
+    editable: false,
+    label: labels.StartTime,
     fixed: false,
     sortable: true,
     show: true,
@@ -256,3 +281,11 @@ export function getStatusBadgeProps(status) {
     }
   }
 }
+
+export const frequencyItems = [
+  { text: 'One Time', value: 0 },
+  { text: 'Weekly', value: 1 },
+  { text: 'Every two weeks', value: 2 },
+  { text: 'Monthly', value: 3 },
+  { text: 'Quarterly', value: 4 }
+]

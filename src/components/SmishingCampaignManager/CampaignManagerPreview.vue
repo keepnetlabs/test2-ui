@@ -111,7 +111,7 @@ export default {
       return 'Smishing Campaign Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name || ''
+      return this.selectedRow?.name || ''
     }
   },
   created() {

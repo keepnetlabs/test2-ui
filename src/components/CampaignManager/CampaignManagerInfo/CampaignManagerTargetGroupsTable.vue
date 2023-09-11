@@ -63,6 +63,10 @@ export default {
     isCallApiWhenCreated: {
       type: Boolean,
       default: false
+    },
+    defaultSelectedTargetGroupResourceIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -182,6 +186,10 @@ export default {
               this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
             })
         } else {
+          if (this.defaultSelectedTargetGroupResourceIds.length)
+            this.axiosPayload.selectTargetUserResourceIds = this.defaultSelectedTargetGroupResourceIds.join(
+              ','
+            )
           searchTargetGroups(this.axiosPayload)
             .then((response) => {
               this.setDefaultResponseParams(response)

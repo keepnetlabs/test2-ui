@@ -132,27 +132,32 @@ export default {
   methods: {
     callForTemplate(showLoader = true) {
       if (showLoader) this.setLoading(true)
-      getCampaignManagerEmailTemplatePreviewContent(
-        this.formData.resourceId,
-        this.formData.campaignResourceId,
-        this.formData.instanceGroup
+      if (
+        this.formData?.resourceId &&
+        this.formData?.campaignResourceId &&
+        this.formData?.instanceGroup
       )
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.emailTemplate = data.template
-          this.difficulty =
-            this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
-          this.method =
-            this.methods.find((item) => item.value === data.categoryResourceId)?.text || ''
-          this.fromName = data.fromName
-          this.fromAddress = data.fromAddress
-          this.name = data.name
-        })
-        .finally(() => {
-          if (showLoader) this.setLoading()
-        })
+        getCampaignManagerEmailTemplatePreviewContent(
+          this.formData.resourceId,
+          this.formData.campaignResourceId,
+          this.formData.instanceGroup
+        )
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            this.emailTemplate = data.template
+            this.difficulty =
+              this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
+            this.method =
+              this.methods.find((item) => item.value === data.categoryResourceId)?.text || ''
+            this.fromName = data.fromName
+            this.fromAddress = data.fromAddress
+            this.name = data.name
+          })
+          .finally(() => {
+            if (showLoader) this.setLoading()
+          })
     },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)

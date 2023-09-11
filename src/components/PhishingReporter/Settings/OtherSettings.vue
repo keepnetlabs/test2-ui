@@ -1,8 +1,8 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 other-settings__header"
       v-if="showHeader"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 other-settings__header"
     >
       <v-list-item-content>
         <v-list-item-title class="other-settings__title">
@@ -72,15 +72,15 @@
           <div class="other-settings__api-settings-container">
             <label class="other-settings__list-item-header mt-n5">{{ labels.CompanyId }}</label>
             <v-text-field
+              v-bind="getHintValues"
+              v-model.trim="formValues.companyKey"
               placeholder="Enter a Company ID"
               outlined
               dense
-              v-bind="getHintValues"
               class="mt-n1 ml-6"
               id="input--phishing-reporter-company-id"
-              v-model.trim="formValues.companyKey"
-              :rules="apiKeyRules"
               height="40"
+              :rules="apiKeyRules"
               :readonly="!showForm"
             ></v-text-field>
           </div>

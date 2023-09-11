@@ -22,8 +22,8 @@
       <div class="table-wrapper">
         <div
           v-click-outside="handleSettingsPopupClickOutside"
-          class="settings-popup"
           v-show="isSettingsOpened"
+          class="settings-popup"
           :style="settingsPopupStyle"
         >
           <div class="settings-header">
@@ -67,6 +67,8 @@
           :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
           :loading="extendedViewLoading"
+          :wait-api="waitExtendedViewApi"
+          :is-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
           @closeCreateMode="$emit('closeCreateMode')"
           @closeEditPopup="closeEditPopup"
           @handleEdit="handleExtendedViewEdit"
@@ -1118,6 +1120,14 @@ export default {
       type: Boolean,
       default: false
     },
+    waitExtendedViewApi: {
+      type: Boolean,
+      default: false
+    },
+    isExtendedViewCancelButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     extendedViewValue: {
       type: Array,
       default() {
@@ -1692,9 +1702,8 @@ export default {
       this.handleRefresh()
     },
     handleClearFilters() {
-      this.search = ''
-      this.filterValues = {}
-      this.reRenderFilters()
+      this.resetSearchText()
+      this.reRenderFilters({})
       this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
       this.handleRefresh()
       this.$emit('clear-filters')
@@ -1813,6 +1822,7 @@ export default {
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
+      if (this.waitExtendedViewApi) return
       this.resetSelectableParams()
     },
     resetSelectableParams() {
@@ -3032,6 +3042,9 @@ export default {
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
       this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
+    },
+    resetSearchText() {
+      this.search = ''
     }
   }
 }
