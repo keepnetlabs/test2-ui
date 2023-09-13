@@ -234,12 +234,14 @@ export default {
     },
     getResendDialogItems() {
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        submittedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        attachmentOpenedEmail = 0
+        openedEmail,
+        clickedEmail,
+        submittedEmail,
+        noResponseEmail,
+        notDelivered,
+        attachmentOpenedEmail,
+        reportedEmail,
+        mfa
       ] = this.getChartData
       return this.getChartData.length
         ? {
@@ -248,7 +250,8 @@ export default {
             notDelivered,
             openedEmail,
             submittedEmail,
-            attachmentOpenedEmail
+            attachmentOpenedEmail,
+            mfa
           }
         : {}
     },

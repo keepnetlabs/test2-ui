@@ -384,11 +384,6 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
-    PREVIEW: {
-      url: `smishing-simulator/smishing-campaign/preview/{resourceId}`,
-      hasPermission: false,
-      method: ENUMS.METHODS.GET
-    },
     EXPORT: {
       url: `smishing-simulator/smishing-campaign/search/export`,
       hasPermission: false,
@@ -906,6 +901,13 @@ export default {
       url: `certificates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    }
+  },
+  TRAINING_REPORTS_PERMISSIONS: {
+    SEARCH_REPORTS: {
+      url: `training-reports/{enrollmentId}/summary`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   },
   INCIDENT_RESPONDER_LIST_GROUP_PERMISSIONS: {
