@@ -243,7 +243,6 @@ export default {
         reportedEmail,
         mfa
       ] = this.getChartData
-      console.log('this.getChartData', this.getChartData)
       return this.getChartData.length
         ? {
             clickedEmail,

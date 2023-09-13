@@ -445,7 +445,6 @@ const store = {
       return state?.emailTemplatesPermissions?.EXPORT?.hasPermission
     },
     getTrainingReportsSearchPermissions(state) {
-      console.log(state?.trainingReportsPermissions?.SEARCH_REPORTS?.hasPermission)
       return state?.trainingReportsPermissions?.SEARCH_REPORTS?.hasPermission
     },
     getLandingPageTemplatesSearchPermissions(state) {
