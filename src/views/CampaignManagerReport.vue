@@ -215,10 +215,10 @@ export default {
     },
     setTabStatus() {
       //click only
-      if (!this.multipleType[0]) {
-        const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
-        if (tabIndex) this.tabItems.splice(tabIndex, 1)
-      }
+      // if (!this.multipleType[0]) {
+      //   const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+      //   if (tabIndex) this.tabItems.splice(tabIndex, 1)
+      // }
       //data submission
       if (!this.multipleType[1]) {
         const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
@@ -235,6 +235,8 @@ export default {
             'permissions/getCampaignReportsOpenedAttachmentPermissions'
           ]
         })
+        const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
+        if (tabIndex) this.tabItems.splice(tabIndex, 1)
       }
       //mfa
       if (this.multipleType[3]) {
