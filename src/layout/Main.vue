@@ -319,7 +319,7 @@
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
                   :active-class-comparator="() => routerName === 'Campaign Manager'"
-                  @click="handleCampaignManagerClick"
+                  @click="handlePhishingCampaignManagerClick"
                 />
               </v-list-item-content>
             </v-list-item>
