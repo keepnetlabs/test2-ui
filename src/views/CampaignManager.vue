@@ -159,6 +159,21 @@ export default {
       next()
     }
   },
+  watch: {
+    '$route.query': {
+      handler: function (val) {
+        if (val?.status === 'parent') {
+          this.selectedParentItem = null
+          this.selectedInstanceItem = null
+          this.isItemTableShowing = false
+          this.isFrequencyTableShowing = false
+          this.$router.replace('/phishing-simulator/campaign-manager')
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
     toggleShowLaunchDialog() {
       if (this.isShowLaunchDialog) this.launchResourceId = ''

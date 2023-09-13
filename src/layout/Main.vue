@@ -319,6 +319,7 @@
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
                   :active-class-comparator="() => routerName === 'Campaign Manager'"
+                  @click="handleCampaignManagerClick"
                 />
               </v-list-item-content>
             </v-list-item>
@@ -420,6 +421,7 @@
                     () =>
                       routerName === 'Smishing Campaign Manager' || routerName === 'Smishing Report'
                   "
+                  @click="handleSmishingCampaignManagerClick"
                 />
               </v-list-item-content>
             </v-list-item>
@@ -1278,6 +1280,12 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    handlePhishingCampaignManagerClick() {
+      this.$router.push('/phishing-simulator/campaign-manager?status=parent')
+    },
+    handleSmishingCampaignManagerClick() {
+      this.$router.push('/smishing-simulator/campaign-manager?status=parent')
+    },
     toggleShowInitializeCompanyModal() {
       this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
     },

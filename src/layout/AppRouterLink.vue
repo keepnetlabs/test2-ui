@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="to" :id="id" :class="getClass">
+  <router-link :to="to" :id="id" :class="getClass" @click.native="$emit('click')">
     <v-list-item-title class="menu-item-wrapper">
       <span class="menu-item-span">{{ routeText || routeName }}</span>
     </v-list-item-title>
