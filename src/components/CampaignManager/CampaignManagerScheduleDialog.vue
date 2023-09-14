@@ -2,7 +2,7 @@
   <AppDialog
     title-id="text--campaign-manager-schedule-popup-title"
     subtitle-id="text--campaign-manager-schedule-popup-subtitle"
-    size="maximum"
+    custom-size="700"
     :icon="CONSTANTS.icon"
     :title="CONSTANTS.title"
     :subtitle="getSubtitle"
@@ -19,7 +19,7 @@
             :key="index"
             class="campaign-manager-schedule-dialog__item"
           >
-            <span>
+            <span class="campaign-manager-schedule-dialog__item--scenario-name">
               {{ item.scenarioName }}
             </span>
             <span>
