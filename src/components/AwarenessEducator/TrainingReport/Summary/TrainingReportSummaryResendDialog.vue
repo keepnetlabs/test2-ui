@@ -25,21 +25,10 @@
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.noResponseEmail"
-            :value="4"
-          >
-            <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--training-report-email-failed-to-send"
-            color="#2196f3"
             :disabled="!items.openedEmail"
             :value="1"
           >
-            <template #label
-              >Users who only opened email {{ `(${items.openedEmail || 0})` }}</template
-            >
+            <template #label>Only opened email {{ `(${items.openedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
@@ -48,9 +37,7 @@
             :disabled="!items.clickedEmail"
             :value="2"
           >
-            <template #label
-              >Users who clicked training link {{ `(${items.clickedEmail || 0})` }}</template
-            >
+            <template #label>Clicked training link {{ `(${items.clickedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
@@ -60,8 +47,7 @@
             :value="3"
           >
             <template #label
-              >Users who didn't complete training
-              {{ `(${items.notCompletedTraining || 0})` }}</template
+              >Didn't complete training {{ `(${items.notCompletedTraining || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
@@ -72,7 +58,7 @@
             :value="6"
           >
             <template #label
-              >Users who didn't complete exam {{ `(${items.notCompletedExam || 0})` }}</template
+              >Didn't complete exam {{ `(${items.notCompletedExam || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
             v-model="types"
@@ -81,7 +67,16 @@
             :disabled="!items.failedExam"
             :value="6"
           >
-            <template #label>Users who failed exam {{ `(${items.failedExam || 0})` }}</template>
+            <template #label>Failed exam {{ `(${items.failedExam || 0})` }}</template>
+          </v-checkbox>
+          <v-checkbox
+            v-model="types"
+            id="input--training-report-email-failed-to-send"
+            color="#2196f3"
+            :disabled="!items.noResponseEmail"
+            :value="4"
+          >
+            <template #label>No response {{ `(${items.noResponseEmail || 0})` }}</template>
           </v-checkbox>
         </div>
       </div>

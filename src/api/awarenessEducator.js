@@ -329,6 +329,23 @@ const downloadEnrollmentPackage = (resourceId = '') => {
   )
 }
 
+const resendTrainingToUsers = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/resend/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToUserList = (payload = {}, id = '') => {
+  return testRequest.post(`/${id}/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const exportTrainingReport = (id = '') => {
+  return testRequest.get(`/training-reports/export/${id}`, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -393,5 +410,8 @@ export default {
   restoreEnrollment,
   getCertificateHtml,
   downloadTrainingPackage,
-  downloadEnrollmentPackage
+  downloadEnrollmentPackage,
+  resendTrainingToUsers,
+  resendTrainingToUserList,
+  exportTrainingReport
 }

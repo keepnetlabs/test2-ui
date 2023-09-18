@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <TrainingReportUserInteractionsModal
       v-if="isShowInteractionsModal"
@@ -47,50 +47,13 @@
       @downloadEvent="exportTrainingReportUsersTable"
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
+      @on-resend="handleOnResend"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-users__status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
         </div>
-      </template>
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleInteractions(scope.row)"
-        />
-        <RowActionsMenu>
-          <DefaultMenuRowAction
-            :scope="scope"
-            :disabled="tableOptions.rowActions[1].disabled"
-            :icon="tableOptions.rowActions[1].icon"
-            :text="tableOptions.rowActions[1].name"
-            @on-click="handleResend(scope.row)"
-          />
-          <DefaultMenuRowAction
-            v-if="!scope.row.isExcluded"
-            :scope="scope"
-            :check-is-owner-property="false"
-            :disabled="tableOptions.rowActions[2].disabled"
-            :icon="tableOptions.rowActions[2].icon"
-            :text="tableOptions.rowActions[2].name"
-            :checkIsOwnerProperty="false"
-            @on-click="handleExclude(scope.row)"
-          />
-          <DefaultMenuRowAction
-            v-else
-            :scope="scope"
-            :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
-            :checkIsOwnerProperty="false"
-            @on-click="handleInclude(scope.row)"
-          />
-        </RowActionsMenu>
       </template>
     </DataTable>
   </div>
@@ -106,9 +69,6 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
@@ -116,19 +76,17 @@ import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 export default {
   name: 'TrainingReportUsers',
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
-    DefaultMenuRowAction,
-    RowActionsMenu,
     Badge,
     TrainingReportUserInteractionsModal,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useResend],
   props: {
     id: {
       type: String
@@ -140,9 +98,7 @@ export default {
   data() {
     return {
       selectedRow: null,
-      isShowResendDialog: false,
       isShowInteractionsModal: false,
-      isResendActionButtonDisabled: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
@@ -249,11 +205,16 @@ export default {
         },
         rowActions: [
           {
+            name: labels.Resend,
+            id: 'btn-resend--row-actions-training-report-users',
+            icon: '$custom-resend',
+            action: 'on-resend'
+          },
+          {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-users',
             icon: '$custom-details',
             action: 'on-interactions'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
           /*
           {
