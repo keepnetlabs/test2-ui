@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <TrainingReportUserInteractionsModal
       v-if="isShowDetailsModal"
@@ -69,6 +69,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 
 export default {
   name: 'TrainingReportClickedTrainingLink',
@@ -78,7 +79,7 @@ export default {
     DataTable,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useResend],
   props: {
     id: {
       type: String
@@ -87,15 +88,12 @@ export default {
   data() {
     return {
       selectedRow: null,
-      isShowResendDialog: false,
       isShowDetailsModal: false,
-      isResendActionButtonDisabled: false,
       CONSTANTS: {
         id: 'training-report-opened-training-email-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
-      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_CLICKED_TABLE,
@@ -185,19 +183,16 @@ export default {
           message: labels.EmptyTrainingReportClicked
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-clicked-link',
             icon: '$custom-resend',
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-clicked-link',
             icon: '$custom-details',
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']

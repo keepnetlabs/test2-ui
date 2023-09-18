@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
       class="mb-6"
@@ -59,6 +59,8 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
+
 export default {
   name: 'TrainingReportExamResults',
   components: {
@@ -66,7 +68,7 @@ export default {
     DataTable,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useResend],
   props: {
     id: {
       type: String
@@ -75,14 +77,11 @@ export default {
   data() {
     return {
       selectedRow: null,
-      isShowResendDialog: false,
-      isResendActionButtonDisabled: false,
       CONSTANTS: {
         id: 'training-report-no-response-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
-      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -160,16 +159,13 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
-            id: 'btn-no-response--row-actions-training-report-users',
+            id: 'btn-no-response--row-actions-training-report-no-response',
             icon: '$custom-resend',
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
-
-           */
         ]
       },
       tableData: []

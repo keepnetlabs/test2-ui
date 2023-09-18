@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <TrainingReportProgressDetails
       v-if="isShowDetailsModal"
@@ -47,30 +47,13 @@
       @downloadEvent="exportTrainingProgressEmailTable"
       @refreshAction="callForData"
       @on-details="handleDetails"
+      @on-resend="handleOnResend"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-progress__progress-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
         </div>
-      </template>
-      <template #datatable-row-actions="{ scope }">
-        <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleResend(scope.row)"
-        />
-        <DefaultButtonRowAction
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled"
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDetails(scope.row)"
-        />
       </template>
     </DataTable>
   </div>
@@ -86,24 +69,24 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import Badge from '@/components/Badge'
 import TrainingReportProgressDetails from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgressDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
+
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
     TrainingReportResendDialog,
     DataTable,
-    DefaultButtonRowAction,
     CampaignManagerReportHeader,
     Badge,
     TrainingReportProgressDetails
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useResend],
   props: {
     id: {
       type: String
@@ -115,9 +98,7 @@ export default {
   data() {
     return {
       selectedRow: null,
-      isShowResendDialog: false,
       isShowDetailsModal: false,
-      isResendActionButtonDisabled: false,
       CONSTANTS: {
         id: 'training-report-progress-data-table',
         ascending: 'ascending'
@@ -257,19 +238,16 @@ export default {
           message: labels.EmptyTrainingReportProgress
         },
         rowActions: [
-          /*
           {
             name: labels.Resend,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-progress',
             icon: '$custom-resend',
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-progress',
             icon: '$custom-details',
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
@@ -344,6 +322,16 @@ export default {
     },
     handleResend(row) {
       this.selectedRow = row
+      this.toggleIsShowResendDialog()
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
       this.toggleIsShowResendDialog()
     },
     handleDetails(row) {
