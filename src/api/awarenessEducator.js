@@ -335,7 +335,7 @@ const resendTrainingToUsers = (payload = {}, id = '') => {
   })
 }
 const resendTrainingToUserList = (payload = {}, id = '') => {
-  return testRequest.post(`/training-reports/resend/list/${id}`, payload, {
+  return testRequest.post(`/${id}/resend`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }

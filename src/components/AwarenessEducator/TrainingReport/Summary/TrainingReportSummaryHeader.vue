@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="training-report-summary-header__right">
-      <v-btn
+      <!-- <v-btn
         class="training-report-summary-header__btn-download-report"
         rounded
         outlined
@@ -33,7 +33,7 @@
         color="#2196f3"
         @click="toggleShowResendDialog"
         >{{ labels.ResendTraining }}</v-btn
-      >
+      > -->
     </div>
   </div>
 </template>
