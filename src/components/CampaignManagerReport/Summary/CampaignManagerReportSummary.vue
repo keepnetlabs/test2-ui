@@ -211,8 +211,17 @@ export default {
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
-        emailDeliveryDuration = 0
+        emailDeliveryDuration = 0,
+        scheduledDate = `01/01/1970`,
+        frequency = 0
       } = campaignInfo
+      if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
+        return {
+          'Scheduled Date': scheduledDate,
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
       return {
         'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
         Duration: `${emailDeliveryDuration || 0}`,
