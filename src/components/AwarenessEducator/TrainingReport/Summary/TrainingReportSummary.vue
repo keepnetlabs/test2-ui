@@ -190,64 +190,66 @@ export default {
     },
     getResendDialogItems() {
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        notCompletedTraining = 0,
-        notCompletedExam = 0,
-        failedExam = 0
+        totalUserOpenedCount = 0,
+        totalUserClickedCount = 0,
+        totalTargetUserCount = 0,
+        emailDeliveredUserCount = 0,
+        emailErrorUserCount = 0,
+        didNotCompleteTrainingCount = 0,
+        didNotCompleteExamCount = 0,
+        failedExamCount = 0,
+        noResponseCount = 0
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            openedEmail,
-            clickedEmail,
-            noResponseEmail,
-            notDelivered,
-            notCompletedTraining,
-            notCompletedExam,
-            failedExam
+            totalUserOpenedCount,
+            totalUserClickedCount,
+            totalTargetUserCount,
+            emailDeliveredUserCount,
+            emailErrorUserCount,
+            didNotCompleteTrainingCount,
+            didNotCompleteExamCount,
+            failedExamCount,
+            noResponseCount
           }
         : {}
     },
     getChartData() {
       const defaultScenarioStatsObject = {
-        scenarioStats: {
-          openedEmail: 0,
-          clickedEmail: 0,
-          noResponseEmail: 0,
-          notDelivered: 0,
-          notCompletedTraining: 0,
-          notCompletedExam: 0,
-          failedExam: 0,
-          inProgress: 0,
-          completedTraining: 0
-        }
+        totalUserOpenedCount: 0,
+        totalUserClickedCount: 0,
+        totalTargetUserCount: 0,
+        emailDeliveredUserCount: 0,
+        emailErrorUserCount: 0,
+        didNotCompleteTrainingCount: 0,
+        didNotCompleteExamCount: 0,
+        failedExamCount: 0,
+        noResponseCount: 0
       }
-      const { scenarioStats = {} } = this.trainingSummary?.scenarioStats
+      const { reportDetail = {} } = this.trainingSummary
         ? this.trainingSummary
         : defaultScenarioStatsObject
       const {
-        openedEmail = 0,
-        clickedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        notCompletedTraining = 0,
-        notCompletedExam = 0,
-        failedExam = 0,
-        inProgress = 0,
-        completedTraining = 0
-      } = scenarioStats
+        totalUserOpenedCount = 0,
+        totalUserClickedCount = 0,
+        totalTargetUserCount = 0,
+        emailDeliveredUserCount = 0,
+        emailErrorUserCount = 0,
+        didNotCompleteTrainingCount = 0,
+        didNotCompleteExamCount = 0,
+        failedExamCount = 0,
+        noResponseCount = 0
+      } = reportDetail
       const dataContainer = [
-        openedEmail,
-        clickedEmail,
-        noResponseEmail,
-        notDelivered,
-        notCompletedTraining,
-        notCompletedExam,
-        failedExam,
-        inProgress,
-        completedTraining
+        totalUserOpenedCount,
+        totalUserClickedCount,
+        totalTargetUserCount,
+        emailDeliveredUserCount,
+        emailErrorUserCount,
+        didNotCompleteTrainingCount,
+        didNotCompleteExamCount,
+        failedExamCount,
+        noResponseCount
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },

@@ -69,7 +69,6 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
-import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 
 export default {
   name: 'TrainingReportClickedTrainingLink',
@@ -79,7 +78,7 @@ export default {
     DataTable,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions, useResend],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -87,6 +86,9 @@ export default {
   },
   data() {
     return {
+      isShowResendDialog: false,
+      resendPayload: null,
+      isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowDetailsModal: false,
       CONSTANTS: {
@@ -100,7 +102,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_CLICKED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: false,
+          resend: true,
           clipboard: true
         },
         columns: [
@@ -206,6 +208,29 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingToClickedLinkList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     callForData() {
       this.setLoading(true)
       AwarenessEducatorService.clickedTrainingReportEmails(this.axiosPayload, this.id)
@@ -245,16 +270,6 @@ export default {
           }
         )
       })
-    },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      this.resendPayload = {
-        Types: [2],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.toggleIsShowResendDialog()
     },
     handleOnDetail(row) {
       this.selectedRow = row
