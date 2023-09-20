@@ -76,7 +76,6 @@ import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -86,7 +85,7 @@ export default {
     TrainingReportUserInteractionsModal,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions, useResend],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -97,6 +96,9 @@ export default {
   },
   data() {
     return {
+      isShowResendDialog: false,
+      resendPayload: null,
+      isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
@@ -110,7 +112,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_USERS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: false,
+          resend: true,
           clipboard: true
         },
         columns: [
@@ -249,6 +251,29 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingToUserList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     },
