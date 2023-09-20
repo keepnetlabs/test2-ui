@@ -125,7 +125,6 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
-import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -139,7 +138,7 @@ export default {
     CampaignManagerReportHeader,
     TrainingReportSendingReportExtendedView
   },
-  mixins: [useLoading, useDefaultTableFunctions, useResend],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -150,6 +149,9 @@ export default {
   },
   data() {
     return {
+      isShowResendDialog: false,
+      resendPayload: null,
+      isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
@@ -391,6 +393,29 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     getEventReason(event = {}) {
       const { reason, event: eventName } = event
       if (reason) return reason
@@ -465,16 +490,6 @@ export default {
         .finally(() => {
           this.extendedViewLoading = false
         })
-    },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      this.resendPayload = {
-        Types: [2],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {

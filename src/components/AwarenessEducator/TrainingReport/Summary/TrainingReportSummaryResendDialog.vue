@@ -16,38 +16,45 @@
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.notDelivered"
-            :value="5"
-          >
-            <template #label> Email failed to send {{ `(${items.notDelivered || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--training-report-email-failed-to-send"
-            color="#2196f3"
-            :disabled="!items.openedEmail"
+            :disabled="!items.emailErrorUserCount"
             :value="1"
           >
-            <template #label>Only opened email {{ `(${items.openedEmail || 0})` }}</template>
+            <template #label>
+              Email failed to send {{ `(${items.emailErrorUserCount || 0})` }}</template
+            >
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.clickedEmail"
+            :disabled="!items.totalUserOpenedCount"
             :value="2"
           >
-            <template #label>Clicked training link {{ `(${items.clickedEmail || 0})` }}</template>
+            <template #label
+              >Only opened email {{ `(${items.totalUserOpenedCount || 0})` }}</template
+            >
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.notCompletedTraining"
+            :disabled="!items.totalUserClickedCount"
             :value="3"
           >
             <template #label
-              >Didn't complete training {{ `(${items.notCompletedTraining || 0})` }}</template
+              >Clicked training link {{ `(${items.totalUserClickedCount || 0})` }}</template
+            >
+          </v-checkbox>
+          <v-checkbox
+            v-model="types"
+            id="input--training-report-email-failed-to-send"
+            color="#2196f3"
+            :disabled="!items.didNotCompleteTrainingCount"
+            :value="4"
+          >
+            <template #label
+              >Didn't complete training
+              {{ `(${items.didNotCompleteTrainingCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
@@ -55,28 +62,28 @@
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
             :disabled="!items.notCompletedExam"
-            :value="6"
+            :value="5"
           >
             <template #label
-              >Didn't complete exam {{ `(${items.notCompletedExam || 0})` }}</template
+              >Didn't complete exam {{ `(${items.didNotCompleteExamCount || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.failedExam"
+            :disabled="!items.failedExamCount"
             :value="6"
           >
-            <template #label>Failed exam {{ `(${items.failedExam || 0})` }}</template>
+            <template #label>Failed exam {{ `(${items.failedExamCount || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.noResponseEmail"
-            :value="4"
+            :disabled="!items.noResponseCount"
+            :value="7"
           >
-            <template #label>No response {{ `(${items.noResponseEmail || 0})` }}</template>
+            <template #label>No response {{ `(${items.noResponseCount || 0})` }}</template>
           </v-checkbox>
         </div>
       </div>

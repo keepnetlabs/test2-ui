@@ -59,7 +59,6 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { useResend } from '@/hooks/awareness-educator/useAwarenessResend'
 
 export default {
   name: 'TrainingReportExamResults',
@@ -68,7 +67,7 @@ export default {
     DataTable,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions, useResend],
+  mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
@@ -76,6 +75,9 @@ export default {
   },
   data() {
     return {
+      isShowResendDialog: false,
+      resendPayload: null,
+      isResendActionButtonDisabled: false,
       selectedRow: null,
       CONSTANTS: {
         id: 'training-report-no-response-data-table',
@@ -175,6 +177,29 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingNoResponseList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     callForData() {
       this.setLoading(true)
       AwarenessEducatorService.noResponseTrainingReportEmails(this.axiosPayload, this.id)
@@ -214,16 +239,6 @@ export default {
           }
         )
       })
-    },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      this.resendPayload = {
-        Types: [2],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {

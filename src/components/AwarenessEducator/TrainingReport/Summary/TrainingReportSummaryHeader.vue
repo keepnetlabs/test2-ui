@@ -27,13 +27,14 @@
         @click="handleDownloadReport"
         >{{ labels.DownloadReport }}</v-btn
       >
+      -->
       <v-btn
         class="training-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"
         @click="toggleShowResendDialog"
         >{{ labels.ResendTraining }}</v-btn
-      > -->
+      >
     </div>
   </div>
 </template>
@@ -71,7 +72,7 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      AwarenessEducatorService.resendTrainingToUsers({ Types: types }, this.id).finally(() => {
+      AwarenessEducatorService.resendTrainingToUsers({ resendTypes: types }, this.id).finally(() => {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
