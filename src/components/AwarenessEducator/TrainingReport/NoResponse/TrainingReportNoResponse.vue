@@ -71,6 +71,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    isScormProxy: {
+      type: Boolean
     }
   },
   data() {
@@ -162,7 +165,7 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Resend,
+            name: `Resend Training`,
             id: 'btn-no-response--row-actions-training-report-no-response',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -175,6 +178,21 @@ export default {
   },
   created() {
     this.callForData()
+  },
+  watch: {
+    isScormProxy: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          const resendActionIndex = this.tableOptions.rowActions.findIndex(
+            (action) => action.name === 'Resend Training'
+          )
+          if (resendActionIndex !== -1) {
+            this.tableOptions.rowActions.splice(resendActionIndex, 1)
+          }
+        }
+      }
+    }
   },
   methods: {
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
