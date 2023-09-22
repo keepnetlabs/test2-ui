@@ -61,7 +61,7 @@ export default {
         cancelAnimationFrame(this.animationFrame)
         let height = iframe.contentWindow.document.body.scrollHeight
         if (this.isInitialResize) {
-          this.setDefaultHeight()
+          height = this.setDefaultHeight(height)
         }
         if (height < 200) {
           this.isBodyHeightUsed = true
@@ -90,16 +90,25 @@ export default {
         }
       }
     },
-    setDefaultHeight() {
+    setDefaultHeight(height) {
       const iframe = this.$refs.iframe
       if (iframe.contentWindow.document.body) {
         if (iframe.contentWindow.document.body.scrollHeight > 200) {
-          this.defaultHeight = iframe.contentWindow.document.body.scrollHeight
+          if (
+            iframe?.contentWindow?.document?.querySelector('body') &&
+            iframe?.contentWindow?.document?.querySelector('#emailCredentials.container')
+          ) {
+            this.defaultHeight = iframe.contentWindow.document.body.scrollHeight + 275
+            height = this.defaultHeight
+          } else {
+            this.defaultHeight = iframe.contentWindow.document.body.scrollHeight
+          }
         } else {
           this.defaultHeight = this.getFirstValidHeight(150, iframe)
         }
       }
       this.isInitialResize = false
+      return height
     },
     getValidElementHeight(style, height) {
       if (
