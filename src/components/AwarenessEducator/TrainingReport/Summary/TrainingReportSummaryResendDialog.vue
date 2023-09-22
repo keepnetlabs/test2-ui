@@ -55,17 +55,6 @@
             <template #label
               >Didn't complete training
               {{ `(${items.didNotCompleteTrainingCount || 0})` }}</template
-            >
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--training-report-email-failed-to-send"
-            color="#2196f3"
-            :disabled="!items.notCompletedExam"
-            :value="5"
-          >
-            <template #label
-              >Didn't complete exam {{ `(${items.didNotCompleteExamCount || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
             v-model="types"
