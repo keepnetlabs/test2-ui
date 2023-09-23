@@ -198,6 +198,7 @@ export default {
           isClickedOnly = true
         } else if (method === '2') {
           isSubmittedData = true
+          isClickedOnly = true
         } else if (method === '3') {
           isAttachment = true
         }
