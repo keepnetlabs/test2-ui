@@ -159,7 +159,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -373,6 +373,16 @@ export default {
   watch: {
     selectedPhishingScenarios(val) {
       this.isPhishingScenariosValid = !!val.length
+    },
+    step(val) {
+      if (
+        val === 4 &&
+        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate === ''
+      ) {
+        this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
+          Date.now()
+        ).format(getTimeZoneForMoment())
+      }
     }
   },
   created() {
@@ -502,10 +512,15 @@ export default {
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
             refCampaignManagerDeliverySettings: {
               formData: deliverySettingsFormData,
-              inputScheduleFormData
+              inputScheduleFormData,
+              inputDistributionFormData
             }
           } = this.$refs
-          deliverySettingsFormData = { ...deliverySettingsFormData, ...inputScheduleFormData }
+          deliverySettingsFormData = {
+            ...deliverySettingsFormData,
+            ...inputScheduleFormData,
+            ...inputDistributionFormData
+          }
           const payload = {
             smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId

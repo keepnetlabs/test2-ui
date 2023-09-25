@@ -9,51 +9,11 @@
       @input="handlePhoneNumberChange"
     />
     <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
-    <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
-      <div class="campaign-manager-advanced-settings__distribution-item">
-        <label for="input--campaign-manager-advanced-settings-time">Sending Limit</label>
-        <VTextField
-          v-model="formData.sendingLimit"
-          v-mask="'###########'"
-          id="input--campaign-manager-advanced-settings-sending-limit"
-          class="ml-6"
-          outlined
-          hide-details
-          placeholder="Enter number"
-          style="max-width: 128px;"
-          :rules="rules.number"
-          @input="callForCalculateSendingInfo"
-        />
-      </div>
-      <div class="campaign-manager-advanced-settings__distribution-item mt-3">
-        <label for="input--campaign-manager-advanced-settings-time"
-          >Send SMS with delay every
-        </label>
-        <v-text-field
-          v-model="formData.distributionDelayEvery"
-          v-mask="'###'"
-          id="input--campaign-manager-advanced-settings-time"
-          outlined
-          class="edit-name-textfield edit-select standard-height ml-2"
-          hide-details
-          style="max-width: 48px;"
-          :rules="rules.number"
-          @input="callForCalculateSendingInfo"
-        ></v-text-field>
-        <KSelect
-          v-model.trim="formData.distributionDelayTimeTypeId"
-          id="input--campaign-manager-advanced-settings-time-type"
-          class="ml-2"
-          outlined
-          dense
-          hide-details
-          placeholder="Select a item"
-          style="max-width: 118px;"
-          :items="formDetails['distributionDelayTimeTypes']"
-          @change="callForCalculateSendingInfo"
-        />
-      </div>
-    </FormGroup>
+    <InputDistribution
+      v-model="inputDistributionFormData"
+      :distribution-delay-time-items="getDistributionDelayTimeItems"
+      @call-for-calculate-sending-info="callForCalculateSendingInfo"
+    />
     <div
       v-if="formData.smsProviderNumberResourceId"
       class="campaign-manager-advanced-settings__distribution-text mt-6"
@@ -64,23 +24,22 @@
 </template>
 
 <script>
-import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import SmishingService from '@/api/smishing'
 import { createRandomCryptStringNumber, getTimeZone } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
+import InputDistribution from '@/components/Common/Inputs/InputDistribution'
+import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
+    InputDistribution,
     InputSchedule,
-    KSelect,
-    FormGroup,
     InputCallerPhoneNumber
   },
   mixins: [useDebounce],
@@ -133,28 +92,23 @@ export default {
       phoneNumberItems: [],
       formData: {
         phoneNumber: '',
-        smsProviderNumberResourceId: '',
-        distributionTypeId: 3,
-        distributionDelayEvery: 20,
-        distributionDelayTimeTypeId: '1',
-        sendingLimit: 50
+        smsProviderNumberResourceId: ''
       },
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
         scheduledDateTimeZoneId: ''
       },
+      inputDistributionFormData: {
+        distributionTypeId: DISTRIBUTION_TYPES.SMISHING,
+        distributionDelayEvery: 20,
+        distributionDelayTimeTypeId: '1',
+        sendingLimit: 50
+      },
       commonRules: {
         hint: '*Required',
         persistentHint: true,
         rules: [(v) => Validations.required(v, labels.Required)]
-      },
-      rules: {
-        number: [
-          (v) => Validations.required(v, 'Enter a number higher than 0'),
-          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
-          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
-        ]
       }
     }
   },
@@ -162,13 +116,16 @@ export default {
     this.callForPhoneNumbers()
   },
   computed: {
+    getDistributionDelayTimeItems() {
+      return this.formDetails['distributionSmtpDelayTimeTypes'] || []
+    },
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
     getDistributionText() {
       if (this.totalTargetUserCount === 1)
         return `Sending an SMS will start immediately for a single user.`
-      return `Sending ${this.formData.sendingLimit} SMS every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
+      return `Sending ${this.inputDistributionFormData.sendingLimit} SMS every ${this.inputDistributionFormData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
       let seconds = this.batchEverySendSecond
@@ -190,14 +147,16 @@ export default {
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionDelayTimeTypes']
         ? this.formDetails['distributionDelayTimeTypes']?.find(
-            (item) => item.value === this.formData.distributionDelayTimeTypeId
+            (item) => item.value === this.inputDistributionFormData.distributionDelayTimeTypeId
           )?.text
         : ''
     },
     getDistributionTextRenderStatus() {
-      return this.formData.distributionTypeId === '1'
-        ? this.formData.sendingLimit && this.formData.distributionDelayEvery
-        : this.formData.sendingLimit && this.formData.distributionEmailOver
+      return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
+        ? this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionDelayEvery
+        : this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionEmailOver
     },
     getApproximatedTime() {
       let seconds = this.totalSendSecond
@@ -293,16 +252,17 @@ export default {
         this.totalTargetUserCount === 1
       )
         return
-      if (!this.formData.distributionDelayEvery) return
+      if (!this.inputDistributionFormData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
-          distributionTypeId: this.formData.distributionTypeId,
-          distributionDelayEvery: this.formData.distributionDelayEvery,
-          distributionDelayTimeTypeId: this.formData.distributionDelayTimeTypeId,
-          distributionEmailOver: this.formData.distributionEmailOver,
-          distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
-          sendingLimit: this.formData.sendingLimit,
+          distributionTypeId: this.inputDistributionFormData.distributionTypeId,
+          distributionDelayEvery: this.inputDistributionFormData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.inputDistributionFormData.distributionDelayTimeTypeId,
+          distributionEmailOver: this.inputDistributionFormData.distributionEmailOver,
+          distributionEmailOverTimeTypeId: this.inputDistributionFormData
+            .distributionEmailOverTimeTypeId,
+          sendingLimit: this.inputDistributionFormData.sendingLimit,
           sendOnlyActiveUsers: this.userTargetAudienceData.sendOnlyActiveUsers,
           sendRandomlyUsers: this.userTargetAudienceData.sendRandomlyUsers,
           sendRandomlyUsersCount: this.userTargetAudienceData.sendRandomlyUsersCount,

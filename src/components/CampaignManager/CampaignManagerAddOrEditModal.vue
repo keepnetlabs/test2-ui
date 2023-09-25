@@ -572,10 +572,15 @@ export default {
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
             refCampaignManagerDeliverySettings: {
               formData: deliverySettingsFormData,
-              inputScheduleFormData
+              inputScheduleFormData,
+              inputDistributionFormData
             }
           } = this.$refs
-          deliverySettingsFormData = { ...deliverySettingsFormData, ...inputScheduleFormData }
+          deliverySettingsFormData = {
+            ...deliverySettingsFormData,
+            ...inputScheduleFormData,
+            ...inputDistributionFormData
+          }
           const payload = {
             phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId

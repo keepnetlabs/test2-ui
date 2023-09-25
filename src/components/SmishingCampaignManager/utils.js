@@ -266,3 +266,8 @@ export const difficulties = [
   { text: 'Medium', value: 'Z5XeVlpw6Dps' },
   { text: 'Hard', value: 'c4LCGEB9MayB' }
 ]
+
+export const DISTRIBUTION_TYPES = {
+  PHISHING: '1',
+  SMISHING: '3'
+}
