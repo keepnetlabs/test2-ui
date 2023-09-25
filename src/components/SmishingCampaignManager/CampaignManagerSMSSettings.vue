@@ -140,7 +140,7 @@ export default {
         sendingLimit: 50
       },
       inputScheduleFormData: {
-        scheduleTypeId: SCHEDULE_TYPES.SEND_NOW,
+        scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
         scheduledDateTimeZoneId: ''
       },

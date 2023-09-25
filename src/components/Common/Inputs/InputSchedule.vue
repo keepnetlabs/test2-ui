@@ -1,35 +1,25 @@
 <template>
-  <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub" style="max-width: 600px;">
+  <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub">
     <v-radio-group
       v-model="value.scheduleTypeId"
-      class="mt-0 campaign-manager-target-groups-radio"
+      class="mt-0 pt-0 campaign-manager-target-groups-radio"
       hide-details
     >
-      <v-radio
-        v-for="item in radioItems"
-        :key="item.text"
-        style="margin-bottom: 16px;"
-        color="#2196f3"
-        :id="`input--campaign-manager-radio-${item.text}`"
-        :value="item.value"
-        :label="item.text"
-      ></v-radio>
-      <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+      <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-4">
         <v-radio
           :id="`input--campaign-manager-radio-schedule-to`"
-          style="margin-bottom: 0;"
-          label="Schedule to"
+          class="mb-0"
+          label="Start time"
           color="#2196f3"
           value="3"
         />
         <div :class="[!isDateValid && 'date-picker-error mb-n3']">
           <InputDate
             v-model="value.scheduledDate"
-            class="date-picker-height-40 ml-2"
+            class="date-picker-height-40 w-100"
             type="datetime"
             ref="refPicker"
             placeholder="Select Date Select Time"
-            style="width: 100%; max-width: 222px;"
             :format="parsedFormat"
             :valueFormat="parsedFormat"
             :disabled="isScheduledTimeDisabled"
@@ -51,8 +41,7 @@
           v-model.trim="value.scheduledDateTimeZoneId"
           type="autocomplete"
           id="input--campaign-manager-campaign-info-time-type"
-          class="ml-2"
-          style="max-width: 195px;"
+          style="max-width: 233px;"
           outlined
           dense
           hide-details
@@ -63,6 +52,14 @@
           :disabled="isScheduledTimeDisabled"
         />
       </div>
+      <v-radio
+        v-for="item in radioItems"
+        :key="item.text"
+        color="#2196f3"
+        :id="`input--campaign-manager-radio-${item.text}`"
+        :value="item.value"
+        :label="item.text"
+      ></v-radio>
     </v-radio-group>
   </FormGroup>
 </template>
@@ -96,10 +93,7 @@ export default {
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
-      radioItems: [
-        { text: 'Send now', value: SCHEDULE_TYPES.SEND_NOW },
-        { text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }
-      ]
+      radioItems: [{ text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }]
     }
   },
   computed: {
@@ -164,7 +158,7 @@ export default {
     validateInput() {
       if (this.value.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO) return true
       this.isDateValid = !!this.value.scheduledDate
-      return this.value.scheduledDate && this.value.scheduledDateTimeZoneId && this.isDateValid
+      return !!(this.value.scheduledDate && this.value.scheduledDateTimeZoneId && this.isDateValid)
     }
   }
 }

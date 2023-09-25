@@ -55,6 +55,7 @@
 .el-date-editor {
   .el-input__inner {
     border-radius: 8px;
+    font-size: 13px;
   }
 }
 .filter__date-picker {
@@ -88,4 +89,8 @@
   .el-date-editor {
     border: 1px solid #ff5252 !important;
   }
+}
+.el-icon-time{
+  color:#757575;
+  font-size: 16px;
 }

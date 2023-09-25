@@ -102,12 +102,12 @@
           outlined
           hide-details
           placeholder="Enter number"
-          style="max-width: 128px;"
+          style="max-width: 116px;"
           :rules="rules.number"
           @input="callForCalculateSendingInfo"
         />
       </div>
-      <div class="campaign-manager-advanced-settings__distribution-item mt-3">
+      <div class="campaign-manager-advanced-settings__distribution-item gap-2 mt-3">
         <label for="input--campaign-manager-advanced-settings-time"
           >Send emails with delay every
         </label>
@@ -116,7 +116,7 @@
           v-mask="'###'"
           id="input--campaign-manager-advanced-settings-time"
           outlined
-          class="edit-name-textfield edit-select standard-height ml-2"
+          class="edit-name-textfield edit-select standard-height"
           hide-details
           style="max-width: 48px;"
           :disabled="!distributionEmailOverTimeDisableStatus"
@@ -126,7 +126,6 @@
         <KSelect
           v-model.trim="formData.distributionDelayTimeTypeId"
           id="input--campaign-manager-advanced-settings-time-type"
-          class="ml-2"
           outlined
           dense
           hide-details
@@ -136,6 +135,7 @@
           :disabled="!distributionEmailOverTimeDisableStatus"
           @change="callForCalculateSendingInfo"
         />
+        <label for="input--campaign-manager-advanced-settings-time">between batches</label>
       </div>
     </FormGroup>
     <div
@@ -232,7 +232,7 @@ export default {
         sendingLimit: 50
       },
       inputScheduleFormData: {
-        scheduleTypeId: SCHEDULE_TYPES.SEND_NOW,
+        scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
         scheduledDateTimeZoneId: ''
       },
