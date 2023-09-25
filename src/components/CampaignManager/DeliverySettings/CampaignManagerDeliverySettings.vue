@@ -81,78 +81,11 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <FormGroup
+    <InputSchedule
       v-if="isSelectedEmailDeliveryIsSmtp"
-      :title="labels.Schedule"
-      :sub-title="labels.ScheduleSub"
-      style="max-width: 600px;"
-    >
-      <v-radio-group
-        v-model="formData.scheduleTypeId"
-        class="mt-0 campaign-manager-target-groups-radio"
-        hide-details
-      >
-        <v-radio
-          v-for="item in radioItems"
-          :key="item.text"
-          style="margin-bottom: 16px;"
-          color="#2196f3"
-          :id="`input--campaign-manager-radio-${item.text}`"
-          :value="item.value"
-          :label="item.text"
-        ></v-radio>
-        <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
-          <v-radio
-            :id="`input--campaign-manager-radio-schedule-to`"
-            style="margin-bottom: 0;"
-            label="Schedule to"
-            color="#2196f3"
-            value="3"
-          />
-          <div :class="[!isDateValid && 'date-picker-error mb-n3']">
-            <InputDate
-              v-model="formData.scheduledDate"
-              class="date-picker-height-40 ml-2"
-              type="datetime"
-              ref="refPicker"
-              placeholder="Select Date Select Time"
-              style="width: 100%; max-width: 222px;"
-              :format="parsedFormat"
-              :valueFormat="parsedFormat"
-              :disabled="isScheduledTimeDisabled"
-              :picker-options="datePickerOptions"
-            />
-            <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-              <transition appear name="bounce">
-                <div class="v-messages theme--light error--text" role="alert">
-                  <div class="v-messages__wrapper">
-                    <div class="v-messages__message" style="padding-left: 10px;">
-                      Date is required
-                    </div>
-                  </div>
-                </div>
-              </transition>
-            </div>
-          </div>
-
-          <KSelect
-            v-model.trim="formData.scheduledDateTimeZoneId"
-            type="autocomplete"
-            id="input--campaign-manager-campaign-info-time-type"
-            class="ml-2"
-            style="max-width: 195px;"
-            outlined
-            dense
-            hide-details
-            placeholder="Select a item"
-            min-width-type="super"
-            nudge-width="200"
-            :items="scheduledTimeItems"
-            :disabled="isScheduledTimeDisabled"
-          />
-        </div>
-      </v-radio-group>
-    </FormGroup>
+      v-model="inputScheduleFormData"
+      ref="inputSchedule"
+    />
     <FormGroup
       v-if="isSelectedEmailDeliveryIsSmtp"
       class="mt-6"
@@ -226,16 +159,15 @@ import {
   getDefaultCompanySmtpSetting,
   getEmailDeliveries
 } from '@/api/phishingsimulator'
-import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
+import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import InputDate from '@/components/Common/Inputs/InputDate'
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
-import { mapGetters } from 'vuex'
+import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
-    InputDate,
+    InputSchedule,
     CampaignManagerSmtpErrorDialog,
     KSelect,
     FormGroup
@@ -275,11 +207,6 @@ export default {
   data() {
     return {
       labels,
-      isDateValid: true,
-      parsedFormat: getTimeZone(false),
-      datePickerOptions: {
-        disabledDate: this.disabledEndDates
-      },
       isTestingConnection: false,
       isShowSmtpErrorDialog: false,
       isUsersOnline: false,
@@ -302,7 +229,9 @@ export default {
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
         distributionDelayTimeTypeId: '1',
-        sendingLimit: 50,
+        sendingLimit: 50
+      },
+      inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SEND_NOW,
         scheduledDate: '',
         scheduledDateTimeZoneId: ''
@@ -319,18 +248,10 @@ export default {
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ],
         frequency: [(v) => v >= 0 || labels.Required]
-      },
-      radioItems: [
-        { text: 'Send now', value: SCHEDULE_TYPES.SEND_NOW },
-        { text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }
-      ]
+      }
     }
   },
   computed: {
-    ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone',
-      timezoneFormat: 'auth/getTimezoneFormat'
-    }),
     isSelectedEmailDeliveryIsSmtp() {
       if (!this.emailDelivery) return false
       return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
@@ -413,13 +334,6 @@ export default {
       }
 
       return `${leftSideText}${rightSideText}`
-    },
-    isScheduledTimeDisabled() {
-      return this.formData.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO
-    },
-    scheduledTimeItems() {
-      const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
   watch: {
@@ -441,34 +355,11 @@ export default {
           }
         } else if (key === 'distributionTypeId') {
           this.formData.distributionTypeId = '1'
+        } else if (['scheduleTypeId', 'scheduledDate', 'scheduledDateTimeZoneId'].includes(key)) {
+          this.inputScheduleFormData[key] = val[key]
         } else {
           this.formData[key] = val[key]
         }
-      }
-    },
-    timezoneFormat: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.parsedFormat = getTimeZone(false, val)
-        }
-      }
-    },
-    selectedTimeZone(val) {
-      this.formData.scheduledDateTimeZoneId = val
-    },
-    'formData.scheduledDate'(val) {
-      let isDateValid = true
-      if (this.formData) {
-        isDateValid =
-          this.formData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO ? val && val.length > 0 : true
-      }
-      this.isDateValid = isDateValid
-    },
-    'formData.scheduleTypeId'(val) {
-      if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
-        this.isDateValid = true
       }
     },
     totalTargetUserCount() {
@@ -476,15 +367,10 @@ export default {
     }
   },
   created() {
-    this.callForGetTimeZones()
-    if (!this.isEdit) this.getSelectedTimeZone()
     this.callForDefaultSmtpSetting()
     this.callForEmailDeliveries()
   },
   methods: {
-    disabledEndDates(val) {
-      return new Date().setHours(0, 0, 0, 0) > val.getTime()
-    },
     getTestConnectionButtonStyle() {
       return {
         fontWeight: 600,
@@ -648,31 +534,9 @@ export default {
         this.formData.smtpSettingResourceId = ''
       }
     },
-    callForGetTimeZones() {
-      if (
-        this.$store?.getters['common/getTimezones'] &&
-        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
-      ) {
-        this.$store.dispatch('common/getTimezone')
-      }
-    },
-    getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
-        this.formData.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
-      } else {
-        this.$store.dispatch('common/callForSettings')
-      }
-    },
     validateForm() {
-      let isValid = this.$refs.refForm.validate()
-      if (this.formData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO) {
-        this.isDateValid = !!this.formData.scheduledDate
-        isValid =
-          isValid &&
-          this.formData.scheduledDate &&
-          this.formData.scheduledDateTimeZoneId &&
-          this.isDateValid
-      }
+      let isValid =
+        this.$refs.refForm.validate() && (this?.$refs?.inputSchedule?.validateInput() ?? true)
       if (!isValid) {
         this.$nextTick(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')

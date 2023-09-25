@@ -243,7 +243,7 @@ export default {
       if (this.step === 5) {
         const { refCampaignManagerDeliverySettings } = this.$refs
         return (
-          refCampaignManagerDeliverySettings?.formData?.scheduleTypeId !==
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId !==
             SCHEDULE_TYPES.SAVE_FOR_LATER &&
           refCampaignManagerDeliverySettings?.formData?.frequency !== 0
         )
@@ -280,8 +280,10 @@ export default {
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const scheduleTypeId = refCampaignManagerDeliverySettings.formData.scheduleTypeId
-        let selectedSchedule = refCampaignManagerDeliverySettings?.formData?.scheduledDate || ''
+        const scheduleTypeId =
+          refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
+        let selectedSchedule =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SEND_NOW) selectedSchedule = 'Now'
         else if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = 'Later'
         formData.userCountDetailResponse = this.userCountDetailResponse
@@ -302,8 +304,9 @@ export default {
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
         formData.scheduledDateTimeZoneId =
-          refCampaignManagerDeliverySettings?.formData?.scheduledDateTimeZoneId
-        formData.scheduledDate = refCampaignManagerDeliverySettings?.formData?.scheduledDate
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId
+        formData.scheduledDate =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
         formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
@@ -548,11 +551,15 @@ export default {
           }
           return
         case 5:
-          const {
+          let {
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
-            refCampaignManagerDeliverySettings: { formData: deliverySettingsFormData }
+            refCampaignManagerDeliverySettings: {
+              formData: deliverySettingsFormData,
+              inputScheduleFormData
+            }
           } = this.$refs
+          deliverySettingsFormData = { ...deliverySettingsFormData, ...inputScheduleFormData }
           const payload = {
             phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId
