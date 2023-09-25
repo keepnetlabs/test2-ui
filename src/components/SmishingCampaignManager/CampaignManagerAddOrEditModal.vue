@@ -266,8 +266,14 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId
         let selectedSchedule =
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
-        if (scheduleTypeId === '1') selectedSchedule = 'Now'
-        else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
+        else {
+          selectedSchedule =
+            Date.now() >
+            new Date(refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate)
+              ? labels.Now
+              : selectedSchedule
+        }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers

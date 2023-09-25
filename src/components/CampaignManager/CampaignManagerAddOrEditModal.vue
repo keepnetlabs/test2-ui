@@ -162,7 +162,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
   createCampaignManager,
@@ -284,8 +284,14 @@ export default {
           refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
         let selectedSchedule =
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
-        if (scheduleTypeId === SCHEDULE_TYPES.SEND_NOW) selectedSchedule = 'Now'
-        else if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = 'Later'
+        if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
+        else {
+          selectedSchedule =
+            Date.now() >
+            new Date(refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate)
+              ? labels.Now
+              : selectedSchedule
+        }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
@@ -401,6 +407,16 @@ export default {
   watch: {
     selectedPhishingScenarios(val) {
       this.isPhishingScenariosValid = !!val.length
+    },
+    step(val) {
+      if (
+        val === 4 &&
+        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate === ''
+      ) {
+        this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
+          Date.now()
+        ).format(getTimeZoneForMoment())
+      }
     }
   },
   created() {
