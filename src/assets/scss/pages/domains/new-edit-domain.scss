@@ -16,6 +16,13 @@
     color: #00bcd4;
     border: 1px solid #00bcd4;
   }
+  .actions-container{
+    .cell {
+      .btn-hover.ml-1{
+        margin-left: 0 !important;
+      }
+    }
+  }
 }
 .name-value-container {
   max-width: 554px;
