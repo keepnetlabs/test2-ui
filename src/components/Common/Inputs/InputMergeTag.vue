@@ -108,7 +108,6 @@ export default {
     return {
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-
         (v) =>
           Validations.maxLength(
             v,

@@ -160,6 +160,7 @@
                         height="160"
                         hint="SMS supports the GSM-7 character set and can contain up to 160 characters"
                         required
+                        :maxLength="160"
                         :mergeTags="mergeTags"
                         :initialRules="textMessageRules"
                       />
@@ -287,7 +288,15 @@ export default {
       },
       textMessageRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.maxLength(v, 160, 'SMS cannot exceed 160 characters')
+        (v) => {
+          if (!v) return true
+          const matches = v.match(/{(.*?)}/gi)
+          const mergeTagsCharacterLength =
+            matches?.reduce((acc, match) => acc + match.length, 0) || 0
+          if (v.length - mergeTagsCharacterLength > 160)
+            return `SMS supports the GSM-7 character set and can contain up to 160 characters excluding the merge tags.`
+          return true
+        }
       ],
       editItemsDisabled: false,
       methodItems: [
