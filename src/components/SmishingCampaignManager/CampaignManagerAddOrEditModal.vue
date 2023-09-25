@@ -262,8 +262,10 @@ export default {
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const scheduleTypeId = refCampaignManagerDeliverySettings.formData.scheduleTypeId
-        let selectedSchedule = refCampaignManagerDeliverySettings?.formData?.scheduledDate || ''
+        const scheduleTypeId =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId
+        let selectedSchedule =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === '1') selectedSchedule = 'Now'
         else if (scheduleTypeId === '2') selectedSchedule = 'Later'
         formData.userCountDetailResponse = this.userCountDetailResponse
@@ -489,11 +491,15 @@ export default {
           this.changeStep()
           return
         case 5:
-          const {
+          let {
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
-            refCampaignManagerDeliverySettings: { formData: deliverySettingsFormData }
+            refCampaignManagerDeliverySettings: {
+              formData: deliverySettingsFormData,
+              inputScheduleFormData
+            }
           } = this.$refs
+          deliverySettingsFormData = { ...deliverySettingsFormData, ...inputScheduleFormData }
           const payload = {
             smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId
