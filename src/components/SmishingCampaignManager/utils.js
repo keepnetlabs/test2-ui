@@ -271,3 +271,7 @@ export const DISTRIBUTION_TYPES = {
   PHISHING: '1',
   SMISHING: '3'
 }
+export const DISTRIBUTION_START_TYPES = {
+  NOW: 1,
+  SCHEDULED: 2
+}

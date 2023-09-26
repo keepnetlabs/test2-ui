@@ -87,8 +87,10 @@
       ref="inputSchedule"
     />
     <InputDistribution
+      v-if="isSelectedEmailDeliveryIsSmtp"
       v-model="inputDistributionFormData"
       :distribution-delay-time-items="getDistributionDelayTimeItems"
+      :selected-time-zone-text="selectedTimeZoneText"
       @call-for-calculate-sending-info="callForCalculateSendingInfo"
     />
     <div
@@ -118,7 +120,11 @@ import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSetti
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
-import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
+import {
+  DISTRIBUTION_START_TYPES,
+  DISTRIBUTION_TYPES
+} from '@/components/SmishingCampaignManager/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
@@ -162,6 +168,7 @@ export default {
   },
   data() {
     return {
+      selectedTimeZoneText: '',
       labels,
       isTestingConnection: false,
       isShowSmtpErrorDialog: false,
@@ -187,7 +194,12 @@ export default {
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
         distributionDelayTimeTypeId: '1',
-        sendingLimit: 50
+        sendingLimit: 50,
+        sendCallsOnDays: [1, 2, 4, 8, 16],
+        distributionStartTime: '09:00',
+        distributionEndTime: '17:00',
+        distributionDays: 31,
+        distributionStartTypeId: DISTRIBUTION_START_TYPES.NOW
       },
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
@@ -210,6 +222,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      timeZones: 'common/getTimezones'
+    }),
     getDistributionDelayTimeItems() {
       return this.formDetails['distributionSmtpDelayTimeTypes'] || []
     },
@@ -324,13 +339,35 @@ export default {
             'distributionDelayEvery',
             'distributionEmailOverTimeTypeId',
             'distributionEmailOver',
-            'distributionDelayTimeTypeId'
+            'distributionDelayTimeTypeId',
+            'distributionStartTime',
+            'distributionEndTime',
+            'sendCallsOnDays',
+            'distributionDays',
+            'distributionStartTypeId'
           ].includes(key)
         ) {
           this.inputDistributionFormData[key] = val[key]
         } else {
           this.formData[key] = val[key]
         }
+      }
+    },
+    'inputScheduleFormData.scheduledDateTimeZoneId': {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.selectedTimeZoneText =
+            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+        }
+      }
+    },
+    'inputDistributionFormData.sendCallsOnDays': {
+      deep: true,
+      handler(val) {
+        this.inputDistributionFormData.distributionDays = val.reduce((acc, val) => {
+          return acc + val
+        }, 0)
       }
     },
     totalTargetUserCount() {
@@ -415,7 +452,10 @@ export default {
           sendRandomlyUsersCount: this.userTargetAudienceData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.userTargetAudienceData
             .sendRandomlyUsersCalculateTypeId,
-          totalTargetUserCount: this.totalTargetUserCount
+          totalTargetUserCount: this.totalTargetUserCount,
+          distributionDays: this.inputDistributionFormData.distributionDays,
+          distributionStartTime: this.inputDistributionFormData.distributionStartTime,
+          distributionEndTime: this.inputDistributionFormData.distributionEndTime
         }
         if (payload.distributionDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
@@ -509,6 +549,16 @@ export default {
     validateForm() {
       let isValid =
         this.$refs.refForm.validate() && (this?.$refs?.inputSchedule?.validateInput() ?? true)
+      if (
+        this.inputDistributionFormData.distributionStartTypeId ===
+        DISTRIBUTION_START_TYPES.SCHEDULED
+      ) {
+        isValid =
+          isValid &&
+          this.inputDistributionFormData.distributionStartTime &&
+          this.inputDistributionFormData.distributionEndTime &&
+          this.inputDistributionFormData.distributionDays
+      }
       if (!isValid) {
         this.$nextTick(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')

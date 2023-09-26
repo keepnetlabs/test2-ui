@@ -170,6 +170,7 @@ import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
+import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -268,11 +269,7 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
         else {
-          selectedSchedule =
-            Date.now() >
-            new Date(refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate)
-              ? labels.Now
-              : selectedSchedule
+          selectedSchedule = `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
         }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
@@ -286,7 +283,8 @@ export default {
         formData.sendRandomlyUsersCalculateTypeId =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCalculateTypeId
         formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
-        formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
+        formData.sendingLimit =
+          refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
@@ -338,7 +336,11 @@ export default {
         smsProvider,
         scheduleTypeId,
         scheduledDate,
-        scheduledDateTimeZoneId
+        scheduledDateTimeZoneId,
+        distributionDays,
+        distributionStartTime,
+        distributionEndTime,
+        distributionStartTypeId
       } = this.selectedRowFormData
       distributionTypeId = 3
       return {
@@ -353,7 +355,12 @@ export default {
         smsProviderNumberResourceId: smsProvider.value,
         scheduledDate,
         scheduledDateTimeZoneId,
-        scheduleTypeId: scheduleTypeId.toString()
+        scheduleTypeId: scheduleTypeId.toString(),
+        distributionDays,
+        distributionStartTime,
+        distributionEndTime,
+        distributionStartTypeId,
+        sendCallsOnDays: getSendCallOnDays(distributionDays)
       }
     },
     getUserTargetAudienceData() {
@@ -503,7 +510,7 @@ export default {
           return
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
-          if (!refCampaignManagerDeliverySettings?.$refs?.refForm?.validate()) return
+          if (!refCampaignManagerDeliverySettings?.validateForm()) return
           this.changeStep()
           return
         case 5:
@@ -540,6 +547,10 @@ export default {
             distributionDelayTimeTypeId: parseInt(
               deliverySettingsFormData.distributionDelayTimeTypeId
             ),
+            distributionStartTime: deliverySettingsFormData.distributionStartTime,
+            distributionEndTime: deliverySettingsFormData.distributionEndTime,
+            distributionDays: deliverySettingsFormData.distributionDays,
+            distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
