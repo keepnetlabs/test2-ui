@@ -144,7 +144,7 @@ export default {
             align: 'left',
             editable: false,
             label: 'Last Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -194,7 +194,7 @@ export default {
           {
             property: 'status',
             align: 'center',
-            fixed: 'right',
+            fixed: false,
             editable: false,
             label: 'Status',
             sortable: true,

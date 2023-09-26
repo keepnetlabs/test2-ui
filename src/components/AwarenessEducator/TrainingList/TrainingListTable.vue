@@ -133,7 +133,8 @@ export default {
           COLUMNS.LANGUAGES,
           COLUMNS.TYPE,
           COLUMNS.CREATED_BY,
-          COLUMNS.TAGS
+          COLUMNS.TAGS,
+          COLUMNS.CREATE_TIME
         ],
         iEmpty: {
           btn: labels.CreateNewTraining,

@@ -18,8 +18,11 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :isLoading="isLoading"
           :training-name="getTrainingName"
           :form-details="formDetails"
+          :trainingSummary="trainingSummary"
+          :isScormProxy="isScormProxy"
         />
       </el-tab-pane>
     </el-tabs>
@@ -44,6 +47,7 @@ export default {
   components: { KContainer },
   data() {
     return {
+      trainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -123,12 +127,30 @@ export default {
     },
     getTrainingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Training Name'
+    },
+    isScormProxy() {
+      return this.trainingSummary?.isScormProxy || false
     }
   },
   created() {
     this.callForFormDetails()
+    this.callForSummary()
   },
   methods: {
+    callForSummary() {
+      this.isLoading = true
+      AwarenessEducatorService.getTrainingReportSummary(this.id)
+        .then((response) => {
+          this.trainingSummary = response?.data?.data
+          this.$store.dispatch(
+            'common/setActivePageRouterName',
+            this.trainingSummary?.trainingDetails?.name || ''
+          )
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     callForFormDetails() {
       AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
         this.formDetails = response?.data?.data

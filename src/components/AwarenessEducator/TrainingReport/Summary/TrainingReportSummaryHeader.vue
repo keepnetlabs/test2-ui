@@ -17,8 +17,8 @@
         Summary of this training enrollment
       </div>
     </div>
-    <div v-if="false" class="training-report-summary-header__right">
-      <v-btn
+    <div class="training-report-summary-header__right">
+      <!-- <v-btn
         class="training-report-summary-header__btn-download-report"
         rounded
         outlined
@@ -27,7 +27,9 @@
         @click="handleDownloadReport"
         >{{ labels.DownloadReport }}</v-btn
       >
+      -->
       <v-btn
+        v-if="!isLoading && !isScormProxy"
         class="training-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"
@@ -41,6 +43,8 @@
 <script>
 import labels from '@/model/constants/labels'
 import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryResendDialog'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'TrainingReportSummaryHeader',
   components: { TrainingReportSummaryResendDialog },
@@ -53,6 +57,12 @@ export default {
     },
     id: {
       type: String
+    },
+    isLoading: {
+      type: Boolean
+    },
+    isScormProxy: {
+      type: Boolean
     }
   },
   data() {
@@ -67,8 +77,40 @@ export default {
     toggleShowResendDialog() {
       this.isShowResendDialog = !this.isShowResendDialog
     },
-    handleOnConfirmResend(types) {},
-    handleDownloadReport() {}
+    handleOnConfirmResend(types) {
+      this.isActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingToUsers({ resendTypes: types }, this.id).finally(
+        () => {
+          this.isActionButtonDisabled = false
+          this.toggleShowResendDialog()
+        }
+      )
+    },
+    handleDownloadReport() {
+      this.isDownloadReportDisabled = true
+      AwarenessEducatorService.exportTrainingReport(this.id)
+        .then((response) => {
+          const { data } = response
+          if (response.status === 200) {
+            const blob = new Blob([data])
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = `Training-Report.xlsx`
+            link.click()
+          } else if (response.status === 201) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Training report will be generated',
+              ...COMMON_SNACKBAR
+            })
+          } else if (response.status === 202) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Training report is being generated',
+              ...COMMON_SNACKBAR
+            })
+          }
+        })
+        .finally(() => (this.isDownloadReportDisabled = false))
+    }
   }
 }
 </script>

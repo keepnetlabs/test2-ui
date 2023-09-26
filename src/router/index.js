@@ -226,7 +226,7 @@ const router = new Router({
               meta: {
                 isAuthenticated: true,
                 parentName: 'Enrollments',
-                permissionStoreKey: 'permissions/getAuditLogSearchPermission'
+                permissionStoreKey: 'permissions/getTrainingReportsSearchPermissions'
               },
               props: true,
               params: true,

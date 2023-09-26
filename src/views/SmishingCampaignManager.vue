@@ -191,6 +191,19 @@ export default {
       next()
     }
   },
+  watch: {
+    '$route.query': {
+      handler: function (val) {
+        if (val?.status === 'parent') {
+          this.selectedParentItem = null
+          this.isItemTableShowing = false
+          this.$router.replace('/smishing-simulator/campaign-manager')
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
     callForScenarioDetails() {
       SmishingService.getSmishingScenarioFormDetails().then((response) => {

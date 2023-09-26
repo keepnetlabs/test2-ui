@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader
       class="mb-6"
@@ -125,6 +125,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
+
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -144,20 +145,23 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    isScormProxy: {
+      type: Boolean
     }
   },
   data() {
     return {
-      selectedRow: null,
       isShowResendDialog: false,
-      isShowInteractionsModal: false,
+      resendPayload: null,
       isResendActionButtonDisabled: false,
+      selectedRow: null,
+      isShowInteractionsModal: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
-      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -297,16 +301,16 @@ export default {
           message: labels.EmptyTrainingReportUsers
         },
         rowActions: [
-          // {
-          //   name: labels.Resend,
-          //   id: 'btn-interactions--row-actions-training-report-users',
-          //   icon: '$custom-resend',
-          //   action: 'on-resend'
-          //   // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
-          // },
+          {
+            name: `Resend Training`,
+            id: 'btn-interactions--row-actions-training-report-sending-report',
+            icon: '$custom-resend',
+            action: 'on-resend'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+          },
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-details',
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
@@ -391,7 +395,45 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    isScormProxy: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          const resendActionIndex = this.tableOptions.rowActions.findIndex(
+            (action) => action.name === 'Resend Training'
+          )
+          if (resendActionIndex !== -1) {
+            this.tableOptions.rowActions.splice(resendActionIndex, 1)
+          }
+        }
+      }
+    }
+  },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     getEventReason(event = {}) {
       const { reason, event: eventName } = event
       if (reason) return reason
@@ -466,16 +508,6 @@ export default {
         .finally(() => {
           this.extendedViewLoading = false
         })
-    },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      this.resendPayload = {
-        Types: [2],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {

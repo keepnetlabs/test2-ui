@@ -5,7 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       @on-close="toggleIsShowResendDialog"
-      @on-confirm="confirmResend"
+      @on-confirm="resendItem"
     />
     <TrainingReportExamResultsDetails
       v-if="isShowDetailsModal"
@@ -63,6 +63,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import TrainingReportExamResultsDetails from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResultsDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'TrainingReportExamResults',
   components: {
@@ -78,20 +79,23 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    isScormProxy: {
+      type: Boolean
     }
   },
   data() {
     return {
-      selectedRow: null,
       isShowResendDialog: false,
-      isShowDetailsModal: false,
+      resendPayload: null,
       isResendActionButtonDisabled: false,
+      selectedRow: null,
+      isShowDetailsModal: false,
       CONSTANTS: {
         id: 'training-report-exam-results-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
-      resendPayload: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -199,19 +203,16 @@ export default {
           message: labels.EmptyTrainingReportExamResults
         },
         rowActions: [
-          /*
           {
-            name: labels.Resend,
-            id: 'btn-interactions--row-actions-training-report-users',
+            name: `Resend Training`,
+            id: 'btn-interactions--row-actions-training-report-exam-results',
             icon: '$custom-resend',
             action: 'on-resend'
             // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
-
-           */
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: 'btn-interactions--row-actions-training-report-exam-results',
             icon: '$custom-details',
             action: 'on-details'
             // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
@@ -224,7 +225,45 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    isScormProxy: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          const resendActionIndex = this.tableOptions.rowActions.findIndex(
+            (action) => action.name === 'Resend Training'
+          )
+          if (resendActionIndex !== -1) {
+            this.tableOptions.rowActions.splice(resendActionIndex, 1)
+          }
+        }
+      }
+    }
+  },
   methods: {
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      AwarenessEducatorService.resendTrainingToExamResultList(this.resendPayload, this.id)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
+    },
     getStatusBadgeProps(status) {
       if (status === 'Failed')
         return {
@@ -281,16 +320,6 @@ export default {
     handleOnDetail(row) {
       this.selectedRow = row
       this.toggleIsShowDetailsModal()
-    },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      this.resendPayload = {
-        Types: [2],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.toggleIsShowResendDialog()
     },
     confirmResend() {},
     toggleIsShowResendDialog() {
