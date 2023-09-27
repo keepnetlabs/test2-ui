@@ -111,6 +111,15 @@ export default {
       this.setLoading(true)
       LDAPService.getLDAPSettingDetailForMyCompany()
         .then((response) => {
+          if (
+            response?.data?.message === 'LDAP Setting not found' &&
+            response?.data?.status === 'SUCCESS'
+          ) {
+            this.isNotConfiguredYet = true
+            this.isFieldMappingDisabled = true
+            if (this.tab === 'field-mapping') this.tab = 'settings'
+            return
+          }
           const {
             data: { data }
           } = response
@@ -126,14 +135,6 @@ export default {
           delete data['fieldMappings']
           delete data['name']
           this.initialFormData = data
-        })
-        .catch((e) => {
-          const { response } = e
-          if (response?.status === 404) {
-            this.isNotConfiguredYet = true
-            this.isFieldMappingDisabled = true
-            if (this.tab === 'field-mapping') this.tab = 'settings'
-          }
         })
         .finally(this.setLoading)
     },
