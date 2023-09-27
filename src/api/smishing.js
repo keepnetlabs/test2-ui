@@ -304,6 +304,10 @@ function calculateSendingInfo(payload) {
   return testRequest.post(`/smishing-simulator/smishing-campaign/calculate-sending-info`, payload)
 }
 
+function calculateScheduleInfo(payload) {
+  return testRequest.post(`/smishing-simulator/smishing-campaign/calculate-schedule-info`, payload)
+}
+
 function getDnsServiceList(payload) {
   return testRequest.post(`smishing-simulator/dns-services/search`, payload)
 }
@@ -450,6 +454,7 @@ export default {
   getSmishingCampaignLandingPageTemplatePreviewContent,
   getSmishingCampaignTextMessageTemplatePreviewContent,
   calculateSendingInfo,
+  calculateScheduleInfo,
   getDnsServiceList,
   createDnsServiceList,
   testConnection,
