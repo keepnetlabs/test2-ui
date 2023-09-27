@@ -10,6 +10,7 @@
       :phishing-scenarios="getPhishingScenarios"
       :scheduled-date-time-zone-id="getScheduledDateTimeZoneId"
       :scheduled-date="getScheduledDate"
+      :items="getScheduledDialogItems"
       @on-close="toggleScheduleDialog"
     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
@@ -286,6 +287,9 @@ export default {
     }
   },
   computed: {
+    getScheduledDialogItems() {
+      return this?.formData?.scheduleItems || []
+    },
     getSelectedFrequency() {
       return this?.formData?.frequency || ''
     },

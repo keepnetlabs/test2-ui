@@ -8,6 +8,21 @@
       :value="formData.phoneNumber"
       @input="handlePhoneNumberChange"
     />
+    <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub" has-hint>
+      <KSelect
+        v-model.trim="formData.frequency"
+        id="input--sms-campaign-manager-advanced-settings-frequency"
+        dense
+        outlined
+        hint="*Required"
+        persistent-hint
+        placeholder="Select Option"
+        no-data-text="No frequency configuration available"
+        :rules="rules.frequency"
+        :items="frequencyItems"
+        :disabled="isEdit"
+      />
+    </FormGroup>
     <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
     <InputDistribution
       v-model="inputDistributionFormData"
@@ -32,7 +47,7 @@ import SmishingService from '@/api/smishing'
 import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
 import {
@@ -40,10 +55,14 @@ import {
   DISTRIBUTION_TYPES
 } from '@/components/SmishingCampaignManager/utils'
 import { mapGetters } from 'vuex'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
+    FormGroup,
+    KSelect,
     InputDistribution,
     InputSchedule,
     InputCallerPhoneNumber
@@ -99,6 +118,7 @@ export default {
       phoneNumbers: [],
       phoneNumberItems: [],
       formData: {
+        frequency: 0,
         phoneNumber: '',
         smsProviderNumberResourceId: ''
       },
@@ -118,10 +138,14 @@ export default {
         distributionDays: 31,
         distributionStartTypeId: DISTRIBUTION_START_TYPES.NOW
       },
+      frequencyItems,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
         rules: [(v) => Validations.required(v, labels.Required)]
+      },
+      rules: {
+        frequency: [(v) => v >= 0 || labels.Required]
       }
     }
   },

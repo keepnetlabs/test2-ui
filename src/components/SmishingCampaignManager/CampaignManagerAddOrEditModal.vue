@@ -125,6 +125,7 @@
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
+              :show-schedule="showSchedule"
             />
           </v-stepper-content>
         </v-stepper-items>
@@ -222,10 +223,22 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
-      defaultTargetGroupResourceIds: []
+      defaultTargetGroupResourceIds: [],
+      scheduleInfoResponse: {}
     }
   },
   computed: {
+    showSchedule() {
+      if (this.step === 5) {
+        const { refCampaignManagerDeliverySettings } = this.$refs
+        return (
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId !==
+            SCHEDULE_TYPES.SAVE_FOR_LATER &&
+          refCampaignManagerDeliverySettings?.formData?.frequency !== 0
+        )
+      }
+      return false
+    },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(
@@ -286,9 +299,19 @@ export default {
         formData.sendingLimit =
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
+        formData.scheduledDateTimeZoneId =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId
+        formData.scheduledDate =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
+        formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
+          (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
+        )?.text
+        formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
+        formData.scheduleItems = this.scheduleInfoResponse
       }
       return formData
     },
@@ -340,7 +363,8 @@ export default {
         distributionDays,
         distributionStartTime,
         distributionEndTime,
-        distributionStartTypeId
+        distributionStartTypeId,
+        frequency
       } = this.selectedRowFormData
       distributionTypeId = 3
       return {
@@ -357,10 +381,11 @@ export default {
         scheduledDateTimeZoneId,
         scheduleTypeId: scheduleTypeId.toString(),
         distributionDays,
-        distributionStartTime,
-        distributionEndTime,
+        distributionStartTime: distributionStartTime || '09:00',
+        distributionEndTime: distributionEndTime || '17:00',
         distributionStartTypeId,
-        sendCallsOnDays: getSendCallOnDays(distributionDays)
+        sendCallsOnDays: getSendCallOnDays(distributionDays),
+        frequency
       }
     },
     getUserTargetAudienceData() {
@@ -511,7 +536,30 @@ export default {
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
-          this.changeStep()
+          if (refCampaignManagerDeliverySettings?.formData?.frequency === 0) {
+            this.changeStep()
+            return
+          }
+          try {
+            this.setActionButtonDisability(true)
+            const response = await SmishingService.calculateScheduleInfo({
+              scheduleTypeId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
+              scheduledDate:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
+              scheduledDateTimeZoneId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
+              frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
+              smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              )
+            })
+            this.setActionButtonDisability(false)
+            this.scheduleInfoResponse = response?.data?.data
+            this.changeStep()
+          } catch (e) {
+            this.setActionButtonDisability(false)
+          }
           return
         case 5:
           let {
@@ -552,6 +600,7 @@ export default {
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
+            frequency: deliverySettingsFormData.frequency,
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: parseInt(targetAudienceFormData.sendRandomlyUsersCount),

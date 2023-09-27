@@ -166,6 +166,7 @@ import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
   createCampaignManager,
+  getCalculatedScheduleInfo,
   getCampaignManager,
   updateCampaignManager
 } from '@/api/phishingsimulator'
@@ -179,6 +180,7 @@ import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAu
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
+
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -229,7 +231,8 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
-      defaultTargetGroupResourceIds: []
+      defaultTargetGroupResourceIds: [],
+      scheduleInfoResponse: {}
     }
   },
   computed: {
@@ -315,6 +318,7 @@ export default {
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
+        formData.scheduleItems = this.scheduleInfoResponse
       }
       return formData
     },
@@ -541,11 +545,37 @@ export default {
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
+          try {
+            if (refCampaignManagerDeliverySettings?.formData?.frequency !== 0) {
+              this.setActionButtonDisability(true)
+              const response = await getCalculatedScheduleInfo({
+                scheduleTypeId:
+                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
+                scheduledDate:
+                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
+                scheduledDateTimeZoneId:
+                  refCampaignManagerDeliverySettings?.inputScheduleFormData
+                    ?.scheduledDateTimeZoneId,
+                frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
+                phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+                  (pScenario) => pScenario.resourceId
+                )
+              })
+              this.scheduleInfoResponse = response?.data?.data
+            }
+          } catch (e) {
+            this.setActionButtonDisability(false)
+            return
+          }
           if (
             refCampaignManagerDeliverySettings.emailDelivery.type ===
             EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-          )
-            return this.changeStep()
+          ) {
+            this.changeStep()
+            this.setActionButtonDisability(false)
+            return
+          }
+
           if (
             refCampaignManagerDeliverySettings &&
             refCampaignManagerDeliverySettings.testEmailErrorMessage &&
@@ -557,21 +587,20 @@ export default {
             !refCampaignManagerDeliverySettings.testEmailErrorMessage &&
             !refCampaignManagerDeliverySettings.isTestMailSend
           ) {
-            refCampaignManagerDeliverySettings
-              .callForTestConnection()
-              .then((response) => {
-                if (response) {
-                  this.step++
-                } else {
-                  refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
-                }
-              })
-              .catch(() => {
+            try {
+              const testResponse = await refCampaignManagerDeliverySettings.callForTestConnection()
+              if (testResponse) {
+                this.changeStep()
+              } else {
                 refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
-              })
+              }
+            } catch (e) {
+              refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
+            }
           } else {
             this.changeStep()
           }
+          this.setActionButtonDisability(false)
           return
         case 5:
           let {
