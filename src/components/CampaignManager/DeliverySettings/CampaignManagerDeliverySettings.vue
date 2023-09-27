@@ -86,58 +86,13 @@
       v-model="inputScheduleFormData"
       ref="inputSchedule"
     />
-    <FormGroup
+    <InputDistribution
       v-if="isSelectedEmailDeliveryIsSmtp"
-      class="mt-6"
-      :title="labels.Distribution"
-      :sub-title="labels.DistributionSub"
-    >
-      <div class="campaign-manager-advanced-settings__distribution-item">
-        <label for="input--campaign-manager-advanced-settings-time">Sending limit per batch</label>
-        <VTextField
-          v-model="formData.sendingLimit"
-          v-mask="'###########'"
-          id="input--campaign-manager-advanced-settings-sending-limit"
-          class="ml-6"
-          outlined
-          hide-details
-          placeholder="Enter number"
-          style="max-width: 116px;"
-          :rules="rules.number"
-          @input="callForCalculateSendingInfo"
-        />
-      </div>
-      <div class="campaign-manager-advanced-settings__distribution-item gap-2 mt-3">
-        <label for="input--campaign-manager-advanced-settings-time"
-          >Send emails with delay every
-        </label>
-        <v-text-field
-          v-model="formData.distributionDelayEvery"
-          v-mask="'###'"
-          id="input--campaign-manager-advanced-settings-time"
-          outlined
-          class="edit-name-textfield edit-select standard-height"
-          hide-details
-          style="max-width: 48px;"
-          :disabled="!distributionEmailOverTimeDisableStatus"
-          :rules="rules.number"
-          @input="callForCalculateSendingInfo"
-        ></v-text-field>
-        <KSelect
-          v-model.trim="formData.distributionDelayTimeTypeId"
-          id="input--campaign-manager-advanced-settings-time-type"
-          outlined
-          dense
-          hide-details
-          placeholder="Select a item"
-          style="max-width: 118px;"
-          :items="formDetails['distributionSmtpDelayTimeTypes']"
-          :disabled="!distributionEmailOverTimeDisableStatus"
-          @change="callForCalculateSendingInfo"
-        />
-        <label for="input--campaign-manager-advanced-settings-time">between batches</label>
-      </div>
-    </FormGroup>
+      v-model="inputDistributionFormData"
+      :distribution-delay-time-items="getDistributionDelayTimeItems"
+      :selected-time-zone-text="selectedTimeZoneText"
+      @call-for-calculate-sending-info="callForCalculateSendingInfo"
+    />
     <div
       v-if="getDistributionTextRenderStatus"
       class="campaign-manager-advanced-settings__distribution-text mt-6"
@@ -164,9 +119,16 @@ import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
+import InputDistribution from '@/components/Common/Inputs/InputDistribution'
+import {
+  DISTRIBUTION_START_TYPES,
+  DISTRIBUTION_TYPES
+} from '@/components/SmishingCampaignManager/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
+    InputDistribution,
     InputSchedule,
     CampaignManagerSmtpErrorDialog,
     KSelect,
@@ -206,6 +168,7 @@ export default {
   },
   data() {
     return {
+      selectedTimeZoneText: '',
       labels,
       isTestingConnection: false,
       isShowSmtpErrorDialog: false,
@@ -223,13 +186,20 @@ export default {
         frequency: 0,
         smtpSettingResourceId: '',
         directEmailSettingResourceId: '',
-        emailDeliverySettingType: '',
-        distributionTypeId: '1',
+        emailDeliverySettingType: ''
+      },
+      inputDistributionFormData: {
+        distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
         distributionDelayEvery: 20,
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
         distributionDelayTimeTypeId: '1',
-        sendingLimit: 50
+        sendingLimit: 50,
+        sendCallsOnDays: [1, 2, 4, 8, 16],
+        distributionStartTime: '09:00',
+        distributionEndTime: '17:00',
+        distributionDays: 31,
+        distributionStartTypeId: DISTRIBUTION_START_TYPES.NOW
       },
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
@@ -252,6 +222,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      timeZones: 'common/getTimezones'
+    }),
+    getDistributionDelayTimeItems() {
+      return this.formDetails['distributionSmtpDelayTimeTypes'] || []
+    },
     isSelectedEmailDeliveryIsSmtp() {
       if (!this.emailDelivery) return false
       return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
@@ -259,15 +235,12 @@ export default {
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
-    distributionEmailOverTimeDisableStatus() {
-      return this.formData.distributionTypeId === '1'
-    },
     getDistributionText() {
       if (this.totalTargetUserCount === 1)
         return `Sending an email will start immediately for a single user.`
-      return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
-        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
+      return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
+        ? `Sending ${this.inputDistributionFormData.sendingLimit} emails every ${this.inputDistributionFormData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
+        : `Sending  ${this.inputDistributionFormData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
     },
     getEmailOverMinutes() {
       let seconds = this.batchEverySendSecond
@@ -289,15 +262,17 @@ export default {
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionSmtpDelayTimeTypes']
         ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
-            (item) => item.value === this.formData.distributionDelayTimeTypeId
+            (item) => item.value === this.inputDistributionFormData.distributionDelayTimeTypeId
           )?.text
         : ''
     },
     getDistributionTextRenderStatus() {
       if (!this.isSelectedEmailDeliveryIsSmtp) return
-      return this.formData.distributionTypeId === '1'
-        ? this.formData.sendingLimit && this.formData.distributionDelayEvery
-        : this.formData.sendingLimit && this.formData.distributionEmailOver
+      return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
+        ? this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionDelayEvery
+        : this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionEmailOver
     },
     getApproximatedTime() {
       let seconds = this.totalSendSecond
@@ -354,12 +329,45 @@ export default {
             type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
           }
         } else if (key === 'distributionTypeId') {
-          this.formData.distributionTypeId = '1'
+          this.inputDistributionFormData.distributionTypeId = DISTRIBUTION_TYPES.PHISHING
         } else if (['scheduleTypeId', 'scheduledDate', 'scheduledDateTimeZoneId'].includes(key)) {
           this.inputScheduleFormData[key] = val[key]
+        } else if (
+          [
+            'sendingLimit',
+            'distributionTypeId',
+            'distributionDelayEvery',
+            'distributionEmailOverTimeTypeId',
+            'distributionEmailOver',
+            'distributionDelayTimeTypeId',
+            'distributionStartTime',
+            'distributionEndTime',
+            'sendCallsOnDays',
+            'distributionDays',
+            'distributionStartTypeId'
+          ].includes(key)
+        ) {
+          this.inputDistributionFormData[key] = val[key]
         } else {
           this.formData[key] = val[key]
         }
+      }
+    },
+    'inputScheduleFormData.scheduledDateTimeZoneId': {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.selectedTimeZoneText =
+            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+        }
+      }
+    },
+    'inputDistributionFormData.sendCallsOnDays': {
+      deep: true,
+      handler(val) {
+        this.inputDistributionFormData.distributionDays = val.reduce((acc, val) => {
+          return acc + val
+        }, 0)
       }
     },
     totalTargetUserCount() {
@@ -428,22 +436,26 @@ export default {
         this.totalTargetUserCount === 1
       )
         return
-      if (!this.formData.distributionDelayEvery) return
+      if (!this.inputDistributionFormData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
           targetGroupResourceIds: this.targetGroupResourceIds,
-          distributionTypeId: this.formData.distributionTypeId,
-          distributionDelayEvery: this.formData.distributionDelayEvery,
-          distributionDelayTimeTypeId: this.formData.distributionDelayTimeTypeId,
-          distributionEmailOver: this.formData.distributionEmailOver,
-          distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
-          sendingLimit: this.formData.sendingLimit,
+          distributionTypeId: this.inputDistributionFormData.distributionTypeId,
+          distributionDelayEvery: this.inputDistributionFormData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.inputDistributionFormData.distributionDelayTimeTypeId,
+          distributionEmailOver: this.inputDistributionFormData.distributionEmailOver,
+          distributionEmailOverTimeTypeId: this.inputDistributionFormData
+            .distributionEmailOverTimeTypeId,
+          sendingLimit: this.inputDistributionFormData.sendingLimit,
           sendOnlyActiveUsers: this.userTargetAudienceData.sendOnlyActiveUsers,
           sendRandomlyUsers: this.userTargetAudienceData.sendRandomlyUsers,
           sendRandomlyUsersCount: this.userTargetAudienceData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: this.userTargetAudienceData
             .sendRandomlyUsersCalculateTypeId,
-          totalTargetUserCount: this.totalTargetUserCount
+          totalTargetUserCount: this.totalTargetUserCount,
+          distributionDays: this.inputDistributionFormData.distributionDays,
+          distributionStartTime: this.inputDistributionFormData.distributionStartTime,
+          distributionEndTime: this.inputDistributionFormData.distributionEndTime
         }
         if (payload.distributionDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
@@ -537,6 +549,16 @@ export default {
     validateForm() {
       let isValid =
         this.$refs.refForm.validate() && (this?.$refs?.inputSchedule?.validateInput() ?? true)
+      if (
+        this.inputDistributionFormData.distributionStartTypeId ===
+        DISTRIBUTION_START_TYPES.SCHEDULED
+      ) {
+        isValid =
+          isValid &&
+          this.inputDistributionFormData.distributionStartTime &&
+          this.inputDistributionFormData.distributionEndTime &&
+          this.inputDistributionFormData.distributionDays
+      }
       if (!isValid) {
         this.$nextTick(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')

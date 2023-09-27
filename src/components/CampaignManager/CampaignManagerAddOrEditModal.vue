@@ -178,6 +178,7 @@ import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -286,11 +287,7 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
         else {
-          selectedSchedule =
-            Date.now() >
-            new Date(refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate)
-              ? labels.Now
-              : selectedSchedule
+          selectedSchedule = `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
         }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
@@ -303,7 +300,8 @@ export default {
         formData.sendRandomlyUsersCalculateTypeId =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCalculateTypeId
         formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
-        formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
+        formData.sendingLimit =
+          refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
         formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
@@ -369,7 +367,11 @@ export default {
         scheduleTypeId,
         scheduledDate,
         scheduledDateTimeZoneId,
-        frequency
+        frequency,
+        distributionDays,
+        distributionStartTime,
+        distributionEndTime,
+        distributionStartTypeId
       } = this.selectedRowFormData
       return {
         smtpSetting,
@@ -387,7 +389,12 @@ export default {
         scheduleTypeId: scheduleTypeId.toString(),
         scheduledDate,
         scheduledDateTimeZoneId,
-        frequency
+        frequency,
+        distributionDays,
+        distributionStartTime: distributionStartTime || '09:00',
+        distributionEndTime: distributionEndTime || '17:00',
+        distributionStartTypeId,
+        sendCallsOnDays: getSendCallOnDays(distributionDays)
       }
     },
     getUserTargetAudienceData() {
@@ -572,10 +579,15 @@ export default {
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
             refCampaignManagerDeliverySettings: {
               formData: deliverySettingsFormData,
-              inputScheduleFormData
+              inputScheduleFormData,
+              inputDistributionFormData
             }
           } = this.$refs
-          deliverySettingsFormData = { ...deliverySettingsFormData, ...inputScheduleFormData }
+          deliverySettingsFormData = {
+            ...deliverySettingsFormData,
+            ...inputScheduleFormData,
+            ...inputDistributionFormData
+          }
           const payload = {
             phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId
@@ -607,6 +619,10 @@ export default {
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
             frequency: deliverySettingsFormData.frequency,
+            distributionStartTime: deliverySettingsFormData.distributionStartTime,
+            distributionEndTime: deliverySettingsFormData.distributionEndTime,
+            distributionDays: deliverySettingsFormData.distributionDays,
+            distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
           }

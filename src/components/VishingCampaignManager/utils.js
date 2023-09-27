@@ -73,6 +73,36 @@ export const sendCallsOnDaysOptions = [
     value: 64
   }
 ]
+export const sendCallsOnDaysOptionsShort = [
+  {
+    text: 'Mon',
+    value: 1
+  },
+  {
+    text: 'Tue',
+    value: 2
+  },
+  {
+    text: 'Wed',
+    value: 4
+  },
+  {
+    text: 'Thu',
+    value: 8
+  },
+  {
+    text: 'Fri',
+    value: 16
+  },
+  {
+    text: 'Sat',
+    value: 32
+  },
+  {
+    text: 'Sun',
+    value: 64
+  }
+]
 
 export const recipientTypes = [
   {
