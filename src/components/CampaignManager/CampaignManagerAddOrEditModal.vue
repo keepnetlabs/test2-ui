@@ -290,7 +290,9 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
         else {
-          selectedSchedule = `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
+          selectedSchedule = this?.scheduleInfoResponse?.isStarting
+            ? labels.Now
+            : `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
         }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
@@ -318,7 +320,7 @@ export default {
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
-        formData.scheduleItems = this.scheduleInfoResponse
+        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
       }
       return formData
     },
