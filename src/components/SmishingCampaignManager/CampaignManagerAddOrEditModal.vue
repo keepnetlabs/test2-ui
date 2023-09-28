@@ -538,10 +538,6 @@ export default {
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
-          if (refCampaignManagerDeliverySettings?.formData?.frequency === 0) {
-            this.changeStep()
-            return
-          }
           try {
             this.setActionButtonDisability(true)
             const response = await SmishingService.calculateScheduleInfo({

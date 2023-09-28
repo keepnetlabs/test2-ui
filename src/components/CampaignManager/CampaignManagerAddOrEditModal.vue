@@ -548,23 +548,20 @@ export default {
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
           try {
-            if (refCampaignManagerDeliverySettings?.formData?.frequency !== 0) {
-              this.setActionButtonDisability(true)
-              const response = await getCalculatedScheduleInfo({
-                scheduleTypeId:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
-                scheduledDate:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
-                scheduledDateTimeZoneId:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData
-                    ?.scheduledDateTimeZoneId,
-                frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
-                phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-                  (pScenario) => pScenario.resourceId
-                )
-              })
-              this.scheduleInfoResponse = response?.data?.data
-            }
+            this.setActionButtonDisability(true)
+            const response = await getCalculatedScheduleInfo({
+              scheduleTypeId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
+              scheduledDate:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
+              scheduledDateTimeZoneId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
+              frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
+              phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              )
+            })
+            this.scheduleInfoResponse = response?.data?.data
           } catch (e) {
             this.setActionButtonDisability(false)
             return
@@ -577,7 +574,6 @@ export default {
             this.setActionButtonDisability(false)
             return
           }
-
           if (
             refCampaignManagerDeliverySettings &&
             refCampaignManagerDeliverySettings.testEmailErrorMessage &&
