@@ -163,6 +163,10 @@ export default {
     },
     resourceId: {
       type: String
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {

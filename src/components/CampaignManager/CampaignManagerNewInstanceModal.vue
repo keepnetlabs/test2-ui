@@ -37,73 +37,19 @@
         :is-valid="isTargetGroupsValid"
         :error-message="getTargetGroupErrorMessage"
       />
-      <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub" style="max-width: 600px;">
-        <v-radio-group
-          v-model="formValues.scheduleTypeId"
-          class="mt-0 campaign-manager-target-groups-radio"
-          hide-details
-        >
-          <v-radio
-            v-for="item in radioItems"
-            :key="item.text"
-            style="margin-bottom: 16px;"
-            color="#2196f3"
-            :id="`input--campaign-manager-radio-${item.text}`"
-            :value="item.value"
-            :label="item.text"
-          ></v-radio>
-          <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
-            <v-radio
-              :id="`input--campaign-manager-radio-schedule-to`"
-              style="margin-bottom: 0;"
-              label="Schedule to"
-              color="#2196f3"
-              value="3"
-            />
-            <div :class="[!isDateValid && 'date-picker-error mb-n3']">
-              <InputDate
-                v-model="formValues.scheduledDate"
-                class="date-picker-height-40 ml-2"
-                type="datetime"
-                ref="refPicker"
-                placeholder="Select Date Select Time"
-                style="width: 100%; max-width: 222px;"
-                :format="parsedFormat"
-                :valueFormat="parsedFormat"
-                :disabled="isScheduledTimeDisabled"
-                :picker-options="datePickerOptions"
-              />
-              <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                <transition appear name="bounce">
-                  <div class="v-messages theme--light error--text" role="alert">
-                    <div class="v-messages__wrapper">
-                      <div class="v-messages__message" style="padding-left: 10px;">
-                        Date is required
-                      </div>
-                    </div>
-                  </div>
-                </transition>
-              </div>
-            </div>
-
-            <KSelect
-              v-model.trim="formValues.scheduledDateTimeZoneId"
-              type="autocomplete"
-              id="input--campaign-manager-campaign-info-time-type"
-              class="ml-2"
-              style="max-width: 195px;"
-              outlined
-              dense
-              hide-details
-              placeholder="Select a item"
-              min-width-type="super"
-              nudge-width="200"
-              :items="scheduledTimeItems"
-              :disabled="isScheduledTimeDisabled"
-            />
-          </div>
-        </v-radio-group>
-      </FormGroup>
+      <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
+      <InputDistribution
+        v-model="inputDistributionFormData"
+        :distribution-delay-time-items="getDistributionDelayTimeItems"
+        :selected-time-zone-text="selectedTimeZoneText"
+        @call-for-calculate-sending-info="callForCalculateSendingInfo"
+      />
+      <div
+        v-if="getDistributionTextRenderStatus"
+        class="campaign-manager-advanced-settings__distribution-text mt-6"
+      >
+        {{ getDistributionText }}
+      </div>
       <FormGroup class="mt-6" :title="labels.MarkAsTest" style="max-width: 640px;">
         <div>
           <v-checkbox
@@ -124,16 +70,19 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
-import InputDate from '@/components/Common/Inputs/InputDate'
-import { searchTargetGroups } from '@/api/targetUsers'
-import { launchPhishingCampaign } from '@/api/phishingsimulator'
-import { mapGetters } from 'vuex'
-import { isDifferent, getTimeZone, getDefaultAxiosPayload } from '@/utils/functions'
-import * as validations from '@/utils/validations'
+import { getTargetGroupCountDetail, searchTargetGroups } from '@/api/targetUsers'
+import { calculateSendingInfo, launchPhishingCampaign } from '@/api/phishingsimulator'
+import { isDifferent, getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
+import InputDistribution from '@/components/Common/Inputs/InputDistribution'
+import InputSchedule from '@/components/Common/Inputs/InputSchedule'
+import {
+  DISTRIBUTION_START_TYPES,
+  DISTRIBUTION_TYPES
+} from '@/components/SmishingCampaignManager/utils'
+import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 
 const defaultFormValues = {
   targetGroupResourceIds: [],
@@ -149,13 +98,13 @@ const EMITS = {
 export default {
   name: 'CampaignManagerNewInstanceModal',
   components: {
+    InputSchedule,
+    InputDistribution,
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    KSelect,
     CampaignManagerTargetGroups,
-    CustomError,
-    InputDate
+    CustomError
   },
   mixins: [useDebounce],
   emits: EMITS,
@@ -165,14 +114,17 @@ export default {
     },
     resourceId: {
       type: String
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
     return {
-      parsedFormat: getTimeZone(false),
-      datePickerOptions: {
-        disabledDate: this.disabledEndDates
-      },
+      totalSendSecond: 77720,
+      batchEverySendSecond: 0,
+      totalTargetUserCount: 0,
       labels,
       initialFormValues: JSON.parse(JSON.stringify(defaultFormValues)),
       formValues: JSON.parse(JSON.stringify(defaultFormValues)),
@@ -186,28 +138,107 @@ export default {
       responseOfTargetGroupsItems: {},
       defaultTargetGroups: [],
       targetGroupItems: [],
-      radioItems: [
-        { text: 'Send now', value: '1' },
-        { text: 'Save for later', value: '2' }
-      ],
-      axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
-      rules: {
-        select: [
-          (v) => !!v.length || labels.Required,
-          (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
-        ],
-        days: [
-          (v) => validations.required(v, labels.Required),
-          (v) => validations.startsWith(v, 'Cannot start with 0', 0)
-        ]
-      }
+      selectedTimeZoneText: '',
+      inputDistributionFormData: {
+        distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
+        distributionDelayEvery: 20,
+        distributionEmailOverTimeTypeId: '1',
+        distributionEmailOver: 8,
+        distributionDelayTimeTypeId: '1',
+        sendingLimit: 50,
+        sendCallsOnDays: [1, 2, 4, 8, 16],
+        distributionStartTime: '09:00',
+        distributionEndTime: '17:00',
+        distributionDays: 31,
+        distributionStartTypeId: DISTRIBUTION_START_TYPES.NOW
+      },
+      inputScheduleFormData: {
+        scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
+        scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        scheduledDateTimeZoneId: ''
+      },
+      axiosPayloadOfTargetGroups: getDefaultAxiosPayload()
     }
   },
   computed: {
-    ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone',
-      timezoneFormat: 'auth/getTimezoneFormat'
-    }),
+    getDistributionTextRenderStatus() {
+      if (!this.totalTargetUserCount) return false
+      return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
+        ? this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionDelayEvery
+        : this.inputDistributionFormData.sendingLimit &&
+            this.inputDistributionFormData.distributionEmailOver
+    },
+    getDistributionText() {
+      if (this.totalTargetUserCount === 1)
+        return `Sending an email will start immediately for a single user.`
+      return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
+        ? `Sending ${this.inputDistributionFormData.sendingLimit} emails every ${this.inputDistributionFormData.distributionDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} to ${this.totalTargetUserCount} target users will take approximately ${this.getApproximatedTime}.`
+        : `Sending  ${this.inputDistributionFormData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}.`
+    },
+    getEmailOverMinutes() {
+      let seconds = this.batchEverySendSecond
+      seconds = seconds.toFixed()
+      if (seconds < 1) seconds = 1
+      let minutes = 0
+      if (seconds > 60) {
+        minutes = seconds % 60
+        seconds = seconds / 60
+      }
+      minutes = minutes.toString()
+      seconds = seconds.toString()
+      const singleDigitMinutes = `0${minutes}`
+      const singleDigitSeconds = `0${seconds}`
+      return `${minutes.length === 1 ? singleDigitMinutes : minutes}:${
+        seconds.length === 1 ? singleDigitSeconds : seconds
+      }`
+    },
+    getApproximatedTime() {
+      let seconds = this.totalSendSecond
+      let minutes = 0
+      let hours = 0
+      if (seconds > 60) {
+        minutes = Math.floor(seconds / 60)
+        seconds = seconds % 60
+      }
+      if (minutes > 60) {
+        hours = Math.floor(minutes / 60)
+        minutes = minutes % 60
+      }
+      seconds = Math.floor(seconds)
+      if (minutes === 0 && hours === 0 && seconds === 0) {
+        seconds = 1
+      }
+      const hoursText = hours > 1 ? 'hours' : 'hour'
+      const minutesText = minutes > 1 ? 'minutes' : 'minute'
+      const secondsText = seconds > 1 ? 'seconds' : 'second'
+      const leftSideHours = `${hours} ${hoursText} `
+      let leftSideText = '',
+        rightSideText = ''
+      if (hours !== 0) {
+        leftSideText = leftSideHours
+      }
+      if (minutes !== 0) {
+        leftSideText += `${minutes} ${minutesText} `
+      }
+
+      if (seconds !== 0) {
+        if (hours !== 0 || minutes !== 0) rightSideText = `and ${seconds} ${secondsText}`
+        else rightSideText = `${seconds} ${secondsText}`
+      }
+
+      return `${leftSideText}${rightSideText}`
+    },
+    getSelectedSmtpDelayOverTimeType() {
+      return this.formDetails['distributionSmtpDelayTimeTypes']
+        ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(
+            (item) => item.value === this.inputDistributionFormData.distributionDelayTimeTypeId
+          )?.text
+        : ''
+    },
+    getDistributionDelayTimeItems() {
+      return this.formDetails['distributionSmtpDelayTimeTypes'] || []
+    },
     getTargetGroupErrorMessage() {
       return this.formValues.targetGroupResourceIds.length
         ? this.getTargetGroupErrorText
@@ -215,9 +246,6 @@ export default {
     },
     getTargetGroupErrorText() {
       return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
-    },
-    isScheduledTimeDisabled() {
-      return this.formValues.scheduleTypeId !== '3'
     },
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
@@ -228,44 +256,35 @@ export default {
     }
   },
   watch: {
-    timezoneFormat: {
-      deep: true,
+    'formValues.targetGroupResourceIds'(val) {
+      this.isTargetGroupsValid = !!val.length
+      this.debounce(() => {
+        this.callForTargetGroupsUserCount()
+      }, 500)
+    },
+    'inputScheduleFormData.scheduledDateTimeZoneId': {
       immediate: true,
       handler(val) {
         if (val) {
-          this.parsedFormat = getTimeZone(false, val)
+          this.selectedTimeZoneText =
+            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
         }
       }
     },
-    selectedTimeZone(val) {
-      this.formValues.scheduledDateTimeZoneId = val
-    },
-    'formValues.scheduledDate'(val) {
-      let isDateValid
-      if (this.formValues) {
-        isDateValid = this.formValues.scheduleTypeId === '3' ? val && val.length > 0 : true
-      } else isDateValid = false
-      this.isDateValid = isDateValid
-    },
-    'formValues.scheduleTypeId'(val) {
-      if (val !== '3') {
-        this.isDateValid = true
+    'inputDistributionFormData.sendCallsOnDays': {
+      deep: true,
+      handler(val) {
+        this.inputDistributionFormData.distributionDays = val.reduce((acc, val) => {
+          return acc + val
+        }, 0)
       }
-    },
-    'formValues.targetGroupResourceIds'(val) {
-      this.isTargetGroupsValid = !!val.length
     }
   },
   created() {
     this.callForTargetGroups()
-    this.callForGetTimeZones()
-    this.getSelectedTimeZone()
     this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   methods: {
-    disabledEndDates(val) {
-      return new Date().setHours(0, 0, 0, 0) > val.getTime()
-    },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
@@ -334,7 +353,10 @@ export default {
       this.isTargetGroupLoading = val
     },
     handleSubmit() {
-      if (this.formValues.scheduleTypeId === '3' && !this.formValues.scheduledDate) {
+      if (
+        this.inputScheduleFormData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO &&
+        !this.inputScheduleFormData.scheduledDate
+      ) {
         this.isDateValid = false
       }
       if (!this.formValues.targetGroupResourceIds.length) {
@@ -344,9 +366,16 @@ export default {
         this.setActionButtonDisability(true)
         const payload = {
           ...this.formValues,
-          scheduleTypeId: parseInt(this.formValues.scheduleTypeId),
+          scheduledDateTimeZoneId: this.inputScheduleFormData.scheduledDateTimeZoneId,
+          scheduleTypeId: this.inputScheduleFormData.scheduleTypeId,
+          distributionStartTypeId: this.inputDistributionFormData.distributionStartTypeId,
+          distributionStartTime: this.inputDistributionFormData.distributionStartTime,
+          distributionEndTime: this.inputDistributionFormData.distributionEndTime,
+          distributionDays: this.inputDistributionFormData.distributionDays,
           scheduledDate:
-            parseInt(this.formValues.scheduleTypeId) !== 3 ? null : this.formValues.scheduledDate,
+            this.inputScheduleFormData.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO
+              ? null
+              : this.inputScheduleFormData.scheduledDate,
           targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(
             (target) => target.value
           )
@@ -361,20 +390,49 @@ export default {
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
     },
-    getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
-        this.formValues.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      } else {
-        this.$store.dispatch('common/callForSettings')
-      }
+    callForCalculateSendingInfo() {
+      if (!this.formValues.targetGroupResourceIds.length) return
+      if (!this.inputDistributionFormData.distributionDelayEvery) return
+      this.debounce(() => {
+        const payload = {
+          targetGroupResourceIds: this.formValues.targetGroupResourceIds,
+          distributionTypeId: this.inputDistributionFormData.distributionTypeId,
+          distributionDelayEvery: this.inputDistributionFormData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.inputDistributionFormData.distributionDelayTimeTypeId,
+          distributionEmailOver: this.inputDistributionFormData.distributionEmailOver,
+          distributionEmailOverTimeTypeId: this.inputDistributionFormData
+            .distributionEmailOverTimeTypeId,
+          sendingLimit: this.inputDistributionFormData.sendingLimit,
+          totalTargetUserCount: this.totalTargetUserCount,
+          distributionDays: this.inputDistributionFormData.distributionDays,
+          distributionStartTime: this.inputDistributionFormData.distributionStartTime,
+          distributionEndTime: this.inputDistributionFormData.distributionEndTime
+        }
+        if (payload.distributionDelayEvery) {
+          calculateSendingInfo(payload).then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalSendSecond, batchEverySendSecond } = data
+            this.totalSendSecond = totalSendSecond
+            this.batchEverySendSecond = batchEverySendSecond
+          })
+        }
+      }, 500)
     },
-    callForGetTimeZones() {
-      if (
-        this.$store?.getters['common/getTimezones'] &&
-        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
-      ) {
-        this.$store.dispatch('common/getTimezone')
+    async callForTargetGroupsUserCount() {
+      if (!this.formValues.targetGroupResourceIds.length) {
+        this.totalTargetUserCount = 0
+        return
+      }
+      const userCountDetailResponse = await getTargetGroupCountDetail(
+        this.formValues.targetGroupResourceIds.map((item) => item.value)
+      )
+      if (userCountDetailResponse?.data?.data && userCountDetailResponse?.data?.data?.length) {
+        this.totalTargetUserCount =
+          userCountDetailResponse?.data?.data
+            ?.find((detail) => detail.status === 'Active')
+            ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count || 0
       }
     }
   }
