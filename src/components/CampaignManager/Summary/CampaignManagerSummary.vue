@@ -436,9 +436,7 @@ export default {
       const obj = {
         Starting: selectedSchedule
       }
-      if (selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        obj['Sending Limit'] = sendingLimit
-      }
+      obj['Sending Limit'] = sendingLimit
       obj['Email Delivery'] = `${
         selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
       } - ${selectedEmailDelivery.name}`
