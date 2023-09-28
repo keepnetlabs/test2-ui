@@ -278,6 +278,10 @@ export default {
           return acc + val
         }, 0)
       }
+    },
+    totalTargetUserCount(val) {
+      if (!val) return
+      this.callForCalculateSendingInfo()
     }
   },
   created() {
@@ -391,7 +395,12 @@ export default {
       this.isActionButtonDisabled = flag
     },
     callForCalculateSendingInfo() {
-      if (!this.formValues.targetGroupResourceIds.length) return
+      if (
+        !this.formValues.targetGroupResourceIds.length ||
+        !this.totalTargetUserCount ||
+        this.totalTargetUserCount === 1
+      )
+        return
       if (!this.inputDistributionFormData.distributionDelayEvery) return
       this.debounce(() => {
         const payload = {
@@ -406,7 +415,10 @@ export default {
           totalTargetUserCount: this.totalTargetUserCount,
           distributionDays: this.inputDistributionFormData.distributionDays,
           distributionStartTime: this.inputDistributionFormData.distributionStartTime,
-          distributionEndTime: this.inputDistributionFormData.distributionEndTime
+          distributionEndTime: this.inputDistributionFormData.distributionEndTime,
+          sendRandomlyUsers: false,
+          sendRandomlyUsersCalculateTypeId: '1',
+          sendRandomlyUsersCount: '20'
         }
         if (payload.distributionDelayEvery) {
           calculateSendingInfo(payload).then((response) => {
