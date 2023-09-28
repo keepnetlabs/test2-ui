@@ -262,7 +262,6 @@ export default {
         : ''
     },
     getDistributionTextRenderStatus() {
-      //if (!this.isSelectedEmailDeliveryIsSmtp) return
       return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
         ? this.inputDistributionFormData.sendingLimit &&
             this.inputDistributionFormData.distributionDelayEvery

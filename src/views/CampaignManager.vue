@@ -40,6 +40,7 @@
       ref="refCampaignNewInstance"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
+      :form-details="formDetails"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />

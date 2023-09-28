@@ -105,7 +105,6 @@ export default {
       DISTRIBUTION_TYPES,
       isTestingConnection: false,
       isShowSmtpErrorDialog: false,
-      isUsersOnline: false,
       totalSendSecond: 77720,
       batchEverySendSecond: 0,
       isTestMailSend: false,
