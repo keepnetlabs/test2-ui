@@ -322,6 +322,7 @@ export const PROPERTY_STORE = {
 
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
+  SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTableSettings',
@@ -458,6 +459,7 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
+  SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSearchContainerKeys',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTable',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
   VISHING_REPORT_DIALED_TABLE: 'VishingReportDialedTable',
