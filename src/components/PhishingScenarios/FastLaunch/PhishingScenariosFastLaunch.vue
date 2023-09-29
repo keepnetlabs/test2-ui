@@ -157,6 +157,7 @@ export default {
           name: 'Default',
           type: EMAIL_DELIVERY_TYPES.SMTP
         }
+        formData.frequency = 'One Time'
       }
       return formData
     }

@@ -113,38 +113,6 @@ export default {
     }
   },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      if (this.type === DISTRIBUTION_TYPES.PHISHING) {
-        getCalculatedScheduleInfo({
-          scheduledDate: this.scheduledDate,
-          scheduledDateTimeZoneId: this.scheduledDateTimeZoneId,
-          scheduleTypeId: this.scheduleTypeId,
-          frequency: this.frequencyId,
-          phishingScenarioResourceIds: this.phishingScenarios.map(
-            (pScenario) => pScenario.resourceId
-          )
-        })
-          .then((res) => {
-            this.items = res?.data?.data
-          })
-          .finally(this.setLoading)
-      } else {
-        SmishingService.calculateScheduleInfo({
-          scheduleTypeId: this.scheduleTypeId,
-          scheduledDate: this.scheduledDate,
-          scheduledDateTimeZoneId: this.scheduledDateTimeZoneId,
-          frequency: this.frequencyId,
-          smishingScenarioResourceIds: this.phishingScenarios.map(
-            (pScenario) => pScenario.resourceId
-          )
-        })
-          .then((res) => {
-            this.items = res?.data?.data
-          })
-          .finally(this.setLoading)
-      }
-    },
     closeModal() {
       this.$emit('on-close')
     },
