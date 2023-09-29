@@ -81,13 +81,8 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule
-      v-if="isSelectedEmailDeliveryIsSmtp"
-      v-model="inputScheduleFormData"
-      ref="inputSchedule"
-    />
+    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
     <InputDistribution
-      v-if="isSelectedEmailDeliveryIsSmtp"
       v-model="inputDistributionFormData"
       :distribution-delay-time-items="getDistributionDelayTimeItems"
       :selected-time-zone-text="selectedTimeZoneText"
@@ -267,7 +262,6 @@ export default {
         : ''
     },
     getDistributionTextRenderStatus() {
-      if (!this.isSelectedEmailDeliveryIsSmtp) return
       return this.inputDistributionFormData.distributionTypeId === DISTRIBUTION_TYPES.PHISHING
         ? this.inputDistributionFormData.sendingLimit &&
             this.inputDistributionFormData.distributionDelayEvery

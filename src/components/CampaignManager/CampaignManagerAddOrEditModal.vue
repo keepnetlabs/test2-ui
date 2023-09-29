@@ -290,7 +290,9 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
         else {
-          selectedSchedule = `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
+          selectedSchedule = this?.scheduleInfoResponse?.isStarting
+            ? labels.Now
+            : `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
         }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
@@ -318,7 +320,7 @@ export default {
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
-        formData.scheduleItems = this.scheduleInfoResponse
+        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
       }
       return formData
     },
@@ -546,23 +548,20 @@ export default {
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
           try {
-            if (refCampaignManagerDeliverySettings?.formData?.frequency !== 0) {
-              this.setActionButtonDisability(true)
-              const response = await getCalculatedScheduleInfo({
-                scheduleTypeId:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
-                scheduledDate:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
-                scheduledDateTimeZoneId:
-                  refCampaignManagerDeliverySettings?.inputScheduleFormData
-                    ?.scheduledDateTimeZoneId,
-                frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
-                phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-                  (pScenario) => pScenario.resourceId
-                )
-              })
-              this.scheduleInfoResponse = response?.data?.data
-            }
+            this.setActionButtonDisability(true)
+            const response = await getCalculatedScheduleInfo({
+              scheduleTypeId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
+              scheduledDate:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
+              scheduledDateTimeZoneId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
+              frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
+              phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              )
+            })
+            this.scheduleInfoResponse = response?.data?.data
           } catch (e) {
             this.setActionButtonDisability(false)
             return
@@ -575,7 +574,6 @@ export default {
             this.setActionButtonDisability(false)
             return
           }
-
           if (
             refCampaignManagerDeliverySettings &&
             refCampaignManagerDeliverySettings.testEmailErrorMessage &&
