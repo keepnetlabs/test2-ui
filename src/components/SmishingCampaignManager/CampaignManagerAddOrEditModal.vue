@@ -282,7 +282,9 @@ export default {
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
         if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
         else {
-          selectedSchedule = `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
+          selectedSchedule = this?.scheduleInfoResponse?.isStarting
+            ? labels.Now
+            : `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
         }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
@@ -311,7 +313,7 @@ export default {
           (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
-        formData.scheduleItems = this.scheduleInfoResponse
+        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
       }
       return formData
     },
@@ -536,10 +538,6 @@ export default {
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
-          if (refCampaignManagerDeliverySettings?.formData?.frequency === 0) {
-            this.changeStep()
-            return
-          }
           try {
             this.setActionButtonDisability(true)
             const response = await SmishingService.calculateScheduleInfo({
