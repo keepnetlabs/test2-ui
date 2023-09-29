@@ -38,26 +38,7 @@
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <template v-if="scope.column.property === 'frequencyDescription'">
-          <div class="reported-email-subject__container">
-            <div class="reported-email-subject">
-              <span> {{ scope.row[col.property] }}</span>
-            </div>
-            <TheRecordsButton
-              label="recurrence"
-              width="150px"
-              :index="scope.$index"
-              :row="scope.row"
-              :disabled-count="0"
-              :is-show-button-with-zero-total="false"
-              @on-click="handleRecordButtonClick"
-            />
-          </div>
-        </template>
-        <div
-          v-if="scope.column.property === 'status'"
-          class="campaign-manager-item-table__status-column"
-        >
+        <div class="campaign-manager-item-table__status-column">
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
             <template #activator="{ on }">
               <v-btn style="display: none;" />
@@ -85,7 +66,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
-          :campaign-resource-id="item.resourceId"
+          :campaign-resource-id="parentResourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
@@ -95,7 +76,7 @@
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
-          {{ getTableAllRecordsText }}
+          {{ labels.RecurrencesOfInstance }}: {{ item.frequencyDescription }}
         </div>
       </template>
     </DataTable>
@@ -118,7 +99,6 @@ import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/Campai
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -128,7 +108,6 @@ const EMITS = {
 export default {
   name: 'CampaignManagerItemTable',
   components: {
-    TheRecordsButton,
     Badge,
     CampaignManagerItemDeleteDialog,
     CampaignManagerItemRowActions,
@@ -140,6 +119,9 @@ export default {
     },
     statusItems: {
       type: Array
+    },
+    parentResourceId: {
+      type: String
     }
   },
   emits: EMITS,
@@ -158,8 +140,8 @@ export default {
       selectedRow: {},
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SMSIHING_FREQUENCY_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SMSIHING_FREQUENCY_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -167,7 +149,6 @@ export default {
           download: false
         },
         columns: [
-          COLUMNS.FREQUENCY,
           COLUMNS.SCHEDULE,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
           COLUMNS.STATUS,
@@ -238,7 +219,13 @@ export default {
     callForData() {
       this.setLoading(true)
       this.$nextTick(() => {
-        SmishingService.searchSmishingCampaignJobReport(this.axiosPayload, this.item.resourceId)
+        SmishingService.searchSmishingCampaignJobReport(
+          {
+            ...this.axiosPayload,
+            smishingCampaignFrequencyGroup: this.item.frequencyGroup
+          },
+          this.parentResourceId
+        )
           .then((response) => {
             const {
               data: { data = [] }
@@ -248,12 +235,6 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             this.tableData = results
-            this.tableData = results.map((item) => {
-              const newItem = JSON.parse(JSON.stringify(item))
-              delete newItem['frequencyCount']
-              newItem.total = Number(item['frequencyCount']) || 0
-              return newItem
-            })
           })
           .finally(this.setLoading)
       })
@@ -269,7 +250,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        SmishingService.exportSmishingCampaignItems(payload, this.item.resourceId).then(
+        SmishingService.exportSmishingCampaignItems(payload, this.parentResourceId).then(
           (response) => {
             const { data } = response
             const link = document.createElement('a')
@@ -286,7 +267,7 @@ export default {
       this.$emit(EMITS.ON_BACK_CLICK)
     },
     handleOnAddButtonClick() {
-      this.$emit('on-launch', { resourceId: this.item.resourceId })
+      this.$emit('on-launch', { resourceId: this.parentResourceId })
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
@@ -300,7 +281,7 @@ export default {
     },
     handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      SmishingService.deleteSmishingCampaignItem(this.item.resourceId, item.instanceGroup)
+      SmishingService.deleteSmishingCampaignItem(this.parentResourceId, item.instanceGroup)
         .then(() => {
           this.$refs.refTable.unSelectRow(item)
           this.callForData()
@@ -311,12 +292,12 @@ export default {
         })
     },
     handleStop(row = {}) {
-      SmishingService.stopSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
+      SmishingService.stopSmishingCampaign(this.parentResourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
     handleLaunch(row = {}) {
-      SmishingService.startSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
+      SmishingService.startSmishingCampaign(this.parentResourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
@@ -331,22 +312,6 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
-    },
-    handleRecordButtonClick(row) {
-      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
-    },
-    reRenderFilters(filterValues = undefined) {
-      this?.$refs?.refTable?.reRenderFilters(filterValues)
-    },
-    resetSearchText() {
-      this.$refs.refTable.resetSearchText()
-    },
-    resetTable() {
-      this.resetSearchText()
-      this.reRenderFilters({})
-      this.axiosPayload = getDefaultAxiosPayload({
-        orderBy: 'CreatedDate'
-      })
     }
   }
 }

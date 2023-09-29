@@ -186,18 +186,32 @@ const searchSmishingCampaignJobReport = (payload, resourceId) => {
 }
 
 const launchSmishingCampaign = (resourceId, payload) => {
-  return testRequest.post(`/smishing-simulator/smishing-campaign-job/start/${resourceId}`, payload)
+  return testRequest.post(
+    `/smishing-simulator/smishing-campaign-job/start/${resourceId}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 const startSmishingCampaign = (resourceId, instanceGroup) => {
   return testRequest.post(
-    `/smishing-simulator/smishing-campaign-job/start/${resourceId}/${instanceGroup}`
+    `/smishing-simulator/smishing-campaign-job/start/${resourceId}/${instanceGroup}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
   )
 }
 
 const stopSmishingCampaign = (resourceId, instanceGroup) => {
   return testRequest.patch(
-    `/smishing-simulator/smishing-campaign-job/stop/${resourceId}/${instanceGroup}`
+    `/smishing-simulator/smishing-campaign-job/stop/${resourceId}/${instanceGroup}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
   )
 }
 
