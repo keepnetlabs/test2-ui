@@ -571,6 +571,14 @@ export default {
             /font-size\:\#?(\w|\s|-)+\;/g,
             `font-size:${buttonStyles['font-size']};`
           )
+          arrangedComment = arrangedComment.replace(
+            /width\:\#?(\w|\s|-)+\;/g,
+            `width:${
+              buttonStyles['width'].includes('px')
+                ? buttonStyles['width'].replace('px', '')
+                : buttonStyles['width']
+            }px;`
+          )
           const children = droppedComponent.parent.components()
           const at = droppedComponent?.index
           const content =
@@ -602,13 +610,18 @@ export default {
         }
       })
       this.editor.on('style:property:update', (styleChanges) => {
-        if (!styleChanges.to.value) {
+        if (!styleChanges.to.value && styleChanges.property.attributes.property !== 'width') {
           return
         }
         if (
-          !['background-color', 'color', 'font-family', 'font-size', 'background'].includes(
-            styleChanges.property.attributes.property
-          )
+          ![
+            'background-color',
+            'color',
+            'font-family',
+            'font-size',
+            'background',
+            'width'
+          ].includes(styleChanges.property.attributes.property)
         ) {
           return
         }
@@ -651,6 +664,26 @@ export default {
                   `font-size:${styleChanges.value};`
                 )
               }
+              if (styleChanges.property.attributes.property === 'width') {
+                setTimeout(() => {
+                  let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+                  if (width < 65) {
+                    width += 4
+                  } else if (width < 95) {
+                    width += 10
+                  } else if (width < 140) {
+                    width += 14
+                  } else {
+                    width += 20
+                  }
+                  width = Math.round(width)
+                  const isShowWidth = [0, '0', '', 'auto'].includes(styleChanges?.to?.value)
+                  commentElement.attributes.content = commentElement.attributes.content.replace(
+                    /width\:\#?(\w|\s|-)+\;/g,
+                    `width:${isShowWidth ? width : styleChanges?.to?.value}px;`
+                  )
+                }, 500)
+              }
             }
           }
         }
@@ -674,12 +707,14 @@ export default {
             const commentElement = getCommentElement()
             if (commentElement) {
               let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
-              if (width < 90) {
-                width += 2
-              } else if (width < 140) {
+              if (width < 65) {
+                width += 4
+              } else if (width < 95) {
                 width += 10
+              } else if (width < 140) {
+                width += 14
               } else {
-                width += 18
+                width += 20
               }
 
               commentElement.attributes.content = commentElement.attributes.content.replace(
