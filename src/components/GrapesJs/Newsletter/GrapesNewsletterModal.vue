@@ -670,11 +670,11 @@ export default {
             if (commentElement) {
               let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
               if (width < 90) {
-                width += 16
+                width += 2
               } else if (width < 140) {
-                width += 24
+                width += 10
               } else {
-                width += 32
+                width += 18
               }
 
               commentElement.attributes.content = commentElement.attributes.content.replace(
