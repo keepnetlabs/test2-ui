@@ -14,7 +14,7 @@ const outlookButton = {
     '        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">\n' +
     '    <![endif]-->\n' +
     '  <a id="outlook-button-href-id" href=""\n' +
-    '    style="background-color:#2196F3;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:34px;text-align:center;text-decoration:none;min-width:65px;-webkit-text-size-adjust:none;">\n' +
+    '    style="background-color:#2196F3;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:34px;text-align:center;padding:0 8px;text-decoration:none;min-width:65px;-webkit-text-size-adjust:none;">\n' +
     '    Button\n' +
     '  </a>\n' +
     '  <!--[if mso]>\n' +
