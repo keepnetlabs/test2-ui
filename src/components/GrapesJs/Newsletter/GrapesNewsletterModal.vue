@@ -550,7 +550,7 @@ export default {
         ) {
           const buttonStyles = { ...droppedComponent.target.getStyle() }
           let arrangedComment =
-            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
+            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
           arrangedComment = arrangedComment.replace(
             /href="([^\'\"]+)?"/g,
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
@@ -613,7 +613,10 @@ export default {
           return
         }
         const updatedComponent = this.editor.getSelected()
-        if (updatedComponent?.getEl()?.id?.includes('outlook')) {
+        if (
+          updatedComponent?.getEl()?.id?.includes('outlook') ||
+          updatedComponent?.getEl()?.classList.contains('outlook-button-span-id')
+        ) {
           const parent = updatedComponent?.parent()
           if (parent) {
             const children = parent.components()
@@ -654,16 +657,27 @@ export default {
       })
       this.editor.on('component:update', (updatedComponent) => {
         if (updatedComponent?.getEl()?.id?.includes('outlook')) {
-          if (updatedComponent?.changed?.attributes?.href) {
+          const getCommentElement = () => {
             const parent = updatedComponent.parent()
             const children = parent.components()
-            const commentElement = children?.models?.find(
-              (el) => el?.attributes?.type === 'comment'
-            )
+            return children?.models?.find((el) => el?.attributes?.type === 'comment')
+          }
+          if (updatedComponent?.changed?.attributes?.href) {
+            const commentElement = getCommentElement()
             if (commentElement) {
               commentElement.attributes.content = commentElement.attributes.content.replace(
                 /href="([^\'\"]+)?"/g,
                 `href="${updatedComponent?.changed?.attributes?.href}"`
+              )
+            }
+          } else {
+            const commentElement = getCommentElement()
+            if (commentElement) {
+              commentElement.attributes.content = commentElement.attributes.content.replace(
+                /width\:\#?(\w|\s|-)+\;/g,
+                `width:${Math.round(
+                  updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width + 16
+                )}px;`
               )
             }
           }
