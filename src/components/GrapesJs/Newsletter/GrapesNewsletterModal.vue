@@ -581,8 +581,12 @@ export default {
           const anchor = newComponent
             .components()
             .models.find((comp) => comp?.getEl()?.id?.includes('outlook'))
-          anchor.setStyle(buttonStyles)
-          newComponent.setStyle(buttonStyles)
+          if (anchor) {
+            anchor.setStyle(buttonStyles)
+          }
+          if (newComponent) {
+            newComponent.setStyle(buttonStyles)
+          }
           this.editor
             .getWrapper()
             .find('.outlook-button-span-id')
