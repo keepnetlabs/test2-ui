@@ -158,6 +158,8 @@ export default {
   },
   data() {
     return {
+      phoneNumbers: [],
+      phoneNumberItems: [],
       labels,
       isActionButtonDisabled: false,
       createErrorMessage: '',
@@ -240,8 +242,15 @@ export default {
   },
   created() {
     this.callForFormDetails()
+    this.callForPhoneNumbers()
   },
   methods: {
+    callForPhoneNumbers() {
+      AwarenessEducatorService.getPhoneNumbers().then((response) => {
+        this.phoneNumberItems = response.data.data
+        this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
+      })
+    },
     callForFormDetails() {
       //get reminder email
       getDefaultEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then(
@@ -384,7 +393,7 @@ export default {
           }
           if (
             this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification &&
-            !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsText.includes(
+            !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate.includes(
               '{TRAININGURL}'
             )
           ) {
@@ -464,6 +473,15 @@ export default {
         markedAsTest,
         awardCertificate,
         languageIds: newLanguageIds
+      }
+
+      if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {
+        payload[
+          'smsTextTemplate'
+        ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+        payload[
+          'smsProviderNumberResourceId'
+        ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsProviderNumberResourceId
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
