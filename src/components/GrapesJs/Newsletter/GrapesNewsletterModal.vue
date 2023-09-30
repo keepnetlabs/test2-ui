@@ -673,11 +673,18 @@ export default {
           } else {
             const commentElement = getCommentElement()
             if (commentElement) {
+              let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+              if (width < 90) {
+                width += 2
+              } else if (width < 140) {
+                width += 10
+              } else {
+                width += 18
+              }
+
               commentElement.attributes.content = commentElement.attributes.content.replace(
                 /width\:\#?(\w|\s|-)+\;/g,
-                `width:${Math.round(
-                  updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width + 16
-                )}px;`
+                `width:${Math.round(width)}px;`
               )
             }
           }
