@@ -537,11 +537,6 @@ export default {
       this.onSelectComponent()
       this.onDragStop()
       this.setLinkType()
-      this.editor.on('component:remove', (component) => {
-        if (component?.ccid === 'outlook-button-href-id') {
-          component?.collection?.parent?.remove()
-        }
-      })
       this.editor.on('component:drag:end', (droppedComponent) => {
         const el = droppedComponent?.target?.getEl()
         if (
@@ -622,6 +617,9 @@ export default {
             }
             if (copyStyle.margin) {
               delete copyStyle.margin
+            }
+            if (copyStyle.width) {
+              delete copyStyle.width
             }
             newComponent.setStyle(copyStyle)
           }
