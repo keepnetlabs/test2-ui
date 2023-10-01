@@ -618,6 +618,9 @@ export default {
             if (copyStyle.margin) {
               delete copyStyle.margin
             }
+            if (copyStyle.width) {
+              delete copyStyle.width
+            }
             newComponent.setStyle(copyStyle)
           }
           this.editor
