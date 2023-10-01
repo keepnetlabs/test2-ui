@@ -538,7 +538,6 @@ export default {
       this.onDragStop()
       this.setLinkType()
       this.editor.on('component:drag:end', (droppedComponent) => {
-        debugger
         const el = droppedComponent?.target?.getEl()
         if (
           el?.id?.includes('outlook-button-href-id') &&
