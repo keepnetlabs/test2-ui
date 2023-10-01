@@ -575,7 +575,7 @@ export default {
                   : buttonStyles['width']
               }px;`
             )
-          } else if (typeof buttonStyles['width'] === 'undefined') {
+          } else if (typeof buttonStyles['width'] === 'undefined' || buttonStyles['width'] === '') {
             let width = droppedComponent?.target?.getEl()?.getBoundingClientRect()?.width
             if (width < 65) {
               width += 6
@@ -587,7 +587,10 @@ export default {
               width += 20
             }
             width = Math.round(width)
-            arrangedComment = arrangedComment.replace(/width\:\#?(\w|\s|-)+\;/g, `width:${width}px`)
+            arrangedComment = arrangedComment.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:${width}px;`
+            )
           }
           const children = droppedComponent.parent.components()
           const at = droppedComponent?.index
@@ -708,14 +711,16 @@ export default {
                     )
                   }, 500)
                 } else {
-                  commentElement.attributes.content = commentElement.attributes.content.replace(
-                    /width\:\#?(\w|\s|-)+\;/g,
-                    `width:${styleChanges?.to?.value}px;`
-                  )
-                  commentElement.attributes.content = commentElement.attributes.content.replace(
-                    /width:undefinedpx;/g,
-                    `width:${styleChanges?.to?.value}px;`
-                  )
+                  setTimeout(() => {
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width\:\#?(\w|\s|-)+\;/g,
+                      `width:${styleChanges?.to?.value}px;`
+                    )
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width:undefinedpx;/g,
+                      `width:${styleChanges?.to?.value}px;`
+                    )
+                  }, 500)
                 }
               }
             }
