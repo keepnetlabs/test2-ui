@@ -228,7 +228,7 @@ export default {
         active: false
       })
       document.querySelector('span[title="Preview"]').addEventListener('click', () => {
-        const win = window.open('', 'Title')
+        const win = window.open('', '_blank')
         win.document.title = 'Mail Preview'
         win.document.body.innerHTML = this.getGrapesEditorContent().replace(
           /{COMPANYLOGO}/g,
@@ -550,7 +550,7 @@ export default {
         ) {
           const buttonStyles = { ...droppedComponent.target.getStyle() }
           let arrangedComment =
-            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
+            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
           arrangedComment = arrangedComment.replace(
             /href="([^\'\"]+)?"/g,
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
@@ -571,6 +571,29 @@ export default {
             /font-size\:\#?(\w|\s|-)+\;/g,
             `font-size:${buttonStyles['font-size']};`
           )
+          if (buttonStyles['width']) {
+            arrangedComment = arrangedComment.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:${
+                buttonStyles['width']?.includes('px')
+                  ? buttonStyles['width']?.replace('px', '')
+                  : buttonStyles['width']
+              }px;`
+            )
+          } else if (typeof buttonStyles['width'] === 'undefined') {
+            let width = droppedComponent?.target?.getEl()?.getBoundingClientRect()?.width
+            if (width < 65) {
+              width += 6
+            } else if (width < 95) {
+              width += 10
+            } else if (width < 140) {
+              width += 14
+            } else {
+              width += 20
+            }
+            width = Math.round(width)
+            arrangedComment = arrangedComment.replace(/width\:\#?(\w|\s|-)+\;/g, `width:${width}px`)
+          }
           const children = droppedComponent.parent.components()
           const at = droppedComponent?.index
           const content =
@@ -590,7 +613,14 @@ export default {
             anchor.setStyle(buttonStyles)
           }
           if (newComponent) {
-            newComponent.setStyle(buttonStyles)
+            const copyStyle = { ...buttonStyles }
+            if (copyStyle.padding) {
+              delete copyStyle.padding
+            }
+            if (copyStyle.margin) {
+              delete copyStyle.margin
+            }
+            newComponent.setStyle(copyStyle)
           }
           this.editor
             .getWrapper()
@@ -602,13 +632,18 @@ export default {
         }
       })
       this.editor.on('style:property:update', (styleChanges) => {
-        if (!styleChanges.to.value) {
+        if (!styleChanges.to.value && styleChanges.property.attributes.property !== 'width') {
           return
         }
         if (
-          !['background-color', 'color', 'font-family', 'font-size', 'background'].includes(
-            styleChanges.property.attributes.property
-          )
+          ![
+            'background-color',
+            'color',
+            'font-family',
+            'font-size',
+            'background',
+            'width'
+          ].includes(styleChanges.property.attributes.property)
         ) {
           return
         }
@@ -651,6 +686,43 @@ export default {
                   `font-size:${styleChanges.value};`
                 )
               }
+              if (styleChanges.property.attributes.property === 'width') {
+                const isShowWidth = [0, '0', '', 'auto', undefined].includes(
+                  styleChanges?.to?.value
+                )
+                if (isShowWidth) {
+                  setTimeout(() => {
+                    let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+                    if (width < 65) {
+                      width += 6
+                    } else if (width < 95) {
+                      width += 10
+                    } else if (width < 140) {
+                      width += 14
+                    } else {
+                      width += 20
+                    }
+                    width = Math.round(width)
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width\:\#?(\w|\s|-)+\;/g,
+                      `width:${width}px;`
+                    )
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width:undefinedpx;/g,
+                      `width:${width}px;`
+                    )
+                  }, 500)
+                } else {
+                  commentElement.attributes.content = commentElement.attributes.content.replace(
+                    /width\:\#?(\w|\s|-)+\;/g,
+                    `width:${styleChanges?.to?.value}px;`
+                  )
+                  commentElement.attributes.content = commentElement.attributes.content.replace(
+                    /width:undefinedpx;/g,
+                    `width:${styleChanges?.to?.value}px;`
+                  )
+                }
+              }
             }
           }
         }
@@ -673,17 +745,24 @@ export default {
           } else {
             const commentElement = getCommentElement()
             if (commentElement) {
+              //if(document.querySelector('.gjs-sm-property__width .gjs-field-integer input')?.value)return
               let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
-              if (width < 90) {
-                width += 2
-              } else if (width < 140) {
+              if (width < 65) {
+                width += 6
+              } else if (width < 95) {
                 width += 10
+              } else if (width < 140) {
+                width += 14
               } else {
-                width += 18
+                width += 20
               }
 
               commentElement.attributes.content = commentElement.attributes.content.replace(
                 /width\:\#?(\w|\s|-)+\;/g,
+                `width:${Math.round(width)}px;`
+              )
+              commentElement.attributes.content = commentElement.attributes.content.replace(
+                /width:undefinedpx/g,
                 `width:${Math.round(width)}px;`
               )
             }
