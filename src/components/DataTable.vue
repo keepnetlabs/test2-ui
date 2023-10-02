@@ -22,8 +22,8 @@
       <div class="table-wrapper">
         <div
           v-click-outside="handleSettingsPopupClickOutside"
-          class="settings-popup"
           v-show="isSettingsOpened"
+          class="settings-popup"
           :style="settingsPopupStyle"
         >
           <div class="settings-header">
@@ -32,10 +32,10 @@
           </div>
           <div class="sub-header">Show / Hide Columns</div>
           <div
+            v-if="ind !== 0 && !col.hideOnSettingsPopup"
+            v-for="(col, ind) of columns"
             :key="ind"
             class="popup-row"
-            v-for="(col, ind) of columns"
-            v-if="ind !== 0 && !col.hideOnSettingsPopup"
           >
             {{ col.label }}
             <v-switch
@@ -67,6 +67,8 @@
           :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
           :loading="extendedViewLoading"
+          :wait-api="waitExtendedViewApi"
+          :is-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
           @closeCreateMode="$emit('closeCreateMode')"
           @closeEditPopup="closeEditPopup"
           @handleEdit="handleExtendedViewEdit"
@@ -132,15 +134,15 @@
               ]"
             >
               <v-menu
+                v-model="clusterChevron"
                 bottom
                 offset-y
                 transition="scale-transition"
-                v-model="clusterChevron"
                 min-width="180"
                 content-class="cluster-view"
               >
-                <template v-slot:activator="{ on }">
-                  <div @click="clusterChevron = !clusterChevron" v-on="on">
+                <template #activator="{ on }">
+                  <div v-on="on" @click="clusterChevron = !clusterChevron">
                     <v-icon color="white" style="margin-top: -2px; margin-left: 1px;"
                       >mdi-menu-down</v-icon
                     >
@@ -153,10 +155,10 @@
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item
-                    :key="item.name + key"
-                    @click="clusterSelected(item.name, key)"
                     v-for="(item, key) of clusterItems"
+                    :key="item.name + key"
                     :class="[isEqualCluster(item.name) && 'cluster-view--selected']"
+                    @click="clusterSelected(item.name, key)"
                   >
                     <v-list-item-title>
                       <span
@@ -177,7 +179,7 @@
 
             <slot name="addUsers">
               <v-tooltip bottom opacity="1">
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-btn
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
@@ -199,7 +201,7 @@
               </v-tooltip>
             </slot>
             <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
                   v-on="on"
                   :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
@@ -213,23 +215,23 @@
               <span class="tooltip-span">{{ 'Refresh' }}</span>
             </v-tooltip>
             <v-menu
+              v-if="downloadButton && downloadButton.show"
               v-model="isDownloadMenuOpen"
               bottom
               left
-              :attach="isTesting && testProps.menuAttach"
               offset-y
-              v-if="downloadButton && downloadButton.show"
+              :attach="isTesting && testProps.menuAttach"
             >
-              <template v-slot:activator="{ on: menu, attrs }">
+              <template #activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
-                  <template v-slot:activator="{ on: tooltip }">
+                  <template #activator="{ on: tooltip }">
                     <v-btn
+                      v-bind="attrs"
                       v-on="{ ...tooltip, ...menu }"
                       :id="`btn-download--table-${Math.random().toString().substring(2)}`"
                       class="btn-hover mr-1"
                       icon
                       style="order: 5;"
-                      v-bind="attrs"
                       :disabled="downloadButton.disabled"
                     >
                       <v-icon>mdi-download</v-icon>
@@ -248,7 +250,7 @@
               </v-list-item>
             </v-menu>
             <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
                   v-on="on"
                   :id="`btn-settings--table-${Math.random().toString().substring(2)}`"
@@ -268,12 +270,12 @@
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="getTableHeaderRender">
           <v-checkbox
+            v-model="selectionCheckbox"
             :indeterminate="selectionRowCheckboxDeterminate"
-            @click.native="toggleAll(multipleSelection)"
             class="selection-all-check"
             color="white"
-            v-model="selectionCheckbox"
             :disabled="getSelectionCheckboxDisabledValue"
+            @click.native="toggleAll(multipleSelection)"
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
@@ -289,7 +291,7 @@
           </v-btn>
           <div class="action-icons">
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.clipboard">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
                   v-on="on"
                   id="btn-copy-to-clipboard-all--table-header"
@@ -303,7 +305,7 @@
               <span class="tooltip-span">Clipboard</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.edit">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
                   v-on="on"
                   id="btn-edit-all--table-header"
@@ -337,12 +339,12 @@
             </v-tooltip>
             <slot name="selection-all-slot" />
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.warning">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
-                  @click="handleWarning(multipleSelection)"
+                  v-on="on"
                   class="btn-selected-hover mr-1"
                   icon
-                  v-on="on"
+                  @click="handleWarning(multipleSelection)"
                 >
                   <v-icon class="selection-icons" color="white">mdi-alert</v-icon>
                 </v-btn>
@@ -350,7 +352,7 @@
               <span class="tooltip-span">Send users a warning message</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.resend">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
                   v-on="on"
                   class="btn-selected-hover mr-1"
@@ -363,51 +365,25 @@
               <span class="tooltip-span">Resend</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.deleteAndNotify">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn
-                  @click="handleDeleteAndNotify(multipleSelection)"
+                  v-on="on"
                   class="btn-selected-hover mr-1"
                   icon
-                  v-on="on"
+                  @click="handleDeleteAndNotify(multipleSelection)"
                 >
                   <v-icon class="selection-icons" color="white">mdi-delete</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">Delete And Notify Users</span>
             </v-tooltip>
-            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.pause">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click="handlePause(multipleSelection)"
-                  class="btn-selected-hover mr-1"
-                  icon
-                  v-on="on"
-                >
-                  <v-icon class="selection-icons" color="white">mdi-pause</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">Pause</span>
-            </v-tooltip>
-            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.stop">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click="handlePause(multipleSelection)"
-                  class="btn-selected-hover mr-1"
-                  icon
-                  v-on="on"
-                >
-                  <v-icon class="selection-icons" color="white">mdi-stop</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">Stop</span>
-            </v-tooltip>
           </div>
         </div>
         <div
           v-if="shouldRenderTable"
-          :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
-          id="table-container"
           ref="tableContainer"
+          id="table-container"
+          :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
         >
           <el-table
             v-row-color-handler
@@ -442,10 +418,10 @@
             @row-click="handleRowClick"
           >
             <el-table-column
+              v-if="selectable"
               align="center"
               type="selection"
               :reserve-selection="true"
-              v-if="selectable"
               width="48"
             />
             <el-table-column
@@ -1118,6 +1094,14 @@ export default {
       type: Boolean,
       default: false
     },
+    waitExtendedViewApi: {
+      type: Boolean,
+      default: false
+    },
+    isExtendedViewCancelButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     extendedViewValue: {
       type: Array,
       default() {
@@ -1692,9 +1676,8 @@ export default {
       this.handleRefresh()
     },
     handleClearFilters() {
-      this.search = ''
-      this.filterValues = {}
-      this.reRenderFilters()
+      this.resetSearchText()
+      this.reRenderFilters({})
       this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
       this.handleRefresh()
       this.$emit('clear-filters')
@@ -1813,6 +1796,7 @@ export default {
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
+      if (this.waitExtendedViewApi) return
       this.resetSelectableParams()
     },
     resetSelectableParams() {
@@ -3032,6 +3016,9 @@ export default {
     reRenderFilters(filterValues) {
       if (filterValues) this.filterValues = filterValues
       this.filterKey = `filter-key-${createRandomCryptStringNumber()}`
+    },
+    resetSearchText() {
+      this.search = ''
     }
   }
 }

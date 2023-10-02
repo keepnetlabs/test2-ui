@@ -148,7 +148,7 @@ export const COLUMNS = {
     label: labels.DateCreated,
     fixed: false,
     sortable: true,
-    show: true,
+    show: false,
     type: 'text',
     width: 160,
     filterableType: 'date'

@@ -246,6 +246,7 @@ export default {
           label: getStoreValue('scanStatus'),
           fixed: false,
           sortable: false,
+          hideSort: true,
           show: true,
           type: 'chart',
           width: 175

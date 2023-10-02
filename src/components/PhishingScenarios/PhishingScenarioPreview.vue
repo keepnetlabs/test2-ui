@@ -150,7 +150,7 @@ export default {
       return 'Scenario Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name
+      return this.selectedRow?.name || ''
     },
     hasLandingPageTemplate() {
       return this.landingPageTemplates.length > 0

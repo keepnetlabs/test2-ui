@@ -16,6 +16,7 @@
       v-if="isShowNewInstanceModal"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
+      :form-details="formDetails"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
@@ -78,7 +79,7 @@
       @on-multiple-delete="handleOnMultipleDelete"
     />
     <CampaignManagerParentTable
-      v-show="!isItemTableShowing"
+      v-show="!isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerParentTable"
       :is-loading.sync="isParentTableLoading"
       :status-items="getStatusItems"
@@ -94,13 +95,26 @@
       @on-multiple-delete="handleMultipleDelete"
     />
     <CampaignManagerItemTable
-      v-if="isItemTableShowing"
+      v-if="selectedParentItem"
+      v-show="isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerItemTable"
       :is-loading="isItemTableLoading"
       :item="selectedParentItem"
       :status-items="getStatusItems"
       @on-launch="handleLaunch"
       @on-back-click="handleOnBackClick"
+      @on-record-button-click="handleItemTableRecordButtonClick"
+      @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
+    />
+    <CampaignManagerFrequencyTable
+      v-if="isFrequencyTableShowing"
+      ref="campaignManagerFrequencyTable"
+      :is-loading="isFrequencyTableShowing"
+      :item="selectedInstanceItem"
+      :status-items="getStatusItems"
+      :parent-resource-id="selectedParentItem.resourceId"
+      @on-launch="handleLaunch"
+      @on-back-click="handleOnFrequencyBackClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
     />
   </KContainer>
@@ -112,7 +126,7 @@ import CampaignManagerItemTable from '@/components/SmishingCampaignManager/Campa
 import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
 import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
 import SmishingService from '@/api/smishing'
-import { getScenarioDataDetails } from '@/api/scenarios'
+import CampaignManagerFrequencyTable from '@/components/SmishingCampaignManager/CampaignManagerFrequencyTable'
 import { createTargetGroup } from '@/api/targetUsers'
 import CampaignManagerPreview from '@/components/SmishingCampaignManager/CampaignManagerPreview'
 import CampaignManagerCreateNewInstanceDialog from '@/components/SmishingCampaignManager/CampaignManagerCreateNewInstanceDialog'
@@ -138,7 +152,8 @@ export default {
     CreateNewUserGroupModal,
     NewScenario,
     CampaignManagerNewInstanceModal,
-    CampaignManagerAddOrEditModal
+    CampaignManagerAddOrEditModal,
+    CampaignManagerFrequencyTable
   },
   data() {
     return {
@@ -148,6 +163,7 @@ export default {
       multipleDeletedUserCount: 0,
       selectedParentItem: null,
       selectedRow: null,
+      selectedInstanceItem: null,
       isShowPreviewDialog: false,
       isEdit: false,
       isParentTableLoading: false,
@@ -164,6 +180,7 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
+      isFrequencyTableShowing: false,
       formDetails: {},
       multipleSystemUserPayload: {},
       scenarioDetailsLookup: {}
@@ -189,6 +206,21 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  watch: {
+    '$route.query': {
+      handler: function (val) {
+        if (val?.status === 'parent') {
+          this.selectedParentItem = null
+          this.selectedInstanceItem = null
+          this.isItemTableShowing = false
+          this.isFrequencyTableShowing = false
+          this.$router.replace('/smishing-simulator/campaign-manager')
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -237,6 +269,10 @@ export default {
     },
     handleOnRecordButtonClick(row) {
       this.selectedParentItem = row
+      if (this.$refs.campaignManagerItemTable) {
+        this.$refs.campaignManagerItemTable.resetTable()
+        this.$refs.campaignManagerItemTable.callForData()
+      }
       this.toggleItemTableShowing()
     },
     handleOnBackClick() {
@@ -368,6 +404,17 @@ export default {
     },
     handleShowNoTargetUserGroupModal() {
       this.isNoTargetUserGroupModalVisible = true
+    },
+    handleItemTableRecordButtonClick(row) {
+      this.selectedInstanceItem = row
+      this.toggleFrequencyTableShowing()
+    },
+    toggleFrequencyTableShowing() {
+      this.isFrequencyTableShowing = !this.isFrequencyTableShowing
+    },
+    handleOnFrequencyBackClick() {
+      this.selectedInstanceItem = null
+      this.toggleFrequencyTableShowing()
     }
   }
 }

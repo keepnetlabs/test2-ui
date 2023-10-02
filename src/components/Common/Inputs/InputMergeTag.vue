@@ -2,7 +2,7 @@
   <div class="input-merge-tag">
     <div v-if="mergeTags.length" class="input-merge-tag__tags">
       <v-btn
-        v-for="mergeTag in mergeTags"
+        v-for="mergeTag in getRowMergeTags"
         :key="mergeTag.value"
         class="input-merge-tag__tag ma-1"
         elevation="0"
@@ -11,6 +11,23 @@
       >
         {{ mergeTag.text }}
       </v-btn>
+      <v-menu v-if="hasOverflowItems" :offset-x="true" bottom right>
+        <template v-slot:activator="{ on: menu }">
+          <v-btn v-on="menu" rounded icon class="ml-4" style="background-color: #2196f3;">
+            <v-icon color="#ffffff" medium>mdi-tag-plus</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="mergeTag in getOverflowItems"
+            :key="mergeTag.value"
+            :id="mergeTag.value"
+            @click="handleMergeTagClick(mergeTag.value)"
+          >
+            <v-list-item-title>{{ mergeTag.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
     <v-textarea
       v-bind="requiredProps"
@@ -91,7 +108,6 @@ export default {
     return {
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-
         (v) =>
           Validations.maxLength(
             v,
@@ -132,6 +148,17 @@ export default {
       ],
       placeholder: '',
       requiredProps: {}
+    }
+  },
+  computed: {
+    hasOverflowItems() {
+      return this.mergeTags?.length > 5
+    },
+    getOverflowItems() {
+      return this.mergeTags?.slice(5)
+    },
+    getRowMergeTags() {
+      return this.mergeTags?.slice(0, 5)
     }
   },
   watch: {

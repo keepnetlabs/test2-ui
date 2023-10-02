@@ -1,8 +1,8 @@
 <template>
   <v-container fill-height fluid tag="div">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 diagnostic-tool__header"
       v-if="showHeader"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 diagnostic-tool__header"
     >
       <v-list-item-content>
         <v-list-item-title class="diagnostic-tool__title">

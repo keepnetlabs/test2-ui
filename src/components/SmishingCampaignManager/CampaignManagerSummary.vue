@@ -1,5 +1,19 @@
 <template>
   <div class="campaign-manager-last-step">
+    <CampaignManagerScheduleDialog
+      v-if="showSchedule && isShowScheduleDialog"
+      :type="DISTRIBUTION_TYPES.SMISHING"
+      :status="isShowScheduleDialog"
+      :campaign-name="formData.name"
+      :selected-frequency="getSelectedFrequency"
+      :frequency-id="getSelectedFrequencyId"
+      :schedule-type-id="getScheduleTypeId"
+      :phishing-scenarios="getPhishingScenarios"
+      :scheduled-date-time-zone-id="getScheduledDateTimeZoneId"
+      :scheduled-date="getScheduledDate"
+      :items="getScheduledDialogItems"
+      @on-close="toggleScheduleDialog"
+    />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
@@ -48,7 +62,7 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="my-6">
+    <div class="my-6 d-flex justify-space-between align-center">
       <span class="campaign-manager-last-step__phishing-scenario-label">Smishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
         <template #activator="{ on }">
@@ -60,6 +74,18 @@
           {{ methodWrapper.method }} ({{ methodWrapper.count }})
         </div>
       </VTooltip>
+      <div v-if="showSchedule">
+        <v-btn
+          class="campaign-manager-summary-card__button pr-4 mr-6"
+          rounded
+          outlined
+          color="#2196f3"
+          @click="handleSchedule"
+        >
+          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-calendar-range</v-icon>
+          Schedule
+        </v-btn>
+      </div>
     </div>
     <ElTabs
       v-if="phishingScenarios.length"
@@ -135,10 +161,13 @@ import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManage
 import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import CampaignManagerSummaryLandingPage from '@/components/SmishingCampaignManager/CampaignManagerSummaryLandingPage'
+import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog.vue'
+import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 
 export default {
   name: 'CampaignManagerSummary',
   components: {
+    CampaignManagerScheduleDialog,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
@@ -156,10 +185,15 @@ export default {
     languageOptions: {
       type: Array,
       default: () => []
+    },
+    showSchedule: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
+      DISTRIBUTION_TYPES,
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
@@ -168,11 +202,33 @@ export default {
       selectedScenarioResourceId: '',
       selectedScenarioName: '',
       selectedScenarioMethodTypeId: '',
+      isShowScheduleDialog: false,
       textTemplateParams: {},
       landingPageParams: {}
     }
   },
   computed: {
+    getScheduledDialogItems() {
+      return this?.formData?.scheduleItems || []
+    },
+    getSelectedFrequency() {
+      return this?.formData?.frequency || ''
+    },
+    getSelectedFrequencyId() {
+      return this?.formData?.frequencyId || ''
+    },
+    getScheduleTypeId() {
+      return this?.formData?.selectedScheduleId || ''
+    },
+    getPhishingScenarios() {
+      return this?.formData?.selectedPhishingScenarios || []
+    },
+    getScheduledDateTimeZoneId() {
+      return this?.formData?.scheduledDateTimeZoneId || ''
+    },
+    getScheduledDate() {
+      return this?.formData?.scheduledDate || ''
+    },
     isMethodMfa() {
       return this.selectedScenarioMethodTypeId === 4
     },
@@ -405,6 +461,12 @@ export default {
     },
     getBadgeText(text = '') {
       return text
+    },
+    handleSchedule() {
+      this.toggleScheduleDialog()
+    },
+    toggleScheduleDialog() {
+      this.isShowScheduleDialog = !this.isShowScheduleDialog
     }
   }
 }

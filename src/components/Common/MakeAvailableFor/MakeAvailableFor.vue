@@ -289,9 +289,9 @@ export default {
           oldVal.some((item) => item.type === 'MyCompanyOnly') &&
           newVal.some((item) => item.type === 'AllCompanies')
         ) {
-          emittedVal = [this.treeSelectOptions[1]]
+          emittedVal = [this.treeSelectOptions?.[1]] || []
         } else if (newVal.length > 1) {
-          emittedVal = [this.treeSelectOptions[0]]
+          emittedVal = [this.treeSelectOptions?.[0]] || []
         }
         this.treeSelectionStatus = true
         this.setTreeSelectOptions(this.treeSelectionStatus)

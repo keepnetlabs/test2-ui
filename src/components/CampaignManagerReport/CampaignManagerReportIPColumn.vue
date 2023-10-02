@@ -10,7 +10,10 @@
           >mdi-information</v-icon
         >
       </template>
-      <span>Unusual IP Interaction: This user had no interaction with the email.</span>
+
+      <span
+        >A sandbox has clicked the Honeypot link. This user had no interaction with the email.</span
+      >
     </v-tooltip>
   </span>
 </template>
@@ -28,7 +31,7 @@ export default {
   computed: {
     isRenderTooltip() {
       if (!this.scope?.row?.sandBoxType) return false
-      const binaryArray = this.scope.row.sandBoxType.toString(2)
+      const binaryArray = this.scope.row.sandBoxType.toString(2).split('').reverse().join('')
       return [binaryArray[UNUSUAL_TYPES.IP], binaryArray[UNUSUAL_TYPES.HONEYPOT]].includes('1')
     }
   }

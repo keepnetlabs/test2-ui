@@ -77,15 +77,18 @@
             changeFooterPosition
             disable-extended-view-transition
             selectable
+            just-compare-row-key
             filterable
             is-server-side
             options
+            wait-extended-view-api
             :table="clusteredTableData"
             :axios-payload.sync="clusteredTableAxios"
             :saved-filters-local-storage-key="clusteredTable.savedFiltersLocalStorageKey"
             :saved-table-settings-local-storage-key="
               clusteredTable.savedTableSettingsLocalStorageKey
             "
+            :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
             :server-side-props="serverSideClusteredProps"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :extended-view-loading="extendedViewLoading"
@@ -230,6 +233,8 @@
             filterable
             options
             groupable
+            just-compare-row-key
+            wait-extended-view-api
             is-server-side-selection
             disable-extended-view-transition
             change-footer-position
@@ -242,6 +247,7 @@
             :table="reportedEmailsData"
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
+            :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
             :extended-view-options="emails.extendedViewOptions"
@@ -1227,7 +1233,8 @@ export default {
       ]
     },
     clusteredTableData: [],
-    clusteredTableAxios: getDefaultAxiosPayload()
+    clusteredTableAxios: getDefaultAxiosPayload(),
+    isExtendedViewCancelButtonDisabled: false
   }),
   computed: {
     ...mapGetters({
@@ -1918,6 +1925,7 @@ export default {
       }
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+      this.isExtendedViewCancelButtonDisabled = true
       if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
         const payload = {
           resourceIdList: []
@@ -1946,12 +1954,14 @@ export default {
               (clusteredRow) => clusteredRow.resourceId === row.resourceId
             )
             if (item) {
-              payload.resourceIdList.push(...item.clusteredResourceIdList)
+              payload.resourceIdList = [
+                ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
+              ]
             }
           }
           sets.result.add(row.result)
           sets.status.add(row.status)
-          const tags = typeof row.tags === 'string' ? row.tags : row.tags.join(',') || ''
+          const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
           sets.tag.add(tags)
           sets.note.add(row.note)
           sets.isNotifyUser.add(row.isNotifyUser)
@@ -1969,18 +1979,12 @@ export default {
           }
         }
         payload.notificationTemplateResourceId = this.selectedTemplateResourceId
-
-        updateNotifiedEmailBulk(payload).finally(() => {
-          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
-          this.$refs.refIncidentResponderCards.callForData()
-          this.callForSearchNotifiedMail()
-          if (this.clusteredRow) {
-            this.callForClusteredTable()
-          }
-        })
+        updateNotifiedEmailBulk(payload)
+          .then(this.handleUpdateNotifiedEmailResponse)
+          .finally(this.handleUpdateNotifiedEmailFinally)
       } else {
         const [item] = selectedRows
-        const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
+        const tag = typeof item?.tags === 'string' ? item?.tags : item?.tags?.join(',')
         const payload = {
           result: item.result,
           status: item.status,
@@ -1990,14 +1994,9 @@ export default {
           customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : '',
           notificationTemplateResourceId: this.selectedTemplateResourceId
         }
-        updateNotifiedEmail(item.resourceId, payload).then(() => {
-          this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
-          this.$refs.refIncidentResponderCards.callForData()
-          this.callForSearchNotifiedMail()
-          if (this.clusteredRow) {
-            this.callForClusteredTable()
-          }
-        })
+        updateNotifiedEmail(item.resourceId, payload)
+          .then(this.handleUpdateNotifiedEmailResponse)
+          .finally(this.handleUpdateNotifiedEmailFinally)
       }
     },
     irDetailsOnClick(row) {
@@ -2008,6 +2007,19 @@ export default {
         this.selectedEmail = response.data.data
         this.isWantToAddNewInvestigation = true
       })
+    },
+    handleUpdateNotifiedEmailResponse() {
+      this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
+      this.$refs.refIncidentResponderCards.callForData()
+      this?.$refs?.refReportedEmails?.resetSelectableParams()
+      this?.$refs?.refReportedEmailsClustered?.resetSelectableParams()
+      this.callForSearchNotifiedMail()
+      if (this.clusteredRow) {
+        this.callForClusteredTable()
+      }
+    },
+    handleUpdateNotifiedEmailFinally() {
+      this.isExtendedViewCancelButtonDisabled = false
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },

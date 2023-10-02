@@ -38,7 +38,26 @@
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <div class="campaign-manager-item-table__status-column">
+        <template v-if="scope.column.property === 'frequencyDescription'">
+          <div class="reported-email-subject__container">
+            <div class="reported-email-subject">
+              <span> {{ scope.row[col.property] }}</span>
+            </div>
+            <TheRecordsButton
+              label="recurrence"
+              width="150px"
+              :index="scope.$index"
+              :row="scope.row"
+              :disabled-count="0"
+              :is-show-button-with-zero-total="false"
+              @on-click="handleRecordButtonClick"
+            />
+          </div>
+        </template>
+        <div
+          v-if="scope.column.property === 'status'"
+          class="campaign-manager-item-table__status-column"
+        >
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
             <template #activator="{ on }">
               <v-btn style="display: none;" />
@@ -76,7 +95,7 @@
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
-          {{ labels.InstancesOfCampaign }}: {{ item.name }}
+          {{ getTableAllRecordsText }}
         </div>
       </template>
     </DataTable>
@@ -99,14 +118,17 @@ import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/Campai
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
+import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_BACK_CLICK: 'on-back-click'
+  ON_BACK_CLICK: 'on-back-click',
+  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
 }
 export default {
   name: 'CampaignManagerItemTable',
   components: {
+    TheRecordsButton,
     Badge,
     CampaignManagerItemDeleteDialog,
     CampaignManagerItemRowActions,
@@ -145,6 +167,7 @@ export default {
           download: false
         },
         columns: [
+          COLUMNS.FREQUENCY,
           COLUMNS.SCHEDULE,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
           COLUMNS.STATUS,
@@ -180,6 +203,11 @@ export default {
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
+    }
+  },
+  computed: {
+    getTableAllRecordsText() {
+      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
     }
   },
   watch: {
@@ -220,6 +248,12 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             this.tableData = results
+            this.tableData = results.map((item) => {
+              const newItem = JSON.parse(JSON.stringify(item))
+              delete newItem['frequencyCount']
+              newItem.total = Number(item['frequencyCount']) || 0
+              return newItem
+            })
           })
           .finally(this.setLoading)
       })
@@ -297,6 +331,22 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
+    },
+    handleRecordButtonClick(row) {
+      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
+    },
+    reRenderFilters(filterValues = undefined) {
+      this?.$refs?.refTable?.reRenderFilters(filterValues)
+    },
+    resetSearchText() {
+      this.$refs.refTable.resetSearchText()
+    },
+    resetTable() {
+      this.resetSearchText()
+      this.reRenderFilters({})
+      this.axiosPayload = getDefaultAxiosPayload({
+        orderBy: 'CreatedDate'
+      })
     }
   }
 }

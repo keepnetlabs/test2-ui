@@ -211,8 +211,17 @@ export default {
       const {
         emailDeliveryStartDate = '01/01/1970',
         emailDeliveryEndDate = '01/01/1970',
-        emailDeliveryDuration = 0
+        emailDeliveryDuration = 0,
+        scheduledDate = `01/01/1970`,
+        frequency = 0
       } = campaignInfo
+      if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
+        return {
+          'Scheduled Date': scheduledDate,
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
       return {
         'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
         Duration: `${emailDeliveryDuration || 0}`,
@@ -234,12 +243,14 @@ export default {
     },
     getResendDialogItems() {
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        submittedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        attachmentOpenedEmail = 0
+        openedEmail,
+        clickedEmail,
+        submittedEmail,
+        noResponseEmail,
+        notDelivered,
+        attachmentOpenedEmail,
+        reportedEmail,
+        mfa
       ] = this.getChartData
       return this.getChartData.length
         ? {
@@ -248,7 +259,8 @@ export default {
             notDelivered,
             openedEmail,
             submittedEmail,
-            attachmentOpenedEmail
+            attachmentOpenedEmail,
+            mfa
           }
         : {}
     },

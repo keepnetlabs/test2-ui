@@ -94,10 +94,12 @@
               :default-values="getDefaultTargetAudienceSettings"
               :is-vishing="true"
               :is-all-groups="!isEdit"
+              :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :selected-target-groups.sync="selectedTargetGroups"
               :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
               :form-details="formDetails"
+              :is-call-api-when-created="!isEdit"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -110,6 +112,7 @@
               :total-target-user-count="totalTargetUserCount"
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
+              :is-edit="isEdit"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -122,6 +125,7 @@
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
+              :show-schedule="showSchedule"
             />
           </v-stepper-content>
         </v-stepper-items>
@@ -156,7 +160,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -167,6 +171,7 @@ import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
+import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -184,8 +189,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
-    AppModal,
-    CampaignManagerSMSSettings
+    AppModal
   },
   props: {
     status: {
@@ -218,10 +222,23 @@ export default {
       userCountDetailResponse: {},
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
-      selectedPhishingScenarios: []
+      selectedPhishingScenarios: [],
+      defaultTargetGroupResourceIds: [],
+      scheduleInfoResponse: {}
     }
   },
   computed: {
+    showSchedule() {
+      if (this.step === 5) {
+        const { refCampaignManagerDeliverySettings } = this.$refs
+        return (
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId !==
+            SCHEDULE_TYPES.SAVE_FOR_LATER &&
+          refCampaignManagerDeliverySettings?.formData?.frequency !== 0
+        )
+      }
+      return false
+    },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(
@@ -259,10 +276,16 @@ export default {
           refCampaignManagerTargetAudience,
           refCampaignManagerDeliverySettings
         } = this.$refs
-        const scheduleTypeId = refCampaignManagerCampaignInfo.formData.scheduleTypeId
-        let selectedSchedule = refCampaignManagerCampaignInfo?.formData?.scheduledDate || ''
-        if (scheduleTypeId === '1') selectedSchedule = 'Now'
-        else if (scheduleTypeId === '2') selectedSchedule = 'Later'
+        const scheduleTypeId =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId
+        let selectedSchedule =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
+        if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
+        else {
+          selectedSchedule = this?.scheduleInfoResponse?.isStarting
+            ? labels.Now
+            : `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
+        }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
@@ -275,31 +298,32 @@ export default {
         formData.sendRandomlyUsersCalculateTypeId =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCalculateTypeId
         formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
-        formData.sendingLimit = refCampaignManagerDeliverySettings?.formData?.sendingLimit
+        formData.sendingLimit =
+          refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
+        formData.scheduledDateTimeZoneId =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId
+        formData.scheduledDate =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
+        formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
+          (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
+        )?.text
+        formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
+        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
       }
       return formData
     },
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const {
-        name,
-        scheduleTypeId,
-        duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
-        excludeFromReports
-      } = this.selectedRowFormData
+      const { name, duration, excludeFromReports } = this.selectedRowFormData
       return {
         name,
-        scheduleTypeId: scheduleTypeId.toString(),
         duration,
-        scheduledDate,
-        scheduledDateTimeZoneId,
         excludeFromReports
       }
     },
@@ -334,7 +358,15 @@ export default {
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId,
-        smsProvider
+        smsProvider,
+        scheduleTypeId,
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        distributionDays,
+        distributionStartTime,
+        distributionEndTime,
+        distributionStartTypeId,
+        frequency
       } = this.selectedRowFormData
       distributionTypeId = 3
       return {
@@ -346,7 +378,16 @@ export default {
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId,
         phoneNumber: smsProvider.text,
-        smsProviderNumberResourceId: smsProvider.value
+        smsProviderNumberResourceId: smsProvider.value,
+        scheduledDate,
+        scheduledDateTimeZoneId,
+        scheduleTypeId: scheduleTypeId.toString(),
+        distributionDays,
+        distributionStartTime: distributionStartTime || '09:00',
+        distributionEndTime: distributionEndTime || '17:00',
+        distributionStartTypeId,
+        sendCallsOnDays: getSendCallOnDays(distributionDays),
+        frequency
       }
     },
     getUserTargetAudienceData() {
@@ -366,6 +407,16 @@ export default {
   watch: {
     selectedPhishingScenarios(val) {
       this.isPhishingScenariosValid = !!val.length
+    },
+    step(val) {
+      if (
+        val === 4 &&
+        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate === ''
+      ) {
+        this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
+          Date.now()
+        ).format(getTimeZoneForMoment())
+      }
     }
   },
   created() {
@@ -399,14 +450,17 @@ export default {
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
           this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs
             ?.refGroupTable?.$refs?.refTable
-        )
+        ) {
+          this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs.refGroupTable.callForData()
           this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
             this.selectedTargetGroups
           )
+        }
       })
     },
     getFormValues() {
@@ -483,15 +537,43 @@ export default {
           return
         case 4:
           const { refCampaignManagerDeliverySettings } = this.$refs
-          if (!refCampaignManagerDeliverySettings?.$refs?.refForm?.validate()) return
-          this.changeStep()
+          if (!refCampaignManagerDeliverySettings?.validateForm()) return
+          try {
+            this.setActionButtonDisability(true)
+            const response = await SmishingService.calculateScheduleInfo({
+              scheduleTypeId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
+              scheduledDate:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
+              scheduledDateTimeZoneId:
+                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
+              frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
+              smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              )
+            })
+            this.setActionButtonDisability(false)
+            this.scheduleInfoResponse = response?.data?.data
+            this.changeStep()
+          } catch (e) {
+            this.setActionButtonDisability(false)
+          }
           return
         case 5:
-          const {
+          let {
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
-            refCampaignManagerDeliverySettings: { formData: deliverySettingsFormData }
+            refCampaignManagerDeliverySettings: {
+              formData: deliverySettingsFormData,
+              inputScheduleFormData,
+              inputDistributionFormData
+            }
           } = this.$refs
+          deliverySettingsFormData = {
+            ...deliverySettingsFormData,
+            ...inputScheduleFormData,
+            ...inputDistributionFormData
+          }
           const payload = {
             smishingScenarioResourceIds: this.selectedPhishingScenarios.map(
               (pScenario) => pScenario.resourceId
@@ -500,18 +582,23 @@ export default {
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             duration: parseInt(campaignManagerFormData.duration),
-            scheduleTypeId: parseInt(campaignManagerFormData.scheduleTypeId),
+            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
-              campaignManagerFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
-                : campaignManagerFormData.scheduledDate,
-            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
+                : deliverySettingsFormData.scheduledDate,
+            scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
             distributionTypeId: parseInt(deliverySettingsFormData.distributionTypeId),
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: parseInt(
               deliverySettingsFormData.distributionDelayTimeTypeId
             ),
+            distributionStartTime: deliverySettingsFormData.distributionStartTime,
+            distributionEndTime: deliverySettingsFormData.distributionEndTime,
+            distributionDays: deliverySettingsFormData.distributionDays,
+            distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
+            frequency: deliverySettingsFormData.frequency,
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: parseInt(targetAudienceFormData.sendRandomlyUsersCount),

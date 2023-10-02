@@ -205,7 +205,7 @@ export default {
                 refSendTrainingSettings.contentLanguageItems.find((item) => item.value === lang)
                   .text
             )
-            .join(', ')
+            ?.join(', ')
         }
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
@@ -214,7 +214,7 @@ export default {
             (lang) =>
               refSendTrainingSettings.contentLanguageItems.find((item) => item.value === lang).text
           )
-          .join(', ')
+          ?.join(', ')
         const isProxy = refSendTrainingSettings?.formData?.isProxy
         formData.settings = {
           'Training Delivery for Your LMS': isProxy ? 'ON' : 'OFF',

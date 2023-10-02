@@ -58,6 +58,12 @@ import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
 import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
+import currentDatePlusTenDays from '@/components/GrapesJs/Newsletter/mergedTexts/currentDatePlusTenDays'
+import currentDateMinusTenDays from '@/components/GrapesJs/Newsletter/mergedTexts/currentDateMinusTenDays'
+import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberOneDigit'
+import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
+import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
+import dateSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateSent'
 
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
@@ -74,7 +80,6 @@ export const MERGED_TEXTS_MAP = {
   '{POSTCOMPANYNAME}': postCompanyName,
   '{WEBURL}': webUrl,
   '{POSTURL}': postUrl,
-  '{CURRENTDATE}': currentDate,
   '{DESCRIPTION}': description,
   '{SHARECOMPANYNAME}': shareCompanyName,
   '{LINK}': link,
@@ -119,5 +124,12 @@ export const MERGED_TEXTS_MAP = {
   '{FROMEMAIL}': fromEmail,
   '{FROMNAME}': fromName,
   '{LASTNAME}': lastName,
-  '{PHISHINGURL}': phishingUrl
+  '{PHISHINGURL}': phishingUrl,
+  '{CURRENT_DATE}': currentDate,
+  '{DATE_SENT}': dateSent,
+  '{CURRENT_DATE_PLUS_10_DAYS}': currentDatePlusTenDays,
+  '{CURRENT_DATE_MINUS_10_DAYS}': currentDateMinusTenDays,
+  '{RANDOM_NUMBER_1_DIGIT}': randomNumberOneDigit,
+  '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
+  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits
 }

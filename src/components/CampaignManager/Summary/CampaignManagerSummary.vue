@@ -1,5 +1,18 @@
 <template>
   <div class="campaign-manager-last-step">
+    <CampaignManagerScheduleDialog
+      v-if="showSchedule && isShowScheduleDialog"
+      :status="isShowScheduleDialog"
+      :campaign-name="formData.name"
+      :selected-frequency="getSelectedFrequency"
+      :frequency-id="getSelectedFrequencyId"
+      :schedule-type-id="getScheduleTypeId"
+      :phishing-scenarios="getPhishingScenarios"
+      :scheduled-date-time-zone-id="getScheduledDateTimeZoneId"
+      :scheduled-date="getScheduledDate"
+      :items="getScheduledDialogItems"
+      @on-close="toggleScheduleDialog"
+    />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
@@ -48,18 +61,32 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="my-6">
-      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
-      <VTooltip v-if="phishingScenarios.length > 5" bottom>
-        <template #activator="{ on }">
-          <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
-            >Total {{ phishingScenarios.length }} Scenarios</span
-          >
-        </template>
-        <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
-          {{ methodWrapper.method }} ({{ methodWrapper.count }})
-        </div>
-      </VTooltip>
+    <div class="my-6 d-flex justify-space-between align-center">
+      <div>
+        <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+        <VTooltip v-if="phishingScenarios.length > 5" bottom>
+          <template #activator="{ on }">
+            <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
+              >Total {{ phishingScenarios.length }} Scenarios</span
+            >
+          </template>
+          <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
+            {{ methodWrapper.method }} ({{ methodWrapper.count }})
+          </div>
+        </VTooltip>
+      </div>
+      <div v-if="showSchedule">
+        <v-btn
+          class="campaign-manager-summary-card__button pr-4 mr-6"
+          rounded
+          outlined
+          color="#2196f3"
+          @click="handleSchedule"
+        >
+          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-calendar-range</v-icon>
+          Schedule
+        </v-btn>
+      </div>
     </div>
     <ElTabs
       v-if="phishingScenarios.length"
@@ -212,6 +239,7 @@ import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -222,7 +250,8 @@ export default {
     CampaignManagerSummaryCard,
     AttachmentsPreview,
     CampaignManagerReportSummaryLandingPage,
-    AlertBox
+    AlertBox,
+    CampaignManagerScheduleDialog
   },
   props: {
     formData: {
@@ -235,6 +264,10 @@ export default {
     languageOptions: {
       type: Array,
       default: () => []
+    },
+    showSchedule: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -249,10 +282,32 @@ export default {
       emailTemplateParams: {},
       landingPageParams: {},
       difficulties,
-      methods
+      methods,
+      isShowScheduleDialog: false
     }
   },
   computed: {
+    getScheduledDialogItems() {
+      return this?.formData?.scheduleItems || []
+    },
+    getSelectedFrequency() {
+      return this?.formData?.frequency || ''
+    },
+    getSelectedFrequencyId() {
+      return this?.formData?.frequencyId || ''
+    },
+    getScheduleTypeId() {
+      return this?.formData?.selectedScheduleId || ''
+    },
+    getPhishingScenarios() {
+      return this?.formData?.selectedPhishingScenarios || []
+    },
+    getScheduledDateTimeZoneId() {
+      return this?.formData?.scheduledDateTimeZoneId || ''
+    },
+    getScheduledDate() {
+      return this?.formData?.scheduledDate || ''
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
@@ -326,7 +381,8 @@ export default {
       return {
         name: formData.name,
         method: [...methodSet].join(', '),
-        difficulty: [...difficultySet].join(', ')
+        difficulty: [...difficultySet].join(', '),
+        'Tracking Duration': formData.duration
       }
     },
     getTotalRandomlySelectedUserCount() {
@@ -369,23 +425,22 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      const totalActiveUsersCount =
+      return (
         userCountDetailResponse?.data.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      return totalActiveUsersCount
+      )
     },
     getSettingsItems() {
       const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
       const obj = {
         Starting: selectedSchedule
       }
-      if (selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        obj['Sending Limit'] = sendingLimit
-      }
+      obj['Sending Limit'] = sendingLimit
       obj['Email Delivery'] = `${
         selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
       } - ${selectedEmailDelivery.name}`
+      obj.frequency = this.formData.frequency
       return obj
     },
     getOtherSettingsItems() {
@@ -488,6 +543,12 @@ export default {
     },
     getBadgeText(text = '') {
       return text
+    },
+    handleSchedule() {
+      this.toggleScheduleDialog()
+    },
+    toggleScheduleDialog() {
+      this.isShowScheduleDialog = !this.isShowScheduleDialog
     }
   }
 }

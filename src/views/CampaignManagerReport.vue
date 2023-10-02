@@ -50,6 +50,7 @@ export default {
   components: { KContainer },
   data() {
     return {
+      renderClickedTab: false,
       customFields: [],
       isLoading: true,
       tab: labels.Summary,
@@ -198,6 +199,7 @@ export default {
           isClickedOnly = true
         } else if (method === '2') {
           isSubmittedData = true
+          this.renderClickedTab = true
         } else if (method === '3') {
           isAttachment = true
         }
@@ -215,7 +217,7 @@ export default {
     },
     setTabStatus() {
       //click only
-      if (!this.multipleType[0]) {
+      if (!this.multipleType[0] && !this.renderClickedTab) {
         const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.Clicked)
         if (tabIndex) this.tabItems.splice(tabIndex, 1)
       }

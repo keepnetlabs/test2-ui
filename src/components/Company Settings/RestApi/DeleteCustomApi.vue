@@ -59,7 +59,7 @@ export default {
       return `Delete Rest API`
     },
     getSubtitle() {
-      return `${this.selectedRow.clientName}`
+      return `${this.selectedRow?.clientName}`
     }
   },
   methods: {

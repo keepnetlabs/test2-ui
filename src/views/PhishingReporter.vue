@@ -435,21 +435,21 @@ export default {
       getPhishingReporter()
         .then((response) => {
           const { data } = response
-          if (response.status === 200) {
+          if (data.message === 'Phishing reporter not found' && data.status === 'SUCCESS') {
+            this.tabComponent = {
+              name: FirstTime,
+              ref: 'refFirstTime',
+              formData: null
+            }
+            this.tab = 'phishing-reporter-settings'
+            return
+          } else if (response.status === 200) {
             this.tabComponent = {
               name: Settings,
               ref: 'refSettings',
               formData: data.data
             }
           }
-        })
-        .catch(() => {
-          this.tabComponent = {
-            name: FirstTime,
-            ref: 'refFirstTime',
-            formData: null
-          }
-          this.tab = 'phishing-reporter-settings'
         })
         .finally(() => (this.isLoading = false))
     }

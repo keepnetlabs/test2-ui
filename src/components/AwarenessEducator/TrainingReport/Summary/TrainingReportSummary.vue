@@ -9,8 +9,10 @@
       @close="hideAudienceDetailsModal"
     />
     <TrainingReportSummaryHeader
+      :isScormProxy="isScormProxy"
       :trainingName="trainingName"
       :resend-dialog-items="getResendDialogItems"
+      :isLoading="isLoading"
       :id="id"
     />
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
@@ -65,7 +67,6 @@ import TrainingReportTrainingMaterial from '@/components/AwarenessEducator/Train
 import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
 import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { useLoading } from '@/hooks/useLoading'
 import { getDefaultEmailTemplate } from '@/api/company'
 export default {
   name: 'TrainingReportSummary',
@@ -79,20 +80,24 @@ export default {
     TrainingReportSummaryAudienceDetails,
     TrainingReportCertificate
   },
-  mixins: [useLoading],
   props: {
     id: {
       type: String
     },
     trainingName: {
       type: String
+    },
+    trainingSummary: {
+      type: Object
+    },
+    isLoading: {
+      type: Boolean
     }
   },
   data() {
     return {
       isAudienceModalVisible: false,
       targetGroups: [],
-      trainingSummary: {},
       interval: null,
       languages: [],
       enrollmentEmailData: {},
@@ -100,6 +105,9 @@ export default {
     }
   },
   computed: {
+    isScormProxy() {
+      return this.trainingSummary?.isScormProxy || false
+    },
     getTrainingMaterialRow() {
       const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
       return { languages, trainingId: trainingDetails?.id, trainingName: trainingDetails?.name }
@@ -190,64 +198,66 @@ export default {
     },
     getResendDialogItems() {
       const [
-        openedEmail = 0,
-        clickedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        notCompletedTraining = 0,
-        notCompletedExam = 0,
-        failedExam = 0
+        totalUserOpenedCount = 0,
+        totalUserClickedCount = 0,
+        totalTargetUserCount = 0,
+        emailDeliveredUserCount = 0,
+        emailErrorUserCount = 0,
+        didNotCompleteTrainingCount = 0,
+        didNotCompleteExamCount = 0,
+        failedExamCount = 0,
+        noResponseCount = 0
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            openedEmail,
-            clickedEmail,
-            noResponseEmail,
-            notDelivered,
-            notCompletedTraining,
-            notCompletedExam,
-            failedExam
+            totalUserOpenedCount,
+            totalUserClickedCount,
+            totalTargetUserCount,
+            emailDeliveredUserCount,
+            emailErrorUserCount,
+            didNotCompleteTrainingCount,
+            didNotCompleteExamCount,
+            failedExamCount,
+            noResponseCount
           }
         : {}
     },
     getChartData() {
       const defaultScenarioStatsObject = {
-        scenarioStats: {
-          openedEmail: 0,
-          clickedEmail: 0,
-          noResponseEmail: 0,
-          notDelivered: 0,
-          notCompletedTraining: 0,
-          notCompletedExam: 0,
-          failedExam: 0,
-          inProgress: 0,
-          completedTraining: 0
-        }
+        totalUserOpenedCount: 0,
+        totalUserClickedCount: 0,
+        totalTargetUserCount: 0,
+        emailDeliveredUserCount: 0,
+        emailErrorUserCount: 0,
+        didNotCompleteTrainingCount: 0,
+        didNotCompleteExamCount: 0,
+        failedExamCount: 0,
+        noResponseCount: 0
       }
-      const { scenarioStats = {} } = this.trainingSummary?.scenarioStats
+      const { reportDetail = {} } = this.trainingSummary
         ? this.trainingSummary
         : defaultScenarioStatsObject
       const {
-        openedEmail = 0,
-        clickedEmail = 0,
-        noResponseEmail = 0,
-        notDelivered = 0,
-        notCompletedTraining = 0,
-        notCompletedExam = 0,
-        failedExam = 0,
-        inProgress = 0,
-        completedTraining = 0
-      } = scenarioStats
+        totalUserOpenedCount = 0,
+        totalUserClickedCount = 0,
+        totalTargetUserCount = 0,
+        emailDeliveredUserCount = 0,
+        emailErrorUserCount = 0,
+        didNotCompleteTrainingCount = 0,
+        didNotCompleteExamCount = 0,
+        failedExamCount = 0,
+        noResponseCount = 0
+      } = reportDetail
       const dataContainer = [
-        openedEmail,
-        clickedEmail,
-        noResponseEmail,
-        notDelivered,
-        notCompletedTraining,
-        notCompletedExam,
-        failedExam,
-        inProgress,
-        completedTraining
+        totalUserOpenedCount,
+        totalUserClickedCount,
+        totalTargetUserCount,
+        emailDeliveredUserCount,
+        emailErrorUserCount,
+        didNotCompleteTrainingCount,
+        didNotCompleteExamCount,
+        failedExamCount,
+        noResponseCount
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
@@ -339,62 +349,48 @@ export default {
   },
   created() {
     this.callForLanguages()
-    this.callForData()
-    this.callForEnrollmentEmail()
-    this.callForCertificate()
+    // this.callForEnrollmentEmail()
+    // this.callForCertificate()
   },
   beforeDestroy() {
     clearInterval(this.interval)
   },
-  methods: {
-    callForData() {
-      this.callApis(true)
-      this.interval = setInterval(() => {
-        this.callApis()
-      }, 15000)
+  watch: {
+    getCertificateEmailNotificationTemplateTypeResourceId(val) {
+      if (val) {
+        this.callForCertificate()
+      }
     },
+    getTrainingEmailNotificationTemplateTypeResourceId(val) {
+      if (val) {
+        this.callForEnrollmentEmail()
+      }
+    }
+  },
+  methods: {
     callForEnrollmentEmail() {
       if (this.getTrainingEmailNotificationTemplateTypeResourceId) {
-        getDefaultEmailTemplate(this.getTrainingEmailNotificationTemplateTypeResourceId)
-          .then((response) => {
+        getDefaultEmailTemplate(this.getTrainingEmailNotificationTemplateTypeResourceId).then(
+          (response) => {
             const {
               data: { data }
             } = response
             this.enrollmentEmailData = data?.template || {}
-          })
-          .finally(this.setLoading)
+          }
+        )
       }
     },
     callForCertificate() {
       if (this.getCertificateEmailNotificationTemplateTypeResourceId) {
-        this.setLoading(true)
         AwarenessEducatorService.getCertificateHtml(
           this.getCertificateEmailNotificationTemplateTypeResourceId
-        )
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.certificateEmailData = data
-          })
-          .finally(this.setLoading)
+        ).then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.certificateEmailData = data
+        })
       }
-    },
-    callApis(isUseLoading = false) {
-      if (isUseLoading) {
-        this.setLoading(true)
-      }
-      AwarenessEducatorService.getTrainingReportSummary(this.id).then((response) => {
-        this.trainingSummary = response?.data?.data
-        this.$store.dispatch(
-          'common/setActivePageRouterName',
-          this.trainingSummary?.trainingDetails?.name || ''
-        )
-        if (isUseLoading) {
-          this.callForEnrollmentEmail()
-          this.callForCertificate()
-        }
-      })
     },
     callForLanguages() {
       AwarenessEducatorService.getLanguages().then((response) => {

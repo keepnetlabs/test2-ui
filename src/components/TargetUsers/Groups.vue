@@ -38,6 +38,8 @@
       options
       selectable
       disable-extended-view-transition
+      wait-extended-view-api
+      :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
       :loading="loading"
       :table="tableData"
       :columns="tableOptions.columns"
@@ -174,6 +176,7 @@ export default {
       bulkDeleteErrorMessage: '',
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
+      isExtendedViewCancelButtonDisabled: false,
       loading: false,
       tableData: [],
       selectedGroup: {},
@@ -436,9 +439,15 @@ export default {
         .finally(() => (this.loading = false))
     },
     callForUpdateTargetGroup(payload) {
-      updateTargetGroup(payload).then(() => {
-        this.callForTargetGroups()
-      })
+      this.isExtendedViewCancelButtonDisabled = true
+      updateTargetGroup(payload)
+        .then(() => {
+          this.$refs?.refGroupsTable?.resetSelectableParams()
+          this.callForTargetGroups()
+        })
+        .finally(() => {
+          this.isExtendedViewCancelButtonDisabled = false
+        })
     },
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)

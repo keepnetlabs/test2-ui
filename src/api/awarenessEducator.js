@@ -333,6 +333,53 @@ const downloadEnrollmentPackage = (resourceId = '') => {
   )
 }
 
+const resendTrainingToUsers = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToUserList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/users/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToOpenedEmailList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/opened-emails/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToClickedLinkList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/clicked-emails/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToProgressList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/progress/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingToExamResultList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/exam-results/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingNoResponseList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/no-response/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const resendTrainingSendingReportList = (payload = {}, id = '') => {
+  return testRequest.post(`/training-reports/${id}/sending-report/resend`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const exportTrainingReport = (id = '') => {
+  return testRequest.get(`/training-reports/export/${id}`, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -398,5 +445,14 @@ export default {
   getCertificateHtml,
   downloadTrainingPackage,
   downloadEnrollmentPackage,
-  getPhoneNumbers
+  getPhoneNumbers,
+  resendTrainingToUsers,
+  resendTrainingToOpenedEmailList,
+  resendTrainingToClickedLinkList,
+  resendTrainingToProgressList,
+  resendTrainingToExamResultList,
+  resendTrainingNoResponseList,
+  resendTrainingSendingReportList,
+  resendTrainingToUserList,
+  exportTrainingReport
 }
