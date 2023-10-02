@@ -164,8 +164,6 @@
                         :mergeTags="mergeTags"
                         :initialRules="textMessageRules"
                       />
-                      <!-- <InputDescription
-                      /> -->
                     </form-group>
                   </v-form>
                 </v-list-item-content>

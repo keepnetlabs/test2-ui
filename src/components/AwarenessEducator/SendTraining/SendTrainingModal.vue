@@ -58,6 +58,10 @@
               ref="refSendTrainingSettings"
               :selected-row="selectedRow"
               :enum-types="enumTypes"
+              :distributionDelayTimeTypes="distributionDelayTimeTypes"
+              :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
+              :phoneNumberItems="phoneNumberItems"
+              :phoneNumbers="phoneNumbers"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -144,6 +148,9 @@ export default {
     },
     enumTypes: {
       type: Object
+    },
+    distributionDelayTimeTypes: {
+      type: Array
     }
   },
   inject: {
@@ -153,6 +160,8 @@ export default {
   },
   data() {
     return {
+      phoneNumbers: [],
+      phoneNumberItems: [],
       labels,
       isActionButtonDisabled: false,
       createErrorMessage: '',
@@ -161,6 +170,8 @@ export default {
       reminderData: null,
       enrollmentData: null,
       userCountDetailResponse: {},
+      totalActiveUserCount: 0,
+      totalPhoneNumberUserCount: 0,
       trainingPreviewData: {
         name: this?.selectedRow?.trainingName,
         category: this?.selectedRow?.category,
@@ -233,8 +244,15 @@ export default {
   },
   created() {
     this.callForFormDetails()
+    this.callForPhoneNumbers()
   },
   methods: {
+    callForPhoneNumbers() {
+      AwarenessEducatorService.getPhoneNumbers().then((response) => {
+        this.phoneNumberItems = response.data.data
+        this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
+      })
+    },
     callForFormDetails() {
       //get reminder email
       getDefaultEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then(
@@ -316,6 +334,14 @@ export default {
             refSendTrainingSelectUsers.isTargetGroupsValid = true
             const targetGroupResourceIds = targetGroups.map((group) => group.resourceId)
             this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
+            this.totalActiveUserCount =
+              this.userCountDetailResponse?.data?.data
+                ?.find((row) => row.status === 'Active')
+                ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
+            this.totalPhoneNumberUserCount =
+              this.userCountDetailResponse?.data?.data
+                ?.find((row) => row.status === 'Active')
+                ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
             this.step += flag
           } else {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
@@ -357,6 +383,29 @@ export default {
           refSendTrainingSettings.validateForm() &&
           refSendTrainingSettings.checkDateIsValid()
         ) {
+          if (
+            this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification &&
+            !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.validateForm()
+          ) {
+            this.$nextTick(() => {
+              const el = refSendTrainingSettings.$refs.refForm.$el.querySelector('.error--text')
+              scrollToComponent(el)
+            })
+            return
+          }
+          if (
+            this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification &&
+            !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate.includes(
+              '{TRAININGURL}'
+            )
+          ) {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-information',
+              message: `You cannot save without adding a {TRAININGURL} to the SMS text field`
+            })
+            return
+          }
           this.step += flag
         } else {
           this.$nextTick(() => {
@@ -426,6 +475,15 @@ export default {
         markedAsTest,
         awardCertificate,
         languageIds: newLanguageIds
+      }
+
+      if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {
+        payload[
+          'smsTextTemplate'
+        ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+        payload[
+          'smsProviderNumberResourceId'
+        ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsProviderNumberResourceId
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)

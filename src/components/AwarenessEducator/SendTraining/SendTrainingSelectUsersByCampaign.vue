@@ -713,7 +713,7 @@ export default {
               showTooltipLine: true
             }
           } else {
-            if (this.methodTypeId === 2) {
+            if (this.campaignMethod === 'Data Submission') {
               this.chartOptions = {
                 ...chartOptions,
                 backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
@@ -742,6 +742,7 @@ export default {
               }
             }
           }
+          console.log(this.chartOptions)
           const {
             attachmentOpenedEmail,
             clickedEmail,
@@ -757,7 +758,7 @@ export default {
           pieData.push(openedEmail)
           pieData.push(reportedEmail)
           if (this.methodTypeId !== 3) pieData.push(clickedEmail)
-          if (this.methodTypeId === 2) pieData.push(submittedEmail)
+          if (this.campaignMethod === 'Data Submission') pieData.push(submittedEmail)
           if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)
           pieData.push(notDelivered)
           if (this.campaignMethod === 'Multiple Method') {

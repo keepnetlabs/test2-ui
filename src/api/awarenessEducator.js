@@ -310,6 +310,10 @@ const restoreEnrollment = (resourceId = '') => {
   )
 }
 
+const getPhoneNumbers = () => {
+  return testRequest.get('/enrollments/phone-number')
+}
+
 const getCertificateHtml = (resourceId) => {
   return testRequest.post(`/training-reports/certificate/${resourceId}`)
 }
@@ -441,6 +445,7 @@ export default {
   getCertificateHtml,
   downloadTrainingPackage,
   downloadEnrollmentPackage,
+  getPhoneNumbers,
   resendTrainingToUsers,
   resendTrainingToOpenedEmailList,
   resendTrainingToClickedLinkList,
