@@ -15,6 +15,7 @@
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
+      rowKey="targetUserResourceId"
       selectable
       filterable
       options
