@@ -60,6 +60,8 @@
               :enum-types="enumTypes"
               :distributionDelayTimeTypes="distributionDelayTimeTypes"
               :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
+              :phoneNumberItems="phoneNumberItems"
+              :phoneNumbers="phoneNumbers"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">

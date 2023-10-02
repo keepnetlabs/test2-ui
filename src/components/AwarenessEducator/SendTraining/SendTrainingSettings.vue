@@ -90,6 +90,8 @@
         ref="refSendTrainingSMSSettings"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
         :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
+        :phoneNumberItems="phoneNumberItems"
+        :phoneNumbers="phoneNumbers"
       />
     </div>
     <FormGroup v-if="!formData.isProxy" style="max-width: 600px;" :title="labels.Schedule">
@@ -358,6 +360,14 @@ export default {
     },
     totalPhoneNumberUserCount: {
       type: Number
+    },
+    phoneNumberItems: {
+      type: Array,
+      default: () => []
+    },
+    phoneNumbers: {
+      type: Array,
+      default: () => []
     }
   },
   inject: {

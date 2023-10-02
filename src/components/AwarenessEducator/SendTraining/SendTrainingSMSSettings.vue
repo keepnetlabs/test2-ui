@@ -130,9 +130,6 @@ export default {
       ]
     }
   },
-  created() {
-    this.callForPhoneNumbers()
-  },
   watch: {
     defaultValues: {
       deep: true,
