@@ -324,6 +324,7 @@ export const labels = {
   SubmittedMFACode: 'Submitted MFA Code',
   OpenedAttachment: 'Opened Attachment',
   NoResponse: 'No Response',
+  EmailFailedToSend: 'Email Failed to Send',
   SendingReport: 'Sending Report',
   PhishingScenarios: 'Phishing Scenarios',
   CampaignManagerPhishingScenariosSub:
