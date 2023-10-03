@@ -11,6 +11,7 @@
     />
     <FormGroup
       class="mb-4"
+      style="max-width: 585px;"
       title="SMS Text"
       sub-title="SMS text to be sent to target users. Use the mandatory merge tag {TRAININGURL} for the link to be added to the SMS"
     >
@@ -126,6 +127,18 @@ export default {
         {
           text: 'Last Name',
           value: '{LASTNAME}'
+        },
+        {
+          text: 'Company Name',
+          value: `{COMPANYNAME}`
+        },
+        {
+          text: 'Training Description',
+          value: '{TRAININGDESCRIPTION}'
+        },
+        {
+          text: 'Date SMS Sent',
+          value: '{DATESMSSENT}'
         }
       ]
     }
