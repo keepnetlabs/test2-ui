@@ -221,10 +221,18 @@ export default {
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Sender Phone Number':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
-              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
+          'SMS Text':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+        }
+        if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
+          delete formData.settings['Sender Phone Number']
+          delete formData.settings['SMS Text']
         }
         if (isProxy) {
           delete formData.settings['Auto-enroll']
