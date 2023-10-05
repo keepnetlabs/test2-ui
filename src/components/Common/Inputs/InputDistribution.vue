@@ -56,7 +56,8 @@
               placeholder="Start time"
               :picker-options="{
                 start: '09:00',
-                end: '17:00'
+                end: '17:00',
+                maxTime: value.distributionEndTime
               }"
             />
           </div>
