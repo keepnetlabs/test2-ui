@@ -702,10 +702,10 @@ export default {
           } else if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#F56C6C', '#F56C6C'],
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B83A3A', '#F56C6C'],
               labels: [
                 labels.NoResponse,
-                labels.Opened,
+                labels.OpenedEmail,
                 labels.ReportedAsSuspicious,
                 labels.OpenedAttachment,
                 labels.EmailFailedToSend
