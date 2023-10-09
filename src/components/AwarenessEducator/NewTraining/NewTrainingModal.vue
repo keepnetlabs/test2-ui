@@ -161,7 +161,7 @@ export default {
     changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs
       if (this.step === 1 && flag === 1) {
-        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs
+        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
         if (refMakeAvailableFor) {
           refMakeAvailableFor.validateAvailableFor(
             refTrainingCourseInformation.formData.availableForRequests
