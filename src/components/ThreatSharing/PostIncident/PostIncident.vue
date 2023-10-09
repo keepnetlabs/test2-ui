@@ -18,7 +18,7 @@
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
           :blockManagerComponents="{}"
-        ></GrapesNewsletterModal>
+        />
       </template>
     </app-modal>
     <div class="incident-container">
