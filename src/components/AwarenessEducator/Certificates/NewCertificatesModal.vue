@@ -173,7 +173,8 @@ export default {
       this.loading = true
       AwarenessEducatorService.getCertificate(this.selectedItem.id)
         .then((response) => {
-          const { name, description, template, availableForList } = response?.data?.data
+          const { name = '', description = '', template = '', availableForList = [] } =
+            response?.data?.data || {}
           this.formData.name = this.isDuplicate ? `${name} - Copy` : name
           this.formData.description = description
           this.formData.template = template
