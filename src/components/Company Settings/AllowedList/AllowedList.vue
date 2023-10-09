@@ -367,7 +367,7 @@ export default {
               totalNumberOfPages = 1,
               pageNumber = 1,
               results = []
-            } = response?.data?.data
+            } = response?.data?.data || {}
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
