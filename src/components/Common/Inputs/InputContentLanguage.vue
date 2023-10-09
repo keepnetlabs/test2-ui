@@ -1,6 +1,7 @@
 <template>
   <FormGroup has-hint :title="title">
     <KSelect
+      ref="refSelect"
       :value="value"
       persistent-hint
       dense
@@ -78,6 +79,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    isAddDefaultValue: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -119,7 +124,8 @@ export default {
           text: 'All Languages',
           value: 'All'
         })
-        this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
+        if (this.isAddDefaultValue)
+          this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
       })
     },
     checkIsItemDisabled(item) {
