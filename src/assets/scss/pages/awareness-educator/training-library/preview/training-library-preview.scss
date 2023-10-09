@@ -12,10 +12,20 @@
       }
       &__details-item{
         margin-top:16px;
+        display: flex;
         & > span{
           min-width:126px;
           display: inline-block;
         }
+      }
+      &__tag{
+        border-radius: 4px;
+        background-color: #E0E0E0;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        padding: 4px 8px;
+        min-width:auto !important;
       }
   .form-group-horizontal-content__label{
     color:rgba(56, 59, 65, 0.72);

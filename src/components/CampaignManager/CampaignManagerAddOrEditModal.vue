@@ -282,7 +282,8 @@ export default {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings
+          refCampaignManagerDeliverySettings,
+          refCampaignManagerPhishingScenarios
         } = this.$refs
         const scheduleTypeId =
           refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
@@ -321,6 +322,7 @@ export default {
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
+        formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
       }
       return formData
     },

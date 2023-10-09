@@ -12,6 +12,7 @@ export const labels = {
   LimitRecipients: 'Limit Recipients',
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
+  TrainingForUsers: 'Training for users who has been phished',
   Now: 'Now',
   Later: 'Later',
   Training: 'Training',

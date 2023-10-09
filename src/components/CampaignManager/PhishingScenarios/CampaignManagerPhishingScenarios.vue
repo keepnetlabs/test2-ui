@@ -13,7 +13,6 @@
       v-if="isShowTrainingDialog"
       :status="isShowTrainingDialog"
       :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      :languages="languages"
       @on-close="toggleShowTrainingDialog"
     />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
@@ -667,7 +666,7 @@ export default {
       if (this.trainingTabModel[item.resourceId]) {
         this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
       } else {
-        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel())
+        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel('', '', [], value))
       }
       if (value) {
         this.$emit('input', [...this.value, item])

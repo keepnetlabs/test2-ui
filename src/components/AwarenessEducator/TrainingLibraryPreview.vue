@@ -43,34 +43,41 @@
         name="details"
         id="campaign-manager-info--training-details-content"
       >
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Training Name: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Category Name: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Description: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Target Audience: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Languages: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Created By: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
-        <div class="training-library-preview__details-item">
-          <span class="training-library-preview__title">Tags: </span>
-          <span class="training-library-preview__desc">{{ name }}</span>
-        </div>
+        <template v-if="trainingParams">
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Training Name: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.name }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Category Name: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.category }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Description: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.description }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Target Audience: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.targetAudience }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Languages: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.languages }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Created By: </span>
+            <span class="training-library-preview__desc">{{ trainingParams.createdBy }}</span>
+          </div>
+          <div class="training-library-preview__details-item">
+            <span class="training-library-preview__title">Tags: </span>
+            <span
+              v-for="tag in trainingParams.tagNames"
+              :key="tag"
+              class="training-library-preview__tag"
+              >{{ tag }}</span
+            >
+          </div>
+        </template>
       </ElTabPane>
     </ElTabs>
   </div>
@@ -97,6 +104,9 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    trainingParams: {
+      type: Object
     }
   },
   data() {
