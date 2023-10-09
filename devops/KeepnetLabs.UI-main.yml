@@ -133,7 +133,7 @@ stages:
       repositoryName: GitHub_Prod_Repo
       environment: EU_PROD_UI
       githubConnectionUrl: $(prodGitHubConnectionURL)
-      githubBranchName: master
+      githubBranchName: prod
 
 - stage: ONPREM_BUCKET
   variables:
