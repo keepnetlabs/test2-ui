@@ -28,6 +28,7 @@
         trainingEmailNotificationTemplateTypeResourceId
       "
       :enum-types="enumTypes"
+      :distributionDelayTimeTypes="distributionDelayTimeTypes"
       @on-close="toggleShowSendTrainingModal"
       @on-show-training-summary="handlePreviewRowClick(selectedRow)"
     />
@@ -93,6 +94,7 @@ export default {
       enumTypes: {},
       distributionEmailOverTimeTypes: [],
       distributionSmtpDelayTimeTypes: [],
+      distributionDelayTimeTypes: [],
       certificateEmailNotificationTemplateTypeResourceId: '',
       reminderEmailNotificationTemplateTypeResourceId: '',
       trainingEmailNotificationTemplateTypeResourceId: ''
@@ -110,6 +112,22 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data || {}
+        const distributionDelayTimeTypes = [
+          {
+            text: 'seconds',
+            value: '1'
+          },
+          {
+            text: 'minutes',
+            value: '2'
+          },
+          {
+            text: 'hours',
+            value: '3'
+          }
+        ]
+        // TODO: Fetch distributionDelayTimeTypes
+        this.distributionDelayTimeTypes = distributionDelayTimeTypes
         this.enumTypes = enumNameValuePairs
         this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId

@@ -4,7 +4,7 @@
     subtitle-id="text--campaign-manager-schedule-popup-subtitle"
     custom-size="700"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="getTitle"
     :subtitle="getSubtitle"
     :status="status"
     @changeStatus="closeModal"
@@ -50,6 +50,8 @@ import AppDialog from '@/components/AppDialog'
 import { getCalculatedScheduleInfo } from '@/api/phishingsimulator'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { useLoading } from '@/hooks/useLoading'
+import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
+import SmishingService from '@/api/smishing'
 export default {
   name: 'CampaignManagerItemDeleteDialog',
   components: { DatatableLoading, AppDialog },
@@ -82,6 +84,14 @@ export default {
     },
     scheduledDate: {
       type: String
+    },
+    type: {
+      type: String,
+      default: DISTRIBUTION_TYPES.PHISHING
+    },
+    items: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -89,33 +99,20 @@ export default {
       CONSTANTS: {
         icon: 'mdi-calendar-range',
         title: 'Phishing Scenarios Frequency Schedule'
-      },
-      items: []
+      }
     }
   },
   computed: {
     getSubtitle() {
       return this?.campaignName || ''
+    },
+    getTitle() {
+      return this.type === DISTRIBUTION_TYPES.PHISHING
+        ? this.CONSTANTS.title
+        : 'Smishing Scenarios Frequency Schedule'
     }
   },
-  created() {
-    this.callForData()
-  },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      getCalculatedScheduleInfo({
-        scheduledDate: this.scheduledDate,
-        scheduledDateTimeZoneId: this.scheduledDateTimeZoneId,
-        scheduleTypeId: this.scheduleTypeId,
-        frequency: this.frequencyId,
-        phishingScenarioResourceIds: this.phishingScenarios.map((pScenario) => pScenario.resourceId)
-      })
-        .then((res) => {
-          this.items = res?.data?.data
-        })
-        .finally(this.setLoading)
-    },
     closeModal() {
       this.$emit('on-close')
     },

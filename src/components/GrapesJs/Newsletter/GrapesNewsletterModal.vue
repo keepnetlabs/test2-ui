@@ -228,7 +228,7 @@ export default {
         active: false
       })
       document.querySelector('span[title="Preview"]').addEventListener('click', () => {
-        const win = window.open('', 'Title')
+        const win = window.open('', '_blank')
         win.document.title = 'Mail Preview'
         win.document.body.innerHTML = this.getGrapesEditorContent().replace(
           /{COMPANYLOGO}/g,
@@ -545,7 +545,7 @@ export default {
         ) {
           const buttonStyles = { ...droppedComponent.target.getStyle() }
           let arrangedComment =
-            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;min-width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
+            '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
           arrangedComment = arrangedComment.replace(
             /href="([^\'\"]+)?"/g,
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
@@ -566,6 +566,32 @@ export default {
             /font-size\:\#?(\w|\s|-)+\;/g,
             `font-size:${buttonStyles['font-size']};`
           )
+          if (buttonStyles['width']) {
+            arrangedComment = arrangedComment.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:${
+                buttonStyles['width']?.includes('px')
+                  ? buttonStyles['width']?.replace('px', '')
+                  : buttonStyles['width']
+              }px;`
+            )
+          } else if (typeof buttonStyles['width'] === 'undefined' || buttonStyles['width'] === '') {
+            let width = droppedComponent?.target?.getEl()?.getBoundingClientRect()?.width
+            if (width < 65) {
+              width += 12
+            } else if (width < 95) {
+              width += 14
+            } else if (width < 140) {
+              width += 18
+            } else {
+              width += 22
+            }
+            width = Math.round(width)
+            arrangedComment = arrangedComment.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:${width}px;`
+            )
+          }
           const children = droppedComponent.parent.components()
           const at = droppedComponent?.index
           const content =
@@ -581,8 +607,22 @@ export default {
           const anchor = newComponent
             .components()
             .models.find((comp) => comp?.getEl()?.id?.includes('outlook'))
-          anchor.setStyle(buttonStyles)
-          newComponent.setStyle(buttonStyles)
+          if (anchor) {
+            anchor.setStyle(buttonStyles)
+          }
+          if (newComponent) {
+            const copyStyle = { ...buttonStyles }
+            if (copyStyle.padding) {
+              delete copyStyle.padding
+            }
+            if (copyStyle.margin) {
+              delete copyStyle.margin
+            }
+            if (copyStyle.width) {
+              delete copyStyle.width
+            }
+            newComponent.setStyle(copyStyle)
+          }
           this.editor
             .getWrapper()
             .find('.outlook-button-span-id')
@@ -593,18 +633,26 @@ export default {
         }
       })
       this.editor.on('style:property:update', (styleChanges) => {
-        if (!styleChanges.to.value) {
+        if (!styleChanges.to.value && styleChanges.property.attributes.property !== 'width') {
           return
         }
         if (
-          !['background-color', 'color', 'font-family', 'font-size', 'background'].includes(
-            styleChanges.property.attributes.property
-          )
+          ![
+            'background-color',
+            'color',
+            'font-family',
+            'font-size',
+            'background',
+            'width'
+          ].includes(styleChanges.property.attributes.property)
         ) {
           return
         }
         const updatedComponent = this.editor.getSelected()
-        if (updatedComponent?.getEl()?.id?.includes('outlook')) {
+        if (
+          updatedComponent?.getEl()?.id?.includes('outlook') ||
+          updatedComponent?.getEl()?.classList.contains('outlook-button-span-id')
+        ) {
           const parent = updatedComponent?.parent()
           if (parent) {
             const children = parent.components()
@@ -639,27 +687,102 @@ export default {
                   `font-size:${styleChanges.value};`
                 )
               }
+              if (styleChanges.property.attributes.property === 'width') {
+                const isShowWidth = [0, '0', '', 'auto', undefined].includes(
+                  styleChanges?.to?.value
+                )
+                if (isShowWidth) {
+                  setTimeout(() => {
+                    let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+                    if (width < 65) {
+                      width += 12
+                    } else if (width < 95) {
+                      width += 14
+                    } else if (width < 140) {
+                      width += 18
+                    } else {
+                      width += 22
+                    }
+                    width = Math.round(width)
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width\:\#?(\w|\s|-)+\;/g,
+                      `width:${width}px;`
+                    )
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width:undefinedpx;/g,
+                      `width:${width}px;`
+                    )
+                  }, 500)
+                } else {
+                  setTimeout(() => {
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width\:\#?(\w|\s|-)+\;/g,
+                      `width:${styleChanges?.to?.value}px;`
+                    )
+                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                      /width:undefinedpx;/g,
+                      `width:${styleChanges?.to?.value}px;`
+                    )
+                  }, 500)
+                }
+              }
             }
           }
         }
       })
       this.editor.on('component:update', (updatedComponent) => {
         if (updatedComponent?.getEl()?.id?.includes('outlook')) {
-          if (updatedComponent?.changed?.attributes?.href) {
+          const getCommentElement = () => {
             const parent = updatedComponent.parent()
             const children = parent.components()
-            const commentElement = children?.models?.find(
-              (el) => el?.attributes?.type === 'comment'
-            )
+            return children?.models?.find((el) => el?.attributes?.type === 'comment')
+          }
+          if (updatedComponent?.changed?.attributes?.href) {
+            const commentElement = getCommentElement()
             if (commentElement) {
               commentElement.attributes.content = commentElement.attributes.content.replace(
                 /href="([^\'\"]+)?"/g,
                 `href="${updatedComponent?.changed?.attributes?.href}"`
               )
             }
+          } else {
+            const commentElement = getCommentElement()
+            if (commentElement) {
+              //if(document.querySelector('.gjs-sm-property__width .gjs-field-integer input')?.value)return
+              let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+              if (width < 65) {
+                width += 12
+              } else if (width < 95) {
+                width += 14
+              } else if (width < 140) {
+                width += 18
+              } else {
+                width += 22
+              }
+
+              commentElement.attributes.content = commentElement.attributes.content.replace(
+                /width\:\#?(\w|\s|-)+\;/g,
+                `width:${Math.round(width)}px;`
+              )
+              commentElement.attributes.content = commentElement.attributes.content.replace(
+                /width:undefinedpx/g,
+                `width:${Math.round(width)}px;`
+              )
+            }
           }
         }
       })
+      this.editor.on('component:remove', (component) => {
+        if (component?.ccid?.includes('outlook-button-href-id')) {
+          const editor = this.editor
+          const outlookSpanItems = editor.DomComponents.getWrapper().find('.outlook-button-span-id')
+          for (let i = 0; i < outlookSpanItems.length; i++) {
+            const element = outlookSpanItems[i]
+            if (!element?.toHTML?.()?.includes('outlook-button-href-id')) element.remove()
+          }
+        }
+      })
+
       this.removeVideoElement()
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)

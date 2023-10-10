@@ -11,6 +11,8 @@ export const labels = {
   DuplicateCertificate: 'Duplicate Certificate',
   LimitRecipients: 'Limit Recipients',
   ScenariosOfInstance: 'Scenarios Of Instance',
+  Now: 'Now',
+  Later: 'Later',
   RecurrencesOfInstance: 'Recurrences Of Instance',
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
@@ -322,6 +324,7 @@ export const labels = {
   SubmittedMFACode: 'Submitted MFA Code',
   OpenedAttachment: 'Opened Attachment',
   NoResponse: 'No Response',
+  EmailFailedToSend: 'Email Failed to Send',
   SendingReport: 'Sending Report',
   PhishingScenarios: 'Phishing Scenarios',
   CampaignManagerPhishingScenariosSub:
@@ -346,6 +349,8 @@ export const labels = {
   // DistributionSub: 'Send emails with selected intervals or over a specified time period',
   DistributionSub:
     'Send emails with selected intervals or over a specified time period. Limit number of emails to be sent in each batch.',
+  DistributionSubSmishing:
+    'Send text message with selected intervals or over a specified time period. Limit number of text message to be sent in each batch.',
   CustomizeSmtpForEachCompany: 'Customize SMTP For Each Company',
   CustomizeSmtpForEachCompanySub: 'Set SMTP configuration for each company',
   SmtpSub: 'Select SMTP configuration for this campaign',

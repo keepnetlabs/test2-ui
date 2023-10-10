@@ -10,6 +10,7 @@
       :phishing-scenarios="getPhishingScenarios"
       :scheduled-date-time-zone-id="getScheduledDateTimeZoneId"
       :scheduled-date="getScheduledDate"
+      :items="getScheduledDialogItems"
       @on-close="toggleScheduleDialog"
     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
@@ -286,6 +287,9 @@ export default {
     }
   },
   computed: {
+    getScheduledDialogItems() {
+      return this?.formData?.scheduleItems || []
+    },
     getSelectedFrequency() {
       return this?.formData?.frequency || ''
     },
@@ -432,9 +436,7 @@ export default {
       const obj = {
         Starting: selectedSchedule
       }
-      if (selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
-        obj['Sending Limit'] = sendingLimit
-      }
+      obj['Sending Limit'] = sendingLimit
       obj['Email Delivery'] = `${
         selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
       } - ${selectedEmailDelivery.name}`

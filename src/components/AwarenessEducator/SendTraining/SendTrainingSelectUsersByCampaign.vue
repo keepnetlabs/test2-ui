@@ -666,7 +666,7 @@ export default {
                 '#913831',
                 '#A52A2A',
                 '#FF0000',
-                '#757575'
+                '#F56C6C'
               ],
               labels: [
                 labels.NoResponse,
@@ -676,7 +676,7 @@ export default {
                 labels.OpenedAttachment,
                 labels.SubmittedData,
                 labels.SubmittedMFACode,
-                labels.NotDelivered
+                labels.EmailFailedToSend
               ],
               showTooltipLine: true
             }
@@ -684,14 +684,14 @@ export default {
             const scenarioMethodTypeId = data?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#F56C6C'],
               labels: [
                 labels.NoResponse,
                 labels.OpenedEmail,
                 labels.ReportedAsSuspicious,
                 labels.ClickedThePhishingLink,
                 labels.SubmittedMFACode,
-                labels.NotDelivered
+                labels.EmailFailedToSend
               ],
               showTooltipLine: true
             }
@@ -702,51 +702,52 @@ export default {
           } else if (this.isAttachmentBasedScenario) {
             this.chartOptions = {
               ...chartOptions,
-              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#F56C6C', '#757575'],
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B83A3A', '#F56C6C'],
               labels: [
                 labels.NoResponse,
-                labels.Opened,
+                labels.OpenedEmail,
                 labels.ReportedAsSuspicious,
                 labels.OpenedAttachment,
-                labels.NotDelivered
+                labels.EmailFailedToSend
               ],
               showTooltipLine: true
             }
           } else {
-            if (this.methodTypeId === 2) {
+            if (this.campaignMethod === 'Data Submission') {
               this.chartOptions = {
                 ...chartOptions,
-                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#757575'],
+                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#F56C6C'],
                 labels: [
                   labels.NoResponse,
                   labels.OpenedEmail,
                   labels.ReportedAsSuspicious,
                   labels.ClickedThePhishingLink,
                   labels.SubmittedData,
-                  labels.NotDelivered
+                  labels.EmailFailedToSend
                 ],
                 showTooltipLine: true
               }
             } else {
               this.chartOptions = {
                 ...chartOptions,
-                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#757575'],
+                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#F56C6C'],
                 labels: [
                   labels.NoResponse,
                   labels.OpenedEmail,
                   labels.ReportedAsSuspicious,
                   labels.ClickedThePhishingLink,
-                  labels.NotDelivered
+                  labels.EmailFailedToSend
                 ],
                 showTooltipLine: true
               }
             }
           }
+          console.log(this.chartOptions)
           const {
             attachmentOpenedEmail,
             clickedEmail,
             noResponseEmail,
-            notDelivered,
+            failedToSend,
             openedEmail,
             reportedEmail,
             submittedEmail,
@@ -757,9 +758,9 @@ export default {
           pieData.push(openedEmail)
           pieData.push(reportedEmail)
           if (this.methodTypeId !== 3) pieData.push(clickedEmail)
-          if (this.methodTypeId === 2) pieData.push(submittedEmail)
+          if (this.campaignMethod === 'Data Submission') pieData.push(submittedEmail)
           if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)
-          pieData.push(notDelivered)
+          pieData.push(failedToSend)
           if (this.campaignMethod === 'Multiple Method') {
             pieData = [
               noResponseEmail,
@@ -769,12 +770,12 @@ export default {
               attachmentOpenedEmail,
               submittedEmail,
               mfa,
-              notDelivered
+              failedToSend
             ]
           }
           if (this.campaignMethod === 'MFA') {
             const scenarioMethodTypeId = data?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId
-            pieData = [noResponseEmail, openedEmail, reportedEmail, clickedEmail, mfa, notDelivered]
+            pieData = [noResponseEmail, openedEmail, reportedEmail, clickedEmail, mfa, failedToSend]
             if (scenarioMethodTypeId === 2) {
               pieData.splice(4, 0, submittedEmail)
             }

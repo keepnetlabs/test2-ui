@@ -40,6 +40,7 @@
       ref="refCampaignNewInstance"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
+      :form-details="formDetails"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
@@ -99,7 +100,6 @@ import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManager',
   components: {

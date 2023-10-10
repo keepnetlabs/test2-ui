@@ -15,6 +15,7 @@
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
+      rowKey="targetUserResourceId"
       selectable
       filterable
       options
@@ -94,7 +95,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_NO_RESPONSE_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: false,
+          resend: true,
           clipboard: true
         },
         columns: [

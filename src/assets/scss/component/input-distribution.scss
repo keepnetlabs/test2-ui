@@ -1,0 +1,23 @@
+.input-distribution{
+  max-width: 1000px;
+  .vishing-campaign-modal__send-calls-on,.vishing-campaign-modal__send-calls{
+      & > div:first-child,& > span:first-child{
+        flex-basis: auto;
+      }
+  }
+  .vishing-campaign-modal__send-calls .form-group-horizontal-content__label{
+    flex-basis:0;
+    flex-grow:2;
+  }
+  .k-form-group__sub-title{
+    max-width: 554px;
+  }
+  &__distribution-start-container{
+    border-radius: 8px;
+    background-color:#F2F2F2;
+    padding:16px;
+    margin-bottom: 8px;
+    max-width: fit-content;
+
+  }
+}
