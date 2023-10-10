@@ -28,7 +28,6 @@ export default {
       if (query?.isPreview) {
         this.src = `${query.template}?isPreview=true&scoAddress=${query.scoAddress}`
       } else {
-        const query = this?.$route?.query
         const enrollmentContentResourceId = query?.EnrollmentContentId
         const targetUserResourceId = query?.TargetUserResourceId
         if (enrollmentContentResourceId && targetUserResourceId) {
