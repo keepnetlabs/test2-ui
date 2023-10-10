@@ -33,7 +33,6 @@
       ref="inputContentLanguage"
       v-model="value.trainingLanguages"
       class="ml-4 mt-4"
-      :is-add-default-value="false"
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
     />
@@ -62,10 +61,6 @@ export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: { InputContentLanguage, KSelect, AlertBox, FormGroup },
   props: {
-    selectedTemplateResourceId: {
-      type: String,
-      default: ''
-    },
     value: {
       type: Object,
       default() {

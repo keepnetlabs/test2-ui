@@ -511,8 +511,13 @@ export default {
           this.changeStep()
           return
         case 2:
+          const { refCampaignManagerPhishingScenarios } = this.$refs
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
+          //if languages empty set all languages
+          refCampaignManagerPhishingScenarios?.adjustTrainingModel(
+            refCampaignManagerPhishingScenarios.selectedTemplateResourceId
+          )
           this.changeStep()
           return
         case 3:

@@ -1,5 +1,5 @@
 <template>
-  <CampaignManagerSummaryCard icon="$domain" :title="labels.TrainingForUsers">
+  <CampaignManagerSummaryCard icon="mdi-application" :title="labels.TrainingForUsers">
     <template #header-right>
       <VBtn
         class="campaign-manager-summary-card__button mr-6 pr-4"

@@ -174,7 +174,7 @@
                           @click="handleClickPreview"
                         >
                           <VIcon color="#2196f3" medium>
-                            {{ 'mdi-fullscreen' }}
+                            mdi-fullscreen
                           </VIcon>
                         </VBtn>
                       </div>
@@ -281,8 +281,8 @@
                     id="campaign-manager-info--training-content"
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
+                      ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
-                      :selected-template-resource-id="selectedTemplateResourceId"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -551,9 +551,7 @@ export default {
         : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
-      if (!this.trainingTabModel[resourceId]) {
-        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
-      }
+      this.adjustTrainingModel(resourceId)
       getScenario(resourceId).then((response) => {
         const {
           data: { data }
@@ -620,6 +618,16 @@ export default {
           }
         )
       })
+    },
+    adjustTrainingModel(resourceId = '') {
+      if (!resourceId) return
+      if (!this.trainingTabModel[resourceId]) {
+        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
+      } else if (
+        this.trainingTabModel?.[resourceId].trainingResourceId &&
+        !this.trainingTabModel?.[resourceId]?.languages?.length
+      )
+        this?.$refs?.trainingTab?.$refs?.inputContentLanguage?.setDefaultValue()
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
