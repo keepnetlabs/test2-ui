@@ -129,12 +129,7 @@ export default {
       handler() {
         this.setPasswordComplexityItems()
       }
-    }
-  },
-  created() {
-    this.callForData()
-  },
-  watch: {
+    },
     customFields: {
       deep: true,
       immediate: true,
@@ -143,11 +138,12 @@ export default {
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
-        if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
-        }
+        if (departmentIndex) this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
       }
     }
+  },
+  created() {
+    this.callForData()
   },
   methods: {
     callForData() {

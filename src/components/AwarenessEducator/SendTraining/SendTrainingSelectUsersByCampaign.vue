@@ -751,7 +751,7 @@ export default {
             reportedEmail,
             submittedEmail,
             mfa
-          } = data?.scenarioStats
+          } = data?.scenarioStats || {}
           let pieData = []
           pieData.push(noResponseEmail)
           pieData.push(openedEmail)

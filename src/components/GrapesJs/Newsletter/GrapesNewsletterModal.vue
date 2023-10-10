@@ -772,6 +772,12 @@ export default {
           }
         }
       })
+      this.editor.on('component:deselected', (updatedComponent) => {
+        const el = updatedComponent?.getEl()
+        if (el?.id?.includes('outlook-button-href-id') && !el.innerText) {
+          updatedComponent.components('No Label')
+        }
+      })
       this.editor.on('component:remove', (component) => {
         if (component?.ccid?.includes('outlook-button-href-id')) {
           const editor = this.editor
@@ -1011,6 +1017,7 @@ export default {
     },
     getGrapesEditorContent() {
       const { editor } = this
+      editor?.select(editor?.getWrapper())
       if (this.templateType === 'email') {
         try {
           return this.editor.Commands.run('get-html-juiced')
