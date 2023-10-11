@@ -13,6 +13,8 @@ export const labels = {
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
   TrainingForUsers: 'Training for users who has been phished',
+  TrainingReport: 'Training Report',
+  TrainingReports: 'Training Reports',
   Now: 'Now',
   Later: 'Later',
   Training: 'Training',
