@@ -1017,6 +1017,7 @@ export default {
     },
     getGrapesEditorContent() {
       const { editor } = this
+      editor?.select(editor?.getWrapper())
       if (this.templateType === 'email') {
         try {
           return this.editor.Commands.run('get-html-juiced')
