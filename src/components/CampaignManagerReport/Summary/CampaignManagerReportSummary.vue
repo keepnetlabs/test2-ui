@@ -209,21 +209,29 @@ export default {
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
       const {
-        emailDeliveryStartDate = '01/01/1970',
-        emailDeliveryEndDate = '01/01/1970',
+        emailDeliveryStartDate,
+        emailDeliveryEndDate,
         emailDeliveryDuration = 0,
-        scheduledDate = `01/01/1970`,
-        frequency = 0
+        scheduledDate,
+        frequency = 0,
+        scheduleTypeId
       } = campaignInfo
+      if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
+        return {
+          'Delivery Start - End': `Saved for later`,
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
       if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
         return {
-          'Scheduled Date': scheduledDate,
+          'Scheduled Date': scheduledDate || '-',
           Duration: `${emailDeliveryDuration || 0}`,
           'Delivery Status': ''
         }
       }
       return {
-        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
+        'Delivery Start - End': `${emailDeliveryStartDate || ''} - ${emailDeliveryEndDate || ''}`,
         Duration: `${emailDeliveryDuration || 0}`,
         'Delivery Status': ''
       }
