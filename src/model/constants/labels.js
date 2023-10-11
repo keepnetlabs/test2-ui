@@ -305,6 +305,7 @@ export const labels = {
   EmptyCampaignManagerReportPhishingReporter: 'You do not have any user who reported the email',
   EmptyCampaignManagerReportClicked: 'You do not have any user who clicked the email',
   EmptyCampaignManagerReportOpenedDetail: 'No user exists in these groups',
+  EmptyCampaignManagerTrainingReport: 'No training report found',
   EmptyTrainingReportSummaryAudienceDetails: 'You do not have any users',
   EmptyCampaignManagerReportSubmittedData: 'You do not have any user who submitted data',
   EmptyCampaignManagerReportSubmittedMfaData: 'You do not have any user who submitted mfa code',
