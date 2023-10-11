@@ -14,7 +14,7 @@
       sub-title="The system sends the selected training to the target users who click on the phishing link, and the enrollment is created"
     >
       <KSelect
-        :value="value.trainingResourceId"
+        :value="value.trainingId"
         type="autocomplete"
         id="input--campaign-manager-training-tab"
         outlined
@@ -31,7 +31,7 @@
     </FormGroup>
     <InputContentLanguage
       ref="inputContentLanguage"
-      v-model="value.trainingLanguages"
+      v-model="value.trainingLanguageIds"
       class="ml-4 mt-4"
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
@@ -57,6 +57,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: { InputContentLanguage, KSelect, AlertBox, FormGroup },
@@ -64,12 +65,7 @@ export default {
     value: {
       type: Object,
       default() {
-        return {
-          trainingResourceId: '',
-          trainingName: '',
-          trainingLanguages: [],
-          isCheckboxSelected: false
-        }
+        return new TrainingTabModel()
       }
     }
   },
@@ -84,13 +80,11 @@ export default {
       return this?.value?.isCheckboxSelected
     },
     isInputLanguageDisabled() {
-      return !this.isInputsEditable || !this.value.trainingResourceId
+      return !this.isInputsEditable || !this.value.trainingId
     },
     isPreviewButtonDisabled() {
       return (
-        !this.isInputsEditable ||
-        !this.value.trainingResourceId ||
-        !this.value.trainingLanguages.length
+        !this.isInputsEditable || !this.value.trainingId || !this.value.trainingLanguageIds.length
       )
     },
     getTrainingInputClassName() {
@@ -98,7 +92,7 @@ export default {
       return classes.filter(Boolean).join(' ')
     },
     getTrainingId() {
-      return this?.value?.trainingResourceId
+      return this?.value?.trainingId || ''
     }
   },
   created() {
@@ -123,9 +117,9 @@ export default {
       this.$emit('on-preview', this.value)
     },
     handleTrainingItemSelect(item) {
-      this.$set(this.value, 'trainingResourceId', item?.value ?? '')
+      this.$set(this.value, 'trainingId', item?.value ?? '')
       this.$set(this.value, 'trainingName', item?.text ?? '')
-      this.$set(this.value, 'trainingLanguages', [])
+      this.$set(this.value, 'trainingLanguageIds', [])
       this.$nextTick(() => {
         this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
       })

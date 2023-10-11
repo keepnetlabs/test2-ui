@@ -18,7 +18,7 @@
         v-show="!isPreviewLoading"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
-        :training-id="selectedRow.trainingResourceId"
+        :training-id="selectedRow.trainingId"
         :languages="selectedLanguages"
         :training-params="getTrainingParams"
       />
@@ -89,7 +89,7 @@ export default {
       this.isPreviewLoading = true
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          this.selectedRow.trainingLanguages.forEach((lang) => {
+          this.selectedRow.trainingLanguageIds.forEach((lang) => {
             const language = res?.data?.data?.find((item) => item.id === lang)
             if (language)
               this.selectedLanguages.push({
@@ -101,12 +101,14 @@ export default {
         .finally(this.callForTrainingDetail)
     },
     callForTrainingDetail() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingResourceId).then((response) => {
+      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
         const {
           data: { data }
         } = response
-        this.trainingDetails = { ...data }
-        this.trainingDetails.languages = this.selectedLanguages.map((lang) => lang.text).join(', ')
+        this.trainingDetails = {
+          ...data,
+          languages: this.selectedLanguages.map((lang) => lang.text).join(', ')
+        }
       })
     },
     handleClose() {

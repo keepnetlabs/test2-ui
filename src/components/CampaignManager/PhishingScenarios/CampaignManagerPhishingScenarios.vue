@@ -624,8 +624,8 @@ export default {
       if (!this.trainingTabModel[resourceId]) {
         this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
       } else if (
-        this.trainingTabModel?.[resourceId].trainingResourceId &&
-        !this.trainingTabModel?.[resourceId]?.languages?.length
+        this.trainingTabModel?.[resourceId].trainingId &&
+        !this.trainingTabModel?.[resourceId]?.trainingLanguageIds?.length
       )
         this?.$refs?.trainingTab?.$refs?.inputContentLanguage?.setDefaultValue()
     },
