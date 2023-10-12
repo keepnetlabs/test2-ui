@@ -282,7 +282,8 @@ export default {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings
+          refCampaignManagerDeliverySettings,
+          refCampaignManagerPhishingScenarios
         } = this.$refs
         const scheduleTypeId =
           refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
@@ -321,6 +322,7 @@ export default {
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
+        formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
       }
       return formData
     },
@@ -509,8 +511,13 @@ export default {
           this.changeStep()
           return
         case 2:
+          const { refCampaignManagerPhishingScenarios } = this.$refs
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
+          //if languages empty set all languages
+          refCampaignManagerPhishingScenarios?.adjustTrainingModel(
+            refCampaignManagerPhishingScenarios.selectedTemplateResourceId
+          )
           this.changeStep()
           return
         case 3:

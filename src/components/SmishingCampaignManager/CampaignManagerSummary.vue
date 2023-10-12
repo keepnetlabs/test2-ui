@@ -200,7 +200,6 @@ export default {
       isShowLandingPageTemplate: false,
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
-      selectedScenarioName: '',
       selectedScenarioMethodTypeId: '',
       isShowScheduleDialog: false,
       textTemplateParams: {},
@@ -396,9 +395,6 @@ export default {
     callForScenarioDetail(event = {}) {
       const resourceId = event?.name || ''
       if (!resourceId) return
-      if (this.phishingScenarios.length) {
-        this.selectedScenarioName = this.phishingScenarios[parseInt(event.index)].name
-      }
       this.isScenarioDetailLoading = true
       SmishingService.previewSmishingScenario(resourceId)
         .then((response) => {

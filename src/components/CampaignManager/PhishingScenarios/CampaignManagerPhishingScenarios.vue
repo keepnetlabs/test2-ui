@@ -13,7 +13,6 @@
       v-if="isShowTrainingDialog"
       :status="isShowTrainingDialog"
       :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      :languages="languages"
       @on-close="toggleShowTrainingDialog"
     />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
@@ -175,7 +174,7 @@
                           @click="handleClickPreview"
                         >
                           <VIcon color="#2196f3" medium>
-                            {{ 'mdi-fullscreen' }}
+                            mdi-fullscreen
                           </VIcon>
                         </VBtn>
                       </div>
@@ -282,8 +281,8 @@
                     id="campaign-manager-info--training-content"
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
+                      ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
-                      :selected-template-resource-id="selectedTemplateResourceId"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -552,9 +551,7 @@ export default {
         : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
-      if (!this.trainingTabModel[resourceId]) {
-        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
-      }
+      this.adjustTrainingModel(resourceId)
       getScenario(resourceId).then((response) => {
         const {
           data: { data }
@@ -622,6 +619,16 @@ export default {
         )
       })
     },
+    adjustTrainingModel(resourceId = '') {
+      if (!resourceId) return
+      if (!this.trainingTabModel[resourceId]) {
+        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
+      } else if (
+        this.trainingTabModel?.[resourceId].trainingResourceId &&
+        !this.trainingTabModel?.[resourceId]?.languages?.length
+      )
+        this?.$refs?.trainingTab?.$refs?.inputContentLanguage?.setDefaultValue()
+    },
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
@@ -667,7 +674,7 @@ export default {
       if (this.trainingTabModel[item.resourceId]) {
         this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
       } else {
-        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel())
+        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel('', '', [], value))
       }
       if (value) {
         this.$emit('input', [...this.value, item])

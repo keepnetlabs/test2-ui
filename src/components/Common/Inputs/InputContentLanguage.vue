@@ -124,9 +124,12 @@ export default {
           text: 'All Languages',
           value: 'All'
         })
-        if (this.isAddDefaultValue)
-          this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
+        this.setDefaultValue()
       })
+    },
+    setDefaultValue() {
+      if (this.isAddDefaultValue)
+        this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
     },
     checkIsItemDisabled(item) {
       if (item.value === 'All') return false
