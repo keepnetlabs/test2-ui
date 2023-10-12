@@ -257,7 +257,7 @@
                           @click="handleClickPreview"
                         >
                           <v-icon color="#2196f3" medium>
-                            {{ 'mdi-fullscreen' }}
+                            mdi-fullscreen
                           </v-icon>
                         </v-btn>
                       </div>
@@ -281,6 +281,17 @@
                         :html="getSingleTemplateDetails"
                       />
                     </div>
+                  </ElTabPane>
+                  <ElTabPane
+                    :label="labels.Training"
+                    name="training"
+                    id="campaign-manager-info--training-content"
+                  >
+                    <CampaignManagerPhishingScenariosTrainingTab
+                      :key="trainingTabKey"
+                      v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :selected-template-resource-id="selectedTemplateResourceId"
+                    />
                   </ElTabPane>
                 </ElTabs>
               </div>
@@ -320,12 +331,14 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
+import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
+    CampaignManagerPhishingScenariosTrainingTab,
     TabsWithMfaSettings,
     ShowMoreTags,
     KEmailPreview,
@@ -367,9 +380,11 @@ export default {
       tab: 'email',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
+      trainingTabModel: {},
       labels,
       methods,
       difficulties,
+      trainingTabKey: createRandomCryptStringNumber(),
       search: '',
       isShowTemplate: false,
       selectedTemplateResourceId: null,
@@ -560,13 +575,19 @@ export default {
         : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
+      if (!this.trainingTabModel[resourceId]) {
+        this.trainingTabModel[resourceId] = {
+          trainingResourceId: '',
+          trainingLanguage: [],
+          isCheckboxSelected: false
+        }
+      }
       getScenario(resourceId).then((response) => {
         const {
           data: { data }
         } = response
-        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
+        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
-        }
         this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
         this.selectedTemplateResourceId = resourceId
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
@@ -670,6 +691,17 @@ export default {
       this.isShowTemplate = !this.isShowTemplate
     },
     setSelectedTemplate(item = {}, value = false) {
+      if (this.trainingTabModel[item.resourceId]) {
+        this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
+      } else {
+        this.trainingTabModel[item.resourceId] = {
+          trainingResourceId: '',
+          trainingLanguage: [],
+          isCheckboxSelected: value
+        }
+      }
+      if (this.selectedTemplateResourceId === item.resourceId)
+        this.trainingTabKey = createRandomCryptStringNumber()
       if (value) {
         this.$emit('input', [...this.value, item])
       } else {
