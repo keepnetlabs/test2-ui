@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="campaign-manager-report-summary-header__right">
-      <v-btn
+      <VBtn
         id="btn-download-report--campaign-reports"
         class="campaign-manager-report-summary-header__btn-download-report"
         rounded
@@ -26,16 +26,27 @@
         color="#2196f3"
         :disabled="isDownloadReportDisabled"
         @click="handleDownloadReport"
-        >{{ labels.DownloadReport }}</v-btn
+        >{{ labels.DownloadReport }}</VBtn
       >
-      <v-btn
+      <VBtn
         id="btn-resend-campaign--campaign-reports"
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"
         @click="toggleShowResendDialog"
-        >{{ labels.ResendCampaign }}</v-btn
+        >{{ labels.ResendCampaign }}</VBtn
       >
+      <VBtn
+        id="btn-training-report--campaign-reports"
+        class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
+        rounded
+        color="#2196f3"
+        @click="handleTrainingReport"
+        >{{ getTrainingReportLabel }}
+        <VIcon v-if="!isMultipleTrainingReport" class="ml-2" style="font-size: 20px;"
+          >mdi-open-in-new</VIcon
+        >
+      </VBtn>
     </div>
   </div>
 </template>
@@ -61,6 +72,10 @@ export default {
     },
     instanceGroup: {
       type: [String, Number]
+    },
+    isMultipleTrainingReport: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -69,6 +84,11 @@ export default {
       isActionButtonDisabled: false,
       isShowResendDialog: false,
       isDownloadReportDisabled: false
+    }
+  },
+  computed: {
+    getTrainingReportLabel() {
+      return this.isMultipleTrainingReport ? labels.TrainingReports : labels.TrainingReport
     }
   },
   methods: {
@@ -106,6 +126,15 @@ export default {
           }
         })
         .finally(() => (this.isDownloadReportDisabled = false))
+    },
+    handleTrainingReport(id = '') {
+      if (!id) return
+      this.$router.push({
+        name: 'Training Report',
+        params: {
+          id
+        }
+      })
     }
   }
 }
