@@ -24,11 +24,7 @@
       />
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
+      <AppDialogFooterWithClose @on-close="handleClose" />
     </template>
   </AppDialog>
 </template>
@@ -38,9 +34,10 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { EMITS } from '@/components/AwarenessEducator/utils'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
   name: 'TrainingLibraryPreviewDialog',
-  components: { TrainingLibraryPreview, AppDialog, DatatableLoading },
+  components: { AppDialogFooterWithClose, TrainingLibraryPreview, AppDialog, DatatableLoading },
   props: {
     status: {
       type: Boolean

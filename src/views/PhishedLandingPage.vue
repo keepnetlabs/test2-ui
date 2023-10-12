@@ -71,7 +71,7 @@ export default {
       const query = this?.$route?.query
       const enrollmentContentResourceId = query?.EnrollmentContentId
       const targetUserResourceId = query?.TargetUserResourceId
-      
+      //logo buttonların linki
        */
     },
     handleStartTraining() {},
