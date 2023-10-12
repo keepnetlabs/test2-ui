@@ -13,7 +13,7 @@
       &__details-item{
         margin-top:16px;
         display: flex;
-        & > span{
+        & > span,& > div > span{
           min-width:126px;
           display: inline-block;
         }
