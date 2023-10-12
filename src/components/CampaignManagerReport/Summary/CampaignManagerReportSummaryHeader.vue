@@ -9,6 +9,11 @@
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />
+    <CampaignManagerReportTrainingReportsDialog
+      v-if="isShowTrainingReportsDialog"
+      :status="isShowTrainingReportsDialog"
+      @on-close="toggleShowTrainingReportsDialog"
+    />
     <div class="campaign-manager-report-summary-header__left">
       <div class="campaign-manager-report-summary-header__title">
         {{ labels.CampaignSummary }}
@@ -56,10 +61,14 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
 import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import CampaignManagerReportTrainingReportsDialog from '@/components/CampaignManagerReport/CampaignManagerReportTrainingReportsDialog.vue'
 
 export default {
   name: 'CampaignManagerReportSummaryHeader',
-  components: { CampaignManagerReportSummaryResendDialog },
+  components: {
+    CampaignManagerReportTrainingReportsDialog,
+    CampaignManagerReportSummaryResendDialog
+  },
   props: {
     phishingScenarioName: {
       type: String
@@ -83,6 +92,7 @@ export default {
       labels,
       isActionButtonDisabled: false,
       isShowResendDialog: false,
+      isShowTrainingReportsDialog: false,
       isDownloadReportDisabled: false
     }
   },
@@ -129,12 +139,17 @@ export default {
     },
     handleTrainingReport(id = '') {
       if (!id) return
-      this.$router.push({
-        name: 'Training Report',
-        params: {
-          id
-        }
-      })
+      if (this.isMultipleTrainingReport) this.toggleShowTrainingReportsDialog()
+      else
+        this.$router.push({
+          name: 'Training Report',
+          params: {
+            id
+          }
+        })
+    },
+    toggleShowTrainingReportsDialog() {
+      this.isShowTrainingReportsDialog = !this.isShowTrainingReportsDialog
     }
   }
 }
