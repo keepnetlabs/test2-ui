@@ -14,21 +14,27 @@
       sub-title="The system sends the selected training to the target users who click on the phishing link, and the enrollment is created"
     >
       <KSelect
-        v-model.trim="value['trainingResourceId']"
+        :value="value.trainingResourceId"
         type="autocomplete"
         id="input--campaign-manager-training-tab"
         outlined
         dense
         hide-details
+        return-object
+        clearable
         placeholder="Select training"
         :items="trainingItems"
         :disabled="!isInputsEditable"
+        @input="handleTrainingItemSelect"
+        @click:clear="handleTrainingItemSelect(null)"
       />
     </FormGroup>
     <InputContentLanguage
-      v-model="value['trainingLanguage']"
+      ref="inputContentLanguage"
+      v-model="value.trainingLanguages"
       class="ml-4 mt-4"
-      :training-id="value['trainingResourceId']"
+      :is-add-default-value="false"
+      :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
     />
     <v-btn
@@ -50,6 +56,8 @@ import AlertBox from '@/components/AlertBox'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: { InputContentLanguage, KSelect, AlertBox, FormGroup },
@@ -63,7 +71,8 @@ export default {
       default() {
         return {
           trainingResourceId: '',
-          trainingLanguage: [],
+          trainingName: '',
+          trainingLanguages: [],
           isCheckboxSelected: false
         }
       }
@@ -86,16 +95,46 @@ export default {
       return (
         !this.isInputsEditable ||
         !this.value.trainingResourceId ||
-        !this.value.trainingLanguage.length
+        !this.value.trainingLanguages.length
       )
     },
     getTrainingInputClassName() {
       const classes = ['ml-3', this.isInputsEditable && 'mt-6']
       return classes.filter(Boolean).join(' ')
+    },
+    getTrainingId() {
+      return this?.value?.trainingResourceId
     }
   },
+  created() {
+    this.callForTrainingItems()
+  },
   methods: {
-    handlePreview() {}
+    callForTrainingItems() {
+      AwarenessEducatorService.searchTraining(getDefaultAxiosPayload({ pageSize: 10000 })).then(
+        (response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const { results = [] } = data
+          this.trainingItems = results.map((result) => ({
+            text: result.trainingName,
+            value: result.trainingId
+          }))
+        }
+      )
+    },
+    handlePreview() {
+      this.$emit('on-preview', this.value)
+    },
+    handleTrainingItemSelect(item) {
+      this.$set(this.value, 'trainingResourceId', item?.value ?? '')
+      this.$set(this.value, 'trainingName', item?.text ?? '')
+      this.$set(this.value, 'trainingLanguages', [])
+      this.$nextTick(() => {
+        this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
+      })
+    }
   }
 }
 </script>

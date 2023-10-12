@@ -1,27 +1,21 @@
 <template>
   <div class="emailTemplatePreview pt-0" style="min-height: auto !important;">
-    <AppDialog
-      icon="mdi-eye"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      :subtitle="labels.TemplatePreview"
+    <CampaignManagerPhishingScenariosPreviewDialog
+      v-if="isShowTemplate"
       :status="isShowTemplate"
-      :title="getTemplateHeader"
-      style="overflow: hidden;"
-      @changeStatus="toggleTemplateDialog"
-    >
-      <template #app-dialog-body>
-        <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleTemplateDialog"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </AppDialog>
+      :landing-page-params="landingPageParams"
+      :email-template="emailTemplate"
+      :tab="tab"
+      :landing-page-templates="landingPageTemplates"
+      @on-close="toggleTemplateDialog"
+    />
+    <TrainingLibraryPreviewDialog
+      v-if="isShowTrainingDialog"
+      :status="isShowTrainingDialog"
+      :selected-row="trainingTabModel[selectedTemplateResourceId]"
+      :languages="languages"
+      @on-close="toggleShowTrainingDialog"
+    />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -288,9 +282,9 @@
                     id="campaign-manager-info--training-content"
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
-                      :key="trainingTabKey"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :selected-template-resource-id="selectedTemplateResourceId"
+                      @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
                 </ElTabs>
@@ -317,11 +311,6 @@
 
 <script>
 import { getScenario, getScenariosList } from '@/api/scenarios'
-
-const EMITS = {
-  ON_ITEM_CHANGE: 'on-item-change'
-}
-import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
@@ -334,16 +323,20 @@ import useDebounce from '@/hooks/useDebounce'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
+import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
+import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
+import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
+    TrainingLibraryPreviewDialog,
+    CampaignManagerPhishingScenariosPreviewDialog,
     CampaignManagerPhishingScenariosTrainingTab,
     TabsWithMfaSettings,
     ShowMoreTags,
     KEmailPreview,
     KSelect,
-    AppDialog,
     Multipane,
     MultipaneResizer,
     AttachmentsPreview
@@ -384,7 +377,6 @@ export default {
       labels,
       methods,
       difficulties,
-      trainingTabKey: createRandomCryptStringNumber(),
       search: '',
       isShowTemplate: false,
       selectedTemplateResourceId: null,
@@ -397,10 +389,10 @@ export default {
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
-      selectedLandingPageTab: '1',
       landingPageTemplates: [],
       phishingScenarioItems: [],
-      isMethodMfa: false
+      isMethodMfa: false,
+      isShowTrainingDialog: false
     }
   },
   computed: {
@@ -443,21 +435,6 @@ export default {
         style.alignItems = 'center'
       }
       return style
-    },
-    getTemplatePreviewContent() {
-      if (this.tab === 'email') {
-        return this.emailTemplate
-      } else {
-        return this.getCurrentLandingPageTemplate
-      }
-    },
-    getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
-        : this.landingPageTemplates?.[0]?.content || ''
-    },
-    getTemplateHeader() {
-      return this.landingPageParams?.name || ''
     },
     isLandingPageTabsVisible() {
       return this.landingPageTemplates?.length > 1
@@ -576,11 +553,7 @@ export default {
     },
     callForSelectedPhishingScenario(resourceId = '') {
       if (!this.trainingTabModel[resourceId]) {
-        this.trainingTabModel[resourceId] = {
-          trainingResourceId: '',
-          trainingLanguage: [],
-          isCheckboxSelected: false
-        }
+        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
       }
       getScenario(resourceId).then((response) => {
         const {
@@ -694,14 +667,8 @@ export default {
       if (this.trainingTabModel[item.resourceId]) {
         this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
       } else {
-        this.trainingTabModel[item.resourceId] = {
-          trainingResourceId: '',
-          trainingLanguage: [],
-          isCheckboxSelected: value
-        }
+        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel())
       }
-      if (this.selectedTemplateResourceId === item.resourceId)
-        this.trainingTabKey = createRandomCryptStringNumber()
       if (value) {
         this.$emit('input', [...this.value, item])
       } else {
@@ -721,6 +688,12 @@ export default {
       this.language = ''
       this.axiosPayload = getDefaultAxiosPayload()
       this.callForPhishingScenarios(false)
+    },
+    handleTrainingPreviewButtonClick(value = {}) {
+      this.toggleShowTrainingDialog()
+    },
+    toggleShowTrainingDialog() {
+      this.isShowTrainingDialog = !this.isShowTrainingDialog
     }
   }
 }

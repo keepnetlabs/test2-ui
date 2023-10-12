@@ -742,7 +742,6 @@ export default {
               }
             }
           }
-          console.log(this.chartOptions)
           const {
             attachmentOpenedEmail,
             clickedEmail,
