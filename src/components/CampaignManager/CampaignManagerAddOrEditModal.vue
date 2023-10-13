@@ -634,9 +634,6 @@ export default {
           })
           const payload = {
             phishingScenarios,
-            phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-              (pScenario) => pScenario.resourceId
-            ),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,

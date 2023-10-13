@@ -22,7 +22,7 @@
             <div class="d-flex justify-space-between">
               <div class="d-flex">
                 <div>
-                  <v-text-field
+                  <VTextField
                     v-model.trim="search"
                     placeholder="Search"
                     outlined
@@ -35,7 +35,7 @@
                       width: 100%;
                       padding-right: 4px !important;
                     "
-                  ></v-text-field>
+                  />
                 </div>
                 <div>
                   <KSelect
@@ -447,11 +447,21 @@ export default {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
       }
+      const addTrainingKeyToTabModel = (val) => {
+        this.trainingTabModel[val.value] = new TrainingTabModel(
+          val.trainingId,
+          val.trainingName,
+          val.trainingLanguageIds,
+          true
+        )
+      }
       if (Array.isArray(val)) {
         val.forEach((item) => {
+          addTrainingKeyToTabModel(item)
           setCheckbox(item.value)
         })
       } else {
+        addTrainingKeyToTabModel(val)
         setCheckbox(val.value)
       }
       this.callForPhishingScenarios()

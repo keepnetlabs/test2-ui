@@ -36,7 +36,7 @@
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
     />
-    <v-btn
+    <VBtn
       id="btn-preview--campaign-manager-training-tab"
       class="white--text btn-util no-box-shadow mt-1 btn-download-add-in ml-4"
       color="#757575"
@@ -46,7 +46,7 @@
     >
       <v-icon left>mdi-eye</v-icon>
       {{ labels.TrainingPreview }}
-    </v-btn>
+    </VBtn>
   </div>
 </template>
 <script>
@@ -100,18 +100,16 @@ export default {
   },
   methods: {
     callForTrainingItems() {
-      AwarenessEducatorService.searchTraining(getDefaultAxiosPayload({ pageSize: 10000 })).then(
-        (response) => {
-          const {
-            data: { data = {} }
-          } = response
-          const { results = [] } = data
-          this.trainingItems = results.map((result) => ({
-            text: result.trainingName,
-            value: result.trainingId
-          }))
-        }
-      )
+      AwarenessEducatorService.getTrainingItems().then((response) => {
+        const {
+          data: { data = {} }
+        } = response
+        const { results = [] } = data
+        this.trainingItems = results.map((result) => ({
+          text: result.trainingName,
+          value: result.trainingId
+        }))
+      })
     },
     handlePreview() {
       this.$emit('on-preview', this.value)

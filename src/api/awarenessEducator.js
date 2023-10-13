@@ -380,6 +380,10 @@ const exportTrainingReport = (id = '') => {
   })
 }
 
+const getTrainingItems = () => {
+  return testRequest.get(`/trainings/search-summary`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -454,5 +458,6 @@ export default {
   resendTrainingNoResponseList,
   resendTrainingSendingReportList,
   resendTrainingToUserList,
-  exportTrainingReport
+  exportTrainingReport,
+  getTrainingItems
 }

@@ -43,16 +43,10 @@
       />
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex justify-end">
-        <VBtn
-          id="btn--close-campaign-manager-opened-email-detail-popup"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-          >CLOSE
-        </VBtn>
-      </div>
+      <AppDialogFooterWithClose
+        id="btn--close-campaign-manager-opened-email-detail-popup"
+        @on-close="handleClose"
+      />
     </template>
   </AppDialog>
 </template>
@@ -66,10 +60,12 @@ import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { useLoading } from '@/hooks/useLoading'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 
 export default {
   name: 'CampaignManagerReportTrainingReportsDialog',
   components: {
+    AppDialogFooterWithClose,
     DataTable,
     AppDialog
   },
