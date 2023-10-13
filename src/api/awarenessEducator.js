@@ -380,8 +380,8 @@ const exportTrainingReport = (id = '') => {
   })
 }
 
-const getTrainingItems = () => {
-  return testRequest.get(`/trainings/search-summary`)
+const getTrainingItems = (payload) => {
+  return testRequest.post(`/trainings/search-summary`, payload)
 }
 
 export default {
