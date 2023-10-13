@@ -100,16 +100,18 @@ export default {
   },
   methods: {
     callForTrainingItems() {
-      AwarenessEducatorService.getTrainingItems().then((response) => {
-        const {
-          data: { data = {} }
-        } = response
-        const { results = [] } = data
-        this.trainingItems = results.map((result) => ({
-          text: result.trainingName,
-          value: result.trainingId
-        }))
-      })
+      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 })).then(
+        (response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const { results = [] } = data
+          this.trainingItems = results.map((result) => ({
+            text: result.trainingName,
+            value: result.trainingId
+          }))
+        }
+      )
     },
     handlePreview() {
       this.$emit('on-preview', this.value)
