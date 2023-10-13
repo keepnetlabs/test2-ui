@@ -33,6 +33,7 @@
       ref="inputContentLanguage"
       v-model="value.trainingLanguageIds"
       class="ml-4 mt-4"
+      :is-add-default-value="!isEdit"
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
     />
@@ -67,6 +68,10 @@ export default {
       default() {
         return new TrainingTabModel()
       }
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

@@ -283,6 +283,7 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -448,11 +449,10 @@ export default {
         this.checkboxModel[resourceId] = true
       }
       const addTrainingKeyToTabModel = (val) => {
-        this.trainingTabModel[val.value] = new TrainingTabModel(
-          val.trainingId,
-          val.trainingName,
-          val.trainingLanguageIds,
-          true
+        this.$set(
+          this.trainingTabModel,
+          val.value,
+          new TrainingTabModel(val.trainingId, val.trainingName, val.trainingLanguageIds, true)
         )
       }
       if (Array.isArray(val)) {
