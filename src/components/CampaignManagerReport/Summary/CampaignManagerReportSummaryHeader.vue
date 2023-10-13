@@ -42,6 +42,7 @@
         >{{ labels.ResendCampaign }}</VBtn
       >
       <VBtn
+        v-if="isShowTrainingReportButton"
         id="btn-training-report--campaign-reports"
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
@@ -85,6 +86,14 @@ export default {
     isMultipleTrainingReport: {
       type: Boolean,
       default: false
+    },
+    isShowTrainingReportButton: {
+      type: Boolean,
+      default: true
+    },
+    trainingInfos: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -137,16 +146,12 @@ export default {
         })
         .finally(() => (this.isDownloadReportDisabled = false))
     },
-    handleTrainingReport(id = '') {
-      if (!id) return
+    handleTrainingReport() {
       if (this.isMultipleTrainingReport) this.toggleShowTrainingReportsDialog()
       else
-        this.$router.push({
-          name: 'Training Report',
-          params: {
-            id
-          }
-        })
+        window.open(
+          `/awareness-educator/enrollments/training-report/${this.trainingInfos[0].enrollmentId}`
+        )
     },
     toggleShowTrainingReportsDialog() {
       this.isShowTrainingReportsDialog = !this.isShowTrainingReportsDialog

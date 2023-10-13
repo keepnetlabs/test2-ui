@@ -66,7 +66,7 @@ export default {
   },
   computed: {
     getTrainingParams() {
-      if (!this.trainingParams) return this.trainingDetails
+      if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
     }
   },

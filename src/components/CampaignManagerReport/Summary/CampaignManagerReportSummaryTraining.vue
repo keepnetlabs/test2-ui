@@ -16,7 +16,7 @@
       <TrainingLibraryPreviewDialog
         v-if="isShowTrainingDialog"
         :status="isShowTrainingDialog"
-        :call-api="false"
+        :call-api="callTrainingPreviewApi"
         :selected-row="selectedRow"
         :training-params="trainingParams"
         :default-selected-languages="selectedTrainingLanguages"
@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="campaign-manager-last-step__training-template-body-header-right__sub">
-          <span>{{ trainingParams.category }} (category) </span>
+          <span>{{ trainingParams.category || trainingParams.categoryName }} (category) </span>
           <span>&#8226;</span> <span class="fw-400">by </span>
           <span>{{ trainingParams.companyName }} </span>
         </div>
@@ -79,6 +79,10 @@ export default {
     },
     selectedTrainingLanguages: {
       type: Array
+    },
+    callTrainingPreviewApi: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
