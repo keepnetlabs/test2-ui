@@ -18,17 +18,13 @@
         v-show="!isPreviewLoading"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
-        :training-id="selectedRow.trainingResourceId"
+        :training-id="selectedRow.trainingId"
         :languages="selectedLanguages"
         :training-params="getTrainingParams"
       />
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
+      <AppDialogFooterWithClose @on-close="handleClose" />
     </template>
   </AppDialog>
 </template>
@@ -38,9 +34,10 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { EMITS } from '@/components/AwarenessEducator/utils'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
   name: 'TrainingLibraryPreviewDialog',
-  components: { TrainingLibraryPreview, AppDialog, DatatableLoading },
+  components: { AppDialogFooterWithClose, TrainingLibraryPreview, AppDialog, DatatableLoading },
   props: {
     status: {
       type: Boolean
@@ -89,7 +86,7 @@ export default {
       this.isPreviewLoading = true
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          this.selectedRow.trainingLanguages.forEach((lang) => {
+          this.selectedRow.trainingLanguageIds.forEach((lang) => {
             const language = res?.data?.data?.find((item) => item.id === lang)
             if (language)
               this.selectedLanguages.push({
@@ -101,12 +98,14 @@ export default {
         .finally(this.callForTrainingDetail)
     },
     callForTrainingDetail() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingResourceId).then((response) => {
+      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
         const {
           data: { data }
         } = response
-        this.trainingDetails = { ...data }
-        this.trainingDetails.languages = this.selectedLanguages.map((lang) => lang.text).join(', ')
+        this.trainingDetails = {
+          ...data,
+          languages: this.selectedLanguages.map((lang) => lang.text).join(', ')
+        }
       })
     },
     handleClose() {

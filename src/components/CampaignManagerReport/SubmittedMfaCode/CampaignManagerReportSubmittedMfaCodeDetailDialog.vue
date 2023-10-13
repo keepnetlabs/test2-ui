@@ -41,16 +41,10 @@
       />
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn
-          id="btn-close--campaign-report-submitted-detail-popup"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
+      <AppDialogFooterWithClose
+        id="btn-close--campaign-report-submitted-detail-popup"
+        @on-close="handleClose"
+      />
     </template>
   </AppDialog>
 </template>
@@ -65,9 +59,10 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { searchCampaignJobUserEmailSubmittedDetailsMfa } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
   name: 'CampaignManagerReportSubmittedMfaDetailDialog',
-  components: { DataTable, AppDialog },
+  components: { AppDialogFooterWithClose, DataTable, AppDialog },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {

@@ -14,11 +14,7 @@
       <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
+      <AppDialogFooterWithClose @on-close="handleClose" />
     </template>
   </AppDialog>
 </template>
@@ -27,9 +23,10 @@
 import labels from '@/model/constants/labels'
 import AppDialog from '@/components/AppDialog.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
   name: 'CampaignManagerPhishingScenariosPreviewDialog',
-  components: { KEmailPreview, AppDialog },
+  components: { AppDialogFooterWithClose, KEmailPreview, AppDialog },
   props: {
     status: {
       type: Boolean,

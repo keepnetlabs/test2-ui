@@ -1,13 +1,13 @@
 export default class TrainingTabModel {
   constructor(
-    trainingResourceId = '',
+    trainingId = '',
     trainingName = '',
-    trainingLanguages = [],
+    trainingLanguageIds = [],
     isCheckboxSelected = false
   ) {
-    this.trainingResourceId = trainingResourceId
+    this.trainingId = trainingId
     this.trainingName = trainingName
-    this.trainingLanguages = trainingLanguages
+    this.trainingLanguageIds = trainingLanguageIds
     this.isCheckboxSelected = isCheckboxSelected
   }
 }

@@ -504,9 +504,9 @@ export default {
       const resourceId = event?.name || ''
       if (!resourceId) return
       const training = this?.formData?.trainings?.[resourceId]
-      if (training && training.trainingResourceId) {
+      if (training && training.trainingId) {
         this.selectedTraining = training
-        this.callForTrainingDetail(training.trainingResourceId)
+        this.callForTrainingDetail(training.trainingId)
       } else this.trainingParams = null
       this.isScenarioDetailLoading = true
       getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
@@ -573,7 +573,7 @@ export default {
         } = response
         this.trainingParams = { ...data }
         let selectedLanguages = []
-        this.selectedTraining.trainingLanguages.forEach((lang) => {
+        this.selectedTraining.trainingLanguageIds.forEach((lang) => {
           const language = this.trainingLanguages.find((item) => item.id === lang)
           if (language)
             selectedLanguages.push({

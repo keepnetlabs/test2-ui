@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     isAllSelected() {
-      return this.value.some((item) => item === 'All')
+      return this.value.some((item) => item === labels.All)
     }
   },
   watch: {
@@ -121,8 +121,8 @@ export default {
           value: lang.id
         }))
         this.contentLanguageItems.unshift({
-          text: 'All Languages',
-          value: 'All'
+          text: labels.AllLanguages,
+          value: labels.All
         })
         this.setDefaultValue()
       })
@@ -132,7 +132,7 @@ export default {
         this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
     },
     checkIsItemDisabled(item) {
-      if (item.value === 'All') return false
+      if (item.value === labels.All) return false
       return !!this.isAllSelected
     },
     getCheckboxCheckedValue(item) {

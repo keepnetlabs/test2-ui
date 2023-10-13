@@ -31,10 +31,10 @@
           <iframe
             v-if="activeTemplate && !isTemplateLoading"
             :key="iframeKey"
-            title="Training Preview"
+            class="training-library-preview__player"
             allowfullscreen
+            title="Training Preview"
             :src="activeTemplate"
-            style="min-width: 1200px; min-height: 900px; border-width: 0;"
           ></iframe>
         </div>
       </ElTabPane>
@@ -91,8 +91,8 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import labels from '@/model/constants/labels'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
-import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent.vue'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'TrainingLibraryPreview',
   components: { DatatableLoading, FormGroupHorizontalContent, KSelect },
@@ -120,7 +120,6 @@ export default {
       activeLanguage: '',
       isTemplateLoading: false,
       activeTemplate: null,
-      srcs: [],
       iframeKey: `key-${createRandomCryptStringNumber()}`
     }
   },

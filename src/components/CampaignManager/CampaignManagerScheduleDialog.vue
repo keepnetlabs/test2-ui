@@ -47,11 +47,9 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import { getCalculatedScheduleInfo } from '@/api/phishingsimulator'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { useLoading } from '@/hooks/useLoading'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
-import SmishingService from '@/api/smishing'
 export default {
   name: 'CampaignManagerItemDeleteDialog',
   components: { DatatableLoading, AppDialog },

@@ -44,7 +44,7 @@
         <div class="campaign-manager-last-step__training-template-body-header-right__sub">
           <span>{{ trainingParams.category }} (category) </span>
           <span>&#8226;</span> <span class="fw-400">by </span>
-          <span>{{ $store?.state?.auth?.companyName }} </span>
+          <span>{{ trainingParams.companyName }} </span>
         </div>
         <div
           style="

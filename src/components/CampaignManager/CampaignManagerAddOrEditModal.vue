@@ -615,17 +615,25 @@ export default {
               formData: deliverySettingsFormData,
               inputScheduleFormData,
               inputDistributionFormData
-            }
+            },
+            refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
           deliverySettingsFormData = {
             ...deliverySettingsFormData,
             ...inputScheduleFormData,
             ...inputDistributionFormData
           }
+          const phishingScenarios = []
+          Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
+            const { trainingId, trainingLanguageIds } = trainingTabModel[phishingScenarioResourceId]
+            phishingScenarios.push({
+              trainingId,
+              trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
+              phishingScenarioResourceId
+            })
+          })
           const payload = {
-            phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-              (pScenario) => pScenario.resourceId
-            ),
+            phishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
