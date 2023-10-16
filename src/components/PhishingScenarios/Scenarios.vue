@@ -27,12 +27,13 @@
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
-    <DeleteScenario
+    <CommonSimulatorDeleteScenario
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :api-func="deleteScenario"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <PhishingScenarioPreview
       v-if="isShowPreviewDialog"
@@ -129,7 +130,7 @@
 <script>
 import DataTable from '../DataTable'
 import NewScenario from './NewScenario'
-import DeleteScenario from './DeleteScenario'
+import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -140,7 +141,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
+import {
+  deleteScenario,
+  exportScenarios,
+  getScenarioDataDetails,
+  getScenariosList
+} from '@/api/scenarios'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 import { mapGetters } from 'vuex'
@@ -163,8 +169,8 @@ export default {
     PhishingScenarioPreview,
     PhishingScenariosFastLaunch,
     DataTable,
-    DeleteScenario,
-    NewScenario
+    NewScenario,
+    CommonSimulatorDeleteScenario
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
@@ -359,6 +365,7 @@ export default {
     this.callForScenarioDetails()
   },
   methods: {
+    deleteScenario,
     callForScenarioDetails() {
       getScenarioDataDetails()
         .then((response) => {
