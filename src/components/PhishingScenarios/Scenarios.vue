@@ -35,10 +35,11 @@
       @on-success="handleSuccessDeleteAction"
       @on-close="showDeleteModal = false"
     />
-    <PhishingScenarioPreview
+    <CommonSimulatorPreviewDialog
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selected-row="selectedPhishingScenario"
+      :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
       @on-close="toggleShowPreviewDialog"
     />
     <data-table
@@ -148,7 +149,6 @@ import {
   getScenariosList
 } from '@/api/scenarios'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
-import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -157,16 +157,18 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue'
+import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorPreviewDialog,
     ScenariosRowActionsEditButton,
     ScenariosRowActionsDeleteButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    PhishingScenarioPreview,
     PhishingScenariosFastLaunch,
     DataTable,
     NewScenario,
@@ -365,6 +367,7 @@ export default {
     this.callForScenarioDetails()
   },
   methods: {
+    getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
     callForScenarioDetails() {
       getScenarioDataDetails()

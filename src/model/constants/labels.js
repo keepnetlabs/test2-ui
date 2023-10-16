@@ -13,6 +13,8 @@ export const labels = {
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
   EmailTemplate: 'Email Template',
+  PhishingScenarioPreview: 'Phishing Scenario Preview',
+  QuishingScenarioPreview: 'Quishing Scenario Preview',
   All: 'All',
   AllLanguages: 'All Languages',
   TrainingForUsers: 'Training for users who has been phished',

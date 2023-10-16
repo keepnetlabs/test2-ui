@@ -14,8 +14,13 @@ const deleteScenario = (id) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
+}
+
 export default {
   exportScenarios,
   searchScenarios,
-  deleteScenario
+  deleteScenario,
+  getQuishingScenarioLandingPageAndEmailTemplate
 }

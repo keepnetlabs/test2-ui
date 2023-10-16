@@ -444,8 +444,8 @@
             v-if="getSmishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-quishing-simulator-list-group"
             no-action
-            prepend-icon="$qr-code"
-            :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
+            :prepend-icon="getQuishingPrependIcon"
+            :class="['menu-with-item menu-link-default', getQuishingSimulatorClasses]"
             :append-icon="iconPaths.mdiChevronDown"
           >
             <template #activator>
@@ -472,7 +472,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/smishing-simulator/campaign-manager"
+                  to="/quishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-quishing-campaign-manager"
                   route-name="Campaign Manager"
                   :active-class-comparator="
@@ -489,7 +489,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/smishing-simulator/settings"
+                  to="/quishing-simulator/settings"
                   id="btn--link-navigator-menu-quishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
@@ -1080,6 +1080,9 @@ export default {
           : 'un-selected-list-item'
       ]
     },
+    getQuishingPrependIcon() {
+      return this.routerName === 'Quishing Simulator' ? '$qr-code-selected' : '$qr-code'
+    },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
         return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
@@ -1179,6 +1182,18 @@ export default {
           routerName === 'Smishing Settings' ||
           routerName === 'Smishing Report',
         'un-selected-list-item': routerName !== 'Smishing Simulator'
+      }
+    },
+    getQuishingSimulatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Quishing Simulator' ||
+          routerName === 'Quishing Scenarios' ||
+          routerName === 'Quishing Campaign Manager' ||
+          routerName === 'Quishing Settings' ||
+          routerName === 'Quishing Report',
+        'un-selected-list-item': routerName !== 'Quishing Simulator'
       }
     },
     getAwarenessEducatorClasses() {
