@@ -4,6 +4,9 @@
       :phishing-scenario-name="phishingScenarioName"
       :resend-dialog-items="getResendDialogItems"
       :id="id"
+      :training-infos="trainingInfos"
+      :is-show-training-report-button="!!trainingInfos.length"
+      :is-multiple-training-report="trainingInfos.length > 1"
       :instance-group="instanceGroup"
     />
     <CampaignManagerReportSummaryCards
@@ -65,6 +68,13 @@
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
     />
+    <CampaignManagerReportSummaryTraining
+      v-if="getTrainingInfo"
+      class="mt-6"
+      call-training-preview-api
+      :training-params="getTrainingInfo"
+      :selected-row="getSelectedRowTrainingInfo"
+    />
   </div>
 </template>
 
@@ -79,9 +89,11 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryEmail,
@@ -159,6 +171,22 @@ export default {
     },
     getScenarioMethod() {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
+    },
+    getTrainingInfo() {
+      return this?.getActiveScenario?.trainingInfo
+    },
+    getSelectedRowTrainingInfo() {
+      return {
+        trainingLanguageIds:
+          this.getTrainingInfo?.languageList?.map((lang) => lang.languageId) || [],
+        trainingId: this.getTrainingInfo?.trainingId
+      }
+    },
+    trainingInfos() {
+      return this.phishingScenarios.reduce((acc, pScenario) => {
+        if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
+        return acc
+      }, [])
     },
     isAttachment() {
       return this.getScenarioMethod.toString() === '3' || false
@@ -441,7 +469,15 @@ export default {
     },
     setCampaignSummary(response) {
       this.campaignSummary = response?.data?.data
-      if (this?.campaignSummary?.scenarios?.length) {
+      const scenarios = this.campaignSummary?.scenarios || []
+      if (scenarios.length) {
+        scenarios.forEach((scenario) => {
+          if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
+            scenario.trainingInfo.languages = scenario.trainingInfo.languageList
+              .map((lang) => lang.languageShortCode)
+              .join(' | ')
+          }
+        })
         if (!this.customKeys.length) {
           this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
             .fill(0)

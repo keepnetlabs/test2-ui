@@ -219,7 +219,15 @@
         v-if="!isAttachmentBasedScenario"
         :difficulties="difficulties"
         :methods="methods"
-        :formData="landingPageParams"
+        :form-data="landingPageParams"
+      />
+    </div>
+    <div class="campaign-manager-last-step__landing-page-template mt-4">
+      <CampaignManagerReportSummaryTraining
+        v-if="isRenderTrainingCard"
+        :selected-row="selectedTraining"
+        :training-params="trainingParams"
+        :selected-training-languages="selectedTrainingLanguages"
       />
     </div>
   </div>
@@ -240,10 +248,13 @@ import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManage
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog'
+import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'CampaignManagerSummary',
   components: {
+    CampaignManagerReportSummaryTraining,
     KEmailPreview,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
@@ -272,6 +283,8 @@ export default {
   },
   data() {
     return {
+      trainingLanguages: [],
+      selectedTrainingLanguages: [],
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
@@ -283,10 +296,15 @@ export default {
       landingPageParams: {},
       difficulties,
       methods,
-      isShowScheduleDialog: false
+      isShowScheduleDialog: false,
+      trainingParams: null,
+      selectedTraining: null
     }
   },
   computed: {
+    isRenderTrainingCard() {
+      return this.trainingParams
+    },
     getScheduledDialogItems() {
       return this?.formData?.scheduleItems || []
     },
@@ -473,13 +491,23 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.callForTrainingLanguages()
+  },
   methods: {
+    callForTrainingLanguages() {
+      AwarenessEducatorService.getLanguages().then((res) => {
+        this.trainingLanguages = res?.data?.data || []
+      })
+    },
     callForScenarioDetail(event = {}) {
       const resourceId = event?.name || ''
       if (!resourceId) return
-      if (this.phishingScenarios.length) {
-        this.selectedScenarioName = this.phishingScenarios[parseInt(event.index)].name
-      }
+      const training = this?.formData?.trainings?.[resourceId]
+      if (training && training.trainingId) {
+        this.selectedTraining = training
+        this.callForTrainingDetail(training.trainingId)
+      } else this.trainingParams = null
       this.isScenarioDetailLoading = true
       getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
         .then((response) => {
@@ -537,6 +565,28 @@ export default {
           )?.text
         })
         .finally(() => (this.isScenarioDetailLoading = false))
+    },
+    callForTrainingDetail(trainingId = '') {
+      AwarenessEducatorService.getTraining(trainingId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.trainingParams = { ...data }
+        let selectedLanguages = []
+        this.selectedTraining.trainingLanguageIds.forEach((lang) => {
+          const language = this.trainingLanguages.find((item) => item.id === lang)
+          if (language)
+            selectedLanguages.push({
+              text: language.name,
+              value: language.id,
+              code: language.code
+            })
+        })
+        this.selectedTrainingLanguages = selectedLanguages
+        this.trainingParams.languages = this.selectedTrainingLanguages
+          .map((lang) => lang.code)
+          .join(' | ')
+      })
     },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)

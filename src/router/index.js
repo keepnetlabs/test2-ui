@@ -52,6 +52,7 @@ import VishingReport from '@/views/VishingReport'
 import AdvancedReports from '@/views/AdvancedReports'
 import AdvancedReport from '@/views/AdvancedReport'
 import Reports from '@/views/Reports'
+import PhishedLandingPage from '@/views/PhishedLandingPage.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -79,6 +80,14 @@ const router = new Router({
       path: '/training/scorm/watch',
       name: 'scorm',
       component: Scorm,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/training/scorm/phished-landing-page',
+      name: 'scorm',
+      component: PhishedLandingPage,
       meta: {
         isAuthenticated: false
       }

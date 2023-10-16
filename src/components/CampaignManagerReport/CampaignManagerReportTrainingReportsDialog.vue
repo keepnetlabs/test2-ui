@@ -5,8 +5,7 @@
     maxHeightSize="665"
     :custom-size="'800'"
     :icon="CONSTANTS.icon"
-    :title="getTitle"
-    :subtitle="getSubtitle"
+    title="Training Reports"
     :status="status"
     @changeStatus="handleClose"
   >
@@ -19,6 +18,7 @@
         options
         is-server-side
         no-padding-bottom
+        is-custom-overflowed-column
         :show-filter-options="false"
         :is-settings-popup="false"
         :loading="isLoading"
@@ -31,6 +31,8 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="tableOptions.countRow"
+        :cell-padding="32"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -38,22 +40,11 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      >
-        <template #datatable-custom-column="{ scope, col }">
-          <CampaignManagerReportUserAgentColumn
-            v-if="col.property === COLUMNS.USER_AGENT_SLOT.property"
-            :scope="scope"
-          />
-          <CampaignManagerReportIPColumn
-            v-if="col.property === COLUMNS.SUBMITTED_DATA_IP_SLOT.property"
-            :scope="scope"
-          />
-        </template>
-      </DataTable>
+      />
     </template>
     <template #app-dialog-footer>
       <AppDialogFooterWithClose
-        id="btn-close--campaign-report-submitted-detail-popup"
+        id="btn--close-campaign-manager-opened-email-detail-popup"
         @on-close="handleClose"
       />
     </template>
@@ -61,25 +52,20 @@
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
-import DataTable from '@/components/DataTable'
+import AppDialog from '@/components/AppDialog.vue'
+import DataTable from '@/components/DataTable.vue'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
-import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
-import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
+import { useLoading } from '@/hooks/useLoading'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 
 export default {
-  name: 'CampaignManagerReportSubmittedtemDetailDialog',
+  name: 'CampaignManagerReportTrainingReportsDialog',
   components: {
     AppDialogFooterWithClose,
-    CampaignManagerReportUserAgentColumn,
-    CampaignManagerReportIPColumn,
     DataTable,
     AppDialog
   },
@@ -87,77 +73,47 @@ export default {
   props: {
     status: {
       type: Boolean
-    },
-    item: {
-      type: Object
     }
   },
   data() {
     return {
-      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
-        id: 'campaign-manager-submitted-detail-item-data-table',
+        id: 'campaign-manager-training-reports-data-table',
         ascending: 'ascending'
       },
-      isLoading: false,
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'SubmittedTime' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime', pageSize: 5 }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          COLUMNS.SUBMITTED_TIME,
-          COLUMNS.USER_AGENT_SLOT,
-          COLUMNS.BROWSER,
-          COLUMNS.GEOLOCATION,
-          COLUMNS.SUBMITTED_DATA_IP_SLOT,
-          COLUMNS.DATA
-        ],
+        columns: [COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.TRAINING_NAME],
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportSubmittedData
+          message: labels.EmptyCampaignManagerTrainingReport
         },
-        rowActions: [],
+        rowActions: [
+          {
+            name: labels.ViewReport,
+            icon: 'mdi-text-box',
+            action: 'on-view-report',
+            isNotShow: true
+          }
+        ],
         downloadButton: {
           show: false
-        }
+        },
+        countRow: 5
       },
       tableData: []
     }
   },
-  computed: {
-    getTitle() {
-      return `Submitted Data ${this.item?.['submittedCount'] || 0} Time(s)`
-    },
-    getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
-    }
-  },
-  created() {
-    this.callForData()
-  },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      searchCampaignJobUserEmailSubmittedDetails(this.axiosPayload, this.item?.resourceId)
-        .then((response) => {
-          const {
-            data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-        })
-        .finally(this.setLoading)
-    },
     handleClose() {
       this.$emit('on-close')
-    }
+    },
+    callForData() {}
   }
 }
 </script>
