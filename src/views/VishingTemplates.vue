@@ -244,7 +244,7 @@ export default {
           {
             property: 'availableFor',
             align: 'right',
-            label: labels.AvailalbeFor,
+            label: labels.AvailableFor,
             fixed: false,
             sortable: false,
             hideSort: true,

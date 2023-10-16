@@ -441,6 +441,64 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
+            v-if="getSmishingSimulatorLeftMenuPermissions"
+            id="btn--link-navigator-menu-quishing-simulator-list-group"
+            no-action
+            prepend-icon="$qr-code"
+            :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template #activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Quishing Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getSmishingScenariosLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/quishing-simulator/quishing-scenarios"
+                  id="btn--link-navigator-menu-quishing-simulator"
+                  route-name="Quishing Simulator"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getSmishingCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/smishing-simulator/campaign-manager"
+                  id="btn--link-navigator-menu-quishing-campaign-manager"
+                  route-name="Campaign Manager"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Quishing Campaign Manager' || routerName === 'Quishing Report'
+                  "
+                  @click="handleSmishingCampaignManagerClick"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getSmishingSettingsLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/smishing-simulator/settings"
+                  id="btn--link-navigator-menu-quishing-dns-service"
+                  route-name="Settings"
+                  :router-name="routerName"
+                  :active-class-comparator="() => routerName === 'Quishing Settings'"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
             v-if="getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[

@@ -12,6 +12,7 @@ export const labels = {
   LimitRecipients: 'Limit Recipients',
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
+  EmailTemplate: 'Email Template',
   All: 'All',
   AllLanguages: 'All Languages',
   TrainingForUsers: 'Training for users who has been phished',
@@ -712,7 +713,7 @@ export const labels = {
   KeepEditing: 'KEEP EDITING',
   NotificationTemplate: 'Notification Template',
   MakeAvailableFor: 'Make Available For',
-  AvailalbeFor: 'Available For',
+  AvailableFor: 'Available For',
   MakeAvailableForSubtitle: 'Use this setting to make the item available for companies and groups.',
   MakeAvailableForPlaceholder: 'Search companies and groups',
   DeleteNotificationTemplateBody:
