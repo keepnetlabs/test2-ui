@@ -3,9 +3,9 @@
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
     maxHeightSize="665"
+    title="Training Reports"
     :custom-size="'800'"
     :icon="CONSTANTS.icon"
-    title="Training Reports"
     :status="status"
     @changeStatus="handleClose"
   >
@@ -50,6 +50,7 @@ import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
   name: 'CampaignManagerReportTrainingReportsDialog',
@@ -79,7 +80,28 @@ export default {
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime', pageSize: 5 }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.TRAINING_NAME],
+        columns: [
+          {
+            property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,
+            align: 'left',
+            label: labels.ScenarioName,
+            fixed: 'left',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 280
+          },
+          {
+            property: 'trainingName',
+            align: 'left',
+            label: labels.TrainingName,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 280
+          }
+        ],
         addButton: {
           show: false
         },

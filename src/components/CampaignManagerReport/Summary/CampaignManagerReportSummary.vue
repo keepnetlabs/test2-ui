@@ -91,6 +91,7 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -476,11 +477,13 @@ export default {
       if (scenarios.length) {
         scenarios.forEach((scenario) => {
           if (scenario.trainingInfo && scenario.enrollmentInfo) {
-            trainingReportDialogItems.push({
-              phishingScenarioName: scenario.scenarioInfo.name,
-              trainingName: scenario.trainingInfo.name,
-              enrollmentId: scenario?.enrollmentInfo?.enrollmentId
-            })
+            trainingReportDialogItems.push(
+              new TrainingReportDialogModel(
+                scenario.scenarioInfo.name,
+                scenario.trainingInfo.name,
+                scenario?.enrollmentInfo?.enrollmentId
+              )
+            )
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
