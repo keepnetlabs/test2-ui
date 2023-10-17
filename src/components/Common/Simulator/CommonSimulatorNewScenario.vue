@@ -1,5 +1,5 @@
 <template>
-  <app-modal :status="status" icon-name="mdi-hook" :title="getModalTitle">
+  <AppModal :status="status" :icon-name="getModalIcon" :title="getModalTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -11,7 +11,6 @@
             >Email Template</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-
           <v-stepper-step
             :class="{
               'k-stepper__step': true,
@@ -46,7 +45,7 @@
                     initial-placeholder="Enter a name"
                   />
                 </form-group>
-                <form-group title="Description" sub-title="Describe the template briefly">
+                <FormGroup title="Description" sub-title="Describe the scenario briefly">
                   <InputDescription
                     v-model.trim="formValues.description"
                     id="input--new-phishing-scenarios-description"
@@ -56,8 +55,8 @@
                     height="100"
                     :maxLength="300"
                   />
-                </form-group>
-                <form-group
+                </FormGroup>
+                <FormGroup
                   has-hint
                   title="Method"
                   sub-title="Select the phishing technique for this scenario"
@@ -88,13 +87,13 @@
                       </div>
                     </template>
                   </KSelect>
-                </form-group>
-                <form-group
+                </FormGroup>
+                <FormGroup
                   has-hint
                   title="Language"
                   sub-title="Select the language you are writing this webpage template in"
                 >
-                  <input-select-language
+                  <InputSelectLanguage
                     v-model="formValues.languageTypeResourceId"
                     v-bind="commonRules"
                     item-text="text"
@@ -103,19 +102,19 @@
                     :items="languageOptions"
                     :menu-props="{ offsetY: true }"
                   />
-                </form-group>
-                <form-group title="Tags" sub-title="Define tags for the scenario">
+                </FormGroup>
+                <FormGroup title="Tags" sub-title="Define tags for the scenario">
                   <InputTag
+                    v-model="formValues.tags"
                     ref="refTags"
                     id="input--action-tags-new-scenario"
-                    v-model="formValues.tags"
                     :items="[]"
                     class="hide-caret"
                   />
-                </form-group>
-                <make-available-for
-                  ref="refMakeAvailableFor"
+                </FormGroup>
+                <MakeAvailableFor
                   v-model="availableForRequests"
+                  ref="refMakeAvailableFor"
                   sub-title="Select companies that should see this scenario in their libraries"
                 />
               </v-form>
@@ -178,20 +177,7 @@
                 :title="labels.ScenarioSummary"
                 :subtitle="labels.ScenarioSummarySub"
               />
-              <div
-                :style="
-                  isMethodMfa
-                    ? {
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        columnGap: '16px',
-                        maxWidth: 'calc(100% - 96px)'
-                      }
-                    : {
-                        maxWidth: 'calc(100% - 96px)'
-                      }
-                "
-              >
+              <div :style="getLastStepContainerStyle">
                 <CampaignManagerSummaryCard
                   icon="mdi-information"
                   :title="labels.ScenarioInfo"
@@ -264,12 +250,7 @@
                             "
                             :color="emailDifficultyChipColor"
                           >
-                            {{
-                              difficulties.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.difficultyResourceId
-                              ).text
-                            }}
+                            {{ getSummaryDifficulty }}
                           </v-chip>
                           <v-chip
                             v-if="!!summaryData && !!summaryData.emailTemplate"
@@ -281,16 +262,11 @@
                               font-size: 12px;
                             "
                           >
-                            {{
-                              methods.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.categoryResourceId
-                              ).text
-                            }}
+                            {{ getSummaryMethod }}
                           </v-chip>
                           <v-chip
                             v-if="!!summaryData"
-                            class="template-list--item template-list--item__chip p"
+                            class="template-list--item template-list--item__chip"
                             style="
                               background-color: #757575;
                               margin-left: 8px;
@@ -387,13 +363,7 @@
                                 "
                                 :color="getLandingPageDifficultyColor"
                               >
-                                {{
-                                  scenarioDetailsLookup.difficultyTypes.find(
-                                    (item) =>
-                                      item.value ===
-                                      summaryData.landingPageTemplate.difficultyTypeId.toString()
-                                  ).text
-                                }}
+                                {{ getLandingPageDifficulty }}
                               </v-chip>
                               <v-chip
                                 v-if="!!summaryData"
@@ -405,13 +375,7 @@
                                   font-size: 12px;
                                 "
                               >
-                                {{
-                                  getMethodTypes.find(
-                                    (item) =>
-                                      item.value ===
-                                      summaryData.landingPageTemplate.methodTypeId.toString()
-                                  ).text
-                                }}
+                                {{ getLandingPageMethod }}
                               </v-chip>
                               <v-chip
                                 v-if="!!summaryData"
@@ -461,13 +425,7 @@
                             "
                             :color="getLandingPageDifficultyColor"
                           >
-                            {{
-                              scenarioDetailsLookup.difficultyTypes.find(
-                                (item) =>
-                                  item.value ===
-                                  summaryData.landingPageTemplate.difficultyTypeId.toString()
-                              ).text
-                            }}
+                            {{ getLandingPageDifficulty }}
                           </v-chip>
                           <v-chip
                             v-if="!!summaryData"
@@ -479,13 +437,7 @@
                               font-size: 12px;
                             "
                           >
-                            {{
-                              getMethodTypes.find(
-                                (item) =>
-                                  item.value ===
-                                  summaryData.landingPageTemplate.methodTypeId.toString()
-                              ).text
-                            }}
+                            {{ getLandingPageMethod }}
                           </v-chip>
                           <v-chip
                             v-if="!!summaryData"
@@ -543,10 +495,9 @@
         @on-submit="submit"
       />
     </template>
-  </app-modal>
+  </AppModal>
 </template>
 <script>
-import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -573,9 +524,10 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-
+import AppModal from '@/components/AppModal'
+import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
-  name: 'NewScenarios',
+  name: 'CommonSimulatorNewScenario',
   components: {
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
@@ -614,6 +566,10 @@ export default {
     },
     scenarioDetailsLookup: {
       required: true
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -632,8 +588,6 @@ export default {
       showTemplate1: false,
       showTemplate2: false,
       languageOptions: [],
-      methods: SCENARIO_METHODS,
-      difficulties: SCENARIO_DIFFICULTIES,
       isSubmitDisabled: false,
       availableForRequests: [],
       generalDifficultyTypeId: '',
@@ -670,6 +624,44 @@ export default {
     }
   },
   computed: {
+    getLastStepContainerStyle() {
+      return this.isMethodMfa
+        ? {
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            columnGap: '16px',
+            maxWidth: 'calc(100% - 96px)'
+          }
+        : {
+            maxWidth: 'calc(100% - 96px)'
+          }
+    },
+    getSummaryDifficulty() {
+      return (
+        SCENARIO_DIFFICULTIES.find(
+          (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
+        )?.text || ''
+      )
+    },
+    getSummaryMethod() {
+      return (
+        SCENARIO_METHODS.find(
+          (item) => item.value === this.summaryData.emailTemplate.categoryResourceId
+        )?.text || ''
+      )
+    },
+    getLandingPageDifficulty() {
+      return (
+        this.scenarioDetailsLookup.difficultyTypes.find(
+          (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
+        )?.text || ''
+      )
+    },
+    getLandingPageMethod() {
+      return this.getMethodTypes.find(
+        (item) => item.value === this.summaryData.landingPageTemplate.methodTypeId.toString()
+      ).text
+    },
     getMethodTypes() {
       return this.scenarioDetailsLookup?.methodTypes || []
     },
@@ -694,11 +686,14 @@ export default {
     },
     getSelectedMethod() {
       if (!this.formValues?.methodTypeId) return ''
-      return this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA'
-        ? this.selectedEmailTemplate.categoryName === 'Click Only'
-          ? 'Click-Only'
+      if (
+        SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text ===
+        SCENARIO_METHOD_TYPES.MFA
+      ) {
+        return this.selectedEmailTemplate.categoryName === labels.ClickOnly
+          ? SCENARIO_METHOD_TYPES.CLICK_ONLY
           : this.selectedEmailTemplate.categoryName
-        : this.methods[Number(this.formValues?.methodTypeId) - 1].text
+      } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
     },
     getStep2Subtitle() {
       const mTypeText =
@@ -744,8 +739,18 @@ export default {
       return false
     },
     getModalTitle() {
-      if (!this.isEdit) return 'New Phishing Scenario'
-      return this.isDuplicate ? 'Duplicate Phishing Scenario' : 'Edit Phishing Scenario'
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        if (!this.isEdit) return 'New Phishing Scenario'
+        return this.isDuplicate ? 'Duplicate Phishing Scenario' : 'Edit Phishing Scenario'
+      }
+      if (!this.isEdit) return 'New Quishing Scenario'
+      return this.isDuplicate ? 'Duplicate Quishing Scenario' : 'Edit Quishing Scenario'
+    },
+    getModalIcon() {
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        return 'mdi-hook'
+      }
+      return '$qr-code-selected'
     },
     getPhishingFile() {
       return this.summaryData?.emailTemplate?.phishingFileName
@@ -808,6 +813,7 @@ export default {
     }
   },
   methods: {
+    getDifficultyColor,
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
         cancelButton: 'btn-cancel--duplicate-scenario-modal',
@@ -904,21 +910,6 @@ export default {
           this.$emit('changeNewScenarioModalStatus', false)
         }
       })
-    },
-    getDifficultyColor(difficulty) {
-      if (difficulty === 'Easy') {
-        return '#217124'
-      }
-
-      if (difficulty === 'Medium') {
-        return '#2196F3'
-      }
-
-      if (difficulty === 'Hard') {
-        return '#F56C6C'
-      }
-
-      return '#217124'
     },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step))

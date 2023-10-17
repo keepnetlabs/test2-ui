@@ -7,26 +7,18 @@
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
     />
-    <v-overlay
+    <CommonSimulatorNewScenario
       v-if="modalStatus"
-      id="add-new-community-overlay"
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
-    >
-      <NewScenario
-        ref="newScenarioModal"
-        :status="modalStatus"
-        :scenarioId="scenarioId"
-        :isEdit="isEdit"
-        :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        :isAttachmentBased="isAttachmentBasedScenario"
-        @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
-      />
-    </v-overlay>
+      ref="newScenarioModal"
+      :status="modalStatus"
+      :scenarioId="scenarioId"
+      :isEdit="isEdit"
+      :isDuplicate="isDuplicate"
+      :editableFormValues="editableFormValues"
+      :scenarioDetailsLookup="scenarioDetailsLookup"
+      :isAttachmentBased="isAttachmentBasedScenario"
+      @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
+    />
     <CommonSimulatorDeleteScenario
       v-if="showDeleteModal"
       :status="showDeleteModal"
@@ -130,7 +122,6 @@
 
 <script>
 import DataTable from '../DataTable'
-import NewScenario from './NewScenario'
 import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
 import {
   getStoreValue,
@@ -159,10 +150,14 @@ import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActio
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue'
 import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
+import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
+import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorNewScenario,
     CommonSimulatorPreviewDialog,
     ScenariosRowActionsEditButton,
     ScenariosRowActionsDeleteButton,
@@ -171,14 +166,12 @@ export default {
     DefaultButtonRowAction,
     PhishingScenariosFastLaunch,
     DataTable,
-    NewScenario,
     CommonSimulatorDeleteScenario
   },
-  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions, useScenarioDetailsLookup],
   data() {
     return {
       languageFilterOptions: [],
-      scenarioDetailsLookup: null,
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       selectedRow: null,
@@ -196,98 +189,12 @@ export default {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SCENARIOS,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
-          {
-            property: PROPERTY_STORE.NAME,
-            align: 'left',
-            editable: false,
-            label: 'Scenario Name',
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: 'left',
-            width: 240,
-            filterableType: 'text'
-          },
-          {
-            property: 'method',
-            align: 'left',
-            editable: false,
-            label: labels.Method,
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: false,
-            width: 240,
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'Click Only', value: 'Click-Only' },
-              { text: 'Data Submission', value: 'Data Submission' },
-              { text: 'Attachment', value: 'Attachment' },
-              { text: 'MFA', value: 'MFA' }
-            ]
-          },
-          {
-            property: PROPERTY_STORE.LANGUAGE,
-            align: 'left',
-            editable: false,
-            label: labels.LANGUAGE,
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: false,
-            width: 175,
-            filterableType: 'select',
-            filterableItems: [],
-            filterableCustomFieldName: 'languageTypeResourceId'
-          },
-          {
-            property: PROPERTY_STORE.TAGS,
-            align: 'left',
-            editable: false,
-            label: 'Tags',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'smallBadge',
-            width: 150,
-            hasTooltip: true,
-            filterableType: 'text',
-            filterableCustomFieldName: PROPERTY_STORE.TAGS
-          },
-          {
-            property: 'difficulty',
-            align: 'center',
-            editable: false,
-            label: labels.DIFFICULTY,
-            sortable: true,
-            show: true,
-            type: 'status',
-            filterableType: 'select',
-            filterableItems: ['Easy', 'Medium', 'Hard'],
-            width: 180
-          },
-          {
-            property: PROPERTY_STORE.CREATEDBY,
-            align: 'left',
-            editable: false,
-            label: 'Created By',
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATETIME),
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'date'
-          }
+          COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.METHOD,
+          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
+          COMMON_SIMULATOR_COLUMNS.CREATED_BY,
+          COMMON_SIMULATOR_COLUMNS.CREATE_TIME
         ],
         rowActions: [
           {
@@ -364,36 +271,47 @@ export default {
   },
   created() {
     this.callForLanguages('refScenariosList')
-    this.callForScenarioDetails()
+    this.callForScenarioDetails().then(() => {
+      this.callForData()
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        this.scenarioDetailsLookup.methodTypes.map((item) => {
+          return { text: item.text, value: item.text }
+        })
+      )
+      this.$set(
+        this.tableOptions.columns[3],
+        'filterableItems',
+        this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+          return { text: item.text, value: item.text }
+        })
+      )
+    })
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
-    callForScenarioDetails() {
-      getScenarioDataDetails()
-        .then((response) => {
-          this.scenarioDetailsLookup = response?.data?.data || {
-            methodTypes: [],
-            difficultyTypes: []
-          }
-          this.$set(
-            this.tableOptions.columns[1],
-            'filterableItems',
-            this.scenarioDetailsLookup.methodTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
-          this.$set(
-            this.tableOptions.columns[3],
-            'filterableItems',
-            this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
-        })
-        .finally(() => {
-          this.callForData()
-        })
+    callForData() {
+      this.loading = true
+      if (this.getPhishingScenariosSearchPermissions) {
+        getScenariosList(this.axiosPayload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      }
     },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
@@ -471,27 +389,6 @@ export default {
           link.click()
         })
       })
-    },
-    callForData() {
-      this.loading = true
-      if (this.getPhishingScenariosSearchPermissions) {
-        getScenariosList(this.axiosPayload)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
-          })
-          .catch(() => {
-            this.tableData = []
-          })
-          .finally(() => (this.loading = false))
-      }
     },
     handleActionDelete(row) {
       this.selectedScenario = row
