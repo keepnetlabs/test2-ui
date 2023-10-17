@@ -24,7 +24,7 @@
           <v-stepper-step
             class="k-stepper__step"
             :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
-            :step="isAttachmentBasedScenario ? 3 : 4"
+            :step="maxStep"
             >Summary</v-stepper-step
           >
         </v-stepper-header>
@@ -167,10 +167,7 @@
               </v-list-item>
             </div>
           </v-stepper-content>
-          <v-stepper-content
-            class="k-stepper__content summary-step"
-            :step="isAttachmentBasedScenario ? 3 : 4"
-          >
+          <v-stepper-content class="k-stepper__content summary-step" :step="maxStep">
             <div class="email-settings">
               <ConfigureCompanyStepHeader
                 class="mb-8"
@@ -311,7 +308,11 @@
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
                           mdi-application
                         </v-icon>
-                        Landing Page for users who clicked the phishing link
+                        {{
+                          type === SCENARIO_TYPES.PHISHING
+                            ? 'Landing Page for users who clicked the phishing link'
+                            : 'Landing Page for users who clicked the quishing link'
+                        }}
                       </div>
                       <div>
                         <v-btn
@@ -485,7 +486,7 @@
     </template>
     <template #overlay-footer>
       <StepperFooter
-        :max-step="isAttachmentBasedScenario ? 3 : 4"
+        :max-step="maxStep"
         :step.sync="step"
         :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
         :ids="footerButtonsIds"
@@ -574,6 +575,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
         backButton: 'btn-back--add-or-edit-scenario-modal',
@@ -624,6 +626,9 @@ export default {
     }
   },
   computed: {
+    maxStep() {
+      return this.isAttachmentBasedScenario ? 3 : 4
+    },
     getLastStepContainerStyle() {
       return this.isMethodMfa
         ? {
