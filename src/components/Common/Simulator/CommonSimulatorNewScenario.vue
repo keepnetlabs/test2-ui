@@ -204,7 +204,9 @@
                           outlined
                           color="#2196f3"
                           @click="showTemplate1 = !showTemplate1"
-                          >Preview
+                        >
+                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                          Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
                             {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
@@ -308,11 +310,7 @@
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
                           mdi-application
                         </v-icon>
-                        {{
-                          type === SCENARIO_TYPES.PHISHING
-                            ? 'Landing Page for users who clicked the phishing link'
-                            : 'Landing Page for users who clicked the quishing link'
-                        }}
+                        {{ getLandingPageCardTitle }}
                       </div>
                       <div>
                         <v-btn
@@ -321,7 +319,9 @@
                           outlined
                           color="#2196f3"
                           @click="showTemplate2 = !showTemplate2"
-                          >Preview
+                        >
+                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                          Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
                             {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
@@ -409,8 +409,9 @@
                               summaryData.landingPageTemplate.name
                             }}
                           </div>
-                          <div class="template-summary__sub-title mt-2">
-                            <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                          <div class="template-summary__subtitle mt-2">
+                            <b>{{ getLandingPageUrlLabel }}:</b>
+                            {{ summaryData.landingPageTemplate.urlTemplate }}
                           </div>
                         </div>
                         <div class="d-flex" v-if="!!summaryData">
@@ -626,6 +627,14 @@ export default {
     }
   },
   computed: {
+    getLandingPageCardTitle() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? 'Landing Page for users who clicked the phishing link'
+        : 'Landing Page for users who clicked the quishing link'
+    },
+    getLandingPageUrlLabel() {
+      return this.type === SCENARIO_TYPES.PHISHING ? 'Phishing Link' : 'Quishing Link'
+    },
     maxStep() {
       return this.isAttachmentBasedScenario ? 3 : 4
     },
