@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="campaign-manager-last-step__training-template-body-header-right__sub">
-          <span>{{ trainingParams.category || trainingParams.categoryName }} (category) </span>
+          <span>{{ getCategoryName }} (category) </span>
           <span>&#8226;</span> <span class="fw-400">by </span>
           <span>{{ trainingParams.companyName }} </span>
         </div>
@@ -89,6 +89,11 @@ export default {
     return {
       labels,
       isShowTrainingDialog: false
+    }
+  },
+  computed: {
+    getCategoryName() {
+      return this?.trainingParams?.category || this?.trainingParams?.categoryName
     }
   },
   methods: {
