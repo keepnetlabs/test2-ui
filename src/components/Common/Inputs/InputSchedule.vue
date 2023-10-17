@@ -11,6 +11,7 @@
           class="mb-0"
           label="Start time"
           color="#2196f3"
+          style="min-width: 68px;"
           value="3"
         />
         <div :class="[!isDateValid && 'date-picker-error mb-n3']">
