@@ -16,30 +16,20 @@
         selectable
         filterable
         options
-        is-server-side
         no-padding-bottom
         is-custom-overflowed-column
         :show-filter-options="false"
         :is-settings-popup="false"
-        :loading="isLoading"
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
-        :server-side-props="serverSideProps"
-        :server-side-events="tableOptions.serverSideEvents"
         :row-actions="tableOptions.rowActions"
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
         :count-row="tableOptions.countRow"
         :cell-padding="32"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-        @server-side-page-number-changed="serverSidePageNumberChanged"
-        @server-side-size-changed="serverSideSizeChanged"
-        @sortChangedEvent="sortChanged"
-        @searchChangedEvent="handleSearchChange"
-        @refreshAction="callForData"
+        @on-view-report="handleViewReport"
       />
     </template>
     <template #app-dialog-footer>
@@ -59,8 +49,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { useLoading } from '@/hooks/useLoading'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
 
 export default {
   name: 'CampaignManagerReportTrainingReportsDialog',
@@ -69,10 +58,14 @@ export default {
     DataTable,
     AppDialog
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useDefaultTableFunctions],
   props: {
     status: {
       type: Boolean
+    },
+    tableData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -105,15 +98,16 @@ export default {
           show: false
         },
         countRow: 5
-      },
-      tableData: []
+      }
     }
   },
   methods: {
     handleClose() {
       this.$emit('on-close')
     },
-    callForData() {}
+    handleViewReport(row = { enrollmentId: '' }) {
+      window.open(`/awareness-educator/enrollments/training-report/${row.enrollmentId}`)
+    }
   }
 }
 </script>

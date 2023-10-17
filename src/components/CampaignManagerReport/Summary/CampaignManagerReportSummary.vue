@@ -8,6 +8,7 @@
       :is-show-training-report-button="!!trainingInfos.length"
       :is-multiple-training-report="trainingInfos.length > 1"
       :instance-group="instanceGroup"
+      :training-report-dialog-items="trainingReportDialogItems"
     />
     <CampaignManagerReportSummaryCards
       :multiple-type="multipleType"
@@ -122,6 +123,7 @@ export default {
   data() {
     return {
       targetGroups: [],
+      trainingReportDialogItems: [],
       selectedScenarioTab: '',
       activeScenarioIndex: 0,
       campaignSummary: {},
@@ -470,14 +472,23 @@ export default {
     setCampaignSummary(response) {
       this.campaignSummary = response?.data?.data
       const scenarios = this.campaignSummary?.scenarios || []
+      const trainingReportDialogItems = []
       if (scenarios.length) {
         scenarios.forEach((scenario) => {
+          if (scenario.trainingInfo && scenario.enrollmentInfo) {
+            trainingReportDialogItems.push({
+              phishingScenarioName: scenario.scenarioInfo.name,
+              trainingName: scenario.trainingInfo.name,
+              enrollmentId: scenario?.enrollmentInfo?.enrollmentId
+            })
+          }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
               .map((lang) => lang.languageShortCode)
               .join(' | ')
           }
         })
+        this.trainingReportDialogItems = trainingReportDialogItems
         if (!this.customKeys.length) {
           this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
             .fill(0)
