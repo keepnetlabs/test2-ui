@@ -203,15 +203,19 @@ export default {
     },
     getSMSDeliveryData() {
       const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
-      const {
-        smsDeliveryStartDate = '01/01/1970',
-        smsDeliveryEndDate = '01/01/1970'
-      } = campaignInfo
+      const { smsDeliveryStartDate, smsDeliveryEndDate, scheduledDate } = campaignInfo
       const senderPhoneNumber = settings?.smsProviderNumber
         ? new PhoneNumber(settings.smsProviderNumber)?.g?.number?.international
         : ''
+      if (!smsDeliveryStartDate && !smsDeliveryEndDate) {
+        return {
+          'Scheduled Date': scheduledDate || '-',
+          'Sending Status': '',
+          'Sender Phone Number': senderPhoneNumber
+        }
+      }
       return {
-        'Sending Start - End': `${smsDeliveryStartDate} - ${smsDeliveryEndDate}`,
+        'Sending Start - End': `${smsDeliveryStartDate || ''} - ${smsDeliveryEndDate || ''}`,
         'Sending Status': '',
         'Sender Phone Number': senderPhoneNumber
       }
