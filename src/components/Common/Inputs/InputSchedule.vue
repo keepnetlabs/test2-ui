@@ -73,6 +73,7 @@ import labels from '@/model/constants/labels'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import { getTimeByTimeZone } from '@/api/company'
 export default {
   name: 'InputSchedule',
   components: { FormGroup, InputDate, KSelect },
@@ -118,6 +119,15 @@ export default {
         if (val) {
           this.parsedFormat = getTimeZone(false, val)
         }
+      }
+    },
+    'value.scheduledDateTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.value.scheduledDate = res.data.data
+          }
+        })
       }
     },
     'value.scheduledDate'(val) {
