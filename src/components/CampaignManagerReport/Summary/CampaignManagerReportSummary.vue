@@ -247,16 +247,16 @@ export default {
         frequency = 0,
         scheduleTypeId
       } = campaignInfo
-      if (!emailDeliveryStartDate && !emailDeliveryEndDate) {
+      if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
         return {
-          'Scheduled Date': scheduledDate || '-',
+          'Delivery Start - End': `Saved for later`,
           Duration: `${emailDeliveryDuration || 0}`,
           'Delivery Status': ''
         }
       }
-      if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
+      if (!emailDeliveryStartDate && !emailDeliveryEndDate) {
         return {
-          'Delivery Start - End': `Saved for later`,
+          'Scheduled Date': scheduledDate || '-',
           Duration: `${emailDeliveryDuration || 0}`,
           'Delivery Status': ''
         }
