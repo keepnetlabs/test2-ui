@@ -337,6 +337,53 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
+          <!-- //TODO: Add permissions -->
+          <v-list-group
+            v-if="getPhishingSimulatorLeftMenuPermissions"
+            id="btn--link-navigator-menu-callback-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default', getCallbackSimulatorClasses]"
+            prepend-icon="$callback"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Callback Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <!-- //TODO: Add permissions -->
+            <v-list-item
+              v-if="getPhishingScenarioLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/callback-simulator/callback-scenarios"
+                  id="btn--link-navigator-menu-callback-scenario"
+                  route-name="Callback Scenarios"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <!-- //TODO: Add permissions -->
+            <v-list-item
+              v-if="getCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/callback-simulator/campaign-manager"
+                  id="btn--link-navigator-menu-callback-campaign-manager"
+                  route-name="Campaign Manager"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Callback Campaign Manager' || routerName === 'Callback Report'
+                  "
+                  @click="handleCallbackCampaignManagerClick"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
           <v-list-group
             v-if="getVishingLeftMenuPermissions"
             id="btn--link-navigator-menu-vishing-simulator-list-group"
@@ -1098,6 +1145,18 @@ export default {
         'un-selected-list-item': !isSelected
       }
     },
+    getCallbackSimulatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Callback Simulator' ||
+          routerName === 'Callback Scenarios' ||
+          routerName === 'Callback Campaign Manager' ||
+          routerName === 'Callback Settings' ||
+          routerName === 'Callback Report',
+        'un-selected-list-item': routerName !== 'Callback Simulator'
+      }
+    },
     getPhishingSimulatorClasses() {
       const routerName = this.routerName
       return {
@@ -1282,6 +1341,9 @@ export default {
     }),
     handlePhishingCampaignManagerClick() {
       this.$router.push('/phishing-simulator/campaign-manager?status=parent')
+    },
+    handleCallbackCampaignManagerClick() {
+      this.$router.push('/callback-simulator/campaign-manager?status=parent')
     },
     handleSmishingCampaignManagerClick() {
       this.$router.push('/smishing-simulator/campaign-manager?status=parent')

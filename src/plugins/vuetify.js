@@ -12,6 +12,8 @@ import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
 import BookSearch from '@/components/CustomIcons/BookSearch'
 import SmishingSimulator from '@/components/CustomIcons/SmishingSimulator'
 import LockOpenTime from '@/components/CustomIcons/LockOpenTime'
+import Callback from '@/components/CustomIcons/Callback'
+import PlayFile from '@/components/CustomIcons/PlayFile'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -20,6 +22,12 @@ export default new Vuetify({
       iconfont: 'mdiSvg'
     },
     values: {
+      playfile: {
+        component: PlayFile
+      },
+      callback: {
+        component: Callback
+      },
       'smishing-simulator': {
         component: SmishingSimulator
       },

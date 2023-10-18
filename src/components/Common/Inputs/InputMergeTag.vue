@@ -1,5 +1,5 @@
 <template>
-  <div class="input-merge-tag">
+  <div :class="['input-merge-tag', isTextToSpeech && 'text-to-speech']">
     <div v-if="mergeTags.length" class="input-merge-tag__tags">
       <v-btn
         v-for="mergeTag in getRowMergeTags"
@@ -34,6 +34,7 @@
       ref="refInput"
       class="rounded-t-0"
       :value="value"
+      :row="3"
       outlined
       dense
       no-resize
@@ -46,7 +47,31 @@
       :readonly="readonly"
       :hint="hint"
       @input="$emit('input', $event)"
-    />
+    >
+      <template #prepend-inner>
+        <div v-if="isTextToSpeech" class="input-merge-tag__audio-container">
+          <div class="input-merge-tag__badges">
+            <div v-if="language" class="input-merge-tag__badge">
+              <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon>{{ language }}
+            </div>
+            <div v-if="voice" class="input-merge-tag__badge">
+              <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
+              >{{ voice }}
+            </div>
+          </div>
+          <v-btn
+            rounded
+            color="#2196f3"
+            :id="'input-merge-tag__play-text-to-speech-button'"
+            :class="['add-step-button', 'button-new', !value ? 'add-step-button--disabled' : '']"
+            :disabled="!value"
+          >
+            <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;">mdi-play</v-icon>
+            <span class="add-step-button__text" style="text-transform: none;">Play the Text</span>
+          </v-btn>
+        </div>
+      </template>
+    </v-textarea>
   </div>
 </template>
 
@@ -102,6 +127,16 @@ export default {
     mergeTags: {
       type: Array,
       required: true
+    },
+    isTextToSpeech: {
+      type: Boolean,
+      default: false
+    },
+    language: {
+      type: String
+    },
+    voice: {
+      type: String
     }
   },
   data() {

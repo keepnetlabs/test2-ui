@@ -64,6 +64,8 @@ import currentDateMinusTenDays from '@/components/GrapesJs/Newsletter/mergedText
 import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberOneDigit'
 import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
 import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
+import phishingCode from '@/components/GrapesJs/Newsletter/mergedTexts/phishingCode'
+import phishingCallbackPhone from '@/components/GrapesJs/Newsletter/mergedTexts/phishingCallbackPhone'
 
 export const MERGED_TEXTS = {
   '{FULLNAME}': fullName,
@@ -131,7 +133,9 @@ export const MERGED_TEXTS = {
   '{CURRENT_DATE_MINUS_10_DAYS}': currentDateMinusTenDays,
   '{RANDOM_NUMBER_1_DIGIT}': randomNumberOneDigit,
   '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
-  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits
+  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits,
+  '{PHISHING_CODE}': phishingCode,
+  '{PHISHING_CALLBACK_PHONE}': phishingCallbackPhone
 }
 
 export const SCENARIO_METHOD_TYPES = {
