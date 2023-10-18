@@ -46,7 +46,7 @@
           outlined
           dense
           hide-details
-          placeholder="Select a item"
+          placeholder="Select an item"
           min-width-type="super"
           nudge-width="200"
           :items="scheduledTimeItems"
@@ -71,7 +71,7 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 export default {
   name: 'InputSchedule',
@@ -130,12 +130,18 @@ export default {
     'value.scheduleTypeId'(val) {
       if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
         this.isDateValid = val !== SCHEDULE_TYPES.SCHEDULE_TO
+        if (!this.value.scheduledDate) {
+          this.value.scheduledDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+        }
+        if (!this.value.scheduledDateTimeZoneId) {
+          this.value.scheduledDateTimeZoneId = this.selectedTimeZone
+        }
       }
     }
   },
   created() {
     this.callForGetTimeZones()
-    if (!this.isEdit) this.getSelectedTimeZone()
+    this.getSelectedTimeZone()
   },
   methods: {
     callForGetTimeZones() {

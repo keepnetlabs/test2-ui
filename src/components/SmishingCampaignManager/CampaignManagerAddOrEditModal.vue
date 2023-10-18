@@ -411,7 +411,7 @@ export default {
     step(val) {
       if (
         val === 4 &&
-        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate === ''
+        !this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
       ) {
         this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
           Date.now()
