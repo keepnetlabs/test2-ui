@@ -69,7 +69,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience.vue'
 
 export default {
-  name: 'PhishingScenariosFastLaunchStep1',
+  name: 'CommonSimulatorFastLaunchStep1',
   components: { CampaignManagerTargetAudience, KSelect, CampaignManagerCampaignInfo },
   props: {
     formDetails: {

@@ -1,12 +1,13 @@
 <template>
   <div id="scenarios">
-    <PhishingScenariosFastLaunch
+    <CommonSimulatorFastLaunch
       v-if="isShowFastLaunch"
       ref="fastLaunch"
       :status="isShowFastLaunch"
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
     />
+
     <CommonSimulatorNewScenario
       v-if="modalStatus"
       ref="newScenarioModal"
@@ -133,13 +134,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import {
-  deleteScenario,
-  exportScenarios,
-  getScenarioDataDetails,
-  getScenariosList
-} from '@/api/scenarios'
-import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
+import { deleteScenario, exportScenarios, getScenariosList } from '@/api/scenarios'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -153,10 +148,12 @@ import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsi
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch.vue'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorFastLaunch,
     CommonSimulatorNewScenario,
     CommonSimulatorPreviewDialog,
     ScenariosRowActionsEditButton,
@@ -164,7 +161,6 @@ export default {
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    PhishingScenariosFastLaunch,
     DataTable,
     CommonSimulatorDeleteScenario
   },
