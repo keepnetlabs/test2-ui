@@ -100,6 +100,11 @@ export default {
       return this?.value?.trainingId || ''
     }
   },
+  watch: {
+    value(val) {
+      console.log('val', val)
+    }
+  },
   created() {
     this.callForTrainingItems()
   },
