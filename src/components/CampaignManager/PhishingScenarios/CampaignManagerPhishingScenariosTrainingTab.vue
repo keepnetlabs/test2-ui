@@ -30,12 +30,14 @@
       />
     </FormGroup>
     <InputContentLanguage
+      :key="inputContentLanguageKey"
       ref="inputContentLanguage"
       v-model="value.trainingLanguageIds"
       class="ml-4 mt-4"
-      :is-add-default-value="!isEdit"
+      :is-add-default-value="false"
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
+      @on-api-call-finished="handleApiCallFinished"
     />
     <VBtn
       id="btn-preview--campaign-manager-training-tab"
@@ -57,7 +59,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
@@ -76,8 +78,14 @@ export default {
   },
   data() {
     return {
+      inputContentLanguageKey: createRandomCryptStringNumber(),
       labels,
       trainingItems: []
+    }
+  },
+  watch: {
+    value() {
+      this.inputContentLanguageKey = createRandomCryptStringNumber()
     }
   },
   computed: {
@@ -98,11 +106,6 @@ export default {
     },
     getTrainingId() {
       return this?.value?.trainingId || ''
-    }
-  },
-  watch: {
-    value(val) {
-      console.log('val', val)
     }
   },
   created() {
@@ -133,6 +136,9 @@ export default {
       this.$nextTick(() => {
         this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
       })
+    },
+    handleApiCallFinished() {
+      if (!this.value.trainingLanguageIds.length) this.$refs.inputContentLanguage.setDefaultValue()
     }
   }
 }
