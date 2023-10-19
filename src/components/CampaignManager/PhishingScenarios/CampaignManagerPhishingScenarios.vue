@@ -276,6 +276,7 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
+                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
@@ -320,12 +321,13 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
@@ -396,6 +398,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },

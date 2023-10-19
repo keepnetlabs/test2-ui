@@ -4,6 +4,7 @@ export const methods = [
   { text: 'Attachment', value: '7dLrW2kdBTDs' },
   { text: 'MFA', value: '67LcW2kHbtds' }
 ]
+export const PHISHING_SCENARIOS_BY_ID = {}
 
 export const difficulties = [
   { text: 'Easy', value: 'mT0CeYGgKsVb' },
