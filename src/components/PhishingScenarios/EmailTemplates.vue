@@ -1,12 +1,12 @@
 <template>
   <div id="emailTemplates">
     <v-overlay
+      v-if="modalStatus"
       id="add-new-community-overlay"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
       color="white"
-      v-if="modalStatus"
     >
       <NewEmailTemplates
         ref="newEmailTemplate"
@@ -50,94 +50,16 @@
     <DeleteEmailTemplates
       v-if="showDeleteModal"
       :status="showDeleteModal"
-      :selectedEmailTemplate="selectedEmailTemplate"
+      :selected-email-template="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
     />
-    <app-dialog
-      v-if="isTemplateDetails"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
-      :title="selectedTemplateHeader"
-      :status="isTemplateDetails"
-      :subtitle="'Email Template Preview'"
-      @changeStatus="isTemplateDetails = false"
-    >
-      <template v-slot:app-dialog-body>
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="template-preview__text" v-if="!!templateHTML">
-            <div>
-              <span class="template-preview__text--title">Template Name: </span>
-              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-            </div>
-            <div>
-              <span class="template-preview__text--title">From Name: </span>
-              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-            </div>
-            <div>
-              <span class="template-preview__text--title">From Email Address: </span>
-              <span class="template-preview__text--body">{{
-                emailTemplateParams.fromAddress
-              }}</span>
-            </div>
-            <div>
-              <span
-                class="template-preview__text--title"
-                style="
-                  font-style: normal;
-                  font-weight: 600;
-                  font-size: 20px;
-                  line-height: 24px;
-                  color: #383b41;
-                "
-                >Subject:
-              </span>
-              <span
-                class="template-preview__text--body--bold"
-                style="
-                  font-style: normal;
-                  font-weight: 600;
-                  font-size: 20px;
-                  line-height: 24px;
-                  color: #383b41;
-                "
-                >{{ emailTemplateParams.subject }}</span
-              >
-            </div>
-          </div>
-          <div
-            v-if="emailTemplateParams.attachment"
-            class="attachment-wrapper mt-2"
-            style="position: relative;"
-          >
-            <div class="attachment blue-attach mb-0">
-              <AttachmentsPreview
-                :deletable="false"
-                :att="emailTemplateParams.attachment"
-                :isEmailTemplate="true"
-              />
-            </div>
-          </div>
-          <hr class="mt-2" v-if="!!templateHTML" />
-          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
-        </div>
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--email-preview-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedEmailTemplate"
+      @on-close="togglePreviewDialog"
+    />
 
     <data-table
       v-if="getEmailTemplatesSearchPermissions"
@@ -182,7 +104,7 @@
           :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
           :checkIsOwnerProperty="false"
-          @on-click="handlePreview(scope.row)"
+          @on-click="togglePreviewDialog(scope.row)"
         />
         <RowActionsMenu>
           <ScenariosRowActionsEditButton
@@ -220,11 +142,7 @@ import DataTable from '../DataTable'
 import NewEmailTemplates from './NewEmailTemplates'
 import DeleteEmailTemplates from './DeleteEmailTemplates'
 import AppDialog from '../AppDialog'
-import {
-  getEmailTemplatesList,
-  exportEmailTemplates,
-  getEmailTemplatePreviewContent
-} from '@/api/phishingsimulator'
+import { getEmailTemplatesList, exportEmailTemplates } from '@/api/phishingsimulator'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -235,13 +153,9 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import KEmailPreview from '@/components/KEmailPreview'
-import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import * as Validations from '@/utils/validations'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { mapGetters } from 'vuex'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
@@ -249,22 +163,21 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorEmailTemplatePreviewDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    DatatableLoading,
-    KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
     NewEmailTemplates,
     AppDialog,
-    AppDialogFooter,
-    AttachmentsPreview
+    AppDialogFooter
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
@@ -453,7 +366,7 @@ export default {
       modalStatus: false,
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
-      isTemplateDetails: false,
+      isShowPreviewDialog: false,
       selectedTemplateHeader: null,
       templateHTML: null
     }
@@ -514,41 +427,9 @@ export default {
       this.showDeleteModal = false
       this.callForData()
     },
-    handlePreview(row) {
-      this.isTemplateDetails = true
-      const id = row.resourceId
-      this.isPreviewLoading = true
-      getEmailTemplatePreviewContent(id)
-        .then((response) => {
-          const data = response.data.data
-          this.selectedTemplateHeader = data.subject
-          const {
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            phishingFileName,
-            subject
-          } = data
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
-            name,
-            subject,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null
-          }
-          this.templateHTML = data.template
-        })
-        .finally(() => {
-          this.timeoutId = setTimeout(() => {
-            this.isPreviewLoading = false
-          }, 500)
-        })
+    togglePreviewDialog(row = null) {
+      this.selectedEmailTemplate = row
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleEdit(row, isDuplicate) {
       this.editableFormValues = row
