@@ -26,7 +26,7 @@
           :key="button.language"
           class="phished-landing-page__button"
           color="#2196f3"
-          @click="handleStartTrainingByLanguage()"
+          @click="handleStartTrainingByLanguage(button)"
           >{{ button.text }}
         </VBtn>
       </div>
@@ -34,32 +34,20 @@
   </div>
 </template>
 <script>
+import AwarenessEducatorService from '@/api/awarenessEducator'
+
 export default {
   name: 'PhishedLandingPage',
   data() {
     return {
-      logo:
-        'https://dev-api.devkeepnet.com/whitelabeling/mainlogo/6b4ca5c7-e8fd-424a-87a5-3c07b240a606.png',
-      isMultiple: false,
+      logo: require('../assets/img/no-logo.png'),
       subtitleText: 'Please start the training and complete the training as soon as possible',
-      buttons: [
-        {
-          text: 'English',
-          language: 'en'
-        },
-        {
-          text: 'Turkish',
-          language: 'tr'
-        },
-        {
-          text: 'French',
-          language: 'fr'
-        },
-        {
-          text: 'Arabic',
-          language: 'ar'
-        }
-      ]
+      buttons: []
+    }
+  },
+  computed: {
+    isMultiple() {
+      return this.buttons.length > 1
     }
   },
   created() {
@@ -67,15 +55,34 @@ export default {
   },
   methods: {
     callForData() {
-      /*
       const query = this?.$route?.query
-      const enrollmentContentResourceId = query?.EnrollmentContentId
+      const enrollmentId = query?.EnrollmentId
       const targetUserResourceId = query?.TargetUserResourceId
-      //logo buttonların linki
-       */
+      if (!enrollmentId) return
+
+      AwarenessEducatorService.getPhishedLandingPage(enrollmentId).then((response) => {
+        const {
+          data: { data = {} }
+        } = response
+        const { enrollmentContents = [], mainLogoUrl = [] } = data
+        this.logo = mainLogoUrl
+        enrollmentContents.forEach((eContent) => {
+          this.buttons.push({
+            text: eContent.nativeLanguageName,
+            enrollmentContentResourceId: eContent.enrollmentContentId,
+            targetUserResourceId
+          })
+        })
+      })
     },
-    handleStartTraining() {},
-    handleStartTrainingByLanguage() {}
+    handleStartTraining() {
+      this.handleStartTrainingByLanguage(this.buttons[0])
+    },
+    handleStartTrainingByLanguage(obj) {
+      window.open(
+        `${window.location.origin}/training/scorm/watch?EnrollmentContentId=${obj.enrollmentContentResourceId}&TargetUserResourceId=${obj.targetUserResourceId}`
+      )
+    }
   }
 }
 </script>

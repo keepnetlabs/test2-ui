@@ -254,6 +254,13 @@ export default {
           'Delivery Status': ''
         }
       }
+      if (!emailDeliveryStartDate && !emailDeliveryEndDate) {
+        return {
+          'Scheduled Date': scheduledDate || '-',
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
       if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
         return {
           'Scheduled Date': scheduledDate || '-',

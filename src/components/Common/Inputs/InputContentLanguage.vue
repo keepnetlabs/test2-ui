@@ -124,6 +124,7 @@ export default {
           text: labels.AllLanguages,
           value: labels.All
         })
+        this.$emit('on-api-call-finished')
         if (this.isAddDefaultValue) this.setDefaultValue()
       })
     },
