@@ -33,7 +33,7 @@
       ref="inputContentLanguage"
       v-model="value.trainingLanguageIds"
       class="ml-4 mt-4"
-      :is-add-default-value="!isEdit || !value.trainingLanguageIds.length"
+      :is-add-default-value="!isEdit"
       :training-id="getTrainingId"
       :disabled="isInputLanguageDisabled"
     />
@@ -98,6 +98,11 @@ export default {
     },
     getTrainingId() {
       return this?.value?.trainingId || ''
+    }
+  },
+  watch: {
+    value(val) {
+      console.log('val', val)
     }
   },
   created() {
