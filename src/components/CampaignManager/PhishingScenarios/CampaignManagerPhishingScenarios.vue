@@ -313,7 +313,11 @@
 <script>
 import { getScenario, getScenariosList } from '@/api/scenarios'
 import labels from '@/model/constants/labels'
-import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import {
+  methods,
+  difficulties,
+  PHISHING_SCENARIOS_METHOD_TYPE_BY_ID
+} from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
@@ -573,7 +577,8 @@ export default {
         } = response
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
-        this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
+        this.isAttachmentBasedScenario =
+          data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT
         this.selectedTemplateResourceId = resourceId
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {
@@ -629,7 +634,7 @@ export default {
             }
             this.landingPageTemplates = landingPages || []
             this.tab = 'email'
-            this.isMethodMfa = data.methodTypeId === 4
+            this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
           }
         )
       })
