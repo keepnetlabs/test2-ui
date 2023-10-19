@@ -625,7 +625,10 @@ export default {
           }
           const phishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
-            const { trainingId, trainingLanguageIds } = trainingTabModel[phishingScenarioResourceId]
+            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
+              phishingScenarioResourceId
+            ]
+            if (!isCheckboxSelected) return
             phishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
