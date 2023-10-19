@@ -1,0 +1,233 @@
+<template>
+  <div>
+    <DataTable
+      id="quishing-email-templates-data-table"
+      ref="refEmailTemplatesList"
+      is-server-side
+      selectable
+      filterable
+      options
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :row-actions="tableOptions.rowActions"
+      :addButton="tableOptions.addButton"
+      :download-button="tableOptions.downloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @onEmptyBtnClicked="handleEmitEmailTemplateModal(null, false)"
+      @addAction="handleEmitEmailTemplateModal(null, false)"
+      @downloadEvent="exportQuishingEmailTemplates"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForData"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+    >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :scope="scope"
+          :id="tableOptions.rowActions[0].id"
+          :icon="tableOptions.rowActions[0].icon"
+          :disabled="tableOptions.rowActions[0].disabled"
+          :text="tableOptions.rowActions[0].name"
+          :checkIsOwnerProperty="false"
+          @on-click="handlePreview(scope.row)"
+        />
+        <RowActionsMenu>
+          <ScenariosRowActionsEditButton
+            :id="tableOptions.rowActions[1].id"
+            :scope="scope"
+            :name="tableOptions.rowActions[1].name"
+            :disabled="tableOptions.rowActions[1].disabled"
+            @on-click="handleEmitEmailTemplateModal(scope.row, false)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[2].id"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            :checkIsOwnerProperty="false"
+            @on-click="handleEmitEmailTemplateModal(scope.row, true)"
+          />
+          <ScenariosRowActionsDeleteButton
+            :id="tableOptions.rowActions[3].id"
+            :scope="scope"
+            :name="tableOptions.rowActions[3].name"
+            :disabled="tableOptions.rowActions[3].disabled"
+            @on-click="handleDelete(scope.row)"
+          />
+        </RowActionsMenu>
+      </template>
+    </DataTable>
+  </div>
+</template>
+<script>
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  LABEL_STORE,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
+import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
+import { useLoading } from '@/hooks/useLoading'
+import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import QuishingService from '@/api/quishing'
+import DataTable from '@/components/DataTable.vue'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
+import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton.vue'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton.vue'
+
+export default {
+  name: 'QuishingEmailTemplatesTable',
+  components: {
+    ScenariosRowActionsDeleteButton,
+    DefaultButtonRowAction,
+    DefaultMenuRowAction,
+    ScenariosRowActionsEditButton,
+    RowActionsMenu,
+    DataTable
+  },
+  mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  data() {
+    return {
+      tableData: [],
+      tableOptions: {
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_EMAIL_TEMPLATES,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_EMAIL_TEMPLATES,
+        columns: [
+          COMMON_SIMULATOR_COLUMNS.TEMPLATE_NAME,
+          COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME,
+          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          COMMON_SIMULATOR_COLUMNS.TAGS,
+          COMMON_SIMULATOR_COLUMNS.DIFFICULTY_EMAIL_TEMPLATE,
+          COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
+          COMMON_SIMULATOR_COLUMNS.AVAILABLE_FOR,
+          COMMON_SIMULATOR_COLUMNS.CREATED_BY
+        ],
+        rowActions: [
+          {
+            name: labels.Preview,
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            id: 'btn-preview--email-templates-row-actions'
+          },
+          {
+            name: labels.Edit,
+            icon: 'mdi-pencil',
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
+            id: 'btn-edit--email-templates-row-actions'
+          },
+          {
+            name: labels.Duplicate,
+            icon: 'mdi-content-copy',
+            action: 'disable',
+            id: 'btn-duplicate--email-templates-row-actions'
+          },
+          {
+            name: labels.Delete,
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
+            id: 'btn-delete--email-templates-row-actions'
+          }
+        ],
+        downloadButton: {
+          show: true,
+          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+        },
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        empty: {
+          message: LABEL_STORE.NO_EMAIL_TEMPLATES,
+          btn: labels.New,
+          icon: 'mdi-plus',
+          id: 'btn-empty--emailTemplates'
+        },
+        addButton: {
+          show: true,
+          action: 'addAction',
+          tooltip: 'Add a Template',
+          id: 'btn-add--emailTemplates',
+          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+        }
+      },
+      axiosPayload: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps()
+    }
+  },
+  created() {
+    this.callForLanguages('refEmailTemplatesList')
+    this.callForData()
+  },
+  methods: {
+    callForData() {
+      this.setLoading(true)
+      QuishingService.searchQuishingEmailTemplates(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+            response?.data?.data || {}
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
+    handleEmitEmailTemplateModal(row = {}, isDuplicate = false) {
+      this.$emit('on-edit-or-new', row, isDuplicate)
+    },
+    handlePreview(row = {}) {
+      this.$emit('on-preview', row)
+    },
+    handleDelete(row = {}) {
+      this.$emit('on-delete', row)
+    },
+    exportQuishingEmailTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.axiosPayload.filter
+        }
+        QuishingService.exportQuishingEmailTemplates(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Quishing-Email-Templates.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    }
+  }
+}
+</script>

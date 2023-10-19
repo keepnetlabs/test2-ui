@@ -18,9 +18,20 @@ const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
   return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
 }
 
+const searchQuishingEmailTemplates = (payload) => {
+  return testRequest.post(`phishing-simulator/email-templates/search`, payload)
+}
+const exportQuishingEmailTemplates = (payload) => {
+  return testRequest.post(`phishing-simulator/email-templates/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   exportScenarios,
   searchScenarios,
+  exportQuishingEmailTemplates,
+  searchQuishingEmailTemplates,
   deleteScenario,
   getQuishingScenarioLandingPageAndEmailTemplate
 }

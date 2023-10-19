@@ -14,6 +14,18 @@ export const COMMON_SIMULATOR_COLUMNS = {
     width: 240,
     filterableType: 'text'
   },
+  TEMPLATE_NAME: {
+    property: PROPERTY_STORE.TEMPLATENAME,
+    align: 'left',
+    editable: false,
+    label: labels.TemplateName,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: 'left',
+    width: 240,
+    filterableType: 'text'
+  },
   METHOD: {
     property: PROPERTY_STORE.METHOD,
     align: 'left',
@@ -62,6 +74,18 @@ export const COMMON_SIMULATOR_COLUMNS = {
   },
   DIFFICULTY: {
     property: PROPERTY_STORE.JUSTDIFFICULTY,
+    align: 'center',
+    editable: false,
+    label: labels.DIFFICULTY,
+    sortable: true,
+    show: true,
+    type: 'status',
+    filterableType: 'select',
+    filterableItems: ['Easy', 'Medium', 'Hard'],
+    width: 180
+  },
+  DIFFICULTY_EMAIL_TEMPLATE: {
+    property: PROPERTY_STORE.DIFFICULTY,
     align: 'center',
     editable: false,
     label: labels.DIFFICULTY,
@@ -126,6 +150,24 @@ export const COMMON_SIMULATOR_COLUMNS = {
     type: 'text',
     width: 180,
     filterableType: 'text'
+  },
+  CATEGORY_NAME: {
+    property: PROPERTY_STORE.CATEGORYNAME,
+    align: 'left',
+    editable: false,
+    label: labels.Method,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 175,
+    filterableType: 'select',
+    filterableCustomFieldName: 'CategoryResourceId',
+    filterableItems: [
+      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+      { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+      { text: 'Attachment', value: '7dLrW2kdBTDs' }
+    ]
   }
 }
 export const PREVIEW_DIALOG_TYPES = {
