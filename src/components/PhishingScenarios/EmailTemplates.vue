@@ -1,24 +1,15 @@
 <template>
   <div id="emailTemplates">
-    <v-overlay
+    <NewEmailTemplates
       v-if="modalStatus"
-      id="add-new-community-overlay"
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
-    >
-      <NewEmailTemplates
-        ref="newEmailTemplate"
-        :status="modalStatus"
-        :emailTemplateId="emailTemplateId"
-        :isEdit="isEdit"
-        :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
-        @showRenameAttachmentModal="onShowRenameAttachmentModal"
-      />
-    </v-overlay>
+      ref="newEmailTemplate"
+      :status="modalStatus"
+      :email-template-id="emailTemplateId"
+      :isEdit="isEdit"
+      :is-duplicate="isDuplicate"
+      @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
+      @showRenameAttachmentModal="onShowRenameAttachmentModal"
+    />
     <AppDialog
       :status="isRenameAttachmentModalVisible"
       title="Rename The Attachment"
@@ -47,12 +38,13 @@
         />
       </template>
     </AppDialog>
-    <DeleteEmailTemplates
+    <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selected-email-template="selectedEmailTemplate"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :api-func="deleteEmailTemplate"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowPreviewDialog"
@@ -60,7 +52,6 @@
       :selected-row="selectedEmailTemplate"
       @on-close="togglePreviewDialog"
     />
-
     <data-table
       v-if="getEmailTemplatesSearchPermissions"
       id="emailTemplates-data-table"
@@ -164,9 +155,12 @@ import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActio
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
+import { deleteEmailTemplate } from '@/api/company'
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorEmailTemplateDeleteDialog,
     CommonSimulatorEmailTemplatePreviewDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
@@ -174,7 +168,6 @@ export default {
     RowActionsMenu,
     DefaultButtonRowAction,
     DataTable,
-    DeleteEmailTemplates,
     NewEmailTemplates,
     AppDialog,
     AppDialogFooter
@@ -185,7 +178,6 @@ export default {
       attachmentName: '',
       isRenameAttachmentModalVisible: false,
       languageFilterOptions: [],
-      editableFormValues: {},
       timeoutId: '',
       emailTemplateParams: {},
       loading: true,
@@ -384,6 +376,7 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    deleteEmailTemplate,
     onShowRenameAttachmentModal() {
       this.isRenameAttachmentModalVisible = true
     },
@@ -432,7 +425,6 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleEdit(row, isDuplicate) {
-      this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
@@ -455,7 +447,6 @@ export default {
       this.isEdit = false
       this.isDuplicate = false
       if (restart) {
-        this.editableFormValues = {}
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false

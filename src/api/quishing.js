@@ -26,6 +26,11 @@ const exportQuishingEmailTemplates = (payload) => {
     responseType: 'blob'
   })
 }
+const deleteEmailTemplate = (id) => {
+  return testRequest.delete(`phishing-simulator/email-templates/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 export default {
   exportScenarios,
