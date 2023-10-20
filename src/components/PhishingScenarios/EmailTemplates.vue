@@ -5,39 +5,17 @@
       ref="newEmailTemplate"
       :status="modalStatus"
       :email-template-id="emailTemplateId"
-      :isEdit="isEdit"
+      :is-edit="isEdit"
       :is-duplicate="isDuplicate"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
-    <AppDialog
-      :status="isRenameAttachmentModalVisible"
-      title="Rename The Attachment"
-      @changeStatus="onCloseRenameAttachmentModal"
-    >
-      <template #app-dialog-body>
-        <v-form ref="refAttachmentNameForm" @submit.prevent>
-          <v-text-field
-            v-model.trim="attachmentName"
-            v-bind="commonRules"
-            id="input--new-email-templates-template-name"
-            placeholder="Enter a name"
-            hint="*Required"
-            required
-            outlined
-            dense
-            persistent-hint
-            @keyup.enter="onConfirmRenameAttachment"
-          />
-        </v-form>
-      </template>
-      <template #app-dialog-footer>
-        <AppDialogFooter
-          @handleClose="onCloseRenameAttachmentModal"
-          @handleConfirm="onConfirmRenameAttachment"
-        />
-      </template>
-    </AppDialog>
+    <CommonSimulatorAttachmentRenameDialog
+      v-if="isShowRenameAttachmentDialog"
+      :status="isShowRenameAttachmentDialog"
+      @on-close="onCloseRenameAttachmentModal"
+      @on-confirm="onConfirmRenameAttachment"
+    />
     <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
@@ -131,8 +109,6 @@
 <script>
 import DataTable from '../DataTable'
 import NewEmailTemplates from './NewEmailTemplates'
-import DeleteEmailTemplates from './DeleteEmailTemplates'
-import AppDialog from '../AppDialog'
 import { getEmailTemplatesList, exportEmailTemplates } from '@/api/phishingsimulator'
 import {
   getStoreValue,
@@ -145,7 +121,6 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import * as Validations from '@/utils/validations'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
@@ -157,9 +132,11 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import { deleteEmailTemplate } from '@/api/company'
+import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
     CommonSimulatorEmailTemplatePreviewDialog,
     ScenariosRowActionsDeleteButton,
@@ -168,15 +145,12 @@ export default {
     RowActionsMenu,
     DefaultButtonRowAction,
     DataTable,
-    NewEmailTemplates,
-    AppDialog,
-    AppDialogFooter
+    NewEmailTemplates
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
-      attachmentName: '',
-      isRenameAttachmentModalVisible: false,
+      isShowRenameAttachmentDialog: false,
       languageFilterOptions: [],
       timeoutId: '',
       emailTemplateParams: {},
@@ -378,42 +352,39 @@ export default {
   methods: {
     deleteEmailTemplate,
     onShowRenameAttachmentModal() {
-      this.isRenameAttachmentModalVisible = true
+      this.isShowRenameAttachmentDialog = true
     },
     onCloseRenameAttachmentModal() {
-      this.attachmentName = ''
-      this.isRenameAttachmentModalVisible = false
+      this.isShowRenameAttachmentDialog = false
     },
-    onConfirmRenameAttachment() {
-      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
-        if (this.$refs.newEmailTemplate) {
-          let fileExtension = ''
-          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
-          if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
-            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.name.split(
-              '.'
-            )[1]
-            const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              new File([file], `${this.attachmentName}.${fileExtension}`, {
-                type
-              })
-            ]
-          } else {
-            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.fileName?.split(
-              '.'
-            )?.[1]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              {
-                ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-                fileName: `${this.attachmentName}.${fileExtension}`
-              }
-            ]
-          }
-          this.$refs.newEmailTemplate.isPhishingFileModified = true
+    onConfirmRenameAttachment(attachmentName = '') {
+      if (this.$refs.newEmailTemplate) {
+        let fileExtension = ''
+        const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
+        if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
+          fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.name.split(
+            '.'
+          )[1]
+          const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            new File([file], `${attachmentName}.${fileExtension}`, {
+              type
+            })
+          ]
+        } else {
+          fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.fileName?.split(
+            '.'
+          )?.[1]
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            {
+              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
+              fileName: `${attachmentName}.${fileExtension}`
+            }
+          ]
         }
-        this.onCloseRenameAttachmentModal()
+        this.$refs.newEmailTemplate.isPhishingFileModified = true
       }
+      this.onCloseRenameAttachmentModal()
     },
     handleSuccessDeleteAction(row) {
       this.$refs.refEmailTemplatesList.unSelectRow(row)

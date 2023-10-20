@@ -10,7 +10,7 @@
         name="email-templates"
         id="email-templates-content"
       >
-        <QuishingEmailTemplates v-if="tab === 'email-templates'" />
+        <QuishingEmailTemplates v-if="tab === 'email-templates'" ref="refEmailTemplates" />
       </ElTabPane>
       <ElTabPane
         v-if="true"
@@ -33,6 +33,41 @@ export default {
   data() {
     return {
       tab: 'scenarios'
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
+    if (refScenarios && refScenarios.modalStatus) {
+      refScenarios.checkIfCanCLoseNewScenarioModal()
+      next(false)
+    } else if (refScenarios && refScenarios.isShowFastLaunch) {
+      if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
+      refScenarios.checkIfCanCloseFastLaunchModal()
+      next(false)
+    } else if (
+      refEmailTemplates &&
+      refEmailTemplates.$refs.newEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refEmailTemplates.checkIfCanCloseGrapesJSModal()
+      next(false)
+    } else if (refEmailTemplates && refEmailTemplates.modalStatus) {
+      refEmailTemplates.checkIfCanCloseNewEmailTemplate()
+      next(false)
+    } else if (
+      refLandingPageList &&
+      refLandingPageList.$refs.newLandingPage &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refLandingPageList.checkIfCanCloseGrapesJSModal()
+      next(false)
+    } else if (refLandingPageList && refLandingPageList.modalStatus) {
+      refLandingPageList.checkIfCanCloseNewLandingPage()
+      next(false)
+    } else {
+      next()
     }
   }
 }

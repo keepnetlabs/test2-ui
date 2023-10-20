@@ -117,6 +117,16 @@ export default {
     changeNewScenarioModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
       this.toggleNewScenarioModal()
+    },
+    checkIfCanCLoseNewScenarioModal() {
+      if (this.$refs.newScenarioModal) {
+        this.$refs.newScenarioModal.changeNewScenarioModalStatus()
+      }
+    },
+    checkIfCanCloseFastLaunchModal() {
+      if (this.$refs.fastLaunch) {
+        this.$refs.fastLaunch.closeOverlay()
+      }
     }
   }
 }
