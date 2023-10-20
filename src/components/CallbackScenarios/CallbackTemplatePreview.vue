@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     icon="mdi-eye"
-    custom-size="670"
+    custom-size="900"
     :status="status"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -113,8 +113,8 @@ export default {
             this?.templateData?.steps?.splice(invalidDialingNoticeStepIndex, 1)
           }
           this.templateData = {
-            language: 'Language',
-            voice: 'Voice',
+            language: 'English',
+            voice: 'Female',
             steps: [
               {
                 inputType: 'TextToSpeech',
