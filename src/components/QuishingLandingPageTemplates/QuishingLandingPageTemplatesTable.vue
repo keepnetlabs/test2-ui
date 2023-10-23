@@ -101,6 +101,11 @@ export default {
     ScenariosRowActionsDeleteButton
   },
   mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    landingPageData: {
+      type: Object
+    }
+  },
   data() {
     return {
       tableData: [],
@@ -112,7 +117,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
-          COMMON_SIMULATOR_COLUMNS.DIFFICULTY_EMAIL_TEMPLATE,
+          COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,
           COMMON_SIMULATOR_COLUMNS.AVAILABLE_FOR
@@ -171,6 +176,21 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
+    }
+  },
+  watch: {
+    landingPageData(val) {
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        val.methodTypes.map((item) => item.text)
+      )
+      this.$set(
+        this.tableOptions.columns[3],
+        'filterableItems',
+        val.difficultyTypes.map((item) => item.text)
+      )
+      this?.$refs?.refLandingPageList?.reRenderFilters()
     }
   },
   created() {

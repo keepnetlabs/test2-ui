@@ -4,11 +4,10 @@
       v-if="modalStatus"
       ref="newLandingPage"
       :status="modalStatus"
-      :emailTemplateId="emailTemplateId"
-      :isEdit="isEdit"
-      :isDuplicate="isDuplicate"
-      :editableFormValues="editableFormValues"
-      :landingPageData="landingPageData"
+      :email-template-id="emailTemplateId"
+      :is-edit="isEdit"
+      :is-duplicate="isDuplicate"
+      :landing-page-data="landingPageData"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
@@ -177,7 +176,6 @@ export default {
     return {
       SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
-      editableFormValues: {},
       loading: true,
       isEdit: false,
       isDuplicate: false,
@@ -425,7 +423,6 @@ export default {
         })
     },
     handleEdit(row, isDuplicate) {
-      this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
@@ -448,7 +445,6 @@ export default {
       this.isEdit = false
       this.isDuplicate = false
       if (restart) {
-        this.editableFormValues = {}
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false
