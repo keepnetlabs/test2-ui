@@ -41,13 +41,17 @@ export default {
   data() {
     return {
       logo: require('../assets/img/no-logo.png'),
-      subtitleText: 'Please start the training and complete the training as soon as possible',
       buttons: []
     }
   },
   computed: {
     isMultiple() {
       return this.buttons.length > 1
+    },
+    subtitleText() {
+      return this.isMultiple
+        ? 'Please start the training by selecting the language and complete the training as soon as possible'
+        : 'Please start the training and complete the training as soon as possible'
     }
   },
   created() {
