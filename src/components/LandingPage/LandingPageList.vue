@@ -1,30 +1,24 @@
 <template>
   <div id="landingPageList">
-    <v-overlay
-      id="add-new-community-overlay"
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
+    <NewLandingPage
       v-if="modalStatus"
-    >
-      <NewLandingPage
-        ref="newLandingPage"
-        :status="modalStatus"
-        :emailTemplateId="emailTemplateId"
-        :isEdit="isEdit"
-        :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        :landingPageData="landingPageData"
-        @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
-      />
-    </v-overlay>
-    <DeleteEmailTemplates
+      ref="newLandingPage"
+      :status="modalStatus"
+      :emailTemplateId="emailTemplateId"
+      :isEdit="isEdit"
+      :isDuplicate="isDuplicate"
+      :editableFormValues="editableFormValues"
+      :landingPageData="landingPageData"
+      @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
+    />
+    <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
-      :selectedEmailTemplate="selectedEmailTemplate"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :selected-email-template="selectedEmailTemplate"
+      :api-func="deleteLandingPage"
+      :type="SCENARIO_DELETE_DIALOG_TYPES.LANDING_PAGE"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -47,17 +41,8 @@
           :phishingUrl="landingPageParams.urlTemplate"
         />
       </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--landing-page-preview-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
+      <template #app-dialog-footer>
+        <AppDialogFooterWithClose @handleClose="isTemplateDetails = false" />
       </template>
     </app-dialog>
 
@@ -139,7 +124,6 @@
 
 <script>
 import DataTable from '../DataTable'
-import DeleteEmailTemplates from './DeleteLandingPage'
 import NewLandingPage from './NewLandingPage'
 import AppDialog from '../AppDialog'
 import {
@@ -155,7 +139,8 @@ import {
   getLandingPageFormDetails,
   getLandingPageList,
   getLandingPageTemplatePreviewContent,
-  exportLandingPage
+  exportLandingPage,
+  deleteLandingPage
 } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { mapGetters } from 'vuex'
@@ -167,10 +152,15 @@ import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPag
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
+import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorEmailTemplateDeleteDialog,
+    AppDialogFooterWithClose,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
@@ -178,7 +168,6 @@ export default {
     DefaultButtonRowAction,
     DatatableLoading,
     DataTable,
-    DeleteEmailTemplates,
     NewLandingPage,
     AppDialog,
     LandingPageTemplateModalPreview
@@ -186,6 +175,7 @@ export default {
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
+      SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
       editableFormValues: {},
       loading: true,
@@ -380,6 +370,7 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    deleteLandingPage,
     callForData() {
       this.loading = true
       if (this.getLandingPageTemplatesSearchPermissions) {

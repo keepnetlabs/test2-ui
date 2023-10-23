@@ -2,8 +2,8 @@
   <AppDialog
     type="delete"
     icon="mdi-delete"
-    title="Delete Email Template?"
-    subtitle="Email template will deleted permanently"
+    :title="getTitle"
+    :subtitle="getSubtitle"
     title-id="text--email-template-delete-popup-title"
     subtitle-id="text--email-template-delete-popup-subtitle"
     :status="status"
@@ -28,6 +28,7 @@
 <script>
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AppDialog from '@/components/AppDialog'
+import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CommonSimulatorEmailTemplateDeleteDialog',
@@ -41,11 +42,27 @@ export default {
     },
     apiFunc: {
       type: Function
+    },
+    type: {
+      type: String,
+      default: SCENARIO_DELETE_DIALOG_TYPES.EMAIL
     }
   },
   data() {
     return {
       isActionButtonDisabled: false
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.type === SCENARIO_DELETE_DIALOG_TYPES.EMAIL
+        ? 'Delete Email Template?'
+        : 'Delete Landing Page Template?'
+    },
+    getSubtitle() {
+      return this.type === SCENARIO_DELETE_DIALOG_TYPES.EMAIL
+        ? 'Email Template will deleted permanently'
+        : 'Landing Page will deleted permanently'
     }
   },
   methods: {
