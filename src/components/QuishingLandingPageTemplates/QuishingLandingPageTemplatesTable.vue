@@ -173,6 +173,9 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
     callForData() {
       this.setLoading(true)

@@ -18,6 +18,7 @@
         name="landing-page"
         id="landing-page-content"
       >
+        <QuishingLandingPageTemplates v-if="tab === 'landing-page'" ref="refLandingPageList" />
       </ElTabPane>
     </ElTabs>
   </KContainer>
@@ -26,10 +27,16 @@
 import KContainer from '@/components/KContainer/KContainer'
 import QuishingScenarios from '@/components/QuishingScenarios/QuishingScenarios'
 import QuishingEmailTemplates from '@/components/QuishingEmailTemplates/QuishingEmailTemplates'
+import QuishingLandingPageTemplates from '@/components/QuishingLandingPageTemplates/QuishingLandingPageTemplates.vue'
 
 export default {
   name: 'QuishingSimulator',
-  components: { QuishingEmailTemplates, QuishingScenarios, KContainer },
+  components: {
+    QuishingLandingPageTemplates,
+    QuishingEmailTemplates,
+    QuishingScenarios,
+    KContainer
+  },
   data() {
     return {
       tab: 'scenarios'
