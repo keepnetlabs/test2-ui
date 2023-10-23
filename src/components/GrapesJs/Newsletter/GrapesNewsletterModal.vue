@@ -775,6 +775,15 @@ export default {
       this.editor.on('component:deselected', (updatedComponent) => {
         const el = updatedComponent?.getEl()
         if (el?.id?.includes('outlook-button-href-id') && !el.innerText) {
+          const commentElement = this.getCommentElementByComponent(updatedComponent)
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /width\:\#?(\w|\s|-)+\;/g,
+            `width:180px;`
+          )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /width:undefinedpx/g,
+            `width:180px;`
+          )
           updatedComponent.components('No Label')
         }
       })
@@ -855,6 +864,11 @@ export default {
             message: 'Error when getting details of uploaded file'
           })
         })
+    },
+    getCommentElementByComponent(component) {
+      const parent = component.parent()
+      const children = parent.components()
+      return children?.models?.find((el) => el?.attributes?.type === 'comment')
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
