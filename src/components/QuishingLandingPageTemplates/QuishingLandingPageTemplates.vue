@@ -14,6 +14,13 @@
       :landing-page-data="landingPageData"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedLandingPageTemplate"
+      :type="PREVIEW_DIALOG_TYPES.QUISHING"
+      @on-close="togglePreviewDialog"
+    />
     <CommonSimulatorEmailTemplateDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
@@ -36,13 +43,18 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader.vue'
 import QuishingLandingPageTemplatesTable from '@/components/QuishingLandingPageTemplates/QuishingLandingPageTemplatesTable.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
-import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import {
+  PREVIEW_DIALOG_TYPES,
+  SCENARIO_DELETE_DIALOG_TYPES
+} from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import QuishingNewLandingPageModal from '@/components/QuishingLandingPageTemplates/QuishingNewLandingPageModal.vue'
 import { getLandingPageFormDetails } from '@/api/landingPage'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'QuishingLandingPageTemplates',
   components: {
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     QuishingNewLandingPageModal,
     CommonSimulatorEmailTemplateDeleteDialog,
     QuishingLandingPageTemplatesTable,
@@ -50,6 +62,7 @@ export default {
   },
   data() {
     return {
+      PREVIEW_DIALOG_TYPES,
       SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
       isShowDeleteDialog: false,

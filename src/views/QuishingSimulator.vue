@@ -44,10 +44,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
-    if (refScenarios && refScenarios.modalStatus) {
+    if (refScenarios && refScenarios.isShowNewScenarioModal) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
-    } else if (refScenarios && refScenarios.isShowFastLaunch) {
+    } else if (refScenarios && refScenarios.isShowFastLaunchDialog) {
       if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
@@ -59,7 +59,7 @@ export default {
     ) {
       refEmailTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refEmailTemplates && refEmailTemplates.modalStatus) {
+    } else if (refEmailTemplates && refEmailTemplates.isShowNewEmailTemplateModal) {
       refEmailTemplates.checkIfCanCloseNewEmailTemplate()
       next(false)
     } else if (
@@ -70,7 +70,7 @@ export default {
     ) {
       refLandingPageList.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refLandingPageList && refLandingPageList.modalStatus) {
+    } else if (refLandingPageList && refLandingPageList.isShowNewLandingPageTemplateModal) {
       refLandingPageList.checkIfCanCloseNewLandingPage()
       next(false)
     } else {

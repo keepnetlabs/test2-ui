@@ -15,6 +15,7 @@ export const labels = {
   TrainingPreview: 'Training Preview',
   EmailTemplate: 'Email Template',
   Attachment: 'Attachment',
+  Quishing: 'Quishing',
   PhishingScenarioPreview: 'Phishing Scenario Preview',
   QuishingScenarioPreview: 'Quishing Scenario Preview',
   All: 'All',
@@ -265,6 +266,7 @@ export const labels = {
   CreateSiemIntegration: 'Create New SIEM integration',
   TimesReported: 'Times Reported',
   ViewReport: 'View Report',
+  Phishing: 'Phishing',
   CreateNewInstance: 'Create new instance',
   CampaignInstance: 'Campaign Instance',
   CampaignInstanceSub:
