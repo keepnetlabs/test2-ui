@@ -111,6 +111,32 @@ const getCampaignManagerFormDetails = () => {
 const getCampaignManagerPreview = (resourceId = '') => {
   return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
 }
+const getCampaignManager = (resourceId = '') => {
+  return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
+}
+const createCampaignManager = (payload = {}) => {
+  return testRequest.post('/phishing-simulator/phishing-campaign', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const updateCampaignManager = (resourceId = '', payload = {}) => {
+  return testRequest.put(`/phishing-simulator/phishing-campaign/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const calculateScheduleInfo = (payload) => {
+  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-schedule-info`, payload)
+}
+const calculateSendingInfo = (payload) => {
+  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-sending-info`, payload)
+}
+const launchPhishingCampaign = (id = '', payload = {}) => {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/start/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -133,5 +159,11 @@ export default {
   exportCampaignManagerItem,
   deletePhishingCampaignJob,
   getCampaignManagerFormDetails,
-  getCampaignManagerPreview
+  getCampaignManagerPreview,
+  getCampaignManager,
+  createCampaignManager,
+  updateCampaignManager,
+  calculateScheduleInfo,
+  calculateSendingInfo,
+  launchPhishingCampaign
 }
