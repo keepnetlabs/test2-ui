@@ -88,14 +88,13 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
-import DeleteServiceModal from '@/components/Settings/DnsServices/DeleteServiceModal'
-import NewEditDnsService from '@/components/Settings/DnsServices/NewEditDnsService'
+import DeleteServiceModal from '@/components/QuishingSettings/DnsServices/DeleteServiceModal'
+import NewEditDnsService from '@/components/QuishingSettings/DnsServices/NewEditDnsService'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import CantDeleteDnsServiceDialog from '@/components/Settings/DnsServices/CantDeleteDnsServiceDialog'
+import CantDeleteDnsServiceDialog from '@/components/QuishingSettings/DnsServices/CantDeleteDnsServiceDialog'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'DnsServiceList',
   components: {
@@ -118,8 +117,8 @@ export default {
       showDeleteModal: false,
       selectedDnsService: null,
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DNSSERVICELIST,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DNSSERVICELIST,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_DNSSERVICELIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_DNSSERVICELIST,
         columns: [
           {
             property: 'dnsServiceProviderName',
@@ -246,7 +245,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getDnsSearchPermissions) {
-        getDnsServiceList(this.axiosPayload)
+        QuishingService.getDnsServiceList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -285,7 +284,7 @@ export default {
       this.callForData()
     },
     handleDelete(row) {
-      deleteEmailTemplate(row.resourceId).then(() => {
+      QuishingService.deleteDnsService(row.resourceId).then(() => {
         this.$refs.refDnsServiceListList.unSelectRow(row)
         this.callForData()
       })
@@ -310,7 +309,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportDnsService(payload).then((response) => {
+        QuishingService.exportDnsService(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

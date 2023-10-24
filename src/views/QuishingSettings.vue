@@ -5,6 +5,7 @@
         <DomainsList v-if="tab === 'Domains'" ref="refDomains" />
       </ElTabPane>
       <ElTabPane v-if="true" label="DNS Services" name="DNSServices" id="dns-services-content">
+        <DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList" />
       </ElTabPane>
       <ElTabPane
         v-if="true"
@@ -12,6 +13,7 @@
         name="ExcludeIpAddress"
         id="exclude-ip-address-content"
       >
+        <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" />
       </ElTabPane>
     </ElTabs>
   </KContainer>
@@ -20,10 +22,12 @@
 <script>
 import KContainer from '@/components/KContainer/KContainer'
 import DomainsList from '@/components/QuishingSettings/Domains/DomainsList'
+import ExcludeIPAddress from '@/components/QuishingSettings/ExcludeIPAddress/ExcludeIPAddress.vue'
+import DnsServiceList from '@/components/QuishingSettings/DnsServices/DnsServicesList.vue'
 
 export default {
   name: 'QuishingSettings',
-  components: { DomainsList, KContainer },
+  components: { DnsServiceList, ExcludeIPAddress, DomainsList, KContainer },
   data() {
     return {
       tab: 'Domains'

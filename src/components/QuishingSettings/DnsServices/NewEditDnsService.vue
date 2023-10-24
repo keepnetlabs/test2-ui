@@ -13,7 +13,7 @@
       <v-form ref="dnsForm">
         <app-modal-body-header
           :title="'Integrate with a DNS Provider'"
-          sub-title="Create a DNS provider integration for phishing domains"
+          sub-title="Create a DNS provider integration for quishing domains"
         />
         <form-group title="DNS Name" has-hint>
           <InputEntityName
@@ -99,11 +99,11 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import AppModalFooter from '@/components/AppModalFooter'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'NewEditDnsService',
   components: {
@@ -164,7 +164,7 @@ export default {
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
-      getDnsService(this.resourceId).then((res) => {
+      QuishingService.getDnsService(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
@@ -217,7 +217,7 @@ export default {
             )
           }
           if (this.isEdit && !this.isDuplicate) {
-            updateDnsServiceList(payload, this.resourceId)
+            QuishingService.updateDnsService(payload, this.resourceId)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })
@@ -225,7 +225,7 @@ export default {
                 this.saveButtonDisabled = false
               })
           } else {
-            createDnsServiceList(payload)
+            QuishingService.createDnsService(payload)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })

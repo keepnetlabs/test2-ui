@@ -137,6 +137,81 @@ const launchPhishingCampaign = (id = '', payload = {}) => {
   })
 }
 
+const getDnsServiceList = (payload) => {
+  return testRequest.post(`phishing-simulator/dns-services/search`, payload)
+}
+const exportDnsService = (payload) => {
+  return testRequest.post(`phishing-simulator/dns-services/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+const deleteDnsService = (id) => {
+  return testRequest.delete(`phishing-simulator/dns-services/${id}`, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const createDnsService = (payload) => {
+  return testRequest.post(`phishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
+}
+const getDnsService = (id) => {
+  return testRequest.get(`phishing-simulator/dns-services/${id}`, { loading: true })
+}
+const updateDnsService = (payload, id) => {
+  return testRequest.put(`phishing-simulator/dns-services/${id}`, payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const testDnsConnection = (payload, id) => {
+  return testRequest.post(`phishing-simulator/dns-services/${id}/test`, payload)
+}
+
+const getDomainsList = (payload) => {
+  return testRequest.post(`phishing-simulator/domain-records/search`, payload)
+}
+const exportDomainList = (payload) => {
+  return testRequest.post(`phishing-simulator/domain-records/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+const deleteDomain = (id) => {
+  return testRequest.delete(`phishing-simulator/domain-records/${id}`, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const getDomainData = () => {
+  return testRequest.get(`phishing-simulator/domain-records/form-details`)
+}
+const createDomain = (payload) => {
+  return testRequest.post(`phishing-simulator/domain-records`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const getDomainEditData = (resId) => {
+  return testRequest.get(`phishing-simulator/domain-records/${resId}`, {
+    loading: true
+  })
+}
+const updateDomain = (payload, id) => {
+  return testRequest.put(`phishing-simulator/domain-records/${id}`, payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const testDomainConnection = (payload) => {
+  return testRequest.post(`phishing-simulator/domain-records/test`, payload)
+}
+const getQuishingExcludedIPAddresses = () => {
+  return testRequest.get(`/phishing-simulator/excluded-ip-list`)
+}
+const postQuishingExcludedIPAddresses = (payload = {}) => {
+  return testRequest.post(`/phishing-simulator/excluded-ip`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -165,5 +240,22 @@ export default {
   updateCampaignManager,
   calculateScheduleInfo,
   calculateSendingInfo,
-  launchPhishingCampaign
+  launchPhishingCampaign,
+  getDnsServiceList,
+  exportDnsService,
+  deleteDnsService,
+  createDnsService,
+  getDnsService,
+  updateDnsService,
+  testDnsConnection,
+  getDomainsList,
+  exportDomainList,
+  deleteDomain,
+  getDomainData,
+  createDomain,
+  getDomainEditData,
+  updateDomain,
+  testDomainConnection,
+  getQuishingExcludedIPAddresses,
+  postQuishingExcludedIPAddresses
 }

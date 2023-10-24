@@ -134,8 +134,10 @@ export default {
       selectedRow: {},
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,

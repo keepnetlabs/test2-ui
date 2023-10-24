@@ -40,7 +40,7 @@
 
 <script>
 import TestConnectivityStatus from './TestConnectivityStatus'
-import { testConnection } from '@/api/dnsServices'
+import QuishingService from '@/api/quishing'
 export default {
   inheritAttrs: true,
   name: 'TestConnection',
@@ -90,7 +90,7 @@ export default {
         password: this.values.password,
         resourceId: this.values.resourceId
       }
-      return testConnection(payload, this.values.resourceId)
+      return QuishingService.testDnsConnection(payload, this.values.resourceId)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '

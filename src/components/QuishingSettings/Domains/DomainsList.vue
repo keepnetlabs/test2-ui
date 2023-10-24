@@ -83,12 +83,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
-import DeleteServiceModal from '@/components/Settings/Domains/DeleteServiceModal'
-import NewEditDomain from '@/components/Settings/Domains/NewEditDomain'
+import DeleteServiceModal from '@/components/QuishingSettings/Domains/DeleteServiceModal'
+import NewEditDomain from '@/components/QuishingSettings/Domains/NewEditDomain'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'DomainList',
   components: {
@@ -254,7 +254,7 @@ export default {
   },
   created() {
     if (this.getDomainFormDetailsPermissions)
-      getDomainData().then((response) => {
+      QuishingService.getDomainData().then((response) => {
         this.domainData = response.data.data
         this.callForData()
       })
@@ -263,7 +263,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getDomainSearchPermissions) {
-        getDomainsList(this.axiosPayload)
+        QuishingService.getDomainsList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -313,7 +313,7 @@ export default {
       this.callForData()
     },
     handleDelete(row) {
-      deleteEmailTemplate(row.resourceId).then(() => {
+      QuishingService.deleteDomain(row.resourceId).then(() => {
         this.$refs.refDomainsListList.unSelectRow(row)
         this.callForData()
       })
@@ -338,7 +338,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportDnsService(payload).then((response) => {
+        QuishingService.exportDomainList(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

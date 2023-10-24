@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import TestConnectivityStatus from '@/components/Settings/DnsServices/TestConnectivityStatus'
-import { testDomainConnection } from '@/api/domains'
+import TestConnectivityStatus from '@/components/QuishingSettings/DnsServices/TestConnectivityStatus'
+import QuishingService from '@/api/quishing'
 export default {
   inheritAttrs: true,
   name: 'TestConnection',
@@ -85,7 +85,7 @@ export default {
         dnsServiceProviderId: this.values.dnsServiceProviderId,
         zoneId: this.values.zoneId
       }
-      testDomainConnection(payload)
+      QuishingService.testDomainConnection(payload)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
