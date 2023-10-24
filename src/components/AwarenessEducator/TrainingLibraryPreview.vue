@@ -56,7 +56,9 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.description }}</span>
+            <span class="training-library-preview__desc">{{
+              trainingParams.description || trainingParams.trainingDescription
+            }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Target Audience: </span>
