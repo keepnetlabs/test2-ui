@@ -27,7 +27,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
-  name: 'SmishingCampaignManagerDeleteDialog',
+  name: 'CommonCampaignManagerDeleteDialog',
   components: { AppDialogFooter, AppDialog },
   props: {
     status: {

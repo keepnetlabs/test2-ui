@@ -50,6 +50,65 @@ const deleteLandingPageTemplate = (id) => {
 const getLandingPageTemplate = (id) => {
   return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }
+const deleteCampaign = (id) => {
+  return testRequest.delete(`phishing-simulator/campaign/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const deleteBulkCampaigns = (payload) => {
+  return testRequest.post(`/phishing-simulator/phishing-campaign/bulk-delete`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const searchCampaignManager = (payload = {}) => {
+  return testRequest.post('/phishing-simulator/phishing-campaign/search', payload)
+}
+const exportCampaignManager = (payload = {}) => {
+  return testRequest.post('phishing-simulator/phishing-campaign/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+const searchCampaignPhishingJob = (payload = {}, id = '') => {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
+}
+const stopPhishingCampaignJob = (id = '', instanceGroup = '') => {
+  return testRequest.patch(
+    `/phishing-simulator/phishing-campaign-job/stop/${id}/${instanceGroup}`,
+    null,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+const launchPhishingCampaignInstanceGroup = (id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job/start/${id}/${instanceGroup}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const exportCampaignManagerItem = (payload, id) => {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/${id}/search/export`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const deletePhishingCampaignJob = (id = '', instanceGroup = '') => {
+  return testRequest.delete(`/phishing-simulator/phishing-campaign-job/${id}/${instanceGroup}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const getCampaignManagerFormDetails = () => {
+  return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -61,5 +120,15 @@ export default {
   exportLandingPageTemplates,
   getQuishingScenarioLandingPageAndEmailTemplate,
   searchLandingPageList,
-  getLandingPageTemplate
+  getLandingPageTemplate,
+  deleteCampaign,
+  deleteBulkCampaigns,
+  searchCampaignManager,
+  exportCampaignManager,
+  searchCampaignPhishingJob,
+  stopPhishingCampaignJob,
+  launchPhishingCampaignInstanceGroup,
+  exportCampaignManagerItem,
+  deletePhishingCampaignJob,
+  getCampaignManagerFormDetails
 }
