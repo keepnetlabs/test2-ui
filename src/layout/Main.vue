@@ -1081,7 +1081,9 @@ export default {
       ]
     },
     getQuishingPrependIcon() {
-      return this.routerName === 'Quishing Scenarios' ? '$qr-code-selected' : '$qr-code'
+      return ['Quishing Scenarios', 'Quishing Campaign Manager'].includes(this.routerName)
+        ? '$qr-code-selected'
+        : '$qr-code'
     },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {

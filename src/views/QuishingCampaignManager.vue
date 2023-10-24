@@ -18,6 +18,14 @@
       @on-delete="handleOnDelete"
       @on-multiple-delete="handleOnMultipleDelete"
     />
+    <CommonCampaignManagerPreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedRow"
+      :type="PREVIEW_DIALOG_TYPES.QUISHING"
+      :api-func="getCampaignManagerPreview"
+      @on-close="toggleShowPreviewDialog"
+    />
     <QuishingCampaignManagerParentTable
       v-show="!isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerParentTable"
@@ -66,9 +74,12 @@ import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManag
 import QuishingCampaignManagerParentTable from '@/components/QuishingCampaignManager/QuishingCampaignManagerParentTable.vue'
 import QuishingCampaignManagerItemTable from '@/components/QuishingCampaignManager/QuishingCampaignManagerItemTable.vue'
 import QuishingCampaignManagerFrequencyTable from '@/components/QuishingCampaignManager/QuishingCampaignManagerFrequencyTable.vue'
+import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'QuishingCampaignManager',
   components: {
+    CommonCampaignManagerPreviewDialog,
     QuishingCampaignManagerFrequencyTable,
     QuishingCampaignManagerItemTable,
     QuishingCampaignManagerParentTable,
@@ -78,6 +89,7 @@ export default {
   },
   data() {
     return {
+      PREVIEW_DIALOG_TYPES,
       selectedParentItem: null,
       selectedInstanceItem: null,
       selectedRow: null,
@@ -87,6 +99,7 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isMultipleDelete: false,
+      isShowPreviewDialog: false,
       multipleDeletedUserCount: 0,
       isParentTableLoading: false,
       isItemTableLoading: false,
@@ -116,9 +129,6 @@ export default {
       immediate: true
     }
   },
-  created() {
-    this.callForFormDetails()
-  },
   beforeRouteLeave(to, from, next) {
     const { refCampaignModal } = this.$refs
     if (refCampaignModal && refCampaignModal.status) {
@@ -128,7 +138,11 @@ export default {
       next()
     }
   },
+  created() {
+    this.callForFormDetails()
+  },
   methods: {
+    getCampaignManagerPreview: QuishingService.getCampaignManagerPreview,
     callForFormDetails() {
       QuishingService.getCampaignManagerFormDetails().then((response) => {
         const {
@@ -231,6 +245,10 @@ export default {
       this.multipleDeletedUserCount = totalUserCount
       this.isMultipleDelete = true
       this.toggleShowDeleteDialog()
+    },
+    toggleShowPreviewDialog() {
+      if (this.isShowPreviewDialog) this.selectedRow = null
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleOnBackClick() {
       if (this.$refs.campaignManagerParentTable) {
