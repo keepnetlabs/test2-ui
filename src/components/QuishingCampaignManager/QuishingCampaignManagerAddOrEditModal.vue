@@ -125,6 +125,7 @@
             />
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
+              :type="SCENARIO_TYPES.QUISHING"
               :show-schedule="showSchedule"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
@@ -175,6 +176,7 @@ import CampaignManagerDeliverySettings from '@/components/CampaignManager/Delive
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import QuishingService from '@/api/quishing'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -212,6 +214,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      SCENARIO_TYPES,
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,

@@ -17,6 +17,17 @@ const deleteScenario = (id) => {
 const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
   return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
 }
+const updateLandingPage = (payload, id) => {
+  return testRequest.put(`phishing-simulator/landing-page-template/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const createLandingPage = (payload) => {
+  return testRequest.post(`phishing-simulator/landing-page-template`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 const searchQuishingEmailTemplates = (payload) => {
   return testRequest.post(`phishing-simulator/email-templates/search`, payload)
@@ -211,6 +222,63 @@ const postQuishingExcludedIPAddresses = (payload = {}) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const createCommonFormDataForQuishingTemplate = (payload) => {
+  const formData = new FormData()
+  formData.append('name', payload.name)
+  formData.append('description', payload.description)
+  formData.append('categoryResourceId', payload.categoryResourceId)
+  for (let i = 0; i < payload?.tags?.length; i++) {
+    formData.append(`tags[${[i]}]`, payload.tags[i])
+  }
+  formData.append('difficultyResourceId', payload.difficultyResourceId)
+  for (let i = 0; i < payload.availableForRequests.length; i++) {
+    formData.append(`availableForRequests[${[i]}].Type`, payload.availableForRequests[i].type)
+    formData.append(
+      `availableForRequests[${[i]}].ResourceId`,
+      payload.availableForRequests[i].resourceId
+    )
+  }
+  formData.append('fromAddress', payload.fromAddress)
+  formData.append('fromName', payload.fromName)
+  formData.append('subject', payload.subject)
+  formData.append('template', payload.template)
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  if (payload.isAttachmentBasedTemplate) {
+    const phishingFileType = getPhishingFileType(payload)
+    formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+    formData.append(
+      'phishingFile',
+      payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
+    )
+    formData.append('phishingFileType', phishingFileType)
+    formData.append('isPhishingFileModified', payload.isPhishingFileModified)
+    formData.append('phishingFileName', payload.phishingFileName)
+  }
+  return formData
+}
+
+const createQuishingEmailTemplate = (payload = {}) => {
+  const formData = createCommonFormDataForQuishingTemplate(payload)
+  formData.append('isDuplicated', payload.isDuplicated)
+  formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
+  return testRequest.post(`phishing-simulator/email-templates`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export function updateQuishingEmailTemplate(payload = {}, id = '') {
+  const formData = createCommonFormDataForQuishingTemplate(payload)
+  return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const getEmailTemplatePreviewContent = (id) => {
+  return testRequest.get(`phishing-simulator/email-templates/${id}`)
+}
+export function getMergedTextForQuishing() {
+  return testRequest.get(`phishing-simulator/email-templates/merge-tags`)
+}
 
 export default {
   exportScenarios,
@@ -257,5 +325,11 @@ export default {
   updateDomain,
   testDomainConnection,
   getQuishingExcludedIPAddresses,
-  postQuishingExcludedIPAddresses
+  postQuishingExcludedIPAddresses,
+  updateLandingPage,
+  createLandingPage,
+  createQuishingEmailTemplate,
+  getEmailTemplatePreviewContent,
+  getMergedTextForQuishing,
+  updateQuishingEmailTemplate
 }

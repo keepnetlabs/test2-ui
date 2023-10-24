@@ -61,6 +61,7 @@
                   item-text-key="text"
                   item-value-key="value"
                   :max-length="256"
+                  :subtitle="getInputPhishingMethodSubtitle"
                   :items="getMethodTypes"
                 />
 
@@ -603,6 +604,11 @@ export default {
     }
   },
   computed: {
+    getInputPhishingMethodSubtitle() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? 'Select the phishing technique for this template'
+        : 'Select the quishing technique for this template'
+    },
     getLandingPageCardTitle() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? 'Landing Page for users who clicked the phishing link'
