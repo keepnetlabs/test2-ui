@@ -784,6 +784,14 @@ export default {
             /width:undefinedpx/g,
             `width:180px;`
           )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /height\:\#?(\w|\s|-)+\;/g,
+            `height:70px;`
+          )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /height:undefinedpx/g,
+            `height:70px;`
+          )
           updatedComponent.components('No Label')
         }
       })
