@@ -1081,7 +1081,9 @@ export default {
       ]
     },
     getQuishingPrependIcon() {
-      return ['Quishing Scenarios', 'Quishing Campaign Manager'].includes(this.routerName)
+      return ['Quishing Scenarios', 'Quishing Campaign Manager', 'Quishing Settings'].includes(
+        this.routerName
+      )
         ? '$qr-code-selected'
         : '$qr-code'
     },
