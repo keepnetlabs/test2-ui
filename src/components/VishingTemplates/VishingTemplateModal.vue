@@ -142,6 +142,8 @@
                       :index="index"
                       :key="index"
                       :isRemoveDisabled="formValues.steps.length === 1"
+                      :language="selectedVishingLanguage"
+                      :voice="selectedVishingVoice"
                       @removeStep="onRemoveStep(index)"
                       @vishingStepChange="onVishingStepChange"
                     />
@@ -236,6 +238,9 @@
                       initial-placeholder="Enter text here"
                       entity-name="Text to speech"
                       :max-length="500"
+                      :language="selectedVishingLanguage"
+                      :voice="selectedVishingVoice"
+                      isTextToSpeech
                     />
                   </FormGroup>
                   <div

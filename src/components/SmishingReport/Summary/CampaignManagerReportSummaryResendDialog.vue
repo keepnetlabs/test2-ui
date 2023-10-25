@@ -46,7 +46,7 @@
             :disabled="!items.submittedMFAsms"
             :value="8"
           >
-            <template #label> Submitted MFA Code {{ `(${items.submittedMFAsms || 0})` }}</template>
+            <template #label> Submitted MFA Code {{ `(${items.mfaSubmittedSms || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"

@@ -246,7 +246,7 @@ export default {
         notDelivered,
         clickedSms,
         submittedSms,
-        submittedMFASms,
+        mfaSubmittedSms,
         noResponseSms
       ] = this.getChartData
       return this.getChartData.length
@@ -254,7 +254,7 @@ export default {
             notDelivered,
             clickedSms,
             submittedSms,
-            submittedMFASms,
+            mfaSubmittedSms,
             noResponseSms
           }
         : {}
@@ -268,7 +268,7 @@ export default {
           notDelivered: 0,
           openedSms: 0,
           submittedSms: 0,
-          submittedMFASms: 0,
+          mfaSubmittedSms: 0,
           reportedSms: 0
         }
       }

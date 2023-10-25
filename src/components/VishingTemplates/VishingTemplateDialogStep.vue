@@ -58,13 +58,13 @@
               <label class="vishing-template-dialog-step__form-label">Audio File</label>
               <span class="vishing-template-dialog-step__form-subtitle">Upload an audio file</span>
             </div>
-            <div class="vishing-template-dialog-step__form--title-right">
+            <!-- <div class="vishing-template-dialog-step__form--title-right">
               <AudioPlayer
                 v-if="(value.inputType === 'FileUpload' && getFileSrc)"
                 isPreview
                 :src="getFileSrc"
               />
-            </div>
+            </div> -->
           </div>
           <KFileUpload
             hint="*Required (Only MP3 files. Max. file size 1MB)"
@@ -75,6 +75,37 @@
             @inputFile="onFileChanged"
             @on-clear="onClearFile"
           />
+          <div
+            v-if="value.inputUrl || value.content"
+            class="vishing-template-dialog-step__audio-file-preview-container"
+          >
+            <div class="vishing-template-dialog-step__audio-badge-container">
+              <div class="vishing-template-dialog-step__audio-badge">
+                <v-icon class="mr-1" color="#757575" size="large">$playfile</v-icon>Audio File
+              </div>
+              <v-btn
+                rounded
+                color="#2196f3"
+                :id="'vishing-template-dialog-step__play-audio-button'"
+                :class="[
+                  'add-step-button',
+                  'button-new',
+                  isPlayAudioDisabled ? 'add-step-button--disabled' : ''
+                ]"
+                :disabled="isPlayAudioDisabled"
+                @click="handlePlayAudio"
+              >
+                <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;">mdi-play</v-icon>
+                <span class="add-step-button__text" style="text-transform: none;">Play Audio</span>
+              </v-btn>
+            </div>
+            <div
+              v-if="isPlayAudioClicked"
+              class="vishing-template-dialog-step__audio-player-container"
+            >
+              <AudioPlayer class="vishing-template-dialog-step__audio-player" :src="getFileSrc" />
+            </div>
+          </div>
           <CustomError
             class="mb-4"
             style="margin-top: 2px;"
@@ -95,10 +126,13 @@
             :value="value.inputText"
             :max-length="500"
             :mergeTags="mergeTags"
+            :language="language"
+            :voice="voice"
             class="vishing-template-dialog-step__text-to-speech-input"
             entity-name="Text to speech"
             initialPlaceholder="Enter your text to speech"
             required
+            isTextToSpeech
             @input="onTextToSpeechChange"
           />
         </FormGroup>
@@ -156,9 +190,18 @@ export default {
     isRemoveDisabled: {
       type: Boolean,
       default: false
+    },
+    language: {
+      type: String
+    },
+    voice: {
+      type: String
     }
   },
   computed: {
+    isPlayAudioDisabled() {
+      return (!this.value?.inputUrl && !this.value?.content) || this.isPlayAudioClicked
+    },
     getTitle() {
       const { inputType } = this.value
       if (inputType === 'TextToSpeech' || inputType === 1) {
@@ -197,6 +240,7 @@ export default {
   },
   data() {
     return {
+      isPlayAudioClicked: false,
       mergeTags: [
         {
           text: 'Full Name',
@@ -255,6 +299,9 @@ export default {
     }
   },
   methods: {
+    handlePlayAudio() {
+      this.isPlayAudioClicked = true
+    },
     onToggleExpansion() {
       this.$emit('input', { ...this.value, isExpanded: !this.value.isExpanded })
     },
@@ -281,6 +328,7 @@ export default {
       }
     },
     onFileChanged(file) {
+      this.isPlayAudioClicked = false
       if (Array.isArray(file) && file.length === 0) {
         this.$emit('input', { ...this.value, content: null, inputUrl: null })
         this.fileUploadErrorText = `Audio file can't be empty.`
