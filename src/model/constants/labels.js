@@ -27,7 +27,7 @@ export const labels = {
     'Select multiple quishing scenarios for your campaign to distribute randomly.',
   All: 'All',
   AllLanguages: 'All Languages',
-  TrainingForUsers: 'Training for users who has been phished',
+  TrainingForUsers: 'Training for users who have been phished',
   TrainingReport: 'Training Report',
   TrainingReports: 'Training Reports',
   Now: 'Now',
