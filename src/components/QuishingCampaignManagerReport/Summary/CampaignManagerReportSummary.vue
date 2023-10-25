@@ -31,7 +31,7 @@
       />
     </div>
     <div class="my-6">
-      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+      <span class="campaign-manager-last-step__phishing-scenario-label">Quishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
         <template #activator="{ on }">
           <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"

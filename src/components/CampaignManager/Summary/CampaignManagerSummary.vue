@@ -174,7 +174,7 @@
                 <div class="attachment-wrapper">
                   <div class="attachment blue-attach" :id="'single-post-attachments-' + att.name">
                     <v-tooltip bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
+                      <template #activator="{ on }">
                         <div
                           v-on="on"
                           id="text--attachment-preview-no-flaged"
@@ -219,6 +219,7 @@
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
         v-if="!isAttachmentBasedScenario"
+        :type="type"
         :difficulties="difficulties"
         :methods="methods"
         :form-data="landingPageParams"

@@ -615,7 +615,7 @@ export default {
         : 'Landing Page for users who clicked the quishing link'
     },
     getLandingPageUrlLabel() {
-      return this.type === SCENARIO_TYPES.PHISHING ? 'Phishing Link' : 'Quishing Link'
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
     },
     maxStep() {
       return this.isAttachmentBasedScenario ? 3 : 4

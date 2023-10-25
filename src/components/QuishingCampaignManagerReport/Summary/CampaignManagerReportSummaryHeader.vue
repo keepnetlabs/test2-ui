@@ -20,7 +20,7 @@
         {{ labels.CampaignSummary }}
       </div>
       <div class="campaign-manager-report-summary-header__subtitle">
-        Summary of this phishing campaign
+        Summary of this quishing campaign
       </div>
     </div>
     <div class="campaign-manager-report-summary-header__right">

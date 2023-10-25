@@ -85,6 +85,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          :type="SCENARIO_TYPES.QUISHING"
           :campaign-resource-id="item.resourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
@@ -119,6 +120,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 import QuishingService from '@/api/quishing'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -146,6 +148,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      SCENARIO_TYPES,
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,

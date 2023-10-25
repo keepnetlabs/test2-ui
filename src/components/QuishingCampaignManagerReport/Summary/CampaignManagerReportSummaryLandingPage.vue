@@ -6,7 +6,7 @@
     detailable-button-id="btn-preview--campaign-report-landing-page-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
-    :title="labels.LandingPageWhoUsers"
+    :title="labels.LandingPageWhoQuishing"
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
@@ -84,7 +84,7 @@
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-sub">
             <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-              >URL:</span
+              >Quishing URL:</span
             >
             {{ urlTemplate || formData.urlTemplate }}
           </div>
