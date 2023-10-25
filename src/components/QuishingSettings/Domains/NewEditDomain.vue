@@ -13,7 +13,7 @@
       <v-form ref="domainForm">
         <app-modal-body-header
           title="New Domain"
-          sub-title="Create a phishing domain for your quishing landing pages"
+          sub-title="Create a quishing domain for your quishing landing pages"
         />
         <form-group title="Domain" has-hint>
           <InputEntityName

@@ -201,15 +201,10 @@ const createDomain = (payload) => {
   })
 }
 const getDomainEditData = (resId) => {
-  return testRequest.get(`phishing-simulator/domain-records/${resId}`, {
-    loading: true
-  })
+  return testRequest.get(`phishing-simulator/domain-records/${resId}`)
 }
 const updateDomain = (payload, id) => {
-  return testRequest.put(`phishing-simulator/domain-records/${id}`, payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.put(`phishing-simulator/domain-records/${id}`, payload)
 }
 const testDomainConnection = (payload) => {
   return testRequest.post(`phishing-simulator/domain-records/test`, payload)
