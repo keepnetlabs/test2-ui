@@ -43,10 +43,10 @@
             v-model="types"
             id="input--campaign-manager-report-submitted-mfa"
             color="#2196f3"
-            :disabled="!items.submittedMFAsms"
+            :disabled="!items.mfaSubmittedSms"
             :value="8"
           >
-            <template #label> Submitted MFA Code {{ `(${items.submittedMFAsms || 0})` }}</template>
+            <template #label> Submitted MFA Code {{ `(${items.mfaSubmittedSms || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
