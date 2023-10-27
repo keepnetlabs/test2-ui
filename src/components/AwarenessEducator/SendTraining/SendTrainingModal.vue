@@ -196,25 +196,21 @@ export default {
       let formData = {}
       if (this.step === 3) {
         const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-        formData.trainingInfo = {
-          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
-          'Content Type': this?.selectedRow?.type,
-          Languages: refSendTrainingSettings.formData.languageIds
-            .map(
-              (lang) =>
-                refSendTrainingSettings.contentLanguageItems.find((item) => item.value === lang)
-                  .text
-            )
-            ?.join(', ')
-        }
-        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
-        formData.userCountDetailResponse = this.userCountDetailResponse
         const languages = refSendTrainingSettings.formData.languageIds
           .map(
             (lang) =>
-              refSendTrainingSettings.contentLanguageItems.find((item) => item.value === lang).text
+              refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
+                (item) => item.value === lang
+              ).text
           )
           ?.join(', ')
+        formData.trainingInfo = {
+          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
+          'Content Type': this?.selectedRow?.type,
+          Languages: languages
+        }
+        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+        formData.userCountDetailResponse = this.userCountDetailResponse
         const isProxy = refSendTrainingSettings?.formData?.isProxy
         formData.settings = {
           'Training Delivery for Your LMS': isProxy ? 'ON' : 'OFF',
@@ -514,7 +510,8 @@ export default {
       const languageIds = this.$refs?.refSendTrainingSettings?.formData?.languageIds.filter(
         (language) => language !== 'All'
       )
-      const contentLanguageItems = this.$refs?.refSendTrainingSettings?.contentLanguageItems
+      const contentLanguageItems = this.$refs?.refSendTrainingSettings?.$refs
+        ?.refInputContentLanguage?.contentLanguageItems
       this.isActionButtonDisabled = true
       const promises = []
       languageIds.forEach((languageId) => {

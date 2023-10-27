@@ -153,7 +153,6 @@ const common = {
     },
     callForSettings({ dispatch }) {
       getSystemUserSettings().then((response) => {
-        console.log(response.data.data)
         dispatch('setSelectedTimeZone', response.data.data.timeZoneId)
         dispatch('setSelectedTimeZoneName', response.data.data.timeZoneName)
       })

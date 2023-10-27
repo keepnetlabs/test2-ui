@@ -13,6 +13,10 @@
     .v-btn__loader {
         padding-right: 8px;
     }
+    &.v-btn.v-btn--disabled.v-btn--has-bg{
+        opacity:.5;
+        background-color: #757575 !important;
+    }
 }
 
 .logos-buttons__first-row {

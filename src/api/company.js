@@ -189,3 +189,7 @@ export function updateCompanyPrivacy(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getTimeByTimeZone(timeZoneId = '') {
+  return testRequest.get(`/companies/get-current-time/${timeZoneId}`)
+}

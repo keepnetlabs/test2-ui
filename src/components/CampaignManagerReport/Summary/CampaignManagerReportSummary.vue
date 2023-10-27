@@ -4,7 +4,11 @@
       :phishing-scenario-name="phishingScenarioName"
       :resend-dialog-items="getResendDialogItems"
       :id="id"
+      :training-infos="trainingInfos"
+      :is-show-training-report-button="!!trainingInfos.length"
+      :is-multiple-training-report="trainingInfos.length > 1"
       :instance-group="instanceGroup"
+      :training-report-dialog-items="trainingReportDialogItems"
     />
     <CampaignManagerReportSummaryCards
       :multiple-type="multipleType"
@@ -65,6 +69,13 @@
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
     />
+    <CampaignManagerReportSummaryTraining
+      v-if="getTrainingInfo"
+      class="mt-6"
+      call-training-preview-api
+      :training-params="getTrainingInfo"
+      :selected-row="getSelectedRowTrainingInfo"
+    />
   </div>
 </template>
 
@@ -79,9 +90,12 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryEmail,
@@ -110,6 +124,7 @@ export default {
   data() {
     return {
       targetGroups: [],
+      trainingReportDialogItems: [],
       selectedScenarioTab: '',
       activeScenarioIndex: 0,
       campaignSummary: {},
@@ -160,6 +175,22 @@ export default {
     getScenarioMethod() {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
+    getTrainingInfo() {
+      return this?.getActiveScenario?.trainingInfo
+    },
+    getSelectedRowTrainingInfo() {
+      return {
+        trainingLanguageIds:
+          this.getTrainingInfo?.languageList?.map((lang) => lang.languageId) || [],
+        trainingId: this.getTrainingInfo?.trainingId
+      }
+    },
+    trainingInfos() {
+      return this.phishingScenarios.reduce((acc, pScenario) => {
+        if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
+        return acc
+      }, [])
+    },
     isAttachment() {
       return this.getScenarioMethod.toString() === '3' || false
     },
@@ -209,21 +240,36 @@ export default {
     getEmailDeliveryData() {
       const { campaignInfo = {} } = this.campaignSummary || {}
       const {
-        emailDeliveryStartDate = '01/01/1970',
-        emailDeliveryEndDate = '01/01/1970',
+        emailDeliveryStartDate,
+        emailDeliveryEndDate,
         emailDeliveryDuration = 0,
-        scheduledDate = `01/01/1970`,
-        frequency = 0
+        scheduledDate,
+        frequency = 0,
+        scheduleTypeId
       } = campaignInfo
+      if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
+        return {
+          'Delivery Start - End': `Saved for later`,
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
+      if (!emailDeliveryStartDate && !emailDeliveryEndDate) {
+        return {
+          'Scheduled Date': scheduledDate || '-',
+          Duration: `${emailDeliveryDuration || 0}`,
+          'Delivery Status': ''
+        }
+      }
       if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
         return {
-          'Scheduled Date': scheduledDate,
+          'Scheduled Date': scheduledDate || '-',
           Duration: `${emailDeliveryDuration || 0}`,
           'Delivery Status': ''
         }
       }
       return {
-        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
+        'Delivery Start - End': `${emailDeliveryStartDate || ''} - ${emailDeliveryEndDate || ''}`,
         Duration: `${emailDeliveryDuration || 0}`,
         'Delivery Status': ''
       }
@@ -433,7 +479,26 @@ export default {
     },
     setCampaignSummary(response) {
       this.campaignSummary = response?.data?.data
-      if (this?.campaignSummary?.scenarios?.length) {
+      const scenarios = this.campaignSummary?.scenarios || []
+      const trainingReportDialogItems = []
+      if (scenarios.length) {
+        scenarios.forEach((scenario) => {
+          if (scenario.trainingInfo && scenario.enrollmentInfo) {
+            trainingReportDialogItems.push(
+              new TrainingReportDialogModel(
+                scenario.scenarioInfo.name,
+                scenario.trainingInfo.name,
+                scenario?.enrollmentInfo?.enrollmentId
+              )
+            )
+          }
+          if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
+            scenario.trainingInfo.languages = scenario.trainingInfo.languageList
+              .map((lang) => lang.languageShortCode)
+              .join(' | ')
+          }
+        })
+        this.trainingReportDialogItems = trainingReportDialogItems
         if (!this.customKeys.length) {
           this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
             .fill(0)

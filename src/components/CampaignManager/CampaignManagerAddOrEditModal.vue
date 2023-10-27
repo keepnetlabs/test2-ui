@@ -282,7 +282,8 @@ export default {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings
+          refCampaignManagerDeliverySettings,
+          refCampaignManagerPhishingScenarios
         } = this.$refs
         const scheduleTypeId =
           refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
@@ -321,6 +322,7 @@ export default {
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
+        formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
       }
       return formData
     },
@@ -424,7 +426,7 @@ export default {
     step(val) {
       if (
         val === 4 &&
-        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate === ''
+        !this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
       ) {
         this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
           Date.now()
@@ -509,8 +511,13 @@ export default {
           this.changeStep()
           return
         case 2:
+          const { refCampaignManagerPhishingScenarios } = this.$refs
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
+          //if languages empty set all languages
+          refCampaignManagerPhishingScenarios?.adjustTrainingModel(
+            refCampaignManagerPhishingScenarios.selectedTemplateResourceId
+          )
           this.changeStep()
           return
         case 3:
@@ -608,17 +615,28 @@ export default {
               formData: deliverySettingsFormData,
               inputScheduleFormData,
               inputDistributionFormData
-            }
+            },
+            refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
           deliverySettingsFormData = {
             ...deliverySettingsFormData,
             ...inputScheduleFormData,
             ...inputDistributionFormData
           }
+          const phishingScenarios = []
+          Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
+            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
+              phishingScenarioResourceId
+            ]
+            if (!isCheckboxSelected) return
+            phishingScenarios.push({
+              trainingId,
+              trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
+              phishingScenarioResourceId
+            })
+          })
           const payload = {
-            phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-              (pScenario) => pScenario.resourceId
-            ),
+            phishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,

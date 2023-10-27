@@ -11,6 +11,7 @@
           class="mb-0"
           label="Start time"
           color="#2196f3"
+          style="min-width: 100px;"
           value="3"
         />
         <div :class="[!isDateValid && 'date-picker-error mb-n3']">
@@ -45,7 +46,7 @@
           outlined
           dense
           hide-details
-          placeholder="Select a item"
+          placeholder="Select an item"
           min-width-type="super"
           nudge-width="200"
           :items="scheduledTimeItems"
@@ -70,8 +71,9 @@ import InputDate from '@/components/Common/Inputs/InputDate'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import { getTimeByTimeZone } from '@/api/company'
 export default {
   name: 'InputSchedule',
   components: { FormGroup, InputDate, KSelect },
@@ -119,6 +121,15 @@ export default {
         }
       }
     },
+    'value.scheduledDateTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.value.scheduledDate = res.data.data
+          }
+        })
+      }
+    },
     'value.scheduledDate'(val) {
       this.isDateValid =
         this.value.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO ? val && val.length > 0 : true
@@ -129,12 +140,18 @@ export default {
     'value.scheduleTypeId'(val) {
       if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
         this.isDateValid = val !== SCHEDULE_TYPES.SCHEDULE_TO
+        if (!this.value.scheduledDate) {
+          this.value.scheduledDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+        }
+        if (!this.value.scheduledDateTimeZoneId) {
+          this.value.scheduledDateTimeZoneId = this.selectedTimeZone
+        }
       }
     }
   },
   created() {
     this.callForGetTimeZones()
-    if (!this.isEdit) this.getSelectedTimeZone()
+    this.getSelectedTimeZone()
   },
   methods: {
     callForGetTimeZones() {

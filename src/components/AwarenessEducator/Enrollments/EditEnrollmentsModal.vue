@@ -279,7 +279,7 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data
+          const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
           if (enrollmentAutoEnroll) this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder

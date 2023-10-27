@@ -22,53 +22,11 @@
         >
       </div>
     </FormGroup>
-    <FormGroup has-hint :title="labels.ContentLanguage">
-      <KSelect
-        v-model.trim="formData.languageIds"
-        persistent-hint
-        dense
-        outlined
-        chips
-        deletable-chips
-        multiple
-        small-chips
-        autocomplete="off"
-        hint="*Required"
-        placeholder="Select content language"
-        :slots="{ item: true, selection: true }"
-        :rules="[(v) => v.length > 0 || 'Required']"
-        :items="contentLanguageItems"
-        :item-disabled="checkIsItemDisabled"
-      >
-        <template #item="{ item, index }">
-          <ContentLanguageSelecItem
-            :item="item"
-            :index="index"
-            :isDisabled="checkIsItemDisabled(item)"
-            :isFirst="item.value === 'All'"
-            :isSelected="getCheckboxCheckedValue(item)"
-          />
-        </template>
-        <template #selection="data">
-          <v-chip
-            v-if="data.item.value !== 'All'"
-            v-show="!isAllSelected"
-            v-bind="data.attrs"
-            close
-            small
-            :key="JSON.stringify(data.item)"
-            :input-value="data.selected"
-            :disabled="data.disabled"
-            @click:close="data.parent.selectItem(data.item)"
-          >
-            {{ data.item.text }}
-          </v-chip>
-          <div v-else>
-            {{ data.item.text }}
-          </div>
-        </template>
-      </KSelect>
-    </FormGroup>
+    <InputContentLanguage
+      v-model="formData.languageIds"
+      ref="refInputContentLanguage"
+      :training-id="selectedRow.trainingId"
+    />
     <div v-if="!formData.isProxy" class="mb-6">
       <FormGroup
         class="send-training-settings__lms"
@@ -332,16 +290,16 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import ContentLanguageSelecItem from '@/components/AwarenessEducator/SendTraining/ContentLanguageSelecItem'
 import { mapGetters } from 'vuex'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings'
+import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
+import { getTimeByTimeZone } from '@/api/company'
 
 export default {
   name: 'SendTrainingSettings',
   components: {
-    ContentLanguageSelecItem,
+    InputContentLanguage,
     InputTimezone,
     InputDate,
     KSelect,
@@ -385,7 +343,6 @@ export default {
       parsedFormat: getTimeZone(false),
       labels,
       Validations,
-      contentLanguageItems: [],
       isDateValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
@@ -402,7 +359,7 @@ export default {
         scheduleTypeId: '1',
         isProxy: false,
         enrollmentScheduler: {
-          scheduledDate: '',
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           scheduledTimeZoneId: '',
           useOwnTimeZone: true
         },
@@ -473,9 +430,6 @@ export default {
       selectedTimeZone: 'common/getSelectedTimeZone',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
-    isAllSelected() {
-      return this.formData.languageIds.some((item) => item === 'All')
-    },
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
@@ -504,7 +458,6 @@ export default {
   },
   created() {
     this.getSelectedTimeZone()
-    this.callForContentLanguageItems()
   },
   watch: {
     timezoneFormat: {
@@ -516,16 +469,17 @@ export default {
         }
       }
     },
+    'formData.enrollmentScheduler.scheduledTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.formData.enrollmentScheduler.scheduledDate = res.data.data
+          }
+        })
+      }
+    },
     selectedTimeZone(val) {
       this.formData.enrollmentScheduler.scheduledTimeZoneId = val
-    },
-    isAllSelected(newVal) {
-      if (newVal === true) {
-        const validOptionValues = this.contentLanguageItems.map((item) => item.value)
-        this.formData.languageIds = [...validOptionValues]
-      } else {
-        this.formData.languageIds = []
-      }
     },
     'formData.enrollmentScheduler.scheduledDate'() {
       this.checkDateIsValid()
@@ -533,6 +487,14 @@ export default {
     'formData.scheduleTypeId'(val) {
       if (val !== '2') {
         this.isDateValid = true
+        if (!this.formData.enrollmentScheduler.scheduledDate) {
+          this.formData.enrollmentScheduler.scheduledDate = this.$moment(Date.now()).format(
+            getTimeZoneForMoment()
+          )
+        }
+        if (!this.formData.enrollmentScheduler.scheduledTimeZoneId) {
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone
+        }
       }
     }
   },
@@ -560,31 +522,6 @@ export default {
       } else {
         this.$store.dispatch('common/callForSettings')
       }
-    },
-    checkIsItemDisabled(item) {
-      if (item.value === 'All') return false
-      return !!this.isAllSelected
-    },
-    getCheckboxCheckedValue(item) {
-      return !!(
-        this.formData.languageIds.some((languageId) => languageId === item.value) ||
-        this.isAllSelected
-      )
-    },
-    callForContentLanguageItems() {
-      AwarenessEducatorService.getContentLanguageItems(this?.selectedRow?.trainingId).then(
-        (response) => {
-          this.contentLanguageItems = response?.data?.data?.map((lang) => ({
-            text: lang.name,
-            value: lang.id
-          }))
-          this.contentLanguageItems.unshift({
-            text: 'All Languages',
-            value: 'All'
-          })
-          this.formData.languageIds = [...this.contentLanguageItems.map((item) => item.value)]
-        }
-      )
     },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {

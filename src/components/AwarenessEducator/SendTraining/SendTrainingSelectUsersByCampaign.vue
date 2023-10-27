@@ -742,7 +742,6 @@ export default {
               }
             }
           }
-          console.log(this.chartOptions)
           const {
             attachmentOpenedEmail,
             clickedEmail,
@@ -752,7 +751,7 @@ export default {
             reportedEmail,
             submittedEmail,
             mfa
-          } = data?.scenarioStats
+          } = data?.scenarioStats || {}
           let pieData = []
           pieData.push(noResponseEmail)
           pieData.push(openedEmail)

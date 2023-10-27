@@ -204,14 +204,30 @@ export default {
     getSMSDeliveryData() {
       const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
       const {
-        smsDeliveryStartDate = '01/01/1970',
-        smsDeliveryEndDate = '01/01/1970'
+        smsDeliveryStartDate,
+        smsDeliveryEndDate,
+        scheduledDate,
+        scheduleTypeId
       } = campaignInfo
       const senderPhoneNumber = settings?.smsProviderNumber
         ? new PhoneNumber(settings.smsProviderNumber)?.g?.number?.international
         : ''
+      if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
+        return {
+          'Sending Start - End': `Saved for later`,
+          'Sending Status': '',
+          'Sender Phone Number': senderPhoneNumber
+        }
+      }
+      if (!smsDeliveryStartDate && !smsDeliveryEndDate) {
+        return {
+          'Scheduled Date': scheduledDate || '-',
+          'Sending Status': '',
+          'Sender Phone Number': senderPhoneNumber
+        }
+      }
       return {
-        'Sending Start - End': `${smsDeliveryStartDate} - ${smsDeliveryEndDate}`,
+        'Sending Start - End': `${smsDeliveryStartDate || ''} - ${smsDeliveryEndDate || ''}`,
         'Sending Status': '',
         'Sender Phone Number': senderPhoneNumber
       }

@@ -52,16 +52,10 @@
       </DataTable>
     </template>
     <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn
-          id="btn-close--campaign-report-submitted-detail-popup"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
+      <AppDialogFooterWithClose
+        id="btn-close--campaign-report-submitted-detail-popup"
+        @on-close="handleClose"
+      />
     </template>
   </AppDialog>
 </template>
@@ -78,10 +72,12 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 
 export default {
   name: 'CampaignManagerReportSubmittedtemDetailDialog',
   components: {
+    AppDialogFooterWithClose,
     CampaignManagerReportUserAgentColumn,
     CampaignManagerReportIPColumn,
     DataTable,

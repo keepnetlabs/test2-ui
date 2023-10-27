@@ -289,7 +289,10 @@ export default {
     },
     saveGrapeJs() {
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
-      this.toggleShowGrapesModal(true)
+      //this code has to be added otherwise grapesjs throws error
+      setTimeout(() => {
+        this.toggleShowGrapesModal(true)
+      }, 100)
     }
   }
 }

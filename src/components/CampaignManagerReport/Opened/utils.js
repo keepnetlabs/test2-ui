@@ -466,6 +466,26 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+  },
+  SCENARIO_NAME: {
+    property: 'phishingScenarioName',
+    align: 'left',
+    label: labels.ScenarioName,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
+  TRAINING_NAME: {
+    property: 'trainingName',
+    align: 'left',
+    label: labels.TrainingName,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
   }
 }
 

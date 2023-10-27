@@ -772,6 +772,29 @@ export default {
           }
         }
       })
+      this.editor.on('component:deselected', (updatedComponent) => {
+        const el = updatedComponent?.getEl()
+        if (el?.id?.includes('outlook-button-href-id') && !el.innerText) {
+          const commentElement = this.getCommentElementByComponent(updatedComponent)
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /width\:\#?(\w|\s|-)+\;/g,
+            `width:180px;`
+          )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /width:undefinedpx/g,
+            `width:180px;`
+          )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /height\:\#?(\w|\s|-)+\;/g,
+            `height:70px;`
+          )
+          commentElement.attributes.content = commentElement.attributes.content.replace(
+            /height:undefinedpx/g,
+            `height:70px;`
+          )
+          updatedComponent.components('No Label')
+        }
+      })
       this.editor.on('component:remove', (component) => {
         if (component?.ccid?.includes('outlook-button-href-id')) {
           const editor = this.editor
@@ -849,6 +872,11 @@ export default {
             message: 'Error when getting details of uploaded file'
           })
         })
+    },
+    getCommentElementByComponent(component) {
+      const parent = component.parent()
+      const children = parent.components()
+      return children?.models?.find((el) => el?.attributes?.type === 'comment')
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
@@ -1011,6 +1039,7 @@ export default {
     },
     getGrapesEditorContent() {
       const { editor } = this
+      editor?.select(editor?.getWrapper())
       if (this.templateType === 'email') {
         try {
           return this.editor.Commands.run('get-html-juiced')

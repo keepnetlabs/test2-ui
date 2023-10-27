@@ -37,7 +37,7 @@
         }
       }
     }
-    &__email-template {
+    &__email-template,&__training-template {
       &-body {
         padding: 16px 24px 24px 24px;
         background-color: #fafafa;
@@ -81,6 +81,14 @@
                 }
               }
             }
+            &__sub{
+              span {
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 19px;
+                color:#757575;
+              }
+            }
           }
           &-sub{
             color: #383B41;
@@ -98,6 +106,7 @@
             overflow-y: auto;
           }
         }
+
       }
     }
     &__landing-page-template {
@@ -193,4 +202,5 @@
         }
       }
     }
+
   }

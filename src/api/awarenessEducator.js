@@ -380,6 +380,14 @@ const exportTrainingReport = (id = '') => {
   })
 }
 
+const getTrainingItems = (payload) => {
+  return testRequest.post(`/trainings/search-summary`, payload)
+}
+
+const getPhishedLandingPage = (resourceId = '') => {
+  return testRequest.get(`/enrollments/${resourceId}/content`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -454,5 +462,7 @@ export default {
   resendTrainingNoResponseList,
   resendTrainingSendingReportList,
   resendTrainingToUserList,
-  exportTrainingReport
+  exportTrainingReport,
+  getTrainingItems,
+  getPhishedLandingPage
 }
