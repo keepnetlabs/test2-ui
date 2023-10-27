@@ -144,6 +144,8 @@
                       :isRemoveDisabled="formValues.steps.length === 1"
                       :language="selectedVishingLanguage"
                       :voice="selectedVishingVoice"
+                      :voiceResourceId="getVoiceResourceId"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
                       @removeStep="onRemoveStep(index)"
                       @vishingStepChange="onVishingStepChange"
                     />
@@ -240,6 +242,8 @@
                       :max-length="500"
                       :language="selectedVishingLanguage"
                       :voice="selectedVishingVoice"
+                      :voiceResourceId="getVoiceResourceId"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
                       isTextToSpeech
                     />
                   </FormGroup>
@@ -499,6 +503,27 @@ export default {
     }
   },
   computed: {
+    getVoiceResourceId() {
+      const vishingLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedVishingLanguage &&
+          language.name === this.selectedVishingVoice
+      )
+
+      if (vishingLanguageIndex !== -1) return this.languageItems[vishingLanguageIndex].resourceId
+      return ''
+    },
+    isVoiceTextToSpeechCompatible() {
+      const vishingLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedVishingLanguage &&
+          language.name === this.selectedVishingVoice
+      )
+
+      if (vishingLanguageIndex !== -1)
+        return this.languageItems[vishingLanguageIndex].voiceProviderTypeId === 2
+      return false
+    },
     getVoiceItems() {
       if (this.selectedVishingLanguage) {
         const voiceItems = this.languageItems.filter(

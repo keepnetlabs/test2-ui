@@ -128,6 +128,8 @@
             :mergeTags="mergeTags"
             :language="language"
             :voice="voice"
+            :voiceResourceId="voiceResourceId"
+            :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
             class="vishing-template-dialog-step__text-to-speech-input"
             entity-name="Text to speech"
             initialPlaceholder="Enter your text to speech"
@@ -196,6 +198,12 @@ export default {
     },
     voice: {
       type: String
+    },
+    voiceResourceId: {
+      type: String
+    },
+    isVoiceTextToSpeechCompatible: {
+      type: Boolean
     }
   },
   computed: {

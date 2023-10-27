@@ -19,16 +19,27 @@
       </v-btn>
     </div>
     <div v-else class="audio-player">
-      <v-btn
-        icon
-        color="#ffffff"
-        class="audio-player__play-pause-button"
-        :style="getButtonStyles"
-        :disabled="!canPlay"
-        @click="onTogglePlay"
-      >
-        <v-icon size="16">{{ audio.playing ? 'mdi-pause' : 'mdi-play' }}</v-icon>
-      </v-btn>
+      <v-tooltip :disabled="isTextToSpeechCompatible" bottom opacity="1">
+        <template #activator="{ on }">
+          <v-btn
+            v-on="on"
+            icon
+            color="#ffffff"
+            class="audio-player__play-pause-button"
+            :style="getButtonStyles"
+            :disabled="!canPlay || isFetchingTTSUrl || !isTextToSpeechCompatible"
+            @click="onTogglePlay"
+          >
+            <v-icon v-if="isFetchingTTSUrl" left class="ml-2 loading-spin-clockwise"
+              >mdi-rotate-right</v-icon
+            >
+            <v-icon v-else size="16">{{ audio.playing ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+          </v-btn>
+        </template>
+        <span class="tooltip-span">
+          The TTS provider of the selected voice cannot provide a preview of the converted speech
+        </span>
+      </v-tooltip>
       <div class="audio-player__time">
         <span class="audio-payer__time-text">
           {{ getCurrentTime }}
@@ -63,6 +74,14 @@ export default {
     isPreview: {
       type: Boolean,
       default: false
+    },
+    isTextToSpeechCompatible: {
+      type: Boolean,
+      default: true
+    },
+    isFetchingTTSUrl: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -81,7 +100,17 @@ export default {
     }
   },
   watch: {
+    isFetchingTTSUrl: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val === true) {
+          this.canPlay = false
+        }
+      }
+    },
     src(newSrc) {
+      this.$forceUpdate()
       if (this.type === 'client') {
         this.url = newSrc || null
         this.onChangeCurrentTime(1)
@@ -95,7 +124,7 @@ export default {
     },
     getButtonStyles() {
       return {
-        backgroundColor: this.canPlay ? '#000000' : 'unset',
+        backgroundColor: this.canPlay && !this.isFetchingTTSUrl ? '#000000' : '#F2F2F2',
         width: '32px',
         height: '32px'
       }

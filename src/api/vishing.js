@@ -166,7 +166,5 @@ export function getPhoneNumbers() {
 }
 
 export function playTextToSpeech(payload = {}) {
-  return vishingRequest.post('/voice/text-to-speech', payload, {
-    responseType: 'blob'
-  })
+  return vishingRequest.post('/vishing-template/language/get-voice-url', payload)
 }
