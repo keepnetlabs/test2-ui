@@ -568,7 +568,7 @@ export default {
       })
     },
     callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
+      QuishingService.getMergedTextForQuishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })

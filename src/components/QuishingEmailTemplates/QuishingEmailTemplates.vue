@@ -14,6 +14,7 @@
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selected-row="selectedEmailTemplate"
+      :api-func="getEmailTemplatePreviewContent"
       @on-close="togglePreviewDialog"
     />
     <CommonSimulatorAttachmentRenameDialog
@@ -72,6 +73,7 @@ export default {
     }
   },
   methods: {
+    getEmailTemplatePreviewContent: QuishingService.getEmailTemplatePreviewContent,
     deleteEmailTemplate: QuishingService.deleteEmailTemplate,
     toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row

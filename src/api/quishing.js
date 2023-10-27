@@ -2,64 +2,92 @@ import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 const exportScenarios = (payload) => {
-  return testRequest.post(`phishing-simulator/phishing-scenario/search/export`, payload, {
+  return testRequest.post(`/quishing-simulator/quishing-scenario/search/export`, payload, {
     responseType: 'blob'
   })
 }
 const searchScenarios = (payload) => {
-  return testRequest.post(`phishing-simulator/phishing-scenario/search`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-scenario/search`, payload)
 }
 const deleteScenario = (id) => {
-  return testRequest.delete(`phishing-simulator/phishing-scenario/${id}`, {
+  return testRequest.delete(`/quishing-simulator/quishing-scenario/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
+const createScenario = (payload) => {
+  return testRequest.post(`/quishing-simulator/quishing-scenario`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const updateScenario = (payload, id) => {
+  return testRequest.put(`/quishing-simulator/quishing-scenario/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const getScenario = (id) => {
+  return testRequest.get(`/quishing-simulator/quishing-scenario/${id}`)
+}
+const getSummaryOfScenario = (templateId, landingPageId) => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-scenario/preview/${templateId}/${landingPageId}`
+  )
+}
 const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
-  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
+  return testRequest.get(`/quishing-simulator/quishing-scenario/preview/${resourceId}`)
 }
 const updateLandingPage = (payload, id) => {
-  return testRequest.put(`phishing-simulator/landing-page-template/${id}`, payload, {
+  return testRequest.put(`/quishing-simulator/landing-page-template/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
 const createLandingPage = (payload) => {
-  return testRequest.post(`phishing-simulator/landing-page-template`, payload, {
+  return testRequest.post(`/quishing-simulator/landing-page-template`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
+const getEmailTemplatesList = (payload) => {
+  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
+}
+const getLandingPageList = (payload) => {
+  return testRequest.post(`/quishing-simulator/landing-page-template/search`, payload)
+}
+const getLandingPageTemplatePreviewContent = (id) => {
+  return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
+}
 const searchQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`phishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
 }
 const exportQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`phishing-simulator/email-templates/search/export`, payload, {
+  return testRequest.post(`/quishing-simulator/email-templates/search/export`, payload, {
     responseType: 'blob'
   })
 }
 const deleteEmailTemplate = (id) => {
-  return testRequest.delete(`phishing-simulator/email-templates/${id}`, {
+  return testRequest.delete(`/quishing-simulator/email-templates/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
 const exportLandingPageTemplates = (payload) => {
-  return testRequest.post(`phishing-simulator/landing-page-template/search/export`, payload, {
+  return testRequest.post(`/quishing-simulator/landing-page-template/search/export`, payload, {
     responseType: 'blob'
   })
 }
 
 const searchLandingPageList = (payload) => {
-  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload)
+  return testRequest.post(`/quishing-simulator/landing-page-template/search`, payload)
 }
 
 const deleteLandingPageTemplate = (id) => {
-  return testRequest.delete(`phishing-simulator/landing-page-template/${id}`, {
+  return testRequest.delete(`/quishing-simulator/landing-page-template/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
 const getLandingPageTemplate = (id) => {
-  return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
+  return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
 }
 const deleteCampaign = (id) => {
   return testRequest.delete(`phishing-simulator/campaign/${id}`, {
@@ -117,7 +145,7 @@ const deletePhishingCampaignJob = (id = '', instanceGroup = '') => {
   })
 }
 const getCampaignManagerFormDetails = () => {
-  return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
+  return testRequest.get('/quishing-simulator/quishing-campaign/form-details')
 }
 const getCampaignManagerPreview = (resourceId = '') => {
   return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
@@ -256,23 +284,23 @@ const createQuishingEmailTemplate = (payload = {}) => {
   const formData = createCommonFormDataForQuishingTemplate(payload)
   formData.append('isDuplicated', payload.isDuplicated)
   formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
-  return testRequest.post(`phishing-simulator/email-templates`, formData, {
+  return testRequest.post(`quishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
 export function updateQuishingEmailTemplate(payload = {}, id = '') {
   const formData = createCommonFormDataForQuishingTemplate(payload)
-  return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
+  return testRequest.put(`quishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
 const getEmailTemplatePreviewContent = (id) => {
-  return testRequest.get(`phishing-simulator/email-templates/${id}`)
+  return testRequest.get(`quishing-simulator/email-templates/${id}`)
 }
 export function getMergedTextForQuishing() {
-  return testRequest.get(`phishing-simulator/email-templates/merge-tags`)
+  return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
 }
 
 export default {
@@ -280,11 +308,18 @@ export default {
   searchScenarios,
   exportQuishingEmailTemplates,
   searchQuishingEmailTemplates,
+  getSummaryOfScenario,
+  createScenario,
+  updateScenario,
+  getScenario,
   deleteScenario,
   deleteEmailTemplate,
   deleteLandingPageTemplate,
   exportLandingPageTemplates,
   getQuishingScenarioLandingPageAndEmailTemplate,
+  getEmailTemplatesList,
+  getLandingPageList,
+  getLandingPageTemplatePreviewContent,
   searchLandingPageList,
   getLandingPageTemplate,
   deleteCampaign,
