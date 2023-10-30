@@ -120,10 +120,16 @@ export default {
           itemTypes.add(result)
           return { x: timeStampOfDate, y: emailCount, result }
         })
-
-        let maxEmailCountLeft = maxEmailCount % 10
-        let remanining = 10 - maxEmailCountLeft
-        maxEmailCount += remanining
+        if (maxEmailCount) {
+          const remainder = Math.floor(maxEmailCount / 50)
+          if (!remainder) {
+            maxEmailCount = 50
+          } else {
+            maxEmailCount = remainder * 50 + 50
+          }
+        } else {
+          maxEmailCount += 10 - (maxEmailCount % 10)
+        }
         this.chartOptions = {
           // Look at this bit
           plugins: {
@@ -184,7 +190,9 @@ export default {
                   beginAtZero: true,
                   padding: -2,
                   fontColor: 'rgba(176, 186, 201)',
-                  lineHeight: 1.58
+                  lineHeight: 1.58,
+                  maxTicksLimit: 6,
+                  stepSize: maxEmailCount / 5
                 }
               }
             ]
