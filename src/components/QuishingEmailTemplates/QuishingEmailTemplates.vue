@@ -87,6 +87,7 @@ export default {
     },
     toggleDeleteDialog(row = null, forceUpdate) {
       if (forceUpdate) this.$refs.refTable.callForData()
+      this.selectedEmailTemplate = row
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     onShowRenameAttachmentModal() {

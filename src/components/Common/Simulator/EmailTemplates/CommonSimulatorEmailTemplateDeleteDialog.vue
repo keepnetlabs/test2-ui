@@ -68,6 +68,7 @@ export default {
   methods: {
     handleDelete() {
       this.isActionButtonDisabled = true
+      console.log('this.selectedEmailTemplate', this.selectedEmailTemplate)
       this.apiFunc(this.selectedEmailTemplate.resourceId)
         .then(() => {
           this.$emit('on-success', this.selectedEmailTemplate)

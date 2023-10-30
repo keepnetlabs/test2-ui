@@ -93,6 +93,7 @@ import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CommonSimulatorFastLaunch',
   components: {
@@ -182,7 +183,11 @@ export default {
   },
   methods: {
     callForDefaultSmtpSetting() {
-      getDefaultCompanySmtpSetting().then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getDefaultCompanySmtpSetting
+          : QuishingService.getDefaultCompanySmtpSetting
+      apiFunc().then((response) => {
         const {
           data: { data }
         } = response
@@ -190,7 +195,11 @@ export default {
       })
     },
     callForFormDetails() {
-      getCampaignManagerFormDetails().then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getCampaignManagerFormDetails
+          : QuishingService.getCampaignManagerFormDetails
+      apiFunc().then((response) => {
         const {
           data: { data }
         } = response
@@ -198,62 +207,64 @@ export default {
       })
     },
     callForGetPhishingScenario() {
-      getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
-        (response) => {
-          if (this?.$refs?.refFastLaunch?.$refs?.refCampaignManagerCampaignInfo) {
-            this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-              this.selectedScenario.name
-            )
-          }
-          const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
-          const {
-            template,
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            categoryResourceId,
-            languageTypeResourceId,
-            phishingFileName
-          } = emailTemplate
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getPhishingScenarioLandingPageAndEmailTemplate
+          : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+      apiFunc(this.selectedScenario.resourceId).then((response) => {
+        if (this?.$refs?.refFastLaunch?.$refs?.refCampaignManagerCampaignInfo) {
+          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+            this.selectedScenario.name
+          )
+        }
+        const { data: { data = {} } = {} } = response
+        const { emailTemplate, landingPageTemplate } = data
+        const {
+          template,
+          fromName,
+          fromAddress,
+          name,
+          difficultyResourceId,
+          categoryResourceId,
+          languageTypeResourceId,
+          phishingFileName
+        } = emailTemplate
 
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
-            name,
+        this.emailTemplateParams = {
+          fromName,
+          fromAddress,
+          name,
+          languageShortCode: this.languageOptions.find(
+            (language) => language.value === languageTypeResourceId
+          )?.text,
+          method: methods.find((item) => item.value === categoryResourceId)?.text,
+          difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+          phishingFileName
+        }
+        this.emailTemplate = template
+        if (landingPageTemplate) {
+          const {
+            name: landingPageName,
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            methodTypeId,
+            languageTypeResourceId
+          } = landingPageTemplate
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1].text,
+            method: methods[methodTypeId - 1].text,
             languageShortCode: this.languageOptions.find(
               (language) => language.value === languageTypeResourceId
-            )?.text,
-            method: methods.find((item) => item.value === categoryResourceId)?.text,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            phishingFileName
+            )?.text
           }
-          this.emailTemplate = template
-          if (landingPageTemplate) {
-            const {
-              name: landingPageName,
-              description,
-              landingPages,
-              urlTemplate,
-              difficultyTypeId,
-              methodTypeId,
-              languageTypeResourceId
-            } = landingPageTemplate
-            this.landingPageParams = {
-              name: landingPageName,
-              description,
-              urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text,
-              languageShortCode: this.languageOptions.find(
-                (language) => language.value === languageTypeResourceId
-              )?.text
-            }
-            this.landingPageTemplate = landingPages
-          }
+          this.landingPageTemplate = landingPages
         }
-      )
+      })
     },
     changeStep(flag = 1) {
       this.step += flag
@@ -315,15 +326,22 @@ export default {
         }
       } else if (this.step === 2) {
         this.setActionButtonDisability(true)
+        const scenarioKey =
+          this.type === SCENARIO_TYPES.PHISHING ? 'phishingScenarios' : 'quishingScenarios'
+        const scenarioValueKey =
+          this.type === SCENARIO_TYPES.PHISHING
+            ? 'phishingScenarioResourceId'
+            : 'quishingScenarioResourceId'
+        const scenarioValue = [
+          {
+            [scenarioValueKey]: this.selectedScenario.resourceId,
+            trainingId: '',
+            trainingLanguageIds: []
+          }
+        ]
         const payload = {
           name: formData.name,
-          phishingScenarios: [
-            {
-              phishingScenarioResourceId: this.selectedScenario.resourceId,
-              trainingId: '',
-              trainingLanguageIds: []
-            }
-          ],
+          [scenarioKey]: scenarioValue,
           scheduleTypeId: '1',
           duration: 365,
           targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(
@@ -344,10 +362,18 @@ export default {
           directEmailSettingResourceId: '',
           emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP
         }
-        createCampaignManager(payload)
+        const apiFunc =
+          this.type === SCENARIO_TYPES.PHISHING
+            ? createCampaignManager
+            : QuishingService.createCampaignManager
+        apiFunc(payload)
           .then(() => {
             this.isSubmitted = true
-            this.$router.push({ name: 'Campaign Manager' })
+            if (this.type === SCENARIO_TYPES.PHISHING) {
+              this.$router.push({ name: 'Campaign Manager' })
+            } else {
+              this.$router.push({ name: 'Quishing Campaign Manager' })
+            }
           })
           .finally(this.setActionButtonDisability)
       }

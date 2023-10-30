@@ -85,6 +85,7 @@ import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFoot
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
@@ -205,6 +206,12 @@ export default {
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
             mfaSmsSenderNumber: data.mfaSmsSenderNumber
+          }
+          if (this.type === PREVIEW_DIALOG_TYPES.QUISHING) {
+            landingPages.forEach((page) => {
+              if (!page.content) return
+              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+            })
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4

@@ -47,7 +47,7 @@
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
               <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-                >Phishing URL:</span
+                >{{ getLandingPageUrlText }}:</span
               >
               {{ urlTemplate || formData.urlTemplate }}
             </div>

@@ -119,8 +119,8 @@ export default {
       showDeleteModal: false,
       selectedDomain: null,
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DOMAINS,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_DOMAINS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_DOMAINS,
         columns: [
           {
             property: 'domain',
@@ -201,20 +201,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDomainUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDomainUpdatePermissions'],
             id: 'btn-edit--domain-lists-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDomainDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDomainDeletePermissions'],
             id: 'btn-delete--domain-lists-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -227,14 +227,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--domainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainCreatePermissions']
         }
       },
       modalStatus: false,
@@ -246,10 +246,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDomainUpdatePermissions: 'permissions/getDomainUpdatePermissions',
-      getDomainDeletePermissions: 'permissions/getDomainDeletePermissions',
-      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
+      getDomainSearchPermissions: 'permissions/getQuishingDomainSearchPermissions',
+      getDomainFormDetailsPermissions: 'permissions/getQuishingDomainFormDetailsPermissions'
     })
   },
   created() {

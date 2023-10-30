@@ -50,7 +50,6 @@ import {
 } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import QuishingNewLandingPageModal from '@/components/QuishingLandingPageTemplates/QuishingNewLandingPageModal.vue'
-import { getLandingPageFormDetails } from '@/api/landingPage'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'QuishingLandingPageTemplates',
@@ -101,7 +100,7 @@ export default {
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     callForLookups() {
-      getLandingPageFormDetails().then((response) => {
+      QuishingService.getLandingPageFormDetails().then((response) => {
         this.landingPageData = response.data.data
       })
     },

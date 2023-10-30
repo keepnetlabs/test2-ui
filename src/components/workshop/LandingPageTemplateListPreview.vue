@@ -298,6 +298,7 @@ import FormGroup from '../SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export default {
   name: 'LandingPageListPreview',
@@ -585,7 +586,14 @@ export default {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
-          this.landingPageTemplates = response?.data?.data?.landingPages || []
+          let templates = response?.data?.data?.landingPages || []
+          if (this.type === SCENARIO_TYPES.QUISHING) {
+            templates.forEach((page) => {
+              if (!page.content) return
+              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+            })
+          }
+          this.landingPageTemplates = templates
         })
         .finally(() => {
           this.loadingTemplatePreview = false
