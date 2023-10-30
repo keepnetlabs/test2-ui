@@ -58,10 +58,10 @@
               ref="refSendTrainingSettings"
               :selected-row="selectedRow"
               :enum-types="enumTypes"
-              :distributionDelayTimeTypes="distributionDelayTimeTypes"
-              :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
-              :phoneNumberItems="phoneNumberItems"
-              :phoneNumbers="phoneNumbers"
+              :distribution-delay-time-types="distributionDelayTimeTypes"
+              :total-phone-number-user-count="totalPhoneNumberUserCount"
+              :phone-number-items="phoneNumberItems"
+              :phone-numbers="phoneNumbers"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -503,6 +503,9 @@ export default {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
         icon: 'mdi-check-circle'
       })
+      this.routeToEnrollments()
+    },
+    routeToEnrollments() {
       this.$router.push({ name: 'Enrollments' })
       this.$emit(EMITS.ON_CLOSE, true)
     },
@@ -534,7 +537,7 @@ export default {
             link.download = `${row.trainingId}-${languageText}_Scorm.zip`
             link.click()
           })
-          this.$emit(EMITS.ON_CLOSE, true)
+          this.routeToEnrollments()
         })
         .finally(() => (this.isActionButtonDisabled = false))
     }

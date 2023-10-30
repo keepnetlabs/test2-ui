@@ -164,3 +164,7 @@ export function resendVishingReport(resourceId = '', payload = {}) {
 export function getPhoneNumbers() {
   return vishingRequest.get('/voice/phone-numbers')
 }
+
+export function playTextToSpeech(payload = {}) {
+  return vishingRequest.post('/vishing-template/language/get-voice-url', payload)
+}

@@ -131,9 +131,16 @@ export default {
             }
           )
         }
-        let maxTrendCountLeft = maxTrendCount % 10
-        let remanining = 10 - maxTrendCountLeft
-        maxTrendCount += remanining
+        if (maxTrendCount) {
+          const remainder = Math.floor(maxTrendCount / 50)
+          if (!remainder) {
+            maxTrendCount = 50
+          } else {
+            maxTrendCount = remainder * 50 + 50
+          }
+        } else {
+          maxTrendCount += 10 - (maxTrendCount % 10)
+        }
         this.chartOptions = {
           plugins: {
             datalabels: {
@@ -193,7 +200,9 @@ export default {
                   beginAtZero: true,
                   padding: -2,
                   fontColor: 'rgba(176, 186, 201)',
-                  lineHeight: 1.58
+                  lineHeight: 1.58,
+                  maxTicksLimit: 6,
+                  stepSize: maxTrendCount / 5
                 }
               }
             ]
