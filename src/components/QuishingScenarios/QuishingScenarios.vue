@@ -55,8 +55,8 @@ import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSi
 import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario.vue'
 import labels from '@/model/constants/labels'
-import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch.vue'
+import useQuishingScenarioDetailsLookup from '@/hooks/useQuishingScenarioDetailsLookup'
 
 export default {
   name: 'QuishingScenarios',
@@ -67,7 +67,7 @@ export default {
     CommonSimulatorDeleteScenario,
     QuishingScenariosTable
   },
-  mixins: [useScenarioDetailsLookup],
+  mixins: [useQuishingScenarioDetailsLookup],
   data() {
     return {
       PREVIEW_DIALOG_TYPES,

@@ -35,6 +35,7 @@ import AppDialog from '@/components/AppDialog'
 import { useLoading } from '@/hooks/useLoading'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { getLandingPageTemplate } from '@/api/landingPage'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CommonSimulatorLandingPageTemplatesPreviewDialog',
   components: {
@@ -87,6 +88,10 @@ export default {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
           this.landingPageParams.name = data.name
+          data.landingPages.forEach((page) => {
+            if (!page.content) return
+            page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+          })
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages?.length

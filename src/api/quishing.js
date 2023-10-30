@@ -65,6 +65,9 @@ const exportQuishingEmailTemplates = (payload) => {
     responseType: 'blob'
   })
 }
+const getScenarioDataDetails = () => {
+  return testRequest.get(`quishing-simulator/quishing-scenario/form-details`)
+}
 const deleteEmailTemplate = (id) => {
   return testRequest.delete(`/quishing-simulator/email-templates/${id}`, {
     snackbar: COMMON_SNACKBAR
@@ -84,6 +87,9 @@ const deleteLandingPageTemplate = (id) => {
   return testRequest.delete(`/quishing-simulator/landing-page-template/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
+}
+const getLandingPageFormDetails = () => {
+  return testRequest.get(`quishing-simulator/landing-page-template/form-details`)
 }
 
 const getLandingPageTemplate = (id) => {
@@ -154,7 +160,7 @@ const getCampaignManager = (resourceId = '') => {
   return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
 }
 const createCampaignManager = (payload = {}) => {
-  return testRequest.post('/phishing-simulator/phishing-campaign', payload, {
+  return testRequest.post('/quishing-simulator/quishing-campaign', payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -302,6 +308,11 @@ const getEmailTemplatePreviewContent = (id) => {
 export function getMergedTextForQuishing() {
   return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
 }
+const getDefaultCompanySmtpSetting = () => {
+  return testRequest.get(
+    '/quishing-simulator/quishing-campaign/root-company-shared-smtp-resource-id'
+  )
+}
 
 export default {
   exportScenarios,
@@ -309,6 +320,7 @@ export default {
   exportQuishingEmailTemplates,
   searchQuishingEmailTemplates,
   getSummaryOfScenario,
+  getScenarioDataDetails,
   createScenario,
   updateScenario,
   getScenario,
@@ -322,6 +334,7 @@ export default {
   getLandingPageTemplatePreviewContent,
   searchLandingPageList,
   getLandingPageTemplate,
+  getLandingPageFormDetails,
   deleteCampaign,
   deleteBulkCampaigns,
   searchCampaignManager,
@@ -361,5 +374,6 @@ export default {
   createQuishingEmailTemplate,
   getEmailTemplatePreviewContent,
   getMergedTextForQuishing,
-  updateQuishingEmailTemplate
+  updateQuishingEmailTemplate,
+  getDefaultCompanySmtpSetting
 }
