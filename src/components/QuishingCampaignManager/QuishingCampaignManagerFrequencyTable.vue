@@ -108,7 +108,12 @@ const EMITS = {
 }
 export default {
   name: 'QuishingCampaignManagerFrequencyTable',
-  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
+  components: {
+    Badge,
+    CampaignManagerItemDeleteDialog,
+    CampaignManagerItemRowActions,
+    DataTable
+  },
   props: {
     item: {
       type: Object
@@ -158,13 +163,7 @@ export default {
           id: 'btn-empty--campaign-manager-report'
         },
         addButton: {
-          show: true,
-          action: 'on-add-button-click',
-          tooltip: 'Add a Campaign',
-          id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters[
-            'permissions/getQuishingCampaignManagerParentCreatePermissions'
-          ]
+          show: false
         },
         rowActions: [
           {

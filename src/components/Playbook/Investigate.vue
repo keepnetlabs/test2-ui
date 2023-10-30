@@ -316,12 +316,7 @@
               outlined
               hide-details
               :position="'top'"
-              @change="
-                $forceUpdate()
-                investigateData.autoAction.type === 'Delete'
-                  ? (investigateData.autoAction.warningMessage = '')
-                  : ''
-              "
+              @change="handleTypeChange"
             />
           </v-col>
           <v-col v-if="investigateData.autoAction.type === 'Warning'">
@@ -549,6 +544,13 @@ export default {
     handleRadioGroup() {
       this.investigateData.targetUsers = []
       this.$forceUpdate()
+    },
+    handleTypeChange() {
+      this.$forceUpdate()
+      if (this.investigateData.autoAction.type === 'Delete') {
+        this.investigateData.autoAction.warningMessage = ''
+        this.investigateData.autoAction.isPermanentDelete = true
+      } else this.investigateData.autoAction.isPermanentDelete = false
     }
   }
 }
