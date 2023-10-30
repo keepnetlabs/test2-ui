@@ -361,7 +361,8 @@ import {
   getDefaultAxiosPayload,
   getTimeZone,
   scrollToComponent,
-  isDifferent
+  isDifferent,
+  getTimeZoneForMoment
 } from '@/utils/functions'
 import VishingTemplateSelectList from '@/components/VishingCampaignManager/VishingTemplateSelectList'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
@@ -387,6 +388,7 @@ import {
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber.vue'
 import useDebounce from '@/hooks/useDebounce'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
+import { getTimeByTimeZone } from '@/api/company'
 
 const initialFormValues = {
   name: '',
@@ -463,8 +465,18 @@ export default {
         disabledDate: this.disabledEndDates
       },
       initial: true,
-      initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
-      formValues: JSON.parse(JSON.stringify(initialFormValues)),
+      initialFormValues: JSON.parse(
+        JSON.stringify({
+          ...initialFormValues,
+          scheduleDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        })
+      ),
+      formValues: JSON.parse(
+        JSON.stringify({
+          ...initialFormValues,
+          scheduleDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        })
+      ),
       selectedTargetGroups: [],
       totalTargetUserCount: 0,
       isTargetGroupsValid: true,
@@ -635,7 +647,13 @@ export default {
       if (val !== '3') {
         this.isDateValid = true
         this.isTimezoneValid = true
-        this.formValues.scheduleDate = ''
+      } else {
+        if (!this.formValues.scheduleDate) {
+          this.formValues.scheduleDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+        }
+        if (!this.formValues.scheduledDateTimeZoneId) {
+          this.formValues.scheduledDateTimeZoneId = this.companyObject?.timeZoneId || ''
+        }
       }
     },
     'formValues.scheduleDate'() {
@@ -647,6 +665,11 @@ export default {
         if (val) {
           this.selectedTimeZoneText =
             this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+          getTimeByTimeZone(val).then((res) => {
+            if (res?.data?.data) {
+              this.formValues.scheduleDate = res.data.data
+            }
+          })
         }
         this.checkTimezoneValid()
       }

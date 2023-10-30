@@ -276,6 +276,7 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
+                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
@@ -312,7 +313,11 @@
 <script>
 import { getScenario, getScenariosList } from '@/api/scenarios'
 import labels from '@/model/constants/labels'
-import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import {
+  methods,
+  difficulties,
+  PHISHING_SCENARIOS_METHOD_TYPE_BY_ID
+} from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
@@ -320,12 +325,13 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
@@ -396,6 +402,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },
@@ -568,7 +577,8 @@ export default {
         } = response
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
-        this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
+        this.isAttachmentBasedScenario =
+          data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT
         this.selectedTemplateResourceId = resourceId
         getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
           (response) => {
@@ -624,7 +634,7 @@ export default {
             }
             this.landingPageTemplates = landingPages || []
             this.tab = 'email'
-            this.isMethodMfa = data.methodTypeId === 4
+            this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
           }
         )
       })
