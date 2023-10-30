@@ -155,15 +155,15 @@
                   </v-btn>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">Template Name: </span>
                     <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
                   </div>
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>
@@ -185,7 +185,7 @@
                     </div>
                   </div>
                 </div>
-                <hr class="mt-2" v-if="!!templateHTML" />
+                <hr class="mt-4" v-if="!!templateHTML" />
                 <k-email-preview
                   v-if="templateHTML"
                   :key="templateHTML"

@@ -157,7 +157,7 @@ export default {
           {
             name: 'Duplicate',
             icon: 'mdi-content-copy',
-            action: 'handleEdit',
+            action: 'handleDuplicate',
             id: 'btn-duplicate--quishing-scenarios-row-actions'
           },
           {

@@ -33,7 +33,7 @@
               :title="labels.CampaignSettings"
               :subtitle="labels.CampaignSettingsSub"
             />
-            <PhishingScenariosFastLaunchStep1 ref="refFastLaunch" :form-details="formDetails" />
+            <CommonSimulatorFastLaunchStep1 ref="refFastLaunch" :form-details="formDetails" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -77,7 +77,7 @@
 import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import PhishingScenariosFastLaunchStep1 from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunchStep1'
+import CommonSimulatorFastLaunchStep1 from '@/components/Common/Simulator/CommonSimulatorFastLaunchStep1.vue'
 import {
   createCampaignManager,
   getCampaignManagerFormDetails,
@@ -92,11 +92,11 @@ import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 export default {
-  name: 'PhishingScenariosFastLaunch',
+  name: 'CommonSimulatorFastLaunch',
   components: {
     StepperFooter,
     CampaignManagerSummary,
-    PhishingScenariosFastLaunchStep1,
+    CommonSimulatorFastLaunchStep1,
     ConfigureCompanyStepHeader,
     AppModal
   },

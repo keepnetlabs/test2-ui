@@ -12,6 +12,13 @@
       :is-attachment-based="isAttachmentBasedScenario"
       @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
     />
+    <CommonSimulatorFastLaunch
+      v-if="isShowFastLaunchDialog"
+      ref="fastLaunch"
+      :status="isShowFastLaunchDialog"
+      :selected-scenario="selectedScenario"
+      @on-close="toggleFastLaunchDialog"
+    />
     <CommonSimulatorDeleteScenario
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
@@ -48,10 +55,12 @@ import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simula
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario.vue'
 import labels from '@/model/constants/labels'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch.vue'
 
 export default {
   name: 'QuishingScenarios',
   components: {
+    CommonSimulatorFastLaunch,
     CommonSimulatorNewScenario,
     CommonSimulatorPreviewDialog,
     CommonSimulatorDeleteScenario,
@@ -64,8 +73,8 @@ export default {
       SCENARIO_TYPES,
       isShowDeleteDialog: false,
       isShowNewScenarioModal: false,
-      isShowFastLaunchDialog: false,
       isShowPreviewDialog: false,
+      isShowFastLaunchDialog: false,
       selectedScenario: null,
       isDuplicate: false,
       isEdit: false
@@ -73,7 +82,7 @@ export default {
   },
   computed: {
     getSelectedScenarioId() {
-      return this.selectedScenario?.id || ''
+      return this.selectedScenario?.resourceId || ''
     },
     isAttachmentBasedScenario() {
       return this.selectedRow?.method === labels.Attachment

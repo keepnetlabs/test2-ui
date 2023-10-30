@@ -178,7 +178,7 @@
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
                     </div>
-                    <hr class="mt-2" v-if="!!template.content" />
+                    <hr class="mt-4" v-if="!!template.content" />
                     <KEmailPreview
                       v-if="!!template.content"
                       is-extra-height
@@ -256,7 +256,7 @@
                       <span class="template-preview__text--body">{{ templateURL }}</span>
                     </div>
                   </div>
-                  <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
+                  <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                   <KEmailPreview
                     v-if="!!getSingleTemplateDetails"
                     :html="getSingleTemplateDetails"
