@@ -27,7 +27,7 @@
       </ElTabs>
       <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
         <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
-          <div class="template-preview pt-6">
+          <div class="template-preview pt-4">
             <div v-if="!!emailTemplate" class="template-preview__text">
               <div class="mb-1">
                 <span class="template-preview__text--title">From: </span>
@@ -61,7 +61,7 @@
                 />
               </div>
             </div>
-            <hr class="mt-2" v-if="!!emailTemplate" />
+            <hr class="mt-4" v-if="!!emailTemplate" />
             <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
           </div>
         </ElTabPane>
@@ -72,6 +72,7 @@
           id="campaign-manager-info--landing-content"
         >
           <TabsWithMfaSettings
+            :type="type"
             :is-method-mfa="isMethodMfa"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
@@ -92,12 +93,13 @@ import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import TabsWithMfaSettings from '../PhishingScenarios/TabsWithMfaSettings'
-import { createRandomCryptStringNumber } from '../../utils/functions'
+import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
-  name: 'CampaignManagerPreview',
+  name: 'CommonCampaignManagerPreviewDialog',
   components: {
     AppDialogFooterWithClose,
     TabsWithMfaSettings,
@@ -112,6 +114,14 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    apiFunc: {
+      type: Function,
+      default: getCampaignManagerPreview
+    },
+    type: {
+      type: String,
+      default: PREVIEW_DIALOG_TYPES.PHISHING
     }
   },
   data() {
@@ -132,7 +142,9 @@ export default {
   },
   computed: {
     getTitle() {
-      return 'Phishing Campaign Preview'
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+        ? 'Phishing Campaign Preview'
+        : 'Quishing Campaign Preview'
     },
     getSubtitle() {
       return this.selectedRow?.name || ''
@@ -147,7 +159,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      getCampaignManagerPreview(this.selectedRow.resourceId)
+      this.apiFunc(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
           this.phishingScenarios = phishingScenarioPreviewList.map((pScenario) => ({

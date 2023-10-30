@@ -82,7 +82,7 @@
           <VIcon color="#2196f3">mdi-information</VIcon>
           <span class="ml-2" style="color: #383b41;"
             >Scenarios created with MFA method can be edited from the
-            {{ isSmishing ? 'smishing' : 'phishing' }} scenarios page.</span
+            {{ getTextOfScenariosPage }} scenarios page.</span
           >
         </div>
       </div>
@@ -134,6 +134,10 @@ export default {
   computed: {
     getUrlTitle() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing URL' : 'Quishing URL'
+    },
+    getTextOfScenariosPage() {
+      if (this.isSmishing) return 'Smishing'
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing' : 'Quishing'
     }
   },
   watch: {

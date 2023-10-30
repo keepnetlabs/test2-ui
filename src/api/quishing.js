@@ -108,7 +108,9 @@ const deletePhishingCampaignJob = (id = '', instanceGroup = '') => {
 const getCampaignManagerFormDetails = () => {
   return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
 }
-
+const getCampaignManagerPreview = (resourceId = '') => {
+  return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
+}
 export default {
   exportScenarios,
   searchScenarios,
@@ -130,5 +132,6 @@ export default {
   launchPhishingCampaignInstanceGroup,
   exportCampaignManagerItem,
   deletePhishingCampaignJob,
-  getCampaignManagerFormDetails
+  getCampaignManagerFormDetails,
+  getCampaignManagerPreview
 }

@@ -18,10 +18,10 @@
       @on-delete="handleOnDelete"
       @on-multiple-delete="handleOnMultipleDelete"
     />
-    <CampaignManagerPreview
+    <CommonCampaignManagerPreviewDialog
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
-      :selectedRow="selectedRow"
+      :selected-row="selectedRow"
       @on-close="toggleShowPreviewDialog"
     />
     <CampaignManagerAddOrEditModal
@@ -93,20 +93,21 @@ import {
   deleteCampaignManager,
   getCampaignManagerFormDetails
 } from '@/api/phishingsimulator'
-import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
 import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
 import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
+import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
+
 export default {
   name: 'CampaignManager',
   components: {
+    CommonCampaignManagerPreviewDialog,
     CommonCampaignManagerCreateNewInstanceDialog,
     CommonCampaignManagerDeleteDialog,
     KContainer,
-    CampaignManagerPreview,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     CampaignManagerAddOrEditModal,
