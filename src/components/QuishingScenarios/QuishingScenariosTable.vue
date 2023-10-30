@@ -139,14 +139,16 @@ export default {
             icon: 'mdi-send',
             action: 'on-fast-launch',
             id: 'btn-fast-launch--quishing-scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignManagerParentCreatePermissions'
+            ]
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
             id: 'btn-edit--quishing-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
+            disabled: !this.$store.getters['permissions/getQuishingScenariosEditPermissions']
           },
           {
             name: labels.Preview,
@@ -165,12 +167,12 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--quishing-scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
+            disabled: !this.$store.getters['permissions/getQuishingScenariosDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getPhishingScenariosExportPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingScenariosExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -189,7 +191,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingScenariosSearchPermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),

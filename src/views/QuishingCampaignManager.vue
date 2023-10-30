@@ -98,6 +98,7 @@ import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignMana
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingCampaignManagerAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerAddOrEditModal.vue'
 import QuishingCampaignManagerNewInstanceModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerNewInstanceModal.vue'
+import { mapGetters } from 'vuex'
 export default {
   name: 'QuishingCampaignManager',
   components: {
@@ -138,6 +139,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getQuishingCampaignManagerDeletePermissions:
+        'permissions/getQuishingCampaignManagerParentDeletePermissions'
+    }),
     getStatusItems() {
       return this.formDetails.status || []
     }
@@ -197,7 +202,7 @@ export default {
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     handleOnDelete(item = {}) {
-      if (this.getCampaignManagerParentDeletePermissions) {
+      if (this.getQuishingCampaignManagerDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         QuishingService.deleteCampaign(item.resourceId)
           .then(() => {

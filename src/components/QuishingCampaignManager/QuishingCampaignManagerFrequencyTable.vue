@@ -66,6 +66,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          :type="SCENARIO_TYPES.QUISHING"
           :campaign-resource-id="parentResourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
@@ -99,6 +100,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import QuishingService from '@/api/quishing'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -123,6 +125,7 @@ export default {
   data() {
     return {
       labels,
+      SCENARIO_TYPES,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
@@ -159,7 +162,9 @@ export default {
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignManagerParentCreatePermissions'
+          ]
         },
         rowActions: [
           {
@@ -167,15 +172,16 @@ export default {
             isNotShow: true,
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
-            action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getCampaignReportsPausePermissions']
+            action: 'on-stop'
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignReportsDeletePermissions'
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

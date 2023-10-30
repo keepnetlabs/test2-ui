@@ -85,6 +85,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          :type="SCENARIO_TYPES.QUISHING"
           :campaign-resource-id="item.resourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
@@ -119,6 +120,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 import QuishingService from '@/api/quishing'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -146,6 +148,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      SCENARIO_TYPES,
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
@@ -183,7 +186,9 @@ export default {
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignManagerParentCreatePermissions'
+          ]
         },
         rowActions: [
           {
@@ -191,15 +196,16 @@ export default {
             isNotShow: true,
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
-            action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getCampaignReportsPausePermissions']
+            action: 'on-stop'
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignReportsDeletePermissions'
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -265,15 +271,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Instance.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        QuishingService.exportCampaignManagerItem(payload, this.item.resourceId).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Manager-Instance.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleBackClick() {

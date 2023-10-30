@@ -33,8 +33,8 @@ import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPag
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
 import AppDialog from '@/components/AppDialog'
 import { useLoading } from '@/hooks/useLoading'
-import QuishingService from '@/api/quishing'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { getLandingPageTemplate } from '@/api/landingPage'
 export default {
   name: 'CommonSimulatorLandingPageTemplatesPreviewDialog',
   components: {
@@ -56,6 +56,10 @@ export default {
     type: {
       type: String,
       default: PREVIEW_DIALOG_TYPES.PHISHING
+    },
+    apiFunc: {
+      type: Function,
+      default: getLandingPageTemplate
     }
   },
   data() {
@@ -78,7 +82,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      QuishingService.getLandingPageTemplate(this.selectedRow.resourceId)
+      this.apiFunc(this.selectedRow.resourceId)
         .then((response) => {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate

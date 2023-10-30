@@ -130,7 +130,7 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingEmailTemplatesEditPermissions'],
             id: 'btn-edit--email-templates-row-actions'
           },
           {
@@ -143,13 +143,15 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getQuishingEmailTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--email-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingEmailTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -168,7 +170,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--emailTemplates',
-          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingEmailTemplatesCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),

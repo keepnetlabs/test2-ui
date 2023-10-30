@@ -42,6 +42,7 @@
             />
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
+              :type="type"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
             />
@@ -91,6 +92,7 @@ import { isDifferent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'CommonSimulatorFastLaunch',
   components: {
@@ -106,6 +108,10 @@ export default {
     },
     selectedScenario: {
       type: Object
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {

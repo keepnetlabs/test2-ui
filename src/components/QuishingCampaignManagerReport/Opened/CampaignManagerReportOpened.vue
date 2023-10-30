@@ -1,0 +1,81 @@
+<template>
+  <div id="campaign-manager-report-opened" class="campaign-manager-report-opened">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
+    <CampaignManagerReportHeader
+      :title="labels.UserWhoOpened"
+      subtitle="List of users who opened the email but didn’t click a link or downloaded file"
+    />
+    <CampaignManagerReportOpenedItemDetailDialog
+      v-if="isShowDetailDialog"
+      :status="isShowDetailDialog"
+      :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
+    />
+    <CampaignManagerReportOpenedTable
+      ref="refTable"
+      class="mt-6"
+      :id="id"
+      :instance-group="instanceGroup"
+      :custom-fields="customFields"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+    />
+  </div>
+</template>
+
+<script>
+import labels from '@/model/constants/labels'
+import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportOpenedTable from '@/components/QuishingCampaignManagerReport/Opened/CampaignManagerReportOpenedTable'
+import CampaignManagerReportOpenedItemDetailDialog from '@/components/QuishingCampaignManagerReport/Opened/CampaignManagerReportOpenedItemDetailDialog'
+import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
+import { useResend } from '@/hooks/useResend'
+export default {
+  name: 'CampaignManagerReportOpened',
+  components: {
+    CampaignManagerReportResendDialog,
+    CampaignManagerReportOpenedItemDetailDialog,
+    CampaignManagerReportOpenedTable,
+    CampaignManagerReportHeader
+  },
+  mixins: [useResend],
+  props: {
+    id: {
+      type: String
+    },
+    instanceGroup: {
+      type: [String, Number]
+    },
+    phishingScenarioName: {
+      type: String
+    },
+    customFields: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      labels,
+      isShowDetailDialog: false,
+      selectedRow: null
+    }
+  },
+  methods: {
+    handleOnDetail(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDetailDialog()
+    },
+    toggleShowDetailDialog() {
+      if (this.isShowDetailDialog) this.selectedRow = null
+      this.isShowDetailDialog = !this.isShowDetailDialog
+    }
+  }
+}
+</script>

@@ -36,6 +36,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 import { SCENARIO_METHOD_TYPES } from '@/components/PhishingScenarios/utils'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'InputPhishingMethod',
@@ -64,6 +65,10 @@ export default {
     itemValueKey: {
       type: String,
       default: 'resourceId'
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -85,10 +90,14 @@ export default {
   },
   methods: {
     getMethodTypeDescription(method = '') {
+      const scenarioType =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? labels.Phishing.toLowerCase()
+          : labels.Quishing.toLowerCase()
       switch (method) {
         case SCENARIO_METHOD_TYPES.CLICK_ONLY:
         case SCENARIO_METHOD_TYPES.CLICK_ONLY_SPACE:
-          return 'See who fails for phishing links'
+          return `See who fails for ${scenarioType} links`
         case SCENARIO_METHOD_TYPES.DATA_SUBMISSION:
           return 'Gather information from users'
         case SCENARIO_METHOD_TYPES.ATTACHMENT:
@@ -96,7 +105,7 @@ export default {
         case SCENARIO_METHOD_TYPES.MFA:
           return 'Send a phishing MFA'
         default:
-          return ''
+          return `See who fails for ${scenarioType} links`
       }
     }
   }

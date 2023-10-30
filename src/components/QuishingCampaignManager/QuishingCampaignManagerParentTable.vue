@@ -173,18 +173,24 @@ export default {
           action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignManagerParentCreatePermissions'
+          ]
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignManagerParentCreatePermissions'
+          ]
         },
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentExportPermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignManagerParentExportPermissions'
+          ]
         },
         rowActions: [
           {
@@ -204,7 +210,9 @@ export default {
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getCampaignManagerParentDeletePermissions']
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignManagerParentDeletePermissions'
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -213,10 +221,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCampaignManagerParentSearchPermissions:
-        'permissions/getCampaignManagerParentSearchPermissions',
-      getCampaignManagerParentExportPermissions:
-        'permissions/getCampaignManagerParentExportPermissions'
+      getQuishingCampaignManagerParentSearchPermissions:
+        'permissions/getQuishingCampaignManagerParentSearchPermissions',
+      getQuishingCampaignManagerParentExportPermissions:
+        'permissions/getQuishingCampaignManagerParentExportPermissions'
     })
   },
   watch: {
@@ -241,7 +249,7 @@ export default {
   },
   methods: {
     callForData() {
-      if (this.getCampaignManagerParentSearchPermissions) {
+      if (this.getQuishingCampaignManagerParentSearchPermissions) {
         this.setLoading(true)
         QuishingService.searchCampaignManager(this.axiosPayload)
           .then((response) => {
@@ -286,7 +294,7 @@ export default {
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
-      if (this.getCampaignManagerParentExportPermissions) {
+      if (this.getQuishingCampaignManagerParentExportPermissions) {
         downloadTypes.exportTypes.forEach((item) => {
           let payload = {
             pageNumber: downloadTypes.pageNumber,

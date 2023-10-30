@@ -16,6 +16,7 @@
       v-if="isShowFastLaunchDialog"
       ref="fastLaunch"
       :status="isShowFastLaunchDialog"
+      :type="SCENARIO_TYPES.QUISHING"
       :selected-scenario="selectedScenario"
       @on-close="toggleFastLaunchDialog"
     />

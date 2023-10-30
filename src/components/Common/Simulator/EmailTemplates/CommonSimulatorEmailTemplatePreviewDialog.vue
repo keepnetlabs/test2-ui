@@ -84,6 +84,10 @@ export default {
     selectedRow: {
       type: Object,
       default: () => ({})
+    },
+    apiFunc: {
+      type: Function,
+      default: getEmailTemplatePreviewContent
     }
   },
   data() {
