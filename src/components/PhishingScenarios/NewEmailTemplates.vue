@@ -277,9 +277,6 @@ export default {
       type: Boolean,
       default: false
     },
-    editableFormValues: {
-      required: false
-    },
     isEdit: {
       type: Boolean
     },
@@ -312,7 +309,7 @@ export default {
       tagSearch: '',
       labels,
       step: 1,
-      Validations: Validations,
+      Validations,
       initialFormValues: {},
       formValues: {
         name: '',

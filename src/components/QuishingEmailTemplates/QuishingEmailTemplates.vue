@@ -6,7 +6,16 @@
       :selected-row="selectedEmailTemplate"
       @on-close="togglePreviewDialog"
     />
+    <CommonSimulatorEmailTemplateDeleteDialog
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :selected-email-template="selectedEmailTemplate"
+      :api-func="selectedEmailTemplate"
+      @on-success="toggleDeleteDialog(null, true)"
+      @on-close="toggleDeleteDialog"
+    />
     <QuishingEmailTemplatesTable
+      ref="refTable"
       @on-edit-or-new="toggleNewEmailTemplatesModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
@@ -16,10 +25,15 @@
 <script>
 import QuishingEmailTemplatesTable from '@/components/QuishingEmailTemplates/QuishingEmailTemplatesTable'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog'
+import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 
 export default {
   name: 'QuishingEmailTemplates',
-  components: { CommonSimulatorEmailTemplatePreviewDialog, QuishingEmailTemplatesTable },
+  components: {
+    CommonSimulatorEmailTemplateDeleteDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
+    QuishingEmailTemplatesTable
+  },
   data() {
     return {
       isShowDeleteDialog: false,
@@ -34,11 +48,12 @@ export default {
     toggleNewEmailTemplatesModal() {
       this.isShowNewEmailTemplatesModal = !this.isShowNewEmailTemplatesModal
     },
-    togglePreviewDialog(selectedEmailTemplate = {}) {
+    togglePreviewDialog(selectedEmailTemplate = null) {
       this.selectedEmailTemplate = selectedEmailTemplate
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    toggleDeleteDialog() {
+    toggleDeleteDialog(row = null, forceUpdate) {
+      if (forceUpdate) this.$refs.refTable.callForData()
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     }
   }
