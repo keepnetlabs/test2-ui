@@ -175,6 +175,10 @@ export const PREVIEW_DIALOG_TYPES = {
   QUISHING: 'quishing'
 }
 
+export const SCENARIO_DELETE_DIALOG_TYPES = {
+  EMAIL: 'Email',
+  LANDING_PAGE: 'Landing Page'
+}
 export const SCENARIO_TYPES = {
   PHISHING: 'Phishing',
   QUISHING: 'Quishing'

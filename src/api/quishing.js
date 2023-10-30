@@ -31,6 +31,21 @@ const deleteEmailTemplate = (id) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const exportLandingPageTemplates = (payload) => {
+  return testRequest.post(`phishing-simulator/landing-page-template/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+const searchLandingPageList = (payload) => {
+  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload)
+}
+
+const deleteLandingPageTemplate = (id) => {
+  return testRequest.delete(`phishing-simulator/landing-page-template/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 export default {
   exportScenarios,
@@ -38,5 +53,9 @@ export default {
   exportQuishingEmailTemplates,
   searchQuishingEmailTemplates,
   deleteScenario,
-  getQuishingScenarioLandingPageAndEmailTemplate
+  deleteEmailTemplate,
+  deleteLandingPageTemplate,
+  exportLandingPageTemplates,
+  getQuishingScenarioLandingPageAndEmailTemplate,
+  searchLandingPageList
 }

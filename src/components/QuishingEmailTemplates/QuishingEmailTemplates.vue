@@ -1,9 +1,9 @@
 <template>
   <div>
     <NewQuishingEmailTemplatesModal
-      v-if="isShowNewEmailTemplatesModal"
+      v-if="isShowNewEmailTemplateModal"
       ref="newEmailTemplate"
-      :status="isShowNewEmailTemplatesModal"
+      :status="isShowNewEmailTemplateModal"
       :is-duplicate="isDuplicate"
       :is-edit="isEdit"
       :email-template-id="getSelectedEmailTemplateId"
@@ -26,13 +26,13 @@
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :selected-email-template="selectedEmailTemplate"
-      :api-func="selectedEmailTemplate"
+      :api-func="deleteEmailTemplate"
       @on-success="toggleDeleteDialog(null, true)"
       @on-close="toggleDeleteDialog"
     />
     <QuishingEmailTemplatesTable
       ref="refTable"
-      @on-edit-or-new="toggleNewEmailTemplatesModal"
+      @on-edit-or-new="toggleNewEmailTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
     />
@@ -44,6 +44,7 @@ import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simul
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
+import QuishingService from '@/api/quishing'
 
 export default {
   name: 'QuishingEmailTemplates',
@@ -57,7 +58,7 @@ export default {
   data() {
     return {
       isShowDeleteDialog: false,
-      isShowNewEmailTemplatesModal: false,
+      isShowNewEmailTemplateModal: false,
       isShowPreviewDialog: false,
       selectedEmailTemplate: null,
       isDuplicate: false,
@@ -71,11 +72,12 @@ export default {
     }
   },
   methods: {
-    toggleNewEmailTemplatesModal(row = null, isDuplicate = false) {
+    deleteEmailTemplate: QuishingService.deleteEmailTemplate,
+    toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
       this.isDuplicate = isDuplicate
       this.isEdit = !!row
-      this.isShowNewEmailTemplatesModal = !this.isShowNewEmailTemplatesModal
+      this.isShowNewEmailTemplateModal = !this.isShowNewEmailTemplateModal
     },
     togglePreviewDialog(selectedEmailTemplate = null) {
       this.selectedEmailTemplate = selectedEmailTemplate
@@ -133,7 +135,7 @@ export default {
     },
     changeNewEmailTemplateModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
-      this.toggleNewEmailTemplatesModal(null, false)
+      this.toggleNewEmailTemplateModal(null, false)
     }
   }
 }
