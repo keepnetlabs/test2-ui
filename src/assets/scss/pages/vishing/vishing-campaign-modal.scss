@@ -1,4 +1,15 @@
 .vishing-campaign-modal {
+  &__summary__audio-file-badge {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    color: #ffffff;
+    background-color: #757575;
+    margin:2px 8px 0px 24px;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 24px;
+  }
   &__send-calls {
     display: flex;
     align-items: center;
@@ -29,7 +40,7 @@
     color: #383b41;
     max-width: 554px;
     padding: 8px;
-    border-radius:8px;
+    border-radius: 8px;
   }
 
   &__general-info {
@@ -47,7 +58,7 @@
       border-radius: 12px;
 
       &-header {
-        padding:24px;
+        padding: 24px;
         display: flex;
         justify-content: space-between;
         .k-badge {
@@ -72,7 +83,7 @@
             }
           }
           div:last-child {
-            margin-left: 8px !important;
+            margin-right: 8px;
             .k-badge {
               max-width: none;
               padding: 0;
@@ -88,6 +99,13 @@
           font-size: 12px;
         }
       }
+    }
+
+    .vishing-template-preview-steps {
+      border-radius: 0;
+      padding: 0;
+      border: none;
+      border-top: 1px solid #e0e0e0;
     }
   }
 
@@ -135,10 +153,10 @@
     }
   }
 }
-.vishing-report-campaign-info{
-  border-bottom: 1px solid #F2F2F2;
-  .campaign-manager-summary-card__body-item{
-    padding-bottom:16px;
-    border-bottom: 1px solid #F2F2F2;
+.vishing-report-campaign-info {
+  border-bottom: 1px solid #f2f2f2;
+  .campaign-manager-summary-card__body-item {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f2f2f2;
   }
 }
