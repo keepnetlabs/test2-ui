@@ -53,6 +53,11 @@ import AdvancedReports from '@/views/AdvancedReports'
 import AdvancedReport from '@/views/AdvancedReport'
 import Reports from '@/views/Reports'
 import PhishedLandingPage from '@/views/PhishedLandingPage.vue'
+import QuishingSimulatorRoute from '@/views/QuishingSimulatorRoute.vue'
+import QuishingSimulator from '@/views/QuishingSimulator.vue'
+import QuishingCampaignManager from '@/views/QuishingCampaignManager.vue'
+import QuishingSettings from '@/views/QuishingSettings.vue'
+import QuishingCampaignManagerReport from '@/views/QuishingCampaignManagerReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -133,6 +138,26 @@ const router = new Router({
             permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
           },
           component: SmishingSimulatorRoute
+        },
+        {
+          path: '/quishing-simulator',
+          name: 'Quishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: QuishingSimulatorRoute
+        },
+        {
+          path: '/quishing-simulator',
+          name: 'Quishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: QuishingSimulatorRoute
         },
         {
           path: '/vishing',
@@ -379,6 +404,54 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Smishing Campaign Manager',
             permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/quishing-simulator/quishing-scenarios',
+          name: 'Quishing Scenarios',
+          component: QuishingSimulator,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Quishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/quishing-simulator/campaign-manager',
+          name: 'Quishing Campaign Manager',
+          component: QuishingCampaignManager,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Quishing Simulator',
+            permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/quishing-simulator/settings',
+          name: 'Quishing Settings',
+          component: QuishingSettings,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Quishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingSettingsLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/reports/quishing-campaign-reports/campaign-report/:id/:instanceGroup',
+          name: 'Quishing Campaign Report',
+          component: QuishingCampaignManagerReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Campaign Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           },
           props: true,
           params: true

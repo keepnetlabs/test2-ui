@@ -1,0 +1,81 @@
+<template>
+  <KContainer id="phishing-simulator">
+    <ElTabs v-model="tab">
+      <ElTabPane v-if="true" label="Scenarios" name="scenarios" id="quishing-simulator-scenarios">
+        <QuishingScenarios v-if="tab === 'scenarios'" ref="refScenarios" />
+      </ElTabPane>
+      <ElTabPane
+        v-if="true"
+        label="Email Templates"
+        name="email-templates"
+        id="email-templates-content"
+      >
+        <QuishingEmailTemplates v-if="tab === 'email-templates'" ref="refEmailTemplates" />
+      </ElTabPane>
+      <ElTabPane
+        v-if="true"
+        label="Landing Page Templates"
+        name="landing-page"
+        id="landing-page-content"
+      >
+        <QuishingLandingPageTemplates v-if="tab === 'landing-page'" ref="refLandingPageList" />
+      </ElTabPane>
+    </ElTabs>
+  </KContainer>
+</template>
+<script>
+import KContainer from '@/components/KContainer/KContainer'
+import QuishingScenarios from '@/components/QuishingScenarios/QuishingScenarios'
+import QuishingEmailTemplates from '@/components/QuishingEmailTemplates/QuishingEmailTemplates'
+import QuishingLandingPageTemplates from '@/components/QuishingLandingPageTemplates/QuishingLandingPageTemplates.vue'
+
+export default {
+  name: 'QuishingSimulator',
+  components: {
+    QuishingLandingPageTemplates,
+    QuishingEmailTemplates,
+    QuishingScenarios,
+    KContainer
+  },
+  data() {
+    return {
+      tab: 'scenarios'
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
+    if (refScenarios && refScenarios.isShowNewScenarioModal) {
+      refScenarios.checkIfCanCLoseNewScenarioModal()
+      next(false)
+    } else if (refScenarios && refScenarios.isShowFastLaunchDialog) {
+      if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
+      refScenarios.checkIfCanCloseFastLaunchModal()
+      next(false)
+    } else if (
+      refEmailTemplates &&
+      refEmailTemplates.$refs.newEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refEmailTemplates.checkIfCanCloseGrapesJSModal()
+      next(false)
+    } else if (refEmailTemplates && refEmailTemplates.isShowNewEmailTemplateModal) {
+      refEmailTemplates.checkIfCanCloseNewEmailTemplate()
+      next(false)
+    } else if (
+      refLandingPageList &&
+      refLandingPageList.$refs.newLandingPage &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refLandingPageList.checkIfCanCloseGrapesJSModal()
+      next(false)
+    } else if (refLandingPageList && refLandingPageList.isShowNewLandingPageTemplateModal) {
+      refLandingPageList.checkIfCanCloseNewLandingPage()
+      next(false)
+    } else {
+      next()
+    }
+  }
+}
+</script>

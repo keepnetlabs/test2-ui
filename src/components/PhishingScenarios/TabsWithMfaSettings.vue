@@ -12,12 +12,12 @@
             <span class="template-preview__text--title">Template Name: </span>
             <span class="template-preview__text--body">{{ landingPageParams.name }}</span>
           </div>
-          <div class="mt-2">
-            <span class="template-preview__text--title">Phishing URL: </span>
+          <div>
+            <span class="template-preview__text--title">{{ getUrlTitle }}: </span>
             <span class="template-preview__text--body">{{ landingPageParams.urlTemplate }}</span>
           </div>
         </div>
-        <hr class="mt-2" v-if="!!template.content" />
+        <hr class="mt-4" v-if="!!template.content" />
         <KEmailPreview v-if="!!template.content" :html="template.content" />
       </div>
     </ElTabPane>
@@ -82,7 +82,7 @@
           <VIcon color="#2196f3">mdi-information</VIcon>
           <span class="ml-2" style="color: #383b41;"
             >Scenarios created with MFA method can be edited from the
-            {{ isSmishing ? 'smishing' : 'phishing' }} scenarios page.</span
+            {{ getTextOfScenariosPage }} scenarios page.</span
           >
         </div>
       </div>
@@ -92,6 +92,7 @@
 
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'TabsWithMfaSettings',
   components: { KEmailPreview },
@@ -119,11 +120,24 @@ export default {
     isSmishing: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: PREVIEW_DIALOG_TYPES.PHISHING
     }
   },
   data() {
     return {
       landingPageTab: '1'
+    }
+  },
+  computed: {
+    getUrlTitle() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing URL' : 'Quishing URL'
+    },
+    getTextOfScenariosPage() {
+      if (this.isSmishing) return 'Smishing'
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing' : 'Quishing'
     }
   },
   watch: {

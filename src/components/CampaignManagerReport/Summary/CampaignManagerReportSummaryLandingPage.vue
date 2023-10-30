@@ -6,7 +6,7 @@
     detailable-button-id="btn-preview--campaign-report-landing-page-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
-    :title="labels.LandingPageWhoUsers"
+    :title="getTitle"
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
@@ -47,7 +47,7 @@
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
               <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-                >URL:</span
+                >{{ getLandingPageUrlText }}:</span
               >
               {{ urlTemplate || formData.urlTemplate }}
             </div>
@@ -84,7 +84,7 @@
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-sub">
             <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-              >URL:</span
+              >{{ getLandingPageUrlText }}:</span
             >
             {{ urlTemplate || formData.urlTemplate }}
           </div>
@@ -118,6 +118,7 @@ import { useLoading } from '@/hooks/useLoading'
 import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { getDifficultyBadgeColor } from '@/utils/functions'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CampaignManagerReportSummaryLandingPage',
@@ -142,6 +143,10 @@ export default {
     methods: {
       type: Array,
       default: () => []
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -157,6 +162,11 @@ export default {
     }
   },
   computed: {
+    getTitle() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? labels.LandingPageWhoUsers
+        : labels.LandingPageWhoQuishing
+    },
     isFormData() {
       return Object.keys(this.formData || {}).length
     },
@@ -164,6 +174,9 @@ export default {
       return this.templates?.length > 1
         ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ''
         : this.templates?.[0]?.content || ''
+    },
+    getLandingPageUrlText() {
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
     }
   },
   watch: {

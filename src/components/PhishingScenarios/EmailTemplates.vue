@@ -1,144 +1,35 @@
 <template>
   <div id="emailTemplates">
-    <v-overlay
-      id="add-new-community-overlay"
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
+    <NewEmailTemplates
       v-if="modalStatus"
-    >
-      <NewEmailTemplates
-        ref="newEmailTemplate"
-        :status="modalStatus"
-        :emailTemplateId="emailTemplateId"
-        :isEdit="isEdit"
-        :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
-        @showRenameAttachmentModal="onShowRenameAttachmentModal"
-      />
-    </v-overlay>
-    <AppDialog
-      :status="isRenameAttachmentModalVisible"
-      title="Rename The Attachment"
-      @changeStatus="onCloseRenameAttachmentModal"
-    >
-      <template #app-dialog-body>
-        <v-form ref="refAttachmentNameForm" @submit.prevent>
-          <v-text-field
-            v-model.trim="attachmentName"
-            v-bind="commonRules"
-            id="input--new-email-templates-template-name"
-            placeholder="Enter a name"
-            hint="*Required"
-            required
-            outlined
-            dense
-            persistent-hint
-            @keyup.enter="onConfirmRenameAttachment"
-          />
-        </v-form>
-      </template>
-      <template #app-dialog-footer>
-        <AppDialogFooter
-          @handleClose="onCloseRenameAttachmentModal"
-          @handleConfirm="onConfirmRenameAttachment"
-        />
-      </template>
-    </AppDialog>
-    <DeleteEmailTemplates
+      ref="newEmailTemplate"
+      :status="modalStatus"
+      :email-template-id="emailTemplateId"
+      :is-edit="isEdit"
+      :is-duplicate="isDuplicate"
+      @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
+      @showRenameAttachmentModal="onShowRenameAttachmentModal"
+    />
+    <CommonSimulatorAttachmentRenameDialog
+      v-if="isShowRenameAttachmentDialog"
+      :status="isShowRenameAttachmentDialog"
+      @on-close="onCloseRenameAttachmentModal"
+      @on-confirm="onConfirmRenameAttachment"
+    />
+    <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
-      :selectedEmailTemplate="selectedEmailTemplate"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :selected-email-template="selectedEmailTemplate"
+      :api-func="deleteEmailTemplate"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
-    <app-dialog
-      v-if="isTemplateDetails"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
-      :title="selectedTemplateHeader"
-      :status="isTemplateDetails"
-      :subtitle="'Email Template Preview'"
-      @changeStatus="isTemplateDetails = false"
-    >
-      <template v-slot:app-dialog-body>
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="template-preview__text" v-if="!!templateHTML">
-            <div>
-              <span class="template-preview__text--title">Template Name: </span>
-              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-            </div>
-            <div>
-              <span class="template-preview__text--title">From Name: </span>
-              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-            </div>
-            <div>
-              <span class="template-preview__text--title">From Email Address: </span>
-              <span class="template-preview__text--body">{{
-                emailTemplateParams.fromAddress
-              }}</span>
-            </div>
-            <div>
-              <span
-                class="template-preview__text--title"
-                style="
-                  font-style: normal;
-                  font-weight: 600;
-                  font-size: 20px;
-                  line-height: 24px;
-                  color: #383b41;
-                "
-                >Subject:
-              </span>
-              <span
-                class="template-preview__text--body--bold"
-                style="
-                  font-style: normal;
-                  font-weight: 600;
-                  font-size: 20px;
-                  line-height: 24px;
-                  color: #383b41;
-                "
-                >{{ emailTemplateParams.subject }}</span
-              >
-            </div>
-          </div>
-          <div
-            v-if="emailTemplateParams.attachment"
-            class="attachment-wrapper mt-2"
-            style="position: relative;"
-          >
-            <div class="attachment blue-attach mb-0">
-              <AttachmentsPreview
-                :deletable="false"
-                :att="emailTemplateParams.attachment"
-                :isEmailTemplate="true"
-              />
-            </div>
-          </div>
-          <hr class="mt-2" v-if="!!templateHTML" />
-          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
-        </div>
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--email-preview-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
-
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedEmailTemplate"
+      @on-close="togglePreviewDialog"
+    />
     <data-table
       v-if="getEmailTemplatesSearchPermissions"
       id="emailTemplates-data-table"
@@ -182,7 +73,7 @@
           :disabled="tableOptions.rowActions[0].disabled"
           :text="tableOptions.rowActions[0].name"
           :checkIsOwnerProperty="false"
-          @on-click="handlePreview(scope.row)"
+          @on-click="togglePreviewDialog(scope.row)"
         />
         <RowActionsMenu>
           <ScenariosRowActionsEditButton
@@ -218,13 +109,7 @@
 <script>
 import DataTable from '../DataTable'
 import NewEmailTemplates from './NewEmailTemplates'
-import DeleteEmailTemplates from './DeleteEmailTemplates'
-import AppDialog from '../AppDialog'
-import {
-  getEmailTemplatesList,
-  exportEmailTemplates,
-  getEmailTemplatePreviewContent
-} from '@/api/phishingsimulator'
+import { getEmailTemplatesList, exportEmailTemplates } from '@/api/phishingsimulator'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -235,13 +120,8 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import KEmailPreview from '@/components/KEmailPreview'
-import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import * as Validations from '@/utils/validations'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { mapGetters } from 'vuex'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
@@ -249,30 +129,29 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
+import { deleteEmailTemplate } from '@/api/company'
+import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorAttachmentRenameDialog,
+    CommonSimulatorEmailTemplateDeleteDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    DatatableLoading,
-    KEmailPreview,
     DataTable,
-    DeleteEmailTemplates,
-    NewEmailTemplates,
-    AppDialog,
-    AppDialogFooter,
-    AttachmentsPreview
+    NewEmailTemplates
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
-      attachmentName: '',
-      isRenameAttachmentModalVisible: false,
+      isShowRenameAttachmentDialog: false,
       languageFilterOptions: [],
-      editableFormValues: {},
       timeoutId: '',
       emailTemplateParams: {},
       loading: true,
@@ -453,7 +332,7 @@ export default {
       modalStatus: false,
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
-      isTemplateDetails: false,
+      isShowPreviewDialog: false,
       selectedTemplateHeader: null,
       templateHTML: null
     }
@@ -471,87 +350,52 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    deleteEmailTemplate,
     onShowRenameAttachmentModal() {
-      this.isRenameAttachmentModalVisible = true
+      this.isShowRenameAttachmentDialog = true
     },
     onCloseRenameAttachmentModal() {
-      this.attachmentName = ''
-      this.isRenameAttachmentModalVisible = false
+      this.isShowRenameAttachmentDialog = false
     },
-    onConfirmRenameAttachment() {
-      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
-        if (this.$refs.newEmailTemplate) {
-          let fileExtension = ''
-          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
-          if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
-            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.name.split(
-              '.'
-            )[1]
-            const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              new File([file], `${this.attachmentName}.${fileExtension}`, {
-                type
-              })
-            ]
-          } else {
-            fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.fileName?.split(
-              '.'
-            )?.[1]
-            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-              {
-                ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-                fileName: `${this.attachmentName}.${fileExtension}`
-              }
-            ]
-          }
-          this.$refs.newEmailTemplate.isPhishingFileModified = true
+    onConfirmRenameAttachment(attachmentName = '') {
+      if (this.$refs.newEmailTemplate) {
+        let fileExtension = ''
+        const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
+        if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
+          fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.name.split(
+            '.'
+          )[1]
+          const file = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            new File([file], `${attachmentName}.${fileExtension}`, {
+              type
+            })
+          ]
+        } else {
+          fileExtension = this.$refs?.newEmailTemplate?.formValues?.attachmentFiles?.[0]?.fileName?.split(
+            '.'
+          )?.[1]
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            {
+              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
+              fileName: `${attachmentName}.${fileExtension}`
+            }
+          ]
         }
-        this.onCloseRenameAttachmentModal()
+        this.$refs.newEmailTemplate.isPhishingFileModified = true
       }
+      this.onCloseRenameAttachmentModal()
     },
     handleSuccessDeleteAction(row) {
       this.$refs.refEmailTemplatesList.unSelectRow(row)
       this.showDeleteModal = false
       this.callForData()
     },
-    handlePreview(row) {
-      this.isTemplateDetails = true
-      const id = row.resourceId
-      this.isPreviewLoading = true
-      getEmailTemplatePreviewContent(id)
-        .then((response) => {
-          const data = response.data.data
-          this.selectedTemplateHeader = data.subject
-          const {
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            phishingFileName,
-            subject
-          } = data
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
-            name,
-            subject,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null
-          }
-          this.templateHTML = data.template
-        })
-        .finally(() => {
-          this.timeoutId = setTimeout(() => {
-            this.isPreviewLoading = false
-          }, 500)
-        })
+    togglePreviewDialog(row = null) {
+      this.selectedEmailTemplate = row
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleEdit(row, isDuplicate) {
-      this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
@@ -574,7 +418,6 @@ export default {
       this.isEdit = false
       this.isDuplicate = false
       if (restart) {
-        this.editableFormValues = {}
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false

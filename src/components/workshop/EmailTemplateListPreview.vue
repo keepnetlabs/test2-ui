@@ -155,15 +155,15 @@
                   </v-btn>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">Template Name: </span>
                     <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
                   </div>
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
-                  <div class="mb-2">
+                  <div>
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>
@@ -185,7 +185,7 @@
                     </div>
                   </div>
                 </div>
-                <hr class="mt-2" v-if="!!templateHTML" />
+                <hr class="mt-4" v-if="!!templateHTML" />
                 <k-email-preview
                   v-if="templateHTML"
                   :key="templateHTML"
@@ -220,7 +220,14 @@ export default {
   props: {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false },
-    categoryResourceId: { type: String, default: '' }
+    categoryResourceId: { type: String, default: '' },
+    apiFuncs: {
+      type: Object,
+      default: () => ({
+        list: getEmailTemplatesList,
+        content: getEmailTemplatePreviewContent
+      })
+    }
   },
   directives: {
     'infinite-scroll': InfiniteScroll
@@ -314,7 +321,8 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getEmailTemplatesList(copyOfBodyData)
+        this.apiFuncs
+          .list(copyOfBodyData)
           .then((response) => {
             const { data } = response
             if (!response.data.data.results.length) {
@@ -360,7 +368,8 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      getEmailTemplatesList(bodyData)
+      this.apiFuncs
+        .list(bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -433,7 +442,8 @@ export default {
       if (isInitial) {
         this.$emit('initialEmailTemplateId', item.id)
       }
-      getEmailTemplatePreviewContent(item.resourceId)
+      this.apiFuncs
+        .content(item.resourceId)
         .then((response) => {
           this.selectedTemplateHeader = response?.data?.data?.name || ''
           this.templateHTML = response?.data?.data?.template || ''
