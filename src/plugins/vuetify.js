@@ -14,6 +14,8 @@ import SmishingSimulator from '@/components/CustomIcons/SmishingSimulator'
 import LockOpenTime from '@/components/CustomIcons/LockOpenTime'
 import QrCode from '@/components/CustomIcons/QrCode'
 import QrCodeSelected from '@/components/CustomIcons/QrCodeSelected'
+import PlayFile from '@/components/CustomIcons/PlayFile'
+import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -22,6 +24,12 @@ export default new Vuetify({
       iconfont: 'mdiSvg'
     },
     values: {
+      playfile: {
+        component: PlayFile
+      },
+      'playfile-gray': {
+        component: PlayFileGray
+      },
       'smishing-simulator': {
         component: SmishingSimulator
       },

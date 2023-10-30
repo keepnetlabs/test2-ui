@@ -50,15 +50,21 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Category Name: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.category }}</span>
+            <span class="training-library-preview__desc">{{
+              trainingParams.categoryName || trainingParams.category
+            }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.description }}</span>
+            <span class="training-library-preview__desc">{{
+              trainingParams.description || trainingParams.trainingDescription
+            }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Target Audience: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.targetAudience }}</span>
+            <span class="training-library-preview__desc">{{
+              trainingParams.targetAudienceName || trainingParams.targetAudience
+            }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Languages: </span>
