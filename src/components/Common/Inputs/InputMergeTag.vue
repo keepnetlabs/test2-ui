@@ -52,12 +52,13 @@
         <div class="input-merge-tag__inner">
           <div v-if="isTextToSpeech" class="input-merge-tag__badges-and-button">
             <div class="input-merge-tag__badges">
-              <div v-if="language" class="input-merge-tag__badge">
-                <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon>{{ language }}
+              <div class="input-merge-tag__badge">
+                <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon
+                >{{ language || 'Language' }}
               </div>
-              <div v-if="voice" class="input-merge-tag__badge">
+              <div class="input-merge-tag__badge">
                 <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
-                >{{ voice }}
+                >{{ voice || 'Voice' }}
               </div>
             </div>
             <v-tooltip :disabled="!isShowTooltip" right opacity="1">
