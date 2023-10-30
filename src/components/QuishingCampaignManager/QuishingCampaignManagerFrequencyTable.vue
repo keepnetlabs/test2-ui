@@ -153,11 +153,7 @@ export default {
           id: 'btn-empty--campaign-manager-report'
         },
         addButton: {
-          show: true,
-          action: 'on-add-button-click',
-          tooltip: 'Add a Campaign',
-          id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          show: false
         },
         rowActions: [
           {
