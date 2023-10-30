@@ -10,6 +10,7 @@
         name="email-templates"
         id="email-templates-content"
       >
+        <QuishingEmailTemplates v-if="tab === 'email-templates'" />
       </ElTabPane>
       <ElTabPane
         v-if="true"
@@ -24,10 +25,11 @@
 <script>
 import KContainer from '@/components/KContainer/KContainer'
 import QuishingScenarios from '@/components/QuishingScenarios/QuishingScenarios'
+import QuishingEmailTemplates from '@/components/QuishingEmailTemplates/QuishingEmailTemplates'
 
 export default {
   name: 'QuishingSimulator',
-  components: { QuishingScenarios, KContainer },
+  components: { QuishingEmailTemplates, QuishingScenarios, KContainer },
   data() {
     return {
       tab: 'scenarios'
