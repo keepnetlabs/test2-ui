@@ -311,7 +311,13 @@ export default {
         this.setActionButtonDisability(true)
         const payload = {
           name: formData.name,
-          phishingScenarioResourceIds: [this.selectedScenario.resourceId],
+          phishingScenarios: [
+            {
+              phishingScenarioResourceId: this.selectedScenario.resourceId,
+              trainingId: '',
+              trainingLanguageIds: []
+            }
+          ],
           scheduleTypeId: '1',
           duration: 365,
           targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(

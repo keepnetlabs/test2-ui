@@ -12,6 +12,7 @@
     <CampaignManagerReportTrainingReportsDialog
       v-if="isShowTrainingReportsDialog"
       :status="isShowTrainingReportsDialog"
+      :table-data="trainingReportDialogItems"
       @on-close="toggleShowTrainingReportsDialog"
     />
     <div class="campaign-manager-report-summary-header__left">
@@ -94,6 +95,10 @@ export default {
     trainingInfos: {
       type: Array,
       default: () => []
+    },
+    trainingReportDialogItems: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -150,7 +155,7 @@ export default {
       if (this.isMultipleTrainingReport) this.toggleShowTrainingReportsDialog()
       else
         window.open(
-          `/awareness-educator/enrollments/training-report/${this.trainingInfos[0].enrollmentId}`
+          `/awareness-educator/enrollments/training-report/${this.trainingReportDialogItems[0].enrollmentId}`
         )
     },
     toggleShowTrainingReportsDialog() {

@@ -157,25 +157,12 @@
             <multipane-resizer></multipane-resizer>
             <div class="pane" :style="{ flexGrow: 1 }">
               <div class="template-preview" v-if="!!template">
-                <div class="template-preview__header">
-                  <div class="template-preview__header-left">
-                    <v-icon color="#383B41"> mdi-eye </v-icon>
-                    <span class="template-preview__header-left-text"> Preview of Steps</span>
-                  </div>
-                  <div class="template-preview__header-right">
-                    <Badge
-                      color="#E0E0E0"
-                      textBlack
-                      :outline="false"
-                      :text="template.steps.length + ' Steps'"
-                    />
-                  </div>
-                </div>
                 <div class="template-preview__steps">
-                  <div v-if="!!template" v-for="(step, index) in template.steps" :key="index">
-                    <VishingTemplatePreviewStep :step="step" :index="index" />
-                    <hr v-if="index !== template.steps.length - 1" />
-                  </div>
+                  <VishingTemplatePreviewSteps
+                    :template="template"
+                    :isTextToSpeechCompatible="isTextToSpeechCompatible"
+                    :voiceResourceId="voiceResourceId"
+                  />
                 </div>
               </div>
             </div>
@@ -191,8 +178,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getVishingTemplatePreview, getVishingTemplates } from '@/api/vishing'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
-import Badge from '@/components/Badge'
-import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import VishingTemplatePreviewSteps from '@/components/VishingTemplates/VishingTemplatePreviewSteps'
 import useDebounce from '@/hooks/useDebounce'
 
 export default {
@@ -215,11 +201,12 @@ export default {
     ShowMoreTags,
     Multipane,
     MultipaneResizer,
-    Badge,
-    VishingTemplatePreviewStep
+    VishingTemplatePreviewSteps
   },
   data() {
     return {
+      isTextToSpeechCompatible: false,
+      voiceResourceId: '',
       search: null,
       listData: [],
       template: null,
@@ -463,7 +450,23 @@ export default {
             (step) => step.order === 0
           )
           if (invalidDialingNoticeStepIndex !== -1) {
+            this.template = {
+              ...this.template,
+              invalidDialingNotice: this.template.steps[invalidDialingNoticeStepIndex]
+            }
             this.template.steps.splice(invalidDialingNoticeStepIndex, 1)
+          }
+          this.template = {
+            ...this.template,
+            language: item.language,
+            voice: item.voice
+          }
+          const voiceIndex = this.languages.findIndex(
+            (language) => language.language === item.language && language.name === item.voice
+          )
+          if (voiceIndex !== -1) {
+            this.isTextToSpeechCompatible = this.languages[voiceIndex].voiceProviderTypeId === 2
+            this.voiceResourceId = this.languages[voiceIndex].resourceId
           }
           this.$emit('selectedTemplateChange', { ...item, ...this.template })
         })
