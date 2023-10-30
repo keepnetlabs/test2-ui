@@ -146,7 +146,7 @@ export default {
               this.templateData = {
                 ...this.templateData,
                 language: this.languages[voiceIndex].language,
-                voice: this.languages[voiceIndex].voice
+                voice: this.languages[voiceIndex].name
               }
               this.campaignVoiceResourceId = this.templateData.vishingLanguageResourceId
               this.campaignTextToSpeechCompatible =
