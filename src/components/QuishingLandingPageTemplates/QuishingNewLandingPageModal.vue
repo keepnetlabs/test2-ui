@@ -63,6 +63,7 @@
                 </form-group>
                 <InputPhishingMethod
                   v-model.trim="formValues.methodTypeId"
+                  subtitle="Select the quishing technique for this template"
                   item-text-key="text"
                   item-value-key="value"
                   :max-length="256"
@@ -94,7 +95,7 @@
                 </form-group>
                 <form-group
                   title="Difficulty"
-                  sub-title="Select a detection difficulty level for this phishing email"
+                  sub-title="Select a detection difficulty level for this quishing email"
                   class-name="mb-8"
                 >
                   <v-radio-group
@@ -142,6 +143,8 @@
                     <InputPhishingLink
                       ref="refInputPhishingLink"
                       v-model="formValues.phishingLink"
+                      title="Quishing Link"
+                      subtitle="Create a quishing link for users to click and be directed to the landing page"
                       :url-schema-types="getUrlSchemaTypes"
                       :domain-records="getDomainRecordTypes"
                       :extension-types="getExtensionTypes"
@@ -286,7 +289,6 @@ import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -295,7 +297,7 @@ import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'QuishingNewLandingPageModal',
   components: {
@@ -376,6 +378,54 @@ export default {
         ]
       },
       editItemsDisabled: false
+    }
+  },
+  created() {
+    if (this.isDuplicate) {
+      this.footerButtonsIds = {
+        cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
+        backButton: 'btn-duplicate-back--landing-page-templates-modal',
+        nextButton: 'btn-duplicate-next--landing-page-templates-modal',
+        saveButton: 'btn-duplicate-save--landing-page-templates-modal'
+      }
+    }
+    if (!this.isEdit)
+      this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
+    this.formValues.difficultyTypeId = '1'
+    this.callForMergedTags()
+    this.callForLanguages()
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    if (this.isEdit) {
+      QuishingService.getLandingPageTemplate(this.emailTemplateId).then((response) => {
+        const { data: { data = {} } = {} } = response || {}
+        const phishingLink = {
+          subDomain: data.subDomain,
+          urlSchemaTypeId: data.urlSchemaTypeId.toString(),
+          pathTypeId: data.pathTypeId.toString(),
+          extensionTypeId: data.extensionTypeId.toString(),
+          parameterTypeId: data.parameterTypeId.toString(),
+          domainRecordId: data.domainRecordId.toString()
+        }
+        delete data.urlSchemaTypeId
+        delete data.pathTypeId
+        delete data.extensionTypeId
+        delete data.parameterTypeId
+        delete data.domainRecordId
+        delete data.subDomain
+        this.formValues = data
+        this.$set(this.formValues, 'phishingLink', phishingLink)
+        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
+        this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+        this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
+        this.formValues.name = `${this.formValues.name}`
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+        this.availableForRequests = getAvailableForValueFromList(
+          response?.data?.data?.availableForList
+        )
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      })
     }
   },
   methods: {
@@ -489,7 +539,7 @@ export default {
           )
         }
         if (this.isEdit && !this.isDuplicate) {
-          updateLandingPage(payload, this.emailTemplateId)
+          QuishingService.updateLandingPage(payload, this.emailTemplateId)
             .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
@@ -497,7 +547,7 @@ export default {
               this.isSubmitDisabled = false
             })
         } else {
-          createLandingPage(payload)
+          QuishingService.createLandingPage(payload)
             .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
@@ -565,54 +615,6 @@ export default {
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
-    }
-  },
-  created() {
-    if (this.isDuplicate) {
-      this.footerButtonsIds = {
-        cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
-        backButton: 'btn-duplicate-back--landing-page-templates-modal',
-        nextButton: 'btn-duplicate-next--landing-page-templates-modal',
-        saveButton: 'btn-duplicate-save--landing-page-templates-modal'
-      }
-    }
-    if (!this.isEdit)
-      this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
-    this.formValues.difficultyTypeId = '1'
-    this.callForMergedTags()
-    this.callForLanguages()
-    if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
-    if (this.isEdit) {
-      getLandingPageTemplate(this.emailTemplateId).then((response) => {
-        const { data: { data = {} } = {} } = response || {}
-        const phishingLink = {
-          subDomain: data.subDomain,
-          urlSchemaTypeId: data.urlSchemaTypeId.toString(),
-          pathTypeId: data.pathTypeId.toString(),
-          extensionTypeId: data.extensionTypeId.toString(),
-          parameterTypeId: data.parameterTypeId.toString(),
-          domainRecordId: data.domainRecordId.toString()
-        }
-        delete data.urlSchemaTypeId
-        delete data.pathTypeId
-        delete data.extensionTypeId
-        delete data.parameterTypeId
-        delete data.domainRecordId
-        delete data.subDomain
-        this.formValues = data
-        this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
-        this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-        this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-        this.formValues.name = `${this.formValues.name}`
-        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        this.availableForRequests = getAvailableForValueFromList(
-          response?.data?.data?.availableForList
-        )
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      })
     }
   }
 }

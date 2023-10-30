@@ -47,6 +47,7 @@
                 </FormGroup>
                 <InputPhishingMethod
                   v-model.trim="formValues.categoryResourceId"
+                  subtitle="Select the quishing technique for this template"
                   :items="methodItems"
                 />
                 <form-group
@@ -75,7 +76,7 @@
                 </form-group>
                 <form-group
                   title="Difficulty"
-                  sub-title="Select a detection difficulty level for this phishing email"
+                  sub-title="Select a detection difficulty level for this quishing email"
                   class-name="mb-6"
                 >
                   <v-radio-group
@@ -206,12 +207,6 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import {
-  createPhishingEmailTemplate,
-  getEmailTemplatePreviewContent,
-  getMergedTextForPhishing,
-  updatePhishingEmailTemplate
-} from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
@@ -223,7 +218,7 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'NewQuishingEmailTemplatesModal',
   components: {
@@ -388,7 +383,7 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit) {
-      getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+      QuishingService.getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
           description: response.data.data.description || '',
@@ -590,7 +585,7 @@ export default {
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
-        updatePhishingEmailTemplate(payload, this.emailTemplateId)
+        QuishingService.updateQuishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -598,7 +593,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createPhishingEmailTemplate(payload)
+        QuishingService.createQuishingEmailTemplate(payload)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -609,7 +604,7 @@ export default {
     },
 
     callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
+      QuishingService.getMergedTextForQuishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import TestConnectivityStatus from '@/components/QuishingSettings/DnsServices/TestConnectivityStatus'
+import TestConnectivityStatus from './TestConnectivityStatus'
 import QuishingService from '@/api/quishing'
 export default {
   inheritAttrs: true,
@@ -60,9 +60,7 @@ export default {
     isLoading() {
       let isLoading = this.checkApiConnectivity !== 'loading'
       if (isLoading) {
-        this.$emit('loading', true)
-      } else {
-        this.$emit('loading', false)
+        this.$emit('loading')
       }
       return !isLoading
     },
@@ -76,21 +74,27 @@ export default {
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     },
-    testConnection(isSave) {
-      this.$emit('save-button-disabled', true)
+    handleTestConnectionClick() {
+      this.$emit('testConnectionClicked')
+    },
+    testConnection(isSave = false, isTested = false) {
       this.isSave = isSave
+      if (isTested) {
+        return this.checkIfAllSuccess(true)
+      }
       this.isLoadingStarted = true
       this.setLoadingStates()
       let payload = {
-        dnsServiceProviderId: this.values.dnsServiceProviderId,
-        zoneId: this.values.zoneId
+        dnsServiceProviderTypeId: this.values.dnsServiceProviderTypeId,
+        username: this.values.username,
+        password: this.values.password,
+        resourceId: this.values.resourceId
       }
-      QuishingService.testDomainConnection(payload)
+      return QuishingService.testDnsConnection(payload, this.values.resourceId)
         .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
           this.checkIfAllSuccess(true)
-          this.$emit('save-button-disabled', false)
         })
         .catch((error) => {
           this.checkApiConnectivity = 'error'
@@ -98,14 +102,10 @@ export default {
             (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
             error.response.data.message
           this.checkIfAllSuccess(false)
-          this.$emit('save-button-disabled', true)
         })
     },
     setLoadingStates() {
       this.checkApiConnectivity = 'loading'
-    },
-    handleTestConnectionClick() {
-      this.$emit('testConnectionClicked')
     }
   }
 }

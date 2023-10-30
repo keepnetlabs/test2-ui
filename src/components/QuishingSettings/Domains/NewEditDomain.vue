@@ -9,19 +9,19 @@
     title-id="text--create-domain-modal-title"
     @closeOverlay="status = false"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <v-form ref="domainForm">
         <app-modal-body-header
-          :title="'New Domain'"
-          sub-title="Create a phishing domain for your phishing landing pages"
+          title="New Domain"
+          sub-title="Create a quishing domain for your quishing landing pages"
         />
         <form-group title="Domain" has-hint>
           <InputEntityName
             v-model.trim="formValues.domain"
             id="input--domain"
-            entityName="domain"
-            initialPlaceholder="yourdomain.com"
-            :initialRules="domainRules"
+            entity-name="domain"
+            initial-placeholder="yourdomain.com"
+            :initial-rules="domainRules"
           />
         </form-group>
         <form-group title="DNS Service" has-hint>
@@ -170,11 +170,10 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
-import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
-import TestConnection from '@/components/Settings/Domains/TestConnection'
+import TestConnection from '@/components/QuishingSettings/Domains/TestConnection'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import AppModalFooter from '@/components/AppModalFooter'
-
+import QuishingService from '@/api/quishing'
 const ENUMS = {
   CNAME: '1',
   A: '2'
@@ -298,7 +297,7 @@ export default {
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
-      getDomainEditData(this.resourceId).then((res) => {
+      QuishingService.getDomainEditData(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         this.formValues.domain = res?.data?.data?.domain
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
@@ -364,7 +363,7 @@ export default {
             this.formValues.dnsRecord = null
           }
           if (this.isEdit && !this.isDuplicate) {
-            updateDomain(payload, this.resourceId)
+            QuishingService.updateDomain(payload, this.resourceId)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })
@@ -372,7 +371,7 @@ export default {
                 this.saveButtonDisabled = false
               })
           } else {
-            createDomain(payload)
+            QuishingService.createDomain(payload)
               .then(() => {
                 this.$emit('changeStatus', false, true)
               })

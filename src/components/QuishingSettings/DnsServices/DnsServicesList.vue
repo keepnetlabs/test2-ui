@@ -1,24 +1,29 @@
 <template>
-  <div id="domains">
-    <NewEditDomain
-      ref="newEditDomainModal"
+  <div id="dnsServiceList">
+    <NewEditDnsService
       v-if="modalStatus"
+      ref="newEditDnsServiceModal"
       :status="modalStatus"
-      :resourceId="resourceId"
-      :isEdit="isEdit"
-      :domainData="domainData"
+      :resource-id="resourceId"
+      :is-edit="isEdit"
       @changeStatus="changeStatus"
+    />
+    <CantDeleteDnsServiceDialog
+      v-if="isShowCantDeleteDialog"
+      :status="isShowCantDeleteDialog"
+      :selected-row="selectedDnsService"
+      @on-close="toggleCantDeleteDialog"
     />
     <DeleteServiceModal
       :status="showDeleteModal"
-      :selectedDomain="selectedDomain"
+      :selected-dns-service="selectedDnsService"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
     />
     <data-table
-      id="domains-data-table"
-      ref="refDomainsListList"
+      id="dnsServiceList-data-table"
+      ref="refDnsServiceListList"
       is-server-side
       selectable
       filterable
@@ -30,16 +35,16 @@
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      :server-side-props="serverSideProps"
       :download-button="tableOptions.downloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleActionDelete"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
-      @downloadEvent="exportDomains"
+      @downloadEvent="exportDnsService"
       @delete="handleActionDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -83,50 +88,43 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import DeleteServiceModal from '@/components/QuishingSettings/Domains/DeleteServiceModal'
-import NewEditDomain from '@/components/QuishingSettings/Domains/NewEditDomain'
+import DeleteServiceModal from '@/components/QuishingSettings/DnsServices/DeleteServiceModal'
+import NewEditDnsService from '@/components/QuishingSettings/DnsServices/NewEditDnsService'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import CantDeleteDnsServiceDialog from '@/components/QuishingSettings/DnsServices/CantDeleteDnsServiceDialog'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import QuishingService from '@/api/quishing'
 export default {
-  name: 'DomainList',
+  name: 'DnsServiceList',
   components: {
+    CantDeleteDnsServiceDialog,
     DefaultButtonRowAction,
-    NewEditDomain,
+    NewEditDnsService,
     DataTable,
     DeleteServiceModal
   },
   mixins: [useDefaultTableFunctions],
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
-  },
   data() {
     return {
-      domainData: null,
+      isShowCantDeleteDialog: false,
       resourceId: null,
-      methodItems: [],
-      difficultyItems: [],
       editableFormValues: {},
       loading: true,
       isEdit: false,
-      isDuplicate: false,
-      emailTemplateId: null,
       labels,
       tableData: [],
       showDeleteModal: false,
-      selectedDomain: null,
+      selectedDnsService: null,
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DOMAINS,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_DNSSERVICELIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_DNSSERVICELIST,
         columns: [
           {
-            property: 'domain',
+            property: 'dnsServiceProviderName',
             align: 'left',
             editable: false,
-            label: 'Domain',
+            label: 'DNS Name',
             sortable: true,
             show: true,
             type: 'text',
@@ -135,29 +133,18 @@ export default {
             width: 180
           },
           {
-            property: 'dnsServiceProviderName',
+            property: 'dnsServiceProviderType',
             align: 'left',
             editable: false,
-            label: 'DNS Name',
+            label: 'Service Type',
             fixed: false,
             sortable: true,
             show: true,
             width: 240,
             hasTooltip: true,
             type: 'text',
-            filterableType: 'text'
-          },
-          {
-            property: 'dnsRecord',
-            align: 'left',
-            editable: false,
-            label: 'DNS Record',
-            sortable: true,
-            show: true,
-            fixed: false,
-            width: 240,
-            type: 'text',
-            filterableType: 'text'
+            filterableType: 'select',
+            filterableItems: [{ text: 'Cloudflare', value: '1' }]
           },
           {
             property: 'healthStatus',
@@ -193,7 +180,8 @@ export default {
             show: true,
             type: 'date',
             filterableType: 'date',
-            width: 180
+            width: 180,
+            filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           }
         ],
         rowActions: [
@@ -201,20 +189,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDomainUpdatePermissions'],
-            id: 'btn-edit--domain-lists-row-actions'
+            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions'],
+            id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDomainDeletePermissions'],
-            id: 'btn-delete--domain-lists-row-actions'
+            disabled: !this.$store.getters['permissions/getDnsDeletePermissions'],
+            id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
+          disabled: !this.$store.getters['permissions/getDnsExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -223,18 +211,17 @@ export default {
           download: false
         },
         empty: {
-          message: 'You do not have any domains',
+          message: 'You do not have any DNS Services',
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--domainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          id: 'btn-empty--DnsServiceList'
         },
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add a Domain',
-          id: 'btn-add--DomainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          tooltip: 'Add a DNS Service',
+          id: 'btn-add--DnsServiceList',
+          disabled: !this.$store.getters['permissions/getDnsCreatePermissions']
         }
       },
       modalStatus: false,
@@ -246,24 +233,19 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDomainUpdatePermissions: 'permissions/getDomainUpdatePermissions',
-      getDomainDeletePermissions: 'permissions/getDomainDeletePermissions',
-      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
+      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
+      getDnsUpdatePermissions: 'permissions/getDnsUpdatePermissions',
+      getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
     })
   },
   created() {
-    if (this.getDomainFormDetailsPermissions)
-      QuishingService.getDomainData().then((response) => {
-        this.domainData = response.data.data
-        this.callForData()
-      })
+    this.callForData()
   },
   methods: {
     callForData() {
       this.loading = true
-      if (this.getDomainSearchPermissions) {
-        QuishingService.getDomainsList(this.axiosPayload)
+      if (this.getDnsSearchPermissions) {
+        QuishingService.getDnsServiceList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -281,9 +263,13 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
-    checkIfCanCloseDomainModal() {
-      if (this.$refs.newEditDomainModal) {
-        this.$refs.newEditDomainModal.cancelDomain()
+    toggleCantDeleteDialog(isOpenNewServiceModal = false) {
+      if (isOpenNewServiceModal) this.handleAdd()
+      this.isShowCantDeleteDialog = !this.isShowCantDeleteDialog
+    },
+    checkIfCanCloseDnsServiceModal() {
+      if (this.$refs.newEditDnsServiceModal) {
+        this.$refs.newEditDnsServiceModal.cancelDns()
       }
     },
     changeStatus(value, restart) {
@@ -293,28 +279,13 @@ export default {
         this.callForData()
       }
     },
-    handleSearchChange(searchFilter = {}) {
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
-        (item) => {
-          if (item.FieldName === 'AnalysisEngineName') {
-            item.FieldName = 'analysisEngineTypeId'
-          }
-          return item
-        }
-      )
-      this.resetPageNumber()
-      this.callForData()
-    },
     handleSuccessDeleteAction() {
       this.showDeleteModal = false
       this.callForData()
     },
     handleDelete(row) {
-      QuishingService.deleteDomain(row.resourceId).then(() => {
-        this.$refs.refDomainsListList.unSelectRow(row)
+      QuishingService.deleteDnsService(row.resourceId).then(() => {
+        this.$refs.refDnsServiceListList.unSelectRow(row)
         this.callForData()
       })
     },
@@ -327,7 +298,7 @@ export default {
       this.isEdit = false
       this.modalStatus = true
     },
-    exportDomains({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportDnsService({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -338,11 +309,11 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        QuishingService.exportDomainList(payload).then((response) => {
+        QuishingService.exportDnsService(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Domains.${
+          link.download = `DnsServices.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
@@ -350,8 +321,9 @@ export default {
       })
     },
     handleActionDelete(row) {
-      this.selectedDomain = row
-      this.showDeleteModal = true
+      this.selectedDnsService = row
+      if (this.serverSideProps.totalNumberOfRecords === 1) this.toggleCantDeleteDialog()
+      else this.showDeleteModal = true
     }
   }
 }
