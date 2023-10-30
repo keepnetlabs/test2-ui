@@ -56,38 +56,13 @@
                     :maxLength="300"
                   />
                 </FormGroup>
-                <FormGroup
-                  has-hint
-                  title="Method"
-                  sub-title="Select the phishing technique for this scenario"
-                >
-                  <KSelect
-                    v-bind="commonRules"
-                    v-model="formValues.methodTypeId"
-                    :items="getMethodTypes"
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    hint="*Required"
-                    required
-                    persistent-hint
-                    :slots="{ item: true }"
-                  >
-                    <template #item="{item}">
-                      <div :class="['mail-configuration-select-sources__item-container']">
-                        <div class="mail-configuration-select-sources__item">
-                          <div class="mail-configuration-select-sources__item-left">
-                            {{ item.text }}
-                          </div>
-                          <div class="mail-configuration-select-sources__item-right-platform">
-                            {{ getMethodTypeDescription(item.text) }}
-                          </div>
-                        </div>
-                      </div>
-                    </template>
-                  </KSelect>
-                </FormGroup>
+                <InputPhishingMethod
+                  v-model.trim="formValues.methodTypeId"
+                  item-text-key="text"
+                  :max-length="256"
+                  :items="getMethodTypes"
+                />
+
                 <FormGroup
                   has-hint
                   title="Language"
@@ -517,7 +492,6 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import {
   SCENARIO_DIFFICULTIES,
@@ -528,12 +502,13 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import AppModal from '@/components/AppModal'
 import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    InputPhishingMethod,
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
-    KSelect,
     StepperFooter,
     KEmailPreview,
     AppModal,

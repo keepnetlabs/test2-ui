@@ -136,6 +136,7 @@ export const MERGED_TEXTS = {
 
 export const SCENARIO_METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
+  CLICK_ONLY_SPACE: 'Click Only',
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment',
   MFA: 'MFA'

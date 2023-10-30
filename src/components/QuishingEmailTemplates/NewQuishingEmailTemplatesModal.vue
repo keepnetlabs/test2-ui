@@ -225,7 +225,7 @@ import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 
 export default {
-  name: 'NewEmailTemplates',
+  name: 'NewQuishingEmailTemplatesModal',
   components: {
     InputPhishingMethod,
     StepperFooter,
