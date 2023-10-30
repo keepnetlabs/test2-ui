@@ -290,11 +290,12 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
+import { getTimeByTimeZone } from '@/api/company'
+
 export default {
   name: 'SendTrainingSettings',
   components: {
@@ -358,7 +359,7 @@ export default {
         scheduleTypeId: '1',
         isProxy: false,
         enrollmentScheduler: {
-          scheduledDate: '',
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           scheduledTimeZoneId: '',
           useOwnTimeZone: true
         },
@@ -468,6 +469,15 @@ export default {
         }
       }
     },
+    'formData.enrollmentScheduler.scheduledTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.formData.enrollmentScheduler.scheduledDate = res.data.data
+          }
+        })
+      }
+    },
     selectedTimeZone(val) {
       this.formData.enrollmentScheduler.scheduledTimeZoneId = val
     },
@@ -475,7 +485,17 @@ export default {
       this.checkDateIsValid()
     },
     'formData.scheduleTypeId'(val) {
-      if (val !== '2') this.isDateValid = true
+      if (val !== '2') {
+        this.isDateValid = true
+        if (!this.formData.enrollmentScheduler.scheduledDate) {
+          this.formData.enrollmentScheduler.scheduledDate = this.$moment(Date.now()).format(
+            getTimeZoneForMoment()
+          )
+        }
+        if (!this.formData.enrollmentScheduler.scheduledTimeZoneId) {
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone
+        }
+      }
     }
   },
   methods: {
