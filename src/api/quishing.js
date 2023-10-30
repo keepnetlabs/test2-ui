@@ -96,21 +96,21 @@ const getLandingPageTemplate = (id) => {
   return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
 }
 const deleteCampaign = (id) => {
-  return testRequest.delete(`phishing-simulator/campaign/${id}`, {
+  return testRequest.delete(`quishing-simulator/campaign/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
 const deleteBulkCampaigns = (payload) => {
-  return testRequest.post(`/phishing-simulator/phishing-campaign/bulk-delete`, payload, {
+  return testRequest.post(`/quishing-simulator/quishing-campaign/bulk-delete`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 
 const searchCampaignManager = (payload = {}) => {
-  return testRequest.post('/phishing-simulator/phishing-campaign/search', payload)
+  return testRequest.post('/quishing-simulator/quishing-campaign/search', payload)
 }
 const exportCampaignManager = (payload = {}) => {
-  return testRequest.post('phishing-simulator/phishing-campaign/search/export', payload, {
+  return testRequest.post('quishing-simulator/quishing-campaign/search/export', payload, {
     responseType: 'blob'
   })
 }
@@ -138,7 +138,7 @@ const launchPhishingCampaignInstanceGroup = (id = '', instanceGroup = '') => {
 
 const exportCampaignManagerItem = (payload, id) => {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/${id}/search/export`,
+    `/quishing-simulator/quishing-campaign-job-report/${id}/search/export`,
     payload,
     {
       responseType: 'blob'
@@ -154,10 +154,10 @@ const getCampaignManagerFormDetails = () => {
   return testRequest.get('/quishing-simulator/quishing-campaign/form-details')
 }
 const getCampaignManagerPreview = (resourceId = '') => {
-  return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
+  return testRequest.get(`/quishing-simulator/quishing-campaign/preview/${resourceId}`)
 }
 const getCampaignManager = (resourceId = '') => {
-  return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
+  return testRequest.get(`quishing-simulator/quishing-campaign/${resourceId}`)
 }
 const createCampaignManager = (payload = {}) => {
   return testRequest.post('/quishing-simulator/quishing-campaign', payload, {
@@ -166,7 +166,7 @@ const createCampaignManager = (payload = {}) => {
 }
 
 const updateCampaignManager = (resourceId = '', payload = {}) => {
-  return testRequest.put(`/phishing-simulator/phishing-campaign/${resourceId}`, payload, {
+  return testRequest.put(`/quishing-simulator/quishing-campaign/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -183,65 +183,65 @@ const launchPhishingCampaign = (id = '', payload = {}) => {
 }
 
 const getDnsServiceList = (payload) => {
-  return testRequest.post(`phishing-simulator/dns-services/search`, payload)
+  return testRequest.post(`quishing-simulator/dns-services/search`, payload)
 }
 const exportDnsService = (payload) => {
-  return testRequest.post(`phishing-simulator/dns-services/search/export`, payload, {
+  return testRequest.post(`quishing-simulator/dns-services/search/export`, payload, {
     responseType: 'blob'
   })
 }
 const deleteDnsService = (id) => {
-  return testRequest.delete(`phishing-simulator/dns-services/${id}`, {
+  return testRequest.delete(`quishing-simulator/dns-services/${id}`, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 const createDnsService = (payload) => {
-  return testRequest.post(`phishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post(`quishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
 }
 const getDnsService = (id) => {
-  return testRequest.get(`phishing-simulator/dns-services/${id}`, { loading: true })
+  return testRequest.get(`quishing-simulator/dns-services/${id}`, { loading: true })
 }
 const updateDnsService = (payload, id) => {
-  return testRequest.put(`phishing-simulator/dns-services/${id}`, payload, {
+  return testRequest.put(`quishing-simulator/dns-services/${id}`, payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 const testDnsConnection = (payload, id) => {
-  return testRequest.post(`phishing-simulator/dns-services/${id}/test`, payload)
+  return testRequest.post(`quishing-simulator/dns-services/${id}/test`, payload)
 }
 
 const getDomainsList = (payload) => {
-  return testRequest.post(`phishing-simulator/domain-records/search`, payload)
+  return testRequest.post(`quishing-simulator/domain-records/search`, payload)
 }
 const exportDomainList = (payload) => {
-  return testRequest.post(`phishing-simulator/domain-records/search/export`, payload, {
+  return testRequest.post(`quishing-simulator/domain-records/search/export`, payload, {
     responseType: 'blob'
   })
 }
 const deleteDomain = (id) => {
-  return testRequest.delete(`phishing-simulator/domain-records/${id}`, {
+  return testRequest.delete(`quishing-simulator/domain-records/${id}`, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 const getDomainData = () => {
-  return testRequest.get(`phishing-simulator/domain-records/form-details`)
+  return testRequest.get(`quishing-simulator/domain-records/form-details`)
 }
 const createDomain = (payload) => {
-  return testRequest.post(`phishing-simulator/domain-records`, payload, {
+  return testRequest.post(`quishing-simulator/domain-records`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
 const getDomainEditData = (resId) => {
-  return testRequest.get(`phishing-simulator/domain-records/${resId}`)
+  return testRequest.get(`quishing-simulator/domain-records/${resId}`)
 }
 const updateDomain = (payload, id) => {
-  return testRequest.put(`phishing-simulator/domain-records/${id}`, payload)
+  return testRequest.put(`quishing-simulator/domain-records/${id}`, payload)
 }
 const testDomainConnection = (payload) => {
-  return testRequest.post(`phishing-simulator/domain-records/test`, payload)
+  return testRequest.post(`quishing-simulator/domain-records/test`, payload)
 }
 const getQuishingExcludedIPAddresses = () => {
   return testRequest.get(`/phishing-simulator/excluded-ip-list`)

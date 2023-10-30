@@ -326,15 +326,22 @@ export default {
         }
       } else if (this.step === 2) {
         this.setActionButtonDisability(true)
+        const scenarioKey =
+          this.type === SCENARIO_TYPES.PHISHING ? 'phishingScenarios' : 'quishingScenarios'
+        const scenarioValueKey =
+          this.type === SCENARIO_TYPES.PHISHING
+            ? 'phishingScenarioResourceId'
+            : 'quishingScenarioResourceId'
+        const scenarioValue = [
+          {
+            [scenarioValueKey]: this.selectedScenario.resourceId,
+            trainingId: '',
+            trainingLanguageIds: []
+          }
+        ]
         const payload = {
           name: formData.name,
-          phishingScenarios: [
-            {
-              phishingScenarioResourceId: this.selectedScenario.resourceId,
-              trainingId: '',
-              trainingLanguageIds: []
-            }
-          ],
+          [scenarioKey]: scenarioValue,
           scheduleTypeId: '1',
           duration: 365,
           targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(
