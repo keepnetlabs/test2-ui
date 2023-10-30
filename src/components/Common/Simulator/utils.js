@@ -15,7 +15,7 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableType: 'text'
   },
   TEMPLATE_NAME: {
-    property: PROPERTY_STORE.TEMPLATENAME,
+    property: PROPERTY_STORE.NAME,
     align: 'left',
     editable: false,
     label: labels.TemplateName,

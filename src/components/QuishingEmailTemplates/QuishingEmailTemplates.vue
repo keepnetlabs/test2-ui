@@ -1,5 +1,11 @@
 <template>
   <div>
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedEmailTemplate"
+      @on-close="togglePreviewDialog"
+    />
     <QuishingEmailTemplatesTable
       @on-edit-or-new="toggleNewEmailTemplatesModal"
       @on-preview="togglePreviewDialog"
@@ -9,10 +15,11 @@
 </template>
 <script>
 import QuishingEmailTemplatesTable from '@/components/QuishingEmailTemplates/QuishingEmailTemplatesTable'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog'
 
 export default {
   name: 'QuishingEmailTemplates',
-  components: { QuishingEmailTemplatesTable },
+  components: { CommonSimulatorEmailTemplatePreviewDialog, QuishingEmailTemplatesTable },
   data() {
     return {
       isShowDeleteDialog: false,
@@ -27,7 +34,8 @@ export default {
     toggleNewEmailTemplatesModal() {
       this.isShowNewEmailTemplatesModal = !this.isShowNewEmailTemplatesModal
     },
-    togglePreviewDialog() {
+    togglePreviewDialog(selectedEmailTemplate = {}) {
+      this.selectedEmailTemplate = selectedEmailTemplate
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleDeleteDialog() {

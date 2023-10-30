@@ -10,6 +10,7 @@ export const labels = {
   IncludeToThisReport: 'Include back to this report',
   DuplicateCertificate: 'Duplicate Certificate',
   LimitRecipients: 'Limit Recipients',
+  EmailTemplatePreview: 'Email Template Preview',
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
   EmailTemplate: 'Email Template',
