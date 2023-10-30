@@ -32,40 +32,35 @@
                   <v-icon :size="16" class="mr-1">mdi-web</v-icon>{{ formValues.template.language }}
                 </template>
               </Badge>
-              <Badge size="mini" color="#757575" class-name="px-2 py-2 ml-2" :outline="false">
+              <Badge
+                size="mini"
+                color="#757575"
+                class-name="px-2 py-2 ml-4"
+                :outline="false"
+                :col="{
+                  props: {
+                    style: {
+                      maxWidth: 'unset'
+                    }
+                  }
+                }"
+              >
                 <template #content>
                   <v-icon :size="16" class="mr-1">mdi-microphone-outline</v-icon
                   >{{ formValues.template.voice }}
                 </template>
               </Badge>
-            </div>
-          </div>
-          <div class="vishing-campaign-modal__summary__template-steps">
-            <div>
-              <div
-                v-for="(step, index) in formValues.template.steps"
-                :class="{
-                  'vishing-campaign-modal__summary__template-step': true,
-                  'vishing-campaign-modal__summary__template-step--selected':
-                    selectedTemplateStepIndex === index
-                }"
-                :key="index"
-                @click="handleSelectedTemplateStepChange(index)"
-              >
-                <span class="vishing-campaign-modal__summary__template-step-name">
-                  {{ getStepName(step, index) }}
-                </span>
-                <Badge v-if="step.isVishingStep" color="#B83A3A" text="Vishing Step" />
-                <div v-else />
+              <div v-if="hasAudioFile" class="vishing-campaign-modal__summary__audio-file-badge">
+                <v-icon class="mr-2" color="#ffffff" :size="16">$playfile</v-icon>Audio Files
               </div>
             </div>
-            <div class="vishing-campaign-modal__summary__template-step-preview">
-              <VishingTemplatePreviewStep
-                :index="selectedTemplateStepIndex"
-                :step="formValues.template.steps[selectedTemplateStepIndex]"
-              />
-            </div>
           </div>
+          <VishingTemplatePreviewSteps
+            :showHeader="false"
+            :template="formValues.template"
+            :isTextToSpeechCompatible="isTextToSpeechCompatible"
+            :voiceResourceId="formValues.template.vishingLanguageResourceId"
+          />
         </div>
       </template>
     </CampaignManagerSummaryCard>
@@ -75,12 +70,12 @@
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
-import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import VishingTemplatePreviewSteps from '@/components/VishingTemplates/VishingTemplatePreviewSteps'
 import Badge from '@/components/Badge'
 
 export default {
   name: 'VishingCampaignModalSummaryVishingTemplate',
-  components: { CampaignManagerSummaryCard, VishingTemplatePreviewStep, Badge },
+  components: { CampaignManagerSummaryCard, VishingTemplatePreviewSteps, Badge },
   props: {
     formValues: {
       type: Object
@@ -90,6 +85,17 @@ export default {
     return {
       labels,
       selectedTemplateStepIndex: 0
+    }
+  },
+  computed: {
+    hasAudioFile() {
+      return (
+        this.formValues?.template?.steps?.some((step) => step.inputUrl) ||
+        this.formValues?.template?.invalidDialingNotice?.inputUrl
+      )
+    },
+    isTextToSpeechCompatible() {
+      return this.formValues?.template?.voiceProviderTypeId === 2
     }
   },
   methods: {

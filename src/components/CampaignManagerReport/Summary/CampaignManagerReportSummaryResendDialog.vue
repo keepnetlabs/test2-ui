@@ -52,7 +52,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.submittedEmail"
+            :disabled="!items.mfa"
             :value="8"
           >
             <template #label> Submitted MFA code {{ `(${items.mfa || 0})` }}</template>
