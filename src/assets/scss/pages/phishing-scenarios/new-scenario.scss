@@ -18,6 +18,12 @@
             font-size: 16px;
             line-height: 22px;
             color: #383b41;
+            b{
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+            }
         }
     }
 
@@ -37,6 +43,10 @@
             padding: 24px 24px 16px 24px;
             align-items: center;
 
+            i{
+                margin-left: 0 !important;
+            }
+
             div {
                 font-style: normal;
                 font-weight: 600;
@@ -50,7 +60,7 @@
             border-top: 1px solid #e0e0e0;
             background: #fafafa;
             border-radius: 0 0 12px 12px;
-            padding: 24px;
+            padding: 16px 24px 24px 24px;
 
             &__title {
                 font-style: normal;

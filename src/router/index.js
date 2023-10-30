@@ -408,7 +408,7 @@ const router = new Router({
         },
         {
           path: '/quishing-simulator/quishing-scenarios',
-          name: 'Quishing Simulator',
+          name: 'Quishing Scenarios',
           component: QuishingSimulator,
           meta: {
             isAuthenticated: true,

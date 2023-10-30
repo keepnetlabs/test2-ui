@@ -461,7 +461,7 @@
                 <app-router-link
                   to="/quishing-simulator/quishing-scenarios"
                   id="btn--link-navigator-menu-quishing-simulator"
-                  route-name="Quishing Simulator"
+                  route-name="Quishing Scenarios"
                   :router-name="routerName"
                 />
               </v-list-item-content>
@@ -1081,7 +1081,7 @@ export default {
       ]
     },
     getQuishingPrependIcon() {
-      return this.routerName === 'Quishing Simulator' ? '$qr-code-selected' : '$qr-code'
+      return this.routerName === 'Quishing Scenarios' ? '$qr-code-selected' : '$qr-code'
     },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {

@@ -97,8 +97,8 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { QUISHING_COLUMNS } from '@/components/QuishingSimulator/utils'
 import QuishingService from '@/api/quishing'
+import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 export default {
   name: 'QuishingScenariosTable',
   components: {
@@ -109,6 +109,11 @@ export default {
     DefaultButtonRowAction,
     ScenariosRowActionsDeleteButton
   },
+  props: {
+    scenarioDetailsLookup: {
+      type: Object
+    }
+  },
   mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
@@ -117,16 +122,16 @@ export default {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_SCENARIOS,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_SCENARIOS,
         columns: [
-          QUISHING_COLUMNS.NAME,
-          QUISHING_COLUMNS.METHOD,
-          QUISHING_COLUMNS.LANGUAGE,
-          QUISHING_COLUMNS.TAGS,
-          QUISHING_COLUMNS.DIFFICULTY,
-          QUISHING_COLUMNS.CREATE_TIME,
-          QUISHING_COLUMNS.CREATED_BY,
-          QUISHING_COLUMNS.AVAILABLE_FOR,
-          QUISHING_COLUMNS.EMAIL_TEMPLATE,
-          QUISHING_COLUMNS.LANDING_PAGE_TEMPLATE
+          COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.METHOD,
+          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          COMMON_SIMULATOR_COLUMNS.TAGS,
+          COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
+          COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
+          COMMON_SIMULATOR_COLUMNS.CREATED_BY,
+          COMMON_SIMULATOR_COLUMNS.AVAILABLE_FOR,
+          COMMON_SIMULATOR_COLUMNS.EMAIL_TEMPLATE,
+          COMMON_SIMULATOR_COLUMNS.LANDING_PAGE_TEMPLATE
         ],
         rowActions: [
           {
@@ -191,8 +196,27 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  watch: {
+    scenarioDetailsLookup() {
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        this.scenarioDetailsLookup.methodTypes.map((item) => {
+          return { text: item.text, value: item.text }
+        })
+      )
+      this.$set(
+        this.tableOptions.columns[3],
+        'filterableItems',
+        this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+          return { text: item.text, value: item.text }
+        })
+      )
+    }
+  },
   created() {
     this.callForData()
+    this.callForLanguages('refScenariosList')
   },
   methods: {
     callForData() {
