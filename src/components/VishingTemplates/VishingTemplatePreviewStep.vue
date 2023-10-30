@@ -8,6 +8,12 @@
     >
       {{ step.inputText }}
     </span>
+    <AudioPlayer
+      v-if="isTextToSpeechStep"
+      :src="ttsUrl"
+      :isFetchingTTSUrl="isFetchingTTSUrl"
+      :isTextToSpeechCompatible="isTextToSpeechCompatible"
+    />
     <template v-if="isFileUploadStep">
       <span
         v-if="isFileUploadStep && step.inputUrl"
