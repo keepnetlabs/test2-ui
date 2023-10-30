@@ -124,7 +124,7 @@ export default {
     },
     getButtonStyles() {
       return {
-        backgroundColor: this.canPlay && !this.isFetchingTTSUrl ? '#000000' : '#F2F2F2',
+        backgroundColor: this.canPlay && !this.isFetchingTTSUrl ? '#757575' : '#F2F2F2',
         width: '32px',
         height: '32px'
       }

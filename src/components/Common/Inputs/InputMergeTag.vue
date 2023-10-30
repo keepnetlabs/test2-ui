@@ -60,7 +60,7 @@
                 >{{ voice }}
               </div>
             </div>
-            <v-tooltip :disabled="!isVoiceTextToSpeechCompatible && !!voice" right opacity="1">
+            <v-tooltip :disabled="!isShowTooltip" right opacity="1">
               <template #activator="{ on }">
                 <v-btn
                   v-on="on"
@@ -230,12 +230,16 @@ export default {
     }
   },
   computed: {
+    isShowTooltip() {
+      return !this.isVoiceTextToSpeechCompatible && !!this.voice
+    },
     isPlayTextDisabled() {
       return (
         !this.value ||
         !this.language ||
         !this.voice ||
         !this.$refs?.refInput?.valid ||
+        !this.isVoiceTextToSpeechCompatible ||
         this.isPlayTextClicked
       )
     },
@@ -250,6 +254,9 @@ export default {
     }
   },
   watch: {
+    voice(val) {
+      this.isPlayTextClicked = false
+    },
     value(val) {
       this.isPlayTextClicked = false
     },
