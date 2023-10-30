@@ -4,48 +4,27 @@
       v-if="modalStatus"
       ref="newLandingPage"
       :status="modalStatus"
-      :emailTemplateId="emailTemplateId"
-      :isEdit="isEdit"
-      :isDuplicate="isDuplicate"
-      :editableFormValues="editableFormValues"
-      :landingPageData="landingPageData"
+      :email-template-id="emailTemplateId"
+      :is-edit="isEdit"
+      :is-duplicate="isDuplicate"
+      :landing-page-data="landingPageData"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
-      :selected-email-template="selectedEmailTemplate"
+      :selected-email-template="selectedLandingPageTemplate"
       :api-func="deleteLandingPage"
       :type="SCENARIO_DELETE_DIALOG_TYPES.LANDING_PAGE"
       @on-success="handleSuccessDeleteAction"
       @on-close="showDeleteModal = false"
     />
-    <app-dialog
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
       v-if="isTemplateDetails"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
       :status="isTemplateDetails"
-      @changeStatus="isTemplateDetails = false"
-      icon="mdi-eye"
-      :title="selectedTemplateHeader"
-      :subtitle="'Landing Page Template Preview'"
-      :size="'ultraMaximum'"
-    >
-      <template v-slot:app-dialog-body>
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <LandingPageTemplateModalPreview
-          v-show="!isPreviewLoading"
-          :templateName="landingPageParams.name"
-          :landingPageTemplates="landingPageTemplates"
-          :phishingUrl="landingPageParams.urlTemplate"
-        />
-      </template>
-      <template #app-dialog-footer>
-        <AppDialogFooterWithClose @handleClose="isTemplateDetails = false" />
-      </template>
-    </app-dialog>
-
+      :selected-row="selectedLandingPageTemplate"
+      @on-close="isTemplateDetails = false"
+    />
     <data-table
       v-if="getLandingPageTemplatesSearchPermissions"
       id="landingPage-data-table"
@@ -125,7 +104,6 @@
 <script>
 import DataTable from '../DataTable'
 import NewLandingPage from './NewLandingPage'
-import AppDialog from '../AppDialog'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -138,46 +116,39 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   getLandingPageFormDetails,
   getLandingPageList,
-  getLandingPageTemplatePreviewContent,
   exportLandingPage,
   deleteLandingPage
 } from '@/api/landingPage'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
-    AppDialogFooterWithClose,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    DatatableLoading,
     DataTable,
-    NewLandingPage,
-    AppDialog,
-    LandingPageTemplateModalPreview
+    NewLandingPage
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
       SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
-      editableFormValues: {},
       loading: true,
       isEdit: false,
       isDuplicate: false,
@@ -189,7 +160,7 @@ export default {
       labels,
       tableData: [],
       showDeleteModal: false,
-      selectedEmailTemplate: {},
+      selectedLandingPageTemplate: {},
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.LANDINGPAGES,
@@ -339,8 +310,7 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
-      templateHTML: null,
-      timeoutId: ''
+      templateHTML: null
     }
   },
   computed: {
@@ -365,9 +335,6 @@ export default {
     this.callForLanguages('refLandingPageList')
     this.callForLookups()
     this.callForData()
-  },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId)
   },
   methods: {
     deleteLandingPage,
@@ -404,28 +371,10 @@ export default {
       this.callForData()
     },
     handlePreview(row) {
-      const id = row.resourceId
+      this.selectedLandingPageTemplate = row
       this.isTemplateDetails = true
-      this.isPreviewLoading = true
-      getLandingPageTemplatePreviewContent(id)
-        .then((response) => {
-          const data = response.data.data
-          this.landingPageParams.urlTemplate = data.urlTemplate
-          this.landingPageParams.name = data.name
-          this.landingPageTemplates = data.landingPages
-          this.selectedTemplateHeader = data.name
-          this.templateHTML = data.landingPages?.length
-            ? data.landingPages[0]?.content || null
-            : null
-        })
-        .finally(() => {
-          this.timeoutId = setTimeout(() => {
-            this.isPreviewLoading = false
-          }, 500)
-        })
     },
     handleEdit(row, isDuplicate) {
-      this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
@@ -448,7 +397,6 @@ export default {
       this.isEdit = false
       this.isDuplicate = false
       if (restart) {
-        this.editableFormValues = {}
         this.emailTemplateId = null
         this.isEdit = false
         this.isDuplicate = false
@@ -478,7 +426,7 @@ export default {
       })
     },
     handleActionDelete(row) {
-      this.selectedEmailTemplate = row
+      this.selectedLandingPageTemplate = row
       this.showDeleteModal = true
     },
     callForLookups() {

@@ -59,6 +59,7 @@
                 <InputPhishingMethod
                   v-model.trim="formValues.methodTypeId"
                   item-text-key="text"
+                  item-value-key="value"
                   :max-length="256"
                   :items="getMethodTypes"
                 />

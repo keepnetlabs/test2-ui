@@ -47,6 +47,9 @@ const deleteLandingPageTemplate = (id) => {
   })
 }
 
+const getLandingPageTemplate = (id) => {
+  return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
+}
 export default {
   exportScenarios,
   searchScenarios,
@@ -57,5 +60,6 @@ export default {
   deleteLandingPageTemplate,
   exportLandingPageTemplates,
   getQuishingScenarioLandingPageAndEmailTemplate,
-  searchLandingPageList
+  searchLandingPageList,
+  getLandingPageTemplate
 }

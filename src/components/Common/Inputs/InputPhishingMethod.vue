@@ -6,7 +6,7 @@
       :items="items"
       item-disabled="disabled"
       :item-text="itemTextKey"
-      item-value="resourceId"
+      :item-value="itemValueKey"
       outlined
       hint="*Required"
       required
@@ -60,6 +60,10 @@ export default {
     itemTextKey: {
       type: String,
       default: 'name'
+    },
+    itemValueKey: {
+      type: String,
+      default: 'resourceId'
     }
   },
   data() {

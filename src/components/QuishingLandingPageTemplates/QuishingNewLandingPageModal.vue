@@ -1,5 +1,5 @@
 <template>
-  <app-modal v-if="status" icon-name="mdi-file" :status="status" :title="getTitle">
+  <AppModal v-if="status" icon-name="mdi-file" :status="status" :title="getTitle">
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -216,7 +216,7 @@
                             attach="#landing-page-tab-content"
                             :z-index="10000"
                           >
-                            <template v-slot:activator="{ on: menu }">
+                            <template #activator="{ on: menu }">
                               <v-btn v-on="menu" text color="#2196f3">
                                 <v-icon class="mr-2" size="18" color="#2196f3"
                                   >mdi-plus-circle-outline</v-icon
@@ -272,7 +272,7 @@
         @on-submit="submit"
       />
     </template>
-  </app-modal>
+  </AppModal>
 </template>
 
 <script>
@@ -297,7 +297,7 @@ import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 
 export default {
-  name: 'NewEmailTemplates',
+  name: 'QuishingNewLandingPageModal',
   components: {
     InputPhishingMethod,
     InputPhishingLink,
@@ -313,6 +313,9 @@ export default {
     status: {
       type: Boolean,
       default: false
+    },
+    editableFormValues: {
+      required: false
     },
     isEdit: {
       type: Boolean
@@ -331,10 +334,10 @@ export default {
   data() {
     return {
       footerButtonsIds: {
-        cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
-        backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
-        nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
-        saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
+        cancelButton: 'btn-cancel--add-or-quishing-edit-landing-page-templates-modal',
+        backButton: 'btn-back--add-or-quishing-edit-landing-page-templates-modal',
+        nextButton: 'btn-next--add-or-quishing-edit-landing-page-templates-modal',
+        saveButton: 'btn-save--add-or-quishing-edit-landing-page-templates-modal'
       },
       languageOptions: [],
       disabledLabel: null,
