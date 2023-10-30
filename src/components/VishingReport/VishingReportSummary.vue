@@ -31,7 +31,7 @@ import VishingReportSummaryCards from '@/components/VishingReport/VishingReportS
 import VishingReportCampaignInfo from '@/components/VishingReport/VishingReportCampaignInfo'
 import VishingReportDelivery from '@/components/VishingReport/VishingReportDelivery'
 import VishingReportTemplate from '@/components/VishingReport/VishingReportTemplate'
-import { getVishingReportSummary } from '@/api/vishing'
+import { getVishingReportSummary, getVishingTemplateLanguages } from '@/api/vishing'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
   name: 'VishingReportSummary',
@@ -53,6 +53,7 @@ export default {
   },
   data() {
     return {
+      languageItems: [],
       vishingSummary: {},
       isLoading: false
     }
@@ -117,6 +118,7 @@ export default {
       return isTestCampaign
     },
     getVishingTemplateData() {
+      if (!this.vishingSummary || !this.languageItems) return {}
       const { vishingTemplateDto = {} } = this.vishingSummary || {}
       const {
         name = '',
@@ -124,34 +126,43 @@ export default {
         difficulty = '',
         createTime = '',
         tags = [],
-        steps = []
+        steps = [],
+        vishingLanguageResourceId = ''
       } = vishingTemplateDto
       this.$store.dispatch('common/setActivePageRouterName', name)
+      const langaugeIndex = this.languageItems.findIndex(
+        (language) => language.resourceId === vishingLanguageResourceId
+      )
       const splittedLanguage = vishingTemplateDto?.vishingLanguage?.split('-')
       const languageShortCode =
         (splittedLanguage && splittedLanguage[0] && splittedLanguage[0].trim()) || ''
       const narratorGender =
         (splittedLanguage && splittedLanguage[1] && splittedLanguage[1].trim()) || ''
       const invalidDialingNoticeStepIndex = steps.findIndex((step) => step.order === 0)
+      let template = {
+        resourceId: this.$route.params.id,
+        name,
+        language: vishingTemplateDto?.vishingLanguage,
+        voice: vishingTemplateDto?.vishingVoice,
+        languageShortCode,
+        narratorGender,
+        description,
+        difficulty,
+        createdBy: '',
+        createTime,
+        tags,
+        steps,
+        vishingLanguageResourceId,
+        voiceProviderTypeId: this.languageItems[langaugeIndex].voiceProviderTypeId
+      }
       if (invalidDialingNoticeStepIndex !== -1) {
-        steps.splice(invalidDialingNoticeStepIndex, 1)
-      }
-      return {
-        template: {
-          resourceId: this.$route.params.id,
-          name,
-          language: vishingTemplateDto?.vishingLanguage,
-          voice: vishingTemplateDto?.vishingVoice,
-          languageShortCode,
-          narratorGender,
-          description,
-          difficulty,
-          createdBy: '',
-          createTime,
-          tags,
-          steps
+        template = {
+          ...template,
+          invalidDialingNotice: { ...steps[invalidDialingNoticeStepIndex] }
         }
+        template.steps.splice(invalidDialingNoticeStepIndex, 1)
       }
+      return { template }
     },
     getResendDialogItems() {
       const {
@@ -164,8 +175,14 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForLanguages()
   },
   methods: {
+    callForLanguages() {
+      getVishingTemplateLanguages().then((response) => {
+        this.languageItems = response?.data?.data || []
+      })
+    },
     callForData() {
       if (!this.id) return
       this.isLoading = true
