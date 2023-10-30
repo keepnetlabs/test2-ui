@@ -1,13 +1,13 @@
 <template>
   <KContainer tabless class="campaign-manager">
-    <CampaignManagerCreateNewInstanceDialog
+    <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
       :resource-id="launchResourceId"
       @on-close="toggleShowLaunchDialog"
       @on-confirm="handleConfirmLaunchDialog"
     />
-    <CampaignManagerDeleteDialog
+    <CommonCampaignManagerDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :item="selectedRow"
@@ -88,25 +88,25 @@
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
-import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import {
   bulkDeleteCampaignReports,
   deleteCampaignManager,
   getCampaignManagerFormDetails
 } from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
-import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
+import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
+import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
 export default {
   name: 'CampaignManager',
   components: {
+    CommonCampaignManagerCreateNewInstanceDialog,
+    CommonCampaignManagerDeleteDialog,
     KContainer,
-    CampaignManagerCreateNewInstanceDialog,
     CampaignManagerPreview,
-    CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     CampaignManagerAddOrEditModal,

@@ -54,8 +54,8 @@ import AdvancedReport from '@/views/AdvancedReport'
 import Reports from '@/views/Reports'
 import PhishedLandingPage from '@/views/PhishedLandingPage.vue'
 import QuishingSimulatorRoute from '@/views/QuishingSimulatorRoute.vue'
-import Quishing from '@/api/quishing'
 import QuishingSimulator from '@/views/QuishingSimulator.vue'
+import QuishingCampaignManager from '@/views/QuishingCampaignManager.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -414,6 +414,18 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Quishing Simulator',
             permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/quishing-simulator/campaign-manager',
+          name: 'Quishing Campaign Manager',
+          component: QuishingCampaignManager,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Quishing Simulator',
+            permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
           },
           props: true,
           params: true

@@ -21,11 +21,12 @@
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
+import AppDialog from '@/components/AppDialog.vue'
+
 export default {
-  name: 'CampaignManagerCreateNewInstanceDialog',
-  components: { AppDialogFooter, AppDialog },
+  name: 'CommonCampaignManagerCreateNewInstanceDialog',
+  components: { AppDialog, AppDialogFooter },
   props: {
     status: {
       type: Boolean

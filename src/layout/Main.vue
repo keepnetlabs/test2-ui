@@ -479,7 +479,7 @@
                     () =>
                       routerName === 'Quishing Campaign Manager' || routerName === 'Quishing Report'
                   "
-                  @click="handleSmishingCampaignManagerClick"
+                  @click="handleQuishingCampaignManagerClick"
                 />
               </v-list-item-content>
             </v-list-item>
@@ -1358,6 +1358,9 @@ export default {
     },
     handleSmishingCampaignManagerClick() {
       this.$router.push('/smishing-simulator/campaign-manager?status=parent')
+    },
+    handleQuishingCampaignManagerClick() {
+      this.$router.push('/quishing-simulator/campaign-manager?status=parent')
     },
     toggleShowInitializeCompanyModal() {
       this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
