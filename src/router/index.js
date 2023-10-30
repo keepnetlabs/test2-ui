@@ -53,6 +53,9 @@ import AdvancedReports from '@/views/AdvancedReports'
 import AdvancedReport from '@/views/AdvancedReport'
 import Reports from '@/views/Reports'
 import PhishedLandingPage from '@/views/PhishedLandingPage.vue'
+import QuishingSimulatorRoute from '@/views/QuishingSimulatorRoute.vue'
+import Quishing from '@/api/quishing'
+import QuishingSimulator from '@/views/QuishingSimulator.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -133,6 +136,26 @@ const router = new Router({
             permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
           },
           component: SmishingSimulatorRoute
+        },
+        {
+          path: '/quishing-simulator',
+          name: 'Quishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: QuishingSimulatorRoute
+        },
+        {
+          path: '/quishing-simulator',
+          name: 'Quishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: QuishingSimulatorRoute
         },
         {
           path: '/vishing',
@@ -379,6 +402,18 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Smishing Campaign Manager',
             permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/quishing-simulator/quishing-scenarios',
+          name: 'Quishing Simulator',
+          component: QuishingSimulator,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Quishing Simulator',
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
           },
           props: true,
           params: true

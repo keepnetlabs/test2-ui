@@ -269,7 +269,7 @@ export default {
           {
             property: PROPERTY_STORE.AVAILABLE_FOR,
             align: 'right',
-            label: labels.AvailalbeFor,
+            label: labels.AvailableFor,
             fixed: false,
             sortable: false,
             hideSort: true,

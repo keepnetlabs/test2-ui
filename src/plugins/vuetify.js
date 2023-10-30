@@ -12,6 +12,7 @@ import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
 import BookSearch from '@/components/CustomIcons/BookSearch'
 import SmishingSimulator from '@/components/CustomIcons/SmishingSimulator'
 import LockOpenTime from '@/components/CustomIcons/LockOpenTime'
+import QrCode from '@/components/CustomIcons/QrCode'
 import PlayFile from '@/components/CustomIcons/PlayFile'
 import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
 Vue.use(Vuetify)
@@ -39,6 +40,9 @@ export default new Vuetify({
       },
       'custom-details': {
         component: DetailsIcon
+      },
+      'qr-code': {
+        component: QrCode
       },
       'custom-new-instance': {
         component: CreateNewInstanceIcon
