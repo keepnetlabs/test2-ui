@@ -97,7 +97,10 @@
               </span>
             </v-tooltip>
           </div>
-          <div v-if="audioSrc && isPlayTextClicked" class="input-merge-tag__audio-container">
+          <div
+            v-if="audioSrc && isPlayTextClicked && !isFetchingTTSUrl"
+            class="input-merge-tag__audio-container"
+          >
             <AudioPlayer class="input-merge-tag__audio-player" :src="audioSrc" />
           </div>
         </div>
