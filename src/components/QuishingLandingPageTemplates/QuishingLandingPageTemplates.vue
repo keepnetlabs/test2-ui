@@ -19,6 +19,7 @@
       :status="isShowPreviewDialog"
       :selected-row="selectedLandingPageTemplate"
       :type="PREVIEW_DIALOG_TYPES.QUISHING"
+      :api-func="getLandingPageTemplate"
       @on-close="togglePreviewDialog"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
@@ -49,7 +50,6 @@ import {
 } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import QuishingNewLandingPageModal from '@/components/QuishingLandingPageTemplates/QuishingNewLandingPageModal.vue'
-import { getLandingPageFormDetails } from '@/api/landingPage'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'QuishingLandingPageTemplates',
@@ -82,6 +82,7 @@ export default {
     }
   },
   methods: {
+    getLandingPageTemplate: QuishingService.getLandingPageTemplate,
     deleteLandingPageTemplate: QuishingService.deleteLandingPageTemplate,
     toggleNewLandingPageTemplateModal(row = null, isDuplicate = false) {
       this.selectedLandingPageTemplate = row
@@ -99,7 +100,7 @@ export default {
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     callForLookups() {
-      getLandingPageFormDetails().then((response) => {
+      QuishingService.getLandingPageFormDetails().then((response) => {
         this.landingPageData = response.data.data
       })
     },

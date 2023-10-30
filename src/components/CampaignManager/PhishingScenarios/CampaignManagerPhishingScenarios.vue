@@ -217,7 +217,7 @@
                           </div>
                         </div>
                       </div>
-                      <hr class="mt-2" v-if="!!emailTemplate" />
+                      <hr class="mt-4" v-if="!!emailTemplate" />
                       <KEmailPreview
                         v-if="!!emailTemplate"
                         :key="emailTemplate"
@@ -268,7 +268,7 @@
                           }}</span>
                         </div>
                       </div>
-                      <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
+                      <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
                         :html="getSingleTemplateDetails"

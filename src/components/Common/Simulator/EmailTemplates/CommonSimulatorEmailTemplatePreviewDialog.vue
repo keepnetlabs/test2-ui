@@ -84,6 +84,10 @@ export default {
     selectedRow: {
       type: Object,
       default: () => ({})
+    },
+    apiFunc: {
+      type: Function,
+      default: getEmailTemplatePreviewContent
     }
   },
   data() {
@@ -104,7 +108,7 @@ export default {
   methods: {
     callForData() {
       this.isPreviewLoading = true
-      getEmailTemplatePreviewContent(this.selectedRow.resourceId)
+      this.apiFunc(this.selectedRow.resourceId)
         .then((response) => {
           const data = response.data.data
           const {

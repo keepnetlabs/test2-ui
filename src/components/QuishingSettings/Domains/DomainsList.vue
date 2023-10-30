@@ -83,12 +83,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
-import DeleteServiceModal from '@/components/Settings/Domains/DeleteServiceModal'
-import NewEditDomain from '@/components/Settings/Domains/NewEditDomain'
+import DeleteServiceModal from '@/components/QuishingSettings/Domains/DeleteServiceModal'
+import NewEditDomain from '@/components/QuishingSettings/Domains/NewEditDomain'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'DomainList',
   components: {
@@ -119,8 +119,8 @@ export default {
       showDeleteModal: false,
       selectedDomain: null,
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DOMAINS,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.DOMAINS,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_DOMAINS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_DOMAINS,
         columns: [
           {
             property: 'domain',
@@ -201,20 +201,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDomainUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDomainUpdatePermissions'],
             id: 'btn-edit--domain-lists-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDomainDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDomainDeletePermissions'],
             id: 'btn-delete--domain-lists-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -227,14 +227,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--domainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDomainCreatePermissions']
         }
       },
       modalStatus: false,
@@ -246,15 +246,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDomainUpdatePermissions: 'permissions/getDomainUpdatePermissions',
-      getDomainDeletePermissions: 'permissions/getDomainDeletePermissions',
-      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
-      getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
+      getDomainSearchPermissions: 'permissions/getQuishingDomainSearchPermissions',
+      getDomainFormDetailsPermissions: 'permissions/getQuishingDomainFormDetailsPermissions'
     })
   },
   created() {
     if (this.getDomainFormDetailsPermissions)
-      getDomainData().then((response) => {
+      QuishingService.getDomainData().then((response) => {
         this.domainData = response.data.data
         this.callForData()
       })
@@ -263,7 +261,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getDomainSearchPermissions) {
-        getDomainsList(this.axiosPayload)
+        QuishingService.getDomainsList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -313,7 +311,7 @@ export default {
       this.callForData()
     },
     handleDelete(row) {
-      deleteEmailTemplate(row.resourceId).then(() => {
+      QuishingService.deleteDomain(row.resourceId).then(() => {
         this.$refs.refDomainsListList.unSelectRow(row)
         this.callForData()
       })
@@ -338,7 +336,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportDnsService(payload).then((response) => {
+        QuishingService.exportDomainList(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

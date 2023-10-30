@@ -133,7 +133,9 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getQuishingLandingPageTemplatesEditPermissions'
+            ],
             id: 'btn-edit--landing-page-templates-row-actions'
           },
           {
@@ -146,13 +148,17 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getQuishingLandingPageTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--landing-page-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getLandingPageTemplatesExportPermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingLandingPageTemplatesExportPermissions'
+          ]
         },
         selectEvent: {
           clipboard: true,
@@ -171,7 +177,9 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--landingPage',
-          disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
+          disabled: !this.$store.getters[
+            'permissions/getQuishingLandingPageTemplatesCreatePermissions'
+          ]
         }
       },
       axiosPayload: getDefaultAxiosPayload(),

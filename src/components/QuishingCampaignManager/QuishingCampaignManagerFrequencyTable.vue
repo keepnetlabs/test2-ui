@@ -26,7 +26,9 @@
       :add-button="tableOptions.addButton"
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @on-add-button-click="handleOnAddButtonClick"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -41,7 +43,7 @@
         <div class="campaign-manager-item-table__status-column">
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
             <template #activator="{ on }">
-              <v-btn style="display: none;" />
+              <v-btn style="display: none" />
               <Badge
                 v-bind="getStatusBadgeProps(scope.row.status)"
                 :listeners="on"
@@ -66,6 +68,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          :type="SCENARIO_TYPES.QUISHING"
           :campaign-resource-id="parentResourceId"
           :scope="scope"
           :row-actions="tableOptions.rowActions"
@@ -84,141 +87,156 @@
 </template>
 
 <script>
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
-import labels from '@/model/constants/labels'
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import { COLUMNS, getStatusBadgeProps } from "@/components/CampaignManager/utils";
+import labels from "@/model/constants/labels";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import DataTable from '@/components/DataTable'
-import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
-import { useLoading } from '@/hooks/useLoading'
-import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import Badge from '@/components/Badge'
-import QuishingService from '@/api/quishing'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import DataTable from "@/components/DataTable";
+import CampaignManagerItemRowActions from "@/components/CampaignManager/CampaignManagerItemRowActions";
+import { useLoading } from "@/hooks/useLoading";
+import CampaignManagerItemDeleteDialog from "@/components/CampaignManager/CampaignManagerItemDeleteDialog";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import Badge from "@/components/Badge";
+import QuishingService from "@/api/quishing";
+import { SCENARIO_TYPES } from "@/components/Common/Simulator/utils";
 const EMITS = {
-  UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
-  RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_BACK_CLICK: 'on-back-click'
-}
+  UPDATE_AXIOS_PAYLOAD: "update:axiosPayload",
+  RESET_AXIOS_PAYLOAD: "reset-axios-payload",
+  ON_BACK_CLICK: "on-back-click",
+};
 export default {
-  name: 'QuishingCampaignManagerFrequencyTable',
-  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
+  name: "QuishingCampaignManagerFrequencyTable",
+  components: {
+    Badge,
+    CampaignManagerItemDeleteDialog,
+    CampaignManagerItemRowActions,
+    DataTable,
+  },
   props: {
     item: {
-      type: Object
+      type: Object,
     },
     statusItems: {
-      type: Array
+      type: Array,
     },
     parentResourceId: {
-      type: String
-    }
+      type: String,
+    },
   },
   emits: EMITS,
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
       labels,
+      SCENARIO_TYPES,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: "CreatedDate" }),
       CONSTANTS: {
-        id: 'campaign-manager-item-data-table',
-        ascending: 'ascending'
+        id: "campaign-manager-item-data-table",
+        ascending: "ascending",
       },
       tableData: [],
       selectedRow: {},
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_FREQUENCY_TABLE,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         columns: [
           COLUMNS.SCHEDULE,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
           COLUMNS.STATUS,
-          COLUMNS.CREATE_TIME_ITEM_TABLE
+          COLUMNS.CREATE_TIME_ITEM_TABLE,
         ],
         iEmpty: {
           message: labels.EmptyCampaignManagerReport,
-          id: 'btn-empty--campaign-manager-report'
+          id: "btn-empty--campaign-manager-report",
         },
         addButton: {
-          show: false
+          show: false,
         },
         rowActions: [
           {
             name: labels.Stop,
             isNotShow: true,
-            id: 'btn-stop--row-actions-campaign-item-manager',
-            icon: 'mdi-stop',
-            action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getCampaignReportsPausePermissions']
+            id: "btn-stop--row-actions-campaign-item-manager",
+            icon: "mdi-stop",
+            action: "on-stop",
           },
           {
             name: labels.Delete,
-            id: 'btn-delete--row-actions-campaign-manager',
-            icon: 'mdi-delete',
-            action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
-          }
+            id: "btn-delete--row-actions-campaign-manager",
+            icon: "mdi-delete",
+            action: "on-delete",
+            disabled: !this.$store.getters[
+              "permissions/getQuishingCampaignReportsDeletePermissions"
+            ],
+          },
         ],
-        serverSideEvents: { pagination: true, search: true, sort: true }
-      }
-    }
+        serverSideEvents: { pagination: true, search: true, sort: true },
+      },
+    };
   },
   watch: {
     statusItems(val) {
       if (val.length) {
         const col = this.tableOptions.columns.find(
           (col) => col.property === COLUMNS.STATUS.property
-        )
+        );
         this.$set(
           col,
-          'filterableItems',
+          "filterableItems",
           val.map((item) => {
-            return { ...item, value: item.text }
+            return { ...item, value: item.text };
           })
-        )
-        this?.$refs?.refTable?.reRenderFilters()
+        );
+        this?.$refs?.refTable?.reRenderFilters();
       }
-    }
+    },
   },
   created() {
-    this.callForData()
+    this.callForData();
   },
   methods: {
     callForData() {
-      this.setLoading(true)
+      this.setLoading(true);
       this.$nextTick(() => {
         QuishingService.searchCampaignPhishingJob(
           {
             ...this.axiosPayload,
-            phishingCampaignFrequencyGroup: this.item.frequencyGroup
+            phishingCampaignFrequencyGroup: this.item.frequencyGroup,
           },
           this.parentResourceId
         )
           .then((response) => {
             const {
-              data: { data = [] }
-            } = response
-            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            this.tableData = results
+              data: { data = [] },
+            } = response;
+            const {
+              results = [],
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+            } = data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            this.tableData = results;
           })
-          .finally(this.setLoading)
-      })
+          .finally(this.setLoading);
+      });
     },
     exportCampaignManagerItemList(downloadTypes = []) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -228,75 +246,78 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
-        }
+          exportType: item === "XLS" ? "Excel" : item,
+          filter: this.axiosPayload.filter,
+        };
         QuishingService.exportCampaignManagerItem(payload, this.parentResourceId).then(
           (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
             link.download = `Campaign-Manager-Instance.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
+              item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
+            }`;
+            link.click();
           }
-        )
-      })
+        );
+      });
     },
     handleBackClick() {
-      this.$emit(EMITS.ON_BACK_CLICK)
+      this.$emit(EMITS.ON_BACK_CLICK);
     },
     handleOnAddButtonClick() {
-      this.$emit('on-launch', { resourceId: this.parentResourceId })
+      this.$emit("on-launch", { resourceId: this.parentResourceId });
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
-        this.selectedRow = {}
+        this.selectedRow = {};
       }
-      this.isShowDeleteDialog = !this.isShowDeleteDialog
+      this.isShowDeleteDialog = !this.isShowDeleteDialog;
     },
     handleDelete(row = {}) {
-      this.selectedRow = row
-      this.toggleShowDeleteDialog()
+      this.selectedRow = row;
+      this.toggleShowDeleteDialog();
     },
     handleOnDelete(item = {}) {
-      this.isDeleteDialogActionButtonDisabled = true
+      this.isDeleteDialogActionButtonDisabled = true;
       QuishingService.deletePhishingCampaignJob(this.parentResourceId, item.instanceGroup)
         .then(() => {
-          this.$refs.refTable.unSelectRow(item)
-          this.callForData()
+          this.$refs.refTable.unSelectRow(item);
+          this.callForData();
         })
         .finally(() => {
-          this.isDeleteDialogActionButtonDisabled = false
-          this.toggleShowDeleteDialog()
-        })
+          this.isDeleteDialogActionButtonDisabled = false;
+          this.toggleShowDeleteDialog();
+        });
     },
     handleStop(row = {}) {
-      QuishingService.stopPhishingCampaignJob(this.parentResourceId, row.instanceGroup).then(() => {
-        this.callForData()
-      })
+      QuishingService.stopPhishingCampaignJob(
+        this.parentResourceId,
+        row.instanceGroup
+      ).then(() => {
+        this.callForData();
+      });
     },
     handleLaunch(row = {}) {
       QuishingService.launchPhishingCampaignInstanceGroup(
         this.parentResourceId,
         row.instanceGroup
       ).then(() => {
-        this.callForData()
-      })
+        this.callForData();
+      });
     },
     getErrorMessage(row = {}) {
-      if (row.status === 'Error') {
-        return row?.jobResultMessage || ''
+      if (row.status === "Error") {
+        return row?.jobResultMessage || "";
       }
-      return ''
+      return "";
     },
-    getStatusBadgeProps(status = '') {
-      return getStatusBadgeProps(status)
+    getStatusBadgeProps(status = "") {
+      return getStatusBadgeProps(status);
     },
     getTooltipDisabilityStatus(row = {}) {
-      return row?.status !== 'Error' || !row?.jobResultMessage
-    }
-  }
-}
+      return row?.status !== "Error" || !row?.jobResultMessage;
+    },
+  },
+};
 </script>

@@ -63,7 +63,9 @@
     </div>
     <div class="my-6 d-flex justify-space-between align-center">
       <div>
-        <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+        <span class="campaign-manager-last-step__phishing-scenario-label">{{
+          type === SCENARIO_TYPES.PHISHING ? 'Phishing Scenarios' : 'Quishing Scenarios'
+        }}</span>
         <VTooltip v-if="phishingScenarios.length > 5" bottom>
           <template #activator="{ on }">
             <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
@@ -172,7 +174,7 @@
                 <div class="attachment-wrapper">
                   <div class="attachment blue-attach" :id="'single-post-attachments-' + att.name">
                     <v-tooltip bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
+                      <template #activator="{ on }">
                         <div
                           v-on="on"
                           id="text--attachment-preview-no-flaged"
@@ -217,6 +219,7 @@
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
         v-if="!isAttachmentBasedScenario"
+        :type="type"
         :difficulties="difficulties"
         :methods="methods"
         :form-data="landingPageParams"
@@ -250,6 +253,7 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -279,10 +283,15 @@ export default {
     showSchedule: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
     return {
+      SCENARIO_TYPES,
       trainingLanguages: [],
       selectedTrainingLanguages: [],
       labels,

@@ -60,10 +60,11 @@
                   v-model.trim="formValues.methodTypeId"
                   item-text-key="text"
                   item-value-key="value"
+                  :type="type"
                   :max-length="256"
+                  :subtitle="getInputPhishingMethodSubtitle"
                   :items="getMethodTypes"
                 />
-
                 <FormGroup
                   has-hint
                   title="Language"
@@ -109,6 +110,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
+                    :api-funcs="getEmailTemplateApiFuncs"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -135,6 +137,8 @@
                     :method="getSelectedMethod"
                     :is-method-mfa="isMethodMfa"
                     :mfa-data="mfaData"
+                    :type="type"
+                    :api-funcs="getLandingPageApiFuncs"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -481,7 +485,8 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
-import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
+import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -504,6 +509,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import AppModal from '@/components/AppModal'
 import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
@@ -603,13 +609,40 @@ export default {
     }
   },
   computed: {
+    getEmailTemplateApiFuncs() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? {
+            list: getEmailTemplatesList,
+            content: getEmailTemplatePreviewContent
+          }
+        : {
+            list: QuishingService.getEmailTemplatesList,
+            content: QuishingService.getEmailTemplatePreviewContent
+          }
+    },
+    getLandingPageApiFuncs() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? {
+            list: getLandingPageList,
+            content: getLandingPageTemplatePreviewContent
+          }
+        : {
+            list: QuishingService.getLandingPageList,
+            content: QuishingService.getLandingPageTemplatePreviewContent
+          }
+    },
+    getInputPhishingMethodSubtitle() {
+      return this.type === SCENARIO_TYPES.PHISHING
+        ? 'Select the phishing technique for this template'
+        : 'Select the quishing technique for this template'
+    },
     getLandingPageCardTitle() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? 'Landing Page for users who clicked the phishing link'
         : 'Landing Page for users who clicked the quishing link'
     },
     getLandingPageUrlLabel() {
-      return this.type === SCENARIO_TYPES.PHISHING ? 'Phishing Link' : 'Quishing Link'
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
     },
     maxStep() {
       return this.isAttachmentBasedScenario ? 3 : 4
@@ -814,7 +847,9 @@ export default {
     },
     callForScenario() {
       this.isSubmitDisabled = true
-      getScenario(this.scenarioId)
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
+      apiFunc(this.scenarioId)
         .then((response) => {
           this.formValues = response.data.data
           this.formValues.name = `${this.formValues.name}`
@@ -837,20 +872,6 @@ export default {
           this.isSubmitDisabled = false
           this.isInitial = false
         })
-    },
-    getMethodTypeDescription(method = '') {
-      switch (method) {
-        case SCENARIO_METHOD_TYPES.CLICK_ONLY:
-          return 'See who fails for phishing links'
-        case SCENARIO_METHOD_TYPES.DATA_SUBMISSION:
-          return 'Gather information from users'
-        case SCENARIO_METHOD_TYPES.ATTACHMENT:
-          return 'Send a trackable file'
-        case SCENARIO_METHOD_TYPES.MFA:
-          return 'Send a phishing MFA'
-        default:
-          return ''
-      }
     },
     getInitialEmailTemplateId(id) {
       this.initialFormValues.emailTemplateId = id
@@ -957,7 +978,11 @@ export default {
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
           this.isSubmitDisabled = true
           this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
-          getSummaryOfScenario(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
+          const apiFunc =
+            this.type === SCENARIO_TYPES.PHISHING
+              ? getSummaryOfScenario
+              : QuishingService.getSummaryOfScenario
+          apiFunc(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
             .then((response) => {
               const {
                 data: { data }
@@ -998,7 +1023,9 @@ export default {
         availableForRequests: this.availableForRequests
       }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(payload, this.scenarioId)
+        const apiFunc =
+          this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario
+        apiFunc(payload, this.scenarioId)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -1006,7 +1033,9 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(payload)
+        const apiFunc =
+          this.type === SCENARIO_TYPES.PHISHING ? createScenario : QuishingService.createScenario
+        apiFunc(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })

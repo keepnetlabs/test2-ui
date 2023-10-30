@@ -174,7 +174,9 @@
                         <span class="template-preview__text--body">{{ templateName }}</span>
                       </div>
                       <div>
-                        <span class="template-preview__text--title">Phishing URL: </span>
+                        <span class="template-preview__text--title"
+                          >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }} URL:
+                        </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
                     </div>
@@ -252,16 +254,18 @@
                       <span class="template-preview__text--body">{{ templateName }}</span>
                     </div>
                     <div>
-                      <span class="template-preview__text--title">Phishing URL: </span>
+                      <span class="template-preview__text--title"
+                        >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }} URL:
+                      </span>
                       <span class="template-preview__text--body">{{ templateURL }}</span>
                     </div>
                   </div>
                   <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                   <KEmailPreview
                     v-if="!!getSingleTemplateDetails"
+                    is-extra-height
                     :html="getSingleTemplateDetails"
                     :key="getLandingPageHtmlKey"
-                    is-extra-height
                   />
                 </div>
               </div>
@@ -293,6 +297,8 @@ import InputCallerPhoneNumber from '../Common/Inputs/InputCallerPhoneNumber'
 import FormGroup from '../SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export default {
   name: 'LandingPageListPreview',
@@ -320,10 +326,22 @@ export default {
     mfaData: {
       type: Object,
       default: () => ({})
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
+    },
+    apiFuncs: {
+      type: Object,
+      default: () => ({
+        list: getLandingPageList,
+        content: getLandingPageTemplatePreviewContent
+      })
     }
   },
   data() {
     return {
+      SCENARIO_TYPES,
       Validations,
       labels,
       templateName: '',
@@ -428,7 +446,8 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getLandingPageList(copyOfBodyData)
+        this.apiFuncs
+          .list(copyOfBodyData)
           .then((response) => {
             const { data } = response
             if (!response.data.data.results.length) {
@@ -484,7 +503,8 @@ export default {
           value: this.landingPageTemplateResourceId
         })
       }
-      getLandingPageList(this.bodyData)
+      this.apiFuncs
+        .list(this.bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -560,12 +580,20 @@ export default {
       if (isInitial) {
         this.$emit('initialLandingPageTemplateId', item.id)
       }
-      getLandingPageTemplatePreviewContent(item.resourceId)
+      this.apiFuncs
+        .content(item.resourceId)
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
-          this.landingPageTemplates = response?.data?.data?.landingPages || []
+          let templates = response?.data?.data?.landingPages || []
+          if (this.type === SCENARIO_TYPES.QUISHING) {
+            templates.forEach((page) => {
+              if (!page.content) return
+              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+            })
+          }
+          this.landingPageTemplates = templates
         })
         .finally(() => {
           this.loadingTemplatePreview = false
