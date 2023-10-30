@@ -20,7 +20,7 @@ export const labels = {
   QuishingScenarioPreview: 'Quishing Scenario Preview',
   All: 'All',
   AllLanguages: 'All Languages',
-  TrainingForUsers: 'Training for users who has been phished',
+  TrainingForUsers: 'Training for users who have been phished',
   TrainingReport: 'Training Report',
   TrainingReports: 'Training Reports',
   Now: 'Now',
