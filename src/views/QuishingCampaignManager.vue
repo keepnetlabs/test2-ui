@@ -26,6 +26,26 @@
       :api-func="getCampaignManagerPreview"
       @on-close="toggleShowPreviewDialog"
     />
+    <QuishingCampaignManagerAddOrEditModal
+      v-if="isShowAddOrEditCampaignManagerModal"
+      ref="refCampaignModal"
+      :status="isShowAddOrEditCampaignManagerModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      :form-details="formDetails"
+      :is-duplicate="isDuplicate"
+      @on-close="toggleAddCampaignManagerModal"
+      @on-submit="handleOnSubmit"
+    />
+    <QuishingCampaignManagerNewInstanceModal
+      v-if="isShowNewInstanceModal"
+      ref="refCampaignNewInstance"
+      :status="isShowNewInstanceModal"
+      :resourceId="instanceResourceId"
+      :form-details="formDetails"
+      @on-close="closeNewInstanceModal"
+      @on-submit="handleOnSubmitNewInstance"
+    />
     <QuishingCampaignManagerParentTable
       v-show="!isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerParentTable"
@@ -76,15 +96,19 @@ import QuishingCampaignManagerItemTable from '@/components/QuishingCampaignManag
 import QuishingCampaignManagerFrequencyTable from '@/components/QuishingCampaignManager/QuishingCampaignManagerFrequencyTable.vue'
 import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import QuishingCampaignManagerAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerAddOrEditModal.vue'
+import QuishingCampaignManagerNewInstanceModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerNewInstanceModal.vue'
 export default {
   name: 'QuishingCampaignManager',
   components: {
+    QuishingCampaignManagerAddOrEditModal,
     CommonCampaignManagerPreviewDialog,
     QuishingCampaignManagerFrequencyTable,
     QuishingCampaignManagerItemTable,
     QuishingCampaignManagerParentTable,
     CommonCampaignManagerDeleteDialog,
     CommonCampaignManagerCreateNewInstanceDialog,
+    QuishingCampaignManagerNewInstanceModal,
     KContainer
   },
   data() {
@@ -92,6 +116,7 @@ export default {
       PREVIEW_DIALOG_TYPES,
       selectedParentItem: null,
       selectedInstanceItem: null,
+      instanceResourceId: '',
       selectedRow: null,
       isEdit: false,
       isShowLaunchDialog: false,
@@ -101,6 +126,9 @@ export default {
       isMultipleDelete: false,
       isShowPreviewDialog: false,
       multipleDeletedUserCount: 0,
+      isShowAddOrEditCampaignManagerModal: false,
+      isShowNewInstanceModal: false,
+      isDuplicate: false,
       isParentTableLoading: false,
       isItemTableLoading: false,
       isItemTableShowing: false,
@@ -249,6 +277,20 @@ export default {
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedRow = null
       this.isShowPreviewDialog = !this.isShowPreviewDialog
+    },
+    showNewInstanceModal() {
+      this.isShowNewInstanceModal = true
+    },
+    closeNewInstanceModal() {
+      this.instanceResourceId = ''
+      this.isShowNewInstanceModal = false
+    },
+    handleOnSubmitNewInstance() {
+      if (this.isItemTableShowing) {
+        this.$refs.campaignManagerItemTable.callForData()
+      }
+      this.$refs.campaignManagerParentTable.callForData()
+      this.closeNewInstanceModal()
     },
     handleOnBackClick() {
       if (this.$refs.campaignManagerParentTable) {
