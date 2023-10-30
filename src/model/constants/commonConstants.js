@@ -171,6 +171,7 @@ export const PROPERTY_STORE = {
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   EMAIL_TEMPLATE: 'emailTemplate',
+  JUSTDIFFICULTY: 'difficulty',
   LANDING_PAGE_TEMPLATE: 'landingPageTemplate',
   EMAIL_DELIVERY: 'emailDelivery',
   SCENARIO_COUNT: 'scenarioCount',

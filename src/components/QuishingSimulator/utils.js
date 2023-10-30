@@ -61,7 +61,7 @@ export const QUISHING_COLUMNS = {
     filterableCustomFieldName: PROPERTY_STORE.TAGS
   },
   DIFFICULTY: {
-    property: PROPERTY_STORE.DIFFICULTY,
+    property: PROPERTY_STORE.JUSTDIFFICULTY,
     align: 'center',
     editable: false,
     label: labels.DIFFICULTY,

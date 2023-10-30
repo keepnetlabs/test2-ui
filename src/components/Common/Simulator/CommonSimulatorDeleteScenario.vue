@@ -1,5 +1,5 @@
 <template>
-  <app-dialog
+  <AppDialog
     type="delete"
     icon="mdi-delete"
     title="Delete Scenario?"
@@ -7,30 +7,29 @@
     title-id="text--scenario-delete-popup-title"
     subtitle-id="text--scenario-delete-popup-subtitle"
     :status="status"
-    @changeStatus="closeModal"
+    @changeStatus="handleClose"
   >
     <template #app-dialog-body>
       {{ selectedScenario && selectedScenario.name }} will be deleted.
     </template>
     <template #app-dialog-footer>
-      <app-dialog-footer
+      <AppDialogFooter
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
         type="delete"
         :confirm-button-disabled="isActionButtonDisabled"
-        @handleClose="closeModal"
+        @handleClose="handleClose"
         @handleConfirm="handleDelete"
       />
     </template>
-  </app-dialog>
+  </AppDialog>
 </template>
 
 <script>
-import AppDialog from '../AppDialog'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { deleteScenario } from '@/api/scenarios'
 export default {
-  name: 'DeleteScenario',
+  name: 'CommonSimulatorDeleteScenario',
   components: {
     AppDialog,
     AppDialogFooter
@@ -41,6 +40,10 @@ export default {
     },
     selectedScenario: {
       type: Object
+    },
+    apiFunc: {
+      type: Function,
+      required: true
     }
   },
   data() {
@@ -49,15 +52,14 @@ export default {
     }
   },
   methods: {
-    closeModal() {
-      this.$emit('handleCloseModal')
+    handleClose() {
+      this.$emit('on-close')
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      deleteScenario(this.selectedScenario.resourceId)
+      this.apiFunc(this.selectedScenario.resourceId)
         .then(() => {
-          this.$emit('handleSuccessDeleteAction', this.selectedScenario)
-          this.closeModal()
+          this.$emit('on-success', this.selectedScenario)
         })
         .finally(() => {
           this.isActionButtonDisabled = false

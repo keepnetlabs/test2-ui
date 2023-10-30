@@ -1,6 +1,15 @@
 <template>
   <div id="quishing-scenarios">
+    <CommonSimulatorDeleteScenario
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :selectedScenario="selectedScenario"
+      :api-func="deleteScenario"
+      @on-success="toggleDeleteDialog(null, true)"
+      @on-close="toggleDeleteDialog"
+    />
     <QuishingScenariosTable
+      ref="refTable"
       @on-edit-or-new="toggleNewScenarioModal"
       @on-fast-launch="toggleFastLaunchDialog"
       @on-preview="togglePreviewDialog"
@@ -11,10 +20,12 @@
 
 <script>
 import QuishingScenariosTable from '@/components/QuishingScenarios/QuishingScenariosTable'
+import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
+import QuishingService from '@/api/quishing'
 
 export default {
   name: 'QuishingScenarios',
-  components: { QuishingScenariosTable },
+  components: { CommonSimulatorDeleteScenario, QuishingScenariosTable },
   data() {
     return {
       isShowDeleteDialog: false,
@@ -25,6 +36,7 @@ export default {
     }
   },
   methods: {
+    deleteScenario: QuishingService.deleteScenario,
     toggleNewScenarioModal(selectedRow = null, isDuplicate = false) {
       this.selectedScenario = selectedRow
       this.isDuplicate = isDuplicate
@@ -38,7 +50,8 @@ export default {
       this.selectedScenario = selectedRow
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    toggleDeleteDialog(selectedRow = null) {
+    toggleDeleteDialog(selectedRow = null, forceUpdate = false) {
+      if (forceUpdate) this.$refs.refTable.callForData()
       this.selectedScenario = selectedRow
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     }

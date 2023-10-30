@@ -19,12 +19,13 @@
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
-    <DeleteScenario
+    <CommonSimulatorDeleteScenario
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :api-func="deleteScenario"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <SmishingScenarioPreview
       v-if="isShowPreviewDialog"
@@ -124,7 +125,6 @@
 <script>
 import DataTable from '@/components/DataTable'
 import NewScenario from '@/components/SmishingScenarios/NewScenario'
-import DeleteScenario from '@/components/SmishingScenarios/DeleteScenario'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -147,10 +147,12 @@ import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActio
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import NoTextMessageTemplateModal from '@/components/SmishingScenarios/NoTextMessageTemplateModal'
 import NoLandingPageTemplateModal from '@/components/SmishingScenarios/NoLandingPageTemplateModal'
+import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
 
 export default {
   name: 'SmishingScenarios',
   components: {
+    CommonSimulatorDeleteScenario,
     ScenariosRowActionsEditButton,
     ScenariosRowActionsDeleteButton,
     DefaultMenuRowAction,
@@ -158,7 +160,6 @@ export default {
     DefaultButtonRowAction,
     SmishingScenarioPreview,
     DataTable,
-    DeleteScenario,
     NewScenario,
     NoTextMessageTemplateModal,
     NoLandingPageTemplateModal
@@ -347,6 +348,7 @@ export default {
     this.callForScenarioDetails()
   },
   methods: {
+    deleteScenario: SmishingService.deleteSmishingScenario,
     callForScenarioDetails() {
       SmishingService.getSmishingScenarioFormDetails()
         .then((response) => {
