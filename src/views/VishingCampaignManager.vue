@@ -5,6 +5,7 @@
       is-campaign
       :status="isPreviewVisible"
       :selected-row="selectedRow"
+      :languages="languages"
       @on-close="onToggleShowPreviewModal"
     />
     <VishingCampaignStopDialog
@@ -212,6 +213,10 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      selectedTemplateLanguage: '',
+      selectedTemplateVoice: '',
+      isTextToSpeechCompatible: false,
+      voiceResourceId: '',
       isPreviewVisible: false,
       isShowStopDialog: false,
       isShowLaunchDialog: false,

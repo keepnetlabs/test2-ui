@@ -13,6 +13,10 @@
     .el-slider__button-wrapper {
       display: none !important;
     }
+    &__play-pause-button:disabled {
+      pointer-events: all;
+      cursor: auto;
+    }
   }
   .audio-player__track {
     flex: 1;
