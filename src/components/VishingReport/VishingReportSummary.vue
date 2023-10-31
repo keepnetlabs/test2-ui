@@ -143,7 +143,7 @@ export default {
         resourceId: this.$route.params.id,
         name,
         language: vishingTemplateDto?.vishingLanguage,
-        voice: vishingTemplateDto?.vishingVoice,
+        voice: this.languageItems[langaugeIndex].name,
         languageShortCode,
         narratorGender,
         description,
