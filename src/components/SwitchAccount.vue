@@ -339,7 +339,12 @@ export default {
         }
         function filterTreeItem(item, search, textKey) {
           const text = getObjectValueByPath(item, textKey)
-          return text && text.toLocaleLowerCase().indexOf(search?.toLocaleLowerCase()) > -1
+          if (!text) return
+          const isTurkish =
+            text.toLocaleLowerCase('tr').indexOf(search?.toLocaleLowerCase('tr')) > -1
+          const isEnglish =
+            text.toLocaleLowerCase('en').indexOf(search?.toLocaleLowerCase('en')) > -1
+          return isTurkish || isEnglish
         }
         function filterTreeItems(filter, item, search, idKey, textKey, childrenKey, excluded) {
           if (filter(item, search, textKey)) {
