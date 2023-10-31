@@ -14,7 +14,7 @@
       name="data-privacy"
       id="data-privacy-content"
     >
-      <DataPrivacy v-if="tab === 'data-privacy'" ref="refDataPrivacy"
+      <DataPrivacy ref="refDataPrivacy"
     /></ElTabPane>
   </ElTabs>
 </template>

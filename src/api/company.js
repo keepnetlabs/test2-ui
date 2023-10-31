@@ -193,3 +193,12 @@ export function updateCompanyPrivacy(payload = {}) {
 export function getTimeByTimeZone(timeZoneId = '') {
   return testRequest.get(`/companies/get-current-time/${timeZoneId}`)
 }
+
+export function getCompanyDataPrivacy() {
+  return testRequest.get('/companies/privacymask')
+}
+export function saveCompanyDataPrivacy(payload = {}) {
+  return testRequest.put('/companies/privacymask', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
