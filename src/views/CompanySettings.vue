@@ -3,11 +3,11 @@
     <el-tabs v-model="tab" ref="refTabContainer">
       <el-tab-pane
         v-if="getAccountPrivacyPermission"
-        label="Account Privacy"
-        name="account-privacy"
-        id="account-privacy-content"
+        label="Privacy"
+        name="privacy"
+        id="privacy-content"
       >
-        <AccountPrivacy v-if="tab === 'account-privacy'" ref="refAccountPrivacy"
+        <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
       <el-tab-pane
         v-if="getSMTPSettingsSearchPermissions"
@@ -121,7 +121,7 @@ import KContainer from '@/components/KContainer/KContainer'
 import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
-import AccountPrivacy from '@/components/Company Settings/AccountPrivacy/AccountPrivacy'
+import Privacy from '@/components/Company Settings/Privacy/Privacy'
 export default {
   name: 'CompanySettings',
   components: {
@@ -137,7 +137,7 @@ export default {
     WhiteLabeling,
     ProxySettings,
     AllowedList,
-    AccountPrivacy
+    Privacy
   },
   data() {
     return {
@@ -165,8 +165,11 @@ export default {
   },
   created() {
     this.tab = [
-      { permission: true, name: 'account-privacy' },
-      { permission: this.getSMTPSettingsSearchPermissions, name: 'smtp-settings' },
+      { permission: true, name: 'privacy' },
+      {
+        permission: this.getSMTPSettingsSearchPermissions,
+        name: 'smtp-settings'
+      },
       {
         permission: this.getDirectEmailCreationSearchPermissions,
         name: 'direct-email-creation'
@@ -176,10 +179,22 @@ export default {
         name: 'notification-template'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
-      { permission: this.getWhiteLabelingGetPermissions, name: 'white-labeling' },
-      { permission: this.getProxySettingsSearchPermissions, name: 'proxy-settings' },
-      { permission: this.getSAMLIntegrationSearchPermissions, name: 'saml-settings' },
-      { permission: this.getSCIMSettingsSearchPermissions, name: 'scim-settings' },
+      {
+        permission: this.getWhiteLabelingGetPermissions,
+        name: 'white-labeling'
+      },
+      {
+        permission: this.getProxySettingsSearchPermissions,
+        name: 'proxy-settings'
+      },
+      {
+        permission: this.getSAMLIntegrationSearchPermissions,
+        name: 'saml-settings'
+      },
+      {
+        permission: this.getSCIMSettingsSearchPermissions,
+        name: 'scim-settings'
+      },
       {
         permission: this.getSIEMIntegrationSearchPermissions,
         name: 'siem-integrations'
