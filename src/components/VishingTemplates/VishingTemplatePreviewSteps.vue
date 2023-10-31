@@ -52,7 +52,7 @@
           }}</span>
           <template v-if="getSelectedStepObject && getSelectedInputType === 'TextToSpeech'">
             <span>
-              {{ getSelectedStepObject?.inputText || '' }}
+              {{ getInputText }}
             </span>
             <div
               v-if="getSelectedStepObject && getSelectedInputType !== 'Pause'"
@@ -85,7 +85,7 @@
                 <v-icon class="mr-2" color="#757575" :size="16">$playfile-gray</v-icon>File Audio
               </div>
               <span>
-                {{ getSelectedStepObject?.inputUrl || '' }}
+                {{ getInputUrl }}
               </span>
             </div>
             <AudioPlayer
@@ -107,7 +107,7 @@
               v-if="getSelectedStepObject && getSelectedInputType === 'Pause'"
               class="vishing-template-preview-steps__step-details-badge vishing-template-preview-steps__step-details-badge--digits"
             >
-              Pause for {{ getSelectedStepObject?.duration || 0 }} seconds
+              Pause for {{ getPauseDuration }} seconds
             </div>
             <div
               v-if="isSelectedStepVishingStep"
@@ -199,6 +199,15 @@ export default {
     }
   },
   computed: {
+    getInputText() {
+      return this.getSelectedStepObject?.inputText || ''
+    },
+    getPauseDuration() {
+      return this.getSelectedStepObject?.duration || 0
+    },
+    getInputUrl() {
+      return this.getSelectedStepObject?.inputUrl || ''
+    },
     hasAudioFile() {
       return (
         this.template?.steps?.some((step) => step?.inputUrl) ||
