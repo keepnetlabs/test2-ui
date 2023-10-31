@@ -84,7 +84,7 @@
               >
                 <v-icon class="mr-2" color="#757575" :size="16">$playfile-gray</v-icon>File Audio
               </div>
-              <span>
+              <span style="overflow-wrap: anywhere;">
                 {{ getInputUrl }}
               </span>
             </div>
