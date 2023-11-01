@@ -129,7 +129,7 @@ export default {
       disabledStyle: { pointerEvents: 'none', opacity: '.5' },
       pathRules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-        (v) => Validations.urlOrIpAddress(v, 'Invalid URL or IP address'),
+        // (v) => Validations.urlOrIpAddress(v, 'Invalid URL or IP address'),
         (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
         (v) => Validations.noWhitespace(v, labels.InvalidURL)
       ]
