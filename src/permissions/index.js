@@ -390,7 +390,7 @@ export default {
   },
   QUISHING_SCENARIO_PERMISSIONS: {
     SEARCH: {
-      url: `quishing-simulator/phishing-scenario/search`,
+      url: `quishing-simulator/quishing-scenario/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
