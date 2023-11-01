@@ -242,7 +242,7 @@ export default {
         !this.value ||
         !this.language ||
         !this.voice ||
-        !this.$refs?.refInput?.valid ||
+        (this.$refs?.refInput && !this.$refs?.refInput?.valid) ||
         !this.isVoiceTextToSpeechCompatible ||
         this.isPlayTextClicked
       )
