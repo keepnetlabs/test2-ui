@@ -74,6 +74,7 @@
             <CampaignManagerPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              :type="SCENARIO_TYPES.QUISHING"
               :campaign-manager-resource-id="getCampaignResourceId"
               :is-edit="isEdit || isDuplicate"
               :languages="languageOptions"
@@ -108,6 +109,7 @@
             />
             <CampaignManagerDeliverySettings
               ref="refCampaignManagerDeliverySettings"
+              :type="SCENARIO_TYPES.QUISHING"
               :default-values="getDefaultValuesDeliverySettings"
               :form-details="formDetails"
               :target-group-resource-ids="targetGroupResourceIds"
@@ -456,6 +458,7 @@ export default {
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
         }
+
         this.selectedRowFormData = data
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
@@ -619,20 +622,20 @@ export default {
             ...inputScheduleFormData,
             ...inputDistributionFormData
           }
-          const phishingScenarios = []
+          const quishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
             const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
               phishingScenarioResourceId
             ]
             if (!isCheckboxSelected) return
-            phishingScenarios.push({
+            quishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
-              phishingScenarioResourceId
+              quishingScenarioResourceId: phishingScenarioResourceId
             })
           })
           const payload = {
-            phishingScenarios,
+            quishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,

@@ -11,10 +11,7 @@
   >
     <template #overlay-body>
       <v-form ref="domainForm">
-        <app-modal-body-header
-          title="New Domain"
-          sub-title="Create a quishing domain for your quishing landing pages"
-        />
+        <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
         <form-group title="Domain" has-hint>
           <InputEntityName
             v-model.trim="formValues.domain"
@@ -256,6 +253,14 @@ export default {
     }
   },
   computed: {
+    getBodyTitle() {
+      return this.isEdit ? 'Edit Domain' : 'New Domain'
+    },
+    getBodySubtitle() {
+      return this.isEdit
+        ? 'Edit quishing domain for your quishing landing pages'
+        : 'Create a quishing domain for your quishing landing pages'
+    },
     getTitle() {
       return this.status && this.resourceId ? 'Edit Domain' : 'Create New Domain'
     },

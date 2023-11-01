@@ -145,17 +145,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard',
-            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
-          },
-          component: QuishingSimulatorRoute
-        },
-        {
-          path: '/quishing-simulator',
-          name: 'Quishing Simulator',
-          meta: {
-            isAuthenticated: true,
-            parentName: 'Dashboard',
-            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getQuishingSimulatorLeftMenuPermissions'
           },
           component: QuishingSimulatorRoute
         },
@@ -415,7 +405,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Quishing Simulator',
-            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getQuishingScenarioLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -427,7 +417,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Quishing Simulator',
-            permissionStoreKey: 'permissions/getCampaignManagerLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getQuishingCampaignManagerLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -439,7 +429,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Quishing Simulator',
-            permissionStoreKey: 'permissions/getSmishingSettingsLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getQuishingSettingsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -451,7 +441,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Campaign Reports',
-            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getQuishingCampaignReportsSearchPermissions'
           },
           props: true,
           params: true

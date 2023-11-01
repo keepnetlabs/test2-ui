@@ -11,10 +11,7 @@
   >
     <template v-slot:overlay-body>
       <v-form ref="dnsForm">
-        <app-modal-body-header
-          :title="'Integrate with a DNS Provider'"
-          sub-title="Create a DNS provider integration for quishing domains"
-        />
+        <app-modal-body-header title="Integrate with a DNS Provider" :sub-title="getBodySubtitle" />
         <form-group title="DNS Name" has-hint>
           <InputEntityName
             v-model.trim="formValues.dnsServiceProviderName"
@@ -152,6 +149,11 @@ export default {
     }
   },
   computed: {
+    getBodySubtitle() {
+      return this.isEdit
+        ? 'Edit DNS provider integration for quishing domains'
+        : 'Create a DNS provider integration for quishing domains'
+    },
     getTitle() {
       return this.status && this.resourceId
         ? 'Edit DNS Provider Integration'

@@ -340,8 +340,8 @@ export default {
           }
         ]
         const payload = {
-          name: formData.name,
           [scenarioKey]: scenarioValue,
+          name: formData.name,
           scheduleTypeId: '1',
           duration: 365,
           targetGroupResourceIds: refFastLaunch.selectedTargetGroups.map(

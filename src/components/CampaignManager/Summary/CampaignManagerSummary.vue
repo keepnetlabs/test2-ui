@@ -254,7 +254,8 @@ import CampaignManagerScheduleDialog from '@/components/CampaignManager/Campaign
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-
+import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -518,7 +519,11 @@ export default {
         this.callForTrainingDetail(training.trainingId)
       } else this.trainingParams = null
       this.isScenarioDetailLoading = true
-      getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId)
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
+          : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+      apiFunc(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
@@ -560,6 +565,12 @@ export default {
             languageTypeResourceId,
             methodTypeId
           } = landingPageTemplate || {}
+          if (this.type === SCENARIO_TYPES.QUISHING) {
+            landingPages.forEach((page) => {
+              if (!page.content) return
+              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+            })
+          }
           this.landingPageParams = {
             name: landingPageName,
             description,

@@ -1,11 +1,16 @@
 <template>
   <KContainer id="phishing-simulator">
     <ElTabs v-model="tab">
-      <ElTabPane v-if="true" label="Scenarios" name="scenarios" id="quishing-simulator-scenarios">
+      <ElTabPane
+        v-if="getPhishingScenariosSearchPermissions"
+        label="Scenarios"
+        name="scenarios"
+        id="quishing-simulator-scenarios"
+      >
         <QuishingScenarios v-if="tab === 'scenarios'" ref="refScenarios" />
       </ElTabPane>
       <ElTabPane
-        v-if="true"
+        v-if="getEmailTemplatesSearchPermissions"
         label="Email Templates"
         name="email-templates"
         id="email-templates-content"
@@ -13,7 +18,7 @@
         <QuishingEmailTemplates v-if="tab === 'email-templates'" ref="refEmailTemplates" />
       </ElTabPane>
       <ElTabPane
-        v-if="true"
+        v-if="getLandingPageTemplatesSearchPermissions"
         label="Landing Page Templates"
         name="landing-page"
         id="landing-page-content"
@@ -28,6 +33,7 @@ import KContainer from '@/components/KContainer/KContainer'
 import QuishingScenarios from '@/components/QuishingScenarios/QuishingScenarios'
 import QuishingEmailTemplates from '@/components/QuishingEmailTemplates/QuishingEmailTemplates'
 import QuishingLandingPageTemplates from '@/components/QuishingLandingPageTemplates/QuishingLandingPageTemplates.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'QuishingSimulator',
@@ -40,6 +46,25 @@ export default {
   data() {
     return {
       tab: 'scenarios'
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getPhishingScenariosSearchPermissions: 'permissions/getQuishingScenariosSearchPermissions',
+      getEmailTemplatesSearchPermissions: 'permissions/getQuishingEmailTemplatesSearchPermissions',
+      getLandingPageTemplatesSearchPermissions:
+        'permissions/getQuishingLandingPageTemplatesSearchPermissions'
+    })
+  },
+  created() {
+    if (!this.getPhishingScenariosSearchPermissions && this.getEmailTemplatesSearchPermissions) {
+      this.tab = 'emailTemplates'
+    } else if (
+      !this.getPhishingScenariosSearchPermissions &&
+      !this.getEmailTemplatesSearchPermissions &&
+      this.getLandingPageTemplatesSearchPermissions
+    ) {
+      this.tab = 'landingPage'
     }
   },
   beforeRouteLeave(to, from, next) {

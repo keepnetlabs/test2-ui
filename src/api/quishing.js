@@ -96,7 +96,7 @@ const getLandingPageTemplate = (id) => {
   return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
 }
 const deleteCampaign = (id) => {
-  return testRequest.delete(`quishing-simulator/campaign/${id}`, {
+  return testRequest.delete(`quishing-simulator/quishing-campaign/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -114,21 +114,21 @@ const exportCampaignManager = (payload = {}) => {
     responseType: 'blob'
   })
 }
-const searchCampaignPhishingJob = (payload = {}, id = '') => {
-  return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
+const searchCampaignQuishingJob = (payload = {}, id = '') => {
+  return testRequest.post(`/quishing-simulator/quishing-campaign-job-report/${id}/search`, payload)
 }
-const stopPhishingCampaignJob = (id = '', instanceGroup = '') => {
+const stopQuishingCampaignJob = (id = '', instanceGroup = '') => {
   return testRequest.patch(
-    `/phishing-simulator/phishing-campaign-job/stop/${id}/${instanceGroup}`,
+    `/quishing-simulator/quishing-campaign-job/stop/${id}/${instanceGroup}`,
     null,
     {
       snackbar: COMMON_SNACKBAR
     }
   )
 }
-const launchPhishingCampaignInstanceGroup = (id = '', instanceGroup = '') => {
+const launchQuishingCampaignInstanceGroup = (id = '', instanceGroup = '') => {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job/start/${id}/${instanceGroup}`,
+    `/quishing-simulator/quishing-campaign-job/start/${id}/${instanceGroup}`,
     {},
     {
       snackbar: COMMON_SNACKBAR
@@ -145,8 +145,8 @@ const exportCampaignManagerItem = (payload, id) => {
     }
   )
 }
-const deletePhishingCampaignJob = (id = '', instanceGroup = '') => {
-  return testRequest.delete(`/phishing-simulator/phishing-campaign-job/${id}/${instanceGroup}`, {
+const deleteQuishingCampaignJob = (id = '', instanceGroup = '') => {
+  return testRequest.delete(`/quishing-simulator/quishing-campaign-job/${id}/${instanceGroup}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -171,13 +171,13 @@ const updateCampaignManager = (resourceId = '', payload = {}) => {
   })
 }
 const calculateScheduleInfo = (payload) => {
-  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-schedule-info`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-campaign/calculate-schedule-info`, payload)
 }
 const calculateSendingInfo = (payload) => {
-  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-sending-info`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-campaign/calculate-sending-info`, payload)
 }
-const launchPhishingCampaign = (id = '', payload = {}) => {
-  return testRequest.post(`/phishing-simulator/phishing-campaign-job/start/${id}`, payload, {
+const launchQuishingCampaign = (id = '', payload = {}) => {
+  return testRequest.post(`/quishing-simulator/quishing-campaign-job/start/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -200,7 +200,7 @@ const createDnsService = (payload) => {
   return testRequest.post(`quishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
 }
 const getDnsService = (id) => {
-  return testRequest.get(`quishing-simulator/dns-services/${id}`, { loading: true })
+  return testRequest.get(`quishing-simulator/dns-services/${id}`)
 }
 const updateDnsService = (payload, id) => {
   return testRequest.put(`quishing-simulator/dns-services/${id}`, payload, {
@@ -244,12 +244,20 @@ const testDomainConnection = (payload) => {
   return testRequest.post(`quishing-simulator/domain-records/test`, payload)
 }
 const getQuishingExcludedIPAddresses = () => {
-  return testRequest.get(`/phishing-simulator/excluded-ip-list`)
+  return testRequest.get(`/quishing-simulator/excluded-ip-list`)
 }
 const postQuishingExcludedIPAddresses = (payload = {}) => {
-  return testRequest.post(`/phishing-simulator/excluded-ip`, payload, {
+  return testRequest.post(`/quishing-simulator/excluded-ip`, payload, {
     snackbar: COMMON_SNACKBAR
   })
+}
+const getQuishingFileType = (payload) => {
+  if (payload.attachmentFiles[0]) {
+    return payload.attachmentFiles[0]?.name
+      ? payload.attachmentFiles[0]?.name?.split('.')[1]
+      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+  }
+  return payload?.phishingFileName?.split('.')?.[1] || null
 }
 const createCommonFormDataForQuishingTemplate = (payload) => {
   const formData = new FormData()
@@ -273,7 +281,7 @@ const createCommonFormDataForQuishingTemplate = (payload) => {
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   if (payload.isAttachmentBasedTemplate) {
-    const phishingFileType = getPhishingFileType(payload)
+    const phishingFileType = getQuishingFileType(payload)
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
     formData.append(
       'phishingFile',
@@ -313,6 +321,9 @@ const getDefaultCompanySmtpSetting = () => {
     '/quishing-simulator/quishing-campaign/root-company-shared-smtp-resource-id'
   )
 }
+const getEmailDeliveries = () => {
+  return testRequest.get(`/quishing-simulator/quishing-campaign/email-delivery-setting-list`)
+}
 
 export default {
   exportScenarios,
@@ -339,11 +350,11 @@ export default {
   deleteBulkCampaigns,
   searchCampaignManager,
   exportCampaignManager,
-  searchCampaignPhishingJob,
-  stopPhishingCampaignJob,
-  launchPhishingCampaignInstanceGroup,
+  searchCampaignQuishingJob,
+  stopQuishingCampaignJob,
+  launchQuishingCampaignInstanceGroup,
   exportCampaignManagerItem,
-  deletePhishingCampaignJob,
+  deleteQuishingCampaignJob,
   getCampaignManagerFormDetails,
   getCampaignManagerPreview,
   getCampaignManager,
@@ -351,7 +362,7 @@ export default {
   updateCampaignManager,
   calculateScheduleInfo,
   calculateSendingInfo,
-  launchPhishingCampaign,
+  launchQuishingCampaign,
   getDnsServiceList,
   exportDnsService,
   deleteDnsService,
@@ -375,5 +386,6 @@ export default {
   getEmailTemplatePreviewContent,
   getMergedTextForQuishing,
   updateQuishingEmailTemplate,
-  getDefaultCompanySmtpSetting
+  getDefaultCompanySmtpSetting,
+  getEmailDeliveries
 }

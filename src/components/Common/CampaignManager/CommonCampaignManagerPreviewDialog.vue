@@ -97,6 +97,7 @@ import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSetti
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
@@ -161,12 +162,17 @@ export default {
       this.setLoading(true)
       this.apiFunc(this.selectedRow.resourceId)
         .then((response) => {
-          const { data: { data: { phishingScenarioPreviewList } = [] } = {} } = response
-          this.phishingScenarios = phishingScenarioPreviewList.map((pScenario) => ({
+          const objKey =
+            this.type === PREVIEW_DIALOG_TYPES.PHISHING
+              ? 'phishingScenarioPreviewList'
+              : 'quishingScenarioPreviewList'
+          const { data: { data } = {} } = response
+          const scenarioPreviewList = data[objKey]
+          this.phishingScenarios = scenarioPreviewList.map((pScenario) => ({
             ...pScenario,
             customKey: createRandomCryptStringNumber()
           }))
-          const phishingScenarioPreviewDto = phishingScenarioPreviewList[0] || {}
+          const phishingScenarioPreviewDto = scenarioPreviewList[0] || {}
           this.selectedScenario = phishingScenarioPreviewDto.name
           this.setActiveScenario(phishingScenarioPreviewDto || {})
         })
@@ -192,6 +198,12 @@ export default {
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING) {
+        this.landingPageTemplates.forEach((page) => {
+          if (!page.content) return
+          page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+        })
+      }
       this.landingPageParams = {
         mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',

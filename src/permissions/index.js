@@ -2,8 +2,14 @@ const ENUMS = {
   DNS: {
     ROOT_URL: 'phishing-simulator/dns-services'
   },
+  QUISHING_DNS: {
+    ROOT_URL: 'quishing-simulator/dns-services'
+  },
   DOMAIN: {
     ROOT_URL: 'phishing-simulator/domain-records'
+  },
+  QUISHING_DOMAIN: {
+    ROOT_URL: 'quishing-simulator/domain-records'
   },
   SCIM: {
     ROOT_URL: 'scim'
@@ -345,272 +351,272 @@ export default {
   },
   QUISHING_SIMULATOR_LEFT_MENU_PERMISSIONS: {
     EMAIL_TEMPLATE: {
-      url: `phishing-simulator/email-templates`,
+      url: `quishing-simulator/email-templates`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PHISHING_SCENARIO: {
-      url: `phishing-simulator/phishing-scenario/search`,
+      url: `quishing-simulator/phishing-scenario/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DNS: {
-      url: `phishing-simulator/dns-services/search`,
+      url: `quishing-simulator/dns-services/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DOMAIN: {
-      url: `phishing-simulator/domain-records/search`,
+      url: `quishing-simulator/domain-records/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_SCENARIO_LEFT_MENU_PERMISSIONS: {
     EMAIL_TEMPLATE: {
-      url: `phishing-simulator/email-templates`,
+      url: `quishing-simulator/email-templates`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PHISHING_SCENARIO: {
-      url: `phishing-simulator/phishing-scenario/search`,
+      url: `quishing-simulator/quishing-scenario/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     LANDING_PAGE: {
-      url: 'phishing-simulator/landing-page-template',
+      url: 'quishing-simulator/landing-page-template',
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_SCENARIO_PERMISSIONS: {
     SEARCH: {
-      url: `phishing-simulator/phishing-scenario/search`,
+      url: `quishing-simulator/phishing-scenario/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PREVIEW: {
-      url: `phishing-simulator/phishing-scenario/preview/{resourceId}`,
+      url: `quishing-simulator/quishing-scenario/preview/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EDIT: {
-      url: `phishing-simulator/phishing-scenario/{resourceId}`,
+      url: `quishing-simulator/quishing-scenario/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     CREATE: {
-      url: `phishing-simulator/phishing-scenario`,
+      url: `quishing-simulator/quishing-scenario`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DELETE: {
-      url: `phishing-simulator/phishing-scenario/{resourceId}`,
+      url: `quishing-simulator/quishing-scenario/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     EXPORT: {
-      url: `phishing-simulator/phishing-scenario/search/export`,
+      url: `quishing-simulator/quishing-scenario/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_EMAIL_TEMPLATES_PERMISSIONS: {
     SEARCH: {
-      url: `phishing-simulator/email-templates/search`,
+      url: `quishing-simulator/email-templates/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PREVIEW: {
-      url: `phishing-simulator/email-templates/{resourceId}`,
+      url: `quishing-simulator/email-templates/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EDIT: {
-      url: `phishing-simulator/email-templates/{resourceId}`,
+      url: `quishing-simulator/email-templates/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     CREATE: {
-      url: `phishing-simulator/email-templates`,
+      url: `quishing-simulator/email-templates`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DELETE: {
-      url: `phishing-simulator/email-templates/{resourceId}`,
+      url: `quishing-simulator/email-templates/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     EXPORT: {
-      url: `phishing-simulator/email-templates/search/export`,
+      url: `quishing-simulator/email-templates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS: {
     SEARCH: {
-      url: 'phishing-simulator/landing-page-template/search',
+      url: 'quishing-simulator/landing-page-template/search',
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PREVIEW: {
-      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      url: `quishing-simulator/landing-page-template/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EDIT: {
-      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      url: `quishing-simulator/landing-page-template/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     CREATE: {
-      url: `phishing-simulator/landing-page-template`,
+      url: `quishing-simulator/landing-page-template`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DELETE: {
-      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      url: `quishing-simulator/landing-page-template/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     EXPORT: {
-      url: `phishing-simulator/landing-page-template/search/export`,
+      url: `quishing-simulator/landing-page-template/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS: {
     CAMPAIGN_MANAGER: {
-      url: `phishing-simulator/phishing-campaign/search`,
+      url: `quishing-simulator/quishing-campaign/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_SETTINGS_LEFT_MENU_PERMISSIONS: {
     DNS: {
-      url: `phishing-simulator/dns-services/search`,
+      url: `quishing-simulator/dns-services/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     DOMAIN: {
-      url: `phishing-simulator/domain-records/search`,
+      url: `quishing-simulator/domain-records/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_CAMPAIGN_MANAGER_PARENT: {
     SEARCH: {
-      url: 'phishing-simulator/phishing-campaign/search',
+      url: 'quishing-simulator/quishing-campaign/search',
       hasPermission: false,
       method: 'POST'
     },
     PREVIEW: {
-      url: 'phishing-simulator/phishing-campaign/preview/{resourceId}',
+      url: 'quishing-simulator/quishing-campaign/preview/{resourceId}',
       hasPermission: false,
       method: 'GET'
     },
     DELETE: {
-      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      url: 'quishing-simulator/quishing-campaign/{resourceId}',
       hasPermission: false,
       method: 'DELETE'
     },
     GET: {
-      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      url: 'quishing-simulator/quishing-campaign/{resourceId}',
       hasPermission: false,
       method: 'GET'
     },
     CREATE: {
-      url: 'phishing-simulator/phishing-campaign',
+      url: 'quishing-simulator/quishing-campaign',
       hasPermission: false,
       method: 'POST'
     },
     EXPORT: {
-      url: 'phishing-simulator/phishing-campaign/search/export',
+      url: 'quishing-simulator/quishing-campaign/search/export',
       hasPermission: false,
       method: 'POST'
     },
     UPDATE: {
-      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      url: 'quishing-simulator/quishing-campaign/{resourceId}',
       hasPermission: false,
       method: 'PUT'
     }
   },
   QUISHING_DNS_PERMISSIONS: {
     CREATE: {
-      url: `${ENUMS.DNS.ROOT_URL}`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     SEARCH: {
-      url: `${ENUMS.DNS.ROOT_URL}/search`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     UPDATE: {
-      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     DELETE: {
-      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     GET: {
-      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EXPORT: {
-      url: `${ENUMS.DNS.ROOT_URL}/search/export`,
+      url: `${ENUMS.QUISHING_DNS.ROOT_URL}/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
   },
   QUISHING_DOMAIN_PERMISSIONS: {
     CREATE: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     SEARCH: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/search`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     UPDATE: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
     },
     DELETE: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     GET: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     EXPORT: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/search/export`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     FORM_DETAILS: {
-      url: `${ENUMS.DOMAIN.ROOT_URL}/form-details`,
+      url: `${ENUMS.QUISHING_DOMAIN.ROOT_URL}/form-details`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     }
   },
   QUISHING_EXCLUDE_IP_ADDRESS_PERMISSIONS: {
     GET: {
-      url: `phishing-simulator/excluded-ip-list`,
+      url: `quishing-simulator/excluded-ip-list`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     POST: {
-      url: `phishing-simulator/excluded-ip`,
+      url: `quishing-simulator/excluded-ip`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
@@ -1471,87 +1477,87 @@ export default {
   },
   QUISHING_CAMPAIGN_REPORTS_PERMISSIONS: {
     SEARCH: {
-      url: `phishing-simulator/phishing-campaign-job-report/search`,
+      url: `quishing-simulator/quishing-campaign-job-report/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     GET: {
-      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     DELETE: {
-      url: `phishing-simulator/phishing-campaign-job/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
     },
     OPENED: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     OPENED_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened/{resourceId}`,
+      url: `quishing-simulator/quishing-campaign-job-report/search-email-opened/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     CLICKED: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     CLICKED_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/search-email-clicked/{resourceId}`,
+      url: `quishing-simulator/quishing-campaign-job-report/search-email-clicked/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     OPENED_ATTACHMENT: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     OPENED_ATTACHMENT_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/{resourceId}`,
+      url: `quishing-simulator/quishing-campaign-job-report/search-email-opened-attachment/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     SUBMITTED_DATA: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     SUBMITTED_DATA_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/search-email-submitted/{resourceId}`,
+      url: `quishing-simulator/quishing-campaign-job-report/search-email-submitted/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     NO_RESPONSE: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PHISHING_REPORTER: {
-      url: `phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     PHISHING_REPORTER_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/search-email-reported/{resourceId}`,
+      url: `quishing-simulator/quishing-campaign-job-report/search-email-reported/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
     SENDING_REPORT: {
-      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     SENDING_REPORT_DETAILS: {
-      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/summary/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
     RESEND: {
-      url: `phishing-simulator/phishing-campaign-job-report/resend/list/{resourceId}/{instanceGroup}`,
+      url: `quishing-simulator/quishing-campaign-job-report/resend/list/{resourceId}/{instanceGroup}`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
