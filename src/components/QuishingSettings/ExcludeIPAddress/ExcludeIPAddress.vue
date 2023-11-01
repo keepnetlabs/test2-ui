@@ -82,7 +82,7 @@ export default {
       isLoading: false,
       Validations,
       isActionButtonDisabled: !this.$store.getters[
-        'permissions/getExcludedIpAddressPostPermissions'
+        'permissions/getQuishingExcludedIpAddressPostPermissions'
       ],
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',

@@ -189,20 +189,20 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDnsUpdatePermissions'],
             id: 'btn-edit--dns-services-list-row-actions'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getDnsDeletePermissions'],
+            disabled: !this.$store.getters['permissions/getQuishingDnsDeletePermissions'],
             id: 'btn-delete--dns-services-list-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getDnsExportPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDnsExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -214,14 +214,15 @@ export default {
           message: 'You do not have any DNS Services',
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--DnsServiceList'
+          id: 'btn-empty--DnsServiceList',
+          disabled: !this.$store.getters['permissions/getQuishingDnsCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a DNS Service',
           id: 'btn-add--DnsServiceList',
-          disabled: !this.$store.getters['permissions/getDnsCreatePermissions']
+          disabled: !this.$store.getters['permissions/getQuishingDnsCreatePermissions']
         }
       },
       modalStatus: false,
@@ -233,9 +234,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
-      getDnsUpdatePermissions: 'permissions/getDnsUpdatePermissions',
-      getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
+      getDnsSearchPermissions: 'permissions/getQuishingDnsSearchPermissions'
     })
   },
   created() {

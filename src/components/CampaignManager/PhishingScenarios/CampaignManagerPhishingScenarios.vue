@@ -332,7 +332,8 @@ import CampaignManagerPhishingScenariosPreviewDialog from '@/components/Campaign
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
-
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -372,6 +373,10 @@ export default {
     campaignManagerResourceId: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -571,7 +576,9 @@ export default {
     },
     callForSelectedPhishingScenario(resourceId = '') {
       this.adjustTrainingModel(resourceId)
-      getScenario(resourceId).then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
+      apiFunc(resourceId).then((response) => {
         const {
           data: { data }
         } = response
@@ -580,63 +587,65 @@ export default {
         this.isAttachmentBasedScenario =
           data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT
         this.selectedTemplateResourceId = resourceId
-        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
-          (response) => {
-            const { data: { data = {} } = {} } = response
-            const {
-              emailTemplate,
-              landingPageTemplate,
-              methodTypeId,
-              mfaTextTemplate,
-              mfaSmsSenderNumber
-            } = data
-            const {
-              template,
-              fromName,
-              fromAddress,
-              name,
-              difficultyResourceId,
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName,
-              subject
-            } = emailTemplate || {}
+        const previewFunc =
+          this.type === SCENARIO_TYPES.PHISHING
+            ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
+            : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+        previewFunc(resourceId).then((response) => {
+          const { data: { data = {} } = {} } = response
+          const {
+            emailTemplate,
+            landingPageTemplate,
+            methodTypeId,
+            mfaTextTemplate,
+            mfaSmsSenderNumber
+          } = data
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName,
+            subject
+          } = emailTemplate || {}
 
-            this.emailTemplateParams = {
-              fromName,
-              fromAddress,
-              name,
-              subject,
-              difficulty:
-                difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName
-            }
-            this.emailTemplate = template
-            const {
-              name: landingPageName = '',
-              description,
-              landingPages,
-              urlTemplate,
-              difficultyTypeId,
-              languageTypeResourceId
-            } = landingPageTemplate || {}
-            this.landingPageParams = {
-              name: landingPageName,
-              description,
-              urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-              method: methods[methodTypeId - 1]?.text || '',
-              languageTypeResourceId,
-              mfaSmsSenderNumber,
-              mfaTextTemplate
-            }
-            this.landingPageTemplates = landingPages || []
-            this.tab = 'email'
-            this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
+          this.emailTemplateParams = {
+            fromName,
+            fromAddress,
+            name,
+            subject,
+            difficulty:
+              difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName
           }
-        )
+          this.emailTemplate = template
+          const {
+            name: landingPageName = '',
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            languageTypeResourceId
+          } = landingPageTemplate || {}
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+            method: methods[methodTypeId - 1]?.text || '',
+            languageTypeResourceId,
+            mfaSmsSenderNumber,
+            mfaTextTemplate
+          }
+          this.landingPageTemplates = landingPages || []
+          this.tab = 'email'
+          this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
+        })
       })
     },
     adjustTrainingModel(resourceId = '') {
@@ -659,7 +668,9 @@ export default {
       } else if (this.value.length && this.isEdit) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }
-      getScenariosList(this.axiosPayload).then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
@@ -716,7 +727,7 @@ export default {
       this.axiosPayload = getDefaultAxiosPayload()
       this.callForPhishingScenarios(false)
     },
-    handleTrainingPreviewButtonClick(value = {}) {
+    handleTrainingPreviewButtonClick() {
       this.toggleShowTrainingDialog()
     },
     toggleShowTrainingDialog() {

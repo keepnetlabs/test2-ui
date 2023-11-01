@@ -62,35 +62,39 @@ export default {
           id: 'campaign-manager-report-summary-content',
           label: labels.Summary,
           component: CampaignManagerReportSummary,
-          isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
+          isVisible: this.$store.getters['permissions/getQuishingCampaignReportsGetPermissions']
         },
         {
           name: labels.Opened,
           id: 'campaign-manager-report-opened-content',
           label: labels.Opened,
           component: CampaignManagerReportOpened,
-          isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
+          isVisible: this.$store.getters['permissions/getQuishingCampaignReportsOpenedPermissions']
         },
         {
           name: labels.Clicked,
           id: 'campaign-manager-report-clicked-content',
           label: labels.Clicked,
           component: CampaignManagerReportClicked,
-          isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
+          isVisible: this.$store.getters['permissions/getQuishingCampaignReportsClickedPermissions']
         },
         {
           name: labels.SubmittedData,
           id: 'campaign-manager-report-submitted-date-content',
           label: labels.SubmittedData,
           component: CampaignManagerReportSubmittedData,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+          isVisible: this.$store.getters[
+            'permissions/getQuishingCampaignReportsSubmittedDataPermissions'
+          ]
         },
         {
           name: labels.NoResponse,
           id: 'campaign-manager-report-no-response-content',
           label: labels.NoResponse,
           component: CampaignManagerReportNoResponse,
-          isVisible: this.$store.getters['permissions/getCampaignReportsNoResponsePermissions']
+          isVisible: this.$store.getters[
+            'permissions/getQuishingCampaignReportsNoResponsePermissions'
+          ]
         },
         {
           name: labels.PhishingReporter,
@@ -98,7 +102,7 @@ export default {
           label: labels.Reporters,
           component: CampaignManagerReportPhishingReport,
           isVisible: this.$store.getters[
-            'permissions/getCampaignReportsPhishingReporterPermissions'
+            'permissions/getQuishingCampaignReportsPhishingReporterPermissions'
           ]
         },
         {
@@ -106,7 +110,9 @@ export default {
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: this.$store.getters[
+            'permissions/getQuishingCampaignReportsSendingReportPermissions'
+          ]
         }
       ]
     }
@@ -170,7 +176,7 @@ export default {
                   id: 'campaign-manager-report-opened-attachment-content',
                   component: CampaignManagerReportOpenedAttachment,
                   isVisible: this.$store.getters[
-                    'permissions/getCampaignReportsOpenedAttachmentPermissions'
+                    'permissions/getQuishingCampaignReportsOpenedAttachmentPermissions'
                   ]
                 }
               }
@@ -233,7 +239,7 @@ export default {
           id: 'campaign-manager-report-opened-attachment-content',
           component: CampaignManagerReportOpenedAttachment,
           isVisible: this.$store.getters[
-            'permissions/getCampaignReportsOpenedAttachmentPermissions'
+            'permissions/getQuishingCampaignReportsOpenedAttachmentPermissions'
           ]
         })
       }
@@ -244,7 +250,9 @@ export default {
           id: 'campaign-manager-report-submitted-mfa-content',
           label: labels.SubmittedMFACode,
           component: CampaignManagerReportSubmittedMfaCode,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+          isVisible: this.$store.getters[
+            'permissions/getQuishingCampaignReportsSubmittedDataPermissions'
+          ]
         })
       }
     }

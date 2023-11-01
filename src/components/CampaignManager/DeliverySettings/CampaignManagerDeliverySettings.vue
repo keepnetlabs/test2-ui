@@ -121,6 +121,8 @@ import {
 } from '@/components/SmishingCampaignManager/utils'
 import { mapGetters } from 'vuex'
 import useDistributionComputed from '@/hooks/awareness-educator/useDistributionComputed'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
@@ -160,6 +162,10 @@ export default {
     totalTargetUserCount: {
       type: Number,
       default: 0
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -321,7 +327,11 @@ export default {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
     callForEmailDeliveries() {
-      getEmailDeliveries().then((res) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getEmailDeliveries
+          : QuishingService.getEmailDeliveries
+      apiFunc().then((res) => {
         const {
           data: { data: { results = [] } = {} }
         } = res || {}
@@ -349,7 +359,11 @@ export default {
     },
     callForDefaultSmtpSetting() {
       if (this.isEdit) return
-      getDefaultCompanySmtpSetting().then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? getDefaultCompanySmtpSetting
+          : QuishingService.getDefaultCompanySmtpSetting
+      apiFunc().then((response) => {
         const {
           data: { data }
         } = response
@@ -386,7 +400,11 @@ export default {
           distributionEndTime: this.inputDistributionFormData.distributionEndTime
         }
         if (payload.distributionDelayEvery) {
-          calculateSendingInfo(payload).then((response) => {
+          const apiFunc =
+            this.type === SCENARIO_TYPES.PHISHING
+              ? calculateSendingInfo
+              : QuishingService.calculateSendingInfo
+          apiFunc(payload).then((response) => {
             const {
               data: { data }
             } = response
