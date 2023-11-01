@@ -128,10 +128,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
-          COMMON_SIMULATOR_COLUMNS.CREATED_BY,
-          COMMON_SIMULATOR_COLUMNS.AVAILABLE_FOR,
-          COMMON_SIMULATOR_COLUMNS.EMAIL_TEMPLATE,
-          COMMON_SIMULATOR_COLUMNS.LANDING_PAGE_TEMPLATE
+          COMMON_SIMULATOR_COLUMNS.CREATED_BY
         ],
         rowActions: [
           {
@@ -184,14 +181,15 @@ export default {
           message: LABEL_STORE.NO_SCENARIO,
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--scenarios'
+          id: 'btn-empty--scenarios',
+          disabled: !this.$store.getters['permissions/getQuishingScenariosCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.$store.getters['permissions/getQuishingScenariosSearchPermissions']
+          disabled: !this.$store.getters['permissions/getQuishingScenariosCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),

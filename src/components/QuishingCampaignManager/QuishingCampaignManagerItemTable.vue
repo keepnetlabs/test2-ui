@@ -241,7 +241,7 @@ export default {
     callForData() {
       this.setLoading(true)
       this.$nextTick(() => {
-        QuishingService.searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+        QuishingService.searchCampaignQuishingJob(this.axiosPayload, this.item.resourceId)
           .then((response) => {
             const {
               data: { data = [] }
@@ -302,7 +302,7 @@ export default {
     },
     handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      QuishingService.deletePhishingCampaignJob(this.item.resourceId, item.instanceGroup)
+      QuishingService.deleteQuishingCampaignJob(this.item.resourceId, item.instanceGroup)
         .then(() => {
           this.$refs.refTable.unSelectRow(item)
           this.callForData()
@@ -313,12 +313,12 @@ export default {
         })
     },
     handleStop(row = {}) {
-      QuishingService.stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
+      QuishingService.stopQuishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
     },
     handleLaunch(row = {}) {
-      QuishingService.launchPhishingCampaignInstanceGroup(
+      QuishingService.launchQuishingCampaignInstanceGroup(
         this.item.resourceId,
         row.instanceGroup
       ).then(() => {

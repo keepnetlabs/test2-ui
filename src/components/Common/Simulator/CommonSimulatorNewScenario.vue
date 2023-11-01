@@ -945,7 +945,8 @@ export default {
       if (currentStep === 2 && this.isAttachmentBasedScenario) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
           this.isSubmitDisabled = true
-          getEmailTemplatePreviewContent(this.emailTemplateResourceId)
+          this.getEmailTemplateApiFuncs
+            .content(this.emailTemplateResourceId)
             .then((response) => {
               const languageShortCode = this.languageOptions.find(
                 (language) => language.value === response?.data?.data?.languageTypeResourceId

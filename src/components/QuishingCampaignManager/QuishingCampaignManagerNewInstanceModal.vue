@@ -316,7 +316,7 @@ export default {
             (target) => target.value
           )
         }
-        QuishingService.launchPhishingCampaign(this.resourceId, payload)
+        QuishingService.launchQuishingCampaign(this.resourceId, payload)
           .then(() => {
             this.$emit(EMITS.ON_SUBMIT)
           })
