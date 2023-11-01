@@ -361,7 +361,7 @@
                         callback: getCompanyGroups
                       }"
                       v-select-search-handler="{
-                        callback: searchCompanyGroups,
+                        callback: searchCompanyGroupsWithParents,
                         isLoadingKey: 'isCompanyGroupsLoading'
                       }"
                       type="autocomplete"
@@ -521,7 +521,12 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
+import {
+  createCompany,
+  searchCompanies,
+  searchCompanyGroupsWithParents,
+  updateCompany
+} from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import {
   getSelectSearchPayload,
@@ -911,9 +916,9 @@ export default {
         }
       )
     },
-    searchCompanyGroups(search = '') {
+    searchCompanyGroupsWithParents(search = '') {
       if (search) {
-        searchCompanyGroups(getSelectSearchPayload(this.companyGroupPayload, search))
+        searchCompanyGroupsWithParents(getSelectSearchPayload(this.companyGroupPayload, search))
           .then(this.setCompanyGroups)
           .finally(() => {
             this.isCompanyGroupsLoading = false
@@ -932,7 +937,7 @@ export default {
         this.companyGroupPayload.pageNumber += 1
         if (this.companyGroupPayload.pageNumber > this.totalNumberOfPagesOfCompanyGroups) return
       }
-      searchCompanyGroups(this.companyGroupPayload)
+      searchCompanyGroupsWithParents(this.companyGroupPayload)
         .then(this.setCompanyGroups)
         .then((data) => {
           this.totalNumberOfPagesOfCompanyGroups = data.totalNumberOfPages
