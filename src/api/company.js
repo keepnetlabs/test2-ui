@@ -41,6 +41,9 @@ export function getCompanyByID(id, loading = true) {
 export function searchCompanyGroups(payload) {
   return testRequest.post(`/company-groups/search`, payload)
 }
+export function searchCompanyGroupsWithParents(payload) {
+  return testRequest.post(`/company-groups/search-with-parent`, payload)
+}
 export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
