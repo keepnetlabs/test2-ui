@@ -371,6 +371,181 @@ const getCampaignManagerLandingPageTemplatePreviewContent = (
 const getCampaignManagerJobFormDetails = () => {
   return testRequest.get('/quishing-simulator/quishing-campaign-job/form-details')
 }
+const searchCampaignJobUserEmailOpened = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/opened/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+const exportCampaignJobUserEmailOpened = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/opened/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const resendQuishingCampaignToUserList = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job/resend/list/${id}/${instanceGroup}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const searchCampaignJobUserEmailClickedDetails = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-email-clicked/${id}`,
+    payload
+  )
+}
+const exportCampaignJobUserEmailClicked = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/clicked/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const searchCampaignJobUserEmailClicked = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/clicked/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+
+const searchCampaignJobUserNoResponse = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/noresponse/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+
+const exportCampaignJobUserNoResponse = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/noresponse/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const searchCampaignJobUserEmailOpenedDetails = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-email-opened/${id}`,
+    payload
+  )
+}
+const searchCampaignJobUserAttachmentOpenedDetails = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-email-opened-attachment/${id}`,
+    payload
+  )
+}
+const searchCampaignJobUserAttachmentOpened = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/attachmentopened/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+const exportCampaignJobUserAttachmentOpened = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/attachmentopened/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const searchCampaignJobUserEmailReportedDetails = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-email-reported/${id}`,
+    payload
+  )
+}
+const exportCampaignJobUserPhishingReport = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/reported/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const searchCampaignJobUserPhishingReport = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/reported/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+const exportCampaignJobUserSendingReport = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/all/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const searchCampaignJobUserSendingReport = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/all/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+const getCampaignJobEmailActivity = (resourceId = '') => {
+  return testRequest.get(`/quishing-simulator/quishing-campaign-job/email-activity/${resourceId}`)
+}
+const exportCampaignJobUserEmailSubmitted = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/submitteddata/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const searchCampaignJobUserEmailSubmitted = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/submitteddata/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+const searchCampaignJobUserEmailSubmittedDetails = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-email-submitted/${id}`,
+    payload
+  )
+}
+const searchCampaignJobUserEmailSubmittedDetailsMfa = (payload, id) => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/search-mfa-submitted/${id}`,
+    payload
+  )
+}
+const exportCampaignJobUserEmailSubmittedMfa = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/mfa/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const searchCampaignJobUserEmailSubmittedMfa = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job-report/mfa/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
 
 export default {
   exportScenarios,
@@ -441,5 +616,29 @@ export default {
   exportQuishingCampaignJob,
   resendQuishingCampaignToUsers,
   getCampaignManagerLandingPageTemplatePreviewContent,
-  getCampaignManagerJobFormDetails
+  getCampaignManagerJobFormDetails,
+  searchCampaignJobUserEmailOpened,
+  exportCampaignJobUserEmailOpened,
+  resendQuishingCampaignToUserList,
+  searchCampaignJobUserEmailClickedDetails,
+  exportCampaignJobUserEmailClicked,
+  searchCampaignJobUserEmailClicked,
+  searchCampaignJobUserNoResponse,
+  exportCampaignJobUserNoResponse,
+  searchCampaignJobUserEmailOpenedDetails,
+  searchCampaignJobUserAttachmentOpenedDetails,
+  searchCampaignJobUserAttachmentOpened,
+  exportCampaignJobUserAttachmentOpened,
+  searchCampaignJobUserEmailReportedDetails,
+  exportCampaignJobUserPhishingReport,
+  searchCampaignJobUserPhishingReport,
+  exportCampaignJobUserSendingReport,
+  searchCampaignJobUserSendingReport,
+  getCampaignJobEmailActivity,
+  exportCampaignJobUserEmailSubmitted,
+  searchCampaignJobUserEmailSubmitted,
+  searchCampaignJobUserEmailSubmittedDetails,
+  searchCampaignJobUserEmailSubmittedDetailsMfa,
+  exportCampaignJobUserEmailSubmittedMfa,
+  searchCampaignJobUserEmailSubmittedMfa
 }

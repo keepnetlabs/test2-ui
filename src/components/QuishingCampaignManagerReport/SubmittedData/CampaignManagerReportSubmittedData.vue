@@ -35,7 +35,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/QuishingCampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
 import CampaignManagerReportSubmittedItemDetailDialog from '@/components/QuishingCampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
 export default {
   name: 'CampaignManagerReportSubmittedData',

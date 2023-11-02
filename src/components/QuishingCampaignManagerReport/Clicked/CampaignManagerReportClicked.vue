@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoClicked"
-      subtitle="List of users who clicked the phishing link"
+      subtitle="List of users who clicked the quishing link"
     />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
@@ -35,7 +35,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportClickedTable from '@/components/QuishingCampaignManagerReport/Clicked/CampaignManagerReportClickedTable'
 import CampaignManagerReportClickedItemDetailDialog from '@/components/QuishingCampaignManagerReport/Clicked/CampaignManagerReportClickedItemDetailDialog'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 export default {
   name: 'CampaignManagerReportClicked',
   components: {

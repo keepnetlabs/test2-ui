@@ -103,16 +103,12 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  exportCampaignJobUserSendingReport,
-  getCampaignJobEmailActivity,
-  searchCampaignJobUserSendingReport
-} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/QuishingCampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
+import QuishingService from '@/api/quishing'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -147,9 +143,9 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
@@ -183,7 +179,7 @@ export default {
             icon: '$custom-details',
             action: 'on-detail',
             disabled: !this.$store.getters[
-              'permissions/getCampaignReportsSendingReportDetailsPermissions'
+              'permissions/getQuishingCampaignReportsSendingReportDetailsPermissions'
             ]
           }
         ]
@@ -289,7 +285,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserSendingReport(this.axiosPayload, this.id, this.instanceGroup)
+      QuishingService.searchCampaignJobUserSendingReport(
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -341,17 +341,19 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserSendingReport(payload, this.id, this.instanceGroup).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Campaign-Report-Sending.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
+        QuishingService.exportCampaignJobUserSendingReport(
+          payload,
+          this.id,
+          this.instanceGroup
+        ).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Sending.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
@@ -367,7 +369,7 @@ export default {
     handleOnDetail(row) {
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      getCampaignJobEmailActivity(row.resourceId)
+      QuishingService.getCampaignJobEmailActivity(row.resourceId)
         .then((response) => {
           const { data: { data = [] } = {} } = response || { data: { data: [] } }
           this.extendedViewValue = [data]

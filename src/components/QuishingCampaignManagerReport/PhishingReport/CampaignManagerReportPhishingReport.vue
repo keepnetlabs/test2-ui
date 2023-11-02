@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoReported"
-      subtitle="List of users who reported the phishing email via Phishing Reporter add-in"
+      subtitle="List of users who reported the quishing email via Phishing Reporter add-in"
     />
     <CampaignManagerReportPhishingReporterItemDetailDialog
       v-if="isShowDetailDialog"
@@ -34,7 +34,7 @@ import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerRep
 import labels from '@/model/constants/labels'
 import CampaignManagerReportPhishingReportTable from '@/components/QuishingCampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReportTable'
 import CampaignManagerReportPhishingReporterItemDetailDialog from '@/components/QuishingCampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReporterItemDetailDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
 export default {
   name: 'CampaignManagerReportPhishingReport',
