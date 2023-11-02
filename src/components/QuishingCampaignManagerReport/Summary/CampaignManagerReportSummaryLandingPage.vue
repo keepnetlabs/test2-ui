@@ -115,9 +115,10 @@ import Badge from '@/components/Badge'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import QuishingService from '@/api/quishing'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { getDifficultyBadgeColor } from '@/utils/functions'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export default {
   name: 'CampaignManagerReportSummaryLandingPage',
@@ -184,11 +185,19 @@ export default {
       if (this.isFetchingSummary) {
         this.setLoading(true)
       }
-      getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId, instanceGroup)
+      QuishingService.getCampaignManagerLandingPageTemplatePreviewContent(
+        resourceId,
+        jobResourceId,
+        instanceGroup
+      )
         .then((response) => {
           const {
             data: { data }
           } = response
+          data?.landingPages?.forEach((page) => {
+            if (!page.content) return
+            page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+          })
           this.templates = data?.landingPages || []
           this.name = data?.name || ''
           this.urlTemplate = data?.urlTemplate || ''

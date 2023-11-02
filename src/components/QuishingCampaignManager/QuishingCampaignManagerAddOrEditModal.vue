@@ -458,7 +458,8 @@ export default {
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
         }
-
+        data.phishingScenarios = data.quishingScenarios
+        delete data.quishingScenarios
         this.selectedRowFormData = data
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,

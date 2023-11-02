@@ -41,15 +41,11 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
-} from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: { DataTable },
@@ -77,8 +73,9 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true
@@ -110,7 +107,9 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-opened',
             icon: '$custom-details',
             action: 'on-detail',
-            disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignReportsOpenedDetailsPermissions'
+            ]
           }
         ]
       }
@@ -137,7 +136,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
+      QuishingService.searchCampaignJobUserEmailOpened(
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -168,15 +171,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Opened.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        QuishingService.exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Quishing-Campaign-Report-Opened.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

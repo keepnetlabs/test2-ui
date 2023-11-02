@@ -848,6 +848,9 @@
             <h1 v-else-if="routerName === 'Smishing Report'">
               {{ getSmishingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Quishing Report'">
+              {{ getQuishingReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1081,9 +1084,12 @@ export default {
       ]
     },
     getQuishingPrependIcon() {
-      return ['Quishing Scenarios', 'Quishing Campaign Manager', 'Quishing Settings'].includes(
-        this.routerName
-      )
+      return [
+        'Quishing Scenarios',
+        'Quishing Campaign Manager',
+        'Quishing Settings',
+        'Quishing Report'
+      ].includes(this.routerName)
         ? '$qr-code-selected'
         : '$qr-code'
     },
@@ -1110,6 +1116,12 @@ export default {
         return `Smishing Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Smishing Report'
+    },
+    getQuishingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Quishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Quishing Report'
     },
     getRouterKey() {
       const { name } = this.$route

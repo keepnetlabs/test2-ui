@@ -61,10 +61,9 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
-import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import CampaignManagerReportTrainingReportsDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportTrainingReportsDialog.vue'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: {
@@ -121,14 +120,18 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      resendPhishingCampaignToUsers({ Types: types }, this.id, this.instanceGroup).finally(() => {
+      QuishingService.resendQuishingCampaignToUsers(
+        { Types: types },
+        this.id,
+        this.instanceGroup
+      ).finally(() => {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
     },
     handleDownloadReport() {
       this.isDownloadReportDisabled = true
-      exportPhishingCampaignJob(this.id, this.instanceGroup)
+      QuishingService.exportQuishingCampaignJob(this.id, this.instanceGroup)
         .then((response) => {
           const { data } = response
           if (response.status === 200) {

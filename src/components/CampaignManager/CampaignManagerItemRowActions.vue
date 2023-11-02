@@ -169,8 +169,7 @@ export default {
         act.action === 'on-view-report'
       ) {
         return this.$router.push({
-          name:
-            this.type === SCENARIO_TYPES.PHISHING ? 'Campaign Report' : 'Quishing Campaign Report',
+          name: this.type === SCENARIO_TYPES.PHISHING ? 'Campaign Report' : 'Quishing Report',
           params: { id: this.campaignResourceId, instanceGroup: this.scope.row.instanceGroup }
         })
       }

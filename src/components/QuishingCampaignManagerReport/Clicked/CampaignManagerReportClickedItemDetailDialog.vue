@@ -64,14 +64,13 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/QuishingCampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
-import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/QuishingCampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 import CampaignManagerReportIPColumn from '@/components/QuishingCampaignManagerReport/CampaignManagerReportIPColumn'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
   components: {
@@ -140,7 +139,10 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailClickedDetails(this.axiosPayload, this.item?.resourceId)
+      QuishingService.searchCampaignJobUserEmailClickedDetails(
+        this.axiosPayload,
+        this.item?.resourceId
+      )
         .then((response) => {
           const {
             data: {

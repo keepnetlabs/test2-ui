@@ -20,7 +20,7 @@
           :id="id"
           :custom-fields="customFields"
           :instance-group="instanceGroup"
-          :phishing-scenario-name="getPhishingScenarioName"
+          :phishing-scenario-name="getQuishingScenarioName"
           :form-details="formDetails"
           :multiple-type="multipleType"
           :api-response="apiResponse"
@@ -33,7 +33,6 @@
 import KContainer from '@/components/KContainer/KContainer.vue'
 import labels from '@/model/constants/labels'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
-import { getCampaignJobSummary, getCampaignManagerJobFormDetails } from '@/api/phishingsimulator'
 import CampaignManagerReportOpenedAttachment from '@/components/QuishingCampaignManagerReport/OpenedAttachment/CampaignManagerReportOpenedAttachment.vue'
 import CampaignManagerReportSubmittedMfaCode from '@/components/QuishingCampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCode.vue'
 import CampaignManagerReportSummary from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummary.vue'
@@ -43,7 +42,7 @@ import CampaignManagerReportSubmittedData from '@/components/QuishingCampaignMan
 import CampaignManagerReportNoResponse from '@/components/QuishingCampaignManagerReport/NoResponse/CampaignManagerReportNoResponse.vue'
 import CampaignManagerReportPhishingReport from '@/components/QuishingCampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport.vue'
 import CampaignManagerReportSendingReport from '@/components/QuishingCampaignManagerReport/SendingReport/CampaignManagerReportSendingReport.vue'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'QuishingCampaignManagerReport',
   components: { KContainer },
@@ -124,7 +123,7 @@ export default {
     instanceGroup() {
       return this.$route?.params?.instanceGroup
     },
-    getPhishingScenarioName() {
+    getQuishingScenarioName() {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
   },
@@ -150,13 +149,13 @@ export default {
       })
     },
     callForFormDetails() {
-      getCampaignManagerJobFormDetails().then((response) => {
+      QuishingService.getCampaignManagerJobFormDetails().then((response) => {
         this.formDetails = response?.data?.data
       })
     },
     setSubmittedDataTabLabel() {
       if (!this.id || !this.instanceGroup) return
-      getCampaignJobSummary(this.id, this.instanceGroup)
+      QuishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
           const scenarios = response?.data?.data?.scenarios || []

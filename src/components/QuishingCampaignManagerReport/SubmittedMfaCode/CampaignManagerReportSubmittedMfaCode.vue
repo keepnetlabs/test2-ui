@@ -34,10 +34,8 @@ import CampaignManagerReportResendDialog from '@/components/QuishingCampaignMana
 import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedMfaCodeTable from '@/components/QuishingCampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable'
 import CampaignManagerReportSubmittedMfaCodeDetailDialog from '@/components/QuishingCampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeDetailDialog'
-
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 import labels from '@/model/constants/labels'
-
 export default {
   name: 'CampaignManagerReportSubmittedMfaCode',
   components: {
