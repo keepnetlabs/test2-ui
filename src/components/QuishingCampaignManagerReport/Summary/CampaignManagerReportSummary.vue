@@ -85,13 +85,13 @@ import CampaignManagerReportSummaryCards from '@/components/QuishingCampaignMana
 import CampaignManagerReportSummaryCampaignInfo from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
 import CampaignManagerReportSummaryEmail from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLandingPage from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
-import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/QuishingCampaignManagerReport/Summary/utils'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -464,7 +464,7 @@ export default {
       if (isUseLoading) {
         this.setLoading(true)
       }
-      getCampaignJobSummary(this.id, this.instanceGroup)
+      QuishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.setCampaignSummary(response)
         })
@@ -508,13 +508,15 @@ export default {
       }
       this.$store.dispatch(
         'common/setActivePageRouterName',
-        this.campaignSummary?.phishingCampaignName || ''
+        this.campaignSummary?.quishingCampaignName || ''
       )
     },
     callForTargetGroups() {
-      getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
-        this.targetGroups = response?.data?.data?.groups || []
-      })
+      QuishingService.getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then(
+        (response) => {
+          this.targetGroups = response?.data?.data?.groups || []
+        }
+      )
     },
     setScenarioDetail(event = {}) {
       this.activeScenarioIndex = event.index

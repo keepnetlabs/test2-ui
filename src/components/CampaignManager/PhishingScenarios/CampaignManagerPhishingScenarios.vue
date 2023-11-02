@@ -334,6 +334,7 @@ import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/tra
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -632,6 +633,12 @@ export default {
             difficultyTypeId,
             languageTypeResourceId
           } = landingPageTemplate || {}
+          if (this.type === SCENARIO_TYPES.QUISHING) {
+            landingPages.forEach((page) => {
+              if (!page.content) return
+              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+            })
+          }
           this.landingPageParams = {
             name: landingPageName,
             description,
