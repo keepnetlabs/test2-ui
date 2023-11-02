@@ -436,11 +436,11 @@ const router = new Router({
         },
         {
           path: '/reports/quishing-campaign-reports/campaign-report/:id/:instanceGroup',
-          name: 'Quishing Campaign Report',
+          name: 'Quishing Report',
           component: QuishingCampaignManagerReport,
           meta: {
             isAuthenticated: true,
-            parentName: 'Campaign Reports',
+            parentName: 'Quishing Campaign Manager',
             permissionStoreKey: 'permissions/getQuishingCampaignReportsSearchPermissions'
           },
           props: true,

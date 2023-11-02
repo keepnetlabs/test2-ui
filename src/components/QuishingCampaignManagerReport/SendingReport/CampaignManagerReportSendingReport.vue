@@ -28,7 +28,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/QuishingCampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 export default {
   name: 'CampaignManagerReportSendingReport',
   components: {

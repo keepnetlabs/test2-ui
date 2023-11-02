@@ -38,7 +38,7 @@ import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerRep
 import CampaignManagerReportOpenedAttachmentTable from '@/components/QuishingCampaignManagerReport/OpenedAttachment/CampaignManagerReportOpenedAttachmentTable'
 import CampaignManagerReportOpenedAttachmentItemDetailDialog from '@/components/QuishingCampaignManagerReport/OpenedAttachment/CampaignManagerReportOpenedAttachmentItemDetailDialog'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 
 export default {
   name: 'CampaignManagerReportOpenedAttachment',

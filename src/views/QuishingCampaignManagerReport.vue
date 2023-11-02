@@ -20,7 +20,7 @@
           :id="id"
           :custom-fields="customFields"
           :instance-group="instanceGroup"
-          :phishing-scenario-name="getPhishingScenarioName"
+          :phishing-scenario-name="getQuishingScenarioName"
           :form-details="formDetails"
           :multiple-type="multipleType"
           :api-response="apiResponse"
@@ -123,7 +123,7 @@ export default {
     instanceGroup() {
       return this.$route?.params?.instanceGroup
     },
-    getPhishingScenarioName() {
+    getQuishingScenarioName() {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
   },

@@ -42,13 +42,10 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/QuishingCampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  exportCampaignJobUserEmailClicked,
-  searchCampaignJobUserEmailClicked
-} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: { DataTable },
@@ -78,9 +75,9 @@ export default {
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
@@ -113,7 +110,7 @@ export default {
             icon: '$custom-details',
             action: 'on-detail',
             disabled: !this.$store.getters[
-              'permissions/getCampaignReportsClickedDetailsPermissions'
+              'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
             ]
           }
         ]
@@ -141,7 +138,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id, this.instanceGroup)
+      QuishingService.searchCampaignJobUserEmailClicked(
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -172,7 +173,11 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailClicked(payload, this.id, this.instanceGroup).then((response) => {
+        QuishingService.exportCampaignJobUserEmailClicked(
+          payload,
+          this.id,
+          this.instanceGroup
+        ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

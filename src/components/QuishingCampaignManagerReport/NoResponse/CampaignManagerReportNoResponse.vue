@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoHaventOpened"
-      subtitle="List of users who had no interaction with the phishing email"
+      subtitle="List of users who had no interaction with the quishing email"
     />
     <CampaignManagerReportNoResponseTable
       ref="refTable"
@@ -27,7 +27,7 @@ import CampaignManagerReportHeader from '@/components/QuishingCampaignManagerRep
 import labels from '@/model/constants/labels'
 import CampaignManagerReportNoResponseTable from '@/components/QuishingCampaignManagerReport/NoResponse/CampaignManagerReportNoResponseTable'
 import CampaignManagerReportResendDialog from '@/components/QuishingCampaignManagerReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useQuishingResend'
 export default {
   name: 'CampaignManagerReportNoResponse',
   components: {

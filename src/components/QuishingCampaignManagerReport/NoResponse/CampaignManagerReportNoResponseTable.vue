@@ -40,14 +40,11 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserNoResponse,
-  searchCampaignJobUserNoResponse
-} from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportNoResponseTable',
   components: { DataTable },
@@ -76,9 +73,9 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE,
+          TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
@@ -129,7 +126,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserNoResponse(this.axiosPayload, this.id, this.instanceGroup)
+      QuishingService.searchCampaignJobUserNoResponse(
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -161,15 +162,17 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserNoResponse(payload, this.id, this.instanceGroup).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-No-Response.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
+        QuishingService.exportCampaignJobUserNoResponse(payload, this.id, this.instanceGroup).then(
+          (response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Quishing-Campaign-Report-No-Response.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        )
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
