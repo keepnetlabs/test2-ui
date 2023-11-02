@@ -192,7 +192,6 @@ const exportDnsService = (payload) => {
 }
 const deleteDnsService = (id) => {
   return testRequest.delete(`quishing-simulator/dns-services/${id}`, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -204,7 +203,6 @@ const getDnsService = (id) => {
 }
 const updateDnsService = (payload, id) => {
   return testRequest.put(`quishing-simulator/dns-services/${id}`, payload, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -222,7 +220,6 @@ const exportDomainList = (payload) => {
 }
 const deleteDomain = (id) => {
   return testRequest.delete(`quishing-simulator/domain-records/${id}`, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -238,7 +235,9 @@ const getDomainEditData = (resId) => {
   return testRequest.get(`quishing-simulator/domain-records/${resId}`)
 }
 const updateDomain = (payload, id) => {
-  return testRequest.put(`quishing-simulator/domain-records/${id}`, payload)
+  return testRequest.put(`quishing-simulator/domain-records/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 const testDomainConnection = (payload) => {
   return testRequest.post(`quishing-simulator/domain-records/test`, payload)
@@ -324,6 +323,54 @@ const getDefaultCompanySmtpSetting = () => {
 const getEmailDeliveries = () => {
   return testRequest.get(`/quishing-simulator/quishing-campaign/email-delivery-setting-list`)
 }
+const getCampaignJobSummary = (id = '', instanceGroup = '') => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-campaign-job-report/summary/${id}/${instanceGroup}`
+  )
+}
+const getCampaignJobSummaryTargetGroups = (id = '', instanceGroup = '') => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-campaign-job-report/summary/target-groups/${id}/${instanceGroup}`
+  )
+}
+const getCampaignManagerEmailTemplatePreviewContent = (
+  id = '',
+  campaignResourceId = '',
+  instanceGroup = ''
+) => {
+  return testRequest.get(
+    `quishing-simulator/quishing-campaign-job-report/summary/${campaignResourceId}/${instanceGroup}/email-templates/${id}`
+  )
+}
+const exportQuishingCampaignJob = (id = '', instanceGroup = '') => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-campaign-job-report/export/${id}/${instanceGroup}`,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+const resendQuishingCampaignToUsers = (payload = {}, id = '', instanceGroup = '') => {
+  return testRequest.post(
+    `/quishing-simulator/quishing-campaign-job/resend/${id}/${instanceGroup}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+const getCampaignManagerLandingPageTemplatePreviewContent = (
+  id = '',
+  campaignResourceId = '',
+  instanceGroup = ''
+) => {
+  return testRequest.get(
+    `quishing-simulator/quishing-campaign-job-report/summary/${campaignResourceId}/${instanceGroup}/landing-page-template/${id}`
+  )
+}
+const getCampaignManagerJobFormDetails = () => {
+  return testRequest.get('/quishing-simulator/quishing-campaign-job/form-details')
+}
 
 export default {
   exportScenarios,
@@ -387,5 +434,12 @@ export default {
   getMergedTextForQuishing,
   updateQuishingEmailTemplate,
   getDefaultCompanySmtpSetting,
-  getEmailDeliveries
+  getEmailDeliveries,
+  getCampaignJobSummary,
+  getCampaignJobSummaryTargetGroups,
+  getCampaignManagerEmailTemplatePreviewContent,
+  exportQuishingCampaignJob,
+  resendQuishingCampaignToUsers,
+  getCampaignManagerLandingPageTemplatePreviewContent,
+  getCampaignManagerJobFormDetails
 }

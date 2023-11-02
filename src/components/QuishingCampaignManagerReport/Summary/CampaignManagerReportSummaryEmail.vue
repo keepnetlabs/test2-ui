@@ -72,10 +72,9 @@ import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import { getDifficultyBadgeColor } from '@/utils/functions'
-
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
   components: {
@@ -137,7 +136,7 @@ export default {
         this.formData?.campaignResourceId &&
         this.formData?.instanceGroup
       )
-        getCampaignManagerEmailTemplatePreviewContent(
+        QuishingService.getCampaignManagerEmailTemplatePreviewContent(
           this.formData.resourceId,
           this.formData.campaignResourceId,
           this.formData.instanceGroup
