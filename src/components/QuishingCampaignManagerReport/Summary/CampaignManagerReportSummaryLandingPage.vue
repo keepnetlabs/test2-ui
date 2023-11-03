@@ -118,8 +118,6 @@ import { useLoading } from '@/hooks/useLoading'
 import QuishingService from '@/api/quishing'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { getDifficultyBadgeColor } from '@/utils/functions'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-
 export default {
   name: 'CampaignManagerReportSummaryLandingPage',
   components: {
@@ -194,10 +192,6 @@ export default {
           const {
             data: { data }
           } = response
-          data?.landingPages?.forEach((page) => {
-            if (!page.content) return
-            page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          })
           this.templates = data?.landingPages || []
           this.name = data?.name || ''
           this.urlTemplate = data?.urlTemplate || ''

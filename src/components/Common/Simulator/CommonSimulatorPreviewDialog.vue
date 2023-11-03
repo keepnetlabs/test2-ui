@@ -12,7 +12,7 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <ElTabs v-show="!isLoading" v-model="tab">
+      <ElTabs v-if="!isLoading" v-model="tab">
         <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
           <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
@@ -84,7 +84,7 @@ import AppDialog from '@/components/AppDialog.vue'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CommonSimulatorPreviewDialog',
@@ -164,7 +164,7 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const {
+          let {
             template,
             fromName,
             fromAddress,
@@ -186,6 +186,8 @@ export default {
                 }
               : null
           }
+          if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
+            template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplate = template
 
           const {
@@ -206,12 +208,6 @@ export default {
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
             mfaSmsSenderNumber: data.mfaSmsSenderNumber
-          }
-          if (this.type === PREVIEW_DIALOG_TYPES.QUISHING) {
-            landingPages.forEach((page) => {
-              if (!page.content) return
-              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-            })
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4

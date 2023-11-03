@@ -75,6 +75,8 @@ import { useLoading } from '@/hooks/useLoading'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import QuishingService from '@/api/quishing'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
   components: {
@@ -145,7 +147,7 @@ export default {
             const {
               data: { data }
             } = response
-            this.emailTemplate = data.template
+            this.emailTemplate = data.template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
             this.difficulty =
               this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
             this.method =

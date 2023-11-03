@@ -215,6 +215,8 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -445,8 +447,10 @@ export default {
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
+          let template = response?.data?.data?.template || ''
+          template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.selectedTemplateHeader = response?.data?.data?.name || ''
-          this.templateHTML = response?.data?.data?.template || ''
+          this.templateHTML = template
           this.templateFromName = response?.data?.data?.fromName || ''
           this.templateSubject = response?.data?.data?.subject || ''
           this.templateFromEmail = response?.data?.data?.fromAddress || ''

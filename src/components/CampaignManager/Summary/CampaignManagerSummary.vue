@@ -527,7 +527,7 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const {
+          let {
             template,
             fromName,
             fromAddress,
@@ -539,7 +539,8 @@ export default {
             phishingFileName,
             subject
           } = emailTemplate || {}
-
+          if (this.type === SCENARIO_TYPES.QUISHING)
+            template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplateParams = {
             fromName,
             fromAddress,
@@ -565,12 +566,6 @@ export default {
             languageTypeResourceId,
             methodTypeId
           } = landingPageTemplate || {}
-          if (this.type === SCENARIO_TYPES.QUISHING) {
-            landingPages.forEach((page) => {
-              if (!page.content) return
-              page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-            })
-          }
           this.landingPageParams = {
             name: landingPageName,
             description,

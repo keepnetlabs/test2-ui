@@ -12,7 +12,7 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-      <div v-show="!isPreviewLoading" class="template-preview">
+      <div v-if="!isPreviewLoading" class="template-preview">
         <div class="template-preview__text" v-if="!!templateHTML">
           <div>
             <span class="template-preview__text--title">Template Name: </span>
@@ -62,6 +62,8 @@ import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFoot
 import labels from '@/model/constants/labels'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
@@ -88,6 +90,10 @@ export default {
     apiFunc: {
       type: Function,
       default: getEmailTemplatePreviewContent
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -131,6 +137,8 @@ export default {
                 }
               : null
           }
+          if (this.type === SCENARIO_TYPES.QUISHING)
+            data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.templateHTML = data.template
         })
         .finally(() => {

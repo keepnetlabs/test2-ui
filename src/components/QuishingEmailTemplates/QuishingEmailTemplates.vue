@@ -12,6 +12,7 @@
     />
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowPreviewDialog"
+      :type="SCENARIO_TYPES.QUISHING"
       :status="isShowPreviewDialog"
       :selected-row="selectedEmailTemplate"
       :api-func="getEmailTemplatePreviewContent"
@@ -46,6 +47,7 @@ import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simula
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
 import QuishingService from '@/api/quishing'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'QuishingEmailTemplates',
@@ -58,6 +60,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       isShowDeleteDialog: false,
       isShowNewEmailTemplateModal: false,
       isShowPreviewDialog: false,
