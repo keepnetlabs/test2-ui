@@ -297,7 +297,6 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'QuishingNewLandingPageModal',
   components: {
@@ -414,10 +413,6 @@ export default {
         delete data.parameterTypeId
         delete data.domainRecordId
         delete data.subDomain
-        data.landingPages.forEach((page) => {
-          if (!page.content) return
-          page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-        })
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
         this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
@@ -542,10 +537,6 @@ export default {
             this.availableForRequests
           )
         }
-        payload.landingPages.forEach((page) => {
-          if (!page.content) return
-          page.content = page.content.replaceAll(qrCodeString, '{QRCODEURLIMAGE}')
-        })
         if (this.isEdit && !this.isDuplicate) {
           QuishingService.updateLandingPage(payload, this.emailTemplateId)
             .then(() => {

@@ -510,6 +510,7 @@ import AppModal from '@/components/AppModal'
 import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
@@ -988,6 +989,12 @@ export default {
               const {
                 data: { data }
               } = response
+              if (this.type === SCENARIO_TYPES.QUISHING) {
+                data.emailTemplate.template = data.emailTemplate.template?.replaceAll(
+                  '{QRCODEURLIMAGE}',
+                  qrCodeString
+                )
+              }
               data.emailTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.emailTemplate?.languageTypeResourceId
               )?.description

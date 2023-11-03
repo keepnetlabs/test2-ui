@@ -4,6 +4,15 @@
       title="Data Privacy"
       sub-title="Setting the visibility of target users' data"
     />
+    <div
+      v-if="isReturnMainAccountVisible"
+      class="bg-warning px-4 py-4 max-w-554 mb-2 text-primary-color align-start fs-medium d-flex br-2"
+    >
+      <VIcon color="#B6791D">mdi-alert-circle</VIcon>
+      <span class="ml-2"
+        >You need to be a company system user to change the account privacy settings</span
+      >
+    </div>
     <FormGroup
       class="input-distribution"
       title="Store and Display Option"
@@ -11,8 +20,12 @@
     >
       <VRadioGroup
         v-model="pentesterMasked"
-        class="mt-2 mb-3 pt-0 campaign-manager-target-groups-radio"
+        :class="[
+          'mt-2 mb-3 pt-0 campaign-manager-target-groups-radio',
+          isReturnMainAccountVisible && 'k-radio-group-custom'
+        ]"
         hide-details
+        :disabled="isReturnMainAccountVisible"
       >
         <VRadio
           :id="`input--data-privacy-masked`"
@@ -20,6 +33,7 @@
           color="#2196f3"
           label="Store and display masked (Default and recommended)"
           :value="true"
+          :disabled="isReturnMainAccountVisible"
         />
         <VRadio
           :id="`input--data-privacy-clear`"
@@ -27,6 +41,7 @@
           color="#2196f3"
           label="Store encrypted and display clear text"
           :value="false"
+          :disabled="isReturnMainAccountVisible"
         />
       </VRadioGroup>
     </FormGroup>
@@ -60,8 +75,18 @@ export default {
     }
   },
   computed: {
+    isReturnMainAccountVisible() {
+      return (
+        localStorage.getItem('companyResourceId') !==
+        localStorage.getItem('selectedCompanyRequestId')
+      )
+    },
     isActionButtonDisabled() {
-      return this.defaultPentesterValue === this.pentesterMasked || this.isApiCalling
+      return (
+        this.defaultPentesterValue === this.pentesterMasked ||
+        this.isApiCalling ||
+        this.isReturnMainAccountVisible
+      )
     }
   },
   created() {
