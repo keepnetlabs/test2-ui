@@ -14,6 +14,10 @@ const QrCode = {
       'data-title': 'Qr Code',
       src: qrCodeString,
       alt: 'Qr Code'
+    },
+    style: {
+      width: '300px',
+      height: '300px'
     }
   }
 }

@@ -219,6 +219,8 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'NewQuishingEmailTemplatesModal',
   components: {
@@ -384,6 +386,12 @@ export default {
     }
     if (this.isEdit) {
       QuishingService.getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+        if (response?.data?.data?.template) {
+          response.data.data.template = response?.data?.data?.template?.replaceAll(
+            '{QRCODEURLIMAGE}',
+            qrCodeString
+          )
+        }
         this.formValues = {
           ...response.data.data,
           description: response.data.data.description || '',
@@ -562,9 +570,11 @@ export default {
         this.isSubmitDisabled = false
         return
       }
+      const payloadTemplate = this.formValues.template.replaceAll(qrCodeString, '{QRCODEURLIMAGE}')
 
       let payload = {
         ...this.formValues,
+        template: payloadTemplate,
         isDuplicated: this.isDuplicate,
         duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
         description: this.formValues.description || '',

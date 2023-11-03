@@ -184,7 +184,10 @@ export default {
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
       this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId.toString() === '3'
-      this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+      let template = phishingScenarioPreviewDto?.emailTemplate?.template || ''
+      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
+        template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+      this.emailTemplate = template
       this.emailTemplateParams = {
         name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
         fromName: phishingScenarioPreviewDto?.emailTemplate?.fromName || '',
@@ -198,12 +201,6 @@ export default {
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
-      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING) {
-        this.landingPageTemplates.forEach((page) => {
-          if (!page.content) return
-          page.content = page.content.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-        })
-      }
       this.landingPageParams = {
         mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',

@@ -64,8 +64,6 @@ import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/r
 import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
 import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
 import dateSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateSent'
-import qrCode from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{USERNAME}': userName,
@@ -132,6 +130,5 @@ export const MERGED_TEXTS_MAP = {
   '{CURRENT_DATE_MINUS_10_DAYS}': currentDateMinusTenDays,
   '{RANDOM_NUMBER_1_DIGIT}': randomNumberOneDigit,
   '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
-  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits,
-  '{QRCODEURLIMAGE}': qrCode
+  '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits
 }
