@@ -224,7 +224,7 @@
                       :id="`input--company-module-license-${index}`"
                       :key="item.resourceId"
                       v-model="formData.LicenseModuleResourceIdArray"
-                      :disabled="stepLock"
+                      :disabled="stepLock || !item.isAvailable"
                       :value="item.resourceId"
                       class="k-checkbox"
                       color="#2196f3"
@@ -627,6 +627,7 @@ export default {
       industries: [],
       licenceTypes: [],
       companyGroupList: [],
+      comapnyGroups: [],
       notificationTemplates: [],
       trainingContents: [],
       smtpConfigurations: [],
@@ -634,7 +635,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       validations: validations,
-      companyGroupPayload: getDefaultAxiosPayload()
+      companyGroupPayload: getDefaultAxiosPayload({ pageSize: 100 })
     }
   },
   computed: {
@@ -929,7 +930,20 @@ export default {
     },
     setCompanyGroups(response) {
       const { data: { data = [] } = [] } = response
-      this.companyGroupList = [...this.companyGroupList, ...data.results]
+      this.comapnyGroups = [...this.comapnyGroups, ...data.results]
+      this.companyGroupList = []
+      if (this.comapnyGroups.some((group) => !group.isOwner)) {
+        this.companyGroupList.push({ header: 'Groups That Company Belongs To' })
+        const companyGroupsThatCompanyBelongsTo = this.comapnyGroups.filter(
+          (group) => !group.isOwner
+        )
+        this.companyGroupList.push(...companyGroupsThatCompanyBelongsTo)
+      }
+      if (this.comapnyGroups.some((group) => group.isOwner)) {
+        this.companyGroupList.push({ header: 'Groups That Created By The Company' })
+        const companyGroupsThatCompanyCreated = this.comapnyGroups.filter((group) => group.isOwner)
+        this.companyGroupList.push(...companyGroupsThatCompanyCreated)
+      }
       return data
     },
     getCompanyGroups(addPage) {
@@ -1008,7 +1022,9 @@ export default {
       const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
       this.formData.LicenseModuleResourceIdArray = selectedLicenceType.licenseModules.reduce(
         (acc, item) => {
-          acc.push(item.resourceId)
+          if (item.isAvailable) {
+            acc.push(item.resourceId)
+          }
           return acc
         },
         []
