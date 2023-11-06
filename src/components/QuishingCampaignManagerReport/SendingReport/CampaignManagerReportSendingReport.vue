@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.EmailSendingReport"
-      subtitle="Phishing email delivery details"
+      subtitle="Quishing email delivery details"
     />
     <CampaignManagerReportSendingReportTable
       ref="refTable"
