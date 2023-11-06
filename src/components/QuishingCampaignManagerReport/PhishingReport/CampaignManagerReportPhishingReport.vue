@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoReported"
-      subtitle="List of users who reported the quishing email via Phishing Reporter add-in"
+      subtitle="List of users who reported the quishing email via Quishing Reporter add-in"
     />
     <CampaignManagerReportPhishingReporterItemDetailDialog
       v-if="isShowDetailDialog"
