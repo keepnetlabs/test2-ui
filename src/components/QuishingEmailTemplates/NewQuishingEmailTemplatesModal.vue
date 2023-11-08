@@ -220,7 +220,6 @@ import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'NewQuishingEmailTemplatesModal',
   components: {
@@ -316,15 +315,6 @@ export default {
           code: '2',
           description: null,
           orderNumber: 2
-        },
-        {
-          resourceId: '7dLrW2kdBTDs',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Attachment',
-          code: '3',
-          description: null,
-          orderNumber: 3
         }
       ],
       difficultyItems: [
