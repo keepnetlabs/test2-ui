@@ -44,6 +44,23 @@ export const COMMON_SIMULATOR_COLUMNS = {
       { text: 'MFA', value: 'MFA' }
     ]
   },
+  QUISHING_METHOD: {
+    property: PROPERTY_STORE.METHOD,
+    align: 'left',
+    editable: false,
+    label: labels.Method,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 240,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Click Only', value: 'Click-Only' },
+      { text: 'Data Submission', value: 'Data Submission' },
+      { text: 'MFA', value: 'MFA' }
+    ]
+  },
   LANGUAGE: {
     property: PROPERTY_STORE.LANGUAGE,
     align: 'left',
@@ -167,6 +184,23 @@ export const COMMON_SIMULATOR_COLUMNS = {
       { text: 'Click Only', value: 'WNZt0sCVCWB3' },
       { text: 'Data Submission', value: 'DYC0gugxJMjT' },
       { text: 'Attachment', value: '7dLrW2kdBTDs' }
+    ]
+  },
+  QUISHING_CATEGORY_NAME: {
+    property: PROPERTY_STORE.CATEGORYNAME,
+    align: 'left',
+    editable: false,
+    label: labels.Method,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 175,
+    filterableType: 'select',
+    filterableCustomFieldName: 'CategoryResourceId',
+    filterableItems: [
+      { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+      { text: 'Data Submission', value: 'DYC0gugxJMjT' }
     ]
   }
 }
