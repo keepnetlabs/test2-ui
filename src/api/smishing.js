@@ -263,7 +263,10 @@ const searchCampaignJobTypeDetails = (searchType, payload, resourceId) => {
 const resendSmishingCampaignToUsers = (payload, resourceId, instanceGroup) => {
   return testRequest.post(
     `/smishing-simulator/smishing-campaign-job/resend/${resourceId}/${instanceGroup}`,
-    payload
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
   )
 }
 

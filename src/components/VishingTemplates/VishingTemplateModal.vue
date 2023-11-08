@@ -142,6 +142,10 @@
                       :index="index"
                       :key="index"
                       :isRemoveDisabled="formValues.steps.length === 1"
+                      :language="selectedVishingLanguage"
+                      :voice="selectedVishingVoice"
+                      :voiceResourceId="getVoiceResourceId"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
                       @removeStep="onRemoveStep(index)"
                       @vishingStepChange="onVishingStepChange"
                     />
@@ -236,6 +240,11 @@
                       initial-placeholder="Enter text here"
                       entity-name="Text to speech"
                       :max-length="500"
+                      :language="selectedVishingLanguage"
+                      :voice="selectedVishingVoice"
+                      :voiceResourceId="getVoiceResourceId"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
+                      isTextToSpeech
                     />
                   </FormGroup>
                   <div
@@ -249,16 +258,6 @@
                           >Upload an audio file</span
                         >
                       </div>
-                      <div class="vishing-template-dialog-step__form--title-right">
-                        <AudioPlayer
-                          v-if="
-                            formValues.dialingNoticeStepInputType === 'FileUpload' &&
-                            getDialingNoticeFileSrc
-                          "
-                          isPreview
-                          :src="getDialingNoticeFileSrc"
-                        />
-                      </div>
                     </div>
                     <KFileUpload
                       hint="Only MP3 files. Max. file size 1MB"
@@ -268,6 +267,47 @@
                       @inputFile="onFileChanged"
                       @on-clear="onClearFile"
                     />
+                    <div
+                      v-if="
+                        formValues.dialingNoticeStepInputUrl || formValues.dialingNoticeStepContent
+                      "
+                      class="vishing-template-dialog-step__audio-file-preview-container"
+                    >
+                      <div class="vishing-template-dialog-step__audio-badge-container">
+                        <div class="vishing-template-dialog-step__audio-badge">
+                          <v-icon class="mr-1" color="#757575" size="large">$playfile-gray</v-icon
+                          >Audio File
+                        </div>
+                        <v-btn
+                          rounded
+                          color="#2196f3"
+                          :id="'vishing-template__play-audio-button'"
+                          :class="[
+                            'add-step-button',
+                            'button-new',
+                            isPlayAudioDisabled ? 'add-step-button--disabled' : ''
+                          ]"
+                          :disabled="isPlayAudioDisabled"
+                          @click="handlePlayAudio"
+                        >
+                          <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;"
+                            >mdi-play</v-icon
+                          >
+                          <span class="add-step-button__text" style="text-transform: none;"
+                            >Play Audio</span
+                          >
+                        </v-btn>
+                      </div>
+                      <div
+                        v-if="isPlayAudioClicked"
+                        class="vishing-template-dialog-step__audio-player-container"
+                      >
+                        <AudioPlayer
+                          class="vishing-template-dialog-step__audio-player"
+                          :src="getFileSrc"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </v-card>
               </FormGroup>
@@ -390,6 +430,7 @@ export default {
   },
   data() {
     return {
+      isPlayAudioClicked: false,
       mergeTags: [
         {
           text: 'Full Name',
@@ -494,6 +535,45 @@ export default {
     }
   },
   computed: {
+    getFileSrc() {
+      if (this.formValues?.dialingNoticeStepContent) {
+        return URL.createObjectURL(this.formValues.dialingNoticeStepContent)
+      }
+
+      if (this.formValues?.dialingNoticeStepInputUrl) {
+        return this.formValues.dialingNoticeStepInputUrl
+      }
+
+      return null
+    },
+    isPlayAudioDisabled() {
+      return (
+        (!this.formValues?.dialingNoticeStepInputUrl &&
+          !this.formValues?.dialingNoticeStepContent) ||
+        this.isPlayAudioClicked
+      )
+    },
+    getVoiceResourceId() {
+      const vishingLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedVishingLanguage &&
+          language.name === this.selectedVishingVoice
+      )
+
+      if (vishingLanguageIndex !== -1) return this.languageItems[vishingLanguageIndex].resourceId
+      return ''
+    },
+    isVoiceTextToSpeechCompatible() {
+      const vishingLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedVishingLanguage &&
+          language.name === this.selectedVishingVoice
+      )
+
+      if (vishingLanguageIndex !== -1)
+        return this.languageItems[vishingLanguageIndex].voiceProviderTypeId === 2
+      return false
+    },
     getVoiceItems() {
       if (this.selectedVishingLanguage) {
         const voiceItems = this.languageItems.filter(
@@ -596,6 +676,9 @@ export default {
     }
   },
   methods: {
+    handlePlayAudio() {
+      this.isPlayAudioClicked = true
+    },
     onVishingLanguageChange() {
       this.selectedVishingVoice = ''
     },
@@ -728,6 +811,7 @@ export default {
       return valid
     },
     onFileChanged(file) {
+      this.isPlayAudioClicked = false
       if (Array.isArray(file) && file.length === 0) {
         this.formValues.dialingNoticeStepContent = null
         this.formValues.dialingNoticeStepInputUrl = null

@@ -1,13 +1,11 @@
 <template>
-  <div class="landing-page-template-preview pt-4" v-if="hasLandingPageTemplate">
+  <div class="landing-page-template-preview" v-if="hasLandingPageTemplate">
     <div class="landing-page-template-preview__text">
       <div>
-        <div class="mb-1">
-          <span class="template-preview__text--title">Template Name: </span>
-          <span class="template-preview__text--body">{{ templateName }}</span>
-        </div>
         <div>
-          <span class="template-preview__text--title">Phishing URL: </span>
+          <span class="template-preview__text--title"
+            >{{ type === PREVIEW_DIALOG_TYPES.PHISHING ? labels.Phishing : labels.Quishing }} URL:
+          </span>
           <span class="template-preview__text--body">{{ phishingUrl }}</span>
         </div>
       </div>
@@ -20,7 +18,7 @@
         </v-btn>
       </div>
     </div>
-    <hr class="mt-2" v-if="!!getCurrentLandingPageTemplate" />
+    <hr class="mt-6" v-if="!!getCurrentLandingPageTemplate" />
     <KEmailPreview
       v-if="!!getCurrentLandingPageTemplate"
       ref="refPreview"
@@ -31,6 +29,8 @@
 
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import labels from '../../model/constants/labels'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
@@ -49,10 +49,16 @@ export default {
     phishingUrl: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: PREVIEW_DIALOG_TYPES.PHISHING
     }
   },
   data() {
     return {
+      labels,
+      PREVIEW_DIALOG_TYPES,
       selectedLandingPageIndex: 0
     }
   },

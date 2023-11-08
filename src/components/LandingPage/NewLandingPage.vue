@@ -61,44 +61,13 @@
                     ]"
                   ></v-textarea>
                 </form-group>
-                <form-group
-                  has-hint
-                  title="Method"
-                  sub-title="Select the phishing technique for this template"
-                >
-                  <KSelect
-                    v-bind="commonRules"
-                    v-model="formValues.methodTypeId"
-                    required
-                    persistent-hint
-                    outlined
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
-                    hint="*Required"
-                    :items="landingPageData.methodTypes"
-                    :slots="{ item: true }"
-                  >
-                    <template #item="{ item }">
-                      <div :class="['mail-configuration-select-sources__item-container']">
-                        <div class="mail-configuration-select-sources__item">
-                          <div class="mail-configuration-select-sources__item-left">
-                            {{ item.text }}
-                          </div>
-                          <div class="mail-configuration-select-sources__item-right-platform">
-                            {{
-                              item.text === 'Click-Only'
-                                ? 'See who falls for phishing links'
-                                : item.text === 'Data Submission'
-                                ? 'Gather information from users'
-                                : 'Send a trackable file '
-                            }}
-                          </div>
-                        </div>
-                      </div>
-                    </template>
-                  </KSelect>
-                </form-group>
+                <InputPhishingMethod
+                  v-model.trim="formValues.methodTypeId"
+                  item-text-key="text"
+                  item-value-key="value"
+                  :max-length="256"
+                  :items="landingPageData.methodTypes"
+                />
                 <form-group
                   has-hint
                   title="Language"
@@ -116,9 +85,9 @@
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
+                    v-model="formValues.tags"
                     ref="refTags"
                     :id="`input--action-tags`"
-                    v-model="formValues.tags"
                     :items="[]"
                     class="hide-caret"
                   />
@@ -148,9 +117,9 @@
                   v-model="availableForRequests"
                   ref="refMakeAvailableFor"
                   open-direction="above"
+                  sub-title="Select companies that should see this landing page template in their libraries"
+                  placeholder="Select companies or company groups"
                   :disabled="!showMakeAvailableFor"
-                  :subTitle="'Select companies that should see this landing page template in their libraries'"
-                  :placeholder="'Select companies or company groups'"
                 />
               </v-form>
             </div>
@@ -322,16 +291,16 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
+import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
+    InputPhishingMethod,
     InputPhishingLink,
-    KSelect,
     StepperFooter,
     AppModal,
     FormGroup,
@@ -344,9 +313,6 @@ export default {
     status: {
       type: Boolean,
       default: false
-    },
-    editableFormValues: {
-      required: false
     },
     isEdit: {
       type: Boolean

@@ -217,7 +217,7 @@
                           </div>
                         </div>
                       </div>
-                      <hr class="mt-2" v-if="!!emailTemplate" />
+                      <hr class="mt-4" v-if="!!emailTemplate" />
                       <KEmailPreview
                         v-if="!!emailTemplate"
                         :key="emailTemplate"
@@ -268,7 +268,7 @@
                           }}</span>
                         </div>
                       </div>
-                      <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
+                      <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
                         :html="getSingleTemplateDetails"
@@ -276,6 +276,7 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
+                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
@@ -312,7 +313,11 @@
 <script>
 import { getScenario, getScenariosList } from '@/api/scenarios'
 import labels from '@/model/constants/labels'
-import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import {
+  methods,
+  difficulties,
+  PHISHING_SCENARIOS_METHOD_TYPE_BY_ID
+} from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
@@ -320,13 +325,16 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
-
+import { mapGetters } from 'vuex'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -366,6 +374,10 @@ export default {
     campaignManagerResourceId: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -396,6 +408,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },
@@ -562,71 +577,77 @@ export default {
     },
     callForSelectedPhishingScenario(resourceId = '') {
       this.adjustTrainingModel(resourceId)
-      getScenario(resourceId).then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
+      apiFunc(resourceId).then((response) => {
         const {
           data: { data }
         } = response
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
-        this.isAttachmentBasedScenario = data.methodTypeId.toString() === '3'
+        this.isAttachmentBasedScenario =
+          data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT
         this.selectedTemplateResourceId = resourceId
-        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(resourceId).then(
-          (response) => {
-            const { data: { data = {} } = {} } = response
-            const {
-              emailTemplate,
-              landingPageTemplate,
-              methodTypeId,
-              mfaTextTemplate,
-              mfaSmsSenderNumber
-            } = data
-            const {
-              template,
-              fromName,
-              fromAddress,
-              name,
-              difficultyResourceId,
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName,
-              subject
-            } = emailTemplate || {}
-
-            this.emailTemplateParams = {
-              fromName,
-              fromAddress,
-              name,
-              subject,
-              difficulty:
-                difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
-              attachments,
-              languageTypeResourceId: languageOfEmailTemplate,
-              phishingFileName
-            }
-            this.emailTemplate = template
-            const {
-              name: landingPageName = '',
-              description,
-              landingPages,
-              urlTemplate,
-              difficultyTypeId,
-              languageTypeResourceId
-            } = landingPageTemplate || {}
-            this.landingPageParams = {
-              name: landingPageName,
-              description,
-              urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-              method: methods[methodTypeId - 1]?.text || '',
-              languageTypeResourceId,
-              mfaSmsSenderNumber,
-              mfaTextTemplate
-            }
-            this.landingPageTemplates = landingPages || []
-            this.tab = 'email'
-            this.isMethodMfa = data.methodTypeId === 4
+        const previewFunc =
+          this.type === SCENARIO_TYPES.PHISHING
+            ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
+            : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+        previewFunc(resourceId).then((response) => {
+          const { data: { data = {} } = {} } = response
+          const {
+            emailTemplate,
+            landingPageTemplate,
+            methodTypeId,
+            mfaTextTemplate,
+            mfaSmsSenderNumber
+          } = data
+          let {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName,
+            subject
+          } = emailTemplate || {}
+          if (this.type === SCENARIO_TYPES.QUISHING)
+            template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+          this.emailTemplateParams = {
+            fromName,
+            fromAddress,
+            name,
+            subject,
+            difficulty:
+              difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
+            attachments,
+            languageTypeResourceId: languageOfEmailTemplate,
+            phishingFileName
           }
-        )
+          this.emailTemplate = template
+          const {
+            name: landingPageName = '',
+            description,
+            landingPages,
+            urlTemplate,
+            difficultyTypeId,
+            languageTypeResourceId
+          } = landingPageTemplate || {}
+          this.landingPageParams = {
+            name: landingPageName,
+            description,
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+            method: methods[methodTypeId - 1]?.text || '',
+            languageTypeResourceId,
+            mfaSmsSenderNumber,
+            mfaTextTemplate
+          }
+          this.landingPageTemplates = landingPages || []
+          this.tab = 'email'
+          this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
+        })
       })
     },
     adjustTrainingModel(resourceId = '') {
@@ -649,7 +670,9 @@ export default {
       } else if (this.value.length && this.isEdit) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }
-      getScenariosList(this.axiosPayload).then((response) => {
+      const apiFunc =
+        this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
@@ -706,7 +729,7 @@ export default {
       this.axiosPayload = getDefaultAxiosPayload()
       this.callForPhishingScenarios(false)
     },
-    handleTrainingPreviewButtonClick(value = {}) {
+    handleTrainingPreviewButtonClick() {
       this.toggleShowTrainingDialog()
     },
     toggleShowTrainingDialog() {

@@ -66,6 +66,7 @@ import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/
 import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
 import phishingCode from '@/components/GrapesJs/Newsletter/mergedTexts/phishingCode'
 import phishingCallbackPhone from '@/components/GrapesJs/Newsletter/mergedTexts/phishingCallbackPhone'
+import qrCode from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 
 export const MERGED_TEXTS = {
   '{FULLNAME}': fullName,
@@ -135,11 +136,13 @@ export const MERGED_TEXTS = {
   '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
   '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits,
   '{PHISHING_CODE}': phishingCode,
-  '{PHISHING_CALLBACK_PHONE}': phishingCallbackPhone
+  '{PHISHING_CALLBACK_PHONE}': phishingCallbackPhone,
+  '{QRCODEURLIMAGE}': qrCode
 }
 
 export const SCENARIO_METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
+  CLICK_ONLY_SPACE: 'Click Only',
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment',
   MFA: 'MFA'

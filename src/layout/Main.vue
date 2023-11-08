@@ -488,6 +488,64 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
+            v-if="getSmishingSimulatorLeftMenuPermissions"
+            id="btn--link-navigator-menu-quishing-simulator-list-group"
+            no-action
+            :prepend-icon="getQuishingPrependIcon"
+            :class="['menu-with-item menu-link-default', getQuishingSimulatorClasses]"
+            :append-icon="iconPaths.mdiChevronDown"
+          >
+            <template #activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Quishing Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-if="getSmishingScenariosLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/quishing-simulator/quishing-scenarios"
+                  id="btn--link-navigator-menu-quishing-simulator"
+                  route-name="Quishing Scenarios"
+                  :router-name="routerName"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getSmishingCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/quishing-simulator/campaign-manager"
+                  id="btn--link-navigator-menu-quishing-campaign-manager"
+                  route-name="Campaign Manager"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Quishing Campaign Manager' || routerName === 'Quishing Report'
+                  "
+                  @click="handleQuishingCampaignManagerClick"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getSmishingSettingsLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/quishing-simulator/settings"
+                  id="btn--link-navigator-menu-quishing-dns-service"
+                  route-name="Settings"
+                  :router-name="routerName"
+                  :active-class-comparator="() => routerName === 'Quishing Settings'"
+                />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
             v-if="getAwarenessEducatorListGroupPermissions"
             id="btn--link-navigator-menu-awareness-educator-list-group"
             :class="[
@@ -837,6 +895,9 @@
             <h1 v-else-if="routerName === 'Smishing Report'">
               {{ getSmishingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Quishing Report'">
+              {{ getQuishingReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1069,6 +1130,16 @@ export default {
           : 'un-selected-list-item'
       ]
     },
+    getQuishingPrependIcon() {
+      return [
+        'Quishing Scenarios',
+        'Quishing Campaign Manager',
+        'Quishing Settings',
+        'Quishing Report'
+      ].includes(this.routerName)
+        ? '$qr-code-selected'
+        : '$qr-code'
+    },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
         return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
@@ -1092,6 +1163,12 @@ export default {
         return `Smishing Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Smishing Report'
+    },
+    getQuishingReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Quishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Quishing Report'
     },
     getRouterKey() {
       const { name } = this.$route
@@ -1180,6 +1257,18 @@ export default {
           routerName === 'Smishing Settings' ||
           routerName === 'Smishing Report',
         'un-selected-list-item': routerName !== 'Smishing Simulator'
+      }
+    },
+    getQuishingSimulatorClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Quishing Simulator' ||
+          routerName === 'Quishing Scenarios' ||
+          routerName === 'Quishing Campaign Manager' ||
+          routerName === 'Quishing Settings' ||
+          routerName === 'Quishing Report',
+        'un-selected-list-item': routerName !== 'Quishing Simulator'
       }
     },
     getAwarenessEducatorClasses() {
@@ -1347,6 +1436,9 @@ export default {
     },
     handleSmishingCampaignManagerClick() {
       this.$router.push('/smishing-simulator/campaign-manager?status=parent')
+    },
+    handleQuishingCampaignManagerClick() {
+      this.$router.push('/quishing-simulator/campaign-manager?status=parent')
     },
     toggleShowInitializeCompanyModal() {
       this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal

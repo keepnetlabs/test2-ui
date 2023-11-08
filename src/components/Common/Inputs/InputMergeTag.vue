@@ -49,26 +49,60 @@
       @input="$emit('input', $event)"
     >
       <template #prepend-inner>
-        <div v-if="isTextToSpeech" class="input-merge-tag__audio-container">
-          <div class="input-merge-tag__badges">
-            <div v-if="language" class="input-merge-tag__badge">
-              <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon>{{ language }}
+        <div class="input-merge-tag__inner">
+          <div v-if="isTextToSpeech" class="input-merge-tag__badges-and-button">
+            <div class="input-merge-tag__badges">
+              <div class="input-merge-tag__badge">
+                <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon
+                >{{ language || 'Language' }}
+              </div>
+              <div class="input-merge-tag__badge">
+                <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
+                >{{ voice || 'Voice' }}
+              </div>
             </div>
-            <div v-if="voice" class="input-merge-tag__badge">
-              <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
-              >{{ voice }}
-            </div>
+            <v-tooltip :disabled="!isShowTooltip" right opacity="1">
+              <template #activator="{ on }">
+                <v-btn
+                  v-on="on"
+                  rounded
+                  color="#2196f3"
+                  :id="'input-merge-tag__play-text-to-speech-button'"
+                  :class="[
+                    'add-step-button',
+                    'button-new',
+                    isPlayTextDisabled ? 'add-step-button--disabled' : ''
+                  ]"
+                  :disabled="isPlayTextDisabled"
+                  @click="handlePlayTextToSpeech"
+                >
+                  <v-icon
+                    v-if="isFetchingTTSUrl"
+                    class="ml-1 loading-spin-clockwise"
+                    color="#ffffff"
+                    medium
+                    >mdi-rotate-right
+                  </v-icon>
+                  <v-icon v-else color="#ffffff" style="font-size: 20px; margin-top: 1px;"
+                    >mdi-play</v-icon
+                  >
+                  <span class="add-step-button__text" style="text-transform: none;"
+                    >Play the Text</span
+                  >
+                </v-btn>
+              </template>
+              <span class="tooltip-span">
+                The TTS provider of the selected voice cannot provide a preview of the converted
+                speech
+              </span>
+            </v-tooltip>
           </div>
-          <v-btn
-            rounded
-            color="#2196f3"
-            :id="'input-merge-tag__play-text-to-speech-button'"
-            :class="['add-step-button', 'button-new', !value ? 'add-step-button--disabled' : '']"
-            :disabled="!value"
+          <div
+            v-if="audioSrc && isPlayTextClicked && !isFetchingTTSUrl"
+            class="input-merge-tag__audio-container"
           >
-            <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;">mdi-play</v-icon>
-            <span class="add-step-button__text" style="text-transform: none;">Play the Text</span>
-          </v-btn>
+            <AudioPlayer class="input-merge-tag__audio-player" :src="audioSrc" />
+          </div>
         </div>
       </template>
     </v-textarea>
@@ -78,8 +112,13 @@
 <script>
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { playTextToSpeech } from '@/api/vishing'
+import AudioPlayer from '@/components/AudioPlayer'
 export default {
   name: 'InputMergeTag',
+  components: {
+    AudioPlayer
+  },
   props: {
     value: {
       type: String
@@ -137,10 +176,19 @@ export default {
     },
     voice: {
       type: String
+    },
+    voiceResourceId: {
+      type: String
+    },
+    isVoiceTextToSpeechCompatible: {
+      type: Boolean
     }
   },
   data() {
     return {
+      isFetchingTTSUrl: false,
+      isPlayTextClicked: false,
+      audioSrc: '',
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) =>
@@ -186,6 +234,19 @@ export default {
     }
   },
   computed: {
+    isShowTooltip() {
+      return !this.isVoiceTextToSpeechCompatible && !!this.voice
+    },
+    isPlayTextDisabled() {
+      return (
+        !this.value ||
+        !this.language ||
+        !this.voice ||
+        (this.$refs?.refInput && !this.$refs?.refInput?.valid) ||
+        !this.isVoiceTextToSpeechCompatible ||
+        this.isPlayTextClicked
+      )
+    },
     hasOverflowItems() {
       return this.mergeTags?.length > 5
     },
@@ -197,6 +258,12 @@ export default {
     }
   },
   watch: {
+    voice(val) {
+      this.isPlayTextClicked = false
+    },
+    value(val) {
+      this.isPlayTextClicked = false
+    },
     required(val) {
       if (val) {
         this.requiredProps = {
@@ -233,6 +300,25 @@ export default {
         start_position
       )}${mergeTag}${textarea.value.substring(end_position, textarea.value.length)}`
       this.$emit('input', newValue)
+    },
+    handlePlayTextToSpeech() {
+      if (!this.value) return
+      this.isPlayTextClicked = true
+      this.isFetchingTTSUrl = true
+      const payload = {
+        inputText: this.value,
+        voiceResourceId: this.voiceResourceId
+      }
+      playTextToSpeech(payload)
+        .then((res) => {
+          if (res?.data?.data) {
+            this.audioSrc = res?.data?.data
+            this.isPlayTextClicked = true
+          }
+        })
+        .finally(() => {
+          this.isFetchingTTSUrl = false
+        })
     }
   }
 }

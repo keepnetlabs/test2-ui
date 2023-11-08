@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     icon="mdi-eye"
-    custom-size="670"
+    custom-size="900"
     :status="status"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -23,21 +23,11 @@
             >
           </div>
         </div>
-        <h3 class="template-preview__steps__header">Steps</h3>
-        <div class="template-preview__steps">
-          <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
-            <VishingTemplatePreviewStep
-              :ref="`refStep${index}`"
-              :step="step"
-              :index="index"
-              @play="handleAudioPlay(index)"
-            />
-            <hr
-              v-if="index !== templateData.steps.length - 1"
-              class="template-preview__steps__separator"
-            />
-          </div>
-        </div>
+        <VishingTemplatePreviewSteps
+          :template="templateData"
+          :isTextToSpeechCompatible="isTextToSpeechCompatible || campaignTextToSpeechCompatible"
+          :voiceResourceId="voiceResourceId || campaignVoiceResourceId"
+        />
       </div>
     </template>
     <template #app-dialog-footer>
@@ -55,13 +45,13 @@ import AppDialog from '@/components/AppDialog'
 import { getVishingCampaignPreview, getVishingTemplatePreview } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
+import VishingTemplatePreviewSteps from '@/components/VishingTemplates/VishingTemplatePreviewSteps'
 export default {
   name: 'VishingTemplatePreview',
   components: {
     DatatableLoading,
     AppDialog,
-    VishingTemplatePreviewStep
+    VishingTemplatePreviewSteps
   },
   props: {
     isCampaign: {
@@ -76,10 +66,29 @@ export default {
     showTemplateInfo: {
       type: Boolean,
       default: true
+    },
+    isTextToSpeechCompatible: {
+      type: Boolean,
+      default: false
+    },
+    voiceResourceId: {
+      type: String
+    },
+    language: {
+      type: String
+    },
+    voice: {
+      type: String
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
+      campaignVoiceResourceId: '',
+      campaignTextToSpeechCompatible: false,
       isLoading: false,
       labels,
       timeoutId: '',
@@ -117,7 +126,32 @@ export default {
             (step) => step.order === 0
           )
           if (invalidDialingNoticeStepIndex !== -1) {
+            this.templateData = {
+              ...this.templateData,
+              invalidDialingNotice: this?.templateData.steps[invalidDialingNoticeStepIndex]
+            }
             this?.templateData?.steps?.splice(invalidDialingNoticeStepIndex, 1)
+          }
+          if (!this.isCampaign) {
+            this.templateData = {
+              ...this.templateData,
+              language: this.language,
+              voice: this.voice
+            }
+          } else {
+            const voiceIndex = this.languages.findIndex(
+              (language) => language.resourceId === this.templateData.vishingLanguageResourceId
+            )
+            if (voiceIndex !== -1) {
+              this.templateData = {
+                ...this.templateData,
+                language: this.languages[voiceIndex].language,
+                voice: this.languages[voiceIndex].name
+              }
+              this.campaignVoiceResourceId = this.templateData.vishingLanguageResourceId
+              this.campaignTextToSpeechCompatible =
+                this.languages[voiceIndex].voiceProviderTypeId === 2
+            }
           }
         })
         .finally(() => {

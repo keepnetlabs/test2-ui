@@ -5,6 +5,10 @@
       :status="isPreviewVisible"
       :selectedRow="selectedTemplate"
       :showTemplateInfo="false"
+      :isTextToSpeechCompatible="isTextToSpeechCompatible"
+      :voiceResourceId="voiceResourceId"
+      :language="selectedTemplateLanguage"
+      :voice="selectedTemplateVoice"
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteVishingTemplateDialog
@@ -150,6 +154,10 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      selectedTemplateLanguage: '',
+      selectedTemplateVoice: '',
+      voiceResourceId: '',
+      isTextToSpeechCompatible: false,
       vishingTemplateId: null,
       modalStatus: false,
       isPreviewVisible: false,
@@ -244,7 +252,7 @@ export default {
           {
             property: 'availableFor',
             align: 'right',
-            label: labels.AvailalbeFor,
+            label: labels.AvailableFor,
             fixed: false,
             sortable: false,
             hideSort: true,
@@ -325,6 +333,28 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload({}, 'default'),
       serverSideProps: new ServerSideProps()
+    }
+  },
+  watch: {
+    selectedTemplate: {
+      deep: true,
+      handler(val) {
+        if (!val) {
+          this.voiceResourceId = ''
+          this.isTextToSpeechCompatible = false
+          return
+        }
+        const vishingLanguageIndex = this.languageItems.findIndex(
+          (language) => language.language === val.language && language.name === val.voice
+        )
+        if (vishingLanguageIndex !== -1) {
+          this.voiceResourceId = this.languageItems[vishingLanguageIndex].resourceId
+          this.isTextToSpeechCompatible =
+            this.languageItems[vishingLanguageIndex].voiceProviderTypeId === 2 || false
+          this.selectedTemplateLanguage = val.language
+          this.selectedTemplateVoice = val.voice
+        }
+      }
     }
   },
   computed: {

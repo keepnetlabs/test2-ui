@@ -22,5 +22,13 @@
       color: #2196f3;
     }
   }
+}
+.k-radio-group-custom{
+  .v-radio {
+    opacity:0.5 !important;
 
+  }
+  .v-radio .mdi-radiobox-marked{
+    color: #2196F3 !important;
+  }
 }

@@ -19,12 +19,14 @@
         @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       />
     </v-overlay>
-    <DeleteEmailTemplates
+    <CommonSimulatorEmailTemplateDeleteDialog
       v-if="showDeleteModal"
       :status="showDeleteModal"
-      :selectedEmailTemplate="selectedEmailTemplate"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :selected-email-template="selectedEmailTemplate"
+      :api-func="deleteLandingPageTemplate"
+      :type="SCENARIO_DELETE_DIALOG_TYPES.LANDING_PAGE"
+      @on-success="handleSuccessDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -139,7 +141,6 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import DeleteEmailTemplates from '@/components/SmishingLandingPages/DeleteLandingPage'
 import NewLandingPage from '@/components/SmishingLandingPages/NewLandingPage'
 import AppDialog from '@/components/AppDialog'
 import {
@@ -162,10 +163,13 @@ import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPag
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
+import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
+import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    CommonSimulatorEmailTemplateDeleteDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
@@ -173,7 +177,6 @@ export default {
     DefaultButtonRowAction,
     DatatableLoading,
     DataTable,
-    DeleteEmailTemplates,
     NewLandingPage,
     AppDialog,
     LandingPageTemplateModalPreview
@@ -181,6 +184,7 @@ export default {
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
+      SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
       editableFormValues: {},
       loading: true,
@@ -383,6 +387,7 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    deleteLandingPageTemplate: SmishingService.deleteLandingPageTemplate,
     callForData() {
       this.loading = true
       if (this.getSmishingLandingPageTemplatesSearchPermissions) {

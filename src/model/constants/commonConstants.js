@@ -170,6 +170,10 @@ export const PROPERTY_STORE = {
   RECIPIENT_TYPE: 'recipientType',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
+  EMAIL_TEMPLATE: 'emailTemplate',
+  JUSTDIFFICULTY: 'difficulty',
+  QUISHING_SCENARIO_NAME: 'quishingScenarioName',
+  LANDING_PAGE_TEMPLATE: 'landingPageTemplate',
   EMAIL_DELIVERY: 'emailDelivery',
   SCENARIO_COUNT: 'scenarioCount',
   AUDIENCE: 'audience',
@@ -182,7 +186,6 @@ export const PROPERTY_STORE = {
   ENROLLED_BY: 'enrolledBy',
   TOEMAIL: 'toEmail',
   PHISHING_SCENARIO_NAME: 'phishingScenarioName',
-  EMAİL: 'email',
   FREQUENCY_DESCRIPTION: 'frequencyDescription',
   OWNER: 'owner',
   FROMEMAIL: 'fromEmail',
@@ -325,8 +328,31 @@ export const TABLE_SETTINGS_KEYS = {
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
+    'QuishingCampaignManagerReportSubmittedMfaDataTableSettings',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTableSettings',
+  QUISHING_DOMAINS: 'QuishingDomainsTableSettings',
+  QUISHING_SCENARIOS: 'QuishingScenariosTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_ITEM_TABLE: 'QuishingCampaignManagerItemTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_PARENT_TABLE: 'QuishingCampaignManagerParentTableSettings',
   VISHING_REPORT_DIALED_TABLE: 'VishingReportDialedTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE: 'QuishingCampaignManagerFrequencyTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE:
+    'QuishingCampaignManagerReportSubmittedDataTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE:
+    'QuishingCampaignManagerReportSendingReportTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
+    'QuishingCampaignManagerReportPhishingReporterTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE:
+    'QuishingCampaignManagerReportAttachmentTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE:
+    'QuishingCampaignManagerReportClickedTableSettings',
+  QUISHING_EMAIL_TEMPLATES: 'QuishingEmailTemplatesTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE:
+    'QuishingCampaignManagerReportNoResponseTableSettings',
+  QUISHING_LANDING_PAGES: 'QuishingLandingPagesTableSettings',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'QuishingCampaignManagerReportOpenedTableSettings',
+  QUISHING_DNSSERVICELIST: 'QuishingDNSServiceListTableSettings',
   VISHING_REPORT_NO_RESPONSE_TABLE: 'VishingReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_FREQUENCY_TABLE: 'CampaignManagerFrequencyTableSettings',
   TRASH_LIST: 'TrashListTableSettings',
@@ -465,8 +491,31 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSearchContainerKeys',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTable',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
+  QUISHING_DOMAINS: 'QuishingDomainsTableContainerKeys',
+  QUISHING_SCENARIOS: 'QuishingScenariosTableContainerKeys',
+  QUISHING_DNSSERVICELIST: 'QuishingDNSServiceListTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
+    'QuishingCampaignManagerReportSubmittedMfaDataTableSearchKeys',
   VISHING_REPORT_DIALED_TABLE: 'VishingReportDialedTable',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE:
+    'QuishingCampaignManagerReportSubmittedDataTableSearchKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE:
+    'QuishingCampaignManagerReportSendingReportTable',
+  QUISHING_LANDING_PAGES: 'QuishingLandingPagesTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_FREQUENCY_TABLE: 'QuishingCampaignManagerFrequencyTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
+    'QuishingCampaignManagerReportPhishingReporterTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_ATTACHMENT_TABLE:
+    'QuishingCampaignManagerReportAttachmentTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE:
+    'QuishingCampaignManagerReportClickedTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE:
+    'QuishingCampaignManagerReportNoResponseTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_REPORT_OPENED_TABLE:
+    'QuishingCampaignManagerReportOpenedTableContainerKeys',
+  QUISHING_CAMPAIGN_MANAGER_ITEM_TABLE: 'QuishingCampaignManagerItemTableContainerKeys',
   VISHING_REPORT_NO_RESPONSE_TABLE: 'VishingReportNoResponseTable',
+  QUISHING_EMAIL_TEMPLATES: 'QuishingEmailTemplatesTableContainerKeys',
   CAMPAIGN_MANAGER_FREQUENCY_TABLE: 'CampaignManagerFrequencyTableContainerKeys',
   TRASH_LIST: 'TrashListTable',
   DIRECT_EMAIL_CREATION: 'DirectEmailCreationTable',
@@ -476,6 +525,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_NO_RESPONSE_TABLE: 'TrainingReportNoResponseTable',
   TRAINING_REPORT_SENDING_REPORT_TABLE: 'TrainingReportSendingReportTable',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
+  QUISHING_CAMPAIGN_MANAGER_PARENT_TABLE: 'QuishingCampaignManagerParentTable',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
   CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
