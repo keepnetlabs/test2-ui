@@ -349,11 +349,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      const totalActiveUsersWithPhoneNumberCount =
+      return (
         this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      return totalActiveUsersWithPhoneNumberCount
+      )
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -364,20 +364,19 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      const totalActiveUsersCount =
+      return (
         userCountDetailResponse?.data.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      return totalActiveUsersCount
+      )
     },
     getSettingsItems() {
       const { selectedSchedule, duration, senderPhoneNumber } = this.formData
-      const obj = {
+      return {
         Starting: selectedSchedule,
         Duration: duration,
         'Sender Phone Number': senderPhoneNumber
       }
-      return obj
     },
     getOtherSettingsItems() {
       const {
