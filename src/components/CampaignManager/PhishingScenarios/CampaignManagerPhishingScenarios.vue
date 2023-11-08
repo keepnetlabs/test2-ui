@@ -284,6 +284,7 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :type="type"
                       :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />

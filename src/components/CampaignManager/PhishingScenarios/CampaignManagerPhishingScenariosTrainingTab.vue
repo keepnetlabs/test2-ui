@@ -3,9 +3,9 @@
     <AlertBox
       v-if="!isInputsEditable"
       class="mb-4 mr-4 ml-3 bg-aqua-light"
-      text="A phishing scenario should be selected in order to be able to choose a training"
       icon-color="#2196F3"
       icon-name="mdi-information"
+      :text="getAlertBoxText"
       :slots="{ primaryAction: false, secondaryAction: false }"
     />
     <FormGroup
@@ -61,6 +61,7 @@ import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguag
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: { InputContentLanguage, KSelect, AlertBox, FormGroup },
@@ -74,6 +75,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -89,6 +94,23 @@ export default {
     }
   },
   computed: {
+    getAlertBoxText() {
+      let scenarioText = ''
+      switch (this.type) {
+        case SCENARIO_TYPES.PHISHING:
+          scenarioText = 'phishing'
+          break
+        case SCENARIO_TYPES.QUISHING:
+          scenarioText = 'quishing'
+          break
+        case SCENARIO_TYPES.SMISHING:
+          scenarioText = 'smishing'
+          break
+        default:
+          break
+      }
+      return `A ${scenarioText} scenario should be selected in order to be able to choose a training`
+    },
     isInputsEditable() {
       return this?.value?.isCheckboxSelected
     },
