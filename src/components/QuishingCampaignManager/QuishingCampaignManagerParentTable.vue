@@ -161,7 +161,7 @@ export default {
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
           COLUMNS.SCENARIO_COUNT,
-          COLUMNS.METHOD,
+          COLUMNS.QUISHING_METHOD,
           COLUMNS.CREATEDBY,
           COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATE_TIME,
