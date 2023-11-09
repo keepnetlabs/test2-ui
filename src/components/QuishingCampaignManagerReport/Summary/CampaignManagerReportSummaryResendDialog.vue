@@ -37,9 +37,7 @@
             :disabled="!items.clickedEmail"
             :value="2"
           >
-            <template #label>
-              Clicked Scanned QR link {{ `(${items.clickedEmail || 0})` }}</template
-            >
+            <template #label> Scanned QR link {{ `(${items.clickedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
