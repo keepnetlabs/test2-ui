@@ -147,6 +147,14 @@
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerSummaryLandingPage :formData="landingPageParams" :isMethodMfa="isMethodMfa" />
     </div>
+    <div class="campaign-manager-last-step__landing-page-template mt-4">
+      <CampaignManagerReportSummaryTraining
+        v-if="isRenderTrainingCard"
+        :selected-row="selectedTraining"
+        :training-params="trainingParams"
+        :selected-training-languages="selectedTrainingLanguages"
+      />
+    </div>
   </div>
 </template>
 
@@ -163,10 +171,13 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import CampaignManagerSummaryLandingPage from '@/components/SmishingCampaignManager/CampaignManagerSummaryLandingPage'
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog.vue'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
+import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'CampaignManagerSummary',
   components: {
+    CampaignManagerReportSummaryTraining,
     CampaignManagerScheduleDialog,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
@@ -202,11 +213,18 @@ export default {
       selectedScenarioResourceId: '',
       selectedScenarioMethodTypeId: '',
       isShowScheduleDialog: false,
+      trainingParams: null,
+      selectedTraining: null,
+      trainingLanguages: [],
+      selectedTrainingLanguages: [],
       textTemplateParams: {},
       landingPageParams: {}
     }
   },
   computed: {
+    isRenderTrainingCard() {
+      return this.trainingParams
+    },
     getScheduledDialogItems() {
       return this?.formData?.scheduleItems || []
     },
@@ -331,11 +349,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      const totalActiveUsersWithPhoneNumberCount =
+      return (
         this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      return totalActiveUsersWithPhoneNumberCount
+      )
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -346,20 +364,19 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      const totalActiveUsersCount =
+      return (
         userCountDetailResponse?.data.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      return totalActiveUsersCount
+      )
     },
     getSettingsItems() {
       const { selectedSchedule, duration, senderPhoneNumber } = this.formData
-      const obj = {
+      return {
         Starting: selectedSchedule,
         Duration: duration,
         'Sender Phone Number': senderPhoneNumber
       }
-      return obj
     },
     getOtherSettingsItems() {
       const {
@@ -391,10 +408,18 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.callForTrainingLanguages()
+  },
   methods: {
     callForScenarioDetail(event = {}) {
       const resourceId = event?.name || ''
       if (!resourceId) return
+      const training = this?.formData?.trainings?.[resourceId]
+      if (training && training.trainingId) {
+        this.selectedTraining = training
+        this.callForTrainingDetail(training.trainingId)
+      } else this.trainingParams = null
       this.isScenarioDetailLoading = true
       SmishingService.previewSmishingScenario(resourceId)
         .then((response) => {
@@ -451,6 +476,33 @@ export default {
           this.selectedScenarioMethodTypeId = scenarioMethodTypeId
         })
         .finally(() => (this.isScenarioDetailLoading = false))
+    },
+    callForTrainingDetail(trainingId = '') {
+      AwarenessEducatorService.getTraining(trainingId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.trainingParams = { ...data }
+        let selectedLanguages = []
+        this.selectedTraining.trainingLanguageIds.forEach((lang) => {
+          const language = this.trainingLanguages.find((item) => item.id === lang)
+          if (language)
+            selectedLanguages.push({
+              text: language.name,
+              value: language.id,
+              code: language.code
+            })
+        })
+        this.selectedTrainingLanguages = selectedLanguages
+        this.trainingParams.languages = this.selectedTrainingLanguages
+          .map((lang) => lang.code)
+          .join(' | ')
+      })
+    },
+    callForTrainingLanguages() {
+      AwarenessEducatorService.getLanguages().then((res) => {
+        this.trainingLanguages = res?.data?.data || []
+      })
     },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)
