@@ -37,7 +37,9 @@
             :disabled="!items.clickedEmail"
             :value="2"
           >
-            <template #label> Clicked phishing link {{ `(${items.clickedEmail || 0})` }}</template>
+            <template #label>
+              Clicked Scanned QR link {{ `(${items.clickedEmail || 0})` }}</template
+            >
           </v-checkbox>
           <v-checkbox
             v-model="types"
@@ -52,7 +54,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.submittedEmail"
+            :disabled="!items.mfa"
             :value="8"
           >
             <template #label> Submitted MFA code {{ `(${items.mfa || 0})` }}</template>

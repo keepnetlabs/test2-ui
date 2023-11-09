@@ -70,10 +70,12 @@
     .campaign-manager-report-summary-info-card {
         margin-top: 24px;
         margin-left: 16px;
-
+      &.campaign-manager-report-summary-info-card--email-icon .campaign-manager-report-summary-info-card-body__icon{
+        right:0 !important; ;
+        bottom:-2px !important;
+      }
         &:first-child {
             margin-left: 0 !important;
-
             .campaign-manager-report-summary-info-card-body__icon {
                 right: -10px;
                 bottom: -12px;
