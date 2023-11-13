@@ -143,8 +143,8 @@
                     <InputPhishingLink
                       ref="refInputPhishingLink"
                       v-model="formValues.phishingLink"
-                      title="Quishing Link"
-                      subtitle="Create a quishing link for users to click and be directed to the landing page"
+                      title="QR code link"
+                      subtitle="Create a QR code link for users to click and be directed to the landing page"
                       :url-schema-types="getUrlSchemaTypes"
                       :domain-records="getDomainRecordTypes"
                       :extension-types="getExtensionTypes"
