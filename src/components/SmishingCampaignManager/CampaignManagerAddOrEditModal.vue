@@ -274,7 +274,8 @@ export default {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings
+          refCampaignManagerDeliverySettings,
+          refCampaignManagerPhishingScenarios
         } = this.$refs
         const scheduleTypeId =
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId
@@ -314,6 +315,7 @@ export default {
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
+        formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
       }
       return formData
     },
@@ -567,19 +569,28 @@ export default {
               formData: deliverySettingsFormData,
               inputScheduleFormData,
               inputDistributionFormData
-            }
+            },
+            refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
           deliverySettingsFormData = {
             ...deliverySettingsFormData,
             ...inputScheduleFormData,
             ...inputDistributionFormData
           }
+          const smishingScenarios = []
+          Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
+            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
+              phishingScenarioResourceId
+            ]
+            if (!isCheckboxSelected) return
+            smishingScenarios.push({
+              trainingId,
+              trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
+              phishingScenarioResourceId
+            })
+          })
           const payload = {
-            smishingScenarios: this.selectedPhishingScenarios.map((pScenario) => ({
-              phishingScenarioResourceId: pScenario.resourceId,
-              trainingId: '',
-              trainingLanguageIds: []
-            })),
+            smishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
