@@ -203,6 +203,7 @@
             <v-tooltip bottom opacity="1">
               <template #activator="{ on }">
                 <v-btn
+                  v-if="showRefreshButton"
                   v-on="on"
                   :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
                   icon
@@ -1164,6 +1165,10 @@ export default {
     refreshButtonDisabled: {
       type: Boolean,
       default: false
+    },
+    showRefreshButton: {
+      type: Boolean,
+      default: true
     },
     rowActions: {
       type: Array,
