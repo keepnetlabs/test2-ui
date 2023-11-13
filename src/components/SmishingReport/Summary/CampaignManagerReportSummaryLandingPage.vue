@@ -6,7 +6,7 @@
     detailable-button-id="btn-preview--campaign-report-landing-page-template"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowLandingPageTemplate"
-    :title="labels.LandingPageWhoUsers"
+    :title="labels.LandingPageWhoUsersSmishing"
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
