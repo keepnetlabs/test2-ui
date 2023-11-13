@@ -38,7 +38,7 @@ export default {
       ReportsService.getReports()
         .then((response) => {
           const { data: { data = [] } = {} } = response || {}
-          this.reports = data
+          this.reports = data.sort((a, b) => a.orderNumber - b.orderNumber)
         })
         .finally(this.setLoading)
     },
