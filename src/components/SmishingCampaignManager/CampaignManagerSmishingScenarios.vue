@@ -15,13 +15,15 @@
         <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
       </template>
       <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleTemplateDialog"
-            >CLOSE
-          </v-btn>
-        </div>
+        <AppDialogFooterWithClose @on-close="toggleTemplateDialog" />
       </template>
     </AppDialog>
+    <TrainingLibraryPreviewDialog
+      v-if="isShowTrainingDialog"
+      :status="isShowTrainingDialog"
+      :selected-row="trainingTabModel[selectedTemplateResourceId]"
+      @on-close="toggleShowTrainingDialog"
+    />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -232,6 +234,20 @@
                       />
                     </div>
                   </ElTabPane>
+                  <ElTabPane
+                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
+                    :label="labels.Training"
+                    name="training"
+                    id="campaign-manager-info--training-content"
+                  >
+                    <CampaignManagerPhishingScenariosTrainingTab
+                      ref="trainingTab"
+                      v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :type="SCENARIO_TYPES.SMISHING"
+                      :is-edit="isEdit"
+                      @on-preview="handleTrainingPreviewButtonClick"
+                    />
+                  </ElTabPane>
                 </ElTabs>
               </div>
             </template>
@@ -269,10 +285,19 @@ import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
+import { mapGetters } from 'vuex'
+import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CampaignManagerSmishingScenarios',
   components: {
+    TrainingLibraryPreviewDialog,
+    CampaignManagerPhishingScenariosTrainingTab,
+    AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
     KSelect,
@@ -310,8 +335,10 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       tab: 'textMessage',
       axiosPayload: getDefaultAxiosPayload(),
+      trainingTabModel: {},
       checkboxModel: {},
       labels,
       methods,
@@ -331,10 +358,14 @@ export default {
       selectedLandingPageTab: '1',
       landingPageTemplates: [],
       phishingScenarioItems: [],
-      isMethodMfa: false
+      isMethodMfa: false,
+      isShowTrainingDialog: false
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },
@@ -395,14 +426,33 @@ export default {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
       }
+      const addTrainingKeyToTabModel = (val) => {
+        this.$set(
+          this.trainingTabModel,
+          val.value,
+          new TrainingTabModel(val.trainingId, val.trainingName, val.trainingLanguageIds, true)
+        )
+      }
       if (Array.isArray(val)) {
         val.forEach((item) => {
+          addTrainingKeyToTabModel(item)
           setCheckbox(item.value)
         })
       } else {
+        addTrainingKeyToTabModel(val)
         setCheckbox(val.value)
       }
       this.callForPhishingScenarios()
+    },
+    adjustTrainingModel(resourceId = '') {
+      if (!resourceId) return
+      if (!this.trainingTabModel[resourceId]) {
+        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
+      } else if (
+        this.trainingTabModel?.[resourceId].trainingId &&
+        !this.trainingTabModel?.[resourceId]?.trainingLanguageIds?.length
+      )
+        this?.$refs?.trainingTab?.$refs?.inputContentLanguage?.setDefaultValue()
     },
     search(val) {
       this.debounce(() => {
@@ -604,6 +654,11 @@ export default {
       this.isShowTemplate = !this.isShowTemplate
     },
     setSelectedTemplate(item = {}, value = false) {
+      if (this.trainingTabModel[item.resourceId]) {
+        this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
+      } else {
+        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel('', '', [], value))
+      }
       if (value) {
         this.$emit('input', [...this.value, item])
       } else {
@@ -623,6 +678,12 @@ export default {
       this.language = ''
       this.axiosPayload = getDefaultAxiosPayload()
       this.callForPhishingScenarios(false)
+    },
+    handleTrainingPreviewButtonClick() {
+      this.toggleShowTrainingDialog()
+    },
+    toggleShowTrainingDialog() {
+      this.isShowTrainingDialog = !this.isShowTrainingDialog
     }
   }
 }
