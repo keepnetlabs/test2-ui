@@ -11,7 +11,7 @@
     <FormGroup
       :class-name="getTrainingInputClassName"
       title="Select Training"
-      sub-title="The system sends the selected training to the target users who click on the phishing link, and the enrollment is created"
+      :sub-title="getSubtitle"
     >
       <KSelect
         :value="value.trainingId"
@@ -94,6 +94,12 @@ export default {
     }
   },
   computed: {
+    getSubtitle() {
+      let type = SCENARIO_TYPES.PHISHING
+      if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING
+      else if (this.type === SCENARIO_TYPES.SMISHING) type = SCENARIO_TYPES.SMISHING
+      return `The system sends the selected training to the target users who click on the ${type.toLowerCase()} link, and the enrollment is created`
+    },
     getAlertBoxText() {
       let scenarioText = ''
       switch (this.type) {
