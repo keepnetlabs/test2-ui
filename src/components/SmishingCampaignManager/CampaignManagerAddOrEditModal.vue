@@ -100,6 +100,8 @@
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
+              isSmishing
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -228,6 +230,9 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
+    },
     showSchedule() {
       if (this.step === 5) {
         const { refCampaignManagerDeliverySettings } = this.$refs
