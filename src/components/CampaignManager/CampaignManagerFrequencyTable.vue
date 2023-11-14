@@ -96,9 +96,7 @@ import CampaignManagerItemRowActions from '@/components/CampaignManager/Campaign
 import {
   deletePhishingCampaignJob,
   exportCampaignManagerItem,
-  launchPhishingCampaignInstanceGroup,
-  searchCampaignPhishingJob,
-  stopPhishingCampaignJob
+  searchCampaignPhishingJob
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
