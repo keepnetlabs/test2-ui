@@ -303,4 +303,17 @@
       border-bottom-right-radius: 24px;
     }
   }
+  .template-preview {
+    height: 100%;
+  }
+  .template-preview__steps {
+    height: 100%;
+  }
+  .callback-template-preview-steps {
+    height: 100%;
+    border-radius: 0px;
+  }
+  .callback-template-preview-steps__steps-container {
+    height: 100%;
+  }
 }

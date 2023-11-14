@@ -20,7 +20,7 @@
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
-    <CampaignManagerCreateNewInstanceDialog
+    <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
       :resource-id="launchResourceId"
@@ -67,7 +67,7 @@
       @on-close="handleCloseNoTargetUserGroupModal"
       @on-confirm="handleConfirmNoTargetUserGroupModal"
     />
-    <CampaignManagerDeleteDialog
+    <CommonCampaignManagerDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :item="selectedRow"
@@ -124,12 +124,12 @@
 import CampaignManagerParentTable from '@/components/SmishingCampaignManager/CampaignManagerParentTable'
 import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
-import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
+import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog'
 import SmishingService from '@/api/smishing'
 import CampaignManagerFrequencyTable from '@/components/SmishingCampaignManager/CampaignManagerFrequencyTable'
 import { createTargetGroup } from '@/api/targetUsers'
 import CampaignManagerPreview from '@/components/SmishingCampaignManager/CampaignManagerPreview'
-import CampaignManagerCreateNewInstanceDialog from '@/components/SmishingCampaignManager/CampaignManagerCreateNewInstanceDialog'
+import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/SmishingCampaignManager/CampaignManagerNewInstanceModal'
@@ -142,9 +142,9 @@ export default {
   name: 'CallbackCampaignManager',
   components: {
     KContainer,
-    CampaignManagerCreateNewInstanceDialog,
+    CommonCampaignManagerCreateNewInstanceDialog,
     CampaignManagerPreview,
-    CampaignManagerDeleteDialog,
+    CommonCampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     NoScenarioModal,

@@ -7,7 +7,11 @@
         name="scenarios"
         id="smishing-scenarios-content"
       >
-        <CallbackScenariosTab v-if="tab === 'scenarios'" ref="refScenarios" />
+        <CallbackScenariosTab
+          v-if="tab === 'scenarios'"
+          ref="refScenarios"
+          :languages="languages"
+        />
       </el-tab-pane>
       <el-tab-pane
         v-if="getSmishingLandingPageTemplatesSearchPermissions"
@@ -35,6 +39,7 @@ import CallbackTemplates from '@/components/CallbackScenarios/CallbackTemplates'
 import CallbackScenarios from '@/components/CallbackScenarios/CallbackScenarios'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
+import { getVishingTemplateLanguages } from '@/api/vishing'
 
 export default {
   name: 'CallbackScenarios',
@@ -46,6 +51,7 @@ export default {
   },
   data() {
     return {
+      languages: [],
       tab: 'scenarios'
     }
   },
@@ -60,6 +66,11 @@ export default {
     })
   },
   methods: {
+    callForLanguages() {
+      getVishingTemplateLanguages().then((response) => {
+        this.languages = response?.data?.data || []
+      })
+    },
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
     },
@@ -81,6 +92,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     if (
       !this.getSmishingScenariosSearchPermissions &&
       this.getSmishingTextMessageTemplatesSearchPermissions

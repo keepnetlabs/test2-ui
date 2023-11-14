@@ -1,7 +1,7 @@
 <template>
   <AppModal :status="status" icon-name="$callback" :title="getTitle">
     <template #overlay-body>
-      <v-stepper light v-model="step" class="k-stepper vishing-template">
+      <v-stepper light v-model="step" class="k-stepper callback-template">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
             >Template Info</v-stepper-step
@@ -22,7 +22,7 @@
               <FormGroup title="Template Name" has-hint>
                 <InputEntityName
                   v-model.trim="formValues.name"
-                  id="input--new-vishing-templates-template-name"
+                  id="input--new-callback-templates-template-name"
                   entityName="template name"
                   initialPlaceholder="Enter a name"
                 />
@@ -30,7 +30,7 @@
               <FormGroup title="Description" sub-title="Describe the template briefly">
                 <InputDescription
                   v-model.trim="formValues.description"
-                  id="input--new-vishing-templates-description"
+                  id="input--new-callback-templates-description"
                   initialPlaceholder="Description"
                   rows="2"
                   height="100"
@@ -48,7 +48,7 @@
               </FormGroup>
               <FormGroup
                 title="Difficulty"
-                subTitle="Select a detection difficulty level for this vishing template"
+                subTitle="Select a detection difficulty level for this callback template"
                 class-name="mb-6"
               >
                 <v-radio-group
@@ -101,7 +101,7 @@
                     :rules="[(v) => Validations.required(v, labels.Required)]"
                     class="filter-field-scenarios mr-4"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
-                    @input="onVishingLanguageChange"
+                    @input="onCallbackLanguageChange"
                   />
                   <KSelect
                     v-model="selectedCallbackVoice"
@@ -139,7 +139,7 @@
                 class="mt-4"
                 style="max-width: 610px;"
                 title="Steps"
-                sub-title="Define your vishing template step by step"
+                sub-title="Define your callback template step by step"
               >
                 <div
                   :class="{
@@ -161,7 +161,6 @@
                       :language="selectedCallbackLanguage"
                       :voice="selectedCallbackVoice"
                       @removeStep="onRemoveStep(index)"
-                      @callbackStepChange="onCallbackStepChange"
                     />
                   </draggable>
                 </div>
@@ -343,7 +342,7 @@ const initialFormValues = {
   description: '',
   tags: [],
   difficulty: 1,
-  vishingLanguageResourceId: '',
+  callbackLanguageResourceId: '',
   availableForRequests: [],
   dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
@@ -354,9 +353,9 @@ const initialFormValues = {
   callGreeting: {
     inputType: 'TextToSpeech',
     inputText: '',
-    inputDigit: 0,
     content: null,
     duration: 0,
+    phishingCodeDigits: 6,
     isDigitEnteringStep: false,
     inputUrl: null,
     isExpanded: true
@@ -610,12 +609,12 @@ export default {
           this.formValues.steps.splice(invalidDialingNoticeStepIndex, 1)
         }
         this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
-        const vishingItemIndex = this.languageItems.findIndex(
-          (language) => this.formValues.vishingLanguageResourceId === language.resourceId
+        const callbackItemIndex = this.languageItems.findIndex(
+          (language) => this.formValues.callbackLanguageResourceId === language.resourceId
         )
-        if (vishingItemIndex !== -1) {
-          this.selectedCallbackLanguage = this.languageItems[vishingItemIndex].language
-          this.selectedCallbackVoice = this.languageItems[vishingItemIndex].name
+        if (callbackItemIndex !== -1) {
+          this.selectedCallbackLanguage = this.languageItems[callbackItemIndex].language
+          this.selectedCallbackVoice = this.languageItems[callbackItemIndex].name
         }
         delete this.formValues.availableForList
         delete this.formValues.createTime
@@ -629,7 +628,7 @@ export default {
     }
   },
   methods: {
-    onVishingLanguageChange() {
+    onCallbackLanguageChange() {
       this.selectedCallbackVoice = ''
     },
     onRemoveStep(index) {
@@ -685,15 +684,6 @@ export default {
           break
       }
       this.formValues.steps.push(newItem)
-    },
-    onCallbackStepChange(index) {
-      for (let i = 0; i < this.formValues.steps.length; i++) {
-        if (index === i) {
-          this.formValues.steps[i].isDigitEnteringStep = true
-        } else {
-          this.formValues.steps[i].isDigitEnteringStep = false
-        }
-      }
     },
     validateFailStep() {
       return this.formValues.steps.some((step) => step.isDigitEnteringStep)
@@ -861,15 +851,15 @@ export default {
       for (let i = 0; i < this.formValues.tags.length; i++) {
         formData.append(`Tags[${i}]`, this.formValues.tags[i])
       }
-      const vishingLanguageIndex = this.languageItems.findIndex(
+      const callbackLanguageIndex = this.languageItems.findIndex(
         (language) =>
           language.language === this.selectedCallbackLanguage &&
           language.name === this.selectedCallbackVoice
       )
-      if (vishingLanguageIndex !== -1) {
+      if (callbackLanguageIndex !== -1) {
         formData.append(
-          'VishingLanguageResourceId',
-          this.languageItems[vishingLanguageIndex].resourceId
+          'callbackLanguageResourceId',
+          this.languageItems[callbackLanguageIndex].resourceId
         )
       }
       formData.append('Difficulty', this.formValues.difficulty)

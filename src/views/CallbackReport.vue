@@ -31,15 +31,16 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import CampaignManagerReportSummary from '@/components/SmishingReport/Summary/CampaignManagerReportSummary'
-// import SmishingReportUsers from '@/components/SmishingReport/Users/CampaignReportUsers'
-import CampaignManagerReportClicked from '@/components/SmishingReport/Clicked/CampaignManagerReportClicked'
-// import CampaignManagerReportOpened from '@/components/SmishingReport/Opened/CampaignManagerReportOpened'
-import CampaignManagerReportSubmittedData from '@/components/SmishingReport/SubmittedData/CampaignManagerReportSubmittedData'
-import CampaignManagerReportSubmittedMFACode from '@/components/SmishingReport/SubmittedMFACode/CampaignManagerReportSubmittedMFACode'
-import CampaignManagerReportNoResponse from '@/components/SmishingReport/NoResponse/CampaignManagerReportNoResponse'
-import CampaignManagerReportSendingReport from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReport'
+import CampaignManagerReportSummary from '@/components/CallbackReport/Summary/CampaignManagerReportSummary'
+import CampaignManagerReportOpened from '@/components/CallbackReport/Opened/CampaignManagerReportOpened'
+import CampaignManagerReportNoResponse from '@/components/CallbackReport/NoResponse/CampaignManagerReportNoResponse'
+import CallbackReportReporters from '@/components/CallbackReport/PhishingReport/CampaignManagerReportPhishingReport'
+import CampaignManagerReportSendingReport from '@/components/CallbackReport/SendingReport/CampaignManagerReportSendingReport'
+import CallbackReportCalledBack from '@/components/CallbackReport/CalledBack/CallbackReportCalledBack'
+import CallbackReportEnteredDigits from '@/components/CallbackReport/EnteredDigits/CallbackReportEnteredDigits'
+// TODO: Change api endpoints
 import SmishingService from '@/api/smishing'
+import { getCampaignJobSummary } from '@/api/phishingsimulator'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import KContainer from '@/components/KContainer/KContainer'
 
@@ -49,13 +50,14 @@ export default {
   data() {
     return {
       customFields: [],
-      isLoading: true,
+      isLoading: false,
       tab: labels.Summary,
       apiResponse: {},
+      // TODO: Change permissions
       tabItems: [
         {
           name: labels.Summary,
-          id: 'smishing-report-summary-content',
+          id: 'callback-report-summary-content',
           label: labels.Summary,
           component: CampaignManagerReportSummary,
           isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
@@ -67,30 +69,44 @@ export default {
         //   component: SmishingReportUsers,
         //   isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
         // },
-        // {
-        //   name: labels.Opened,
-        //   id: 'campaign-manager-report-opened-content',
-        //   label: labels.Opened,
-        //   component: CampaignManagerReportOpened,
-        //   isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
-        // },
         {
-          name: labels.Clicked,
-          id: 'smishing-report-clicked-content',
-          label: labels.Clicked,
-          component: CampaignManagerReportClicked,
+          name: labels.Opened,
+          id: 'callback-report-opened-content',
+          label: labels.Opened,
+          component: CampaignManagerReportOpened,
+          isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
+        },
+        {
+          name: `Called Back`,
+          id: 'callback-report-called-back-content',
+          label: `Called Back`,
+          component: CallbackReportCalledBack,
           isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
         },
         {
-          name: labels.NoResponse,
-          id: 'smishing-report-no-response-content',
-          label: labels.NoResponse,
+          name: `Entered Digits`,
+          id: 'callback-report-entered-digits-content',
+          label: `Entered Digits`,
+          component: CallbackReportEnteredDigits,
+          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+        },
+        {
+          name: `No Response`,
+          id: 'callback-report-no-response-content',
+          label: `No Response`,
           component: CampaignManagerReportNoResponse,
           isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
         },
         {
+          name: `Reporters`,
+          id: 'callback-report-reporters-content',
+          label: `Reporters`,
+          component: CallbackReportReporters,
+          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+        },
+        {
           name: labels.SendingReport,
-          id: 'campaign-manager-report-sending-response-content',
+          id: 'callback-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport,
           isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
@@ -110,22 +126,21 @@ export default {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
   },
-  watch: {
-    '$route.params.id': {
-      handler: function (id) {
-        if (id) {
-          this.setSubmittedDataTabLabel()
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  },
   created() {
+    this.callForSummary()
     this.callForCustomFields()
     this.callForFormDetails()
   },
   methods: {
+    callForSummary() {
+      getCampaignJobSummary(this.id, this.instanceGroup)
+        .then((response) => {
+          this.apiResponse = response
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     callForCustomFields() {
       getTargetUserCustomFieldsByCompanyId().then((response) => {
         this.customFields = response?.data?.data
@@ -135,43 +150,6 @@ export default {
       SmishingService.getCampaignFormDetails().then((response) => {
         this.formDetails = response?.data?.data
       })
-    },
-    setSubmittedDataTabLabel() {
-      if (!this.id || !this.instanceGroup) return
-      SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
-        .then((response) => {
-          this.apiResponse = response
-          const scenarios = response?.data?.data?.scenarios || []
-          const firstScenario = scenarios[0]
-          if (!firstScenario || !scenarios.length) return
-          const isSubmittedData = scenarios.some(
-            (scenario) => scenario.landingPageTemplateInfo.methodTypeId.toString() === '2'
-          )
-          const isSubmittedMFA = scenarios.some(
-            (scenario) => scenario.scenarioInfo.methodTypeId.toString() === '4'
-          )
-          if (isSubmittedData) {
-            this.tabItems.splice(this.tabItems.length - 2, 0, {
-              name: labels.SubmittedData,
-              id: 'smishing-report-submitted-data-content',
-              label: labels.SubmittedData,
-              component: CampaignManagerReportSubmittedData,
-              isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
-            })
-          }
-          if (isSubmittedMFA) {
-            this.tabItems.splice(this.tabItems.length - 2, 0, {
-              name: 'Submitted MFA Code',
-              id: 'smishing-report-submitted-mfa-code-content',
-              label: 'Submitted MFA Code',
-              component: CampaignManagerReportSubmittedMFACode,
-              isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
-            })
-          }
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
     }
   }
 }

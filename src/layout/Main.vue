@@ -359,7 +359,7 @@
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/callback-simulator/callback-scenarios"
-                  id="btn--link-navigator-menu-callback-scenario"
+                  id="btn--link-navigator-menu-callback-scenarios"
                   route-name="Callback Scenarios"
                   :router-name="routerName"
                 />
@@ -380,6 +380,21 @@
                       routerName === 'Callback Campaign Manager' || routerName === 'Callback Report'
                   "
                   @click="handleCallbackCampaignManagerClick"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <!-- //TODO: Add permissions -->
+            <v-list-item
+              v-if="getCampaignManagerLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/callback-simulator/settings"
+                  id="btn--link-navigator-menu-callback-settings"
+                  route-name="Settings"
+                  :router-name="routerName"
+                  :active-class-comparator="() => routerName === 'Callback Settings'"
                 />
               </v-list-item-content>
             </v-list-item>
@@ -898,6 +913,9 @@
             <h1 v-else-if="routerName === 'Quishing Report'">
               {{ getQuishingReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Callback Report'">
+              {{ getCallbackReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1169,6 +1187,12 @@ export default {
         return `Quishing Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Quishing Report'
+    },
+    getCallbackReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Callback Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Callback Report'
     },
     getRouterKey() {
       const { name } = this.$route

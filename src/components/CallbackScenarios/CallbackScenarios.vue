@@ -1,6 +1,6 @@
 <template>
   <div id="callback-scenarios">
-    <PhishingScenariosFastLaunch
+    <CommonSimulatorFastLaunch
       v-if="isShowFastLaunch"
       ref="fastLaunch"
       :status="isShowFastLaunch"
@@ -15,7 +15,7 @@
       :z-index="99"
       color="white"
     >
-      <NewScenario
+      <CallbackScenarioModal
         ref="newScenarioModal"
         :status="modalStatus"
         :scenarioId="scenarioId"
@@ -23,6 +23,7 @@
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
         :scenarioDetailsLookup="scenarioDetailsLookup"
+        :languages="languages"
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
@@ -127,7 +128,7 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import NewScenario from '@/components/CallbackScenarios/CallbackScenarioModal'
+import CallbackScenarioModal from '@/components/CallbackScenarios/CallbackScenarioModal'
 import DeleteScenario from '@/components/CallbackScenarios/DeleteCallbackScenario'
 import {
   getStoreValue,
@@ -141,7 +142,7 @@ import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 // TODO: Change endpoints
 import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
-import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
+import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
 import CallbackScenarioPreview from '@/components/CallbackScenarios/CallbackScenarioPreview'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
@@ -161,10 +162,15 @@ export default {
     RowActionsMenu,
     DefaultButtonRowAction,
     CallbackScenarioPreview,
-    PhishingScenariosFastLaunch,
+    CommonSimulatorFastLaunch,
     DataTable,
     DeleteScenario,
-    NewScenario
+    CallbackScenarioModal
+  },
+  props: {
+    languages: {
+      type: Array
+    }
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {

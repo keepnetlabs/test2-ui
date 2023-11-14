@@ -113,7 +113,7 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreivewSteps'
+import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 export default {
   name: 'CallbackScenarioPreview',
   components: {
@@ -234,9 +234,9 @@ export default {
               inputType: 'TextToSpeech',
               inputText:
                 'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              inputDigit: 6,
               content: null,
               duration: 0,
+              phishingCodeDigits: 6,
               isDigitEnteringStep: false,
               isPhishingCodeStep: true,
               inputUrl: null

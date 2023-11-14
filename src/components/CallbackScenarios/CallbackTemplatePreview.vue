@@ -13,22 +13,7 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <div v-else :class="['template-preview']">
-        <h3 class="template-preview__steps__header">Steps</h3>
-        <div class="template-preview__steps">
-          <CallbackTemplatePreviewSteps :template="templateData" />
-          <!-- <div v-if="isRenderSteps" v-for="(step, index) in templateData.steps" :key="index">
-            <CallbackTemplatePreviewStep
-              :ref="`refStep${index}`"
-              :step="step"
-              :index="index"
-              @play="handleAudioPlay(index)"
-            />
-            <hr
-              v-if="index !== templateData.steps.length - 1"
-              class="template-preview__steps__separator"
-            />
-          </div> -->
-        </div>
+        <CallbackTemplatePreviewSteps :template="templateData" />
       </div>
     </template>
     <template #app-dialog-footer>
@@ -47,7 +32,7 @@ import AppDialog from '@/components/AppDialog'
 import { getVishingCampaignPreview, getVishingTemplatePreview } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreivewSteps'
+import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 
 export default {
   name: 'CallbackTemplatePreview',
@@ -155,9 +140,9 @@ export default {
               inputType: 'TextToSpeech',
               inputText:
                 'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              inputDigit: 6,
               content: null,
               duration: 0,
+              phishingCodeDigits: 6,
               isDigitEnteringStep: false,
               isPhishingCodeStep: true,
               inputUrl: null

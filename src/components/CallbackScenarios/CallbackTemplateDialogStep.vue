@@ -13,7 +13,7 @@
           :value="value.isDigitEnteringStep"
           label="Digit Entering Step"
           customStyle="text-transform: none;"
-          @input="onVishingStepChange"
+          @input="onCallbackStepChange"
         />
         <v-tooltip :disabled="!isRemoveDisabled" right max-width="200">
           <template v-slot:activator="{ on }">
@@ -80,13 +80,6 @@
               <label class="callback-template-dialog-step__form-label">Audio File</label>
               <span class="callback-template-dialog-step__form-subtitle">Upload an audio file</span>
             </div>
-            <div class="callback-template-dialog-step__form--title-right">
-              <AudioPlayer
-                v-if="value.inputType === 'FileUpload' && getFileSrc"
-                isPreview
-                :src="getFileSrc"
-              />
-            </div>
           </div>
           <KFileUpload
             hint="*Required (Only MP3 files. Max. file size 1MB)"
@@ -97,6 +90,37 @@
             @inputFile="onFileChanged"
             @on-clear="onClearFile"
           />
+          <div
+            v-if="value.inputUrl || value.content"
+            class="callback-template-dialog-step__audio-file-preview-container"
+          >
+            <div class="callback-template-dialog-step__audio-badge-container">
+              <div class="callback-template-dialog-step__audio-badge">
+                <v-icon class="mr-1" color="#757575" size="large">$playfile-gray</v-icon>Audio File
+              </div>
+              <v-btn
+                rounded
+                color="#2196f3"
+                :id="'callback-template-dialog-step__play-audio-button'"
+                :class="[
+                  'add-step-button',
+                  'button-new',
+                  isPlayAudioDisabled ? 'add-step-button--disabled' : ''
+                ]"
+                :disabled="isPlayAudioDisabled"
+                @click="handlePlayAudio"
+              >
+                <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;">mdi-play</v-icon>
+                <span class="add-step-button__text" style="text-transform: none;">Play Audio</span>
+              </v-btn>
+            </div>
+            <div
+              v-if="isPlayAudioClicked"
+              class="callback-template-dialog-step__audio-player-container"
+            >
+              <AudioPlayer class="callback-template-dialog-step__audio-player" :src="getFileSrc" />
+            </div>
+          </div>
           <CustomError
             class="mb-4"
             style="margin-top: 2px;"
@@ -128,7 +152,7 @@
           />
         </FormGroup>
         <FormGroup
-          v-if="value.inputType !== 'Pause'"
+          v-if="value.inputType !== 'Pause' && !isCallGreeting"
           className="mt-4"
           labelClassName="callback-template-dialog-step__form-label"
           title="Number of digits"
@@ -136,7 +160,7 @@
         >
           <v-text-field
             v-model.number="value.inputDigit"
-            placeholder="Enter pause duration"
+            placeholder="Enter digit count"
             class="callback-template-dialog-step__input-digit"
             type="number"
             style="max-width: 205px;"
@@ -212,6 +236,9 @@ export default {
     }
   },
   computed: {
+    isPlayAudioDisabled() {
+      return (!this.value?.inputUrl && !this.value?.content) || this.isPlayAudioClicked
+    },
     getTitle() {
       const { inputType } = this.value
       if (inputType === 'TextToSpeech' || inputType === 1) {
@@ -250,6 +277,7 @@ export default {
   },
   data() {
     return {
+      isPlayAudioClicked: false,
       mergeTags: [
         {
           text: 'Full Name',
@@ -308,6 +336,9 @@ export default {
     }
   },
   methods: {
+    handlePlayAudio() {
+      this.isPlayAudioClicked = true
+    },
     onToggleExpansion() {
       this.$emit('input', { ...this.value, isExpanded: !this.value.isExpanded })
     },
@@ -333,13 +364,11 @@ export default {
         })
       }
     },
-    onVishingStepChange(val) {
+    onCallbackStepChange(val) {
       this.$emit('input', { ...this.value, isDigitEnteringStep: val })
-      if (val) {
-        this.$emit('callbackStepChange', this.index)
-      }
     },
     onFileChanged(file) {
+      this.isPlayAudioClicked = false
       if (Array.isArray(file) && file.length === 0) {
         this.$emit('input', { ...this.value, content: null, inputUrl: null })
         this.fileUploadErrorText = `Audio file can't be empty.`
