@@ -60,6 +60,8 @@
               :last-column-name="lastColumnName"
               :add-row-class-name="addRowClassName"
               :is-vishing="isVishing"
+              :isSmishing="isSmishing"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
             />
           </div>
         </Multipane>
@@ -111,6 +113,14 @@ export default {
       default: false
     },
     isCallApiWhenCreated: {
+      type: Boolean,
+      default: false
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isMFAScenarioSelected: {
       type: Boolean,
       default: false
     }

@@ -21,6 +21,11 @@
         :text="getUnverifiedDomainsText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
+      <AlertBox
+        v-if="canRenderPhoneNumberAlertBox"
+        :text="getPhoneNumberWarningText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -72,6 +77,14 @@ export default {
     isVishing: {
       type: Boolean,
       default: false
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -80,6 +93,7 @@ export default {
       totalUserCount: 0,
       activeUserCount: 0,
       activeUsersWithPhoneNumberCount: 0,
+      activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       CONSTANTS: {
@@ -159,13 +173,54 @@ export default {
     canRenderAlertbox() {
       return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
+    canRenderPhoneNumberAlertBox() {
+      return this.activeUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+    },
     getUnverifiedDomainsText() {
       return `There are ${this.usersFromUnverifiedDomainsCount} active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
       } with unverified domains in this group. Please verify the domains in order to send emails.`
+    },
+    getPhoneNumberWarningText() {
+      return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.activeUsersWithPhoneNumberCount
+      } active user${this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone number${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } and ${this.activeUsersWithoutPhoneNumberCount} active user${
+        this.activeUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } without phone number${
+        this.activeUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } in this group. Only the ${this.activeUsersWithPhoneNumberCount} user${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone number${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } will receive MFA scenario.`
     }
   },
   watch: {
+    isMFAScenarioSelected(val) {
+      if (this.isSmishing) return
+      if (val) {
+        this.tableOptions.columns.push({
+          property: 'phoneNumber',
+          align: 'left',
+          editable: false,
+          label: 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          overrideWidth: true,
+          hideSort: true
+        })
+      } else {
+        const phoneNumberColumnIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'phoneNumber'
+        )
+        if (phoneNumberColumnIndex > -1) {
+          this.tableOptions.columns.splice(phoneNumberColumnIndex, 1)
+        }
+      }
+    },
     resourceId() {
       this.callForData()
     }
@@ -199,6 +254,10 @@ export default {
                 data
                   .find((row) => row.status === 'Active')
                   ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+              const activeUsersWithoutPhoneNumberCount =
+                data
+                  .find((row) => row.status === 'Active')
+                  ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
               const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
               const usersFromUnverifiedDomainsCount =
                 data
@@ -209,6 +268,7 @@ export default {
               this.inactiveUserCount = inactiveUserCount
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
               this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
+              this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
               this.setLoading(false)
             })
             .catch(() => {
