@@ -277,13 +277,15 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(this.parentResourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-stop', {
+        resourceId: this.parentResourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaignInstanceGroup(this.parentResourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-start', {
+        resourceId: this.parentResourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     getErrorMessage(row = {}) {

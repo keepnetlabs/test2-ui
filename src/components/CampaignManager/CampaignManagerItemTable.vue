@@ -310,13 +310,15 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-stop', {
+        resourceId: this.item.resourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaignInstanceGroup(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-start', {
+        resourceId: this.item.resourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     getErrorMessage(row = {}) {
