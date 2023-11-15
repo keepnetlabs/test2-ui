@@ -510,11 +510,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      const totalActiveUsersWithPhoneNumberCount =
+      return (
         this.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      return totalActiveUsersWithPhoneNumberCount
+      )
     },
     getSendCallsText() {
       return `${this.getTotalActiveUsersWithPhoneNumber} user${
