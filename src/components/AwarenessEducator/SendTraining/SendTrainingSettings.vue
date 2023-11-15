@@ -1,5 +1,12 @@
 <template>
   <v-form ref="refForm" class="send-training-settings">
+    <FormGroup has-hint :title="labels.EnrollmentName">
+      <InputEntityName
+        v-model.trim="formData.name"
+        id="input--enrollment-name"
+        entity-name="name"
+      />
+    </FormGroup>
     <FormGroup
       class="send-training-settings__lms"
       title="Training Delivery for Your LMS"
@@ -303,10 +310,12 @@ import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
 import { getTimeByTimeZone } from '@/api/company'
 import AlertBox from '@/components/AlertBox'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 
 export default {
   name: 'SendTrainingSettings',
   components: {
+    InputEntityName,
     AlertBox,
     InputContentLanguage,
     InputTimezone,
@@ -359,6 +368,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       formData: {
+        name: '',
         isSendSMSNotification: false,
         senderPhoneNumber: '',
         smsText: '',

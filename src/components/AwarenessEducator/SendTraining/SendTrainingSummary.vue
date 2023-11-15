@@ -12,7 +12,7 @@
         :items="getSettingItems"
       />
     </div>
-    <div class="campaign-manager-last-step__target-users mt-4">
+    <div v-if="!isProxy" class="campaign-manager-last-step__target-users mt-4">
       <CampaignManagerSummaryCard
         detailable
         icon="mdi-account-multiple"

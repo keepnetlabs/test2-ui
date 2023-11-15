@@ -20,7 +20,7 @@
             class="k-stepper__step"
             :complete="step > 1"
             :step="1"
-            >{{ labels.SelectUsers }}
+            >{{ labels.EnrollmentSettings }}
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
@@ -28,7 +28,7 @@
             class="k-stepper__step"
             :complete="step > 2"
             :step="2"
-            >{{ labels.Settings }}
+            >{{ labels.TargetAudience }}
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
@@ -43,16 +43,8 @@
           <v-stepper-content class="k-stepper__content" :step="1">
             <ConfigureCompanyStepHeader
               class="mb-8"
-              :title="labels.SelectRecipients"
-              :subtitle="labels.SelectRecipientsSub"
-            />
-            <SendTrainingSelectUsers ref="refSendTrainingSelectUsers" />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.Settings"
-              :subtitle="labels.SendTrainingSettingsSub"
+              :title="labels.EnrollmentSettings"
+              :subtitle="labels.EnrollmentSettingsSub"
             />
             <SendTrainingSettings
               ref="refSendTrainingSettings"
@@ -63,6 +55,14 @@
               :phone-number-items="phoneNumberItems"
               :phone-numbers="phoneNumbers"
             />
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content" :step="2">
+            <ConfigureCompanyStepHeader
+              class="mb-8"
+              :title="labels.SelectRecipients"
+              :subtitle="labels.SelectRecipientsSub"
+            />
+            <SendTrainingSelectUsers ref="refSendTrainingSelectUsers" :is-proxy="isTrainingProxy" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -183,6 +183,11 @@ export default {
     }
   },
   computed: {
+    isTrainingProxy() {
+      if (this.step === 2 || this.step === 3)
+        return this?.$refs?.refSendTrainingSettings?.formData?.isProxy
+      return false
+    },
     getTitle() {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
@@ -314,8 +319,12 @@ export default {
       this.$emit(EMITS.ON_CLOSE)
     },
     async changeStep(flag = 1) {
-      if (this.step === 1 && flag === 1) {
-        const { refSendTrainingSelectUsers } = this.$refs
+      if (this.step === 2 && flag === 1) {
+        const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+        if (refSendTrainingSettings?.formData?.isProxy) {
+          this.step += flag
+          return
+        }
         if (refSendTrainingSelectUsers.selectedRadioGroupIndex === 0) {
           const ids = refSendTrainingSelectUsers.formData.targetGroupResourceIds.map(
             (item) => item.value
@@ -380,7 +389,7 @@ export default {
             this.step += flag
           }
         }
-      } else if (this.step === 2 && flag === 1) {
+      } else if (this.step === 1 && flag === 1) {
         const { refSendTrainingSettings } = this.$refs
         if (
           refSendTrainingSettings &&
@@ -452,7 +461,8 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
-        languageIds
+        languageIds,
+        name
       } = refSendTrainingSettings.formData
       const newLanguageIds = languageIds.filter((languageId) => languageId !== 'All')
       const phishingCampaignConditionTypes = []
@@ -463,6 +473,7 @@ export default {
       }
       if (enrollmentScheduler.scheduledTimeZoneId) enrollmentScheduler.useOwnTimeZone = false
       const payload = {
+        name,
         trainingId: this.selectedRow.trainingId,
         targetGroupResourceIds:
           selectedIndex === 0
@@ -521,7 +532,8 @@ export default {
         promises.push(
           AwarenessEducatorService.downloadTrainingPackage({
             trainingId: row.trainingId,
-            languageId
+            languageId,
+            name: this.$refs?.refSendTrainingSettings?.formData?.name || ''
           })
         )
       })
