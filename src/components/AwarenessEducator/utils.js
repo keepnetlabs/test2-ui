@@ -37,6 +37,28 @@ export const ENROLLMENT_STATUSES_FILTER = [
 ]
 
 export const COLUMNS = {
+  ENROLLMENT_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.EnrollmentName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  TRAINING_NAME_UNFIXED: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.TrainingName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
   NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
