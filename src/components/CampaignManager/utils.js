@@ -196,6 +196,23 @@ export const COLUMNS = {
     ],
     width: 160
   },
+  QUISHING_METHOD: {
+    property: PROPERTY_STORE.METHOD,
+    align: 'left',
+    label: labels.Method,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Multiple Method', value: 'Multiple Method' },
+      { text: 'Click Only', value: 'Click-Only' },
+      { text: 'Data Submission', value: 'Data Submission' },
+      { text: 'MFA', value: 'MFA' }
+    ],
+    width: 160
+  },
   EMAIL_DELIVERY: {
     property: PROPERTY_STORE.EMAIL_DELIVERY,
     align: 'left',

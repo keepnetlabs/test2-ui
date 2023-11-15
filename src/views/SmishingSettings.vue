@@ -1,5 +1,5 @@
 <template>
-  <KContainer id="phishing-settings">
+  <KContainer id="smishing-settings">
     <el-tabs v-model="tab">
       <el-tab-pane
         v-if="getSmishingDomainSearchPermissions"

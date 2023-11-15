@@ -1,7 +1,11 @@
+.template-preview__text{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
 .template-preview__text--body,.template-preview__text--title{
   font-weight: 400;
   font-size: 16px;
-  line-height: 22px;
   color:#383B41;
 }
 .template-preview__text--subject{

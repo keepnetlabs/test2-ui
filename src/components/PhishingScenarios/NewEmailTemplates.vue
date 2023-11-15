@@ -26,7 +26,7 @@
               </v-list-item>
 
               <v-form ref="refFormStep1" lazy-validation>
-                <form-group title="Template Name" has-hint class-name="mt-8">
+                <FormGroup title="Template Name" has-hint class-name="mt-8">
                   <InputEntityName
                     v-model.trim="formValues.name"
                     id="input--new-email-templates-template-name"
@@ -34,8 +34,8 @@
                     initialPlaceholder="Enter a name"
                     :disabled="editItemsDisabled"
                   />
-                </form-group>
-                <form-group title="Description" sub-title="Describe the template briefly">
+                </FormGroup>
+                <FormGroup title="Description" sub-title="Describe the template briefly">
                   <InputDescription
                     v-model.trim="formValues.description"
                     id="input--new-email-templates-description"
@@ -44,45 +44,11 @@
                     height="100"
                     :maxLength="300"
                   />
-                </form-group>
-                <form-group
-                  title="Method"
-                  sub-title="Select the phishing technique for this template"
-                  has-hint
-                >
-                  <k-select
-                    v-bind="commonRules"
-                    v-model.trim="formValues.categoryResourceId"
-                    :items="methodItems"
-                    item-disabled="disabled"
-                    item-text="name"
-                    item-value="resourceId"
-                    outlined
-                    hint="*Required"
-                    required
-                    persistent-hint
-                    :slots="{ item: true }"
-                  >
-                    <template #item="{ item }">
-                      <div :class="['mail-configuration-select-sources__item-container']">
-                        <div class="mail-configuration-select-sources__item">
-                          <div class="mail-configuration-select-sources__item-left">
-                            {{ item.name }}
-                          </div>
-                          <div class="mail-configuration-select-sources__item-right-platform">
-                            {{
-                              item.name === 'Click Only'
-                                ? 'See who falls for phishing links'
-                                : item.name === 'Data Submission'
-                                ? 'Gather information from users'
-                                : 'Send a trackable file '
-                            }}
-                          </div>
-                        </div>
-                      </div>
-                    </template>
-                  </k-select>
-                </form-group>
+                </FormGroup>
+                <InputPhishingMethod
+                  v-model.trim="formValues.categoryResourceId"
+                  :items="methodItems"
+                />
                 <form-group
                   has-hint
                   title="Language"
@@ -235,7 +201,6 @@
 
 <script>
 import AppModal from '../AppModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -257,12 +222,13 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
+import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
+    InputPhishingMethod,
     StepperFooter,
-    KSelect,
     AppModal,
     FormGroup,
     MakeAvailableFor,
@@ -276,9 +242,6 @@ export default {
     status: {
       type: Boolean,
       default: false
-    },
-    editableFormValues: {
-      required: false
     },
     isEdit: {
       type: Boolean
@@ -312,7 +275,7 @@ export default {
       tagSearch: '',
       labels,
       step: 1,
-      Validations: Validations,
+      Validations,
       initialFormValues: {},
       formValues: {
         name: '',

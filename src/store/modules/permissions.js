@@ -7,18 +7,30 @@ const {
   PHISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
   PHISHING_SCENARIO_LEFT_MENU_PERMISSIONS,
   CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  PHISHING_SCENARIO_PERMISSIONS,
+  EMAIL_TEMPLATES_PERMISSIONS,
+  LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  CAMPAIGN_MANAGER_PARENT,
   SETTINGS_LEFT_MENU_PERMISSIONS,
+  QUISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  QUISHING_SCENARIO_LEFT_MENU_PERMISSIONS,
+  QUISHING_SCENARIO_PERMISSIONS,
+  QUISHING_EMAIL_TEMPLATES_PERMISSIONS,
+  QUISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  QUISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  QUISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
+  QUISHING_CAMPAIGN_MANAGER_PARENT,
+  QUISHING_DNS_PERMISSIONS,
+  QUISHING_DOMAIN_PERMISSIONS,
+  QUISHING_EXCLUDE_IP_ADDRESS_PERMISSIONS,
   INCIDENT_RESPONDER_LIST_GROUP_PERMISSIONS,
   INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS,
   PHISHING_REPORTER_LEFT_MENU_PERMISSIONS,
   REPORTS_LEFT_MENU_PERMISSIONS,
   COMPANY_LEFT_MENU_PERMISSIONS,
   THREAT_SHARING_PERMISSIONS,
-  PHISHING_SCENARIO_PERMISSIONS,
-  EMAIL_TEMPLATES_PERMISSIONS,
-  LANDING_PAGE_TEMPLATES_PERMISSIONS,
-  CAMPAIGN_MANAGER_PARENT,
   CAMPAIGN_REPORTS_PERMISSIONS,
+  QUISHING_CAMPAIGN_REPORTS_PERMISSIONS,
   DOMAIN_PERMISSIONS,
   DNS_PERMISSIONS,
   EXCLUDE_IP_ADDRESS_PERMISSIONS,
@@ -92,6 +104,7 @@ const defaultState = {
   landingPageTemplatesPermissions: LANDING_PAGE_TEMPLATES_PERMISSIONS,
   campaignManagerParentPermissions: CAMPAIGN_MANAGER_PARENT,
   campaignReportsPermissions: CAMPAIGN_REPORTS_PERMISSIONS,
+  quishingCampaignReportsPermissions: QUISHING_CAMPAIGN_REPORTS_PERMISSIONS,
   domainPermisisons: DOMAIN_PERMISSIONS,
   dnsPermissions: DNS_PERMISSIONS,
   incidentResponderOtherPermissions: INCIDENT_RESPONDER_OTHER_PERMISSIONS,
@@ -142,7 +155,18 @@ const defaultState = {
   smishingDnsPermissions: SMISHING_DNS_PERMISSIONS,
   smishingDomainPermissions: SMISHING_DOMAIN_PERMISSIONS,
   smishingExcludedIpPermissions: SMISHING_EXCLUDED_IP_PERMISSIONS,
-  trainingReportsPermissions: TRAINING_REPORTS_PERMISSIONS
+  trainingReportsPermissions: TRAINING_REPORTS_PERMISSIONS,
+  quishingSimulatorLeftPermissions: QUISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  quishingScenarioLeftPermissions: QUISHING_SCENARIO_LEFT_MENU_PERMISSIONS,
+  quishingScenarioPermissions: QUISHING_SCENARIO_PERMISSIONS,
+  quishingEmailTemplatesPermissions: QUISHING_EMAIL_TEMPLATES_PERMISSIONS,
+  quishingLandingPageTemplatesPermissions: QUISHING_LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  quishingCampaignManagerLeftPermissions: QUISHING_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  quishingSettingsLeftPermissions: QUISHING_SETTINGS_LEFT_MENU_PERMISSIONS,
+  quishingCampaignManagerParentPermissions: QUISHING_CAMPAIGN_MANAGER_PARENT,
+  quishingDnsPermissions: QUISHING_DNS_PERMISSIONS,
+  quishingDomainPermissions: QUISHING_DOMAIN_PERMISSIONS,
+  quishingExcludeIpAddressPermissions: QUISHING_EXCLUDE_IP_ADDRESS_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -246,6 +270,173 @@ const store = {
     getPhishingScenariosExportPermissions(state) {
       return state?.phishingScenariosPermissions?.EXPORT?.hasPermission
     },
+
+    getQuishingSimulatorLeftMenuPermissions(state) {
+      return state?.quishingSimulatorLeftPermissions?.isOneOfThemPermitted
+    },
+    getQuishingScenarioLeftMenuPermissions(state) {
+      return state?.quishingScenarioLeftPermissions?.isOneOfThemPermitted
+    },
+    getQuishingScenariosSearchPermissions(state) {
+      return state?.quishingScenarioPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingScenariosPreviewPermissions(state) {
+      return state?.quishingScenarioPermissions?.PREVIEW?.hasPermission
+    },
+    getQuishingScenariosEditPermissions(state) {
+      return state?.quishingScenarioPermissions?.EDIT?.hasPermission
+    },
+    getQuishingScenariosCreatePermissions(state) {
+      return state?.quishingScenarioPermissions?.CREATE?.hasPermission
+    },
+    getQuishingScenariosDeletePermissions(state) {
+      return state?.quishingScenarioPermissions?.DELETE?.hasPermission
+    },
+    getQuishingScenariosExportPermissions(state) {
+      return state?.quishingScenarioPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingEmailTemplatesSearchPermissions(state) {
+      return state?.quishingEmailTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingEmailTemplatesEditPermissions(state) {
+      return state?.quishingEmailTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getQuishingEmailTemplatesCreatePermissions(state) {
+      return state?.quishingEmailTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getQuishingEmailTemplatesDeletePermissions(state) {
+      return state?.quishingEmailTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getQuishingEmailTemplatesExportPermissions(state) {
+      return state?.quishingEmailTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingLandingPageTemplatesSearchPermissions(state) {
+      return state?.quishingLandingPageTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingLandingPageTemplatesEditPermissions(state) {
+      return state?.quishingLandingPageTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getQuishingLandingPageTemplatesCreatePermissions(state) {
+      return state?.quishingLandingPageTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getQuishingLandingPageTemplatesDeletePermissions(state) {
+      return state?.quishingLandingPageTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getQuishingLandingPageTemplatesExportPermissions(state) {
+      return state?.quishingLandingPageTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingCampaignManagerLeftMenuPermissions(state) {
+      return state?.quishingCampaignManagerLeftPermissions?.isOneOfThemPermitted
+    },
+    getQuishingCampaignManagerParentSearchPermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingCampaignManagerParentPreviewPermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.PREVIEW?.hasPermission
+    },
+    getQuishingCampaignManagerParentDeletePermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.DELETE?.hasPermission
+    },
+    getQuishingCampaignManagerParentCreatePermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.CREATE?.hasPermission
+    },
+    getQuishingCampaignManagerParentExportPermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingCampaignManagerParentUpdatePermissions(state) {
+      return state?.quishingCampaignManagerParentPermissions?.UPDATE?.hasPermission
+    },
+    getQuishingSettingsLeftMenuPermissions(state) {
+      return state?.quishingSettingsLeftPermissions?.isOneOfThemPermitted
+    },
+    getQuishingDomainCreatePermissions(state) {
+      return state?.quishingDomainPermissions?.CREATE?.hasPermission
+    },
+    getQuishingDomainSearchPermissions(state) {
+      return state?.quishingDomainPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingDomainUpdatePermissions(state) {
+      return state?.quishingDomainPermissions?.UPDATE?.hasPermission
+    },
+    getQuishingDomainDeletePermissions(state) {
+      return state?.quishingDomainPermissions?.DELETE?.hasPermission
+    },
+    getQuishingDomainExportPermissions(state) {
+      return state?.quishingDomainPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingDomainFormDetailsPermissions(state) {
+      return state?.quishingDomainPermissions?.FORM_DETAILS?.hasPermission
+    },
+    getQuishingDnsCreatePermissions(state) {
+      return state?.quishingDnsPermissions?.CREATE?.hasPermission
+    },
+    getQuishingDnsSearchPermissions(state) {
+      return state?.quishingDnsPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingDnsUpdatePermissions(state) {
+      return state?.quishingDnsPermissions?.UPDATE?.hasPermission
+    },
+    getQuishingDnsDeletePermissions(state) {
+      return state?.quishingDnsPermissions?.DELETE?.hasPermission
+    },
+    getQuishingDnsExportPermissions(state) {
+      return state?.quishingDnsPermissions?.EXPORT?.hasPermission
+    },
+    getQuishingExcludedIpAddressGetPermissions(state) {
+      return state?.quishingExcludeIpAddressPermissions?.GET?.hasPermission
+    },
+    getQuishingExcludedIpAddressPostPermissions(state) {
+      return state?.quishingExcludeIpAddressPermissions?.POST?.hasPermission
+    },
+    getQuishingCampaignReportsSearchPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.SEARCH?.hasPermission
+    },
+    getQuishingCampaignReportsGetPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.GET?.hasPermission
+    },
+    getQuishingCampaignReportsDeletePermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.DELETE?.hasPermission
+    },
+    getQuishingCampaignReportsOpenedPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.OPENED?.hasPermission
+    },
+    getQuishingCampaignReportsOpenedDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.OPENED_DETAILS?.hasPermission
+    },
+    getQuishingCampaignReportsClickedPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.CLICKED?.hasPermission
+    },
+    getQuishingCampaignReportsClickedDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.CLICKED_DETAILS?.hasPermission
+    },
+    getQuishingCampaignReportsOpenedAttachmentPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.OPENED_ATTACHMENT?.hasPermission
+    },
+    getQuishingCampaignReportsOpenedAttachmentDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.OPENED_ATTACHMENT_DETAILS?.hasPermission
+    },
+    getQuishingCampaignReportsSubmittedDataPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.SUBMITTED_DATA?.hasPermission
+    },
+    getQuishingCampaignReportsSubmittedDataDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.SUBMITTED_DATA_DETAILS?.hasPermission
+    },
+    getQuishingCampaignReportsNoResponsePermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.NO_RESPONSE?.hasPermission
+    },
+    getQuishingCampaignReportsPhishingReporterPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.PHISHING_REPORTER?.hasPermission
+    },
+    getQuishingCampaignReportsPhishingReporterDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.PHISHING_REPORTER_DETAILS?.hasPermission
+    },
+    getQuishingCampaignReportsSendingReportPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.SENDING_REPORT?.hasPermission
+    },
+    getQuishingCampaignReportsSendingReportDetailsPermissions(state) {
+      return state?.quishingCampaignReportsPermissions?.SENDING_REPORT_DETAILS?.hasPermission
+    },
+
     getSmishingSimulatorLeftMenuPermissions(state) {
       return state?.smishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted
     },
@@ -429,9 +620,6 @@ const store = {
     getEmailTemplatesSearchPermissions(state) {
       return state?.emailTemplatesPermissions?.SEARCH?.hasPermission
     },
-    getEmailTemplatesPreviewPermissions(state) {
-      return state?.emailTemplatesPermissions?.PREVIEW?.hasPermission
-    },
     getEmailTemplatesEditPermissions(state) {
       return state?.emailTemplatesPermissions?.EDIT?.hasPermission
     },
@@ -449,9 +637,6 @@ const store = {
     },
     getLandingPageTemplatesSearchPermissions(state) {
       return state?.landingPageTemplatesPermissions?.SEARCH?.hasPermission
-    },
-    getLandingPageTemplatesPreviewPermissions(state) {
-      return state?.landingPageTemplatesPermissions?.PREVIEW?.hasPermission
     },
     getLandingPageTemplatesEditPermissions(state) {
       return state?.landingPageTemplatesPermissions?.EDIT?.hasPermission
@@ -477,9 +662,6 @@ const store = {
     getCampaignManagerParentDeletePermissions(state) {
       return state?.campaignManagerParentPermissions?.DELETE?.hasPermission
     },
-    getCampaignManagerParentGetPermissions(state) {
-      return state?.campaignManagerParentPermissions?.GET?.hasPermission
-    },
     getCampaignManagerParentCreatePermissions(state) {
       return state?.campaignManagerParentPermissions?.CREATE?.hasPermission
     },
@@ -504,9 +686,6 @@ const store = {
     getDomainDeletePermissions(state) {
       return state?.domainPermisisons?.DELETE?.hasPermission
     },
-    getDomainGetPermissions(state) {
-      return state?.domainPermisisons?.GET?.hasPermission
-    },
     getDomainExportPermissions(state) {
       return state?.domainPermisisons?.EXPORT?.hasPermission
     },
@@ -524,9 +703,6 @@ const store = {
     },
     getDnsDeletePermissions(state) {
       return state?.dnsPermissions?.DELETE?.hasPermission
-    },
-    getDnsGetPermissions(state) {
-      return state?.dnsPermissions?.GET?.hasPermission
     },
     getDnsExportPermissions(state) {
       return state?.dnsPermissions?.EXPORT?.hasPermission
@@ -1302,7 +1478,19 @@ const store = {
         'smishingDnsPermissions',
         'smishingDomainPermissions',
         'smishingExcludedIpPermissions',
-        'trainingReportsPermissions'
+        'trainingReportsPermissions',
+        'quishingSimulatorLeftPermissions',
+        'quishingScenarioLeftPermissions',
+        'quishingScenarioPermissions',
+        'quishingEmailTemplatesPermissions',
+        'quishingLandingPageTemplatesPermissions',
+        'quishingCampaignManagerLeftPermissions',
+        'quishingSettingsLeftPermissions',
+        'quishingCampaignManagerParentPermissions',
+        'quishingDnsPermissions',
+        'quishingDomainPermissions',
+        'quishingExcludeIpAddressPermissions',
+        'quishingCampaignReportsPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

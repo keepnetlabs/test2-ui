@@ -62,6 +62,7 @@ import { ACTION_STATUSES } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CampaignManagerItemRowActions',
@@ -74,6 +75,10 @@ export default {
     },
     campaignResourceId: {
       type: String
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
@@ -164,7 +169,7 @@ export default {
         act.action === 'on-view-report'
       ) {
         return this.$router.push({
-          name: 'Campaign Report',
+          name: this.type === SCENARIO_TYPES.PHISHING ? 'Campaign Report' : 'Quishing Report',
           params: { id: this.campaignResourceId, instanceGroup: this.scope.row.instanceGroup }
         })
       }

@@ -64,7 +64,6 @@ import randomNumberOneDigit from '@/components/GrapesJs/Newsletter/mergedTexts/r
 import randomNumberTwoDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberTwoDigits'
 import randomNumberThreeDigits from '@/components/GrapesJs/Newsletter/mergedTexts/randomNumberThreeDigits'
 import dateSent from '@/components/GrapesJs/Newsletter/mergedTexts/dateSent'
-
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{USERNAME}': userName,

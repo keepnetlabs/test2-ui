@@ -75,7 +75,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
-
     if (refScenarios && refScenarios.modalStatus) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)

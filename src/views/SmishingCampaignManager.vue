@@ -20,7 +20,7 @@
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
-    <CampaignManagerCreateNewInstanceDialog
+    <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
       :resource-id="launchResourceId"
@@ -67,7 +67,7 @@
       @on-close="handleCloseNoTargetUserGroupModal"
       @on-confirm="handleConfirmNoTargetUserGroupModal"
     />
-    <CampaignManagerDeleteDialog
+    <CommonCampaignManagerDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :item="selectedRow"
@@ -124,12 +124,10 @@
 import CampaignManagerParentTable from '@/components/SmishingCampaignManager/CampaignManagerParentTable'
 import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
-import CampaignManagerDeleteDialog from '@/components/SmishingCampaignManager/CampaignManagerDeleteDialog'
 import SmishingService from '@/api/smishing'
 import CampaignManagerFrequencyTable from '@/components/SmishingCampaignManager/CampaignManagerFrequencyTable'
 import { createTargetGroup } from '@/api/targetUsers'
 import CampaignManagerPreview from '@/components/SmishingCampaignManager/CampaignManagerPreview'
-import CampaignManagerCreateNewInstanceDialog from '@/components/SmishingCampaignManager/CampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/SmishingCampaignManager/CampaignManagerNewInstanceModal'
@@ -137,14 +135,16 @@ import NoScenarioModal from '@/components/SmishingCampaignManager/NoScenarioModa
 import NoTargetUserGroupModal from '@/components/SmishingCampaignManager/NoTargetUserGroupModal'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import NewScenario from '@/components/SmishingScenarios/NewScenario'
+import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
+import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
 
 export default {
   name: 'CampaignManager',
   components: {
+    CommonCampaignManagerDeleteDialog,
+    CommonCampaignManagerCreateNewInstanceDialog,
     KContainer,
-    CampaignManagerCreateNewInstanceDialog,
     CampaignManagerPreview,
-    CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     NoScenarioModal,
