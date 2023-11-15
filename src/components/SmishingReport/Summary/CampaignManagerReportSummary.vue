@@ -141,7 +141,6 @@ export default {
     //   return this.phishingScenarios?.[this.activeScenarioIndex]?.scenarioInfo?.methodTypeId === 4
     // },
     getTrainingInfo() {
-      console.log(this?.getActiveScenario?.trainingInfo)
       return this?.getActiveScenario?.trainingInfo
     },
     getSelectedRowTrainingInfo() {
