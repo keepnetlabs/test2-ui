@@ -11,6 +11,7 @@ export const labels = {
   DuplicateCertificate: 'Duplicate Certificate',
   EnrollmentName: 'Enrollment Name',
   LimitRecipients: 'Limit Recipients',
+  EnrollmentInfo: 'Enrollment Info',
   EmailTemplatePreview: 'Email Template Preview',
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
