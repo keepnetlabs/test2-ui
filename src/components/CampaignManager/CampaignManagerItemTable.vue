@@ -115,9 +115,7 @@ import CampaignManagerItemRowActions from '@/components/CampaignManager/Campaign
 import {
   deletePhishingCampaignJob,
   exportCampaignManagerItem,
-  launchPhishingCampaignInstanceGroup,
-  searchCampaignPhishingJob,
-  stopPhishingCampaignJob
+  searchCampaignPhishingJob
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
@@ -310,13 +308,15 @@ export default {
         })
     },
     handleStop(row = {}) {
-      stopPhishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-stop', {
+        resourceId: this.item.resourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaignInstanceGroup(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
+      this.$emit('on-start', {
+        resourceId: this.item.resourceId,
+        instanceGroup: row.instanceGroup
       })
     },
     getErrorMessage(row = {}) {
