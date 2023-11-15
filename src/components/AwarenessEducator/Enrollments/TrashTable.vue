@@ -70,7 +70,8 @@ export default {
           download: false
         },
         columns: [
-          COLUMNS.NAME,
+          COLUMNS.ENROLLMENT_NAME,
+          COLUMNS.TRAINING_NAME_UNFIXED,
           COLUMNS.CATEGORY,
           COLUMNS.AUDIENCE,
           COLUMNS.LANGUAGES,
