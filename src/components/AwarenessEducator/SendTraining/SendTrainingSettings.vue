@@ -33,6 +33,13 @@
         title="SMS Notification"
         sub-title="In addition to the training enrollment, send an SMS notification with the selected phone number"
       >
+        <AlertBox
+          class="bg-aqua-light mb-4"
+          icon-color="#2196F3"
+          icon-name="mdi-information"
+          text="Once the SMS notification is enabled, target audience will receive SMS in addition to email, only if their phone number exists in the system. "
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        />
         <div class="send-training-settings__lms-switch">
           <VSwitch
             v-model="formData.isSendSMSNotification"
@@ -295,10 +302,12 @@ import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
 import { getTimeByTimeZone } from '@/api/company'
+import AlertBox from '@/components/AlertBox'
 
 export default {
   name: 'SendTrainingSettings',
   components: {
+    AlertBox,
     InputContentLanguage,
     InputTimezone,
     InputDate,
