@@ -22,6 +22,8 @@
           ref="refTargetGroups"
           class="mt-2"
           is-all-groups
+          add-phone-number-column
+          :is-awareness="isSmsNotification"
           :response-of-target-groups-items="responseOfTargetGroupsItems"
           :selected-target-groups="formData.targetGroupResourceIds"
           :is-valid="isTargetGroupsValid"
@@ -135,6 +137,10 @@ export default {
   },
   props: {
     isProxy: {
+      type: Boolean,
+      default: false
+    },
+    isSmsNotification: {
       type: Boolean,
       default: false
     }

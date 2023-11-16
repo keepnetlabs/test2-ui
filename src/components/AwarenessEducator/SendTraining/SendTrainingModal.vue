@@ -62,7 +62,11 @@
               :title="labels.SelectRecipients"
               :subtitle="labels.SelectRecipientsSub"
             />
-            <SendTrainingSelectUsers ref="refSendTrainingSelectUsers" :is-proxy="isTrainingProxy" />
+            <SendTrainingSelectUsers
+              ref="refSendTrainingSelectUsers"
+              :is-proxy="isTrainingProxy"
+              :is-sms-notification="isSmsNotification"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -183,6 +187,11 @@ export default {
     }
   },
   computed: {
+    isSmsNotification() {
+      if (this.step === 2 || this.step === 3)
+        return this?.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification
+      return false
+    },
     isTrainingProxy() {
       if (this.step === 2 || this.step === 3)
         return this?.$refs?.refSendTrainingSettings?.formData?.isProxy

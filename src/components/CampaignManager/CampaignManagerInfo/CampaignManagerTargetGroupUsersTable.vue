@@ -26,6 +26,11 @@
         :text="getPhoneNumberWarningText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
+      <AlertBox
+        v-if="canRenderPhoneNumberAwarenessAlertBox"
+        :text="getAwarenessPhoneNumberWarningText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -82,7 +87,15 @@ export default {
       type: Boolean,
       default: false
     },
+    isAwareness: {
+      type: Boolean,
+      default: false
+    },
     isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
+    addPhoneNumberColumn: {
       type: Boolean,
       default: false
     }
@@ -107,40 +120,7 @@ export default {
           message: labels.EmptyTargetUsersPeople,
           id: 'btn-empty--target-users-people'
         },
-        columns: [
-          {
-            property: PROPERTY_STORE.FIRSTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            hideSort: true
-          },
-          {
-            property: PROPERTY_STORE.LASTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.LASTNAME),
-            sortable: true,
-            show: true,
-            type: 'text',
-            hideSort: true
-          },
-          {
-            property: this.lastColumnName,
-            align: 'left',
-            editable: false,
-            label: this.lastColumnName === 'email' ? 'Email' : 'Phone Number',
-            sortable: true,
-            show: true,
-            type: 'text',
-            overrideWidth: true,
-            hideSort: true
-          }
-        ]
+        columns: this.getColumns()
       }
     }
   },
@@ -171,10 +151,15 @@ export default {
       return this.isTargetGroupLoading || this.isLoading
     },
     canRenderAlertbox() {
+      if (this.isAwareness) return false
       return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     canRenderPhoneNumberAlertBox() {
+      if (this.isAwareness) return false
       return this.activeUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+    },
+    canRenderPhoneNumberAwarenessAlertBox() {
+      return this.activeUsersWithoutPhoneNumberCount > 0 && this.isAwareness
     },
     getUnverifiedDomainsText() {
       return `There are ${this.usersFromUnverifiedDomainsCount} active user${
@@ -195,6 +180,17 @@ export default {
       } with phone number${
         this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
       } will receive MFA scenario.`
+    },
+    getAwarenessPhoneNumberWarningText() {
+      return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.activeUsersWithPhoneNumberCount
+      } active user${this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone numbers and ${
+        this.activeUsersWithoutPhoneNumberCount
+      } active users without phone numbers in this group. Only the ${
+        this.activeUsersWithPhoneNumberCount
+      } user${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone numbers will receive training email and SMS.`
     }
   },
   watch: {
@@ -223,12 +219,66 @@ export default {
     },
     resourceId() {
       this.callForData()
+    },
+    addPhoneNumberColumn() {
+      this.tableOptions.columns = this.getColumns()
     }
   },
   created() {
     this.callForData()
   },
   methods: {
+    getColumns() {
+      const columns = [
+        {
+          property: PROPERTY_STORE.FIRSTNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          hideSort: true
+        },
+        {
+          property: PROPERTY_STORE.LASTNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.LASTNAME),
+          sortable: true,
+          show: true,
+          type: 'text',
+          hideSort: true
+        },
+        {
+          property: this.lastColumnName,
+          align: 'left',
+          editable: false,
+          label: this.lastColumnName === 'email' ? 'Email' : 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          overrideWidth: true,
+          hideSort: true
+        }
+      ]
+      if (this.addPhoneNumberColumn) {
+        columns.push({
+          property: 'phoneNumber',
+          align: 'left',
+          editable: false,
+          label: 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 200,
+          overrideWidth: true,
+          hideSort: true
+        })
+      }
+      return columns
+    },
     cancellableSearchTargetGroupUsers: cancellableAxiosRequest(searchTargetGroupUsers),
     callForData() {
       if (!this.resourceId) return
