@@ -60,8 +60,10 @@
               :last-column-name="lastColumnName"
               :add-row-class-name="addRowClassName"
               :is-vishing="isVishing"
-              :isSmishing="isSmishing"
+              :is-smishing="isSmishing"
+              :is-awareness="isAwareness"
               :isMFAScenarioSelected="isMFAScenarioSelected"
+              :add-phone-number-column="isAwareness"
             />
           </div>
         </Multipane>
@@ -120,7 +122,15 @@ export default {
       type: Boolean,
       default: false
     },
+    isAwareness: {
+      type: Boolean,
+      default: false
+    },
     isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
+    addPhoneNumberColumn: {
       type: Boolean,
       default: false
     }
