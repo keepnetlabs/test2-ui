@@ -15,8 +15,8 @@
     </div>
     <FormGroup
       class="input-distribution"
-      title="Store and Display Option"
-      sub-title="This option allows you to store and display the data that target users entered into the landing page. The change does not affect the existing data."
+      title="Privacy Options"
+      :sub-title="`Full “Password” is never transferred and stored in our platform! <br/> <p class='mt-2 mb-0'>Email address, username, and similar fields are transferred to the platform and could be displayed in two options:</p>`"
     >
       <VRadioGroup
         v-model="pentesterMasked"
@@ -29,20 +29,39 @@
       >
         <VRadio
           :id="`input--data-privacy-masked`"
-          class="mb-0"
+          class="mb-0 align-start"
           color="#2196f3"
-          label="Store and display masked (Default and recommended)"
-          :value="true"
-          :disabled="isReturnMainAccountVisible"
-        />
-        <VRadio
-          :id="`input--data-privacy-clear`"
-          class="mb-0 mt-4"
-          color="#2196f3"
-          label="Store encrypted and display clear text"
           :value="false"
           :disabled="isReturnMainAccountVisible"
-        />
+        >
+          <template v-slot:label>
+            <div>
+              Display data as it is.
+              <p class="mb-0 font-italic">
+                For an email address like alex@company.com, it will be shown as is.
+              </p>
+            </div>
+          </template>
+        </VRadio>
+        <VRadio
+          :id="`input--data-privacy-clear`"
+          class="mb-4 mt-4 align-start"
+          color="#2196f3"
+          :value="true"
+          :disabled="isReturnMainAccountVisible"
+        >
+          <template v-slot:label>
+            <div>
+              (Default) Mask original data, e.g., a***********m
+              <p class="mb-0 font-italic">
+                An email like alex@company.com would appear as a***********m.
+              </p>
+              <p class="mb-0 font-italic">
+                There is no way to revert back masked data with this option!
+              </p>
+            </div>
+          </template>
+        </VRadio>
       </VRadioGroup>
     </FormGroup>
     <div>
