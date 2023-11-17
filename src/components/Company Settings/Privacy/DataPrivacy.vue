@@ -31,7 +31,7 @@
           :id="`input--data-privacy-masked`"
           class="mb-0 align-start"
           color="#2196f3"
-          :value="true"
+          :value="false"
           :disabled="isReturnMainAccountVisible"
         >
           <template v-slot:label>
@@ -47,7 +47,7 @@
           :id="`input--data-privacy-clear`"
           class="mb-4 mt-4 align-start"
           color="#2196f3"
-          :value="false"
+          :value="true"
           :disabled="isReturnMainAccountVisible"
         >
           <template v-slot:label>
