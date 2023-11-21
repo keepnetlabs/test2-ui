@@ -42,6 +42,9 @@ export function exportSystemUsers(payload = {}) {
 export function getSystemUsersRole() {
   return testRequest.get(`/roles`)
 }
+export function getAvailableSystemUsersRole() {
+  return testRequest.get(`/roleswithAvailable`)
+}
 
 export function bulkDeleteSystemUsers(payload) {
   return testRequest.delete('/system-users/bulk-delete', {
