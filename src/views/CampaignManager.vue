@@ -41,6 +41,7 @@
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       :form-details="formDetails"
+      :selected-row="selectedRow"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
@@ -287,6 +288,7 @@ export default {
     },
     handleLaunch(row = {}) {
       this.launchResourceId = row.resourceId
+      this.selectedRow = row
       this.toggleShowLaunchDialog()
     },
     toggleShowPreviewDialog() {

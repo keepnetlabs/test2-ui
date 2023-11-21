@@ -14,6 +14,7 @@
       :selected-target-groups.sync="selectedTargetGroups"
       :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
       :form-details="formDetails"
+      :isMFAScenarioSelected="isMFAScenarioSelected"
     />
     <div>
       <v-checkbox
@@ -74,6 +75,10 @@ export default {
   props: {
     formDetails: {
       type: Object
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

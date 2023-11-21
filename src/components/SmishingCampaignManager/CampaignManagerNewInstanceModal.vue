@@ -27,10 +27,12 @@
         ref="refCampaignManagerTargetGroup"
         class="mt-2"
         is-vishing
+        is-smishing
         last-column-name="phoneNumber"
         :selected-target-groups="formValues.targetGroupResourceIds"
         :response-of-target-groups-items="responseOfTargetGroupsItems"
         :is-valid="isTargetGroupsValid"
+        :isMFAScenarioSelected="isMFAScenarioSelected"
         @handle-selection-change="handleTableSelectionChange"
       />
       <CustomError
@@ -121,6 +123,10 @@ export default {
     formDetails: {
       type: Object,
       default: () => ({})
+    },
+    selectedRow: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -165,6 +171,18 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      if (this.selectedRow?.method === 'MFA') return true
+      if (this.selectedRow?.method === 'Multiple Method') {
+        const methodsArray = JSON.parse(this.selectedRow.methodDetail)
+        const mfaIndex = methodsArray.findIndex((methodObj) => methodObj.method === 'MFA')
+        if (mfaIndex !== -1) {
+          return true
+        }
+        return false
+      }
+      return false
+    },
     getDistributionDelayTimeItems() {
       return this.formDetails['distributionDelayTimeTypes'] || []
     },

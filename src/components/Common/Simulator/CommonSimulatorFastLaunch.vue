@@ -33,7 +33,11 @@
               :title="labels.CampaignSettings"
               :subtitle="labels.CampaignSettingsSub"
             />
-            <CommonSimulatorFastLaunchStep1 ref="refFastLaunch" :form-details="formDetails" />
+            <CommonSimulatorFastLaunchStep1
+              ref="refFastLaunch"
+              :form-details="formDetails"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -131,6 +135,9 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      return this.selectedScenario?.method === 'MFA'
+    },
     getTitle() {
       return `Fast Launch - ${this.selectedScenario.name}`
     },
