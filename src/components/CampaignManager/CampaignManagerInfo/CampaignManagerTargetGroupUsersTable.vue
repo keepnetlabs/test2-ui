@@ -194,26 +194,30 @@ export default {
     }
   },
   watch: {
-    isMFAScenarioSelected(val) {
-      if (this.isSmishing) return
-      if (val) {
-        this.tableOptions.columns.push({
-          property: 'phoneNumber',
-          align: 'left',
-          editable: false,
-          label: 'Phone Number',
-          sortable: true,
-          show: true,
-          type: 'text',
-          overrideWidth: true,
-          hideSort: true
-        })
-      } else {
-        const phoneNumberColumnIndex = this.tableOptions.columns.findIndex(
-          (column) => column.property === 'phoneNumber'
-        )
-        if (phoneNumberColumnIndex > -1) {
-          this.tableOptions.columns.splice(phoneNumberColumnIndex, 1)
+    isMFAScenarioSelected: {
+      immediate: true,
+      handler(val) {
+        if (this.isSmishing) return
+        if (val) {
+          this.tableOptions.columns.push({
+            property: 'phoneNumber',
+            align: 'left',
+            editable: false,
+            label: 'Phone Number',
+            sortable: true,
+            show: true,
+            width: 150,
+            type: 'text',
+            overrideWidth: true,
+            hideSort: true
+          })
+        } else {
+          const phoneNumberColumnIndex = this.tableOptions.columns.findIndex(
+            (column) => column.property === 'phoneNumber'
+          )
+          if (phoneNumberColumnIndex > -1) {
+            this.tableOptions.columns.splice(phoneNumberColumnIndex, 1)
+          }
         }
       }
     },

@@ -14,6 +14,7 @@
       :selected-target-groups.sync="selectedTargetGroups"
       :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
       :form-details="formDetails"
+      :isMFAScenarioSelected="isMFAScenarioSelected"
     />
     <div>
       <FormGroup :title="labels.MarkAsTest">
@@ -79,6 +80,10 @@ export default {
   props: {
     formDetails: {
       type: Object
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
