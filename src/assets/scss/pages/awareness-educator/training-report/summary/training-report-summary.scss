@@ -6,6 +6,11 @@
 
     .campaign-manager-summary-card__body-item {
         justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .campaign-manager-summary-card__body-item:first-child {
+        padding: 16px 0 !important;
     }
 
     &-scenario-stats {
