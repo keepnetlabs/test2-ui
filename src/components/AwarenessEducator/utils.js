@@ -212,6 +212,19 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'text'
   },
+  DELIVERY_TYPE: {
+    property: PROPERTY_STORE.DELIVERY_TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.DeliveryType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    filterableType: 'select',
+    filterableItems: ['Email', 'Email & SMS']
+  },
   START_DATE: {
     property: PROPERTY_STORE.START_DATE,
     align: 'left',

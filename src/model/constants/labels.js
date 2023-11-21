@@ -57,6 +57,7 @@ export const labels = {
   MultiFactorAuthenticationSub: 'Phishing scenarios become more realistic with MFA settings',
   Scenarios: 'Scenarios',
   SMS: 'SMS',
+  SMSInfo: 'SMS Info',
   ScenarioSummary: 'Scenario Summary',
   ScenarioSummarySub: 'Preview what this scenario will look like',
   MFASettings: 'MFA Settings',
@@ -135,6 +136,7 @@ export const labels = {
   Test: 'Test',
   UserWhoDownloadedAttachment: 'Users who downloaded attachment',
   Delivery: 'Delivery',
+  DeliveryType: 'Delivery Type',
   TrainingDistributionSub:
     'Send trainings with selected intervals or over a specified time period. Limit number of trainings to be sent in each batch.',
   ContentLanguage: 'Content Language',

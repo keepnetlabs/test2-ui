@@ -104,6 +104,7 @@ export default {
           COLUMNS.START_DATE,
           COLUMNS.STATUS,
           COLUMNS.DELIVERY,
+          COLUMNS.DELIVERY_TYPE,
           COLUMNS.TARGET_USERS,
           COLUMNS.TAGS
         ],
