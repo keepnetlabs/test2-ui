@@ -1118,6 +1118,10 @@
         line-height: 1.71;
         letter-spacing: normal;
         color: #ffffff;
+
+        &--secondary {
+          color:#757575;
+        }
       }
     }
   }
