@@ -199,6 +199,21 @@
                     {{ formValues.distributionOverDays > 1 ? 'weeks' : 'week' }}
                   </span>
                 </div>
+                <div class="vishing-campaign-modal__send-calls-on mb-1">
+                  <div>
+                    <div>Send calls on</div>
+                  </div>
+                  <div class="vishing-campaign-modal__send-calls-on__days d-flex gap-2">
+                    <v-checkbox
+                      v-for="day in sendCallsOnDaysOptionsShort"
+                      v-model="formValues.sendCallsOnDays"
+                      color="#2196F3"
+                      :label="day.text"
+                      :value="day.value"
+                      :key="day.value"
+                    />
+                  </div>
+                </div>
                 <div
                   class="vishing-campaign-modal__send-calls"
                   style="max-width: unset; width: 1000px;"
@@ -264,21 +279,6 @@
                   <span v-if="!!selectedTimeZoneText" class="form-group-horizontal-content__label">
                     {{ selectedTimeZoneText }}
                   </span>
-                </div>
-                <div class="vishing-campaign-modal__send-calls-on">
-                  <div>
-                    <div>Send calls on</div>
-                  </div>
-                  <div class="vishing-campaign-modal__send-calls-on__days d-flex gap-2">
-                    <v-checkbox
-                      v-for="day in sendCallsOnDaysOptionsShort"
-                      v-model="formValues.sendCallsOnDays"
-                      color="#2196F3"
-                      :label="day.text"
-                      :value="day.value"
-                      :key="day.value"
-                    />
-                  </div>
                 </div>
               </FormGroup>
               <div class="vishing-campaign-modal__send-calls-text">
