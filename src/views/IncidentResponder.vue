@@ -47,6 +47,7 @@
       </AppModal>
       <FilterByHashModal
         v-model="hashfilterProps"
+        v-if="isFilterByHashModalVisible"
         :status="isFilterByHashModalVisible"
         :filterProps="hashfilterProps"
         @confirm="confirmFilterByHash"
@@ -1322,10 +1323,14 @@ export default {
     isHashFilterActive(val) {
       if (val) {
         this.emails.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
         this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
       } else {
         this.emails.addButton.label = `FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
         this.clusteredTable.addButton.label = `FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
       }
     },
     getIncidentResponderNotifiedEmailReAnalyze: {

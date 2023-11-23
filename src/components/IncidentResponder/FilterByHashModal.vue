@@ -84,6 +84,9 @@ export default {
     }
   },
   watch: {
+    status(val) {
+      this.componentKey = Math.random()
+    },
     'filterProps.filterBy'(val) {
       this.componentKey = Math.random()
       this.$emit('input', { hash: '', filterBy: val })
