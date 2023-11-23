@@ -29,7 +29,7 @@
               getStepName(template.callGreeting, 'Call Greeting')
             }}</span>
             <div
-              v-if="template && template.callGreeting && template.callGreeting.isPhishingCodeStep"
+              v-if="template && template.callGreeting && template.callGreeting"
               class="callback-template-preview-steps__step-badge"
             >
               Phishing Code Step
@@ -47,10 +47,7 @@
             <span class="callback-template-preview-steps__step-text">{{
               getStepName(step, 'Step', index + 1)
             }}</span>
-            <div
-              v-if="step.isDigitEnteringStep"
-              class="callback-template-preview-steps__step-badge"
-            >
+            <div v-if="step.isVishingStep" class="callback-template-preview-steps__step-badge">
               Digit Entering Step
             </div>
           </div>
@@ -145,7 +142,7 @@
           <AlertBox
             v-if="selectedStep === 'Call Greeting'"
             class="bg-aqua-light"
-            :text="`Caller is expected to enter ${getPhishingCodeDigits}-digits phishing code at the end of the Call Greeting message.`"
+            :text="`Caller is expected to enter 6-digits phishing code at the end of the Call Greeting message.`"
             icon-color="#2196F3"
             icon-name="mdi-information"
             :slots="{ primaryAction: false, secondaryAction: false }"
@@ -161,6 +158,7 @@ import AudioPlayer from '@/components/AudioPlayer'
 import AlertBox from '@/components/AlertBox'
 // TODO: Change endpoint
 import { playTextToSpeech } from '@/api/vishing'
+import CallbackService from '@/api/callback'
 export default {
   name: 'CallbackTemplatePreviewSteps',
   components: {
@@ -222,7 +220,7 @@ export default {
             inputText: this.getSelectedStepObject?.inputText || '',
             voiceResourceId: this.voiceResourceId
           }
-          playTextToSpeech(payload)
+          CallbackService.getVoiceUrl(payload)
             .then((res) => {
               if (res?.data?.data) {
                 this.ttsUrl = res?.data?.data
@@ -236,9 +234,6 @@ export default {
     }
   },
   computed: {
-    getPhishingCodeDigits() {
-      return this.template?.callGreeting?.phishingCodeDigits || 0
-    },
     getInputText() {
       return this.getSelectedStepObject?.inputText || ''
     },
@@ -259,10 +254,10 @@ export default {
       return this.getSelectedStepObject?.inputType || 'TextToSpeech'
     },
     isSelectedStepDigitEnteringStep() {
-      return this.getSelectedStepObject?.isDigitEnteringStep || false
+      return this.getSelectedStepObject?.isVishingStep || false
     },
     isSelectedStepPhishingCodeStep() {
-      return this.getSelectedStepObject?.isPhishingCodeStep || false
+      return this.selectedStep === 'Call Greeting' || false
     },
     getSelectedStepObject() {
       if (!this.template || !this.selectedStep) return null

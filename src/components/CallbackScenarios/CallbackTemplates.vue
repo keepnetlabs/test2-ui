@@ -5,6 +5,7 @@
       :status="isPreviewVisible"
       :selectedRow="selectedTemplate"
       :showTemplateInfo="false"
+      :languageItems="languageItems"
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteCallbackTemplateModal
@@ -51,7 +52,7 @@
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewCallbackTemplateModalStatus(true)"
-      @downloadEvent="exportVishingTemplates"
+      @downloadEvent="exportCallbackTemplates"
       @handleMultipleDelete="handleActionDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -122,12 +123,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 // TODO: Change endpoints
-import {
-  exportVishingTemplates,
-  getVishingTemplates,
-  getVishingTemplateLanguages,
-  deleteVishingTemplate
-} from '@/api/vishing'
+import CallbackService from '@/api/callback'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteCallbackTemplateModal from '@/components/CallbackScenarios/DeleteCallbackTemplateModal'
 import CallbackTemplateModal from '@/components/CallbackScenarios/CallbackTemplateModal'
@@ -242,7 +238,7 @@ export default {
           {
             property: 'availableFor',
             align: 'right',
-            label: labels.AvailalbeFor,
+            label: labels.AvailableFor,
             fixed: false,
             sortable: false,
             hideSort: true,
@@ -380,7 +376,7 @@ export default {
         this.callForData()
       }
     },
-    exportVishingTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportCallbackTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -391,7 +387,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportVishingTemplates(payload).then((response) => {
+        CallbackService.exportCallbackTemplates(payload).then((response) => {
           const { data } = response
           if (data && data instanceof Blob) {
             const link = document.createElement('a')
@@ -407,7 +403,7 @@ export default {
     callForData() {
       if (this.getVishingTemplatesSearchPermissions) {
         this.isLoading = true
-        getVishingTemplates(this.axiosPayload)
+        CallbackService.searchCallbackTemplates(this.axiosPayload)
           .then((response) => {
             const {
               totalNumberOfRecords = 0,
@@ -429,7 +425,7 @@ export default {
       }
     },
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
+      CallbackService.getCallbackTemplateLanguages().then((response) => {
         this.languageItems = response?.data?.data || []
         const voiceFilterableItems = response?.data?.data
           ? response.data.data.map((language) => language.name)
@@ -459,7 +455,7 @@ export default {
       this.isDeleteModalVisible = false
     },
     handleDeleteConfirm() {
-      deleteVishingTemplate(this.selectedTemplate.resourceId)
+      CallbackService.deleteCallbackTemplate(this.selectedTemplate.resourceId)
         .then(this.callForData)
         .finally(this.onCloseDeleteModal)
     },

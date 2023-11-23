@@ -467,8 +467,7 @@ export default {
               content: null,
               duration: 0,
               phishingCodeDigits: 6,
-              isDigitEnteringStep: false,
-              isPhishingCodeStep: true,
+              isVishingStep: false,
               inputUrl: null
             },
             language: item.language,

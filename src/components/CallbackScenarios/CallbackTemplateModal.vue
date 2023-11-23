@@ -131,6 +131,8 @@
                   :voice="selectedCallbackVoice"
                   :dialingNoticeItems="dialingNoticeItems"
                   :phishingCodeDigitCount="6"
+                  :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
+                  :voiceResourceId="getVoiceResourceId"
                   isCallGreeting
                   class="pb-3"
                 />
@@ -160,6 +162,8 @@
                       :isRemoveDisabled="formValues.steps.length === 1"
                       :language="selectedCallbackLanguage"
                       :voice="selectedCallbackVoice"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
+                      :voiceResourceId="getVoiceResourceId"
                       @removeStep="onRemoveStep(index)"
                     />
                   </draggable>
@@ -249,13 +253,16 @@
                   >
                     <InputMergeTag
                       v-model.trim="formValues.dialingNoticeStepInputText"
-                      :mergeTags="mergeTags"
+                      :mergeTags="[]"
                       :max-length="500"
                       :language="selectedCallbackLanguage"
                       :voice="selectedCallbackVoice"
+                      :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
+                      :voiceResourceId="getVoiceResourceId"
                       initial-placeholder="Enter text here"
                       entity-name="Text to speech"
                       isTextToSpeech
+                      isCallback
                     />
                   </FormGroup>
                   <div
@@ -328,8 +335,7 @@ import CallbackTemplateDialogStep from '@/components/CallbackScenarios/CallbackT
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import Draggable from 'vuedraggable'
 import AudioPlayer from '@/components/AudioPlayer'
-// TODO: Change endpoints
-import { updateVishingTemplate, createVishingTemplate, getVishingTemplate } from '@/api/vishing'
+import CallbackService from '@/api/callback'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
@@ -342,7 +348,7 @@ const initialFormValues = {
   description: '',
   tags: [],
   difficulty: 1,
-  callbackLanguageResourceId: '',
+  vishingLanguageResourceId: '',
   availableForRequests: [],
   dialingNoticeStepResourceId: null,
   dialingNoticeStepInputType: 'TextToSpeech',
@@ -355,8 +361,7 @@ const initialFormValues = {
     inputText: '',
     content: null,
     duration: 0,
-    phishingCodeDigits: 6,
-    isDigitEnteringStep: false,
+    isVishingStep: false,
     inputUrl: null,
     isExpanded: true
   },
@@ -367,7 +372,7 @@ const initialFormValues = {
       inputDigit: 0,
       duration: 0,
       content: null,
-      isDigitEnteringStep: false,
+      isVishingStep: false,
       inputUrl: null,
       isExpanded: true
     }
@@ -526,6 +531,27 @@ export default {
     }
   },
   computed: {
+    getVoiceResourceId() {
+      const callbackLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedCallbackLanguage &&
+          language.name === this.selectedCallbackVoice
+      )
+
+      if (callbackLanguageIndex !== -1) return this.languageItems[callbackLanguageIndex].resourceId
+      return ''
+    },
+    isVoiceTextToSpeechCompatible() {
+      const callbackLanguageIndex = this.languageItems.findIndex(
+        (language) =>
+          language.language === this.selectedCallbackLanguage &&
+          language.name === this.selectedCallbackVoice
+      )
+
+      if (callbackLanguageIndex !== -1)
+        return this.languageItems[callbackLanguageIndex].voiceProviderTypeId === 2
+      return false
+    },
     getVoiceItems() {
       if (this.selectedCallbackLanguage) {
         const voiceItems = this.languageItems.filter(
@@ -582,35 +608,21 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit || this.isDuplicate) {
-      getVishingTemplate(this.templateId).then((response) => {
+      CallbackService.getCallbackTemplate(this.templateId).then((response) => {
         this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
         for (const step of this.formValues.steps) {
           step['isExpanded'] = false
         }
-        const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
-          (step) => step.order === 0
-        )
-        if (invalidDialingNoticeStepIndex !== -1) {
-          this.formValues.dialingNoticeStepResourceId = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].resourceId
-          this.formValues.dialingNoticeStepInputType = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].inputType
-          this.formValues.dialingNoticeStepInputText = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].inputText
-          this.formValues.dialingNoticeStepInputUrl = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].inputUrl
-          this.formValues.dialingNoticeStepContent = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].content
-          this.formValues.steps.splice(invalidDialingNoticeStepIndex, 1)
-        }
+        this.formValues.callGreeting = { ...this.formValues.steps[0] }
+        this.formValues.steps.splice(0, 1)
+        this.formValues.dialingNoticeStepInputType = this.formValues.steps[0].inputType
+        this.formValues.dialingNoticeStepInputText = this.formValues.steps[0].inputText
+        this.formValues.dialingNoticeStepInputUrl = this.formValues.steps[0].inputUrl
+        this.formValues.dialingNoticeStepContent = this.formValues.steps[0].content
+        this.formValues.steps.splice(0, 1)
         this.formValues.difficulty = this.getDifficultyValue(this.formValues.difficulty)
         const callbackItemIndex = this.languageItems.findIndex(
-          (language) => this.formValues.callbackLanguageResourceId === language.resourceId
+          (language) => this.formValues.vishingLanguageResourceId === language.resourceId
         )
         if (callbackItemIndex !== -1) {
           this.selectedCallbackLanguage = this.languageItems[callbackItemIndex].language
@@ -618,12 +630,13 @@ export default {
         }
         delete this.formValues.availableForList
         delete this.formValues.createTime
-        delete this.formValues.vishingLanguage
+        delete this.formValues.callbackLanguage
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.formValues.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        console.log(this.formValues)
       })
     }
   },
@@ -651,7 +664,7 @@ export default {
             inputUrl: null,
             inputDigit: 0,
             duration: 0,
-            isDigitEnteringStep: false,
+            isVishingStep: false,
             order,
             isExpanded: true
           }
@@ -663,7 +676,7 @@ export default {
             inputUrl: null,
             inputDigit: 0,
             duration: 0,
-            isDigitEnteringStep: false,
+            isVishingStep: false,
             order,
             isExpanded: true
           }
@@ -675,7 +688,7 @@ export default {
             inputUrl: null,
             inputDigit: 0,
             duration: 0,
-            isDigitEnteringStep: false,
+            isVishingStep: false,
             order,
             isExpanded: true
           }
@@ -686,7 +699,7 @@ export default {
       this.formValues.steps.push(newItem)
     },
     validateFailStep() {
-      return this.formValues.steps.some((step) => step.isDigitEnteringStep)
+      return this.formValues.steps.some((step) => step.isVishingStep)
     },
     validateSteps() {
       let valid = true
@@ -842,106 +855,133 @@ export default {
         this.isSubmitDisabled = false
         return
       }
-      const formData = new FormData()
-      if (this.formValues.resourceId) {
-        formData.append('ResouceId', this.formValues.resourceId)
+      this.formValues.vishingLanguageResourceId = this.getVoiceResourceId
+      const payload = {
+        ...this.formValues,
+        steps: [...this.formValues.steps]
       }
-      formData.append('Name', this.formValues.name)
-      formData.append('Description', this.formValues.description || '')
-      for (let i = 0; i < this.formValues.tags.length; i++) {
-        formData.append(`Tags[${i}]`, this.formValues.tags[i])
+      const invalidDialingNoticeStep = {
+        inputType: this.formValues.dialingNoticeStepInputType,
+        inputText: this.formValues.dialingNoticeStepInputText,
+        content: this.formValues.dialingNoticeStepContent,
+        inputUrl: this.formValues.dialingNoticeStepInputUrl,
+        duration: 0,
+        isVishingStep: false
       }
-      const callbackLanguageIndex = this.languageItems.findIndex(
-        (language) =>
-          language.language === this.selectedCallbackLanguage &&
-          language.name === this.selectedCallbackVoice
-      )
-      if (callbackLanguageIndex !== -1) {
-        formData.append(
-          'callbackLanguageResourceId',
-          this.languageItems[callbackLanguageIndex].resourceId
-        )
+      payload.steps.unshift(invalidDialingNoticeStep)
+      const callGreetingStep = {
+        ...this.formValues.callGreeting
       }
-      formData.append('Difficulty', this.formValues.difficulty)
-      for (let i = 0; i < this.formValues.availableForRequests.length; i++) {
-        formData.append(
-          `AvailableForRequests[${i}].ResourceId`,
-          this.formValues.availableForRequests[i].resourceId
-        )
-        formData.append(
-          `AvailableForRequests[${i}].Type`,
-          this.formValues.availableForRequests[i].type
-        )
-      }
-      for (let i = 0; i < this.formValues.steps.length; i++) {
-        if (this.isEdit && this.formValues.steps[i].resourceId) {
-          formData.append(`Steps[${i + 1}].ResourceId`, this.formValues.steps[i].resourceId)
-        }
-        formData.append(
-          `Steps[${i + 1}].InputType`,
-          this.getInputTypeValue(this.formValues.steps[i].inputType)
-        )
-        formData.append(`Steps[${i + 1}].Order`, i + 1)
-        formData.append(
-          `Steps[${i + 1}].IsVishingStep`,
-          this.formValues.steps[i].isDigitEnteringStep || false
-        )
-        formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText)
-        formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit)
-        formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration)
-        formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
-        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
-        if (this.isEdit && !this.formValues.steps[i].content) {
-          formData.delete(`Steps[${i + 1}].Content`)
-          formData.delete(`Steps[${i + 1}].InputUrl`)
-        }
-        if (
-          this.isDuplicate &&
-          !this.formValues.steps[i].content &&
-          this.formValues.steps[i].inputUrl
-        ) {
-          formData.set(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
-          formData.delete(`Steps[${i + 1}].Content`)
-        }
-        if (this.isDuplicate && this.formValues.steps[i].content) {
-          formData.delete(`Steps[${i + 1}].InputUrl`)
-          formData.set(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
-        }
-      }
-      if (
-        (this.formValues.dialingNoticeStepInputType === 'TextToSpeech' &&
-          this.formValues.dialingNoticeStepInputText) ||
-        (this.formValues.dialingNoticeStepInputType === 'FileUpload' &&
-          (this.formValues.dialingNoticeStepInputUrl || this.formValues.dialingNoticeStepContent))
-      ) {
-        formData.append('Steps[0].ResourceId', this.formValues.dialingNoticeStepResourceId)
-        formData.append('Steps[0].Order', 0)
-        formData.append(
-          'Steps[0].InputType',
-          this.getInputTypeValue(this.formValues.dialingNoticeStepInputType)
-        )
-        formData.append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
-        formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
-        formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
-        if (this.isEdit && !this.formValues.dialingNoticeStepContent) {
-          formData.delete(`Steps[0].Content`)
-          formData.delete(`Steps[0].InputUrl`)
-        }
-        if (
-          this.isDuplicate &&
-          !this.formValues.dialingNoticeStepContent &&
-          this.formValues.dialingNoticeStepInputUrl
-        ) {
-          formData.set(`Steps[0].InputUrl`, this.formValues.dialingNoticeStepInputUrl)
-          formData.delete(`Steps[0].Content`)
-        }
-        if (this.isDuplicate && this.formValues.dialingNoticeStepContent) {
-          formData.delete(`Steps[0].InputUrl`)
-          formData.set(`Steps[0].Content`, this.formValues.dialingNoticeStepContent)
-        }
-      }
+      payload.steps.splice(1, 0, callGreetingStep)
+      delete payload.resourceId
+      delete payload.callGreeting
+      delete payload.dialingNoticeStepInputType
+      delete payload.dialingNoticeStepInputText
+      delete payload.dialingNoticeStepContent
+      delete payload.dialingNoticeStepInputUrl
+      delete payload.dialingNoticeStepResourceId
+      payload.steps.forEach((step) => delete step.isExpanded)
+      console.log(payload)
+      this.isSubmitDisabled = false
+      // if (this.formValues.resourceId) {
+      //   new FormData().append('ResouceId', this.formValues.resourceId)
+      // }
+      // new FormData().append('Name', this.formValues.name)
+      // new FormData().append('Description', this.formValues.description || '')
+      // for (let i = 0; i < this.formValues.tags.length; i++) {
+      //   new FormData().append(`Tags[${i}]`, this.formValues.tags[i])
+      // }
+      // const callbackLanguageIndex = this.languageItems.findIndex(
+      //   (language) =>
+      //     language.language === this.selectedCallbackLanguage &&
+      //     language.name === this.selectedCallbackVoice
+      // )
+      // if (callbackLanguageIndex !== -1) {
+      //   new FormData().append(
+      //     'vishingLanguageResourceId',
+      //     this.languageItems[callbackLanguageIndex].resourceId
+      //   )
+      // }
+      // new FormData().append('Difficulty', this.formValues.difficulty)
+      // for (let i = 0; i < this.formValues.availableForRequests.length; i++) {
+      //   new FormData().append(
+      //     `AvailableForRequests[${i}].ResourceId`,
+      //     this.formValues.availableForRequests[i].resourceId
+      //   )
+      //   new FormData().append(
+      //     `AvailableForRequests[${i}].Type`,
+      //     this.formValues.availableForRequests[i].type
+      //   )
+      // }
+      // for (let i = 0; i < this.formValues.steps.length; i++) {
+      //   if (this.isEdit && this.formValues.steps[i].resourceId) {
+      //     new FormData().append(`Steps[${i + 1}].ResourceId`, this.formValues.steps[i].resourceId)
+      //   }
+      //   new FormData().append(
+      //     `Steps[${i + 1}].InputType`,
+      //     this.getInputTypeValue(this.formValues.steps[i].inputType)
+      //   )
+      //   new FormData().append(`Steps[${i + 1}].Order`, i + 1)
+      //   new FormData().append(
+      //     `Steps[${i + 1}].IsVishingStep`,
+      //     this.formValues.steps[i].isDigitEnteringStep || false
+      //   )
+      //   new FormData().append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText)
+      //   new FormData().append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit)
+      //   new FormData().append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration)
+      //   new FormData().append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
+      //   new FormData().append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
+      //   if (this.isEdit && !this.formValues.steps[i].content) {
+      //     new FormData().delete(`Steps[${i + 1}].Content`)
+      //     new FormData().delete(`Steps[${i + 1}].InputUrl`)
+      //   }
+      //   if (
+      //     this.isDuplicate &&
+      //     !this.formValues.steps[i].content &&
+      //     this.formValues.steps[i].inputUrl
+      //   ) {
+      //     new FormData().set(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
+      //     new FormData().delete(`Steps[${i + 1}].Content`)
+      //   }
+      //   if (this.isDuplicate && this.formValues.steps[i].content) {
+      //     new FormData().delete(`Steps[${i + 1}].InputUrl`)
+      //     new FormData().set(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
+      //   }
+      // }
+      // if (
+      //   (this.formValues.dialingNoticeStepInputType === 'TextToSpeech' &&
+      //     this.formValues.dialingNoticeStepInputText) ||
+      //   (this.formValues.dialingNoticeStepInputType === 'FileUpload' &&
+      //     (this.formValues.dialingNoticeStepInputUrl || this.formValues.dialingNoticeStepContent))
+      // ) {
+      //   new FormData().append('Steps[0].ResourceId', this.formValues.dialingNoticeStepResourceId)
+      //   new FormData().append('Steps[0].Order', 0)
+      //   new FormData().append(
+      //     'Steps[0].InputType',
+      //     this.getInputTypeValue(this.formValues.dialingNoticeStepInputType)
+      //   )
+      //   new FormData().append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
+      //   new FormData().append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
+      //   new FormData().append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
+      //   if (this.isEdit && !this.formValues.dialingNoticeStepContent) {
+      //     new FormData().delete(`Steps[0].Content`)
+      //     new FormData().delete(`Steps[0].InputUrl`)
+      //   }
+      //   if (
+      //     this.isDuplicate &&
+      //     !this.formValues.dialingNoticeStepContent &&
+      //     this.formValues.dialingNoticeStepInputUrl
+      //   ) {
+      //     new FormData().set(`Steps[0].InputUrl`, this.formValues.dialingNoticeStepInputUrl)
+      //     new FormData().delete(`Steps[0].Content`)
+      //   }
+      //   if (this.isDuplicate && this.formValues.dialingNoticeStepContent) {
+      //     new FormData().delete(`Steps[0].InputUrl`)
+      //     new FormData().set(`Steps[0].Content`, this.formValues.dialingNoticeStepContent)
+      //   }
+      // }
       if (this.isEdit && !this.isDuplicate) {
-        updateVishingTemplate(this.templateId, formData)
+        CallbackService.updateCallbackTemplate(this.templateId, payload)
           .then(() => {
             this.$emit('changeCallbackTemplateModalStatus', false, true)
           })
@@ -949,7 +989,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createVishingTemplate(formData)
+        CallbackService.createCallbackTemplate(payload)
           .then(() => {
             this.$emit('changeCallbackTemplateModalStatus', false, true)
           })

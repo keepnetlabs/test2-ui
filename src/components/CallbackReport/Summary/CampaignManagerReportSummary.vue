@@ -437,8 +437,7 @@ export default {
                 'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
               inputDigit: 6,
               duration: 0,
-              isDigitEnteringStep: true,
-              isPhishingCodeStep: false,
+              isVishingStep: true,
               content: null,
               inputUrl: null,
               isExpanded: true
@@ -449,8 +448,7 @@ export default {
               inputDigit: 5,
               content: null,
               duration: 0,
-              isDigitEnteringStep: false,
-              isPhishingCodeStep: false,
+              isVishingStep: false,
               inputUrl: `https://keepnetlabsvishing.s3.eu-west-2.amazonaws.com/VishingTEST/X7AE3NtBgV1B-2.mp3`,
               isExpanded: true
             },
@@ -460,8 +458,7 @@ export default {
               inputDigit: 0,
               content: null,
               duration: 3,
-              isDigitEnteringStep: false,
-              isPhishingCodeStep: false,
+              isVishingStep: false,
               inputUrl: null,
               isExpanded: true
             }
@@ -473,8 +470,7 @@ export default {
             content: null,
             duration: 0,
             phishingCodeDigits: 6,
-            isDigitEnteringStep: false,
-            isPhishingCodeStep: true,
+            isVishingStep: false,
             inputUrl: null
           },
           invalidDialingNotice: {
@@ -484,8 +480,7 @@ export default {
             inputDigit: 0,
             content: null,
             duration: 0,
-            isDigitEnteringStep: false,
-            isPhishingCodeStep: false,
+            isVishingStep: false,
             inputUrl: null
           }
         }

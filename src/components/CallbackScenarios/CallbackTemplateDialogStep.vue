@@ -10,7 +10,7 @@
       <div class="callback-template-dialog-step__header-right">
         <KButtonCheckbox
           v-if="value.inputType !== 'Pause'"
-          :value="value.isDigitEnteringStep"
+          :value="value.isVishingStep"
           label="Digit Entering Step"
           customStyle="text-transform: none;"
           @input="onCallbackStepChange"
@@ -140,13 +140,16 @@
           <InputMergeTag
             :value="value.inputText"
             :max-length="500"
-            :mergeTags="mergeTags"
+            :mergeTags="isCallGreeting ? [] : mergeTags"
             :language="language"
             :voice="voice"
+            :voiceResourceId="voiceResourceId"
+            :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
             class="callback-template-dialog-step__text-to-speech-input"
             entity-name="Text to speech"
             initialPlaceholder="Enter your text to speech"
             isTextToSpeech
+            isCallback
             required
             @input="onTextToSpeechChange"
           />
@@ -233,6 +236,12 @@ export default {
     },
     phishingCodeDigitCount: {
       type: Number
+    },
+    voiceResourceId: {
+      type: String
+    },
+    isVoiceTextToSpeechCompatible: {
+      type: Boolean
     }
   },
   computed: {
@@ -365,7 +374,7 @@ export default {
       }
     },
     onCallbackStepChange(val) {
-      this.$emit('input', { ...this.value, isDigitEnteringStep: val })
+      this.$emit('input', { ...this.value, isVishingStep: val })
     },
     onFileChanged(file) {
       this.isPlayAudioClicked = false

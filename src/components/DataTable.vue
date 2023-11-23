@@ -1474,13 +1474,6 @@ export default {
     }
   },
   watch: {
-    columns: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('columns', val)
-      }
-    },
     table(table, oldTable) {
       this.columnStandardisation(this.columns)
       this.initialData = this.isServerSide ? table : [...table]
