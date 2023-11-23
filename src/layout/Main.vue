@@ -441,7 +441,7 @@
             </v-list-item>
           </v-list-group>
           <v-list-group
-            v-if="getSmishingSimulatorLeftMenuPermissions"
+            v-if="getQuishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-quishing-simulator-list-group"
             no-action
             :prepend-icon="getQuishingPrependIcon"
@@ -454,7 +454,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="getSmishingScenariosLeftMenuPermissions"
+              v-if="getQuishingScenarioLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -467,7 +467,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSmishingCampaignManagerLeftMenuPermissions"
+              v-if="getQuishingCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -484,7 +484,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getSmishingSettingsLeftMenuPermissions"
+              v-if="getQuishingSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -1055,7 +1055,13 @@ export default {
         'permissions/getSmishingScenariosLeftMenuPermissions',
       getSmishingCampaignManagerLeftMenuPermissions:
         'permissions/getSmishingCampaignManagerLeftMenuPermissions',
-      getSmishingSettingsLeftMenuPermissions: 'permissions/getSmishingSettingsLeftMenuPermissions'
+      getSmishingSettingsLeftMenuPermissions: 'permissions/getSmishingSettingsLeftMenuPermissions',
+      getQuishingSimulatorLeftMenuPermissions:
+        'permissions/getQuishingSimulatorLeftMenuPermissions',
+      getQuishingCampaignManagerLeftMenuPermissions:
+        'permissions/getQuishingCampaignManagerLeftMenuPermissions',
+      getQuishingScenarioLeftMenuPermissions: 'permissions/getQuishingScenarioLeftMenuPermissions',
+      getQuishingSettingsLeftMenuPermissions: 'permissions/getQuishingSettingsLeftMenuPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
