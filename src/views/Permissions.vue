@@ -360,6 +360,9 @@ export default {
             case 'Vishing Simulator':
               sortedPermissions[8] = item
               break
+            case 'Threat Intelligence':
+              sortedPermissions[10] = item
+              break
             default:
               break
           }
