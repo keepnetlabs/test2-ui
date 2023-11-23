@@ -197,7 +197,7 @@ export default {
     isMFAScenarioSelected: {
       immediate: true,
       handler(val) {
-        if (this.isSmishing) return
+        if (this.isSmishing || this.isVishing) return
         if (val) {
           this.tableOptions.columns.push({
             property: 'phoneNumber',
@@ -215,7 +215,7 @@ export default {
           const phoneNumberColumnIndex = this.tableOptions.columns.findIndex(
             (column) => column.property === 'phoneNumber'
           )
-          if (phoneNumberColumnIndex > -1) {
+          if (phoneNumberColumnIndex !== -1) {
             this.tableOptions.columns.splice(phoneNumberColumnIndex, 1)
           }
         }
