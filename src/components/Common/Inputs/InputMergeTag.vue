@@ -113,6 +113,7 @@
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { playTextToSpeech } from '@/api/vishing'
+import CallbackService from '@/api/callback'
 import AudioPlayer from '@/components/AudioPlayer'
 export default {
   name: 'InputMergeTag',
@@ -182,6 +183,10 @@ export default {
     },
     isVoiceTextToSpeechCompatible: {
       type: Boolean
+    },
+    isCallback: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -273,7 +278,7 @@ export default {
         this.rules.unshift((v) => Validations.required(v))
       }
       this.rules = this.applyRules ? this.initialRules || this.rules : []
-      this.rules.push(...this.mergeTagRules)
+      if (this.mergeTags.length > 0) this.rules.push(...this.mergeTagRules)
       this.placeholder = this.initialPlaceholder || labels.EnterDescription
     }
   },
@@ -286,7 +291,7 @@ export default {
       this.rules.unshift((v) => Validations.required(v))
     }
     this.rules = this.applyRules ? this.initialRules || this.rules : []
-    this.rules.push(...this.mergeTagRules)
+    if (this.mergeTags.length > 0) this.rules.push(...this.mergeTagRules)
     this.placeholder = this.initialPlaceholder || labels.EnterDescription
   },
   methods: {
@@ -309,7 +314,13 @@ export default {
         inputText: this.value,
         voiceResourceId: this.voiceResourceId
       }
-      playTextToSpeech(payload)
+      let fn = null
+      if (this.isCallback) {
+        fn = CallbackService.getVoiceUrl
+      } else {
+        fn = playTextToSpeech
+      }
+      fn(payload)
         .then((res) => {
           if (res?.data?.data) {
             this.audioSrc = res?.data?.data
