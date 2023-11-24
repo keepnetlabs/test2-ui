@@ -73,6 +73,7 @@ import {
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 // TODO: Change endpoints
 import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
+import CallbackService from '@/api/callback'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader.vue'
@@ -108,7 +109,7 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           {
-            property: 'callerPhoneNumber',
+            property: 'number',
             //align: 'left',
             editable: false,
             label: 'Callback Phone Number',
@@ -132,7 +133,7 @@ export default {
             filterableType: 'text'
           },
           {
-            property: 'status',
+            property: 'isUsing',
             align: 'center',
             editable: false,
             label: 'Status',
@@ -167,7 +168,7 @@ export default {
             filterableType: 'text'
           },
           {
-            property: 'freesOnDate',
+            property: 'freeOnDate',
             //align: 'left',
             editable: false,
             label: 'Frees On Date',
@@ -224,7 +225,6 @@ export default {
   },
   mounted() {
     this.callForData()
-    this.callForLicenseInformation()
   },
   // TODO: Change permission
   computed: {
@@ -233,51 +233,28 @@ export default {
     })
   },
   methods: {
-    callForLicenseInformation() {
-      // TODO: Get license information and make select phone numbers button disaabled if needed
-    },
     callForData() {
-      this.tableData = [
-        {
-          resourceId: '1',
-          callerPhoneNumber: '+1 900-123-4433',
-          region: 'United States',
-          status: 'Not In Use',
-          campaignName: '-',
-          scenarioName: '-',
-          freesOnDate: '-'
-        },
-        {
-          resourceId: '2',
-          callerPhoneNumber: '+1 900-123-4433',
-          region: 'United States',
-          status: 'In Use',
-          campaignName: 'Campaign Name',
-          scenarioName: 'Scenario Name',
-          freesOnDate: '08/11/2023 10:09'
-        }
-      ]
-      //   this.isLoading = true
-      //   getThreatIntelligenceList(this.axiosPayload)
-      //     .then((response) => {
-      //       const {
-      //         totalNumberOfRecords = 0,
-      //         totalNumberOfPages = 0,
-      //         pageNumber = 1,
-      //         results = []
-      //       } = response.data.data
-      //       this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //       this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //       this.serverSideProps.pageNumber = pageNumber
-      //       for (const row of results) {
-      //         row.isActive = row.isActive ? 'Active' : 'Passive'
-      //       }
-      //       this.tableData = results
-      //     })
-      //     .catch(() => {
-      //       this.tableData = []
-      //     })
-      //     .finally(() => (this.isLoading = false))
+      this.isLoading = true
+      CallbackService.searchCallbackSettings(this.axiosPayload)
+        .then((response) => {
+          const {
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1,
+            results = []
+          } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results.map((row) => ({
+            ...row,
+            isUsing: row.isUsing ? 'In Use' : 'Not In Use'
+          }))
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.isLoading = false))
     },
     handleExchange(row) {
       this.selectedRow = row

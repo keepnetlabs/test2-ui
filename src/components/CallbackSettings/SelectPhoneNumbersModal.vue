@@ -48,8 +48,7 @@
 import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import InputPhoneNumberComboBox from '@/components/Common/Inputs/InputPhoneNumberComboBox'
-// TODO: Change endpoint
-import SmishingService from '@/api/smishing'
+import CallbackService from '@/api/callback'
 
 export default {
   name: 'SelectPhoneNumbersModal',
@@ -74,7 +73,7 @@ export default {
   },
   methods: {
     callPhoneNumbers() {
-      SmishingService.getSmishingPhoneNumbers().then((response) => {
+      CallbackService.getAvailableCallbackNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
       })
     },

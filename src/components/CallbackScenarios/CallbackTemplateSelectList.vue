@@ -175,8 +175,7 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-// TODO: Change endpoints
-import { getVishingTemplatePreview, getVishingTemplates } from '@/api/vishing'
+import CallbackService from '@/api/callback'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
@@ -335,7 +334,7 @@ export default {
         copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
         copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
         this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
-        getVishingTemplates(copyOfBodyData)
+        CallbackService.searchCallbackTemplates(copyOfBodyData)
           .then((response) => {
             if (!response.data.data.results.length) {
               this.listData = []
@@ -361,9 +360,16 @@ export default {
         this.getTemplates(true, this.templateResourceId, this.bodyData, true)
       }
     },
-    checkAndAddResourceIdToPayload() {
+    checkAndAddResourceIdToPayload(isInitial, bodyData) {
       this.loadingTemplates = true
       this.$emit('loading', true)
+      if (isInitial && this.templateResourceId) {
+        bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'ResourceId',
+          Operator: 'Include',
+          value: this.templateResourceId
+        })
+      }
     },
     getTemplates(
       isInitial = false,
@@ -372,7 +378,7 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      getVishingTemplates(bodyData)
+      CallbackService.searchCallbackTemplates(bodyData)
         .then((response) => {
           const { data } = response
           this.totalNumberOfPages = data.data.totalNumberOfPages
@@ -444,35 +450,17 @@ export default {
       if (isInitial) {
         this.$emit('initialTemplateId', item.resourceId)
       }
-      getVishingTemplatePreview(item.resourceId)
+      CallbackService.getCallbackTemplatePreview(item.resourceId)
         .then((response) => {
           this.template = response.data.data
-          const invalidDialingNoticeStepIndex = this.template.steps.findIndex(
-            (step) => step.order === 0
-          )
-          if (invalidDialingNoticeStepIndex !== -1) {
-            this.template = {
-              ...this.template,
-              invalidDialingNotice: this.template.steps[invalidDialingNoticeStepIndex]
-            }
-            this.template.steps.splice(invalidDialingNoticeStepIndex, 1)
-          }
-          // TODO: Remove default call greeting step
           this.template = {
             ...this.template,
-            callGreeting: {
-              inputType: 'TextToSpeech',
-              inputText:
-                'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              content: null,
-              duration: 0,
-              phishingCodeDigits: 6,
-              isVishingStep: false,
-              inputUrl: null
-            },
+            invalidDialingNotice: { ...this.template.steps[0] },
+            callGreeting: { ...this.template.steps[1] },
             language: item.language,
             voice: item.voice
           }
+          this.template.steps.splice(0, 2)
           const voiceIndex = this.languages.findIndex(
             (language) => language.language === item.language && language.name === item.voice
           )

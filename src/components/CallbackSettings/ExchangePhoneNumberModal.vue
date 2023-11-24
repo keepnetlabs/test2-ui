@@ -49,8 +49,7 @@
 import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
-// TODO: Change endpoint
-import SmishingService from '@/api/smishing'
+import CallbackService from '@/api/callback'
 
 export default {
   name: 'ExchangePhoneNumberModal',
@@ -80,7 +79,7 @@ export default {
   },
   methods: {
     callPhoneNumbers() {
-      SmishingService.getSmishingPhoneNumbers().then((response) => {
+      CallbackService.getAvailableCallbackNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
         this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
       })

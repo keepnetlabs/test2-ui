@@ -60,6 +60,10 @@ const getEmailTemplate = (resourceId) => {
   return testRequest.get(`/callback-simulator/email-template/${resourceId}`)
 }
 
+const getMergeTags = () => {
+  return testRequest.get(`/callback-simulator/email-template/merge-tags`)
+}
+
 const updateEmailTemplate = (resourceId, payload) => {
   return testRequest.put(`/callback-simulator/email-template/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -70,6 +74,77 @@ const deleteEmailTemplate = (resourceId) => {
   return testRequest.delete(`/callback-simulator/email-template/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
   })
+}
+
+const createEmailTemplate = (payload = {}) => {
+  return testRequest.post(`/callback-simulator/email-template`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const searchCallbackScenarios = (payload) => {
+  return testRequest.post('/callback-simulator/scenario/search', payload)
+}
+
+const exportCallbackScenarios = (payload = {}) => {
+  return testRequest.post(`/callback-simulator/scenario/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+const getCallbackScenario = (resourceId) => {
+  return testRequest.get(`/callback-simulator/scenario/${resourceId}`)
+}
+
+const getCallbackScenarioPreview = (resourceId = '') => {
+  return testRequest.get(`/callback-simulator/scenario/preview/${resourceId}`)
+}
+
+const updateCallbackScenario = (resourceId, payload) => {
+  return testRequest.put(`/callback-simulator/scenario/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const deleteCallbackScenario = (resourceId) => {
+  return testRequest.delete(`/callback-simulator/scenario/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const createCallbackScenario = (payload = {}) => {
+  return testRequest.post(`/callback-simulator/scenario`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const getUsedCallbackNumbers = () => {
+  return testRequest.get(`/callback-simulator/settings/usage`)
+}
+
+const exportCallbackSettings = (payload = {}) => {
+  return testRequest.post(`/callback-simulator/settings/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+const searchCallbackSettings = (payload) => {
+  return testRequest.post('/callback-simulator/settings/search', payload)
+}
+
+const mapCallbackNumbers = (payload) => {
+  return testRequest.post('/callback-simulator/settings/map-numbers', payload)
+}
+
+const exchangeCallbackNumbers = (oldProviderNumberId, newProviderNumberId) => {
+  return testRequest.post(
+    `/callback-simulator/settings/exchange-number/${oldProviderNumberId}/${newProviderNumberId}`,
+    payload
+  )
+}
+
+const getAvailableCallbackNumbers = () => {
+  return testRequest.get(`/callback-simulator/settings/available-numbers`)
 }
 
 const getCallbackCampaignManagerFormDetails = () => {
@@ -89,7 +164,22 @@ export default {
   searchEmailTemplates,
   exportEmailTemplates,
   getEmailTemplate,
+  getMergeTags,
   updateEmailTemplate,
   deleteEmailTemplate,
+  createEmailTemplate,
+  searchCallbackScenarios,
+  exportCallbackScenarios,
+  getCallbackScenario,
+  getCallbackScenarioPreview,
+  updateCallbackScenario,
+  deleteCallbackScenario,
+  createCallbackScenario,
+  getUsedCallbackNumbers,
+  exportCallbackSettings,
+  searchCallbackSettings,
+  mapCallbackNumbers,
+  exchangeCallbackNumbers,
+  getAvailableCallbackNumbers,
   getCallbackCampaignManagerFormDetails
 }

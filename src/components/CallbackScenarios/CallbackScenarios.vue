@@ -38,6 +38,7 @@
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selected-row="selectedPhishingScenario"
+      :languages="languages"
       @on-close="toggleShowPreviewDialog"
     />
     <DataTable
@@ -140,8 +141,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-// TODO: Change endpoints
-import { exportScenarios, getScenarioDataDetails, getScenariosList } from '@/api/scenarios'
+import CallbackService from '@/api/callback'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
 import CallbackScenarioPreview from '@/components/CallbackScenarios/CallbackScenarioPreview'
 import { mapGetters } from 'vuex'
@@ -176,7 +176,22 @@ export default {
   data() {
     return {
       languageFilterOptions: [],
-      scenarioDetailsLookup: null,
+      scenarioDetailsLookup: {
+        difficultyTypes: [
+          {
+            text: 'Easy',
+            value: 1
+          },
+          {
+            text: 'Medium',
+            value: 2
+          },
+          {
+            text: 'Hard',
+            value: 3
+          }
+        ]
+      },
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       selectedRow: null,
@@ -271,7 +286,7 @@ export default {
           {
             property: 'availableFor',
             align: 'right',
-            label: labels.AvailalbeFor,
+            label: labels.AvailableFor,
             fixed: false,
             sortable: false,
             hideSort: true,
@@ -379,36 +394,9 @@ export default {
     })
   },
   created() {
-    this.callForLanguages('refScenariosList')
-    this.callForScenarioDetails()
+    this.callForData()
   },
   methods: {
-    callForScenarioDetails() {
-      getScenarioDataDetails()
-        .then((response) => {
-          this.scenarioDetailsLookup = response?.data?.data || {
-            methodTypes: [],
-            difficultyTypes: []
-          }
-          this.$set(
-            this.tableOptions.columns[1],
-            'filterableItems',
-            this.scenarioDetailsLookup.methodTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
-          this.$set(
-            this.tableOptions.columns[3],
-            'filterableItems',
-            this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
-        })
-        .finally(() => {
-          this.callForData()
-        })
-    },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
       this.isShowPreviewDialog = !this.isShowPreviewDialog
@@ -475,11 +463,11 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportScenarios(payload).then((response) => {
+        CallbackService.exportCallbackScenarios(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Scenarios.${
+          link.download = `Callback-Scenarios.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
@@ -489,7 +477,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
-        getScenariosList(this.axiosPayload)
+        CallbackService.searchCallbackScenarios(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }

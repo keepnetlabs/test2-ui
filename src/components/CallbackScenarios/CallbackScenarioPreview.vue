@@ -84,7 +84,11 @@
                 <span class="template-preview__text--body">{{ callbackTemplateParams.name }}</span>
               </div>
             </div>
-            <CallbackTemplatePreviewSteps :template="callbackTemplateParams" />
+            <CallbackTemplatePreviewSteps
+              :template="callbackTemplateParams"
+              :isTextToSpeechCompatible="isTextToSpeechCompatible"
+              :voiceResourceId="callbackTemplateParams.vishingLanguageResourceId"
+            />
           </div>
         </ElTabPane>
       </ElTabs>
@@ -108,6 +112,7 @@
 import AppDialog from '@/components/AppDialog'
 // TODO:  Change endpoint
 import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -129,10 +134,15 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
+      isTextToSpeechCompatible: false,
       emailTemplate: null,
       landingPageTemplates: [],
       isMethodMfa: false,
@@ -162,7 +172,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      getPhishingScenarioLandingPageAndEmailTemplate(this.selectedRow.resourceId)
+      CallbackService.getCallbackScenarioPreview(this.selectedRow.resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, callbackTemplate } = data
@@ -190,64 +200,23 @@ export default {
           }
           this.emailTemplate = template
 
+          const languageIndex = this.languages.findIndex(
+            (language) => language.resourceId === callbackTemplate.vishingLanguageResourceId
+          )
+
           this.callbackTemplateParams = {
-            name: 'Netflix Discount',
-            language: 'Language',
-            voice: 'Voice',
-            steps: [
-              {
-                inputType: 'TextToSpeech',
-                inputText:
-                  'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-                inputDigit: 6,
-                duration: 0,
-                isVishingStep: true,
-                content: null,
-                inputUrl: null,
-                isExpanded: true
-              },
-              {
-                inputType: 'FileUpload',
-                inputText: '',
-                inputDigit: 5,
-                content: null,
-                duration: 0,
-                isVishingStep: false,
-                inputUrl: `https://keepnetlabsvishing.s3.eu-west-2.amazonaws.com/VishingTEST/X7AE3NtBgV1B-2.mp3`,
-                isExpanded: true
-              },
-              {
-                inputType: 'Pause',
-                inputText: '',
-                inputDigit: 0,
-                content: null,
-                duration: 3,
-                isVishingStep: false,
-                inputUrl: null,
-                isExpanded: true
-              }
-            ],
-            callGreeting: {
-              inputType: 'TextToSpeech',
-              inputText:
-                'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              content: null,
-              duration: 0,
-              phishingCodeDigits: 6,
-              isVishingStep: false,
-              inputUrl: null
-            },
-            invalidDialingNotice: {
-              inputType: 'TextToSpeech',
-              inputText:
-                'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              inputDigit: 0,
-              content: null,
-              duration: 0,
-              isVishingStep: false,
-              inputUrl: null
-            }
+            ...callbackTemplate
           }
+
+          this.callbackTemplateParams.invalidDialingNotice = {
+            ...this.callbackTemplateParams.steps[0]
+          }
+          this.callbackTemplateParams.steps.splice(0, 1)
+          this.callbackTemplateParams.callGreeting = { ...this.callbackTemplateParams.steps[0] }
+          this.callbackTemplateParams.steps.splice(0, 1)
+          this.callbackTemplateParams.language = this.languages[languageIndex].language
+          this.callbackTemplateParams.voice = this.languages[languageIndex].name
+          this.isTextToSpeechCompatible = this.languages[languageIndex].voiceProviderTypeId === 2
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

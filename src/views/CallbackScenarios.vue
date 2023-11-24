@@ -38,6 +38,7 @@ import EmailTemplates from '@/components/CallbackScenarios/EmailTemplates'
 import CallbackTemplates from '@/components/CallbackScenarios/CallbackTemplates'
 import CallbackScenarios from '@/components/CallbackScenarios/CallbackScenarios'
 import { mapGetters } from 'vuex'
+import CallbackService from '@/api/callback'
 import KContainer from '@/components/KContainer/KContainer'
 import { getVishingTemplateLanguages } from '@/api/vishing'
 
@@ -67,7 +68,7 @@ export default {
   },
   methods: {
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
+      CallbackService.getCallbackTemplateLanguages().then((response) => {
         this.languages = response?.data?.data || []
       })
     },

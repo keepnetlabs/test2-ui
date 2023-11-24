@@ -213,13 +213,7 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-// TODO: Change endpoints
-import {
-  createPhishingEmailTemplate,
-  getEmailTemplatePreviewContent,
-  getMergedTextForPhishing,
-  updatePhishingEmailTemplate
-} from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
@@ -370,7 +364,7 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit) {
-      getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+      CallbackService.getEmailTemplate(this.emailTemplateId).then((response) => {
         this.formValues = {
           ...response.data.data,
           description: response.data.data.description || '',
@@ -567,7 +561,7 @@ export default {
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
-        updatePhishingEmailTemplate(payload, this.emailTemplateId)
+        CallbackService.updateEmailTemplate(this.emailTemplateId, payload)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -575,7 +569,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createPhishingEmailTemplate(payload)
+        CallbackService.createEmailTemplate(payload)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -586,7 +580,7 @@ export default {
     },
 
     callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
+      CallbackService.getMergeTags().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })

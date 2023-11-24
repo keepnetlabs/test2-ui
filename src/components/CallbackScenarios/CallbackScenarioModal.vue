@@ -98,6 +98,8 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
+                    :apiFuncs="getEmailTemplateApiFuncs"
+                    :defaultBodyData="defaultEmailTemplateBodyData"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -116,8 +118,9 @@
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <CallbackTemplateSelectList
+                    v-if="step === 3"
                     ref="refCallbackTemplateSelectList"
-                    :template-resource-id="formValues.templateResourceId"
+                    :templateResourceId="formValues.callbackTemplateResourceId"
                     :languages="languages"
                     @initialTemplateId="handleInitialTemplate"
                     @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
@@ -285,11 +288,17 @@
                   </div>
                 </v-list-item-content>
               </v-list-item>
-              <CallbackCampaignModalSummaryCallbackTemplate
-                v-if="!!summaryData.callbackTemplate"
-                class="mt-4"
-                :formValues="summaryData.callbackTemplate"
-              />
+              <v-list-item>
+                <v-list-item-content>
+                  <div style="max-width: calc(100% - 96px);">
+                    <CallbackCampaignModalSummaryCallbackTemplate
+                      v-if="!!summaryData.callbackTemplate"
+                      class="mt-4"
+                      :formValues="summaryData.callbackTemplate"
+                    />
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
             </div>
           </v-stepper-content>
         </v-stepper-items>
@@ -318,7 +327,7 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
+import CallbackService from '@/api/callback'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -388,6 +397,39 @@ export default {
   },
   data() {
     return {
+      defaultEmailTemplateBodyData: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  value: '',
+                  FieldName: 'CategoryResourceId',
+                  Operator: 'Include'
+                },
+                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+              ]
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                { FieldName: 'Name', Operator: 'Contains', value: '' },
+                { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
+                { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
+                { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
+                { FieldName: 'Tags', Operator: 'Contains', value: '' },
+                { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
+              ]
+            }
+          ]
+        }
+      },
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
         backButton: 'btn-back--add-or-edit-scenario-modal',
@@ -440,6 +482,12 @@ export default {
     }
   },
   computed: {
+    getEmailTemplateApiFuncs() {
+      return {
+        list: CallbackService.searchEmailTemplates,
+        content: CallbackService.getEmailTemplate
+      }
+    },
     getMethodTypes() {
       return this.scenarioDetailsLookup?.methodTypes || []
     },
@@ -449,7 +497,7 @@ export default {
     getScenarioInfoItems() {
       return {
         Name: this.formValues.name,
-        Method: this.getMethodText,
+        // Method: this.getMethodText,
         Difficulty: this.getDifficultyType
       }
     },
@@ -484,17 +532,17 @@ export default {
     getDifficultyType() {
       return (
         this.scenarioDetailsLookup['difficultyTypes'].find(
-          (item) => item.value === this.generalDifficultyTypeId
-        )?.text || ''
-      )
-    },
-    getMethodText() {
-      return (
-        this.scenarioDetailsLookup?.methodTypes?.find(
-          (item) => item.value === this.formValues.methodTypeId
+          (item) => item.value === parseInt(this.generalDifficultyTypeId)
         )?.text || ''
       )
     }
+    // getMethodText() {
+    //   return (
+    //     this.scenarioDetailsLookup?.methodTypes?.find(
+    //       (item) => item.value === this.formValues.methodTypeId
+    //     )?.text || ''
+    //   )
+    // }
   },
   watch: {
     'formValues.methodTypeId'(val, oldVal) {
@@ -534,18 +582,16 @@ export default {
     },
     callForScenario() {
       this.isSubmitDisabled = true
-      getScenario(this.scenarioId)
+      CallbackService.getCallbackScenario(this.scenarioId)
         .then((response) => {
           this.formValues = response.data.data
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
           this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
+          this.formValues.callbackTemplateResourceId = response.data.data.callbackTemplateResourceId
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
-          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
-          this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
-          this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
@@ -689,13 +735,16 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
       }
       const payload = {
-        ...this.formValues,
-        mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
-        mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
+        name: this.formValues.name,
+        description: this.formValues.description || '',
+        languageTypeResourceId: this.formValues.languageTypeResourceId,
+        tags: this.formValues.tags || [],
+        emailTemplateId: this.formValues.emailTemplateId,
+        callbackTemplateId: this.selectedCallbackTemplate.id,
         availableForRequests: this.availableForRequests
       }
       if (this.isEdit && !this.isDuplicate) {
-        updateScenario(payload, this.scenarioId)
+        CallbackService.updateCallbackScenario(this.scenarioId, payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
@@ -703,7 +752,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        createScenario(payload)
+        CallbackService.createCallbackScenario(payload)
           .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })

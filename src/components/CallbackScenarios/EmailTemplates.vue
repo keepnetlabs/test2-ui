@@ -145,12 +145,7 @@ import NewEmailTemplates from '@/components/CallbackScenarios/NewEmailTemplate'
 import DeleteEmailTemplates from '@/components/CallbackScenarios/DeleteEmailTemplate'
 import EmailTemplatePreview from '@/components/CallbackScenarios/EmailTemplatePreview'
 import AppDialog from '@/components/AppDialog'
-// TODO: Change endpoints
-import {
-  getEmailTemplatesList,
-  exportEmailTemplates,
-  getEmailTemplatePreviewContent
-} from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -172,6 +167,7 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+
 export default {
   name: 'CallbackEmailTemplates',
   components: {
@@ -423,7 +419,7 @@ export default {
       this.isTemplateDetails = true
       const id = row.resourceId
       this.isPreviewLoading = true
-      getEmailTemplatePreviewContent(id)
+      CallbackService.getEmailTemplate(id)
         .then((response) => {
           const data = response.data.data
           this.selectedTemplateHeader = data.name
@@ -497,11 +493,11 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportEmailTemplates(payload).then((response) => {
+        CallbackService.exportEmailTemplates(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `EmailTemplates.${
+          link.download = `Callback-Email-Templates.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
@@ -511,7 +507,7 @@ export default {
     callForData() {
       if (this.getEmailTemplatesSearchPermissions) {
         this.loading = true
-        getEmailTemplatesList(this.axiosPayload)
+        CallbackService.searchEmailTemplates(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }

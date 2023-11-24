@@ -29,6 +29,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { deleteScenario } from '@/api/scenarios'
+import CallbackService from '@/api/callback'
 export default {
   name: 'DeleteCallbackScenario',
   components: {
@@ -54,7 +55,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      deleteScenario(this.selectedScenario.resourceId)
+      CallbackService.deleteCallbackScenario(this.selectedScenario.resourceId)
         .then(() => {
           this.$emit('handleSuccessDeleteAction', this.selectedScenario)
           this.closeModal()
