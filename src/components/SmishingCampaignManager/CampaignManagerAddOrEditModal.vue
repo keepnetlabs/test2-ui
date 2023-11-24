@@ -100,6 +100,8 @@
               :total-target-user-count="getTotalTargetUserCountForTargetAudience"
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
+              isSmishing
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -228,6 +230,9 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
+    },
     showSchedule() {
       if (this.step === 5) {
         const { refCampaignManagerDeliverySettings } = this.$refs
@@ -274,7 +279,8 @@ export default {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings
+          refCampaignManagerDeliverySettings,
+          refCampaignManagerPhishingScenarios
         } = this.$refs
         const scheduleTypeId =
           refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId
@@ -314,6 +320,7 @@ export default {
         )?.text
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
+        formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
       }
       return formData
     },
@@ -567,19 +574,28 @@ export default {
               formData: deliverySettingsFormData,
               inputScheduleFormData,
               inputDistributionFormData
-            }
+            },
+            refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
           deliverySettingsFormData = {
             ...deliverySettingsFormData,
             ...inputScheduleFormData,
             ...inputDistributionFormData
           }
+          const smishingScenarios = []
+          Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
+            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
+              phishingScenarioResourceId
+            ]
+            if (!isCheckboxSelected) return
+            smishingScenarios.push({
+              trainingId,
+              trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
+              phishingScenarioResourceId
+            })
+          })
           const payload = {
-            smishingScenarios: this.selectedPhishingScenarios.map((pScenario) => ({
-              phishingScenarioResourceId: pScenario.resourceId,
-              trainingId: '',
-              trainingLanguageIds: []
-            })),
+            smishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,

@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     :isLoading="isLoading"
     icon="mdi-information"
-    :title="labels.TrainingInfo"
+    :title="labels.EnrollmentInfo"
     :items="getItems"
   >
     <template #TargetUsers="{ props:{ key } }">

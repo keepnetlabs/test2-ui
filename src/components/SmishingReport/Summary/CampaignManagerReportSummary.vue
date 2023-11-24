@@ -5,6 +5,10 @@
       :resend-dialog-items="getResendDialogItems"
       :id="id"
       :instance-group="instanceGroup"
+      :training-infos="trainingInfos"
+      :is-show-training-report-button="!!trainingInfos.length"
+      :is-multiple-training-report="trainingInfos.length > 1"
+      :training-report-dialog-items="trainingReportDialogItems"
     />
     <CampaignManagerReportSummaryCards
       :multiple-type="getCampaignMethodTypes"
@@ -61,6 +65,13 @@
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
     />
+    <CampaignManagerReportSummaryTraining
+      v-if="getTrainingInfo"
+      class="mt-6"
+      call-training-preview-api
+      :training-params="getTrainingInfo"
+      :selected-row="getSelectedRowTrainingInfo"
+    />
   </div>
 </template>
 
@@ -76,10 +87,13 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSMSDelivery from '@/components/SmishingReport/Summary/CampaignManagerReportSMSDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import PhoneNumber from 'awesome-phonenumber'
+import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
+import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryTraining,
     CampaignManagerReportSMSDelivery,
     CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryTextTemplate,
@@ -104,6 +118,7 @@ export default {
   },
   data() {
     return {
+      trainingReportDialogItems: [],
       targetGroups: [],
       selectedScenarioTab: '',
       activeScenarioIndex: 0,
@@ -125,6 +140,23 @@ export default {
     // isMethodMfa() {
     //   return this.phishingScenarios?.[this.activeScenarioIndex]?.scenarioInfo?.methodTypeId === 4
     // },
+    getTrainingInfo() {
+      return this?.getActiveScenario?.trainingInfo
+    },
+    getSelectedRowTrainingInfo() {
+      return {
+        trainingLanguageIds:
+          this.getTrainingInfo?.languageList?.map((lang) => lang.languageId) || [],
+        trainingId: this.getTrainingInfo?.trainingId,
+        trainingName: this.getTrainingInfo?.name
+      }
+    },
+    trainingInfos() {
+      return this.phishingScenarios.reduce((acc, pScenario) => {
+        if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
+        return acc
+      }, [])
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
@@ -419,11 +451,26 @@ export default {
     },
     setCampaignSummary(response = {}) {
       this.campaignSummary = response?.data?.data
-      this.$store.dispatch(
-        'common/setActivePageRouterName',
-        this.campaignSummary?.smishingCampaignName || ''
-      )
-      if (this?.campaignSummary?.scenarios?.length) {
+      const scenarios = this.campaignSummary?.scenarios || []
+      const trainingReportDialogItems = []
+      if (scenarios.length) {
+        scenarios.forEach((scenario) => {
+          if (scenario.trainingInfo && scenario.enrollmentInfo) {
+            trainingReportDialogItems.push(
+              new TrainingReportDialogModel(
+                scenario.scenarioInfo.name,
+                scenario.trainingInfo.name,
+                scenario?.enrollmentInfo?.enrollmentId
+              )
+            )
+          }
+          if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
+            scenario.trainingInfo.languages = scenario.trainingInfo.languageList
+              .map((lang) => lang.languageShortCode)
+              .join(' | ')
+          }
+        })
+        this.trainingReportDialogItems = trainingReportDialogItems
         if (!this.customKeys.length) {
           this.customKeys = new Array(this.campaignSummary?.scenarios?.length)
             .fill(0)
@@ -431,6 +478,10 @@ export default {
         }
         if (!this.selectedScenarioTab) this.selectedScenarioTab = this?.customKeys[0]
       }
+      this.$store.dispatch(
+        'common/setActivePageRouterName',
+        this.campaignSummary?.smishingCampaignName || ''
+      )
     },
     callForTargetGroups() {
       SmishingService.getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then(

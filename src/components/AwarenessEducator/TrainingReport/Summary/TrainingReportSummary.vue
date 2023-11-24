@@ -33,6 +33,12 @@
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
+    <TrainingReportSMSSummary
+      v-if="isSMSSummaryExist"
+      :isLoading="isLoading"
+      :items="getSMSSummaryData"
+      :helper-data="getSMSSummaryHelperData"
+    />
     <TrainingReportEnrollmentEmail
       :form-data="getEnrollmentTemplateData"
       :isFetchingSummary="isLoading"
@@ -62,6 +68,7 @@ import TrainingReportSummaryHeader from '@/components/AwarenessEducator/Training
 import TrainingReportSummaryCards from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryCards'
 import TrainingReportSummaryTrainingInfo from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryTrainingInfo'
 import TrainingReportEnrollmentEmail from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportEnrollmentEmail'
+import TrainingReportSMSSummary from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSMSSummary'
 import TrainingReportCertificate from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportCertificate'
 import TrainingReportTrainingMaterial from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingMaterial'
 import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
@@ -73,6 +80,7 @@ export default {
   components: {
     TrainingReportTrainingDelivery,
     TrainingReportTrainingMaterial,
+    TrainingReportSMSSummary,
     TrainingReportEnrollmentEmail,
     TrainingReportSummaryTrainingInfo,
     TrainingReportSummaryCards,
@@ -105,12 +113,19 @@ export default {
     }
   },
   computed: {
+    isSMSSummaryExist() {
+      return !!this.trainingSummary?.smsSummary
+    },
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
     },
     getTrainingMaterialRow() {
       const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
-      return { languages, trainingId: trainingDetails?.id, trainingName: trainingDetails?.name }
+      return {
+        languages,
+        trainingId: trainingDetails?.id,
+        trainingName: trainingDetails?.name
+      }
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
@@ -126,6 +141,14 @@ export default {
     },
     getUserGroups() {
       return this.trainingSummary?.userGroups || {}
+    },
+    getSMSSummaryData() {
+      const { smsPhoneNumber, template } = this?.trainingSummary?.smsSummary || {}
+      return {
+        'Sender Phone Number': { show: true, value: smsPhoneNumber },
+        'SMS Text': { show: true, value: template },
+        'Delivery Status': { show: true, value: '' }
+      }
     },
     getTrainingInfoData() {
       const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
@@ -151,6 +174,12 @@ export default {
           show: true,
           value: languages?.join(', ')
         }
+      }
+    },
+    getSMSSummaryHelperData() {
+      const { sentCount } = this?.trainingSummary?.smsSummary || {}
+      return {
+        sentCount
       }
     },
     getTrainingInfoHelperData() {

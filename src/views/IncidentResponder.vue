@@ -45,6 +45,14 @@
           />
         </template>
       </AppModal>
+      <FilterByHashModal
+        v-model="hashfilterProps"
+        v-if="isFilterByHashModalVisible"
+        :status="isFilterByHashModalVisible"
+        :filterProps="hashfilterProps"
+        @confirm="confirmFilterByHash"
+        @close="closeFilterByHashModal"
+      />
       <IncidentResponderHeaderCards ref="refIncidentResponderCards" />
       <div
         v-if="getIncidentResponderNotifiedEmailPermission"
@@ -100,6 +108,8 @@
             :extendedViewValue="extendedViewValue"
             :select-event="clusteredTable.selectEvent"
             :extendedViewDisableChanger="extendedViewDisableChanger"
+            :add-button="clusteredTable.addButton"
+            @on-filter-by-hash="handleFilterByHash"
             @downloadEvent="exportClusteredReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @handleInvestigate="handleReportedEmailInvestigate"
@@ -258,6 +268,8 @@
             :selectEvent="emails.selectEvent"
             :server-side-props="serverSideProps"
             :extendedViewDisableChanger="extendedViewDisableChanger"
+            :add-button="emails.addButton"
+            @on-filter-by-hash="handleFilterByHash"
             @clusterChanged="clusterChanged"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
@@ -454,14 +466,15 @@ import {
   handleIsSafari,
   setSafariClusterFix
 } from '@/utils/functions'
-import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
+import DataTableColorfulText from '@/components/DataTableComponents/DataTableColorfulText'
 import {
   exportNotifiedEmails,
   getNotifiedEmailForEdit,
   getNotifiedEmail
 } from '@/api/notifiedEmail'
-import Datatable from '../components/DataTable'
-import NewInvestigation from '../components/Investigation/NewInvestigation'
+import Datatable from '@/components/DataTable'
+import FilterByHashModal from '@/components/IncidentResponder/FilterByHashModal'
+import NewInvestigation from '@/components/Investigation/NewInvestigation'
 import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import {
@@ -472,7 +485,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { required, startsWith, maxLength } from '@/utils/validations'
-import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
@@ -500,7 +513,8 @@ export default {
     NewInvestigation,
     DataTableColorfulText,
     CreateOrEditRule,
-    AppModal
+    AppModal,
+    FilterByHashModal
   },
   props: {
     isLoadState: {
@@ -508,6 +522,15 @@ export default {
     }
   },
   data: () => ({
+    defaultHashfilterProps: {
+      filterBy: 'MD5',
+      hash: ''
+    },
+    hashfilterProps: {
+      filterBy: 'MD5',
+      hash: ''
+    },
+    isFilterByHashModalVisible: false,
     waitingItemForApiItems: [],
     isShowEmailTemplateModal: false,
     dynamicReportedEmailProps: null,
@@ -660,6 +683,15 @@ export default {
             show: true
           }
         ]
+      },
+      addButton: {
+        show: true,
+        icon: null,
+        label: 'FILTER BY MD5 OR sha512 Hash',
+        action: 'on-filter-by-hash',
+        tooltip: 'FILTER BY MD5 OR sha512 Hash',
+        type: 'secondary',
+        id: 'btn-select--show-filter-by-hash'
       },
       columns: [
         {
@@ -951,6 +983,15 @@ export default {
     clusteredTable: {
       savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
       savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
+      addButton: {
+        show: true,
+        icon: null,
+        label: 'FILTER BY MD5 OR sha512 Hash',
+        action: 'on-filter-by-hash',
+        tooltip: 'FILTER BY MD5 OR sha512 Hash',
+        type: 'secondary',
+        id: 'btn-select--show-filter-by-hash'
+      },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
@@ -1248,6 +1289,11 @@ export default {
       getDashboardReportedEmailTrendsPermission:
         'permissions/getDashboardReportedEmailTrendsPermission'
     }),
+    isHashFilterActive() {
+      return !!this.requestBodyReportedEmails?.filter?.FilterGroups[0]?.FilterItems.find((item) =>
+        ['MD5', 'SHA512'].includes(item.FieldName)
+      )
+    },
     getReportedEmailTitle() {
       return this.isShowingClusteredTable
         ? this.clusteredRow[this.getClusteredField(this.selectedCluster)]
@@ -1274,6 +1320,19 @@ export default {
     }
   },
   watch: {
+    isHashFilterActive(val) {
+      if (val) {
+        this.emails.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
+      } else {
+        this.emails.addButton.label = `FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.label = `FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
+      }
+    },
     getIncidentResponderNotifiedEmailReAnalyze: {
       immediate: true,
       handler(newValue) {
@@ -1320,6 +1379,50 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleFilterByHash() {
+      if (this.isHashFilterActive) {
+        this.clearFilterByHashProps()
+      } else {
+        this.isFilterByHashModalVisible = true
+      }
+    },
+    clearFilterByHashProps() {
+      this.hashfilterProps = this.defaultHashfilterProps
+      const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+      )
+      if (hashFilterIndex !== -1) {
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.splice(hashFilterIndex, 1)
+      }
+      this.callForSearchNotifiedMail()
+    },
+    confirmFilterByHash() {
+      const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+      )
+      if (hashFilterIndex !== -1) {
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+          hashFilterIndex
+        ].FieldName = this.hashfilterProps.filterBy
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+          hashFilterIndex
+        ].Value = this.hashfilterProps.hash
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+          hashFilterIndex
+        ].Operator = '='
+      } else {
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.push({
+          FieldName: this.hashfilterProps.filterBy,
+          Value: this.hashfilterProps.hash,
+          Operator: '='
+        })
+      }
+      this.callForSearchNotifiedMail()
+      this.closeFilterByHashModal()
+    },
+    closeFilterByHashModal() {
+      this.isFilterByHashModalVisible = false
+    },
     handleOnExtendedViewStatusChange(status) {
       if (!status) {
         this.extendedViewValue = []

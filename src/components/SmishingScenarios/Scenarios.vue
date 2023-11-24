@@ -1,24 +1,16 @@
 <template>
   <div id="smishing">
-    <v-overlay
+    <NewScenario
       v-if="modalStatus"
-      id="new-smishing-scenario-overlay"
-      :value="modalStatus"
-      :opacity="1"
-      :z-index="99"
-      color="white"
-    >
-      <NewScenario
-        ref="newScenarioModal"
-        :status="modalStatus"
-        :scenarioId="scenarioId"
-        :isEdit="isEdit"
-        :isDuplicate="isDuplicate"
-        :editableFormValues="editableFormValues"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
-      />
-    </v-overlay>
+      ref="newScenarioModal"
+      :status="modalStatus"
+      :scenarioId="scenarioId"
+      :isEdit="isEdit"
+      :isDuplicate="isDuplicate"
+      :editableFormValues="editableFormValues"
+      :scenarioDetailsLookup="scenarioDetailsLookup"
+      @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
+    />
     <CommonSimulatorDeleteScenario
       v-if="showDeleteModal"
       :status="showDeleteModal"

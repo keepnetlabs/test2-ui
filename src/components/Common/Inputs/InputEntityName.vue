@@ -52,6 +52,10 @@ export default {
       type: Boolean,
       default: false
     },
+    hint: {
+      type: String,
+      default: ''
+    },
     type: {
       type: String,
       default: 'text'
@@ -84,7 +88,7 @@ export default {
   methods: {
     applyRequiredProps() {
       if (this.required) {
-        this.requiredProps = { hint: '*Required', persistentHint: true }
+        this.requiredProps = { hint: this.hint || '*Required', persistentHint: true }
         this.rules.unshift((v) => Validations.required(v))
       } else {
         this.requiredProps = {}

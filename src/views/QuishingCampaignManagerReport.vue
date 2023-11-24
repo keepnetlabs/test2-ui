@@ -73,7 +73,7 @@ export default {
         {
           name: labels.Clicked,
           id: 'campaign-manager-report-clicked-content',
-          label: labels.Clicked,
+          label: labels.ScannedQRLink,
           component: CampaignManagerReportClicked,
           isVisible: this.$store.getters['permissions/getQuishingCampaignReportsClickedPermissions']
         },

@@ -40,7 +40,7 @@
                 <div>
                   <KSelect
                     v-model="method"
-                    :items="methods"
+                    :items="quishingMethods"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
@@ -284,6 +284,7 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :type="type"
                       :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
@@ -314,9 +315,9 @@
 import { getScenario, getScenariosList } from '@/api/scenarios'
 import labels from '@/model/constants/labels'
 import {
-  methods,
   difficulties,
-  PHISHING_SCENARIOS_METHOD_TYPE_BY_ID
+  PHISHING_SCENARIOS_METHOD_TYPE_BY_ID,
+  quishingMethods
 } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
@@ -387,7 +388,7 @@ export default {
       checkboxModel: {},
       trainingTabModel: {},
       labels,
-      methods,
+      quishingMethods,
       difficulties,
       search: '',
       isShowTemplate: false,
@@ -639,7 +640,7 @@ export default {
             description,
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-            method: methods[methodTypeId - 1]?.text || '',
+            method: quishingMethods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
             mfaSmsSenderNumber,
             mfaTextTemplate

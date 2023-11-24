@@ -142,10 +142,7 @@ export default {
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
           this.trainingSummary = response?.data?.data
-          this.$store.dispatch(
-            'common/setActivePageRouterName',
-            this.trainingSummary?.trainingDetails?.name || ''
-          )
+          this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
         })
         .finally(() => {
           this.isLoading = false

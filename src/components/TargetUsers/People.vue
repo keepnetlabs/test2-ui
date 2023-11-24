@@ -972,6 +972,9 @@ export default {
         .then((response) => {
           this.unverifiedDomains = response?.data?.data || []
         })
+        .catch(() => {
+          this.unverifiedDomains = []
+        })
         .finally(() => {
           this.isUnverifiedDomainsLoading = false
         })

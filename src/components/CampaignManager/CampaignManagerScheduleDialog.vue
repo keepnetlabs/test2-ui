@@ -50,6 +50,7 @@ import AppDialog from '@/components/AppDialog'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { useLoading } from '@/hooks/useLoading'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'CampaignManagerItemDeleteDialog',
   components: { DatatableLoading, AppDialog },
@@ -90,13 +91,20 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    scenarioType: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   data() {
     return {
       CONSTANTS: {
         icon: 'mdi-calendar-range',
-        title: 'Phishing Scenarios Frequency Schedule'
+        title:
+          this.scenarioType === SCENARIO_TYPES.PHISHING
+            ? 'Phishing Scenarios Frequency Schedule'
+            : 'Quishing Scenarios Frequency Schedule'
       }
     }
   },

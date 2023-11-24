@@ -564,7 +564,7 @@ export default {
               scheduledDateTimeZoneId:
                 refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
               frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
-              phishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+              quishingScenarioResourceIds: this.selectedPhishingScenarios.map(
                 (pScenario) => pScenario.resourceId
               )
             })

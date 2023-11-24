@@ -18,6 +18,7 @@
         options
         no-padding-bottom
         is-custom-overflowed-column
+        :show-refresh-button="false"
         :show-filter-options="false"
         :is-settings-popup="false"
         :table="tableData"
@@ -46,7 +47,6 @@ import AppDialog from '@/components/AppDialog.vue'
 import DataTable from '@/components/DataTable.vue'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'

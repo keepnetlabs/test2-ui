@@ -61,6 +61,10 @@ export default {
     },
     type: {
       type: String
+    },
+    isForceActionButtonText: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['handleClose', 'handleConfirm'],
@@ -89,7 +93,7 @@ export default {
     getActionButtonText() {
       let actionButtonText
       if (this.type === 'delete') {
-        actionButtonText = 'DELETE'
+        actionButtonText = this.isForceActionButtonText ? this.actionButtonText : 'DELETE'
       } else {
         actionButtonText = this.actionButtonText
       }

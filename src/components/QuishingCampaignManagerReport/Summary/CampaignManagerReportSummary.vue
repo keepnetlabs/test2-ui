@@ -182,7 +182,8 @@ export default {
       return {
         trainingLanguageIds:
           this.getTrainingInfo?.languageList?.map((lang) => lang.languageId) || [],
-        trainingId: this.getTrainingInfo?.trainingId
+        trainingId: this.getTrainingInfo?.trainingId,
+        trainingName: this.getTrainingInfo?.name
       }
     },
     trainingInfos() {

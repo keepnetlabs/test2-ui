@@ -640,7 +640,7 @@ export default {
     getLandingPageCardTitle() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? 'Landing Page for users who clicked the phishing link'
-        : 'Landing Page for users who clicked the quishing link'
+        : 'Landing Page for users who clicked the QR code link'
     },
     getLandingPageUrlLabel() {
       return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL

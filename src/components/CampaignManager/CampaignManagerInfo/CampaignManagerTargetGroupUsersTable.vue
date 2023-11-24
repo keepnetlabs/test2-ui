@@ -21,6 +21,16 @@
         :text="getUnverifiedDomainsText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
+      <AlertBox
+        v-if="canRenderPhoneNumberAlertBox"
+        :text="getPhoneNumberWarningText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
+      <AlertBox
+        v-if="canRenderPhoneNumberAwarenessAlertBox"
+        :text="getAwarenessPhoneNumberWarningText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -72,6 +82,22 @@ export default {
     isVishing: {
       type: Boolean,
       default: false
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isAwareness: {
+      type: Boolean,
+      default: false
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
+    addPhoneNumberColumn: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -80,6 +106,7 @@ export default {
       totalUserCount: 0,
       activeUserCount: 0,
       activeUsersWithPhoneNumberCount: 0,
+      activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       CONSTANTS: {
@@ -93,40 +120,7 @@ export default {
           message: labels.EmptyTargetUsersPeople,
           id: 'btn-empty--target-users-people'
         },
-        columns: [
-          {
-            property: PROPERTY_STORE.FIRSTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            hideSort: true
-          },
-          {
-            property: PROPERTY_STORE.LASTNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.LASTNAME),
-            sortable: true,
-            show: true,
-            type: 'text',
-            hideSort: true
-          },
-          {
-            property: this.lastColumnName,
-            align: 'left',
-            editable: false,
-            label: this.lastColumnName === 'email' ? 'Email' : 'Phone Number',
-            sortable: true,
-            show: true,
-            type: 'text',
-            overrideWidth: true,
-            hideSort: true
-          }
-        ]
+        columns: this.getColumns()
       }
     }
   },
@@ -157,23 +151,138 @@ export default {
       return this.isTargetGroupLoading || this.isLoading
     },
     canRenderAlertbox() {
+      if (this.isAwareness) return false
       return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
+    },
+    canRenderPhoneNumberAlertBox() {
+      if (this.isAwareness) return false
+      return this.activeUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+    },
+    canRenderPhoneNumberAwarenessAlertBox() {
+      return this.activeUsersWithoutPhoneNumberCount > 0 && this.isAwareness
     },
     getUnverifiedDomainsText() {
       return `There are ${this.usersFromUnverifiedDomainsCount} active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
       } with unverified domains in this group. Please verify the domains in order to send emails.`
+    },
+    getPhoneNumberWarningText() {
+      return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.activeUsersWithPhoneNumberCount
+      } active user${this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone number${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } and ${this.activeUsersWithoutPhoneNumberCount} active user${
+        this.activeUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } without phone number${
+        this.activeUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } in this group. Only the ${this.activeUsersWithPhoneNumberCount} user${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone number${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } will receive MFA scenario.`
+    },
+    getAwarenessPhoneNumberWarningText() {
+      return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.activeUsersWithPhoneNumberCount
+      } active user${this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone numbers and ${
+        this.activeUsersWithoutPhoneNumberCount
+      } active users without phone numbers in this group. Only the ${
+        this.activeUsersWithPhoneNumberCount
+      } user${
+        this.activeUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone numbers will receive training email and SMS.`
     }
   },
   watch: {
+    isMFAScenarioSelected: {
+      immediate: true,
+      handler(val) {
+        if (this.isSmishing || this.isVishing) return
+        if (val) {
+          this.tableOptions.columns.push({
+            property: 'phoneNumber',
+            align: 'left',
+            editable: false,
+            label: 'Phone Number',
+            sortable: true,
+            show: true,
+            width: 150,
+            type: 'text',
+            overrideWidth: true,
+            hideSort: true
+          })
+        } else {
+          const phoneNumberColumnIndex = this.tableOptions.columns.findIndex(
+            (column) => column.property === 'phoneNumber'
+          )
+          if (phoneNumberColumnIndex !== -1) {
+            this.tableOptions.columns.splice(phoneNumberColumnIndex, 1)
+          }
+        }
+      }
+    },
     resourceId() {
       this.callForData()
+    },
+    addPhoneNumberColumn() {
+      this.tableOptions.columns = this.getColumns()
     }
   },
   created() {
     this.callForData()
   },
   methods: {
+    getColumns() {
+      const columns = [
+        {
+          property: PROPERTY_STORE.FIRSTNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          hideSort: true
+        },
+        {
+          property: PROPERTY_STORE.LASTNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.LASTNAME),
+          sortable: true,
+          show: true,
+          type: 'text',
+          hideSort: true
+        },
+        {
+          property: this.lastColumnName,
+          align: 'left',
+          editable: false,
+          label: this.lastColumnName === 'email' ? 'Email' : 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          overrideWidth: true,
+          hideSort: true
+        }
+      ]
+      if (this.addPhoneNumberColumn) {
+        columns.push({
+          property: 'phoneNumber',
+          align: 'left',
+          editable: false,
+          label: 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 200,
+          overrideWidth: true,
+          hideSort: true
+        })
+      }
+      return columns
+    },
     cancellableSearchTargetGroupUsers: cancellableAxiosRequest(searchTargetGroupUsers),
     callForData() {
       if (!this.resourceId) return
@@ -199,6 +308,10 @@ export default {
                 data
                   .find((row) => row.status === 'Active')
                   ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+              const activeUsersWithoutPhoneNumberCount =
+                data
+                  .find((row) => row.status === 'Active')
+                  ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
               const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
               const usersFromUnverifiedDomainsCount =
                 data
@@ -209,6 +322,7 @@ export default {
               this.inactiveUserCount = inactiveUserCount
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
               this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
+              this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
               this.setLoading(false)
             })
             .catch(() => {

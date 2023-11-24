@@ -175,11 +175,11 @@
               <InputCallerPhoneNumber v-model="formValues.callerPhoneNumber" />
               <FormGroup
                 title="Distribution"
-                subTitle="Call target users with over a specified time period. Set days and hours of calls."
+                sub-title="Call target users with over a specified time period. Set days and hours of calls."
               >
                 <div class="vishing-campaign-modal__send-calls">
                   <span>Send calls over</span>
-                  <div style="position: relative;">
+                  <div class="position-relative">
                     <v-text-field
                       ref="refSendCallsOver"
                       :value="formValues.distributionOverDays"
@@ -199,13 +199,13 @@
                     {{ formValues.distributionOverDays > 1 ? 'weeks' : 'week' }}
                   </span>
                 </div>
-                <div class="vishing-campaign-modal__send-calls-on">
+                <div class="vishing-campaign-modal__send-calls-on mb-1">
                   <div>
                     <div>Send calls on</div>
                   </div>
-                  <div class="vishing-campaign-modal__send-calls-on__days">
+                  <div class="vishing-campaign-modal__send-calls-on__days d-flex gap-2">
                     <v-checkbox
-                      v-for="day in sendCallsOnDaysOptions"
+                      v-for="day in sendCallsOnDaysOptionsShort"
                       v-model="formValues.sendCallsOnDays"
                       color="#2196F3"
                       :label="day.text"
@@ -376,7 +376,7 @@ import {
   getScheduleType,
   getSendCallOnDays,
   recipientTypes,
-  sendCallsOnDaysOptions,
+  sendCallsOnDaysOptionsShort,
   sendCallsOverTypes
 } from '@/components/VishingCampaignManager/utils'
 import {
@@ -488,7 +488,7 @@ export default {
       recipientTypes,
       distributionDays: 31,
       sendCallsOverTypes,
-      sendCallsOnDaysOptions,
+      sendCallsOnDaysOptionsShort,
       isActionButtonDisabled: false,
       distributionDayCount: 7
     }
@@ -510,11 +510,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      const totalActiveUsersWithPhoneNumberCount =
+      return (
         this.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      return totalActiveUsersWithPhoneNumberCount
+      )
     },
     getSendCallsText() {
       return `${this.getTotalActiveUsersWithPhoneNumber} user${

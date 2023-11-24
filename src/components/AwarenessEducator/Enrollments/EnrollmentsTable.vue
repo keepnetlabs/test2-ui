@@ -94,7 +94,8 @@ export default {
           download: false
         },
         columns: [
-          COLUMNS.NAME,
+          COLUMNS.ENROLLMENT_NAME,
+          COLUMNS.TRAINING_NAME_UNFIXED,
           COLUMNS.CATEGORY,
           COLUMNS.AUDIENCE,
           COLUMNS.LANGUAGES,
@@ -103,6 +104,7 @@ export default {
           COLUMNS.START_DATE,
           COLUMNS.STATUS,
           COLUMNS.DELIVERY,
+          COLUMNS.DELIVERY_TYPE,
           COLUMNS.TARGET_USERS,
           COLUMNS.TAGS
         ],

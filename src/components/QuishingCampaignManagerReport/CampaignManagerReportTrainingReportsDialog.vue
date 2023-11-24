@@ -18,6 +18,7 @@
         options
         no-padding-bottom
         is-custom-overflowed-column
+        :show-refresh-button="false"
         :show-filter-options="false"
         :is-settings-popup="false"
         :table="tableData"

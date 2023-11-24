@@ -105,6 +105,60 @@
             />
           </div>
           <div class="table-settings" v-if="options">
+            <slot name="addUsers">
+              <v-tooltip bottom opacity="1">
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="
+                      addButton &&
+                      addButton.show &&
+                      addButton.action &&
+                      getAddButtonType === 'primary'
+                    "
+                    v-on="on"
+                    :id="addButton.id"
+                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
+                    rounded
+                    color="#2196f3"
+                    style="order: 1; margin-right: 10px;"
+                    :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
+                  >
+                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
+                      getAddButtonIcon
+                    }}</v-icon>
+                    <span class="button-new__text">{{ getAddButtonLabel }}</span>
+                  </v-btn>
+                  <v-btn
+                    v-if="
+                      addButton &&
+                      addButton.show &&
+                      addButton.action &&
+                      getAddButtonType === 'secondary'
+                    "
+                    v-on="on"
+                    :id="addButton.id"
+                    :class="[addButton && addButton.disabled && 'btn-add--disabled']"
+                    color="#757575"
+                    text
+                    plain
+                    style="order: 1; margin-right: 10px;"
+                    :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
+                  >
+                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
+                      getAddButtonIcon
+                    }}</v-icon>
+                    <span class="button-new__text button-new__text--secondary">{{
+                      getAddButtonLabel
+                    }}</span>
+                  </v-btn>
+                </template>
+                <span class="tooltip-span">{{
+                  (addButton && addButton.tooltip) || 'Add Users'
+                }}</span>
+              </v-tooltip>
+            </slot>
             <v-btn
               v-if="groupable"
               class="clust-btn btn-hover mr-1"
@@ -234,6 +288,7 @@
             <v-tooltip bottom opacity="1">
               <template #activator="{ on }">
                 <v-btn
+                  v-if="showRefreshButton"
                   v-on="on"
                   :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
                   icon
@@ -1197,6 +1252,10 @@ export default {
     refreshButtonDisabled: {
       type: Boolean,
       default: false
+    },
+    showRefreshButton: {
+      type: Boolean,
+      default: true
     },
     rowActions: {
       type: Array,

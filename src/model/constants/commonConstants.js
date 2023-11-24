@@ -260,6 +260,7 @@ export const PROPERTY_STORE = {
   LASTSEEN: 'lastSeen',
   ADDINVERSION: 'addInVersion',
   DELIVERY: 'delivery',
+  DELIVERY_TYPE: 'deliveryType',
   COMPANYNAME: 'companyName',
   APIKEY: 'apiKey',
   DATECREATED: 'dateCreated',

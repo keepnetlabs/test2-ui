@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoClicked"
-      subtitle="List of users who clicked the quishing link"
+      subtitle="List of users who clicked the QR code link"
     />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"

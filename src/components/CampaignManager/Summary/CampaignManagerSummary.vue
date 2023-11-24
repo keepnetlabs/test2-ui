@@ -11,6 +11,7 @@
       :scheduled-date-time-zone-id="getScheduledDateTimeZoneId"
       :scheduled-date="getScheduledDate"
       :items="getScheduledDialogItems"
+      :scenario-type="type"
       @on-close="toggleScheduleDialog"
     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">

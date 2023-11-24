@@ -22,7 +22,7 @@
       />
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose @handleClose="handleClose" />
+      <AppDialogFooterWithClose @on-close="handleClose" />
     </template>
   </AppDialog>
 </template>

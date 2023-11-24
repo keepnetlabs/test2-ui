@@ -1,101 +1,118 @@
 <template>
   <v-form ref="refForm">
-    <KButtonRadioGroup v-model="selectedRadioGroupIndex" class="mb-8" :items="radioGroupItems" />
-    <div v-show="selectedRadioGroupIndex === 0">
-      <FormGroup :title="labels.TargetUserGroups" :sub-title="labels.TargetUserGroupsSub">
-      </FormGroup>
-      <TargetGroups
-        ref="refTargetGroups"
-        class="mt-2"
-        is-all-groups
-        :response-of-target-groups-items="responseOfTargetGroupsItems"
-        :selected-target-groups="formData.targetGroupResourceIds"
-        :is-valid="isTargetGroupsValid"
-        @handle-selection-change="handleTableSelectionChange"
-      />
-      <CustomError
-        class="mb-6 ml-2"
-        style="margin-top: 2px;"
-        :is-valid="isTargetGroupsValid"
-        :error-message="getTargetGroupErrorMessage"
-      />
+    <div v-show="isProxy" class="send-training-settings__lms-switch max-w-554">
+      <div class="text-primary-color fs-5 fw-600">Target Audience</div>
+      <div class="text-primary-color fs-medium">
+        When the “Training Delivery for Your LMS” is activated, training is created as a SCORM
+        package and can not be launched directly. Therefore, the target audience selection can not
+        be made
+      </div>
     </div>
-    <div v-if="selectedRadioGroupIndex === 1">
-      <FormGroup :title="labels.PhishingCampaigns" :sub-title="labels.PhishingCampaignsSub">
-      </FormGroup>
-      <SendTrainingSelectUsersByCampaign
-        ref="refSendTrainingSelectUsersByCampaign"
-        :value="formData.campaignResourceId"
-        :is-target-groups-valid="!!getTotalTargetUserCount"
-        @on-item-change="handleCampaignChange"
-      />
-      <FormGroup
-        class="mt-6"
-        style="max-width: 640px;"
-        :title="labels.TargetUsers"
-        :sub-title="labels.SendTrainingTargetUsersSub"
-      >
-        <div>
-          <v-checkbox
-            v-model="formData.userWhoOpenedEmail"
-            id="input--send-training-user-who-opened-email"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoOpenedEmail }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-if="isMultipleMethod || methodTypeId !== 3"
-            v-model="formData.userWhoClickedEmail"
-            id="input--send-training-user-who-clicked-email"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoClickedEmail }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-if="isMultipleMethod || isMFADataSubmission || methodTypeId === 2"
-            v-model="formData.userWhoSubmittedData"
-            id="input--send-training-user-who-submitted-data"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoSubmittedData }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-if="isMultipleMethod || isMFADataSubmission || isMFAClickOnly"
-            v-model="formData.userWhoSubmittedMFACode"
-            id="input--send-training-user-who-submitted-mfa-code"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoSubmittedMFACode }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-if="isMultipleMethod || methodTypeId === 3"
-            v-model="formData.userWhoDownloadedAttachment"
-            id="input--send-training-user-who-downloaded-attachment"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoOpenedAttachment }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="formData.userWhoReportedAsSuspicious"
-            id="input--send-training-user-who-reported-as-suspicious"
-            color="#2196f3"
-            @click="checkboxSelectionChange"
-          >
-            <template #label>{{ labels.UserWhoReportedAsSuspicious }}</template>
-          </v-checkbox>
-          <CustomError
-            class="mb-6"
-            style="margin-top: 2px;"
-            :is-valid="!getErrorText"
-            :error-message="getErrorText"
-          />
-        </div>
-      </FormGroup>
+    <div
+      v-show="!isProxy"
+      :style="{
+        visibility: isProxy ? 'hidden' : 'visible'
+      }"
+    >
+      <KButtonRadioGroup v-model="selectedRadioGroupIndex" class="mb-8" :items="radioGroupItems" />
+      <div v-show="selectedRadioGroupIndex === 0">
+        <FormGroup :title="labels.TargetUserGroups" :sub-title="labels.TargetUserGroupsSub">
+        </FormGroup>
+        <TargetGroups
+          ref="refTargetGroups"
+          class="mt-2"
+          is-all-groups
+          add-phone-number-column
+          :is-awareness="isSmsNotification"
+          :response-of-target-groups-items="responseOfTargetGroupsItems"
+          :selected-target-groups="formData.targetGroupResourceIds"
+          :is-valid="isTargetGroupsValid"
+          @handle-selection-change="handleTableSelectionChange"
+        />
+        <CustomError
+          class="mb-6 ml-2"
+          style="margin-top: 2px;"
+          :is-valid="isTargetGroupsValid"
+          :error-message="getTargetGroupErrorMessage"
+        />
+      </div>
+      <div v-if="selectedRadioGroupIndex === 1">
+        <FormGroup :title="labels.PhishingCampaigns" :sub-title="labels.PhishingCampaignsSub">
+        </FormGroup>
+        <SendTrainingSelectUsersByCampaign
+          ref="refSendTrainingSelectUsersByCampaign"
+          :value="formData.campaignResourceId"
+          :is-target-groups-valid="!!getTotalTargetUserCount"
+          @on-item-change="handleCampaignChange"
+        />
+        <FormGroup
+          class="mt-6"
+          style="max-width: 640px;"
+          :title="labels.TargetUsers"
+          :sub-title="labels.SendTrainingTargetUsersSub"
+        >
+          <div>
+            <v-checkbox
+              v-model="formData.userWhoOpenedEmail"
+              id="input--send-training-user-who-opened-email"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoOpenedEmail }}</template>
+            </v-checkbox>
+            <v-checkbox
+              v-if="isMultipleMethod || methodTypeId !== 3"
+              v-model="formData.userWhoClickedEmail"
+              id="input--send-training-user-who-clicked-email"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoClickedEmail }}</template>
+            </v-checkbox>
+            <v-checkbox
+              v-if="isMultipleMethod || isMFADataSubmission || methodTypeId === 2"
+              v-model="formData.userWhoSubmittedData"
+              id="input--send-training-user-who-submitted-data"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoSubmittedData }}</template>
+            </v-checkbox>
+            <v-checkbox
+              v-if="isMultipleMethod || isMFADataSubmission || isMFAClickOnly"
+              v-model="formData.userWhoSubmittedMFACode"
+              id="input--send-training-user-who-submitted-mfa-code"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoSubmittedMFACode }}</template>
+            </v-checkbox>
+            <v-checkbox
+              v-if="isMultipleMethod || methodTypeId === 3"
+              v-model="formData.userWhoDownloadedAttachment"
+              id="input--send-training-user-who-downloaded-attachment"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoOpenedAttachment }}</template>
+            </v-checkbox>
+            <v-checkbox
+              v-model="formData.userWhoReportedAsSuspicious"
+              id="input--send-training-user-who-reported-as-suspicious"
+              color="#2196f3"
+              @click="checkboxSelectionChange"
+            >
+              <template #label>{{ labels.UserWhoReportedAsSuspicious }}</template>
+            </v-checkbox>
+            <CustomError
+              class="mb-6"
+              style="margin-top: 2px;"
+              :is-valid="!getErrorText"
+              :error-message="getErrorText"
+            />
+          </div>
+        </FormGroup>
+      </div>
     </div>
   </v-form>
 </template>
@@ -117,6 +134,16 @@ export default {
     TargetGroups: CampaignManagerTargetGroups,
     FormGroup,
     KButtonRadioGroup
+  },
+  props: {
+    isProxy: {
+      type: Boolean,
+      default: false
+    },
+    isSmsNotification: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
