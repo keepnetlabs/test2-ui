@@ -12,6 +12,7 @@ import ThreatIntelligenceIcon from '@/components/CustomIcons/ThreatIntelligence'
 import BookSearch from '@/components/CustomIcons/BookSearch'
 import SmishingSimulator from '@/components/CustomIcons/SmishingSimulator'
 import LockOpenTime from '@/components/CustomIcons/LockOpenTime'
+import Callback from '@/components/CustomIcons/Callback'
 import QrCode from '@/components/CustomIcons/QrCode'
 import QrCodeSelected from '@/components/CustomIcons/QrCodeSelected'
 import PlayFile from '@/components/CustomIcons/PlayFile'
@@ -26,6 +27,9 @@ export default new Vuetify({
     values: {
       playfile: {
         component: PlayFile
+      },
+      callback: {
+        component: Callback
       },
       'playfile-gray': {
         component: PlayFileGray

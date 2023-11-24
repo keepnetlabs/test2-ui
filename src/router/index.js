@@ -24,17 +24,22 @@ import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 import PhishingSimulator from '@/views/PhishingSimulator'
-import SmishingScenarios from '@/views/SmishingScenarios'
 import Sandbox from '@/views/Sandbox'
 import Settings from '@/views/Settings'
 import SmishingSettings from '@/views/SmishingSettings'
-import SmishingReport from '@/views/SmishingReport'
 import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import SmishingSimulatorRoute from '@/views/SmishingSimulatorRoute'
+import SmishingScenarios from '@/views/SmishingScenarios'
 import SmishingCampaignManager from '@/views/SmishingCampaignManager'
+import SmishingReport from '@/views/SmishingReport'
+import CallbackSimulatorRoute from '@/views/CallbackSimulatorRoute'
+import CallbackCampaignManager from '@/views/CallbackCampaignManager'
+import CallbackScenarios from '@/views/CallbackScenarios'
+import CallbackReport from '@/views/CallbackReport'
+import CallbackSettings from '@/components/CallbackSettings/Settings'
 import VishingRoute from '@/views/VishingRoute'
 import VishingTemplates from '@/views/VishingTemplates'
 import VishingCampaignManager from '@/views/VishingCampaignManager'
@@ -139,6 +144,18 @@ const router = new Router({
           },
           component: SmishingSimulatorRoute
         },
+        {
+          path: '/callback-simulator',
+          name: 'Callback Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard',
+            // TODO: chnage permission key
+            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+          },
+          component: CallbackSimulatorRoute
+        },
+
         {
           path: '/quishing-simulator',
           name: 'Quishing Simulator',
@@ -393,6 +410,58 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Smishing Campaign Manager',
+            permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/callback-simulator/callback-scenarios',
+          name: 'Callback Scenarios',
+          component: CallbackScenarios,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Callback Simulator',
+            // TODO: Change permission
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/callback-simulator/campaign-manager',
+          name: 'Callback Campaign Manager',
+          component: CallbackCampaignManager,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Callback Simulator',
+            // TODO: Change permission
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/callback-simulator/settings',
+          name: 'Callback Settings',
+          component: CallbackSettings,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Callback Simulator',
+            // TODO: Change permission
+            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/callback-report/:id/:instanceGroup',
+          name: 'Callback Report',
+          component: CallbackReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Callback Campaign Manager',
+            // TODO: Change permission
             permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
           },
           props: true,

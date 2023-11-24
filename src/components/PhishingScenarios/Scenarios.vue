@@ -143,12 +143,12 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue'
+import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog'
 import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
-import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch.vue'
+import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
 
 export default {
   name: 'EmailTemplates',

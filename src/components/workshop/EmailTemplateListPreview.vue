@@ -223,6 +223,9 @@ export default {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false },
     categoryResourceId: { type: String, default: '' },
+    defaultBodyData: {
+      type: Object
+    },
     apiFuncs: {
       type: Object,
       default: () => ({
@@ -256,7 +259,7 @@ export default {
       templateFromEmail: null,
       methods: SCENARIO_METHODS,
       difficulties: SCENARIO_DIFFICULTIES,
-      bodyData: getDefaultEmailTemplatePayload(this.categoryResourceId),
+      bodyData: this.defaultBodyData || getDefaultEmailTemplatePayload(this.categoryResourceId),
       loadingTemplatePreview: false,
       templateHTML: null,
       activeTemplateHTML: null,

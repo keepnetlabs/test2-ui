@@ -37,6 +37,15 @@
     text-transform: none;
   }
 
+  &__audio-container {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+  }
+
   &__inner {
     width: 100%;
     min-height: 44px;
@@ -82,7 +91,7 @@
     background-color: #2195f3 !important;
     pointer-events: all;
     cursor: auto;
-    
+
     i {
       color: #ffffff !important;
     }

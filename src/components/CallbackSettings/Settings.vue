@@ -1,0 +1,305 @@
+<template>
+  <KContainer id="callback-settings">
+    <CompanySettingsHeader
+      title="Callback Phone Numbers"
+      sub-title="Manage your callback phone numbers"
+    />
+    <SelectPhoneNumbersModal
+      :status="isShowSelectPhoneNumbersModal"
+      @confirm="handleConfirmSelectPhoneNumbers"
+      @close="handleCloseSelectPhoneNumbersModal"
+    />
+    <ExchangePhoneNumberModal
+      :status="isShowExchangePhoneNumberModal"
+      :selectedRow="selectedRow"
+      @confirm="handleConfirmExchangePhoneNumber"
+      @close="handleCloseExchangePhoneNumberModal"
+    />
+    <DataTable
+      v-if="getThreatIntelligencePermissionsSearch"
+      ref="refCallbackSettings"
+      id="callback-phone-numbers-table"
+      is-server-side
+      selectable
+      filterable
+      options
+      :showPagination="true"
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :download-button="tableOptions.downloadButton"
+      :row-actions="tableOptions.rowActions"
+      @selectPhoneNumbers="handleSelectPhoneNumbers"
+      @columnFilterChanged="columnFilterChanged"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportData"
+      @refreshAction="callForData"
+    >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :scope="scope"
+          :id="tableOptions.rowActions[0].id"
+          :icon="tableOptions.rowActions[0].icon"
+          :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Use'"
+          :text="tableOptions.rowActions[0].name"
+          :checkIsOwnerProperty="false"
+          @on-click="handleExchange(scope.row)"
+        />
+      </template>
+    </DataTable>
+  </KContainer>
+</template>
+
+<script>
+import DataTable from '@/components/DataTable'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { useLoading } from '@/hooks/useLoading'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+// TODO: Change endpoints
+import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
+import CallbackService from '@/api/callback'
+import { mapGetters } from 'vuex'
+import KContainer from '@/components/KContainer/KContainer'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import SelectPhoneNumbersModal from '@/components/CallbackSettings/SelectPhoneNumbersModal'
+import ExchangePhoneNumberModal from '@/components/CallbackSettings/ExchangePhoneNumberModal'
+export default {
+  name: 'CallbackSettings',
+  components: {
+    DataTable,
+    KContainer,
+    CompanySettingsHeader,
+    DefaultButtonRowAction,
+    SelectPhoneNumbersModal,
+    ExchangePhoneNumberModal
+  },
+  mixins: [useLoading, useDefaultTableFunctions],
+  data() {
+    return {
+      CONSTANTS: {
+        id: 'CallbackSettingsSearchContainer',
+        ascending: 'ascending'
+      },
+      axiosPayload: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps(),
+      isShowSelectPhoneNumbersModal: false,
+      isShowExchangePhoneNumberModal: false,
+      selectedRow: null,
+      tableData: [],
+      tableOptions: {
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_SETTINGS,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CALLBACK_SETTINGS,
+        serverSideEvents: { pagination: true, search: true, sort: true },
+        columns: [
+          {
+            property: 'number',
+            //align: 'left',
+            editable: false,
+            label: 'Callback Phone Number',
+            fixed: true,
+            hideSort: false,
+            show: true,
+            type: 'text',
+            width: 220,
+            filterableType: 'text'
+          },
+          {
+            property: 'region',
+            //align: 'left',
+            editable: false,
+            label: 'Region',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: 'text'
+          },
+          {
+            property: 'isUsing',
+            align: 'center',
+            editable: false,
+            label: 'Status',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'status',
+            width: 150,
+            filterableType: 'select',
+            filterableItems: ['Not In Use', 'In Use']
+          },
+          {
+            property: 'campaignName',
+            //align: 'left',
+            editable: false,
+            label: 'Campaign Name',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'text',
+            filterableType: 'text'
+          },
+          {
+            property: 'scenarioName',
+            //align: 'left',
+            editable: false,
+            label: 'Campaign Name',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'text',
+            filterableType: 'text'
+          },
+          {
+            property: 'freeOnDate',
+            //align: 'left',
+            editable: false,
+            label: 'Frees On Date',
+            fixed: false,
+            hideSort: false,
+            show: true,
+            type: 'date',
+            filterableType: 'date'
+          }
+        ],
+        rowActions: [
+          {
+            name: 'Exchange',
+            icon: 'mdi-swap-horizontal',
+            action: 'handleExchange',
+            id: 'btn-exchange--callback-settings',
+            // TODO: Change permission
+            disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+          }
+        ],
+        addButton: {
+          show: true,
+          icon: 'mdi-phone',
+          label: 'Select Phone Numbers',
+          action: 'selectPhoneNumbers',
+          tooltip: 'Select phone numbers',
+          id: 'btn-select--phone-numbers',
+          // TODO: Change permission
+          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+        },
+        iEmpty: {
+          message:
+            'You do not have any callback phone numbers, yet <br/> <span class="text-subtitle-1">To start a campaign, you need to select callback phone numbers first</span>',
+          btn: 'Select Phone Numbers',
+          action: 'select-phone-numbers',
+          id: 'btn-empty--callback-settings',
+          icon: 'mdi-phone',
+          // TODO: Change permission
+          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+        },
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        downloadButton: {
+          show: true,
+          // TODO: Change permission
+          disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
+        }
+      }
+    }
+  },
+  mounted() {
+    this.callForData()
+  },
+  // TODO: Change permission
+  computed: {
+    ...mapGetters({
+      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
+    })
+  },
+  methods: {
+    callForData() {
+      this.isLoading = true
+      CallbackService.searchCallbackSettings(this.axiosPayload)
+        .then((response) => {
+          const {
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1,
+            results = []
+          } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results.map((row) => ({
+            ...row,
+            isUsing: row.isUsing ? 'In Use' : 'Not In Use'
+          }))
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.isLoading = false))
+    },
+    handleExchange(row) {
+      this.selectedRow = row
+      this.isShowExchangePhoneNumberModal = true
+    },
+    handleCloseExchangePhoneNumberModal() {
+      this.isShowExchangePhoneNumberModal = false
+      this.selectedRow = null
+    },
+    handleConfirmExchangePhoneNumber(phoneNumber) {
+      // TODO: Make api call to update phone number
+    },
+    handleSelectPhoneNumbers() {
+      this.isShowSelectPhoneNumbersModal = true
+    },
+    handleCloseSelectPhoneNumbersModal() {
+      this.isShowSelectPhoneNumbersModal = false
+    },
+    handleConfirmSelectPhoneNumbers(phoneNumbers) {
+      // TODO: Make api call to update phone numbers
+    },
+    exportData(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportThreatIntelligence(payload).then((response) => {
+          const { data } = response
+          if (data && data instanceof Blob) {
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Callback-Phone-Numbers.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          }
+        })
+      })
+    }
+  }
+}
+</script>
