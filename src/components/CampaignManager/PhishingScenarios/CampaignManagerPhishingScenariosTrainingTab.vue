@@ -98,6 +98,10 @@ export default {
       let type = SCENARIO_TYPES.PHISHING
       if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING
       else if (this.type === SCENARIO_TYPES.SMISHING) type = SCENARIO_TYPES.SMISHING
+      else if (this.type === SCENARIO_TYPES.CALLBACK) {
+        type = SCENARIO_TYPES.CALLBACK
+        return `The system sends the selected training to the target users who call the callback phone number, and enrollment is created`
+      }
       return `The system sends the selected training to the target users who click on the ${type.toLowerCase()} link, and the enrollment is created`
     },
     getAlertBoxText() {
@@ -112,6 +116,8 @@ export default {
         case SCENARIO_TYPES.SMISHING:
           scenarioText = 'smishing'
           break
+        case SCENARIO_TYPES.CALLBACK:
+          scenarioText = 'callback'
         default:
           break
       }

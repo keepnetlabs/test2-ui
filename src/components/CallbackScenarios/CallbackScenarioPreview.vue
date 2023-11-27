@@ -110,11 +110,9 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-// TODO:  Change endpoint
-import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
 import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'

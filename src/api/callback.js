@@ -138,8 +138,7 @@ const mapCallbackNumbers = (payload) => {
 
 const exchangeCallbackNumbers = (oldProviderNumberId, newProviderNumberId) => {
   return testRequest.post(
-    `/callback-simulator/settings/exchange-number/${oldProviderNumberId}/${newProviderNumberId}`,
-    payload
+    `/callback-simulator/settings/exchange-number/${oldProviderNumberId}/${newProviderNumberId}`
   )
 }
 
@@ -149,6 +148,176 @@ const getAvailableCallbackNumbers = () => {
 
 const getCallbackCampaignManagerFormDetails = () => {
   return testRequest.get('/callback-simulator/campaign/form-details')
+}
+
+const createCallbackCampaign = (payload) => {
+  return testRequest.post(`/callback-simulator/campaign`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const deleteCallbackCampaign = (resourceId) => {
+  return testRequest.delete(`/callback-simulator/campaign/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const getCallbackCampaign = (resourceId) => {
+  return testRequest.get(`/callback-simulator/campaign/${resourceId}`)
+}
+
+const searchCallbackCampaigns = (payload) => {
+  return testRequest.post('/callback-simulator/campaign/search', payload)
+}
+
+const exportCallbackCampaigns = (payload) => {
+  return testRequest.post(`/callback-simulator/campaign/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+const getCallbackCampaignPreview = (resourceId) => {
+  return testRequest.get(`/callback-simulator/campaign/preview/${resourceId}`)
+}
+
+const bulkDeleteCallbackCampaign = (payload) => {
+  return testRequest.delete(`/callback-simulator/campaign/bulk-delete`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const calculateSendingInfo = (payload) => {
+  return testRequest.post(`/callback-simulator/campaign/calculate-sending-info`, payload)
+}
+
+const calculateScheduleInfo = (payload) => {
+  return testRequest.post(`/callback-simulator/campaign/calculate-schedule-info`, payload)
+}
+
+const getEmailDeliverySettings = () => {
+  return testRequest.get(`/callback-simulator/campaign/email-delivery-settings`)
+}
+
+const getCallbackCampaignJobFormDetails = () => {
+  return testRequest.get('/callback-simulator/campaign-job/form-details')
+}
+
+const launchCallbackCampaignJob = (payload) => {
+  return testRequest.post(`/callback-simulator/campaign-job/start`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const startCallbackCampaignJob = (resourceId, instanceGroup) => {
+  return testRequest.post(
+    `/phishing-simulator/campaign-job/start/${resourceId}/${instanceGroup}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const stopCallbackCampaignJob = (resourceId, instanceGroup) => {
+  return testRequest.post(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
+}
+
+const deleteCallbackJob = (resourceId, instanceGroup) => {
+  return testRequest.delete(`/callback-simulator/campaign-job/${resourceId}/${instanceGroup}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const searchCallbackJobs = (resourceId, payload) => {
+  return testRequest.post(`/callback-simulator/campaign-job/search/${resourceId}`, payload)
+}
+
+const exportCallbackJobs = (resourceId, payload) => {
+  return testRequest.post(`/callback-simulator/campaign-job/export/${resourceId}`, payload, {
+    responseType: 'blob'
+  })
+}
+
+const resendCampaignToUsersList = (payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job/resend/${resourceId}/${instanceGroup}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const resendCampaignToUsers = (payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job/resend/users/${resourceId}/${instanceGroup}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
+const getTargetGroupsForCurrentCompany = (payload) => {
+  return testRequest.post(`/target-groups/search/current-company`, payload)
+}
+
+const getCampaignSummary = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/callback-simulator/campaign-job-report/summary/${resourceId}/${instanceGroup}`
+  )
+}
+
+const getCampaignSummaryTargetGroups = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/callback-simulator/campaign-job-report/summary/target-groups/${resourceId}/${instanceGroup}`
+  )
+}
+
+const exportCampaignReport = (resourceId, instanceGroup) => {
+  return testRequest.get(
+    `/callback-simulator/campaign-job-report/export/${resourceId}/${instanceGroup}`,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const getCampaignTabUsers = (searchType, resourceId, instanceGroup, payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job-report/${searchType}/search/${resourceId}/${instanceGroup}`,
+    payload
+  )
+}
+
+const exportCampaignTabUsers = (searchType, resourceId, instanceGroup, payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job-report/${searchType}/search/export/${resourceId}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+const getEmailOpenedUserDetails = (resourceId, payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job-report/search-email-opened/${resourceId}`,
+    payload
+  )
+}
+
+const getReportedUserDetails = (resourceId, payload) => {
+  return testRequest.post(
+    `/callback-simulator/campaign-job-report/search-email-reported/${resourceId}`,
+    payload
+  )
+}
+
+const getUserEmailActivity = (resourceId) => {
+  return testRequest.get(
+    `/callback-simulator/campaign-job-report/search-email-activity/${resourceId}`
+  )
 }
 
 export default {
@@ -181,5 +350,33 @@ export default {
   mapCallbackNumbers,
   exchangeCallbackNumbers,
   getAvailableCallbackNumbers,
-  getCallbackCampaignManagerFormDetails
+  getCallbackCampaignManagerFormDetails,
+  createCallbackCampaign,
+  deleteCallbackCampaign,
+  getCallbackCampaign,
+  searchCallbackCampaigns,
+  exportCallbackCampaigns,
+  getCallbackCampaignPreview,
+  bulkDeleteCallbackCampaign,
+  calculateSendingInfo,
+  calculateScheduleInfo,
+  getEmailDeliverySettings,
+  getCallbackCampaignJobFormDetails,
+  launchCallbackCampaignJob,
+  startCallbackCampaignJob,
+  stopCallbackCampaignJob,
+  deleteCallbackJob,
+  searchCallbackJobs,
+  exportCallbackJobs,
+  resendCampaignToUsersList,
+  resendCampaignToUsers,
+  getTargetGroupsForCurrentCompany,
+  getCampaignSummary,
+  getCampaignSummaryTargetGroups,
+  exportCampaignReport,
+  getCampaignTabUsers,
+  exportCampaignTabUsers,
+  getEmailOpenedUserDetails,
+  getReportedUserDetails,
+  getUserEmailActivity
 }

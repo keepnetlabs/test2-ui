@@ -109,6 +109,7 @@ import {
   getDefaultCompanySmtpSetting,
   getEmailDeliveries
 } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
@@ -330,6 +331,8 @@ export default {
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING
           ? getEmailDeliveries
+          : this.type === SCENARIO_TYPES.CALLBACK
+          ? CallbackService.getEmailDeliverySettings
           : QuishingService.getEmailDeliveries
       apiFunc().then((res) => {
         const {
@@ -359,6 +362,7 @@ export default {
     },
     callForDefaultSmtpSetting() {
       if (this.isEdit) return
+      if (this.type === SCENARIO_TYPES.CALLBACK) return
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING
           ? getDefaultCompanySmtpSetting
@@ -403,6 +407,8 @@ export default {
           const apiFunc =
             this.type === SCENARIO_TYPES.PHISHING
               ? calculateSendingInfo
+              : this.type === SCENARIO_TYPES.CALLBACK
+              ? CallbackService.calculateSendingInfo
               : QuishingService.calculateSendingInfo
           apiFunc(payload).then((response) => {
             const {
