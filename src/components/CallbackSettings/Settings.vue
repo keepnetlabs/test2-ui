@@ -5,16 +5,21 @@
       sub-title="Manage your callback phone numbers"
     />
     <SelectPhoneNumbersModal
+      v-if="isShowSelectPhoneNumbersModal"
+      :isLoading="isMutating"
       :status="isShowSelectPhoneNumbersModal"
       @confirm="handleConfirmSelectPhoneNumbers"
       @close="handleCloseSelectPhoneNumbersModal"
     />
     <ExchangePhoneNumberModal
+      v-if="isShowExchangePhoneNumberModal"
+      :isLoading="isMutating"
       :status="isShowExchangePhoneNumberModal"
       :selectedRow="selectedRow"
       @confirm="handleConfirmExchangePhoneNumber"
       @close="handleCloseExchangePhoneNumberModal"
     />
+    <!-- // TODO: Change permission -->
     <DataTable
       v-if="getThreatIntelligencePermissionsSearch"
       ref="refCallbackSettings"
@@ -37,6 +42,7 @@
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
       :download-button="tableOptions.downloadButton"
       :row-actions="tableOptions.rowActions"
+      @onEmptyBtnClicked="handleSelectPhoneNumbers"
       @selectPhoneNumbers="handleSelectPhoneNumbers"
       @columnFilterChanged="columnFilterChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -71,8 +77,6 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-// TODO: Change endpoints
-import { getThreatIntelligenceList, exportThreatIntelligence } from '@/api/threatIntelligence'
 import CallbackService from '@/api/callback'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
@@ -97,6 +101,7 @@ export default {
         id: 'CallbackSettingsSearchContainer',
         ascending: 'ascending'
       },
+      isMutating: false,
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isShowSelectPhoneNumbersModal: false,
@@ -160,7 +165,7 @@ export default {
             property: 'scenarioName',
             //align: 'left',
             editable: false,
-            label: 'Campaign Name',
+            label: 'Scenario Name',
             fixed: false,
             hideSort: false,
             show: true,
@@ -203,7 +208,7 @@ export default {
           message:
             'You do not have any callback phone numbers, yet <br/> <span class="text-subtitle-1">To start a campaign, you need to select callback phone numbers first</span>',
           btn: 'Select Phone Numbers',
-          action: 'select-phone-numbers',
+          action: 'selectPhoneNumbers',
           id: 'btn-empty--callback-settings',
           icon: 'mdi-phone',
           // TODO: Change permission
@@ -264,8 +269,16 @@ export default {
       this.isShowExchangePhoneNumberModal = false
       this.selectedRow = null
     },
-    handleConfirmExchangePhoneNumber(phoneNumber) {
-      // TODO: Make api call to update phone number
+    handleConfirmExchangePhoneNumber(newPhoneNumberId) {
+      this.isMutating = true
+      CallbackService.exchangeCallbackNumbers(this.selectedRow.providerNumberId, newPhoneNumberId)
+        .then((res) => {
+          this.handleCloseExchangePhoneNumberModal()
+          this.callForData()
+        })
+        .finally(() => {
+          this.isMutating = false
+        })
     },
     handleSelectPhoneNumbers() {
       this.isShowSelectPhoneNumbersModal = true
@@ -273,8 +286,16 @@ export default {
     handleCloseSelectPhoneNumbersModal() {
       this.isShowSelectPhoneNumbersModal = false
     },
-    handleConfirmSelectPhoneNumbers(phoneNumbers) {
-      // TODO: Make api call to update phone numbers
+    handleConfirmSelectPhoneNumbers(phoneNumberIds) {
+      this.isMutating = true
+      CallbackService.mapCallbackNumbers(phoneNumberIds)
+        .then((res) => {
+          this.handleCloseSelectPhoneNumbersModal()
+          this.callForData()
+        })
+        .finally(() => {
+          this.isMutating = false
+        })
     },
     exportData(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -287,7 +308,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportThreatIntelligence(payload).then((response) => {
+        CallbackService.exportCallbackSettings(payload).then((response) => {
           const { data } = response
           if (data && data instanceof Blob) {
             const link = document.createElement('a')

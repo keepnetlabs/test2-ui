@@ -7,6 +7,7 @@
     title="Select Callback Phone Numbers"
     title-id="text--select-phone-numbers-modal-title"
     customSize="600"
+    dialogBodyClass="select-phone-numbers-modal--body"
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
@@ -16,6 +17,8 @@
         subTitle="Manage your callback phone numbers"
         is-smishing
         :defaultPhoneNumbers="phoneNumberItems"
+        itemText="number"
+        itemValue="providerNumberId"
         :value="selectedPhoneNumbers"
         @input="handleSelectedPhoneNumberChange"
       />
@@ -28,6 +31,7 @@
           color="#f56c6c"
           class="delete-user__footer-button"
           text
+          :disabled="isLoading"
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
@@ -37,6 +41,7 @@
           class="delete-user__footer-button"
           style="padding: 0;"
           text
+          :disabled="isDoneDisabled"
           >DONE</v-btn
         >
       </div>
@@ -57,6 +62,9 @@ export default {
     InputPhoneNumberComboBox
   },
   props: {
+    isLoading: {
+      type: Boolean
+    },
     status: {
       type: Boolean
     }
@@ -71,6 +79,11 @@ export default {
   created() {
     this.callPhoneNumbers()
   },
+  computed: {
+    isDoneDisabled() {
+      return this.isLoading || this.selectedPhoneNumbers.length === 0
+    }
+  },
   methods: {
     callPhoneNumbers() {
       CallbackService.getAvailableCallbackNumbers().then((response) => {
@@ -78,7 +91,6 @@ export default {
       })
     },
     handleSelectedPhoneNumberChange(pns) {
-      if (!pns.length) return
       this.selectedPhoneNumbers = pns
     },
     changeStatus() {

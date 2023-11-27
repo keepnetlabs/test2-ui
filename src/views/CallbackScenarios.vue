@@ -40,7 +40,6 @@ import CallbackScenarios from '@/components/CallbackScenarios/CallbackScenarios'
 import { mapGetters } from 'vuex'
 import CallbackService from '@/api/callback'
 import KContainer from '@/components/KContainer/KContainer'
-import { getVishingTemplateLanguages } from '@/api/vishing'
 
 export default {
   name: 'CallbackScenarios',

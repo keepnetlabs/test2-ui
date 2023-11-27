@@ -366,7 +366,7 @@
               </v-list-item-content>
             </v-list-item>
             <!-- //TODO: Add permissions -->
-            <!-- <v-list-item
+            <v-list-item
               v-if="getCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
@@ -382,9 +382,9 @@
                   @click="handleCallbackCampaignManagerClick"
                 />
               </v-list-item-content>
-            </v-list-item> -->
+            </v-list-item>
             <!-- //TODO: Add permissions -->
-            <!-- <v-list-item
+            <v-list-item
               v-if="getCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
@@ -397,7 +397,7 @@
                   :active-class-comparator="() => routerName === 'Callback Settings'"
                 />
               </v-list-item-content>
-            </v-list-item> -->
+            </v-list-item>
           </v-list-group>
           <v-list-group
             v-if="getVishingLeftMenuPermissions"

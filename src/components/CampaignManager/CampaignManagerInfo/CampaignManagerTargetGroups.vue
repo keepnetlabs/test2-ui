@@ -37,6 +37,7 @@
               :is-all-groups="isAllGroups"
               :is-call-api-when-created="isCallApiWhenCreated"
               :is-show-company-column="isShowCompanyColumn"
+              :isCallback="isCallback"
               :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
@@ -119,6 +120,10 @@ export default {
       default: false
     },
     isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isCallback: {
       type: Boolean,
       default: false
     },

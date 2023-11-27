@@ -32,6 +32,7 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { searchAllTargetGroups, searchTargetGroups } from '@/api/targetUsers'
+import CallbackService from '@/api/callback'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
@@ -61,6 +62,10 @@ export default {
       default: true
     },
     isCallApiWhenCreated: {
+      type: Boolean,
+      default: false
+    },
+    isCallback: {
       type: Boolean,
       default: false
     },
@@ -177,7 +182,15 @@ export default {
     callForData() {
       this.$nextTick(() => {
         this.setLoading(true)
-        if (this.isAllGroups) {
+        if (this.isCallback) {
+          CallbackService.getTargetGroupsForCurrentCompany(this.axiosPayload)
+            .then((response) => {
+              this.setDefaultResponseParams(response)
+            })
+            .finally(() => {
+              this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
+            })
+        } else if (this.isAllGroups) {
           searchAllTargetGroups(this.axiosPayload)
             .then((response) => {
               this.setDefaultResponseParams(response)

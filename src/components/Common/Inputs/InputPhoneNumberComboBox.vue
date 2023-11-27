@@ -10,8 +10,8 @@
       type="autocomplete"
       chips
       clearable
-      item-text="phoneNumber"
-      item-value="resourceId"
+      :item-text="itemText"
+      :item-value="itemValue"
       multiple
       small-chips
       deletable-chips
@@ -25,10 +25,10 @@
         <div :class="['mail-configuration-select-sources__item-container']">
           <div class="mail-configuration-select-sources__item">
             <div class="mail-configuration-select-sources__item-left">
-              {{ getPhoneNumberFormatted(item.phoneNumber) }}
+              {{ getPhoneNumberFormatted(item[itemText]) }}
             </div>
             <div class="mail-configuration-select-sources__item-right-platform">
-              {{ getPhoneNumberCountry(item.phoneNumber) }}
+              {{ getPhoneNumberCountry(item[itemText]) }}
             </div>
           </div>
         </div>
@@ -60,6 +60,14 @@ export default {
     subTitle: {
       type: String,
       default: 'Select caller phone number for this campaign'
+    },
+    itemText: {
+      type: String,
+      default: 'phoneNumber'
+    },
+    itemValue: {
+      type: String,
+      default: 'resourceId'
     },
     defaultPhoneNumbers: {
       type: Array,
@@ -115,7 +123,9 @@ export default {
           this.phoneNumbers = this.sortPhoneNumbersAndOrderByRegionCode(data, true).map(
             (phoneNumberWrapper) => {
               return {
-                text: this.getPhoneNumberFormatted({ text: phoneNumberWrapper.phoneNumber }),
+                text: this.getPhoneNumberFormatted({
+                  text: phoneNumberWrapper.phoneNumber
+                }),
                 value: phoneNumberWrapper.resourceId
               }
             }

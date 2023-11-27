@@ -351,7 +351,7 @@ import CallbackTemplateSelectList from '@/components/CallbackScenarios/CallbackT
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 
 export default {
-  name: 'NewScenarios',
+  name: 'CallbackScenarioModal',
   components: {
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
