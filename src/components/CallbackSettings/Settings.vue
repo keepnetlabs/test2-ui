@@ -8,6 +8,7 @@
       v-if="isShowSelectPhoneNumbersModal"
       :isLoading="isMutating"
       :status="isShowSelectPhoneNumbersModal"
+      :selectablePhoneNumberCount="selectablePhoneNumberCount"
       @confirm="handleConfirmSelectPhoneNumbers"
       @close="handleCloseSelectPhoneNumbersModal"
     />
@@ -97,6 +98,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      selectablePhoneNumberCount: 0,
       CONSTANTS: {
         id: 'CallbackSettingsSearchContainer',
         ascending: 'ascending'
@@ -229,6 +231,7 @@ export default {
     }
   },
   mounted() {
+    this.callForNumberUsage()
     this.callForData()
   },
   // TODO: Change permission
@@ -238,6 +241,14 @@ export default {
     })
   },
   methods: {
+    callForNumberUsage() {
+      CallbackService.getUsedCallbackNumbers().then((res) => {
+        const { companyCount, usedCount } = res.data.data
+        if (companyCount === null) companyCount = 0
+        if (usedCount === null) usedCount = 0
+        this.selectablePhoneNumberCount = companyCount - usedCount
+      })
+    },
     callForData() {
       this.isLoading = true
       CallbackService.searchCallbackSettings(this.axiosPayload)
@@ -259,7 +270,10 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.isLoading = false))
+        .finally(() => {
+          this.callForNumberUsage()
+          this.isLoading = false
+        })
     },
     handleExchange(row) {
       this.selectedRow = row
