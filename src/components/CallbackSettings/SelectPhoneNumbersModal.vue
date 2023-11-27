@@ -2,6 +2,7 @@
   <AppDialog
     v-if="status"
     class="select-phone-numbers-modal"
+    className="switch-dialog"
     :status="true"
     icon="mdi-phone"
     title="Select Callback Phone Numbers"
@@ -14,12 +15,13 @@
       <InputPhoneNumberComboBox
         style="margin-top: 0px !important;"
         title="Callback Phone Numbers"
-        subTitle="Manage your callback phone numbers"
+        :subTitle="getSubtitle"
         is-smishing
         :defaultPhoneNumbers="phoneNumberItems"
         itemText="number"
         itemValue="providerNumberId"
         :value="selectedPhoneNumbers"
+        :rules="getRules"
         @input="handleSelectedPhoneNumberChange"
       />
     </template>
@@ -67,6 +69,9 @@ export default {
     },
     status: {
       type: Boolean
+    },
+    selectablePhoneNumberCount: {
+      type: Number
     }
   },
   data() {
@@ -82,6 +87,16 @@ export default {
   computed: {
     isDoneDisabled() {
       return this.isLoading || this.selectedPhoneNumbers.length === 0
+    },
+    getSubtitle() {
+      return `Select up to ${this.selectablePhoneNumberCount} callback phone numbers. You can always change your numbers in the Settings page.`
+    },
+    getRules() {
+      return [
+        (v) =>
+          v.length <= this.selectablePhoneNumberCount ||
+          `Based on your license settings, you can select maximum ${this.selectablePhoneNumberCount} callback phone numbers`
+      ]
     }
   },
   methods: {

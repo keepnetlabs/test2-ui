@@ -44,8 +44,7 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryResendDialog'
-// TODO: Change endpoint
-import SmishingService from '@/api/smishing'
+import CallbackService from '@/api/callback'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export default {
@@ -79,18 +78,16 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      SmishingService.resendSmishingCampaignToUsers(
-        { Types: types },
-        this.id,
-        this.instanceGroup
-      ).finally(() => {
+      CallbackService.resendCampaignToUsersList(this.id, this.instanceGroup, {
+        Types: types
+      }).finally(() => {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
     },
     handleDownloadReport() {
       this.isDownloadReportDisabled = true
-      SmishingService.downloadSmishingReport(this.id, this.instanceGroup)
+      CallbackService.exportCampaignReport(this.id, this.instanceGroup)
         .then((response) => {
           const { data } = response
           if (response.status === 200) {

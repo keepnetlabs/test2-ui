@@ -146,7 +146,7 @@ const getAvailableCallbackNumbers = () => {
   return testRequest.get(`/callback-simulator/settings/available-numbers`)
 }
 
-const getCallbackCampaignManagerFormDetails = () => {
+const getCampaignManagerFormDetails = () => {
   return testRequest.get('/callback-simulator/campaign/form-details')
 }
 
@@ -238,7 +238,7 @@ const exportCallbackJobs = (resourceId, payload) => {
   })
 }
 
-const resendCampaignToUsersList = (payload) => {
+const resendCampaignToUsersList = (resourceId, instanceGroup, payload) => {
   return testRequest.post(
     `/callback-simulator/campaign-job/resend/${resourceId}/${instanceGroup}`,
     payload,
@@ -248,7 +248,7 @@ const resendCampaignToUsersList = (payload) => {
   )
 }
 
-const resendCampaignToUsers = (payload) => {
+const resendCampaignToUsers = (resourceId, instanceGroup, payload) => {
   return testRequest.post(
     `/callback-simulator/campaign-job/resend/users/${resourceId}/${instanceGroup}`,
     payload,
@@ -350,7 +350,7 @@ export default {
   mapCallbackNumbers,
   exchangeCallbackNumbers,
   getAvailableCallbackNumbers,
-  getCallbackCampaignManagerFormDetails,
+  getCampaignManagerFormDetails,
   createCallbackCampaign,
   deleteCallbackCampaign,
   getCallbackCampaign,

@@ -23,6 +23,7 @@
           :phishing-scenario-name="getPhishingScenarioName"
           :form-details="formDetails"
           :api-response="apiResponse"
+          :languageItems="languageItems"
         />
       </el-tab-pane>
     </el-tabs>
@@ -38,9 +39,7 @@ import CallbackReportReporters from '@/components/CallbackReport/PhishingReport/
 import CampaignManagerReportSendingReport from '@/components/CallbackReport/SendingReport/CampaignManagerReportSendingReport'
 import CallbackReportCalledBack from '@/components/CallbackReport/CalledBack/CallbackReportCalledBack'
 import CallbackReportEnteredDigits from '@/components/CallbackReport/EnteredDigits/CallbackReportEnteredDigits'
-// TODO: Change api endpoints
-import SmishingService from '@/api/smishing'
-import { getCampaignJobSummary } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import KContainer from '@/components/KContainer/KContainer'
 
@@ -49,6 +48,7 @@ export default {
   components: { KContainer },
   data() {
     return {
+      languageItems: [],
       customFields: [],
       isLoading: false,
       tab: labels.Summary,
@@ -127,13 +127,19 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForSummary()
     this.callForCustomFields()
     this.callForFormDetails()
   },
   methods: {
+    callForLanguages() {
+      CallbackService.getCallbackTemplateLanguages().then((response) => {
+        this.languageItems = response?.data?.data || []
+      })
+    },
     callForSummary() {
-      getCampaignJobSummary(this.id, this.instanceGroup)
+      CallbackService.getCampaignSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
         })
@@ -147,7 +153,7 @@ export default {
       })
     },
     callForFormDetails() {
-      SmishingService.getCampaignFormDetails().then((response) => {
+      CallbackService.getCampaignManagerFormDetails().then((response) => {
         this.formDetails = response?.data?.data
       })
     }

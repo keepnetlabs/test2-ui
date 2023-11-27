@@ -28,7 +28,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CallbackReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/CallbackReport/SendingReport/CampaignManagerReportSendingReportTable'
 import CampaignManagerReportResendDialog from '@/components/CallbackReport/CampaignManagerReportResendDialog'
-import { useSmishingResend } from '@/hooks/useSmishingResend'
+import { useResend } from '@/hooks/useCallbackResend'
 export default {
   name: 'CampaignManagerReportSendingReport',
   components: {
@@ -36,7 +36,7 @@ export default {
     CampaignManagerReportSendingReportTable,
     CampaignManagerReportHeader
   },
-  mixins: [useSmishingResend],
+  mixins: [useResend],
   props: {
     id: {
       type: String

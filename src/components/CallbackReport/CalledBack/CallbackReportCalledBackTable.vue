@@ -41,14 +41,12 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
-} from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import { REPORT_TABS } from '../Opened/utils'
 
 export default {
   name: 'CallbackReportCalledBackTable',
@@ -88,7 +86,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.SCENARIO_NAME,
           COLUMNS.LAST_CALLER_ID,
           COLUMNS.LAST_CALLED_BACK,
           COLUMNS.TIMES_CALLED_BACK
@@ -97,7 +95,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportOpened
+          message: `You do not have any users who called back`
         },
         rowActions: [
           {
@@ -131,7 +129,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
+      CallbackService.getCampaignTabUsers(
+        REPORT_TABS.CALLBACK,
+        this.id,
+        this.instanceGroup,
+        this.axiosPayload
+      )
         .then((response) => {
           const {
             data: {
@@ -148,29 +151,6 @@ export default {
             })
             return { ...row, ...customFields }
           })
-
-          this.tableData = [
-            {
-              firstName: 'Bruce',
-              lastName: 'Wayne',
-              email: 'bruce@gmail.com',
-              department: 'Executives',
-              scenarioName: 'Amazon Login',
-              lastCallerId: '+905456789564',
-              lastCalledBack: '31.05.2021 16:31:33',
-              calledBackCount: 1
-            },
-            {
-              firstName: 'Bruce',
-              lastName: 'Wayne',
-              email: 'bruce@gmail.com',
-              department: 'Executives',
-              scenarioName: 'Amazon Login',
-              lastCallerId: '+905456789564',
-              lastCalledBack: '31.05.2021 16:31:33',
-              calledBackCount: 1
-            }
-          ]
         })
         .finally(this.setLoading)
     },
@@ -185,7 +165,12 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
+        CallbackService.exportCampaignTabUsers(
+          REPORT_TABS.CALLBACK,
+          this.id,
+          this.instanceGroup,
+          payload
+        ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -198,7 +183,7 @@ export default {
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [1],
+        Types: [REPORT_TABS.CALLBACK],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
