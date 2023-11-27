@@ -91,13 +91,13 @@ export default {
           COLUMNS.ACTIVITY_TYPE
         ],
         addButton: {
-          show: true,
-          icon: null,
-          label: 'Show Sandbox Activity',
-          action: 'handleShowSandboxActivity',
-          tooltip: 'Show Sandbox Activity',
-          type: 'secondary',
-          id: 'btn-select--show-sandbox-activity'
+          show: false
+          // icon: null,
+          // label: 'Show Sandbox Activity',
+          // action: 'handleShowSandboxActivity',
+          // tooltip: 'Show Sandbox Activity',
+          // type: 'secondary',
+          // id: 'btn-select--show-sandbox-activity'
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
