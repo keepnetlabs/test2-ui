@@ -1,13 +1,3 @@
-.select-phone-numbers-modal {
-  .v-dialog {
-    overflow: visible !important;
-  }
-
-  form {
-    overflow: visible !important;
-  }
-
-  .k-dialog__body {
-    overflow: visible !important;
-  }
+.select-phone-numbers-modal--body {
+  overflow: visible;
 }

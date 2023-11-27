@@ -8,6 +8,7 @@
     :subtitle="selectedRow.callerPhoneNumber"
     title-id="text--exchange-phone-number-modal-title"
     customSize="600"
+    dialogBodyClass="exchange-phone-number-modal--body"
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
@@ -29,6 +30,7 @@
           color="#f56c6c"
           class="delete-user__footer-button"
           text
+          :disabled="isLoading"
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
@@ -38,6 +40,7 @@
           class="delete-user__footer-button"
           style="padding: 0;"
           text
+          :disabled="isExchangeDisabled"
           >EXCHANGE</v-btn
         >
       </div>
@@ -58,6 +61,9 @@ export default {
     InputCallerPhoneNumber
   },
   props: {
+    isLoading: {
+      type: Boolean
+    },
     status: {
       type: Boolean
     },
@@ -77,19 +83,26 @@ export default {
   created() {
     this.callPhoneNumbers()
   },
+  computed: {
+    isExchangeDisabled() {
+      return this.isLoading || !this.selectedPhoneNumber
+    }
+  },
   methods: {
     callPhoneNumbers() {
       CallbackService.getAvailableCallbackNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
-        this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
+        this.phoneNumbers = response.data.data.map((item) => item.number)
       })
     },
     handlePhoneNumberChange(phoneNumber) {
       const phoneNumberIndex = this.phoneNumberItems.findIndex(
-        (item) => item.phoneNumber === phoneNumber
+        (item) => item.number === phoneNumber
       )
       if (phoneNumberIndex !== -1) {
-        this.selectedPhoneNumberResourceId = this.phoneNumberItems[phoneNumberIndex].resourceId
+        this.selectedPhoneNumberResourceId = this.phoneNumberItems[
+          phoneNumberIndex
+        ].providerNumberId
         this.selectedPhoneNumber = phoneNumber
       }
     },
@@ -97,7 +110,7 @@ export default {
       this.$emit('close')
     },
     confirm() {
-      this.$emit('confirm', this.selectedPhoneNumbers)
+      this.$emit('confirm', this.selectedPhoneNumberResourceId)
     }
   }
 }

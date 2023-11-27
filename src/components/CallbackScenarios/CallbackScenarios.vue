@@ -282,42 +282,42 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'text'
-          },
-          {
-            property: 'availableFor',
-            align: 'right',
-            label: labels.AvailableFor,
-            fixed: false,
-            sortable: false,
-            hideSort: true,
-            show: true,
-            type: 'number',
-            width: 100
-          },
-          {
-            property: 'emailTemplate',
-            align: 'left',
-            editable: false,
-            label: 'Email Template',
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: false,
-            width: 240,
-            filterableType: 'text'
-          },
-          {
-            property: 'callingTemplate',
-            align: 'left',
-            editable: false,
-            label: 'Calling Template',
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: false,
-            width: 240,
-            filterableType: 'text'
           }
+          // {
+          //   property: 'availableFor',
+          //   align: 'right',
+          //   label: labels.AvailableFor,
+          //   fixed: false,
+          //   sortable: false,
+          //   hideSort: true,
+          //   show: true,
+          //   type: 'number',
+          //   width: 100
+          // },
+          // {
+          //   property: 'emailTemplate',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'Email Template',
+          //   sortable: true,
+          //   show: true,
+          //   type: 'text',
+          //   fixed: false,
+          //   width: 240,
+          //   filterableType: 'text'
+          // },
+          // {
+          //   property: 'callingTemplate',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'Calling Template',
+          //   sortable: true,
+          //   show: true,
+          //   type: 'text',
+          //   fixed: false,
+          //   width: 240,
+          //   filterableType: 'text'
+          // }
         ],
         // TODO: Change permissions
         rowActions: [

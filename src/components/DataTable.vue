@@ -231,60 +231,6 @@
               </v-menu>
             </div>
 
-            <slot name="addUsers">
-              <v-tooltip bottom opacity="1">
-                <template #activator="{ on }">
-                  <v-btn
-                    v-if="
-                      addButton &&
-                      addButton.show &&
-                      addButton.action &&
-                      getAddButtonType === 'primary'
-                    "
-                    v-on="on"
-                    :id="addButton.id"
-                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
-                    rounded
-                    color="#2196f3"
-                    style="order: 3; margin-right: 10px;"
-                    :disabled="addButton && addButton['disabled']"
-                    @click="addButtonFunction(addButton.action)"
-                  >
-                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
-                      getAddButtonIcon
-                    }}</v-icon>
-                    <span class="button-new__text">{{ getAddButtonLabel }}</span>
-                  </v-btn>
-                  <v-btn
-                    v-if="
-                      addButton &&
-                      addButton.show &&
-                      addButton.action &&
-                      getAddButtonType === 'secondary'
-                    "
-                    v-on="on"
-                    :id="addButton.id"
-                    :class="[addButton && addButton.disabled && 'btn-add--disabled']"
-                    color="#757575"
-                    text
-                    plain
-                    style="order: 3; margin-right: 10px;"
-                    :disabled="addButton && addButton['disabled']"
-                    @click="addButtonFunction(addButton.action)"
-                  >
-                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
-                      getAddButtonIcon
-                    }}</v-icon>
-                    <span class="button-new__text button-new__text--secondary">{{
-                      getAddButtonLabel
-                    }}</span>
-                  </v-btn>
-                </template>
-                <span class="tooltip-span">{{
-                  (addButton && addButton.tooltip) || 'Add Users'
-                }}</span>
-              </v-tooltip>
-            </slot>
             <v-tooltip bottom opacity="1">
               <template #activator="{ on }">
                 <v-btn
@@ -2882,6 +2828,10 @@ export default {
       this.calculateAllSelected()
     },
     onEmptyBtnClicked(e) {
+      if (this.empty?.action) {
+        this.$emit(this.empty.action)
+        return
+      }
       this.$emit('onEmptyBtnClicked', e)
     },
     downloadEvent(downloadTypes) {

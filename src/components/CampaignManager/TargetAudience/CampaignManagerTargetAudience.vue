@@ -17,6 +17,7 @@
       :is-all-groups="isAllGroups"
       :isMFAScenarioSelected="isMFAScenarioSelected"
       :isSmishing="isSmishing"
+      :isCallback="isCallback"
       :last-column-name="lastColumnName"
       :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
       @handle-selection-change="handleTargetGroupSelectionChange"
@@ -147,6 +148,10 @@ export default {
       default: true
     },
     isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isCallback: {
       type: Boolean,
       default: false
     },

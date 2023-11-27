@@ -3,7 +3,11 @@
     <slot>
       <div class="alert-box__default-content">
         <v-icon :color="iconColor">{{ iconName }}</v-icon>
-        <p>{{ text }}</p>
+        <slot name="text">
+          <p>
+            {{ text }}
+          </p>
+        </slot>
       </div>
     </slot>
     <div v-if="hasAction" class="alert-box__actions">
@@ -24,8 +28,7 @@ export default {
   name: 'AlertBox',
   props: {
     text: {
-      type: String,
-      required: true
+      type: String
     },
     iconColor: {
       type: String,

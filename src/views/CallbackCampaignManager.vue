@@ -8,6 +8,8 @@
       :selected-row="selectedRow"
       :form-details="formDetails"
       :is-duplicate="isDuplicate"
+      :availableNumbers="availableNumbers"
+      :languages="languages"
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
@@ -29,16 +31,18 @@
     />
     <v-overlay
       v-if="isNewScenarioModalVisible"
-      id="new-smishing-scenario-overlay"
+      id="add-new-community-overlay"
       :value="isNewScenarioModalVisible"
       :opacity="1"
       :z-index="99"
       color="white"
     >
-      <NewScenario
+      <CallbackScenarioModal
+        v-if="isNewScenarioModalVisible"
         ref="newScenarioModal"
         :status="isNewScenarioModalVisible"
         :scenarioDetailsLookup="scenarioDetailsLookup"
+        :languages="languages"
         @changeNewScenarioModalStatus="handleCloseNewScenarioModal"
       />
     </v-overlay>
@@ -49,10 +53,11 @@
       @changeNewUserGroupStatus="handleCloseTargetGroupModal"
       @handleSave="handleConfirmTargetGroupModal"
     />
-    <CampaignManagerPreview
+    <CampaignPreviewModal
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selectedRow="selectedRow"
+      :languages="languages"
       @on-close="toggleShowPreviewDialog"
     />
     <NoScenarioModal
@@ -121,36 +126,36 @@
 </template>
 
 <script>
-import CampaignManagerParentTable from '@/components/SmishingCampaignManager/CampaignManagerParentTable'
-import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable'
-import CampaignManagerAddOrEditModal from '@/components/SmishingCampaignManager/CampaignManagerAddOrEditModal'
+import CampaignManagerParentTable from '@/components/CallbackCampaignManager/CampaignManagerParentTable'
+import CampaignManagerItemTable from '@/components/CallbackCampaignManager/CampaignManagerItemTable'
+import CampaignManagerAddOrEditModal from '@/components/CallbackCampaignManager/CampaignManagerAddOrEditModal'
 import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog'
-import SmishingService from '@/api/smishing'
-import CampaignManagerFrequencyTable from '@/components/SmishingCampaignManager/CampaignManagerFrequencyTable'
+import CallbackService from '@/api/callback'
+import CampaignManagerFrequencyTable from '@/components/CallbackCampaignManager/CampaignManagerFrequencyTable'
 import { createTargetGroup } from '@/api/targetUsers'
-import CampaignManagerPreview from '@/components/SmishingCampaignManager/CampaignManagerPreview'
+import CampaignPreviewModal from '@/components/CallbackCampaignManager/CampaignPreviewModal'
 import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
-import CampaignManagerNewInstanceModal from '@/components/SmishingCampaignManager/CampaignManagerNewInstanceModal'
-import NoScenarioModal from '@/components/SmishingCampaignManager/NoScenarioModal'
-import NoTargetUserGroupModal from '@/components/SmishingCampaignManager/NoTargetUserGroupModal'
+import CampaignManagerNewInstanceModal from '@/components/CallbackCampaignManager/CampaignManagerNewInstanceModal'
+import NoScenarioModal from '@/components/CallbackCampaignManager/NoScenarioModal'
+import NoTargetUserGroupModal from '@/components/CallbackCampaignManager/NoTargetUserGroupModal'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
-import NewScenario from '@/components/SmishingScenarios/NewScenario'
+import CallbackScenarioModal from '@/components/CallbackScenarios/CallbackScenarioModal'
 
 export default {
   name: 'CallbackCampaignManager',
   components: {
     KContainer,
     CommonCampaignManagerCreateNewInstanceDialog,
-    CampaignManagerPreview,
+    CampaignPreviewModal,
     CommonCampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     NoScenarioModal,
     NoTargetUserGroupModal,
     CreateNewUserGroupModal,
-    NewScenario,
+    CallbackScenarioModal,
     CampaignManagerNewInstanceModal,
     CampaignManagerAddOrEditModal,
     CampaignManagerFrequencyTable
@@ -183,9 +188,27 @@ export default {
       isFrequencyTableShowing: false,
       formDetails: {},
       multipleSystemUserPayload: {},
-      scenarioDetailsLookup: {}
+      languages: [],
+      availableNumbers: [],
+      scenarioDetailsLookup: {
+        difficultyTypes: [
+          {
+            text: 'Easy',
+            value: 1
+          },
+          {
+            text: 'Medium',
+            value: 2
+          },
+          {
+            text: 'Hard',
+            value: 3
+          }
+        ]
+      }
     }
   },
+  // TODO: Change permissions
   computed: {
     ...mapGetters({
       getSmishingCampaignManagerDeletePermissions:
@@ -196,8 +219,9 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForFormDetails()
-    this.callForScenarioDetails()
+    this.callForAvailableNumbers()
   },
   beforeRouteLeave(to, from, next) {
     const { refCampaignModal } = this.$refs
@@ -224,12 +248,14 @@ export default {
     }
   },
   methods: {
-    callForScenarioDetails() {
-      SmishingService.getSmishingScenarioFormDetails().then((response) => {
-        this.scenarioDetailsLookup = response?.data?.data || {
-          methodTypes: [],
-          difficultyTypes: []
-        }
+    callForAvailableNumbers() {
+      CallbackService.getAvailableCallbackNumbers().then((res) => {
+        this.availableNumbers = res?.data?.data || []
+      })
+    },
+    callForLanguages() {
+      CallbackService.getCallbackTemplateLanguages().then((response) => {
+        this.languages = response?.data?.data || []
       })
     },
     toggleShowLaunchDialog() {
@@ -242,7 +268,7 @@ export default {
       this.showNewInstanceModal()
     },
     callForFormDetails() {
-      SmishingService.getCampaignManagerFormDetails().then((response) => {
+      CallbackService.getCallbackCampaignManagerFormDetails().then((response) => {
         const {
           data: { data }
         } = response
@@ -260,7 +286,7 @@ export default {
       bulkDeleteCampaignReports(this.multipleSystemUserPayload)
         .then(() => {
           this.$refs.campaignManagerParentTable.$refs.refTable.resetSelectableParams()
-          this.$refs.campaignManagerParentTable.callForData()
+          this.$refs.campaignManagerParentTable.callForNumbers()
           this.toggleShowDeleteDialog()
         })
         .finally(() => {
@@ -277,7 +303,7 @@ export default {
     },
     handleOnBackClick() {
       if (this.$refs.campaignManagerParentTable) {
-        this.$refs.campaignManagerParentTable.callForData()
+        this.$refs.campaignManagerParentTable.callForNumbers()
       }
       this.toggleItemTableShowing()
     },
@@ -303,11 +329,12 @@ export default {
       if (this.isItemTableShowing) {
         this.$refs.campaignManagerItemTable.callForData()
       }
-      this.$refs.campaignManagerParentTable.callForData()
+      this.$refs.campaignManagerParentTable.callForNumbers()
       this.closeNewInstanceModal()
     },
     handleOnSubmit() {
-      this.$refs.campaignManagerParentTable.callForData()
+      this.callForAvailableNumbers()
+      this.$refs.campaignManagerParentTable.callForNumbers()
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnEdit(row) {
@@ -348,15 +375,16 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
+      // TODO: Change permissions
       if (this.getSmishingCampaignManagerDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
-        SmishingService.deleteSmishingCampaign(item.resourceId)
+        CallbackService.deleteCallbackCampaign(item.resourceId)
           .then(() => {
             this.$refs?.campaignManagerParentTable?.$refs?.refTable?.unSelectRow(item)
             this.$refs?.campaignManagerParentTable?.$refs?.refTable?.changeServerSideSelectionCount(
               -1
             )
-            this.$refs.campaignManagerParentTable.callForData()
+            this.$refs.campaignManagerParentTable.callForNumbers()
           })
           .finally(() => {
             this.toggleShowDeleteDialog()
@@ -372,7 +400,7 @@ export default {
       createTargetGroup(group)
         .then(() => {
           this.isTargeGroupModalVisible = false
-          this.$refs?.campaignManagerParentTable?.callForData?.()
+          this.$refs?.campaignManagerParentTable?.callForNumbers?.()
         })
         .finally(() => (this.isCreateTargetGroupButtonDisabled = false))
     },
