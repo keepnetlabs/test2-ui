@@ -17,7 +17,7 @@
             id="input--callback-report-message-failed-to-send"
             color="#2196f3"
             :disabled="!items.notDelivered"
-            :value="5"
+            :value="REPORT_TABS.FAILED"
           >
             <template #label> Email failed to send {{ `(${items.notDelivered || 0})` }}</template>
           </v-checkbox>
@@ -25,40 +25,38 @@
             v-model="types"
             id="input--callback-report-opened"
             color="#2196f3"
-            :disabled="!items.clickedSms"
-            :value="2"
+            :disabled="!items.openedEmail"
+            :value="REPORT_TABS.OPENED"
           >
-            <template #label> Only opened email {{ `(${items.clickedSms || 0})` }}</template>
+            <template #label> Only opened email {{ `(${items.openedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--callback-report-called-back"
             color="#2196f3"
-            :disabled="!items.submittedSms"
-            :value="3"
+            :disabled="!items.calledBack"
+            :value="REPORT_TABS.CALLBACK"
           >
-            <template #label> Called back {{ `(${items.submittedSms || 0})` }}</template>
+            <template #label> Called back {{ `(${items.calledBack || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--campaign-manager-report-entered-digits"
             color="#2196f3"
-            :disabled="!items.mfaSubmittedSms"
-            :value="8"
+            :disabled="!items.enteredDigits"
+            :value="REPORT_TABS.ENTERED_DIGITS"
           >
-            <template #label>
-              Times entered digits {{ `(${items.mfaSubmittedSms || 0})` }}</template
-            >
+            <template #label> Times entered digits {{ `(${items.enteredDigits || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--campaign-manager-report-no-response"
             color="#2196f3"
             hide-details
-            :disabled="!items.noResponseSms"
-            :value="4"
+            :disabled="!items.noResponseEmail"
+            :value="REPORT_TABS.NO_RESPONSE"
           >
-            <template #label> No response {{ `(${items.noResponseSms || 0})` }}</template>
+            <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
           </v-checkbox>
         </div>
       </div>
@@ -80,6 +78,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import { REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 export default {
   name: 'CallbackReportSummaryResendDialog',
   components: { AppDialogFooter, AppDialog },
@@ -99,6 +98,7 @@ export default {
   },
   data() {
     return {
+      REPORT_TABS,
       CONSTANTS: {
         icon: 'mdi-refresh',
         title: labels.ResendCampaign

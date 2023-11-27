@@ -37,12 +37,9 @@ import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { COLUMNS, REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import {
-  exportCampaignJobUserPhishingReport,
-  searchCampaignJobUserPhishingReport
-} from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -139,7 +136,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserPhishingReport(this.axiosPayload, this.id, this.instanceGroup)
+      CallbackService.getCampaignTabUsers(
+        REPORT_TABS.REPORTED,
+        this.id,
+        this.instanceGroup,
+        this.axiosPayload
+      )
         .then((response) => {
           const {
             data: {
@@ -170,22 +172,25 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserPhishingReport(payload, this.id, this.instanceGroup).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Campaign-Report-Phishing-Reporter.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
+        CallbackService.exportCampaignTabUsers(
+          REPORT_TABS.REPORTED,
+          this.id,
+          this.instanceGroup,
+          payload
+        ).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Callback-Report-Reporters.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [6],
+        Types: [REPORT_TABS.REPORTED],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,

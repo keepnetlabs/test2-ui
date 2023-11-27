@@ -18,7 +18,7 @@
       required
       :items="getPhoneNumberItems"
       :slots="{ item: true, append: true }"
-      :rules="[(v) => Validations.required(v)]"
+      :rules="[(v) => Validations.required(v), ...rules]"
       @input="handleInputChange"
     >
       <template #item="{ item }">
@@ -88,6 +88,9 @@ export default {
     callerPhoneNumber: {
       type: String,
       default: ''
+    },
+    rules: {
+      type: Array
     }
   },
   data() {

@@ -5,7 +5,7 @@
     title="Email Delivery"
     :items="items"
   >
-    <template #SendingStatus="{ props:{ key } }">
+    <template #DeliveryStatus="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
       </div>
@@ -59,12 +59,12 @@ export default {
       return !!(this.helperData?.emailNotDeliveredUserCount || 0)
     },
     getDeliveryValue() {
-      const { smsDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
-      return `${smsDeliveredUserCount} / ${totalTargetUserCount} sent`
+      const { emailDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
+      return `${emailDeliveredUserCount} / ${totalTargetUserCount} sent`
     },
     getNotDeliveredValue() {
-      const { smsNotDeliveredUserCount = '' } = this.helperData
-      return `${smsNotDeliveredUserCount} not delivered`
+      const { emailNotDeliveredUserCount = '' } = this.helperData
+      return `${emailNotDeliveredUserCount} not delivered`
     }
   }
 }
