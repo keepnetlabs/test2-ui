@@ -232,7 +232,7 @@ export default {
       type: Boolean
     },
     availableNumbers: {
-      type: Array
+      type: Number
     },
     languages: {
       type: Array
@@ -260,7 +260,7 @@ export default {
   },
   computed: {
     getAvailableNumberCount() {
-      return this.availableNumbers?.length || 0
+      return this.availableNumbers || 0
     },
     isMFAScenarioSelected() {
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
@@ -544,9 +544,9 @@ export default {
         case 2:
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
-          if (this.selectedPhishingScenarios.length > this.availableNumbers.length) {
+          if (this.selectedPhishingScenarios.length > this.availableNumbers) {
             this.$store.dispatch('common/createSnackBar', {
-              message: `You can select up to ${this.availableNumbers.length} callback scenarios.`,
+              message: `You can select up to ${this.availableNumbers} callback scenarios.`,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert'
             })

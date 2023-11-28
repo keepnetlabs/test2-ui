@@ -249,8 +249,9 @@ export default {
   },
   methods: {
     callForAvailableNumbers() {
-      CallbackService.getAvailableCallbackNumbers().then((res) => {
-        this.availableNumbers = res?.data?.data || []
+      CallbackService.getUsedCallbackNumbers().then((res) => {
+        const { companyCount = 0, usedCount = 0 } = res.data.data
+        this.availableNumbers = companyCount - usedCount
       })
     },
     callForLanguages() {
@@ -268,7 +269,7 @@ export default {
       this.showNewInstanceModal()
     },
     callForFormDetails() {
-      CallbackService.getCallbackCampaignManagerFormDetails().then((response) => {
+      CallbackService.getCampaignManagerFormDetails().then((response) => {
         const {
           data: { data }
         } = response
