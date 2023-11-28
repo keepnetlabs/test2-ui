@@ -4,7 +4,7 @@
       v-if="isShowPrivacyOptionsDialog"
       :status="isShowPrivacyOptionsDialog"
       @on-close="toggleShowPrivacyOptionsDialog"
-      @on-success="callForSubmitApi"
+      @on-success="handleSuccess"
     />
     <CompanySettingsHeader
       title="Data Privacy"
@@ -143,7 +143,12 @@ export default {
         this.defaultPentesterValue = this.pentesterMasked
       })
     },
-    toggleShowPrivacyOptionsDialog() {
+    handleSuccess() {
+      this.callForSubmitApi()
+      this.toggleShowPrivacyOptionsDialog(false)
+    },
+    toggleShowPrivacyOptionsDialog(changeValue = true) {
+      if (changeValue) this.pentesterMasked = !this.pentesterMasked
       this.isShowPrivacyOptionsDialog = !this.isShowPrivacyOptionsDialog
     }
   }

@@ -67,7 +67,6 @@ export default {
     },
     handleSuccess() {
       this.$emit('on-success')
-      this.handleClose()
     }
   }
 }
