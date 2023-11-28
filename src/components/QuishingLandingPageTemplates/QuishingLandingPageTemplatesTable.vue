@@ -201,6 +201,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages('refLandingPageList')
     this.callForData()
   },
   methods: {
