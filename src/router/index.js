@@ -150,8 +150,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard',
-            // TODO: chnage permission key
-            permissionStoreKey: 'permissions/getSmishingSimulatorLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getCallbackSimulatorLeftMenuPermissions'
           },
           component: CallbackSimulatorRoute
         },
@@ -422,8 +421,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Callback Simulator',
-            // TODO: Change permission
-            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getCallbackScenarioLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -435,8 +433,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Callback Simulator',
-            // TODO: Change permission
-            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getCallbackCampaignManagerLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -448,8 +445,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Callback Simulator',
-            // TODO: Change permission
-            permissionStoreKey: 'permissions/getSmishingScenariosLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getCallbackSettingsLeftMenuPermissions'
           },
           props: true,
           params: true
@@ -461,8 +457,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Callback Campaign Manager',
-            // TODO: Change permission
-            permissionStoreKey: 'permissions/getSmishingReportSummaryPermissions'
+            permissionStoreKey: 'permissions/getCallbackReportSearchPermissions'
           },
           props: true,
           params: true

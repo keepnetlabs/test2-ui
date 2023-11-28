@@ -64,7 +64,7 @@
       @close="isTemplateDetails = false"
     />
     <DataTable
-      v-if="getEmailTemplatesSearchPermissions"
+      v-if="getCallbackEmailTemplatesSearchPermissions"
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       is-server-side
@@ -297,7 +297,6 @@ export default {
             filterableType: 'text'
           }
         ],
-        // TODO: Change permissions
         rowActions: [
           {
             name: labels.Preview,
@@ -309,7 +308,7 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions'],
+            disabled: !this.$store.getters['permissions/getCallbackEmailTemplatesEditPermissions'],
             id: 'btn-edit--email-templates-row-actions'
           },
           {
@@ -322,13 +321,15 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions'],
+            disabled: !this.$store.getters[
+              'permissions/getCallbackEmailTemplatesDeletePermissions'
+            ],
             id: 'btn-delete--email-templates-row-actions'
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
+          disabled: !this.$store.getters['permissions/getCallbackEmailTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -347,7 +348,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--emailTemplates',
-          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackEmailTemplatesCreatePermissions']
         }
       },
       modalStatus: false,
@@ -358,10 +359,10 @@ export default {
       templateHTML: null
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
+      getCallbackEmailTemplatesSearchPermissions:
+        'permissions/getCallbackEmailTemplatesSearchPermissions'
     })
   },
   created() {
@@ -505,7 +506,7 @@ export default {
       })
     },
     callForData() {
-      if (this.getEmailTemplatesSearchPermissions) {
+      if (this.getCallbackEmailTemplatesSearchPermissions) {
         this.loading = true
         CallbackService.searchEmailTemplates(this.axiosPayload)
           .then((response) => {

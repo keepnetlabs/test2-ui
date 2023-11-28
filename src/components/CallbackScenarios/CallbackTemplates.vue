@@ -26,9 +26,8 @@
       :languageItems="languageItems"
       @changeCallbackTemplateModalStatus="changeNewCallbackTemplateModalStatus"
     />
-    <!-- TODO: Change permission -->
     <DataTable
-      v-if="getVishingTemplatesSearchPermissions"
+      v-if="getCallbackTemplatesSearchPermissions"
       id="callback-templates-data-table"
       ref="refCallbackTemplatesTable"
       is-server-side
@@ -261,42 +260,40 @@ export default {
             filterableCustomFieldName: PROPERTY_STORE.TAGS
           }
         ],
-        //TODO: Change permissions
         rowActions: [
           {
             name: labels.Preview,
             icon: 'mdi-eye',
-            action: 'handlePreview',
-            disabled: !this.$store.getters['permissions/getVishingTemplatesPreviewPermissions']
+            action: 'handlePreview'
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.$store.getters['permissions/getVishingTemplatesEditPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackTemplatesEditPermissions']
           },
           {
             name: labels.FastLaunch,
             icon: 'mdi-send',
             action: 'handleFastLaunch',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackCampaignCreatePermissions']
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'disable',
-            disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
+            disabled: !this.$store.getters['permissions/getCallbackTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.$store.getters['permissions/getVishingTemplatesDeletePermissions']
+            disabled: !this.$store.getters['permissions/getCallbackTemplatesDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getVishingTemplatesExportPermissions']
+          disabled: !this.$store.getters['permissions/getCallbackTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -315,8 +312,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Callback Template',
           id: 'btn-add--callback-templates',
-          //TODO: Change permissions
-          disabled: !this.$store.getters['permissions/getVishingTemplatesCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackTemplatesCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload({}, 'CreateTime'),
@@ -327,9 +323,8 @@ export default {
     getTemplateId() {
       return this.selectedTemplate ? this.selectedTemplate.resourceId : ''
     },
-    //TODO: Change permissions
     ...mapGetters({
-      getVishingTemplatesSearchPermissions: 'permissions/getVishingTemplatesSearchPermissions'
+      getCallbackTemplatesSearchPermissions: 'permissions/getCallbackTemplatesSearchPermissions'
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -401,7 +396,7 @@ export default {
       })
     },
     callForData() {
-      if (this.getVishingTemplatesSearchPermissions) {
+      if (this.getCallbackTemplatesSearchPermissions) {
         this.isLoading = true
         CallbackService.searchCallbackTemplates(this.axiosPayload)
           .then((response) => {

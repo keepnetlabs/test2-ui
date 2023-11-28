@@ -20,9 +20,8 @@
       @confirm="handleConfirmExchangePhoneNumber"
       @close="handleCloseExchangePhoneNumberModal"
     />
-    <!-- // TODO: Change permission -->
     <DataTable
-      v-if="getThreatIntelligencePermissionsSearch"
+      v-if="getCallbackSettingsSearchPermissions"
       ref="refCallbackSettings"
       id="callback-phone-numbers-table"
       is-server-side
@@ -192,8 +191,7 @@ export default {
             icon: 'mdi-swap-horizontal',
             action: 'handleExchange',
             id: 'btn-exchange--callback-settings',
-            // TODO: Change permission
-            disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+            disabled: !this.$store.getters['permissions/getCallbackSettingsExchangePermissions']
           }
         ],
         addButton: {
@@ -203,8 +201,7 @@ export default {
           action: 'selectPhoneNumbers',
           tooltip: 'Select phone numbers',
           id: 'btn-select--phone-numbers',
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsMapNumbersPermissions']
         },
         iEmpty: {
           message:
@@ -213,8 +210,7 @@ export default {
           action: 'selectPhoneNumbers',
           id: 'btn-empty--callback-settings',
           icon: 'mdi-phone',
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsMapNumbersPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -224,8 +220,7 @@ export default {
         },
         downloadButton: {
           show: true,
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsExportPermissions']
         }
       }
     }
@@ -234,10 +229,9 @@ export default {
     this.callForNumberUsage()
     this.callForData()
   },
-  // TODO: Change permission
   computed: {
     ...mapGetters({
-      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
+      getCallbackSettingsSearchPermissions: 'permissions/getCallbackSettingsSearchPermissions'
     })
   },
   methods: {

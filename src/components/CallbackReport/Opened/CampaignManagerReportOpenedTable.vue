@@ -114,7 +114,7 @@ export default {
             id: 'btn-details--row-actions-campaign-manager-report-opened',
             icon: '$custom-details',
             action: 'on-detail',
-            disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackReportOpenedDetailsPermissions']
           }
         ]
       }

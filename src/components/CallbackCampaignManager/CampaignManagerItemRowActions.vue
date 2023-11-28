@@ -46,7 +46,7 @@
           :id="`btn--delete-row-action-${Math.random().toString().substring(2)}`"
           class="btn-hover"
           icon
-          :disabled="!getSmishingCampaignJobDeletePermissions"
+          :disabled="!getCallbackCampaignJobDeletePermissions"
           @click="$emit('on-delete', scope.row)"
         >
           <v-icon>mdi-delete</v-icon>
@@ -81,10 +81,9 @@ export default {
       labels
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getSmishingCampaignJobDeletePermissions: 'permissions/getSmishingCampaignJobDeletePermissions'
+      getCallbackCampaignJobDeletePermissions: 'permissions/getCallbackCampaignJobDeletePermissions'
     }),
     isMenuRender() {
       return ![
